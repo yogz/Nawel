@@ -523,7 +523,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
               )}
             </div>
             {itemsForPerson.length === 0 ? (
-              <p className="text-sm text-gray-500">Rien de prévu pour l'instant.</p>
+              <p className="text-sm text-gray-500">Rien de prévu pour l&apos;instant.</p>
             ) : (
               <div className="space-y-2">
                 {itemsForPerson.map(({ item, meal, dayTitle }) => (
@@ -582,7 +582,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       <BottomSheet
         open={sheet?.type === "item"}
         onClose={() => setSheet(null)}
-        title={sheet?.type === "item" && sheet.item ? "Modifier l'article" : "Ajouter un article"}
+        title={sheet?.type === "item" && sheet.item ? "Modifier l&apos;article" : "Ajouter un article"}
       >
         {sheet?.type === "item" && (
           <ItemForm
@@ -840,7 +840,7 @@ function ItemForm({
               className="w-full flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-red-50 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
             >
               <Trash2 size={14} className="sm:w-4 sm:h-4" />
-              Supprimer l'article
+              Supprimer l&apos;article
             </button>
           ) : (
             <div className="space-y-2 sm:space-y-3">
