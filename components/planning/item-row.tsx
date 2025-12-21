@@ -4,6 +4,7 @@ import { motion, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
 import { UserRound } from "lucide-react";
 import { Item, Person } from "@/lib/types";
+import { getPersonEmoji } from "@/lib/utils";
 
 export function ItemRow({
   item,
@@ -61,12 +62,14 @@ export function ItemRow({
           <div className="flex items-center justify-between">
             <p className="text-base font-semibold">{item.name}</p>
             {person ? (
-              <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-1 text-xs font-semibold text-accent">
-                <UserRound size={14} />
+              <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent border border-accent/10">
+                <span className="text-sm">{getPersonEmoji(person.name)}</span>
                 {person.name}
               </span>
             ) : (
-              <span className="text-xs text-red-600">À prévoir ✨</span>
+              <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-700 border border-amber-200 shadow-sm">
+                À prévoir ✨
+              </span>
             )}
           </div>
           {(item.quantity || item.note) && (

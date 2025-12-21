@@ -18,6 +18,7 @@ import { BottomSheet } from "../ui/bottom-sheet";
 import { Check, ShieldAlert, Sparkles, Plus as PlusIconLucide } from "lucide-react";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
+import { getPersonEmoji } from "@/lib/utils";
 
 const tabOrder = ["planning", "unassigned", "people", "settings"] as const;
 type SheetState =
@@ -247,14 +248,14 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500">{dayTitle} • {meal.title}</p>
-                    <p className="text-base font-semibold">{item.name}</p>
+                    <p className="text-base font-semibold">🥘 {item.name}</p>
                   </div>
                   {!readOnly && (
                     <button
                       onClick={() => setSheet({ type: "item", mealId: meal.id, item })}
                       className="rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white"
                     >
-                      Choisir
+                      Choisir 🎅
                     </button>
                   )}
                 </div>
@@ -278,6 +279,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       : "bg-white text-gray-700 ring-1 ring-gray-200"
                   )}
                 >
+                  <span className="mr-1.5">{getPersonEmoji(person.name)}</span>
                   {person.name}
                 </button>
               ))}
@@ -297,7 +299,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 {itemsForPerson.map(({ item, meal, dayTitle }) => (
                   <div key={item.id} className="premium-card p-5">
                     <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                    <p className="text-base font-semibold">{item.name}</p>
+                    <p className="text-base font-semibold">🥧 {item.name}</p>
                     {(item.quantity || item.note) && (
                       <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
                     )}
