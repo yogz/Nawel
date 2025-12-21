@@ -1,10 +1,6 @@
-import * as dotenv from "dotenv";
 import { sql } from "drizzle-orm";
 import { db } from "../lib/db";
 import { days, items, meals, people } from "../drizzle/schema";
-
-// Charger les variables d'environnement
-dotenv.config({ path: ".env" });
 
 type PersonId =
   | "nicolas"
