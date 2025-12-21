@@ -364,6 +364,23 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                           className="absolute left-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-2xl bg-white p-1.5 shadow-xl ring-1 ring-black/5"
                         >
                           <div className="max-h-64 overflow-y-auto no-scrollbar">
+                            <button
+                              onClick={() => {
+                                setPlanningFilter({ type: "all" });
+                                setSheet(null);
+                              }}
+                              className={clsx(
+                                "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
+                                planningFilter.type === "all"
+                                  ? "bg-accent/10 text-accent"
+                                  : "text-gray-600 hover:bg-gray-50"
+                              )}
+                            >
+                              <span>Tout le monde</span>
+                              {planningFilter.type === "all" && (
+                                <Check size={14} className="ml-auto" />
+                              )}
+                            </button>
                             {plan.people.map((person) => (
                               <button
                                 key={person.id}
