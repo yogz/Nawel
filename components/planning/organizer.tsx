@@ -767,12 +767,13 @@ function ItemForm({
                 onAssign(null);
               }}
               disabled={readOnly}
+              title="À prévoir"
               className={clsx(
-                "rounded-full px-2.5 sm:px-3 py-1 text-xs sm:text-sm transition-colors",
-                !defaultItem.personId ? "bg-accent text-white" : "bg-gray-100"
+                "rounded-full px-2 sm:px-2.5 py-1 text-base sm:text-lg transition-colors",
+                !defaultItem.personId ? "bg-accent text-white" : "bg-gray-100 text-gray-600"
               )}
             >
-              À prévoir
+              ❓
             </button>
             {people.map((person) => (
               <button
