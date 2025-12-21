@@ -60,16 +60,17 @@ export function MealSection({
           </button>
         )}
       </div>
-      {filteredItems.map((item) => (
-        <ItemRow
-          key={item.id}
-          item={item}
-          person={people.find((p) => p.id === item.personId) || item.person}
-          onAssign={() => onAssign(item)}
-          onDelete={() => onDelete(item)}
-          readOnly={readOnly}
-        />
-      ))}
+             {filteredItems.map((item) => (
+               <ItemRow
+                 key={item.id}
+                 item={item}
+                 person={people.find((p) => p.id === item.personId) || item.person}
+                 onAssign={() => onAssign(item)}
+                 onDelete={() => onDelete(item)}
+                 readOnly={readOnly}
+                 allPeopleNames={people.map(p => p.name)}
+               />
+             ))}
       {meal.items.length === 0 && (
         <p className={clsx("text-sm text-gray-500", isOver && isDraggingFromOtherMeal && "text-accent font-semibold")}>
           {isOver && isDraggingFromOtherMeal ? "Déposez ici pour déplacer l'article" : "Aucun ingrédient pour l'instant."}

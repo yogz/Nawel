@@ -348,7 +348,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                   >
                     {planningFilter.type === "person" ? (
                       <>
-                        {getPersonEmoji(plan.people.find(p => p.id === planningFilter.personId)?.name || "")}{" "}
+                        {getPersonEmoji(plan.people.find(p => p.id === planningFilter.personId)?.name || "", plan.people.map(p => p.name))}{" "}
                         {plan.people.find(p => p.id === planningFilter.personId)?.name}
                       </>
                     ) : (
@@ -385,7 +385,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                                     : "text-gray-600 hover:bg-gray-50"
                                 )}
                               >
-                                <span>{getPersonEmoji(person.name)}</span>
+                                <span>{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
                                 <span className="truncate">{person.name}</span>
                                 {planningFilter.type === "person" && planningFilter.personId === person.id && (
                                   <Check size={14} className="ml-auto" />
@@ -539,7 +539,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       : "bg-white text-gray-700 ring-1 ring-gray-200"
                   )}
                 >
-                  <span className="mr-1.5">{getPersonEmoji(person.name)}</span>
+                  <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
                   {person.name}
                 </button>
               ))}
@@ -992,7 +992,7 @@ function ItemForm({
                   person.id === defaultItem.personId ? "bg-accent text-white" : "bg-gray-100"
                 )}
               >
-                {getPersonEmoji(person.name)} {person.name}
+                {getPersonEmoji(person.name, people.map(p => p.name))} {person.name}
               </button>
             ))}
           </div>

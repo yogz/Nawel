@@ -12,12 +12,14 @@ export function ItemRow({
   onAssign,
   onDelete,
   readOnly,
+  allPeopleNames,
 }: {
   item: Item;
   person?: Person | null;
   onAssign: () => void;
   onDelete: () => void;
   readOnly?: boolean;
+  allPeopleNames?: string[];
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.id,
@@ -52,7 +54,7 @@ export function ItemRow({
                 disabled={readOnly}
                 className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent border border-accent/10 transition-transform active:scale-90"
               >
-                <span className="text-sm">{getPersonEmoji(person.name)}</span>
+                <span className="text-sm">{getPersonEmoji(person.name, allPeopleNames)}</span>
                 {person.name}
               </button>
             ) : (
