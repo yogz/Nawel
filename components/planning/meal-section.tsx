@@ -59,7 +59,7 @@ export function MealSection({
             className="flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white shadow-sm active:scale-95"
           >
             <Plus size={16} />
-            Add item
+            Ajouter
           </button>
         )}
       </div>
@@ -91,7 +91,7 @@ export function MealSection({
           ))}
         </SortableContext>
       </DndContext>
-      {meal.items.length === 0 && <p className="text-sm text-gray-500">No items yet.</p>}
+      {meal.items.length === 0 && <p className="text-sm text-gray-500">Aucun ingrédient pour l&apos;instant.</p>}
     </section>
   );
 }

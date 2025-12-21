@@ -4,8 +4,8 @@ import { CalendarRange, ListChecks, Settings, Users } from "lucide-react";
 import clsx from "clsx";
 
 const tabs = [
-  { key: "planning", label: "Planning 🎄", icon: CalendarRange },
-  { key: "unassigned", label: "Cadeaux 🎁", icon: ListChecks },
+  { key: "planning", label: "Menu 🎄", icon: CalendarRange },
+  { key: "unassigned", label: "À prévoir 🥘", icon: ListChecks },
   { key: "people", label: "Famille 👨‍👩‍👧‍👦", icon: Users },
   { key: "settings", label: "Prefs ⚙️", icon: Settings },
 ] as const;

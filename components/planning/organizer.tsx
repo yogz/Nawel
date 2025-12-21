@@ -13,7 +13,6 @@ import {
 } from "@/app/actions";
 import { PlanData, Item, Meal, Person } from "@/lib/types";
 import { TabBar } from "../tab-bar";
-import { DaySwiper } from "./day-swiper";
 import { MealSection } from "./meal-section";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { Check, ShieldAlert, Sparkles } from "lucide-react";
@@ -30,7 +29,6 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const [plan, setPlan] = useState(initialPlan);
   const [tab, setTab] = useState<(typeof tabOrder)[number]>("planning");
   const [sheet, setSheet] = useState<SheetState | null>(null);
-  const [dayIndex, setDayIndex] = useState(0);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(initialPlan.people[0]?.id ?? null);
   const [readOnly, setReadOnly] = useState(!writeEnabled);
   const [pending, startTransition] = useTransition();
@@ -180,38 +178,43 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       </div>
       <main className="flex-1 space-y-4 px-4 py-4">
         {tab === "planning" && (
-          <DaySwiper days={plan.days} index={dayIndex} onChange={setDayIndex}>
-            {(day) => (
-              <div className="space-y-3">
-                {day.meals.map((meal) => (
-                  <MealSection
-                    key={meal.id}
-                    meal={meal}
-                    people={plan.people}
-                    readOnly={readOnly}
-                    onAssign={(item) => setSheet({ type: "item", mealId: meal.id, item })}
-                    onDelete={handleDelete}
-                    onReorder={(order) => handleReorder(meal, order)}
-                    onCreate={() => setSheet({ type: "item", mealId: meal.id })}
-                  />
-                ))}
-                {!readOnly && (
-                  <button
-                    onClick={() => setSheet({ type: "meal", dayId: day.id })}
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white px-4 py-4 text-sm font-semibold text-gray-600"
-                  >
-                    <PlusIcon />
-                    Add meal
-                  </button>
-                )}
+          <div className="space-y-8">
+            {plan.days.map((day) => (
+              <div key={day.id} className="space-y-4">
+                <h2 className="px-2 text-xl font-bold text-accent flex items-center gap-2">
+                  <span>📅</span> {day.title || day.date}
+                </h2>
+                <div className="space-y-6">
+                  {day.meals.map((meal) => (
+                    <MealSection
+                      key={meal.id}
+                      meal={meal}
+                      people={plan.people}
+                      readOnly={readOnly}
+                      onAssign={(item) => setSheet({ type: "item", mealId: meal.id, item })}
+                      onDelete={handleDelete}
+                      onReorder={(order) => handleReorder(meal, order)}
+                      onCreate={() => setSheet({ type: "item", mealId: meal.id })}
+                    />
+                  ))}
+                  {!readOnly && (
+                    <button
+                      onClick={() => setSheet({ type: "meal", dayId: day.id })}
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600"
+                    >
+                      <PlusIcon />
+                      Ajouter un repas
+                    </button>
+                  )}
+                </div>
               </div>
-            )}
-          </DaySwiper>
+            ))}
+          </div>
         )}
 
         {tab === "unassigned" && (
           <div className="space-y-3">
-            {unassignedItems.length === 0 && <p className="text-sm text-gray-500">All items are assigned. 🎉</p>}
+            {unassignedItems.length === 0 && <p className="text-sm text-gray-500">Tout est déjà prévu ! 🎉</p>}
             {unassignedItems.map(({ item, meal, dayTitle }) => (
               <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
                 <div className="flex items-center justify-between">
@@ -224,7 +227,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       onClick={() => setSheet({ type: "item", mealId: meal.id, item })}
                       className="rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white"
                     >
-                      Assign
+                      Choisir
                     </button>
                   )}
                 </div>
@@ -261,7 +264,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
               )}
             </div>
             {itemsForPerson.length === 0 ? (
-              <p className="text-sm text-gray-500">Nothing assigned yet.</p>
+              <p className="text-sm text-gray-500">Rien de prévu pour l&apos;instant.</p>
             ) : (
               <div className="space-y-2">
                 {itemsForPerson.map(({ item, meal, dayTitle }) => (

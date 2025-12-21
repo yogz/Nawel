@@ -39,14 +39,14 @@ export function ItemRow({
           disabled={readOnly}
           className="rounded-full bg-accent-soft px-3 py-1 text-accent shadow-sm"
         >
-          Assign
+          Choisir
         </button>
         <button
           onClick={onDelete}
           disabled={readOnly}
           className="rounded-full bg-red-100 px-3 py-1 text-red-600 shadow-sm"
         >
-          Delete
+          Supprimer
         </button>
       </div>
       <motion.div
