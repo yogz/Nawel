@@ -11,7 +11,7 @@ export function SnowOverlay() {
     const accumulationRef = useRef<number[]>([]);
 
     // Configuration
-    const IDLE_THRESHOLD = 3000; // 3 seconds of inactivity to start
+    const IDLE_THRESHOLD = 2000; // 2 seconds of inactivity to start
     const MAX_FLAKES = 450; // Increased from 300
 
     class Snowflake {
@@ -207,7 +207,7 @@ export function SnowOverlay() {
     return (
         <canvas
             ref={canvasRef}
-            className={`fixed inset-0 z-[100] pointer-events-none transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"
+            className={`fixed inset-0 z-[100] pointer-events-none transition-all duration-1000 ${isActive ? "opacity-100 bg-black/40" : "opacity-0"
                 }`}
         />
     );
