@@ -15,6 +15,13 @@
       "when": 1766334225365,
       "tag": "0001_nifty_genesis",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1766334640212,
+      "tag": "0002_faulty_the_twelve",
+      "breakpoints": true
     }
   ]
 }

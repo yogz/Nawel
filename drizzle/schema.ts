@@ -69,5 +69,8 @@ export const changeLogs = pgTable("change_logs", {
   recordId: integer("record_id").notNull(),
   oldData: text("old_data"), // JSON string of old data (for update/delete)
   newData: text("new_data"), // JSON string of new data (for create/update)
+  userIp: varchar("user_ip", { length: 100 }),
+  userAgent: text("user_agent"),
+  referer: text("referer"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

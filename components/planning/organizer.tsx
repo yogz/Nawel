@@ -554,18 +554,23 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         )}
 
         {tab === "logs" && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="rounded-2xl bg-white p-4 shadow-sm">
-              <h2 className="mb-4 text-lg font-bold">Historique des modifications</h2>
+              <h2 className="mb-3 text-lg font-bold">Historique des modifications</h2>
               {logs.length === 0 ? (
                 <p className="text-sm text-gray-500">Aucun changement enregistré pour l&apos;instant.</p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {logs.map((log) => {
                     const actionColors = {
-                      create: "bg-green-100 text-green-700",
-                      update: "bg-blue-100 text-blue-700",
-                      delete: "bg-red-100 text-red-700",
+                      create: "bg-green-500",
+                      update: "bg-blue-500",
+                      delete: "bg-red-500",
+                    };
+                    const actionIcons = {
+                      create: "➕",
+                      update: "✏️",
+                      delete: "🗑️",
                     };
                     const actionLabels = {
                       create: "Créé",
@@ -582,40 +587,88 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                     const formattedDate = date.toLocaleString("fr-FR", {
                       day: "2-digit",
                       month: "2-digit",
-                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const formattedTime = date.toLocaleTimeString("fr-FR", {
                       hour: "2-digit",
                       minute: "2-digit",
                     });
 
+                    // Extraire les changements importants
+                    const getChanges = () => {
+                      if (log.action === "create" && log.newData) {
+                        const data = log.newData;
+                        if (log.tableName === "items") {
+                          return `"${data.name || ""}"${data.quantity ? ` (${data.quantity})` : ""}`;
+                        } else if (log.tableName === "meals") {
+                          return `"${data.title || ""}"`;
+                        } else if (log.tableName === "people") {
+                          return `"${data.name || ""}"`;
+                        } else if (log.tableName === "days") {
+                          return `"${data.title || data.date || ""}"`;
+                        }
+                      } else if (log.action === "update" && log.oldData && log.newData) {
+                        const changes: string[] = [];
+                        const old = log.oldData;
+                        const new_ = log.newData;
+                        if (old.name !== new_.name) changes.push(`Nom: "${old.name || ""}" → "${new_.name || ""}"`);
+                        if (old.title !== new_.title) changes.push(`Titre: "${old.title || ""}" → "${new_.title || ""}"`);
+                        if (old.quantity !== new_.quantity) changes.push(`Quantité: "${old.quantity || ""}" → "${new_.quantity || ""}"`);
+                        if (old.note !== new_.note) changes.push(`Note: "${old.note || ""}" → "${new_.note || ""}"`);
+                        if (old.personId !== new_.personId) {
+                          const oldPerson = plan.people.find((p) => p.id === old.personId);
+                          const newPerson = plan.people.find((p) => p.id === new_.personId);
+                          changes.push(`Assigné: ${oldPerson?.name || "Personne"} → ${newPerson?.name || "Personne"}`);
+                        }
+                        return changes.length > 0 ? changes.join(", ") : "Modifications";
+                      } else if (log.action === "delete" && log.oldData) {
+                        const data = log.oldData;
+                        if (log.tableName === "items") {
+                          return `"${data.name || ""}"`;
+                        } else if (log.tableName === "meals") {
+                          return `"${data.title || ""}"`;
+                        } else if (log.tableName === "people") {
+                          return `"${data.name || ""}"`;
+                        } else if (log.tableName === "days") {
+                          return `"${data.title || data.date || ""}"`;
+                        }
+                      }
+                      return "";
+                    };
+
+                    const changes = getChanges();
+                    const userAgentShort = log.userAgent
+                      ? log.userAgent
+                          .replace(/Mozilla\/[\d.]+ \(([^)]+)\)[^/]*\/([^ ]+)/, "$1 / $2")
+                          .substring(0, 40)
+                      : null;
+
                     return (
-                      <div key={log.id} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                        <div className="mb-2 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className={clsx("rounded-full px-2 py-1 text-xs font-bold", actionColors[log.action as keyof typeof actionColors])}>
-                              {actionLabels[log.action as keyof typeof actionLabels]}
-                            </span>
-                            <span className="text-sm font-semibold text-gray-700">
-                              {tableLabels[log.tableName as keyof typeof tableLabels]} #{log.recordId}
-                            </span>
+                      <div key={log.id} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+                        <div className="flex items-start gap-3">
+                          <div className={clsx("mt-0.5 flex h-6 w-6 items-center justify-center rounded-full text-xs text-white", actionColors[log.action as keyof typeof actionColors])}>
+                            {actionIcons[log.action as keyof typeof actionIcons]}
                           </div>
-                          <span className="text-xs text-gray-500">{formattedDate}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs font-semibold text-gray-700">
+                                {actionLabels[log.action as keyof typeof actionLabels]} {tableLabels[log.tableName as keyof typeof tableLabels]}
+                              </span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-500">{formattedTime}</span>
+                            </div>
+                            {changes && (
+                              <div className="text-xs text-gray-600 mb-1 truncate" title={changes}>
+                                {changes}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-xs text-gray-400">
+                              {log.userIp && <span>🌐 {log.userIp}</span>}
+                              {userAgentShort && <span>💻 {userAgentShort}</span>}
+                            </div>
+                          </div>
                         </div>
-                        {log.oldData && (
-                          <div className="mb-2 rounded-lg bg-red-50 p-2">
-                            <p className="mb-1 text-xs font-semibold text-red-700">Avant :</p>
-                            <pre className="text-xs text-red-600 overflow-x-auto">
-                              {JSON.stringify(log.oldData, null, 2)}
-                            </pre>
-                          </div>
-                        )}
-                        {log.newData && (
-                          <div className="rounded-lg bg-green-50 p-2">
-                            <p className="mb-1 text-xs font-semibold text-green-700">Après :</p>
-                            <pre className="text-xs text-green-600 overflow-x-auto">
-                              {JSON.stringify(log.newData, null, 2)}
-                            </pre>
-                          </div>
-                        )}
                       </div>
                     );
                   })}
