@@ -843,9 +843,11 @@ function ItemForm({
               Supprimer l&apos;article
             </button>
           ) : (
-            <div className="space-y-1.5 sm:space-y-2">
-              <p className="text-xs sm:text-sm font-semibold text-red-600">Êtes-vous sûr de vouloir supprimer cet article ?</p>
-              <div className="flex gap-1.5 sm:gap-2">
+            <div className="space-y-2 sm:space-y-3">
+              <p className="text-xs sm:text-sm font-semibold text-red-600 text-center">
+                Êtes-vous sûr de vouloir supprimer cet article ?
+              </p>
+              <div className="flex gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -853,14 +855,14 @@ function ItemForm({
                     setShowDeleteConfirm(false);
                   }}
                   disabled={readOnly}
-                  className="flex-1 rounded-xl bg-red-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-red-600 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   Oui, supprimer
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 rounded-xl bg-gray-100 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
+                  className="flex-1 rounded-xl bg-gray-100 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
