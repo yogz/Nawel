@@ -644,6 +644,31 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                           .substring(0, 40)
                       : null;
 
+                    // Extraire le nom de l'élément pour l'affichage
+                    const getItemName = () => {
+                      if (log.tableName === "items") {
+                        if (log.newData?.name) return log.newData.name;
+                        if (log.oldData?.name) return log.oldData.name;
+                      } else if (log.tableName === "meals") {
+                        if (log.newData?.title) return log.newData.title;
+                        if (log.oldData?.title) return log.oldData.title;
+                      } else if (log.tableName === "people") {
+                        if (log.newData?.name) return log.newData.name;
+                        if (log.oldData?.name) return log.oldData.name;
+                      } else if (log.tableName === "days") {
+                        if (log.newData?.title) return log.newData.title;
+                        if (log.oldData?.title) return log.oldData.title;
+                        if (log.newData?.date) return log.newData.date;
+                        if (log.oldData?.date) return log.oldData.date;
+                      }
+                      return null;
+                    };
+
+                    const itemName = getItemName();
+                    const displayTitle = itemName
+                      ? `${actionLabels[log.action as keyof typeof actionLabels]} "${itemName}"`
+                      : `${actionLabels[log.action as keyof typeof actionLabels]} ${tableLabels[log.tableName as keyof typeof tableLabels]}`;
+
                     return (
                       <div key={log.id} className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
                         <div className="flex items-start gap-3">
@@ -653,7 +678,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-xs font-semibold text-gray-700">
-                                {actionLabels[log.action as keyof typeof actionLabels]} {tableLabels[log.tableName as keyof typeof tableLabels]}
+                                {displayTitle}
                               </span>
                               <span className="text-xs text-gray-400">•</span>
                               <span className="text-xs text-gray-500">{formattedTime}</span>
