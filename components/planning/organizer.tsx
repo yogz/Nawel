@@ -489,6 +489,22 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 );
               })}
             </div>
+            {plan.days.length === 0 && planningFilter.type === "all" && (
+              <div className="px-4 py-8 text-center">
+                <p className="text-gray-500 mb-4">Aucun jour pour l&apos;instant.</p>
+                {!readOnly && (
+                  <button
+                    onClick={() => {
+                      setSheet({ type: "meal", dayId: -1 });
+                    }}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 hover:bg-white/80 transition-colors"
+                  >
+                    <PlusIcon />
+                    Créer un jour et un repas
+                  </button>
+                )}
+              </div>
+            )}
             {!readOnly && planningFilter.type === "all" && plan.days.length > 0 && (
               <div className="mt-8 px-4">
                 <button
@@ -792,11 +808,12 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         )}
       </BottomSheet>
 
-      <BottomSheet open={sheet?.type === "meal"} onClose={() => setSheet(null)} title="Ajouter un repas">
+      <BottomSheet open={sheet?.type === "meal"} onClose={() => setSheet(null)} title={plan.days.length === 0 ? "Créer un jour et un repas" : "Ajouter un repas"}>
         {sheet?.type === "meal" && (
           <MealForm
             days={plan.days}
-            defaultDayId={sheet.dayId}
+            defaultDayId={sheet.dayId === -1 ? undefined : sheet.dayId}
+            forceNewDay={sheet.dayId === -1 || plan.days.length === 0}
             onSubmit={async (dayIdOrNew, title, newDayDate?, newDayTitle?) => {
               if (readOnly) return;
               startTransition(async () => {
@@ -1079,17 +1096,19 @@ function ItemForm({
 function MealForm({
   days,
   defaultDayId,
+  forceNewDay,
   onSubmit,
   readOnly,
 }: {
   days: Day[];
   defaultDayId?: number;
+  forceNewDay?: boolean;
   onSubmit: (dayId: number, title: string, newDayDate?: string, newDayTitle?: string) => Promise<void>;
   readOnly?: boolean;
 }) {
   const [title, setTitle] = useState("");
   const [selectedDayId, setSelectedDayId] = useState<number>(defaultDayId ?? days[0]?.id ?? 0);
-  const [isNewDay, setIsNewDay] = useState(false);
+  const [isNewDay, setIsNewDay] = useState(forceNewDay ?? false);
   const [newDayDate, setNewDayDate] = useState("");
   const [newDayTitle, setNewDayTitle] = useState("");
 
@@ -1105,31 +1124,33 @@ function MealForm({
         }
       }}
     >
-      <label className="block space-y-1">
-        <span className="text-sm font-semibold">Jour</span>
-        <select
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
-          value={isNewDay ? -1 : selectedDayId}
-          onChange={(e) => {
-            const value = Number(e.target.value);
-            if (value === -1) {
-              setIsNewDay(true);
-            } else {
-              setIsNewDay(false);
-              setSelectedDayId(value);
-            }
-          }}
-          required
-          disabled={readOnly}
-        >
-          {days.map((day) => (
-            <option key={day.id} value={day.id}>
-              {day.title || day.date}
-            </option>
-          ))}
-          <option value={-1}>+ Nouveau jour</option>
-        </select>
-      </label>
+      {days.length > 0 && (
+        <label className="block space-y-1">
+          <span className="text-sm font-semibold">Jour</span>
+          <select
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
+            value={isNewDay ? -1 : selectedDayId}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (value === -1) {
+                setIsNewDay(true);
+              } else {
+                setIsNewDay(false);
+                setSelectedDayId(value);
+              }
+            }}
+            required
+            disabled={readOnly}
+          >
+            {days.map((day) => (
+              <option key={day.id} value={day.id}>
+                {day.title || day.date}
+              </option>
+            ))}
+            <option value={-1}>+ Nouveau jour</option>
+          </select>
+        </label>
+      )}
       {isNewDay && (
         <>
           <label className="block space-y-1">
