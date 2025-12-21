@@ -255,15 +255,15 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-2xl px-6 py-3 shadow-lg border-2"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-2xl px-6 py-3 shadow-lg border-2 flex items-center justify-center"
             style={{
               background: christmas 
                 ? "repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px)"
-                : "#22c55e",
-              borderColor: christmas ? "#dc2626" : "#16a34a",
+                : "#86efac",
+              borderColor: christmas ? "#dc2626" : "#4ade80",
             }}
           >
-            <div className="flex items-center gap-2 text-white">
+            <div className="flex items-center justify-center gap-2" style={{ color: christmas ? "#fff" : "#065f46" }}>
               {christmas ? (
                 <>
                   <span className="text-xl">🎄</span>
@@ -318,7 +318,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                     : "bg-white text-gray-400 hover:text-amber-600"
                 )}
               >
-                À prévoir ({unassignedItemsCount}) 🥘
+                ? ({unassignedItemsCount}) 🥘
               </button>
 
               {plan.people.length > 0 && (
