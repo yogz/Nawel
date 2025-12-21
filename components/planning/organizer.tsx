@@ -448,9 +448,9 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 }));
                 if (planningFilter.type !== "all" && !hasMatch) return null;
 
-                // Get a random citation for this day (stable per day based on day.id)
-                const dayCitationIndex = day.id % citationsData.citations.length;
-                const dayCitation = citationsData.citations[dayCitationIndex];
+                // Get a random citation
+                const randomIndex = Math.floor(Math.random() * citationsData.citations.length);
+                const dayCitation = citationsData.citations[randomIndex];
 
                 return (
                   <div key={day.id} className="space-y-6">
