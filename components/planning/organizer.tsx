@@ -569,11 +569,21 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             ) : (
               <div className="space-y-2">
                 {itemsForPerson.map(({ item, meal, dayTitle }) => (
-                  <div key={item.id} className="premium-card p-5">
+                  <div key={item.id} className="premium-card p-5 relative group">
                     <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
                     <p className="text-base font-semibold">🥧 {item.name}</p>
                     {(item.quantity || item.note) && (
                       <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
+                    )}
+                    {!readOnly && (
+                      <button
+                        onClick={() => handleAssign(item, null)}
+                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
+                        title="Retirer l'assignation"
+                      >
+                        <ArrowRightLeft size={12} />
+                        Retirer
+                      </button>
                     )}
                   </div>
                 ))}
@@ -677,8 +687,8 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                     const changes = getChanges();
                     const userAgentShort = log.userAgent
                       ? log.userAgent
-                          .replace(/Mozilla\/[\d.]+ \(([^)]+)\)[^/]*\/([^ ]+)/, "$1 / $2")
-                          .substring(0, 40)
+                        .replace(/Mozilla\/[\d.]+ \(([^)]+)\)[^/]*\/([^ ]+)/, "$1 / $2")
+                        .substring(0, 40)
                       : null;
 
                     // Extraire le nom de l'élément pour l'affichage
@@ -909,11 +919,11 @@ function ItemForm({
     if (!defaultItem || readOnly || isInitialMountRef.current) return;
 
     // Don't save if values haven't changed from last saved state
-    if (lastSavedRef.current && 
-        name === lastSavedRef.current.name && 
-        quantity === lastSavedRef.current.quantity && 
-        note === lastSavedRef.current.note && 
-        price === lastSavedRef.current.price) {
+    if (lastSavedRef.current &&
+      name === lastSavedRef.current.name &&
+      quantity === lastSavedRef.current.quantity &&
+      note === lastSavedRef.current.note &&
+      price === lastSavedRef.current.price) {
       return;
     }
 
@@ -925,10 +935,10 @@ function ItemForm({
     // Save after 1000ms of no changes (increased from 500ms to avoid conflicts)
     saveTimeoutRef.current = setTimeout(() => {
       if (defaultItem && lastSavedRef.current &&
-          (name !== lastSavedRef.current.name || 
-           quantity !== lastSavedRef.current.quantity || 
-           note !== lastSavedRef.current.note || 
-           price !== lastSavedRef.current.price)) {
+        (name !== lastSavedRef.current.name ||
+          quantity !== lastSavedRef.current.quantity ||
+          note !== lastSavedRef.current.note ||
+          price !== lastSavedRef.current.price)) {
         onSubmit({ name, quantity, note, price });
         lastSavedRef.current = { name, quantity, note, price };
       }
