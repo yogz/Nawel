@@ -110,9 +110,8 @@ function EventForm({
   };
 
   return (
-    <BottomSheet isOpen={true} onClose={onClose}>
+    <BottomSheet open={true} onClose={onClose} title="Nouvel événement">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-bold">Nouvel événement</h2>
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Nom de l&apos;événement</span>
           <input
