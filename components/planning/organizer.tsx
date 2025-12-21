@@ -727,7 +727,7 @@ function ItemForm({
       <label className="block space-y-1">
         <span className="text-sm font-semibold">Article</span>
         <input
-          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Plateau de fromages"
@@ -739,7 +739,7 @@ function ItemForm({
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Quantité</span>
           <input
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="ex. 2 plateaux"
@@ -749,7 +749,7 @@ function ItemForm({
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Remarque</span>
           <input
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Sans gluten"
@@ -919,7 +919,7 @@ function MealForm({
       <label className="block space-y-1">
         <span className="text-sm font-semibold">Jour</span>
         <select
-          className="w-full rounded-xl border border-gray-200 px-3 py-2"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
           value={isNewDay ? -1 : selectedDayId}
           onChange={(e) => {
             const value = Number(e.target.value);
@@ -947,7 +947,7 @@ function MealForm({
             <span className="text-sm font-semibold">Date du jour</span>
             <input
               type="date"
-              className="w-full rounded-xl border border-gray-200 px-3 py-2"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
               value={newDayDate}
               onChange={(e) => setNewDayDate(e.target.value)}
               required
@@ -957,7 +957,7 @@ function MealForm({
           <label className="block space-y-1">
             <span className="text-sm font-semibold">Titre du jour (optionnel)</span>
             <input
-              className="w-full rounded-xl border border-gray-200 px-3 py-2"
+              className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
               value={newDayTitle}
               onChange={(e) => setNewDayTitle(e.target.value)}
               placeholder="Jour de Noël"
@@ -969,7 +969,7 @@ function MealForm({
       <label className="block space-y-1">
         <span className="text-sm font-semibold">Titre du repas</span>
         <input
-          className="w-full rounded-xl border border-gray-200 px-3 py-2"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Dessert"
@@ -1001,7 +1001,7 @@ function PersonForm({ onSubmit, readOnly }: { onSubmit: (name: string) => void; 
       <label className="block space-y-1">
         <span className="text-sm font-semibold">Nom</span>
         <input
-          className="w-full rounded-xl border border-gray-200 px-3 py-2"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nom du membre"
