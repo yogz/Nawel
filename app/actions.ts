@@ -274,52 +274,66 @@ export async function getChangeLogsAction(input: z.infer<typeof getChangeLogsSch
     .select()
     .from(changeLogs)
     .orderBy(desc(changeLogs.createdAt))
-    .limit(200); // Get more to ensure we have enough after filtering
+    .limit(200);
 
-  // Filter logs by event
-  const filteredLogs = [];
+  // Group logs by table name for batch processing
+  const logsByTable: Record<string, typeof allLogs> = {
+    events: [],
+    people: [],
+    days: [],
+    meals: [],
+    items: [],
+  };
 
   for (const log of allLogs) {
-    let belongsToEvent = false;
-
-    if (log.tableName === 'events') {
-      // Events: check if recordId matches event.id
-      belongsToEvent = log.recordId === event.id;
-    } else if (log.tableName === 'people') {
-      // People: join people -> events
-      const person = await db.query.people.findFirst({
-        where: eq(people.id, log.recordId),
-      });
-      belongsToEvent = person?.eventId === event.id;
-    } else if (log.tableName === 'days') {
-      // Days: join days -> events
-      const day = await db.query.days.findFirst({
-        where: eq(days.id, log.recordId),
-      });
-      belongsToEvent = day?.eventId === event.id;
-    } else if (log.tableName === 'meals') {
-      // Meals: join meals -> days -> events
-      const meal = await db.query.meals.findFirst({
-        where: eq(meals.id, log.recordId),
-        with: { day: true },
-      });
-      belongsToEvent = meal?.day?.eventId === event.id;
-    } else if (log.tableName === 'items') {
-      // Items: join items -> meals -> days -> events
-      const item = await db.query.items.findFirst({
-        where: eq(items.id, log.recordId),
-        with: { meal: { with: { day: true } } },
-      });
-      belongsToEvent = item?.meal?.day?.eventId === event.id;
+    if (logsByTable[log.tableName]) {
+      logsByTable[log.tableName].push(log);
     }
-
-    if (belongsToEvent) {
-      filteredLogs.push(log);
-    }
-
-    // Stop if we have enough logs
-    if (filteredLogs.length >= 100) break;
   }
+
+  // Batch fetch all related records
+  const [peopleRecords, daysRecords, mealsRecords, itemsRecords] = await Promise.all([
+    logsByTable.people.length > 0
+      ? db.query.people.findMany({
+        where: eq(people.eventId, event.id),
+      })
+      : [],
+    logsByTable.days.length > 0
+      ? db.query.days.findMany({
+        where: eq(days.eventId, event.id),
+      })
+      : [],
+    logsByTable.meals.length > 0
+      ? db.query.meals.findMany({
+        with: { day: true },
+      })
+      : [],
+    logsByTable.items.length > 0
+      ? db.query.items.findMany({
+        with: { meal: { with: { day: true } } },
+      })
+      : [],
+  ]);
+
+  // Create lookup sets for fast filtering
+  const peopleIds = new Set(peopleRecords.map((p) => p.id));
+  const daysIds = new Set(daysRecords.map((d) => d.id));
+  const mealsIds = new Set(
+    mealsRecords.filter((m) => m.day?.eventId === event.id).map((m) => m.id)
+  );
+  const itemsIds = new Set(
+    itemsRecords.filter((i) => i.meal?.day?.eventId === event.id).map((i) => i.id)
+  );
+
+  // Filter logs using the lookup sets
+  const filteredLogs = allLogs.filter((log) => {
+    if (log.tableName === 'events') return log.recordId === event.id;
+    if (log.tableName === 'people') return peopleIds.has(log.recordId);
+    if (log.tableName === 'days') return daysIds.has(log.recordId);
+    if (log.tableName === 'meals') return mealsIds.has(log.recordId);
+    if (log.tableName === 'items') return itemsIds.has(log.recordId);
+    return false;
+  }).slice(0, 100);
 
   return filteredLogs.map((log) => ({
     ...log,

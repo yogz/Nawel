@@ -55,6 +55,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const { christmas, toggle } = useThemeMode();
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [logsLoading, setLogsLoading] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -68,7 +69,10 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
   useEffect(() => {
     if (tab === "logs") {
-      getChangeLogsAction({ slug }).then(setLogs);
+      setLogsLoading(true);
+      getChangeLogsAction({ slug })
+        .then(setLogs)
+        .finally(() => setLogsLoading(false));
     }
   }, [tab, slug]);
 
@@ -676,7 +680,14 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
           <div className="space-y-3">
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <h2 className="mb-3 text-lg font-bold">Historique des modifications</h2>
-              {logs.length === 0 ? (
+              {logsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="flex items-center gap-3 text-gray-500">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-accent"></div>
+                    <span className="text-sm">Chargement de l&apos;historique...</span>
+                  </div>
+                </div>
+              ) : logs.length === 0 ? (
                 <p className="text-sm text-gray-500">Aucun changement enregistré pour l&apos;instant.</p>
               ) : (
                 <div className="space-y-2">
