@@ -65,9 +65,13 @@ export function ItemRow({
               </button>
             )}
           </div>
-          {(item.quantity || item.note) && (
+          {(item.quantity || item.note || item.price) && (
             <p className="mt-1 text-sm text-gray-600">
-              {[item.quantity, item.note].filter(Boolean).join(" • ")}
+              {[
+                item.quantity,
+                item.price ? `${item.price.toFixed(2)} €` : null,
+                item.note
+              ].filter(Boolean).join(" • ")}
             </p>
           )}
         </div>

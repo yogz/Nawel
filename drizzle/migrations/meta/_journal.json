@@ -22,6 +22,13 @@
       "when": 1766334640212,
       "tag": "0002_faulty_the_twelve",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1766335578229,
+      "tag": "0003_violet_the_captain",
+      "breakpoints": true
     }
   ]
 }

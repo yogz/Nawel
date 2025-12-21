@@ -85,6 +85,7 @@ const createItemSchema = baseInput.extend({
   name: z.string().min(1),
   quantity: z.string().optional(),
   note: z.string().optional(),
+  price: z.number().optional(),
 });
 
 export async function createItemAction(input: z.infer<typeof createItemSchema>) {
@@ -102,6 +103,7 @@ export async function createItemAction(input: z.infer<typeof createItemSchema>) 
       name: input.name,
       quantity: input.quantity,
       note: input.note,
+      price: input.price ?? null,
       order: (last?.order || 0) + 1,
     })
     .returning();
@@ -115,6 +117,7 @@ const updateItemSchema = baseInput.extend({
   name: z.string().min(1),
   quantity: z.string().optional().nullable(),
   note: z.string().optional().nullable(),
+  price: z.number().optional().nullable(),
   personId: z.number().optional().nullable(),
 });
 
@@ -128,6 +131,7 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
       name: input.name,
       quantity: input.quantity ?? null,
       note: input.note ?? null,
+      price: input.price ?? null,
       personId: input.personId ?? null,
     })
     .where(eq(items.id, input.id));

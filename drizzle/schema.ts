@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, timestamp, real } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const days = pgTable("days", {
@@ -29,6 +29,7 @@ export const items = pgTable("items", {
   name: text("name").notNull(),
   quantity: text("quantity"),
   note: text("note"),
+  price: real("price"),
   personId: integer("person_id").references(() => people.id, {
     onDelete: "set null",
   }),

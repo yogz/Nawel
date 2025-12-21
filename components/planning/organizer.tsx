@@ -81,7 +81,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
     }));
   };
 
-  const handleCreateItem = (data: { mealId: number; name: string; quantity?: string; note?: string }) => {
+  const handleCreateItem = (data: { mealId: number; name: string; quantity?: string; note?: string; price?: number }) => {
     if (readOnly) return;
     startTransition(async () => {
       const created = await createItemAction({ ...data, slug, key: writeKey });
@@ -98,6 +98,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         name: item.name,
         quantity: item.quantity,
         note: item.note,
+        price: item.price ?? null,
         personId: item.personId ?? null,
         slug,
         key: writeKey,
@@ -600,7 +601,10 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       if (log.action === "create" && log.newData) {
                         const data = log.newData;
                         if (log.tableName === "items") {
-                          return `"${data.name || ""}"${data.quantity ? ` (${data.quantity})` : ""}`;
+                          const parts = [];
+                          if (data.quantity) parts.push(data.quantity);
+                          if (data.price) parts.push(`${data.price.toFixed(2)} €`);
+                          return `"${data.name || ""}"${parts.length > 0 ? ` (${parts.join(", ")})` : ""}`;
                         } else if (log.tableName === "meals") {
                           return `"${data.title || ""}"`;
                         } else if (log.tableName === "people") {
@@ -615,6 +619,11 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                         if (old.name !== new_.name) changes.push(`Nom: "${old.name || ""}" → "${new_.name || ""}"`);
                         if (old.title !== new_.title) changes.push(`Titre: "${old.title || ""}" → "${new_.title || ""}"`);
                         if (old.quantity !== new_.quantity) changes.push(`Quantité: "${old.quantity || ""}" → "${new_.quantity || ""}"`);
+                        if (old.price !== new_.price) {
+                          const oldPrice = old.price ? `${old.price.toFixed(2)} €` : "—";
+                          const newPrice = new_.price ? `${new_.price.toFixed(2)} €` : "—";
+                          changes.push(`Prix: ${oldPrice} → ${newPrice}`);
+                        }
                         if (old.note !== new_.note) changes.push(`Note: "${old.note || ""}" → "${new_.note || ""}"`);
                         if (old.personId !== new_.personId) {
                           const oldPerson = plan.people.find((p) => p.id === old.personId);
@@ -828,7 +837,7 @@ function ItemForm({
   defaultItem?: Item;
   allMeals?: Array<Meal & { dayTitle: string }>;
   currentMealId?: number;
-  onSubmit: (values: { name: string; quantity?: string; note?: string }) => void;
+  onSubmit: (values: { name: string; quantity?: string; note?: string; price?: number }) => void;
   onAssign: (personId: number | null) => void;
   onMoveMeal?: (targetMealId: number) => void;
   onDelete?: () => void;
@@ -837,6 +846,7 @@ function ItemForm({
   const [name, setName] = useState(defaultItem?.name ?? "");
   const [quantity, setQuantity] = useState(defaultItem?.quantity ?? "");
   const [note, setNote] = useState(defaultItem?.note ?? "");
+  const [price, setPrice] = useState<number | undefined>(defaultItem?.price ?? undefined);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showMoveMeal, setShowMoveMeal] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -847,6 +857,7 @@ function ItemForm({
       setName(defaultItem.name ?? "");
       setQuantity(defaultItem.quantity ?? "");
       setNote(defaultItem.note ?? "");
+      setPrice(defaultItem.price ?? undefined);
     }
   }, [defaultItem]);
 
@@ -855,7 +866,7 @@ function ItemForm({
     if (!defaultItem || readOnly) return;
 
     // Don't save on initial mount
-    if (name === defaultItem.name && quantity === defaultItem.quantity && note === defaultItem.note) {
+    if (name === defaultItem.name && quantity === defaultItem.quantity && note === defaultItem.note && price === defaultItem.price) {
       return;
     }
 
@@ -866,8 +877,8 @@ function ItemForm({
 
     // Save after 500ms of no changes
     saveTimeoutRef.current = setTimeout(() => {
-      if (defaultItem && (name !== defaultItem.name || quantity !== defaultItem.quantity || note !== defaultItem.note)) {
-        onSubmit({ name, quantity, note });
+      if (defaultItem && (name !== defaultItem.name || quantity !== defaultItem.quantity || note !== defaultItem.note || price !== defaultItem.price)) {
+        onSubmit({ name, quantity, note, price });
       }
     }, 500);
 
@@ -877,14 +888,14 @@ function ItemForm({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, quantity, note, defaultItem?.id, defaultItem?.name, defaultItem?.quantity, defaultItem?.note, readOnly, onSubmit]);
+  }, [name, quantity, note, price, defaultItem?.id, defaultItem?.name, defaultItem?.quantity, defaultItem?.note, defaultItem?.price, readOnly, onSubmit]);
 
   return (
     <form
       className="space-y-2.5 sm:space-y-3"
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ name, quantity, note });
+        onSubmit({ name, quantity, note, price });
       }}
     >
       <label className="block space-y-1">
@@ -910,16 +921,29 @@ function ItemForm({
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-sm font-semibold">Remarque</span>
+          <span className="text-sm font-semibold">Prix (€)</span>
           <input
+            type="number"
+            step="0.01"
+            min="0"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Sans gluten"
+            value={price ?? ""}
+            onChange={(e) => setPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+            placeholder="ex. 15.50"
             disabled={readOnly}
           />
         </label>
       </div>
+      <label className="block space-y-1">
+        <span className="text-sm font-semibold">Remarque</span>
+        <input
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-base sm:text-sm"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Sans gluten"
+          disabled={readOnly}
+        />
+      </label>
       {defaultItem && (
         <div className="space-y-1.5 sm:space-y-2">
           <p className="text-xs sm:text-sm font-semibold text-gray-600">Assigner à</p>
