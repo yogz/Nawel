@@ -577,7 +577,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       <BottomSheet
         open={sheet?.type === "item"}
         onClose={() => setSheet(null)}
-        title={sheet?.type === "item" && sheet.item ? "Modifier l'article" : "Ajouter un article"}
+        title={sheet?.type === "item" && sheet.item ? "Modifier l&apos;article" : "Ajouter un article"}
       >
         {sheet?.type === "item" && (
           <ItemForm
@@ -679,7 +679,7 @@ function ItemForm({
       setQuantity(defaultItem.quantity ?? "");
       setNote(defaultItem.note ?? "");
     }
-  }, [defaultItem?.id, defaultItem?.name, defaultItem?.quantity, defaultItem?.note]);
+  }, [defaultItem]);
 
   // Auto-save on change
   useEffect(() => {
@@ -708,7 +708,7 @@ function ItemForm({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, quantity, note, defaultItem?.id, readOnly]);
+  }, [name, quantity, note, defaultItem?.id, defaultItem?.name, defaultItem?.quantity, defaultItem?.note, readOnly, onSubmit]);
 
   return (
     <form
@@ -821,7 +821,7 @@ function ItemForm({
               className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
             >
               <Trash2 size={16} />
-              Supprimer l'article
+              Supprimer l&apos;article
             </button>
           ) : (
             <div className="space-y-2">
