@@ -24,6 +24,7 @@ export function MealSection({
   onReorder,
   onCreate,
   readOnly,
+  showOnlyUnassigned,
 }: {
   meal: Meal;
   people: Person[];
@@ -32,7 +33,10 @@ export function MealSection({
   onReorder: (orderedIds: number[]) => void;
   onCreate: () => void;
   readOnly?: boolean;
+  showOnlyUnassigned?: boolean;
 }) {
+  const filteredItems = showOnlyUnassigned ? meal.items.filter((i) => !i.personId) : meal.items;
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor),
@@ -49,11 +53,13 @@ export function MealSection({
     }
   };
 
+  if (showOnlyUnassigned && filteredItems.length === 0) return null;
+
   return (
     <section className="premium-card glass p-6 overflow-hidden">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold">{meal.title}</h3>
-        {!readOnly && (
+        {!readOnly && !showOnlyUnassigned && (
           <button
             onClick={onCreate}
             className="flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white shadow-sm active:scale-95"
@@ -64,8 +70,8 @@ export function MealSection({
         )}
       </div>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={meal.items.map((item) => item.id)}>
-          {meal.items.map((item) => (
+        <SortableContext items={filteredItems.map((item) => item.id)}>
+          {filteredItems.map((item) => (
             <SortableRow key={item.id} id={item.id}>
               {(attributes, listeners) => (
                 <ItemRow

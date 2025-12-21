@@ -20,7 +20,7 @@ import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
 import { getPersonEmoji } from "@/lib/utils";
 
-const tabOrder = ["planning", "unassigned", "people", "settings"] as const;
+const tabOrder = ["planning", "people", "settings"] as const;
 type SheetState =
   | { type: "item"; mealId: number; item?: Item }
   | { type: "meal"; dayId: number }
@@ -29,6 +29,7 @@ type SheetState =
 export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initialPlan: PlanData; slug: string; writeKey?: string; writeEnabled: boolean }) {
   const [plan, setPlan] = useState(initialPlan);
   const [tab, setTab] = useState<(typeof tabOrder)[number]>("planning");
+  const [showOnlyUnassigned, setShowOnlyUnassigned] = useState(false);
   const [sheet, setSheet] = useState<SheetState | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(initialPlan.people[0]?.id ?? null);
   const [readOnly, setReadOnly] = useState(!writeEnabled);
@@ -126,16 +127,16 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
     });
   };
 
-  const unassignedItems = useMemo(() => {
-    const list: Array<{ item: Item; meal: Meal; dayTitle: string }> = [];
+  const unassignedItemsCount = useMemo(() => {
+    let count = 0;
     plan.days.forEach((day) => {
       day.meals.forEach((meal) => {
         meal.items.forEach((item) => {
-          if (!item.personId) list.push({ item, meal, dayTitle: day.title || day.date });
+          if (!item.personId) count++;
         });
       });
     });
-    return list;
+    return count;
   }, [plan.days]);
 
   const itemsForPerson = useMemo(() => {
@@ -192,76 +193,83 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             )}
           </div>
         </div>
+        {tab === "planning" && (
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => setShowOnlyUnassigned(false)}
+              className={clsx(
+                "rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
+                !showOnlyUnassigned
+                  ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                  : "bg-white text-gray-400 hover:text-gray-600"
+              )}
+            >
+              Tout le menu
+            </button>
+            <button
+              onClick={() => setShowOnlyUnassigned(true)}
+              className={clsx(
+                "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
+                showOnlyUnassigned
+                  ? "bg-amber-400 text-amber-950 shadow-md ring-2 ring-amber-400/20"
+                  : "bg-white text-gray-400 hover:text-amber-600"
+              )}
+            >
+              À prévoir ({unassignedItemsCount}) 🥘
+            </button>
+          </div>
+        )}
       </header>
 
       <main className="flex-1 space-y-4 px-4 py-8">
         {tab === "planning" && (
           <div className="space-y-12">
-            {plan.days.map((day) => (
-              <div key={day.id} className="space-y-6">
-                <div className="flex items-center gap-3 px-2">
-                  <div className="h-10 w-10 shrink-0 grid place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
-                    <span className="text-lg font-bold">🎄</span>
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-black tracking-tight text-text">
-                      {day.title || day.date}
-                    </h2>
-                    <p className="text-xs font-bold uppercase tracking-widest text-accent opacity-60">
-                      Festins de Noël
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {day.meals.map((meal) => (
-                    <MealSection
-                      key={meal.id}
-                      meal={meal}
-                      people={plan.people}
-                      readOnly={readOnly}
-                      onAssign={(item) => setSheet({ type: "item", mealId: meal.id, item })}
-                      onDelete={handleDelete}
-                      onReorder={(order) => handleReorder(meal, order)}
-                      onCreate={() => setSheet({ type: "item", mealId: meal.id })}
-                    />
-                  ))}
-                  {!readOnly && (
-                    <button
-                      onClick={() => setSheet({ type: "meal", dayId: day.id })}
-                      className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600"
-                    >
-                      <PlusIcon />
-                      Ajouter un repas
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+            {plan.days.map((day) => {
+              const hasUnassigned = day.meals.some(m => m.items.some(i => !i.personId));
+              if (showOnlyUnassigned && !hasUnassigned) return null;
 
-        {tab === "unassigned" && (
-          <div className="space-y-3">
-            {unassignedItems.length === 0 && <p className="text-sm text-gray-500">Tout est déjà prévu ! 🎉</p>}
-            {unassignedItems.map(({ item, meal, dayTitle }) => (
-              <div key={item.id} className="premium-card p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500">{dayTitle} • {meal.title}</p>
-                    <p className="text-base font-semibold">🥘 {item.name}</p>
+              return (
+                <div key={day.id} className="space-y-6">
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="h-10 w-10 shrink-0 grid place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
+                      <span className="text-lg font-bold">🎄</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-black tracking-tight text-text">
+                        {day.title || day.date}
+                      </h2>
+                      <p className="text-xs font-bold uppercase tracking-widest text-accent opacity-60">
+                        Festins de Noël
+                      </p>
+                    </div>
                   </div>
-                  {!readOnly && (
-                    <button
-                      onClick={() => setSheet({ type: "item", mealId: meal.id, item })}
-                      className="rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white"
-                    >
-                      Choisir 🎅
-                    </button>
-                  )}
+                  <div className="space-y-6">
+                    {day.meals.map((meal) => (
+                      <MealSection
+                        key={meal.id}
+                        meal={meal}
+                        people={plan.people}
+                        readOnly={readOnly}
+                        onAssign={(item) => setSheet({ type: "item", mealId: meal.id, item })}
+                        onDelete={handleDelete}
+                        onReorder={(order) => handleReorder(meal, order)}
+                        onCreate={() => setSheet({ type: "item", mealId: meal.id })}
+                        showOnlyUnassigned={showOnlyUnassigned}
+                      />
+                    ))}
+                    {!readOnly && !showOnlyUnassigned && (
+                      <button
+                        onClick={() => setSheet({ type: "meal", dayId: day.id })}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600"
+                      >
+                        <PlusIcon />
+                        Ajouter un repas
+                      </button>
+                    )}
+                  </div>
                 </div>
-                {item.note && <p className="mt-2 text-sm text-gray-600">{item.note}</p>}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
