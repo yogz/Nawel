@@ -48,13 +48,19 @@ export function SnowOverlay() {
         }
     }
 
+    // Track active state in ref to avoid effect re-runs
+    const isActiveRef = useRef(isActive);
+    useEffect(() => {
+        isActiveRef.current = isActive;
+    }, [isActive]);
+
     // Idle detection
     useEffect(() => {
         const events = ["mousemove", "keydown", "scroll", "touchstart", "click"];
 
         const resetIdleTimer = () => {
-            // If was active (snowing), stop it immediately
-            if (isActive) {
+            // Use ref to check current state without re-binding listeners
+            if (isActiveRef.current) {
                 setIsActive(false);
             }
 
@@ -84,7 +90,7 @@ export function SnowOverlay() {
             });
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
-    }, [isActive]);
+    }, []); // Empty dependency array to run only once!
 
     // Snow animation loop
     useEffect(() => {
