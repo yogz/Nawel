@@ -1,4 +1,5 @@
-import { relations, sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { relations } from "drizzle-orm";
 
 export const days = sqliteTable("days", {
   id: integer("id").primaryKey({ autoIncrement: true }),
