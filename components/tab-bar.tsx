@@ -4,10 +4,10 @@ import { CalendarRange, ListChecks, Settings, Users, History } from "lucide-reac
 import clsx from "clsx";
 
 const tabs = [
-  { key: "planning", label: "Menu 🎄", icon: CalendarRange },
-  { key: "people", label: "Famille 👨‍👩‍👧‍👦", icon: Users },
-  { key: "logs", label: "Historique 📜", icon: History },
-  { key: "settings", label: "Prefs ⚙️", icon: Settings },
+  { key: "planning", label: "Menu", icon: CalendarRange },
+  { key: "people", label: "Famille", icon: Users },
+  { key: "logs", label: "Historique", icon: History },
+  { key: "settings", label: "Prefs", icon: Settings },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["key"];
