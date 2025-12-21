@@ -49,7 +49,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const [logs, setLogs] = useState<any[]>([]);
   const [planningFilter, setPlanningFilter] = useState<PlanningFilter>({ type: "all" });
   const [sheet, setSheet] = useState<SheetState | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<number | null>(initialPlan.people[0]?.id ?? null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
   const [readOnly, setReadOnly] = useState(!writeEnabled);
   const [pending, startTransition] = useTransition();
   const { christmas, toggle } = useThemeMode();
@@ -244,6 +244,23 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
     });
     return list;
   }, [plan.days, selectedPerson]);
+
+  const itemsByPerson = useMemo(() => {
+    const byPerson: Record<number, Array<{ item: Item; meal: Meal; dayTitle: string }>> = {};
+    plan.people.forEach((person) => {
+      byPerson[person.id] = [];
+    });
+    plan.days.forEach((day) => {
+      day.meals.forEach((meal) => {
+        meal.items.forEach((item) => {
+          if (item.personId && byPerson[item.personId]) {
+            byPerson[item.personId].push({ item, meal, dayTitle: day.title || day.date });
+          }
+        });
+      });
+    });
+    return byPerson;
+  }, [plan.days, plan.people]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
@@ -540,6 +557,17 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         {tab === "people" && (
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedPerson(null)}
+                className={clsx(
+                  "rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+                  selectedPerson === null
+                    ? "bg-accent text-white"
+                    : "bg-white text-gray-700 ring-1 ring-gray-200"
+                )}
+              >
+                Tout le monde
+              </button>
               {plan.people.map((person) => (
                 <button
                   key={person.id}
@@ -564,30 +592,74 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 </button>
               )}
             </div>
-            {itemsForPerson.length === 0 ? (
-              <p className="text-sm text-gray-500">Rien de prévu pour l&apos;instant.</p>
-            ) : (
-              <div className="space-y-2">
-                {itemsForPerson.map(({ item, meal, dayTitle }) => (
-                  <div key={item.id} className="premium-card p-5 relative group">
-                    <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                    <p className="text-base font-semibold">🥧 {item.name}</p>
-                    {(item.quantity || item.note) && (
-                      <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
-                    )}
-                    {!readOnly && (
-                      <button
-                        onClick={() => handleAssign(item, null)}
-                        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
-                        title="Retirer l'assignation"
-                      >
-                        <ArrowRightLeft size={12} />
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                ))}
+            {selectedPerson === null ? (
+              // Vue "Tout le monde" - afficher tous les articles groupés par personne
+              <div className="space-y-6">
+                {plan.people.map((person) => {
+                  const personItems = itemsByPerson[person.id] || [];
+                  if (personItems.length === 0) return null;
+                  return (
+                    <div key={person.id} className="space-y-2">
+                      <div className="flex items-center gap-2 px-2">
+                        <span className="text-2xl">{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
+                        <h3 className="text-lg font-bold text-text">{person.name}</h3>
+                        <span className="text-sm text-gray-500">({personItems.length})</span>
+                      </div>
+                      <div className="space-y-2">
+                        {personItems.map(({ item, meal, dayTitle }) => (
+                          <div key={item.id} className="premium-card p-5 relative group">
+                            <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
+                            <p className="text-base font-semibold">🥧 {item.name}</p>
+                            {(item.quantity || item.note) && (
+                              <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
+                            )}
+                            {!readOnly && (
+                              <button
+                                onClick={() => handleAssign(item, null)}
+                                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
+                                title="Retirer l'assignation"
+                              >
+                                <ArrowRightLeft size={12} />
+                                Retirer
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+                {Object.values(itemsByPerson).every(items => items.length === 0) && (
+                  <p className="text-sm text-gray-500">Aucun article assigné pour l&apos;instant.</p>
+                )}
               </div>
+            ) : (
+              // Vue individuelle - afficher les articles d'une seule personne
+              itemsForPerson.length === 0 ? (
+                <p className="text-sm text-gray-500">Rien de prévu pour l&apos;instant.</p>
+              ) : (
+                <div className="space-y-2">
+                  {itemsForPerson.map(({ item, meal, dayTitle }) => (
+                    <div key={item.id} className="premium-card p-5 relative group">
+                      <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
+                      <p className="text-base font-semibold">🥧 {item.name}</p>
+                      {(item.quantity || item.note) && (
+                        <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
+                      )}
+                      {!readOnly && (
+                        <button
+                          onClick={() => handleAssign(item, null)}
+                          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
+                          title="Retirer l'assignation"
+                        >
+                          <ArrowRightLeft size={12} />
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )
             )}
           </div>
         )}
