@@ -5,12 +5,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 const ThemeContext = createContext<{
   christmas: boolean;
   toggle: () => void;
-}>({ christmas: false, toggle: () => {} });
+}>({ christmas: false, toggle: () => { } });
 
 const STORAGE_KEY = "christmas-theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [christmas, setChristmas] = useState(false);
+  const [christmas, setChristmas] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);

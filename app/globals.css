@@ -17,9 +17,21 @@
   --accent: #c2410c;
   --accent-soft: #fff4e6;
   --text: #311b0b;
-  background: radial-gradient(circle at 20% 20%, rgba(241, 193, 137, 0.18), transparent 30%),
-    radial-gradient(circle at 80% 0%, rgba(226, 106, 106, 0.16), transparent 32%),
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(194, 65, 12, 0.08), transparent 40%),
+    radial-gradient(circle at 90% 10%, rgba(23, 161, 96, 0.08), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(241, 193, 137, 0.05), transparent 60%),
     var(--surface);
+  background-attachment: fixed;
+}
+
+@keyframes snow-sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.festive-sparkle {
+  animation: snow-sparkle 3s infinite ease-in-out;
 }
 
 body {

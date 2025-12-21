@@ -66,7 +66,7 @@ export function ItemRow({
                 {person.name}
               </span>
             ) : (
-              <span className="text-xs text-red-600">Unassigned</span>
+              <span className="text-xs text-red-600">À prévoir ✨</span>
             )}
           </div>
           {(item.quantity || item.note) && (

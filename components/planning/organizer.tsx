@@ -155,11 +155,26 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
       <div className="relative">
-        {christmas && <div className="garland h-3 w-full rounded-b-3xl" />}
-        {!readOnly ? null : (
+        {christmas && (
+          <div className="garland h-3 w-full rounded-b-3xl">
+            <div className="absolute -bottom-6 left-0 right-0 flex justify-around px-4 pointer-events-none opacity-50">
+              <span>❄️</span>
+              <span>⛄</span>
+              <span>✨</span>
+              <span>🦌</span>
+              <span>❄️</span>
+            </div>
+          </div>
+        )}
+        {!readOnly ? (
+          <div className="flex items-center gap-2 bg-green-100 px-4 py-3 text-sm text-green-800">
+            <Check size={16} />
+            Mode édition activé ✨
+          </div>
+        ) : (
           <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
             <ShieldAlert size={16} />
-            Read-only mode
+            Mode lecture (ajoute ?key=... pour éditer) 🔒
           </div>
         )}
       </div>

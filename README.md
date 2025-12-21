@@ -13,10 +13,10 @@ Mobile-first Christmas meal organizer built with Next.js, Tailwind CSS, Drizzle 
    ```bash
    pnpm install
    ```
-2. Copy env vars:
+2. Créer le fichier .env (déjà fait pour toi avec la clé par défaut `noel2024`) :
    ```bash
    cp .env.example .env
-   # set WRITE_KEY to the shared secret; DATABASE_PATH defaults to ./data/sqlite.db
+   # WRITE_KEY=noel2024
    ```
 3. Run migrations:
    ```bash
