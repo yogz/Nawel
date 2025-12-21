@@ -262,27 +262,25 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 rounded-2xl px-6 py-3 shadow-lg border-2 flex items-center justify-center"
-            style={{
-              background: christmas 
-                ? "repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px)"
-                : "#86efac",
-              borderColor: christmas ? "#dc2626" : "#4ade80",
-            }}
+            className="fixed top-24 inset-x-0 z-50 flex justify-center px-4 pointer-events-none"
           >
-            <div className="flex items-center justify-center gap-2" style={{ color: christmas ? "#fff" : "#065f46" }}>
-              {christmas ? (
-                <>
-                  <span className="text-xl">🎄</span>
-                  <span className="font-bold text-lg drop-shadow-md">{successMessage}</span>
-                  <span className="text-xl">✨</span>
-                </>
-              ) : (
-                <>
-                  <Check size={18} />
-                  <span className="font-semibold">{successMessage}</span>
-                </>
-              )}
+            <div className="rounded-full px-5 py-2.5 shadow-xl bg-gray-900/95 backdrop-blur-sm border border-white/10 pointer-events-auto">
+              <div className="flex items-center gap-2.5 text-white">
+                {christmas ? (
+                  <>
+                    <span className="text-base">🎄</span>
+                    <span className="font-semibold text-sm">{successMessage}</span>
+                    <span className="text-base">✨</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-green-500">
+                      <Check size={12} strokeWidth={3} className="text-white" />
+                    </div>
+                    <span className="font-semibold text-sm">{successMessage}</span>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
@@ -697,12 +695,12 @@ function ItemForm({
   // Auto-save on change
   useEffect(() => {
     if (!defaultItem || readOnly) return;
-    
+
     // Don't save on initial mount
     if (name === defaultItem.name && quantity === defaultItem.quantity && note === defaultItem.note) {
       return;
     }
-    
+
     // Clear existing timeout
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
