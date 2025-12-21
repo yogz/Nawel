@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition, useRef } from "react";
+import citationsData from "@/data/citations.json";
 import {
   assignItemAction,
   createItemAction,
@@ -447,6 +448,10 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 }));
                 if (planningFilter.type !== "all" && !hasMatch) return null;
 
+                // Get a random citation for this day (stable per day based on day.id)
+                const dayCitationIndex = day.id % citationsData.citations.length;
+                const dayCitation = citationsData.citations[dayCitationIndex];
+
                 return (
                   <div key={day.id} className="space-y-6">
                     <div className="flex items-center gap-3 px-2">
@@ -457,9 +462,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                         <h2 className="text-xl font-black tracking-tight text-text">
                           {day.title || day.date}
                         </h2>
-                        <p className="text-xs font-bold uppercase tracking-widest text-accent opacity-60">
-                          Festins de Noël
-                        </p>
+                        <CitationDisplay citation={dayCitation} />
                       </div>
                     </div>
                     <div className="space-y-6">
@@ -1249,5 +1252,23 @@ function PlusIcon() {
     <span className="grid h-7 w-7 place-items-center rounded-full bg-accent text-white shadow-md ring-2 ring-white/20">
       <PlusIconLucide size={16} strokeWidth={3} />
     </span>
+  );
+}
+
+function CitationDisplay({ citation }: { citation: { phrase: string; author: string } }) {
+  const [showAuthor, setShowAuthor] = useState(false);
+
+  return (
+    <button
+      onClick={() => setShowAuthor(!showAuthor)}
+      className="text-xs font-bold uppercase tracking-widest text-accent opacity-60 hover:opacity-100 transition-opacity cursor-pointer text-left"
+      title={showAuthor ? "Cliquer pour cacher l'auteur" : "Cliquer pour voir l'auteur"}
+    >
+      {showAuthor ? (
+        <span className="italic normal-case tracking-normal">{citation.author}</span>
+      ) : (
+        <span>{citation.phrase}</span>
+      )}
+    </button>
   );
 }
