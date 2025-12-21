@@ -36,13 +36,6 @@ export function ItemRow({
     <div className="relative">
       <div className="absolute inset-y-0 right-2 z-0 flex items-center gap-2 text-sm">
         <button
-          onClick={onAssign}
-          disabled={readOnly}
-          className="rounded-full bg-accent-soft px-3 py-1 text-accent shadow-sm"
-        >
-          Choisir
-        </button>
-        <button
           onClick={onDelete}
           disabled={readOnly}
           className="rounded-full bg-red-100 px-3 py-1 text-red-600 shadow-sm"
@@ -52,7 +45,7 @@ export function ItemRow({
       </div>
       <motion.div
         drag={!readOnly ? "x" : false}
-        dragConstraints={{ left: -140, right: 0 }}
+        dragConstraints={{ left: -100, right: 0 }}
         style={{ x }}
         whileTap={{ scale: 0.98 }}
         className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03]"
@@ -62,14 +55,22 @@ export function ItemRow({
           <div className="flex items-center justify-between">
             <p className="text-base font-semibold">{item.name}</p>
             {person ? (
-              <span className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent border border-accent/10">
+              <button
+                onClick={(e) => { e.stopPropagation(); onAssign(); }}
+                disabled={readOnly}
+                className="flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-bold text-accent border border-accent/10 transition-transform active:scale-90"
+              >
                 <span className="text-sm">{getPersonEmoji(person.name)}</span>
                 {person.name}
-              </span>
+              </button>
             ) : (
-              <span className="flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950 border border-amber-500/20 shadow-sm">
-                À prévoir ✨
-              </span>
+              <button
+                onClick={(e) => { e.stopPropagation(); onAssign(); }}
+                disabled={readOnly}
+                className="flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950 border border-amber-500/20 shadow-sm transition-transform active:scale-90"
+              >
+                Sélectionner ✨
+              </button>
             )}
           </div>
           {(item.quantity || item.note) && (
