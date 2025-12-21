@@ -288,7 +288,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                   onClick={() => setSheet({ type: "person" })}
                   className="rounded-full border-2 border-dashed border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
                 >
-                  + Add person
+                  + Ajouter un membre
                 </button>
               )}
             </div>
@@ -324,11 +324,11 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                   christmas ? "bg-accent text-white" : "bg-gray-100 text-gray-700"
                 )}
               >
-                <Sparkles size={16} /> {christmas ? "On" : "Off"}
+                <Sparkles size={16} /> Thème Noël : {christmas ? "Oui" : "Non"}
               </button>
             </div>
             <div className="rounded-xl bg-accent-soft p-3 text-sm text-accent">
-              Share this link with family. Keep the key only for editors.
+              Partagez ce lien avec la famille. Gardez la clé pour les éditeurs.
               <div className="mt-2 break-all text-xs text-gray-600">
                 {typeof window !== "undefined" ? window.location.href : "Add ?key=..."}
               </div>
@@ -336,12 +336,12 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             {!readOnly ? (
               <div className="flex items-center gap-2 rounded-xl bg-green-50 p-3 text-sm text-green-700">
                 <Check size={16} />
-                Edit mode enabled via key.
+                Mode édition activé avec succès.
               </div>
             ) : (
               <div className="flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-700">
                 <ShieldAlert size={16} />
-                Add the ?key=... query to edit.
+                Ajouter ?key=... pour modifier.
               </div>
             )}
           </div>
@@ -352,7 +352,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       <BottomSheet
         open={sheet?.type === "item"}
         onClose={() => setSheet(null)}
-        title={sheet?.type === "item" && sheet.item ? "Edit item" : "Add item"}
+        title={sheet?.type === "item" && sheet.item ? "Modifier l'article" : "Ajouter un article"}
       >
         {sheet?.type === "item" && (
           <ItemForm
@@ -374,11 +374,11 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         )}
       </BottomSheet>
 
-      <BottomSheet open={sheet?.type === "meal"} onClose={() => setSheet(null)} title="Add meal">
+      <BottomSheet open={sheet?.type === "meal"} onClose={() => setSheet(null)} title="Ajouter un repas">
         {sheet?.type === "meal" && <MealForm onSubmit={(title) => handleCreateMeal(sheet.dayId, title)} readOnly={readOnly} />}
       </BottomSheet>
 
-      <BottomSheet open={sheet?.type === "person"} onClose={() => setSheet(null)} title="Add person">
+      <BottomSheet open={sheet?.type === "person"} onClose={() => setSheet(null)} title="Ajouter un membre">
         {sheet?.type === "person" && <PersonForm onSubmit={(name) => handleCreatePerson(name)} readOnly={readOnly} />}
       </BottomSheet>
     </div>
@@ -445,7 +445,7 @@ function ItemForm({
       </div>
       {defaultItem && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-600">Assign to</p>
+          <p className="text-sm font-semibold text-gray-600">Assigner à</p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -453,7 +453,7 @@ function ItemForm({
               disabled={readOnly}
               className="rounded-full bg-gray-100 px-3 py-1 text-sm"
             >
-              Unassigned
+              À prévoir
             </button>
             {people.map((person) => (
               <button
@@ -466,7 +466,7 @@ function ItemForm({
                   person.id === defaultItem.personId ? "bg-accent text-white" : "bg-gray-100"
                 )}
               >
-                {person.name}
+                {getPersonEmoji(person.name)} {person.name}
               </button>
             ))}
           </div>
@@ -477,7 +477,7 @@ function ItemForm({
         disabled={readOnly}
         className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm active:scale-95 disabled:opacity-50"
       >
-        {defaultItem ? "Update item" : "Add item"}
+        {defaultItem ? "Mettre à jour" : "Ajouter au menu"}
       </button>
     </form>
   );
@@ -509,7 +509,7 @@ function MealForm({ onSubmit, readOnly }: { onSubmit: (title: string) => void; r
         disabled={readOnly}
         className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm active:scale-95 disabled:opacity-50"
       >
-        Save meal
+        Enregistrer le repas
       </button>
     </form>
   );
@@ -541,7 +541,7 @@ function PersonForm({ onSubmit, readOnly }: { onSubmit: (name: string) => void; 
         disabled={readOnly}
         className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm active:scale-95 disabled:opacity-50"
       >
-        Add person
+        Ajouter le membre
       </button>
     </form>
   );
