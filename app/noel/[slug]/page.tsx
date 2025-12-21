@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default async function Page({ params, searchParams }: Props) {
-  const plan = await fetchPlan();
+  const plan = await fetchPlan(params.slug);
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
   const writeEnabled = isWriteKeyValid(key);
 

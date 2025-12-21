@@ -1,21 +1,30 @@
 import Link from "next/link";
+import { getAllEventsAction, createEventAction } from "./actions";
+import { isWriteKeyValid } from "@/lib/auth";
+import { EventList } from "@/components/event-list";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const events = await getAllEventsAction();
+  const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
+  const writeEnabled = isWriteKeyValid(key);
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center gap-6 px-6 text-center">
-      <div className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Christmas organizer 🎄</p>
-        <h1 className="text-3xl font-bold">Coordonnez vos repas de fêtes, tout simplement ✨</h1>
-        <p className="text-gray-600">
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-12">
+      <div className="mb-8 text-center">
+        <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Organisateur d&apos;événements 🎄</p>
+        <h1 className="mt-2 text-3xl font-bold">Coordonnez vos repas de fêtes, tout simplement ✨</h1>
+        <p className="mt-2 text-gray-600">
           Partagez le lien avec votre famille pour que chacun puisse choisir ce qu&apos;il apporte ! 🎁
         </p>
       </div>
-      <Link
-        href="/noel/family"
-        className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm"
-      >
-        Ouvrir le menu
-      </Link>
+
+      <EventList events={events} writeEnabled={writeEnabled} writeKey={key} />
     </main>
   );
 }

@@ -1,8 +1,19 @@
 import { pgTable, serial, varchar, text, integer, timestamp, real } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const days = pgTable("days", {
   id: serial("id").primaryKey(),
+  eventId: integer("event_id")
+    .notNull()
+    .references(() => events.id, { onDelete: "cascade" }),
   date: varchar("date", { length: 10 }).notNull(),
   title: text("title"),
 });
@@ -18,6 +29,9 @@ export const meals = pgTable("meals", {
 
 export const people = pgTable("people", {
   id: serial("id").primaryKey(),
+  eventId: integer("event_id")
+    .notNull()
+    .references(() => events.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
 });
 
@@ -36,7 +50,16 @@ export const items = pgTable("items", {
   order: integer("order_index").notNull().default(0),
 });
 
-export const dayRelations = relations(days, ({ many }) => ({
+export const eventRelations = relations(events, ({ many }) => ({
+  days: many(days),
+  people: many(people),
+}));
+
+export const dayRelations = relations(days, ({ one, many }) => ({
+  event: one(events, {
+    fields: [days.eventId],
+    references: [events.id],
+  }),
   meals: many(meals),
 }));
 
@@ -59,7 +82,11 @@ export const itemRelations = relations(items, ({ one }) => ({
   }),
 }));
 
-export const personRelations = relations(people, ({ many }) => ({
+export const personRelations = relations(people, ({ one, many }) => ({
+  event: one(events, {
+    fields: [people.eventId],
+    references: [events.id],
+  }),
   items: many(items),
 }));
 

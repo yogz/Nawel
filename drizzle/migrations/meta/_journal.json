@@ -29,6 +29,13 @@
       "when": 1766335578229,
       "tag": "0003_violet_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1766336113404,
+      "tag": "0004_simple_zeigeist",
+      "breakpoints": true
     }
   ]
 }

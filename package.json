@@ -12,7 +12,10 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx db/seed.ts",
-    "db:update-michel": "tsx db/update-michel.ts"
+    "db:update-michel": "tsx db/update-michel.ts",
+    "db:migrate-events": "tsx db/migrate-to-events.ts",
+    "db:fix-events": "tsx db/fix-event-ids.ts",
+    "db:add-not-null": "tsx db/add-not-null-constraints.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",

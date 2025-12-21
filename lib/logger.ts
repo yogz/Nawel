@@ -3,7 +3,7 @@ import { db } from "./db";
 import { changeLogs } from "@/drizzle/schema";
 
 type Action = "create" | "update" | "delete";
-type TableName = "items" | "meals" | "people" | "days";
+type TableName = "items" | "meals" | "people" | "days" | "events";
 
 function getUserInfo() {
   try {

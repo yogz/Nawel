@@ -5,7 +5,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { assertWriteAccess } from "@/lib/auth";
 import { logChange } from "@/lib/logger";
-import { changeLogs, days, items, meals, people } from "@/drizzle/schema";
+import { changeLogs, days, items, meals, people, events } from "@/drizzle/schema";
 import { asc, desc, eq } from "drizzle-orm";
 
 const baseInput = z.object({
@@ -20,9 +20,11 @@ const createDaySchema = baseInput.extend({
 
 export async function createDayAction(input: z.infer<typeof createDaySchema>) {
   assertWriteAccess(input.key);
+  const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
+  if (!event) throw new Error("Event not found");
   const [created] = await db
     .insert(days)
-    .values({ date: input.date, title: input.title ?? null })
+    .values({ eventId: event.id, date: input.date, title: input.title ?? null })
     .returning();
   await logChange("create", "days", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
@@ -74,7 +76,9 @@ export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) 
 const createPersonSchema = baseInput.extend({ name: z.string().min(1) });
 export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
   assertWriteAccess(input.key);
-  const [created] = await db.insert(people).values({ name: input.name }).returning();
+  const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
+  if (!event) throw new Error("Event not found");
+  const [created] = await db.insert(people).values({ eventId: event.id, name: input.name }).returning();
   await logChange("create", "people", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
@@ -270,4 +274,33 @@ export async function getChangeLogsAction() {
     oldData: log.oldData ? JSON.parse(log.oldData) : null,
     newData: log.newData ? JSON.parse(log.newData) : null,
   }));
+}
+
+const createEventSchema = z.object({
+  slug: z.string().min(1).max(100),
+  name: z.string().min(1),
+  description: z.string().optional(),
+  key: z.string().optional(),
+});
+
+export async function createEventAction(input: z.infer<typeof createEventSchema>) {
+  assertWriteAccess(input.key);
+  const [created] = await db
+    .insert(events)
+    .values({
+      slug: input.slug,
+      name: input.name,
+      description: input.description ?? null,
+    })
+    .returning();
+  await logChange("create", "events", created.id, null, created);
+  revalidatePath("/");
+  return created;
+}
+
+export async function getAllEventsAction() {
+  return await db
+    .select()
+    .from(events)
+    .orderBy(desc(events.createdAt));
 }
