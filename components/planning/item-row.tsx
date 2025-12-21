@@ -83,9 +83,9 @@ export function ItemRow({
               <button
                 onClick={(e) => { e.stopPropagation(); onAssign(); }}
                 disabled={readOnly}
-                className="flex items-center gap-1 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950 border border-amber-500/20 shadow-sm transition-transform active:scale-90"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-400 text-amber-950 border border-amber-500/20 shadow-sm transition-transform active:scale-90 font-bold text-lg"
               >
-                Sélectionner ✨
+                ?
               </button>
             )}
           </div>
