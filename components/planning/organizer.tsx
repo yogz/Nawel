@@ -594,16 +594,24 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             </div>
             {selectedPerson === null ? (
               // Vue "Tout le monde" - afficher tous les articles groupés par personne
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {plan.people.map((person) => {
                   const personItems = itemsByPerson[person.id] || [];
                   if (personItems.length === 0) return null;
                   return (
-                    <div key={person.id} className="space-y-2">
-                      <div className="flex items-center gap-2 px-2">
-                        <span className="text-2xl">{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
-                        <h3 className="text-lg font-bold text-text">{person.name}</h3>
-                        <span className="text-sm text-gray-500">({personItems.length})</span>
+                    <div key={person.id} className="space-y-3">
+                      <div className="sticky top-[72px] z-20 -mx-4 px-4 py-3 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 backdrop-blur-sm border-y border-accent/20">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-2xl shadow-sm ring-2 ring-accent/20">
+                            {getPersonEmoji(person.name, plan.people.map(p => p.name))}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-black tracking-tight text-text">{person.name}</h3>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+                              {personItems.length} article{personItems.length > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <div className="space-y-2">
                         {personItems.map(({ item, meal, dayTitle }) => (
