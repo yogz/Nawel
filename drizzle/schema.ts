@@ -1,14 +1,14 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, varchar, text, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-export const days = sqliteTable("days", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  date: text("date", { length: 10 }).notNull(),
+export const days = pgTable("days", {
+  id: serial("id").primaryKey(),
+  date: varchar("date", { length: 10 }).notNull(),
   title: text("title"),
 });
 
-export const meals = sqliteTable("meals", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const meals = pgTable("meals", {
+  id: serial("id").primaryKey(),
   dayId: integer("day_id")
     .notNull()
     .references(() => days.id, { onDelete: "cascade" }),
@@ -16,13 +16,13 @@ export const meals = sqliteTable("meals", {
   order: integer("order_index").notNull().default(0),
 });
 
-export const people = sqliteTable("people", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const people = pgTable("people", {
+  id: serial("id").primaryKey(),
   name: text("name").notNull(),
 });
 
-export const items = sqliteTable("items", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+export const items = pgTable("items", {
+  id: serial("id").primaryKey(),
   mealId: integer("meal_id")
     .notNull()
     .references(() => meals.id, { onDelete: "cascade" }),
