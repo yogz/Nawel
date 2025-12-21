@@ -1,17 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useThemeMode } from "@/components/theme-provider";
 
 export function SnowOverlay() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isActive, setIsActive] = useState(false);
+    const { christmas } = useThemeMode();
     const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
     const requestRef = useRef<number>();
     const snowFlakesRef = useRef<Snowflake[]>([]);
     const accumulationRef = useRef<number[]>([]);
 
     // Configuration
-    const IDLE_THRESHOLD = 2000; // 2 seconds of inactivity to start
+    const IDLE_THRESHOLD = 3000; // 3 seconds of inactivity to start
     const MAX_FLAKES = 450; // Increased from 300
 
     class Snowflake {
@@ -202,13 +204,13 @@ export function SnowOverlay() {
             window.removeEventListener("resize", updateCanvasSize);
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
-    }, [isActive]);
+    }, [isActive, christmas]);
 
-    return (
+    return christmas ? (
         <canvas
             ref={canvasRef}
             className={`fixed inset-0 z-[100] pointer-events-none transition-all duration-1000 ${isActive ? "opacity-100 bg-black/40" : "opacity-0"
                 }`}
         />
-    );
+    ) : null;
 }

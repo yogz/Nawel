@@ -268,11 +268,13 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
-      <div className="christmas-garland">
-        {Array.from({ length: 14 }).map((_, i) => (
-          <div key={i} className="christmas-light" />
-        ))}
-      </div>
+      {christmas && (
+        <div className="christmas-garland">
+          {Array.from({ length: 14 }).map((_, i) => (
+            <div key={i} className="christmas-light" />
+          ))}
+        </div>
+      )}
       {readOnly && (
         <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
           <ShieldAlert size={16} />
