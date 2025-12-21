@@ -9,7 +9,7 @@ export async function fetchPlan(slug: string) {
   });
 
   if (!event) {
-    return { days: [], people: [] };
+    return { event: null, days: [], people: [] };
   }
 
   const dayList = await db.query.days.findMany({

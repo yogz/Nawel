@@ -1,5 +1,5 @@
 import { InferSelectModel } from "drizzle-orm";
-import { days, items, meals, people } from "@/drizzle/schema";
+import { days, items, meals, people, events } from "@/drizzle/schema";
 
 export type Day = InferSelectModel<typeof days> & {
   meals: Meal[];
