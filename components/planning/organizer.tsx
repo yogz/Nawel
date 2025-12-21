@@ -318,7 +318,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                     : "bg-white text-gray-400 hover:text-amber-600"
                 )}
               >
-                ? ({unassignedItemsCount}) 🥘
+                À prévoir ({unassignedItemsCount}) 🥘
               </button>
 
               {plan.people.length > 0 && (
