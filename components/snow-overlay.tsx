@@ -12,7 +12,7 @@ export function SnowOverlay() {
 
     // Configuration
     const IDLE_THRESHOLD = 3000; // 3 seconds of inactivity to start
-    const MAX_FLAKES = 300;
+    const MAX_FLAKES = 450; // Increased from 300
 
     class Snowflake {
         x: number;
@@ -25,10 +25,10 @@ export function SnowOverlay() {
         constructor(width: number, height: number) {
             this.x = Math.random() * width;
             this.y = -10; // Start slightly above viewport
-            this.radius = Math.random() * 3 + 1;
-            this.speed = Math.random() * 1 + 1;
+            this.radius = Math.random() * 4 + 2; // Increased size: 2-6px
+            this.speed = Math.random() * 2 + 1; // Faster fall
             this.wind = Math.random() * 2 - 1;
-            this.opacity = Math.random() * 0.5 + 0.3;
+            this.opacity = Math.random() * 0.4 + 0.6; // Higher opacity: 0.6-1.0
         }
 
         update(height: number, width: number) {
