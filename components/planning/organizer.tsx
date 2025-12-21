@@ -302,17 +302,26 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       </main>
       <TabBar active={tab} onChange={(t) => setTab(t)} />
 
-      <BottomSheet open={sheet?.type === "item"} onClose={() => setSheet(null)} title={sheet?.item ? "Edit item" : "Add item"}>
+      <BottomSheet
+        open={sheet?.type === "item"}
+        onClose={() => setSheet(null)}
+        title={sheet?.type === "item" && sheet.item ? "Edit item" : "Add item"}
+      >
         {sheet?.type === "item" && (
           <ItemForm
             people={plan.people}
             defaultItem={sheet.item}
-            onSubmit={(values) =>
+            onSubmit={(values) => {
+              if (sheet.type !== "item") return;
               sheet.item
                 ? handleUpdateItem({ ...sheet.item, ...values })
-                : handleCreateItem({ ...values, mealId: sheet.mealId })
-            }
-            onAssign={(personId) => sheet.item && handleAssign(sheet.item, personId)}
+                : handleCreateItem({ ...values, mealId: sheet.mealId });
+            }}
+            onAssign={(personId) => {
+              if (sheet.type === "item" && sheet.item) {
+                handleAssign(sheet.item, personId);
+              }
+            }}
             readOnly={readOnly}
           />
         )}
