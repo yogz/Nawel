@@ -58,8 +58,7 @@ export function SnowOverlay() {
 
     // Idle detection
     useEffect(() => {
-        // Use Pointer Events for better mobile/desktop unification
-        const events = ["pointermove", "pointerdown", "keydown", "scroll"];
+        const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "touchmove", "click"];
 
         const resetIdleTimer = () => {
             // Use ref to check current state without re-binding listeners
