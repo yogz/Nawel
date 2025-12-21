@@ -5,7 +5,7 @@ import clsx from "clsx";
 
 const tabs = [
   { key: "planning", label: "Menu", icon: CalendarRange },
-  { key: "people", label: "Famille", icon: Users },
+  { key: "people", label: "Invités", icon: Users },
   { key: "logs", label: "Historique", icon: History },
   { key: "settings", label: "Prefs", icon: Settings },
 ] as const;
