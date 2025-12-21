@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface: #f7f8fb;
+  --muted: #e5e7eb;
+  --accent: #0ea5e9;
+  --accent-soft: #e0f2fe;
+  --text: #0f172a;
+  color-scheme: light;
+}
+
+.theme-christmas {
+  --surface: #fdf6f0;
+  --muted: #f2dede;
+  --accent: #c2410c;
+  --accent-soft: #fff4e6;
+  --text: #311b0b;
+  background: radial-gradient(circle at 20% 20%, rgba(241, 193, 137, 0.18), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(226, 106, 106, 0.16), transparent 32%),
+    var(--surface);
+}
+
+body {
+  @apply min-h-screen bg-surface text-text font-sans antialiased;
+}
+
+a {
+  @apply text-accent underline-offset-4;
+}
+
+.garland {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(195, 49, 34, 0.1) 0,
+    rgba(195, 49, 34, 0.1) 10px,
+    rgba(23, 161, 96, 0.1) 10px,
+    rgba(23, 161, 96, 0.1) 20px
+  );
+}

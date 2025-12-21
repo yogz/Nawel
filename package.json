@@ -1,0 +1,40 @@
+{
+  "name": "nawel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate": "drizzle-kit migrate:sqlite",
+    "db:seed": "tsx db/seed.ts"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/sortable": "^7.0.0",
+    "clsx": "^2.1.0",
+    "drizzle-orm": "^0.30.10",
+    "framer-motion": "^11.2.6",
+    "lucide-react": "^0.371.0",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-swipeable": "^7.1.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "autoprefixer": "^10.4.18",
+    "drizzle-kit": "^0.21.4",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.3",
+    "tsx": "^4.7.1",
+    "typescript": "5.4.5"
+  }
+}
