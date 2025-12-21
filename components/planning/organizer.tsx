@@ -106,16 +106,8 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       setMealItems(item.mealId, (items) => items.map((it) => (it.id === item.id ? item : it)));
       if (closeSheet) {
         setSheet(null);
-      } else {
-        // Update the sheet with the new item data
-        if (sheet?.type === "item" && sheet.item?.id === item.id) {
-          setSheet({
-            type: "item",
-            mealId: sheet.mealId,
-            item: { ...item },
-          });
-        }
       }
+      // Don't update the sheet item during auto-save to avoid re-rendering and losing focus
     });
   };
 
@@ -867,23 +859,41 @@ function ItemForm({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showMoveMeal, setShowMoveMeal] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMountRef = useRef(true);
+  const lastSavedRef = useRef<{ name: string; quantity: string; note: string; price: number | undefined } | null>(null);
+  const currentItemIdRef = useRef<number | undefined>(defaultItem?.id);
 
-  // Sync with defaultItem when it changes
+  // Sync with defaultItem only on initial mount or when defaultItem.id changes
   useEffect(() => {
     if (defaultItem) {
-      setName(defaultItem.name ?? "");
-      setQuantity(defaultItem.quantity ?? "");
-      setNote(defaultItem.note ?? "");
-      setPrice(defaultItem.price ?? undefined);
+      // Only sync if it's a different item (different ID) or initial mount
+      if (isInitialMountRef.current || defaultItem.id !== currentItemIdRef.current) {
+        setName(defaultItem.name ?? "");
+        setQuantity(defaultItem.quantity ?? "");
+        setNote(defaultItem.note ?? "");
+        setPrice(defaultItem.price ?? undefined);
+        lastSavedRef.current = {
+          name: defaultItem.name ?? "",
+          quantity: defaultItem.quantity ?? "",
+          note: defaultItem.note ?? "",
+          price: defaultItem.price ?? undefined,
+        };
+        currentItemIdRef.current = defaultItem.id;
+        isInitialMountRef.current = false;
+      }
     }
-  }, [defaultItem]);
+  }, [defaultItem?.id]);
 
-  // Auto-save on change
+  // Auto-save on change (only for existing items)
   useEffect(() => {
-    if (!defaultItem || readOnly) return;
+    if (!defaultItem || readOnly || isInitialMountRef.current) return;
 
-    // Don't save on initial mount
-    if (name === defaultItem.name && quantity === defaultItem.quantity && note === defaultItem.note && price === defaultItem.price) {
+    // Don't save if values haven't changed from last saved state
+    if (lastSavedRef.current && 
+        name === lastSavedRef.current.name && 
+        quantity === lastSavedRef.current.quantity && 
+        note === lastSavedRef.current.note && 
+        price === lastSavedRef.current.price) {
       return;
     }
 
@@ -892,20 +902,24 @@ function ItemForm({
       clearTimeout(saveTimeoutRef.current);
     }
 
-    // Save after 500ms of no changes
+    // Save after 1000ms of no changes (increased from 500ms to avoid conflicts)
     saveTimeoutRef.current = setTimeout(() => {
-      if (defaultItem && (name !== defaultItem.name || quantity !== defaultItem.quantity || note !== defaultItem.note || price !== defaultItem.price)) {
+      if (defaultItem && lastSavedRef.current &&
+          (name !== lastSavedRef.current.name || 
+           quantity !== lastSavedRef.current.quantity || 
+           note !== lastSavedRef.current.note || 
+           price !== lastSavedRef.current.price)) {
         onSubmit({ name, quantity, note, price });
+        lastSavedRef.current = { name, quantity, note, price };
       }
-    }, 500);
+    }, 1000);
 
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, quantity, note, price, defaultItem?.id, defaultItem?.name, defaultItem?.quantity, defaultItem?.note, defaultItem?.price, readOnly, onSubmit]);
+  }, [name, quantity, note, price, defaultItem, readOnly, onSubmit]);
 
   return (
     <form
