@@ -675,6 +675,7 @@ function ItemForm({
   const [quantity, setQuantity] = useState(defaultItem?.quantity ?? "");
   const [note, setNote] = useState(defaultItem?.note ?? "");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showMoveMeal, setShowMoveMeal] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync with defaultItem when it changes
@@ -717,7 +718,7 @@ function ItemForm({
 
   return (
     <form
-      className="space-y-3"
+      className="space-y-2.5 sm:space-y-3"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit({ name, quantity, note });
@@ -726,7 +727,7 @@ function ItemForm({
       <label className="block space-y-1">
         <span className="text-sm font-semibold">Article</span>
         <input
-          className="w-full rounded-xl border border-gray-200 px-3 py-2"
+          className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Plateau de fromages"
@@ -734,11 +735,11 @@ function ItemForm({
           disabled={readOnly}
         />
       </label>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Quantité</span>
           <input
-            className="w-full rounded-xl border border-gray-200 px-3 py-2"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="ex. 2 plateaux"
@@ -748,7 +749,7 @@ function ItemForm({
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Remarque</span>
           <input
-            className="w-full rounded-xl border border-gray-200 px-3 py-2"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Sans gluten"
@@ -757,9 +758,9 @@ function ItemForm({
         </label>
       </div>
       {defaultItem && (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-600">Assigner à</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-1.5 sm:space-y-2">
+          <p className="text-xs sm:text-sm font-semibold text-gray-600">Assigner à</p>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => {
@@ -767,7 +768,7 @@ function ItemForm({
               }}
               disabled={readOnly}
               className={clsx(
-                "rounded-full px-3 py-1 text-sm transition-colors",
+                "rounded-full px-2.5 sm:px-3 py-1 text-xs sm:text-sm transition-colors",
                 !defaultItem.personId ? "bg-accent text-white" : "bg-gray-100"
               )}
             >
@@ -782,7 +783,7 @@ function ItemForm({
                 }}
                 disabled={readOnly}
                 className={clsx(
-                  "rounded-full px-3 py-1 text-sm transition-colors",
+                  "rounded-full px-2.5 sm:px-3 py-1 text-xs sm:text-sm transition-colors",
                   person.id === defaultItem.personId ? "bg-accent text-white" : "bg-gray-100"
                 )}
               >
@@ -793,45 +794,57 @@ function ItemForm({
         </div>
       )}
       {defaultItem && allMeals && onMoveMeal && (
-        <div className="space-y-2 border-t border-gray-200 pt-4">
-          <p className="text-sm font-semibold text-gray-600 flex items-center gap-2">
-            <ArrowRightLeft size={16} />
-            Changer de repas
-          </p>
-          <div className="max-h-48 overflow-y-auto space-y-1">
-            {allMeals
-              .filter((meal) => meal.id !== currentMealId)
-              .map((meal) => (
-                <button
-                  key={meal.id}
-                  type="button"
-                  onClick={() => onMoveMeal(meal.id)}
-                  disabled={readOnly}
-                  className="w-full rounded-xl bg-gray-50 px-3 py-2 text-left text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
-                >
-                  <div className="font-semibold">{meal.title}</div>
-                  <div className="text-xs text-gray-500">{meal.dayTitle}</div>
-                </button>
-              ))}
-          </div>
+        <div className="space-y-1.5 sm:space-y-2 border-t border-gray-200 pt-2.5 sm:pt-3">
+          <button
+            type="button"
+            onClick={() => setShowMoveMeal(!showMoveMeal)}
+            className="w-full flex items-center justify-between text-xs sm:text-sm font-semibold text-gray-600 hover:text-gray-800 transition-colors py-1"
+          >
+            <span className="flex items-center gap-1.5 sm:gap-2">
+              <ArrowRightLeft size={14} className="sm:w-4 sm:h-4" />
+              Changer de repas
+            </span>
+            <ChevronDown
+              size={14}
+              className={clsx("transition-transform sm:w-4 sm:h-4", showMoveMeal && "rotate-180")}
+            />
+          </button>
+          {showMoveMeal && (
+            <div className="max-h-40 sm:max-h-48 overflow-y-auto space-y-1 pt-1.5 sm:pt-2">
+              {allMeals
+                .filter((meal) => meal.id !== currentMealId)
+                .map((meal) => (
+                  <button
+                    key={meal.id}
+                    type="button"
+                    onClick={() => onMoveMeal(meal.id)}
+                    disabled={readOnly}
+                    className="w-full rounded-xl bg-gray-50 px-2.5 sm:px-3 py-1.5 sm:py-2 text-left text-xs sm:text-sm hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  >
+                    <div className="font-semibold">{meal.title}</div>
+                    <div className="text-xs text-gray-500">{meal.dayTitle}</div>
+                  </button>
+                ))}
+            </div>
+          )}
         </div>
       )}
       {defaultItem && onDelete && (
-        <div className="space-y-2 border-t border-gray-200 pt-4">
+        <div className="space-y-1.5 sm:space-y-2 border-t border-gray-200 pt-2.5 sm:pt-3">
           {!showDeleteConfirm ? (
             <button
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
               disabled={readOnly}
-              className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-red-50 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
             >
-              <Trash2 size={16} />
+              <Trash2 size={14} className="sm:w-4 sm:h-4" />
               Supprimer l&apos;article
             </button>
           ) : (
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-red-600">Êtes-vous sûr de vouloir supprimer cet article ?</p>
-              <div className="flex gap-2">
+            <div className="space-y-1.5 sm:space-y-2">
+              <p className="text-xs sm:text-sm font-semibold text-red-600">Êtes-vous sûr de vouloir supprimer cet article ?</p>
+              <div className="flex gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -839,14 +852,14 @@ function ItemForm({
                     setShowDeleteConfirm(false);
                   }}
                   disabled={readOnly}
-                  className="flex-1 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-red-600 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   Oui, supprimer
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
+                  className="flex-1 rounded-xl bg-gray-100 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
                 >
                   Annuler
                 </button>
@@ -865,7 +878,7 @@ function ItemForm({
         </button>
       )}
       {defaultItem && (
-        <div className="text-xs text-center text-gray-500 pt-2">
+        <div className="text-[10px] sm:text-xs text-center text-gray-500 pt-1 sm:pt-2">
           Les modifications sont sauvegardées automatiquement
         </div>
       )}
