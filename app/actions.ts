@@ -1,0 +1,141 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { db } from "@/lib/db";
+import { assertWriteAccess } from "@/lib/auth";
+import { items, meals, people } from "@/drizzle/schema";
+import { asc, desc, eq } from "drizzle-orm";
+
+const baseInput = z.object({
+  key: z.string().optional(),
+  slug: z.string(),
+});
+
+const createMealSchema = baseInput.extend({
+  dayId: z.number(),
+  title: z.string().min(1, "Title required"),
+});
+
+export async function createMealAction(input: z.infer<typeof createMealSchema>) {
+  assertWriteAccess(input.key);
+  const [last] = await db
+    .select({ value: meals.order })
+    .from(meals)
+    .where(eq(meals.dayId, input.dayId))
+    .orderBy(desc(meals.order))
+    .limit(1);
+  const lastOrder = last?.value ?? 0;
+  const [created] = await db
+    .insert(meals)
+    .values({ dayId: input.dayId, title: input.title, order: lastOrder + 1 })
+    .returning();
+  revalidatePath(`/noel/${input.slug}`);
+  return created;
+}
+
+const mealSchema = baseInput.extend({ id: z.number(), title: z.string().min(1) });
+export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
+  assertWriteAccess(input.key);
+  await db.update(meals).set({ title: input.title }).where(eq(meals.id, input.id));
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const deleteMealSchema = baseInput.extend({ id: z.number() });
+export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) {
+  assertWriteAccess(input.key);
+  await db.delete(meals).where(eq(meals.id, input.id));
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const createPersonSchema = baseInput.extend({ name: z.string().min(1) });
+export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
+  assertWriteAccess(input.key);
+  const [created] = await db.insert(people).values({ name: input.name }).returning();
+  revalidatePath(`/noel/${input.slug}`);
+  return created;
+}
+
+const createItemSchema = baseInput.extend({
+  mealId: z.number(),
+  name: z.string().min(1),
+  quantity: z.string().optional(),
+  note: z.string().optional(),
+});
+
+export async function createItemAction(input: z.infer<typeof createItemSchema>) {
+  assertWriteAccess(input.key);
+  const [last] = await db
+    .select()
+    .from(items)
+    .where(eq(items.mealId, input.mealId))
+    .orderBy(desc(items.order))
+    .limit(1);
+  const [created] = await db
+    .insert(items)
+    .values({
+      mealId: input.mealId,
+      name: input.name,
+      quantity: input.quantity,
+      note: input.note,
+      order: (last?.order || 0) + 1,
+    })
+    .returning();
+  revalidatePath(`/noel/${input.slug}`);
+  return created;
+}
+
+const updateItemSchema = baseInput.extend({
+  id: z.number(),
+  name: z.string().min(1),
+  quantity: z.string().optional().nullable(),
+  note: z.string().optional().nullable(),
+  personId: z.number().optional().nullable(),
+});
+
+export async function updateItemAction(input: z.infer<typeof updateItemSchema>) {
+  assertWriteAccess(input.key);
+  await db
+    .update(items)
+    .set({
+      name: input.name,
+      quantity: input.quantity ?? null,
+      note: input.note ?? null,
+      personId: input.personId ?? null,
+    })
+    .where(eq(items.id, input.id));
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const deleteItemSchema = baseInput.extend({ id: z.number() });
+export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) {
+  assertWriteAccess(input.key);
+  await db.delete(items).where(eq(items.id, input.id));
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const assignItemSchema = baseInput.extend({ id: z.number(), personId: z.number().nullable() });
+export async function assignItemAction(input: z.infer<typeof assignItemSchema>) {
+  assertWriteAccess(input.key);
+  await db.update(items).set({ personId: input.personId }).where(eq(items.id, input.id));
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const reorderSchema = baseInput.extend({ mealId: z.number(), itemIds: z.array(z.number()) });
+export async function reorderItemsAction(input: z.infer<typeof reorderSchema>) {
+  assertWriteAccess(input.key);
+  const updates = input.itemIds.map((id, index) =>
+    db.update(items).set({ order: index }).where(eq(items.id, id))
+  );
+  for (const query of updates) {
+    await query;
+  }
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const validateSchema = z.object({ key: z.string().optional() });
+export async function validateWriteKeyAction(input: z.infer<typeof validateSchema>) {
+  const writeKey = process.env.WRITE_KEY;
+  if (!writeKey) return false;
+  return input.key === writeKey;
+}
