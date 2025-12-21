@@ -762,7 +762,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       <BottomSheet
         open={sheet?.type === "item"}
         onClose={() => setSheet(null)}
-        title={sheet?.type === "item" && sheet.item ? "Modifier l&apos;article" : "Ajouter un article"}
+        title={sheet?.type === "item" && sheet.item ? "Modifier l'article" : "Ajouter un article"}
       >
         {sheet?.type === "item" && (
           <ItemForm
