@@ -68,9 +68,9 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
   useEffect(() => {
     if (tab === "logs") {
-      getChangeLogsAction().then(setLogs);
+      getChangeLogsAction({ slug }).then(setLogs);
     }
-  }, [tab]);
+  }, [tab, slug]);
 
   const setMealItems = (mealId: number, updater: (items: Item[]) => Item[]) => {
     setPlan((prev) => ({
@@ -617,7 +617,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                         {personItems.map(({ item, meal, dayTitle }) => (
                           <div key={item.id} className="premium-card p-5 relative group">
                             <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                            <p className="text-base font-semibold">🥧 {item.name}</p>
+                            <p className="text-base font-semibold">{item.name}</p>
                             {(item.quantity || item.note) && (
                               <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
                             )}
@@ -650,7 +650,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                   {itemsForPerson.map(({ item, meal, dayTitle }) => (
                     <div key={item.id} className="premium-card p-5 relative group">
                       <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                      <p className="text-base font-semibold">🥧 {item.name}</p>
+                      <p className="text-base font-semibold">{item.name}</p>
                       {(item.quantity || item.note) && (
                         <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
                       )}

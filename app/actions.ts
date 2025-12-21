@@ -263,13 +263,65 @@ export async function validateWriteKeyAction(input: z.infer<typeof validateSchem
   return input.key === writeKey;
 }
 
-export async function getChangeLogsAction() {
-  const logs = await db
+const getChangeLogsSchema = z.object({ slug: z.string() });
+export async function getChangeLogsAction(input: z.infer<typeof getChangeLogsSchema>) {
+  // Get the event
+  const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
+  if (!event) return [];
+
+  // Get all logs
+  const allLogs = await db
     .select()
     .from(changeLogs)
     .orderBy(desc(changeLogs.createdAt))
-    .limit(100);
-  return logs.map((log) => ({
+    .limit(200); // Get more to ensure we have enough after filtering
+
+  // Filter logs by event
+  const filteredLogs = [];
+
+  for (const log of allLogs) {
+    let belongsToEvent = false;
+
+    if (log.tableName === 'events') {
+      // Events: check if recordId matches event.id
+      belongsToEvent = log.recordId === event.id;
+    } else if (log.tableName === 'people') {
+      // People: join people -> events
+      const person = await db.query.people.findFirst({
+        where: eq(people.id, log.recordId),
+      });
+      belongsToEvent = person?.eventId === event.id;
+    } else if (log.tableName === 'days') {
+      // Days: join days -> events
+      const day = await db.query.days.findFirst({
+        where: eq(days.id, log.recordId),
+      });
+      belongsToEvent = day?.eventId === event.id;
+    } else if (log.tableName === 'meals') {
+      // Meals: join meals -> days -> events
+      const meal = await db.query.meals.findFirst({
+        where: eq(meals.id, log.recordId),
+        with: { day: true },
+      });
+      belongsToEvent = meal?.day?.eventId === event.id;
+    } else if (log.tableName === 'items') {
+      // Items: join items -> meals -> days -> events
+      const item = await db.query.items.findFirst({
+        where: eq(items.id, log.recordId),
+        with: { meal: { with: { day: true } } },
+      });
+      belongsToEvent = item?.meal?.day?.eventId === event.id;
+    }
+
+    if (belongsToEvent) {
+      filteredLogs.push(log);
+    }
+
+    // Stop if we have enough logs
+    if (filteredLogs.length >= 100) break;
+  }
+
+  return filteredLogs.map((log) => ({
     ...log,
     oldData: log.oldData ? JSON.parse(log.oldData) : null,
     newData: log.newData ? JSON.parse(log.newData) : null,
