@@ -14,7 +14,7 @@ export default function Home() {
         href="/noel/family"
         className="rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm"
       >
-        Open planner
+        Ouvrir le menu
       </Link>
     </main>
   );

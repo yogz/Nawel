@@ -12,42 +12,81 @@
 }
 
 .theme-christmas {
-  --surface: #fdf6f0;
-  --muted: #f2dede;
-  --accent: #c2410c;
-  --accent-soft: #fff4e6;
-  --text: #311b0b;
-  background: 
-    radial-gradient(circle at 10% 10%, rgba(194, 65, 12, 0.08), transparent 40%),
-    radial-gradient(circle at 90% 10%, rgba(23, 161, 96, 0.08), transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(241, 193, 137, 0.05), transparent 60%),
-    var(--surface);
+  --surface: #fffcf9;
+  --muted: #fce7e7;
+  --accent: #b91c1c;
+  --accent-soft: #fef2f2;
+  --text: #450a0a;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(185, 28, 28, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(21, 128, 61, 0.05) 0%, transparent 50%),
+    #fffcf9;
   background-attachment: fixed;
 }
 
-@keyframes snow-sparkle {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.1); }
+/* Falling Snow Effect */
+.theme-christmas::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background-image:
+    radial-gradient(4px 4px at 20px 30px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(3px 3px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(5px 5px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(4px 4px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(4px 4px at 110px 110px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(3px 3px at 160px 120px, #fff, rgba(0, 0, 0, 0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: snow 10s linear infinite;
+  opacity: 0.5;
 }
 
-.festive-sparkle {
-  animation: snow-sparkle 3s infinite ease-in-out;
+@keyframes snow {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 100px 200px;
+  }
 }
 
 body {
-  @apply min-h-screen bg-surface text-text font-sans antialiased;
+  @apply min-h-screen bg-surface text-text font-sans antialiased transition-colors duration-500 overflow-x-hidden;
 }
 
 a {
-  @apply text-accent underline-offset-4;
+  @apply text-accent underline-offset-4 transition-all;
 }
 
 .garland {
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(195, 49, 34, 0.1) 0,
-    rgba(195, 49, 34, 0.1) 10px,
-    rgba(23, 161, 96, 0.1) 10px,
-    rgba(23, 161, 96, 0.1) 20px
-  );
+  background: repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px);
+  opacity: 0.8;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.glass {
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.premium-card {
+  background-color: white;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.premium-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }

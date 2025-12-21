@@ -54,7 +54,7 @@ export function ItemRow({
         dragConstraints={{ left: -140, right: 0 }}
         style={{ x }}
         whileTap={{ scale: 0.98 }}
-        className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm"
+        className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03]"
       >
         {dragHandle}
         <div className="flex-1">

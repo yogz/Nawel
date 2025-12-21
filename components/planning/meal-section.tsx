@@ -50,7 +50,7 @@ export function MealSection({
   };
 
   return (
-    <section className="mb-6 rounded-3xl bg-white/70 p-4 shadow-sm ring-1 ring-black/5">
+    <section className="premium-card glass p-6 overflow-hidden">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold">{meal.title}</h3>
         {!readOnly && (

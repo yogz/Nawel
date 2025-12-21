@@ -15,7 +15,7 @@ import { PlanData, Item, Meal, Person } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { MealSection } from "./meal-section";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Check, ShieldAlert, Sparkles } from "lucide-react";
+import { Check, ShieldAlert, Sparkles, Plus as PlusIconLucide } from "lucide-react";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
 
@@ -176,14 +176,41 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
           </div>
         )}
       </div>
-      <main className="flex-1 space-y-4 px-4 py-4">
+      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-md px-4 py-4 border-b border-black/[0.03]">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-black italic tracking-tight text-accent">NAWEL ✨</h1>
+          <div className="flex items-center gap-2">
+            {!readOnly ? (
+              <span className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700">
+                <Check size={12} /> Live
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
+                <ShieldAlert size={12} /> Miroir
+              </span>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 space-y-4 px-4 py-8">
         {tab === "planning" && (
-          <div className="space-y-8">
+          <div className="space-y-12">
             {plan.days.map((day) => (
-              <div key={day.id} className="space-y-4">
-                <h2 className="px-2 text-xl font-bold text-accent flex items-center gap-2">
-                  <span>📅</span> {day.title || day.date}
-                </h2>
+              <div key={day.id} className="space-y-6">
+                <div className="flex items-center gap-3 px-2">
+                  <div className="h-10 w-10 shrink-0 grid place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
+                    <span className="text-lg font-bold">🎄</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black tracking-tight text-text">
+                      {day.title || day.date}
+                    </h2>
+                    <p className="text-xs font-bold uppercase tracking-widest text-accent opacity-60">
+                      Festins de Noël
+                    </p>
+                  </div>
+                </div>
                 <div className="space-y-6">
                   {day.meals.map((meal) => (
                     <MealSection
@@ -216,7 +243,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
           <div className="space-y-3">
             {unassignedItems.length === 0 && <p className="text-sm text-gray-500">Tout est déjà prévu ! 🎉</p>}
             {unassignedItems.map(({ item, meal, dayTitle }) => (
-              <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
+              <div key={item.id} className="premium-card p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-500">{dayTitle} • {meal.title}</p>
@@ -268,7 +295,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             ) : (
               <div className="space-y-2">
                 {itemsForPerson.map(({ item, meal, dayTitle }) => (
-                  <div key={item.id} className="rounded-2xl bg-white p-4 shadow-sm">
+                  <div key={item.id} className="premium-card p-5">
                     <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
                     <p className="text-base font-semibold">{item.name}</p>
                     {(item.quantity || item.note) && (
@@ -520,8 +547,8 @@ function PersonForm({ onSubmit, readOnly }: { onSubmit: (name: string) => void; 
 
 function PlusIcon() {
   return (
-    <span className="grid h-6 w-6 place-items-center rounded-full bg-accent text-white shadow-sm">
-      +
+    <span className="grid h-7 w-7 place-items-center rounded-full bg-accent text-white shadow-md ring-2 ring-white/20">
+      <PlusIconLucide size={16} strokeWidth={3} />
     </span>
   );
 }

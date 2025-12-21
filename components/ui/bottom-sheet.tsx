@@ -28,14 +28,14 @@ export function BottomSheet({
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
           <motion.div
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-xl rounded-t-3xl bg-white p-5 shadow-sheet"
+            className="relative z-10 w-full max-w-xl rounded-t-[2.5rem] bg-surface p-6 shadow-2xl border-x border-t border-white/20"
             initial={{ y: 400 }}
             animate={{ y: 0 }}
             exit={{ y: 400 }}
