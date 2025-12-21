@@ -112,24 +112,31 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
   const handleAssign = (item: Item, personId: number | null) => {
     if (readOnly) return;
+
+    // Optimistic UI: update immediately for instant feedback
+    setMealItems(item.mealId, (items) =>
+      items.map((it) => (it.id === item.id ? { ...it, personId } : it))
+    );
+    setSheet(null);
+    const personName = personId ? plan.people.find((p) => p.id === personId)?.name : "À prévoir";
+    setSuccessMessage(`Article assigné à ${personName} ✓`);
+    setTimeout(() => setSuccessMessage(null), 3000);
+
+    // Server sync in background
     startTransition(async () => {
       await assignItemAction({ id: item.id, personId, slug, key: writeKey });
-      setMealItems(item.mealId, (items) =>
-        items.map((it) => (it.id === item.id ? { ...it, personId } : it))
-      );
-      // Close the sheet and show success message
-      setSheet(null);
-      const personName = personId ? plan.people.find((p) => p.id === personId)?.name : "À prévoir";
-      setSuccessMessage(`Article assigné à ${personName} ✓`);
-      setTimeout(() => setSuccessMessage(null), 3000);
     });
   };
 
   const handleDelete = (item: Item) => {
     if (readOnly) return;
+
+    // Optimistic UI: remove immediately
+    setMealItems(item.mealId, (items) => items.filter((i) => i.id !== item.id));
+
+    // Server sync in background
     startTransition(async () => {
       await deleteItemAction({ id: item.id, slug, key: writeKey });
-      setMealItems(item.mealId, (items) => items.filter((i) => i.id !== item.id));
     });
   };
 
