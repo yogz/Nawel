@@ -15,7 +15,10 @@ export type Item = InferSelectModel<typeof items> & {
   person?: Person | null;
 };
 
+export type Event = InferSelectModel<typeof events>;
+
 export type PlanData = {
+  event: Event | null;
   days: Day[];
   people: Person[];
 };

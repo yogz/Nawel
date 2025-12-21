@@ -34,7 +34,7 @@ export async function fetchPlan(slug: string) {
     where: eq(people.eventId, event.id),
     orderBy: asc(people.name),
   });
-  return { days: dayList, people: peopleList };
+  return { event, days: dayList, people: peopleList };
 }
 
 export async function fetchAllEvents() {
