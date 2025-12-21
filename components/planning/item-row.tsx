@@ -2,6 +2,8 @@
 
 import { motion, useMotionValue } from "framer-motion";
 import { useEffect } from "react";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 import { UserRound } from "lucide-react";
 import { Item, Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
@@ -12,16 +14,23 @@ export function ItemRow({
   onAssign,
   onDelete,
   readOnly,
-  dragHandle,
 }: {
   item: Item;
   person?: Person | null;
   onAssign: () => void;
   onDelete: () => void;
   readOnly?: boolean;
-  dragHandle?: React.ReactNode;
 }) {
   const x = useMotionValue(0);
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: item.id,
+    disabled: readOnly,
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+  } as React.CSSProperties;
 
   useEffect(() => {
     const unsubscribe = x.on("change", (value) => {
@@ -44,13 +53,20 @@ export function ItemRow({
         </button>
       </div>
       <motion.div
+        ref={setNodeRef}
         drag={!readOnly ? "x" : false}
         dragConstraints={{ left: -100, right: 0 }}
-        style={{ x }}
+        style={{ ...style, x }}
         whileTap={{ scale: 0.98 }}
-        className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03]"
+        onTap={() => {
+          if (!readOnly && !isDragging) {
+            onAssign();
+          }
+        }}
+        {...listeners}
+        {...attributes}
+        className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03] cursor-pointer"
       >
-        {dragHandle}
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <p className="text-base font-semibold">{item.name}</p>

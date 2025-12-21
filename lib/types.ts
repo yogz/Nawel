@@ -19,3 +19,8 @@ export type PlanData = {
   days: Day[];
   people: Person[];
 };
+
+export type PlanningFilter =
+  | { type: "all" }
+  | { type: "unassigned" }
+  | { type: "person"; personId: number };

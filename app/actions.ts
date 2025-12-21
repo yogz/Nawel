@@ -4,13 +4,28 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { assertWriteAccess } from "@/lib/auth";
-import { items, meals, people } from "@/drizzle/schema";
+import { days, items, meals, people } from "@/drizzle/schema";
 import { asc, desc, eq } from "drizzle-orm";
 
 const baseInput = z.object({
   key: z.string().optional(),
   slug: z.string(),
 });
+
+const createDaySchema = baseInput.extend({
+  date: z.string().min(1, "Date required"),
+  title: z.string().optional(),
+});
+
+export async function createDayAction(input: z.infer<typeof createDaySchema>) {
+  assertWriteAccess(input.key);
+  const [created] = await db
+    .insert(days)
+    .values({ date: input.date, title: input.title ?? null })
+    .returning();
+  revalidatePath(`/noel/${input.slug}`);
+  return created;
+}
 
 const createMealSchema = baseInput.extend({
   dayId: z.number(),
@@ -130,6 +145,82 @@ export async function reorderItemsAction(input: z.infer<typeof reorderSchema>) {
   for (const query of updates) {
     await query;
   }
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const moveItemSchema = baseInput.extend({
+  itemId: z.number(),
+  targetMealId: z.number(),
+  targetOrder: z.number().optional(),
+});
+export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
+  assertWriteAccess(input.key);
+  // Get the item to move
+  const [item] = await db.select().from(items).where(eq(items.id, input.itemId)).limit(1);
+  if (!item) return;
+
+  const oldMealId = item.mealId;
+
+  // If moving to the same meal, just reorder (handled by reorderItemsAction)
+  if (oldMealId === input.targetMealId) {
+    revalidatePath(`/noel/${input.slug}`);
+    return;
+  }
+
+  // Get all items in target meal
+  const targetMealItems = await db
+    .select()
+    .from(items)
+    .where(eq(items.mealId, input.targetMealId))
+    .orderBy(asc(items.order));
+
+  // Calculate new order
+  let newOrder: number;
+  if (input.targetOrder !== undefined && input.targetOrder < targetMealItems.length) {
+    newOrder = input.targetOrder;
+    // Shift items at and after targetOrder
+    for (const targetItem of targetMealItems) {
+      if (targetItem.order >= newOrder) {
+        await db.update(items).set({ order: targetItem.order + 1 }).where(eq(items.id, targetItem.id));
+      }
+    }
+  } else {
+    // Add to end
+    const [last] = await db
+      .select()
+      .from(items)
+      .where(eq(items.mealId, input.targetMealId))
+      .orderBy(desc(items.order))
+      .limit(1);
+    newOrder = (last?.order || 0) + 1;
+  }
+
+  // Move the item
+  await db
+    .update(items)
+    .set({ mealId: input.targetMealId, order: newOrder })
+    .where(eq(items.id, input.itemId));
+
+  // Reorder items in the old meal (compact orders)
+  const oldMealItems = await db
+    .select()
+    .from(items)
+    .where(eq(items.mealId, oldMealId))
+    .orderBy(asc(items.order));
+  for (let i = 0; i < oldMealItems.length; i++) {
+    await db.update(items).set({ order: i }).where(eq(items.id, oldMealItems[i].id));
+  }
+
+  // Reorder items in the new meal (compact orders)
+  const newMealItems = await db
+    .select()
+    .from(items)
+    .where(eq(items.mealId, input.targetMealId))
+    .orderBy(asc(items.order));
+  for (let i = 0; i < newMealItems.length; i++) {
+    await db.update(items).set({ order: i }).where(eq(items.id, newMealItems[i].id));
+  }
+
   revalidatePath(`/noel/${input.slug}`);
 }
 
