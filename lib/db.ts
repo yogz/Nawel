@@ -1,6 +1,12 @@
+import * as dotenv from "dotenv";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "@/drizzle/schema";
+
+// Charger les variables d'environnement si elles ne sont pas déjà chargées
+if (!process.env.DATABASE_URL) {
+  dotenv.config({ path: ".env" });
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL environment variable is not set");
