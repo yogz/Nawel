@@ -26,8 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
-        <SnowOverlay />
+        <ThemeProvider>
+          {children}
+          <SnowOverlay />
+        </ThemeProvider>
       </body>
     </html>
   );
