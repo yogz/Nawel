@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, timestamp } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const days = pgTable("days", {
@@ -61,3 +61,13 @@ export const itemRelations = relations(items, ({ one }) => ({
 export const personRelations = relations(people, ({ many }) => ({
   items: many(items),
 }));
+
+export const changeLogs = pgTable("change_logs", {
+  id: serial("id").primaryKey(),
+  action: varchar("action", { length: 20 }).notNull(), // 'create', 'update', 'delete'
+  tableName: varchar("table_name", { length: 50 }).notNull(), // 'items', 'meals', 'people', 'days'
+  recordId: integer("record_id").notNull(),
+  oldData: text("old_data"), // JSON string of old data (for update/delete)
+  newData: text("new_data"), // JSON string of new data (for create/update)
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

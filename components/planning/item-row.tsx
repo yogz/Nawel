@@ -1,10 +1,8 @@
 "use client";
 
-import { motion, useMotionValue } from "framer-motion";
-import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { UserRound } from "lucide-react";
 import { Item, Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 
@@ -21,7 +19,6 @@ export function ItemRow({
   onDelete: () => void;
   readOnly?: boolean;
 }) {
-  const x = useMotionValue(0);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.id,
     disabled: readOnly,
@@ -32,41 +29,20 @@ export function ItemRow({
     opacity: isDragging ? 0.5 : 1,
   } as React.CSSProperties;
 
-  useEffect(() => {
-    const unsubscribe = x.on("change", (value) => {
-      if (value < -120) {
-        onDelete();
-      }
-    });
-    return () => unsubscribe();
-  }, [onDelete, x]);
-
   return (
-    <div className="relative">
-      <div className="absolute inset-y-0 right-2 z-0 flex items-center gap-2 text-sm">
-        <button
-          onClick={onDelete}
-          disabled={readOnly}
-          className="rounded-full bg-red-100 px-3 py-1 text-red-600 shadow-sm"
-        >
-          Supprimer
-        </button>
-      </div>
-      <motion.div
-        ref={setNodeRef}
-        drag={!readOnly ? "x" : false}
-        dragConstraints={{ left: -100, right: 0 }}
-        style={{ ...style, x }}
-        whileTap={{ scale: 0.98 }}
-        onTap={() => {
-          if (!readOnly && !isDragging) {
-            onAssign();
-          }
-        }}
-        {...listeners}
-        {...attributes}
-        className="relative z-10 mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03] cursor-pointer"
-      >
+    <motion.div
+      ref={setNodeRef}
+      style={style}
+      whileTap={{ scale: 0.98 }}
+      onTap={() => {
+        if (!readOnly && !isDragging) {
+          onAssign();
+        }
+      }}
+      {...listeners}
+      {...attributes}
+      className="mb-2 flex items-center gap-3 rounded-2xl bg-white p-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] border border-black/[0.03] cursor-pointer"
+    >
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <p className="text-base font-semibold">{item.name}</p>
@@ -95,7 +71,6 @@ export function ItemRow({
             </p>
           )}
         </div>
-      </motion.div>
-    </div>
+    </motion.div>
   );
 }

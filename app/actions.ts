@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { assertWriteAccess } from "@/lib/auth";
-import { days, items, meals, people } from "@/drizzle/schema";
+import { logChange } from "@/lib/logger";
+import { changeLogs, days, items, meals, people } from "@/drizzle/schema";
 import { asc, desc, eq } from "drizzle-orm";
 
 const baseInput = z.object({
@@ -23,6 +24,7 @@ export async function createDayAction(input: z.infer<typeof createDaySchema>) {
     .insert(days)
     .values({ date: input.date, title: input.title ?? null })
     .returning();
+  await logChange("create", "days", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
 }
@@ -45,6 +47,7 @@ export async function createMealAction(input: z.infer<typeof createMealSchema>) 
     .insert(meals)
     .values({ dayId: input.dayId, title: input.title, order: lastOrder + 1 })
     .returning();
+  await logChange("create", "meals", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
 }
@@ -52,14 +55,19 @@ export async function createMealAction(input: z.infer<typeof createMealSchema>) 
 const mealSchema = baseInput.extend({ id: z.number(), title: z.string().min(1) });
 export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
   assertWriteAccess(input.key);
+  const [oldData] = await db.select().from(meals).where(eq(meals.id, input.id)).limit(1);
   await db.update(meals).set({ title: input.title }).where(eq(meals.id, input.id));
+  const [newData] = await db.select().from(meals).where(eq(meals.id, input.id)).limit(1);
+  await logChange("update", "meals", input.id, oldData || undefined, newData || undefined);
   revalidatePath(`/noel/${input.slug}`);
 }
 
 const deleteMealSchema = baseInput.extend({ id: z.number() });
 export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) {
   assertWriteAccess(input.key);
+  const [oldData] = await db.select().from(meals).where(eq(meals.id, input.id)).limit(1);
   await db.delete(meals).where(eq(meals.id, input.id));
+  await logChange("delete", "meals", input.id, oldData || undefined);
   revalidatePath(`/noel/${input.slug}`);
 }
 
@@ -67,6 +75,7 @@ const createPersonSchema = baseInput.extend({ name: z.string().min(1) });
 export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
   assertWriteAccess(input.key);
   const [created] = await db.insert(people).values({ name: input.name }).returning();
+  await logChange("create", "people", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
 }
@@ -96,6 +105,7 @@ export async function createItemAction(input: z.infer<typeof createItemSchema>) 
       order: (last?.order || 0) + 1,
     })
     .returning();
+  await logChange("create", "items", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
 }
@@ -110,6 +120,8 @@ const updateItemSchema = baseInput.extend({
 
 export async function updateItemAction(input: z.infer<typeof updateItemSchema>) {
   assertWriteAccess(input.key);
+  // Récupérer les données avant la mise à jour
+  const [oldData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await db
     .update(items)
     .set({
@@ -119,20 +131,29 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
       personId: input.personId ?? null,
     })
     .where(eq(items.id, input.id));
+  // Récupérer les données après la mise à jour
+  const [newData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
+  await logChange("update", "items", input.id, oldData || undefined, newData || undefined);
   revalidatePath(`/noel/${input.slug}`);
 }
 
 const deleteItemSchema = baseInput.extend({ id: z.number() });
 export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) {
   assertWriteAccess(input.key);
+  // Récupérer les données avant la suppression
+  const [oldData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await db.delete(items).where(eq(items.id, input.id));
+  await logChange("delete", "items", input.id, oldData || undefined);
   revalidatePath(`/noel/${input.slug}`);
 }
 
 const assignItemSchema = baseInput.extend({ id: z.number(), personId: z.number().nullable() });
 export async function assignItemAction(input: z.infer<typeof assignItemSchema>) {
   assertWriteAccess(input.key);
+  const [oldData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await db.update(items).set({ personId: input.personId }).where(eq(items.id, input.id));
+  const [newData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
+  await logChange("update", "items", input.id, oldData || undefined, newData || undefined);
   revalidatePath(`/noel/${input.slug}`);
 }
 
@@ -196,10 +217,13 @@ export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
   }
 
   // Move the item
+  const oldData = { ...item };
   await db
     .update(items)
     .set({ mealId: input.targetMealId, order: newOrder })
     .where(eq(items.id, input.itemId));
+  const [newData] = await db.select().from(items).where(eq(items.id, input.itemId)).limit(1);
+  await logChange("update", "items", input.itemId, oldData, newData || undefined);
 
   // Reorder items in the old meal (compact orders)
   const oldMealItems = await db
@@ -229,4 +253,17 @@ export async function validateWriteKeyAction(input: z.infer<typeof validateSchem
   const writeKey = process.env.WRITE_KEY;
   if (!writeKey) return false;
   return input.key === writeKey;
+}
+
+export async function getChangeLogsAction() {
+  const logs = await db
+    .select()
+    .from(changeLogs)
+    .orderBy(desc(changeLogs.createdAt))
+    .limit(100);
+  return logs.map((log) => ({
+    ...log,
+    oldData: log.oldData ? JSON.parse(log.oldData) : null,
+    newData: log.newData ? JSON.parse(log.newData) : null,
+  }));
 }

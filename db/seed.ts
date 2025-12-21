@@ -46,7 +46,7 @@ const seedPeople: Array<{ id: PersonId; name: string }> = [
   { id: "gael", name: "Gaël" },
   { id: "joel", name: "Joël" },
   { id: "karine", name: "Karine" },
-  { id: "michel", name: "Michel" },
+  { id: "michel", name: "Michelle" },
   { id: "nicolas-b", name: "Nicolas B" },
   { id: "odile", name: "Odile" },
   { id: "jacques", name: "Jacques" },

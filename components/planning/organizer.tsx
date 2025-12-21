@@ -8,6 +8,7 @@ import {
   createMealAction,
   createPersonAction,
   deleteItemAction,
+  getChangeLogsAction,
   moveItemAction,
   updateItemAction,
   validateWriteKeyAction,
@@ -34,7 +35,7 @@ import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
 import { getPersonEmoji } from "@/lib/utils";
 
-const tabOrder = ["planning", "people", "settings"] as const;
+const tabOrder = ["planning", "people", "logs", "settings"] as const;
 type SheetState =
   | { type: "item"; mealId: number; item?: Item }
   | { type: "meal"; dayId: number }
@@ -44,6 +45,7 @@ type SheetState =
 export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initialPlan: PlanData; slug: string; writeKey?: string; writeEnabled: boolean }) {
   const [plan, setPlan] = useState(initialPlan);
   const [tab, setTab] = useState<(typeof tabOrder)[number]>("planning");
+  const [logs, setLogs] = useState<any[]>([]);
   const [planningFilter, setPlanningFilter] = useState<PlanningFilter>({ type: "all" });
   const [sheet, setSheet] = useState<SheetState | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(initialPlan.people[0]?.id ?? null);
@@ -62,6 +64,12 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   useEffect(() => {
     validateWriteKeyAction({ key: writeKey }).then((ok) => setReadOnly(!ok));
   }, [writeKey, writeEnabled]);
+
+  useEffect(() => {
+    if (tab === "logs") {
+      getChangeLogsAction().then(setLogs);
+    }
+  }, [tab]);
 
   const setMealItems = (mealId: number, updater: (items: Item[]) => Item[]) => {
     setPlan((prev) => ({
@@ -542,6 +550,78 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {tab === "logs" && (
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <h2 className="mb-4 text-lg font-bold">Historique des modifications</h2>
+              {logs.length === 0 ? (
+                <p className="text-sm text-gray-500">Aucun changement enregistré pour l&apos;instant.</p>
+              ) : (
+                <div className="space-y-3">
+                  {logs.map((log) => {
+                    const actionColors = {
+                      create: "bg-green-100 text-green-700",
+                      update: "bg-blue-100 text-blue-700",
+                      delete: "bg-red-100 text-red-700",
+                    };
+                    const actionLabels = {
+                      create: "Créé",
+                      update: "Modifié",
+                      delete: "Supprimé",
+                    };
+                    const tableLabels = {
+                      items: "Article",
+                      meals: "Repas",
+                      people: "Personne",
+                      days: "Jour",
+                    };
+                    const date = new Date(log.createdAt);
+                    const formattedDate = date.toLocaleString("fr-FR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+
+                    return (
+                      <div key={log.id} className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                        <div className="mb-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className={clsx("rounded-full px-2 py-1 text-xs font-bold", actionColors[log.action as keyof typeof actionColors])}>
+                              {actionLabels[log.action as keyof typeof actionLabels]}
+                            </span>
+                            <span className="text-sm font-semibold text-gray-700">
+                              {tableLabels[log.tableName as keyof typeof tableLabels]} #{log.recordId}
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-500">{formattedDate}</span>
+                        </div>
+                        {log.oldData && (
+                          <div className="mb-2 rounded-lg bg-red-50 p-2">
+                            <p className="mb-1 text-xs font-semibold text-red-700">Avant :</p>
+                            <pre className="text-xs text-red-600 overflow-x-auto">
+                              {JSON.stringify(log.oldData, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                        {log.newData && (
+                          <div className="rounded-lg bg-green-50 p-2">
+                            <p className="mb-1 text-xs font-semibold text-green-700">Après :</p>
+                            <pre className="text-xs text-green-600 overflow-x-auto">
+                              {JSON.stringify(log.newData, null, 2)}
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
