@@ -33,7 +33,7 @@ import { PlanData, Item, Meal, Person, PlanningFilter, Day } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { MealSection } from "./meal-section";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft } from "lucide-react";
+import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft, Pencil } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
@@ -243,6 +243,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const handleDeletePerson = (id: number) => {
     if (readOnly) return;
     startTransition(async () => {
+      if (!confirm("Es-tu sûr de vouloir supprimer ce convive ? Tous ses articles deviendront 'À prévoir'.")) return;
       await deletePersonAction({ id, slug, key: writeKey });
       setPlan((prev) => ({
         ...prev,
@@ -613,19 +614,39 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 Tout le monde
               </button>
               {plan.people.map((person) => (
-                <button
+                <div
                   key={person.id}
-                  onClick={() => setSelectedPerson(person.id)}
                   className={clsx(
-                    "rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+                    "group flex items-center rounded-full shadow-sm transition-all",
                     selectedPerson === person.id
-                      ? "bg-accent text-white"
+                      ? "bg-accent text-white ring-2 ring-accent/20"
                       : "bg-white text-gray-700 ring-1 ring-gray-200"
                   )}
                 >
-                  <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map(p => p.name), person.emoji)}</span>
-                  {person.name}
-                </button>
+                  <button
+                    onClick={() => setSelectedPerson(person.id)}
+                    className="flex items-center px-4 py-2 text-sm font-semibold"
+                  >
+                    <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map(p => p.name), person.emoji)}</span>
+                    {person.name}
+                  </button>
+                  {!readOnly && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSheet({ type: "person-edit", person });
+                      }}
+                      className={clsx(
+                        "mr-1 flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                        selectedPerson === person.id
+                          ? "hover:bg-white/20 text-white/80 hover:text-white"
+                          : "hover:bg-gray-100 text-gray-400 hover:text-accent"
+                      )}
+                    >
+                      <Pencil size={12} />
+                    </button>
+                  )}
+                </div>
               ))}
               {!readOnly && (
                 <button
@@ -1462,7 +1483,7 @@ function PersonEditForm({
         </div>
 
         <label className="block space-y-1">
-          <span className="text-sm font-semibold text-gray-700">Nom de l&apos;invité</span>
+          <span className="text-sm font-semibold text-gray-700">Nom du convive</span>
           <input
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-base"
             value={name}
@@ -1523,7 +1544,7 @@ function PersonEditForm({
           className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-red-100 bg-red-50/50 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
         >
           <Trash2 size={16} />
-          Supprimer l&apos;invité
+          Supprimer le convive
         </button>
       </div>
     </div>
