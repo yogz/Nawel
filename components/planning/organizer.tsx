@@ -144,7 +144,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       const frame = () => {
         // Cannon left
         confetti({
-          particleCount: 3,
+          particleCount: 2,
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.8 },
@@ -154,7 +154,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
         // Cannon right
         confetti({
-          particleCount: 3,
+          particleCount: 2,
           angle: 120,
           spread: 55,
           origin: { x: 1, y: 0.8 },
@@ -165,7 +165,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         // Center burst
         if (Math.random() > 0.7) {
           confetti({
-            particleCount: 5,
+            particleCount: 4,
             spread: 120,
             origin: { y: 0.6 },
             shapes: emojiShapes,
