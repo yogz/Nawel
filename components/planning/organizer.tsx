@@ -121,7 +121,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
     // Optimistic UI: update immediately for instant feedback
     setMealItems(item.mealId, (items) =>
-      items.map((it) => (it.id === item.id ? { ...it, personId } : it))
+      items.map((it) => (it.id === item.id ? { ...it, personId, person: personId ? plan.people.find(p => p.id === personId) : null } : it))
     );
     setSheet(null);
     const personName = personId ? plan.people.find((p) => p.id === personId)?.name : "À prévoir";
