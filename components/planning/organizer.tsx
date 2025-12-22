@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition, useRef } from "react";
 import Link from "next/link";
+import confetti from "canvas-confetti";
 import citationsData from "@/data/citations.json";
 import {
   assignItemAction,
@@ -128,9 +129,55 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       items.map((it) => (it.id === item.id ? { ...it, personId, person: personId ? plan.people.find(p => p.id === personId) : null } : it))
     );
     setSheet(null);
-    const personName = personId ? plan.people.find((p) => p.id === personId)?.name : "À prévoir";
+    const person = personId ? plan.people.find((p) => p.id === personId) : null;
+    const personName = person?.name || "À prévoir";
     setSuccessMessage(`Article assigné à ${personName} ✓`);
     setTimeout(() => setSuccessMessage(null), 3000);
+
+    // Special effect for Cécile
+    if (person && (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")) {
+      const duration = 3 * 1000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          shapes: ['square'], // fallback
+          scalar: 2,
+          colors: ['#ff0000', '#ff69b4', '#ffc0cb'],
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          shapes: ['square'], // fallback
+          scalar: 2,
+          colors: ['#ff0000', '#ff69b4', '#ffc0cb'],
+        });
+
+        // Emojis support in canvas-confetti is through custom shapes or just randomizing
+        // Since we want hearts and flowers, we can use the 'text' shape if supported or just standard confetti
+        // The standard version I installed might need custom shape drawing for emoji, but many wrappers support it.
+        // Let's use a more robust way for emojis:
+        const emojis = ['❤️', '💖', '💕', '🥂', '🌸', '🌺', '🌷', '✨'];
+        confetti({
+          particleCount: 3,
+          spread: 100,
+          origin: { y: 0.6 },
+          shapes: emojis.map(e => confetti.shapeFromText({ text: e })) as any,
+          scalar: 3
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      frame();
+    }
 
     // Server sync in background
     startTransition(async () => {
