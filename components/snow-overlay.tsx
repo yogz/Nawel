@@ -13,7 +13,7 @@ export function SnowOverlay() {
     const accumulationRef = useRef<number[]>([]);
 
     // Configuration
-    const IDLE_THRESHOLD = 3000; // 3 seconds of inactivity to start
+    const IDLE_THRESHOLD = 5000; // 5 seconds of inactivity to start
     const MAX_FLAKES = 450; // Increased from 300
 
     class Snowflake {
