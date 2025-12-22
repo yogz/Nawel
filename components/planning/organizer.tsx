@@ -884,6 +884,23 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 </div>
               )}
             </div>
+
+            {!readOnly && (
+              <div className="rounded-2xl bg-white p-4 shadow-sm border border-red-100 bg-red-50/20">
+                <h3 className="text-sm font-black uppercase tracking-widest text-red-600 mb-2">Zone de danger</h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  La suppression de cet événement supprimera définitivement toutes les données associées.
+                </p>
+                <button
+                  onClick={handleDeleteEvent}
+                  disabled={isPending}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 size={18} /> Supprimer l&apos;événement
+                </button>
+              </div>
+            )}
+
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <h2 className="mb-3 text-lg font-bold">Historique des modifications</h2>
               {logsLoading ? (

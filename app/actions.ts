@@ -400,3 +400,16 @@ export async function getAllEventsAction() {
     .from(events)
     .orderBy(desc(events.createdAt));
 }
+
+const deleteEventSchema = baseInput;
+export async function deleteEventAction(input: z.infer<typeof deleteEventSchema>) {
+  const event = await verifyEventAccess(input.slug, input.key);
+
+  // Log deletion before removing the record
+  await logChange("delete", "events", event.id, event);
+
+  await db.delete(events).where(eq(events.id, event.id));
+
+  revalidatePath("/");
+  return { success: true };
+}
