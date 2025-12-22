@@ -1,15 +1,13 @@
-export function assertWriteAccess(key?: string | null) {
-  const writeKey = process.env.WRITE_KEY;
-  if (!writeKey) {
-    throw new Error("WRITE_KEY is not configured");
+export function assertWriteAccess(key: string | undefined | null, eventKey: string | null) {
+  if (!eventKey) {
+    throw new Error("Event has no admin key configured");
   }
-  if (!key || key !== writeKey) {
+  if (!key || key !== eventKey) {
     throw new Error("Unauthorized");
   }
 }
 
-export function isWriteKeyValid(key?: string | null) {
-  const writeKey = process.env.WRITE_KEY;
-  if (!writeKey) return false;
-  return key === writeKey;
+export function isWriteKeyValid(key: string | undefined | null, eventKey: string | null) {
+  if (!eventKey) return false;
+  return key === eventKey;
 }

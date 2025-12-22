@@ -69,8 +69,8 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   );
 
   useEffect(() => {
-    validateWriteKeyAction({ key: writeKey }).then((ok) => setReadOnly(!ok));
-  }, [writeKey, writeEnabled]);
+    validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
+  }, [writeKey, slug, writeEnabled]);
 
   useEffect(() => {
     if (tab === "settings") {

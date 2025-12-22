@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Page({ params, searchParams }: Props) {
   const plan = await fetchPlan(params.slug);
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
-  const writeEnabled = isWriteKeyValid(key);
+  const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);
 
   return <Organizer initialPlan={plan} slug={params.slug} writeKey={key} writeEnabled={writeEnabled} />;
 }
