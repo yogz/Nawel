@@ -136,41 +136,42 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
     // Special effect for Cécile
     if (person && (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")) {
-      const duration = 3 * 1000;
+      const duration = 4 * 1000;
       const end = Date.now() + duration;
+      const emojis = ['❤️', '💖', '💕', '🥂', '🌸', '🌺', '🌷', '✨'];
+      const emojiShapes = emojis.map(e => confetti.shapeFromText({ text: e })) as any;
 
       const frame = () => {
-        confetti({
-          particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          shapes: ['square'], // fallback
-          scalar: 2,
-          colors: ['#ff0000', '#ff69b4', '#ffc0cb'],
-        });
-        confetti({
-          particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          shapes: ['square'], // fallback
-          scalar: 2,
-          colors: ['#ff0000', '#ff69b4', '#ffc0cb'],
-        });
-
-        // Emojis support in canvas-confetti is through custom shapes or just randomizing
-        // Since we want hearts and flowers, we can use the 'text' shape if supported or just standard confetti
-        // The standard version I installed might need custom shape drawing for emoji, but many wrappers support it.
-        // Let's use a more robust way for emojis:
-        const emojis = ['❤️', '💖', '💕', '🥂', '🌸', '🌺', '🌷', '✨'];
+        // Cannon left
         confetti({
           particleCount: 3,
-          spread: 100,
-          origin: { y: 0.6 },
-          shapes: emojis.map(e => confetti.shapeFromText({ text: e })) as any,
-          scalar: 3
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.8 },
+          shapes: emojiShapes,
+          scalar: 2.5,
         });
+
+        // Cannon right
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.8 },
+          shapes: emojiShapes,
+          scalar: 2.5,
+        });
+
+        // Center burst
+        if (Math.random() > 0.7) {
+          confetti({
+            particleCount: 5,
+            spread: 120,
+            origin: { y: 0.6 },
+            shapes: emojiShapes,
+            scalar: 3.5
+          });
+        }
 
         if (Date.now() < end) {
           requestAnimationFrame(frame);
