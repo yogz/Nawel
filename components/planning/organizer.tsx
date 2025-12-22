@@ -585,9 +585,6 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 }));
                 if (planningFilter.type !== "all" && !hasMatch) return null;
 
-                // Get a random citation
-                const randomIndex = Math.floor(Math.random() * citationsData.citations.length);
-                const dayCitation = citationsData.citations[randomIndex];
 
                 return (
                   <div key={day.id} className="space-y-6">
@@ -599,7 +596,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                         <h2 className="text-xl font-black tracking-tight text-text">
                           {day.title || day.date}
                         </h2>
-                        <CitationDisplay citation={dayCitation} />
+                        <CitationDisplay />
                       </div>
                     </div>
                     <div className="space-y-6">
@@ -1659,8 +1656,16 @@ function PlusIcon() {
   );
 }
 
-function CitationDisplay({ citation }: { citation: { phrase: string; author: string } }) {
+function CitationDisplay() {
   const [showAuthor, setShowAuthor] = useState(false);
+  const [citation, setCitation] = useState<{ phrase: string; author: string } | null>(null);
+
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * citationsData.citations.length);
+    setCitation(citationsData.citations[randomIndex]);
+  }, []);
+
+  if (!citation) return <div className="h-4" />; // Éviter le saut de mise en page pendant le chargement
 
   return (
     <button
