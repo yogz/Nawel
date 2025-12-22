@@ -37,7 +37,7 @@ import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
 import { getPersonEmoji } from "@/lib/utils";
 
-const tabOrder = ["planning", "people", "logs", "settings"] as const;
+const tabOrder = ["planning", "people", "settings"] as const;
 type SheetState =
   | { type: "item"; mealId: number; item?: Item }
   | { type: "meal"; dayId: number }
@@ -69,7 +69,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   }, [writeKey, writeEnabled]);
 
   useEffect(() => {
-    if (tab === "logs") {
+    if (tab === "settings") {
       setLogsLoading(true);
       getChangeLogsAction({ slug })
         .then(setLogs)
@@ -681,8 +681,44 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
           </div>
         )}
 
-        {tab === "logs" && (
+        {tab === "settings" && (
           <div className="space-y-3">
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">Thème de Noël</p>
+                  <p className="text-sm text-gray-500">Accents festifs subtils</p>
+                </div>
+                <button
+                  onClick={toggle}
+                  className={clsx(
+                    "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+                    christmas ? "bg-accent text-white" : "bg-gray-100 text-gray-700"
+                  )}
+                >
+                  <Sparkles size={16} /> Thème Noël : {christmas ? "Oui" : "Non"}
+                </button>
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white p-4 shadow-sm">
+              <div className="rounded-xl bg-accent-soft p-3 text-sm text-accent">
+                Partagez ce lien avec la famille. Gardez la clé pour les éditeurs.
+                <div className="mt-2 break-all text-xs text-gray-600">
+                  {typeof window !== "undefined" ? window.location.href : "Ajouter ?key=..."}
+                </div>
+              </div>
+              {!readOnly ? (
+                <div className="mt-3 flex items-center gap-2 rounded-xl bg-green-50 p-3 text-sm text-green-700">
+                  <Check size={16} />
+                  Mode édition activé avec succès.
+                </div>
+              ) : (
+                <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-700">
+                  <ShieldAlert size={16} />
+                  Ajouter ?key=... pour modifier.
+                </div>
+              )}
+            </div>
             <div className="rounded-2xl bg-white p-4 shadow-sm">
               <h2 className="mb-3 text-lg font-bold">Historique des modifications</h2>
               {logsLoading ? (
@@ -843,43 +879,6 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 </div>
               )}
             </div>
-          </div>
-        )}
-
-        {tab === "settings" && (
-          <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold">Thème de Noël</p>
-                <p className="text-sm text-gray-500">Accents festifs subtils</p>
-              </div>
-              <button
-                onClick={toggle}
-                className={clsx(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
-                  christmas ? "bg-accent text-white" : "bg-gray-100 text-gray-700"
-                )}
-              >
-                <Sparkles size={16} /> Thème Noël : {christmas ? "Oui" : "Non"}
-              </button>
-            </div>
-            <div className="rounded-xl bg-accent-soft p-3 text-sm text-accent">
-              Partagez ce lien avec la famille. Gardez la clé pour les éditeurs.
-              <div className="mt-2 break-all text-xs text-gray-600">
-                {typeof window !== "undefined" ? window.location.href : "Ajouter ?key=..."}
-              </div>
-            </div>
-            {!readOnly ? (
-              <div className="flex items-center gap-2 rounded-xl bg-green-50 p-3 text-sm text-green-700">
-                <Check size={16} />
-                Mode édition activé avec succès.
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-700">
-                <ShieldAlert size={16} />
-                Ajouter ?key=... pour modifier.
-              </div>
-            )}
           </div>
         )}
       </main>

@@ -1,12 +1,11 @@
 "use client";
 
-import { CalendarRange, ListChecks, Settings, Users, History } from "lucide-react";
+import { CalendarRange, ListChecks, Settings, Users } from "lucide-react";
 import clsx from "clsx";
 
 const tabs = [
   { key: "planning", label: "Menu", icon: CalendarRange },
   { key: "people", label: "Invités", icon: Users },
-  { key: "logs", label: "Historique", icon: History },
   { key: "settings", label: "Prefs", icon: Settings },
 ] as const;
 
