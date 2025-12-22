@@ -221,10 +221,20 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const handleCreatePerson = (name: string, emoji?: string | null) => {
     if (readOnly) return;
     startTransition(async () => {
-      const created = await createPersonAction({ name, emoji: emoji ?? undefined, slug, key: writeKey });
-      setPlan((prev) => ({ ...prev, people: [...prev.people, created] }));
-      setSelectedPerson(created.id);
-      setSheet(null);
+      try {
+        const created = await createPersonAction({ name, emoji: emoji ?? undefined, slug, key: writeKey });
+        setPlan((prev) => ({
+          ...prev,
+          people: [...prev.people, created].sort((a, b) => a.name.localeCompare(b.name))
+        }));
+        setSelectedPerson(created.id);
+        setSheet(null);
+        setSuccessMessage(`${name} a été ajouté(e) aux convives ✨`);
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } catch (error) {
+        console.error("Failed to create person:", error);
+        alert("Erreur lors de l'ajout du convive. Vérifiez votre clé d'accès ou réessayez plus tard.");
+      }
     });
   };
 

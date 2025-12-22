@@ -75,17 +75,24 @@ export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) 
 
 const createPersonSchema = baseInput.extend({ name: z.string().min(1), emoji: z.string().optional() });
 export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
-  assertWriteAccess(input.key);
-  const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
-  if (!event) throw new Error("Event not found");
-  const [created] = await db.insert(people).values({
-    eventId: event.id,
-    name: input.name,
-    emoji: input.emoji ?? null,
-  }).returning();
-  await logChange("create", "people", created.id, null, created);
-  revalidatePath(`/noel/${input.slug}`);
-  return created;
+  try {
+    assertWriteAccess(input.key);
+    const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
+    if (!event) throw new Error(`Event not found for slug: ${input.slug}`);
+
+    const [created] = await db.insert(people).values({
+      eventId: event.id,
+      name: input.name,
+      emoji: input.emoji ?? null,
+    }).returning();
+
+    await logChange("create", "people", created.id, null, created);
+    revalidatePath(`/noel/${input.slug}`);
+    return created;
+  } catch (error) {
+    console.error("Error in createPersonAction:", error);
+    throw error instanceof Error ? error : new Error("An unknown error occurred while adding the person");
+  }
 }
 
 const updatePersonSchema = baseInput.extend({
