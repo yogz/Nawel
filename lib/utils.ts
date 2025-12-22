@@ -1,4 +1,4 @@
-const PERSON_EMOJIS = [
+export const PERSON_EMOJIS = [
     "🎅", "🤶", "🧑‍🎄", "🧝", "🦌", "⛄", "🏂", "⛸️", "🧣", "🧤",
     "🧥", "🥘", "🥧", "🍬", "🍭", "🍪", "🥛", "🍷", "🥂", "🎻"
 ];
@@ -7,7 +7,9 @@ const PERSON_EMOJIS = [
  * Get a unique emoji for a person within an event.
  * Ensures emojis are unique per event by using the person's position in a sorted list of unique names.
  */
-export function getPersonEmoji(name: string, allPeopleNames?: string[]): string {
+export function getPersonEmoji(name: string, allPeopleNames?: string[], existingEmoji?: string | null): string {
+    if (existingEmoji) return existingEmoji;
+
     // If we have the list of all people, ensure uniqueness per event
     if (allPeopleNames && allPeopleNames.length > 0) {
         // Get unique names to ensure each name gets a unique emoji
@@ -18,7 +20,7 @@ export function getPersonEmoji(name: string, allPeopleNames?: string[]): string 
         }
         // If name not found (shouldn't happen), fallback to hash
     }
-    
+
     // Fallback: use hash-based assignment (may have collisions but works without full list)
     let hash = 0;
     for (let i = 0; i < name.length; i++) {

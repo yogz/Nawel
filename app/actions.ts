@@ -73,15 +73,49 @@ export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) 
   revalidatePath(`/noel/${input.slug}`);
 }
 
-const createPersonSchema = baseInput.extend({ name: z.string().min(1) });
+const createPersonSchema = baseInput.extend({ name: z.string().min(1), emoji: z.string().optional() });
 export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
   assertWriteAccess(input.key);
   const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
   if (!event) throw new Error("Event not found");
-  const [created] = await db.insert(people).values({ eventId: event.id, name: input.name }).returning();
+  const [created] = await db.insert(people).values({
+    eventId: event.id,
+    name: input.name,
+    emoji: input.emoji ?? null,
+  }).returning();
   await logChange("create", "people", created.id, null, created);
   revalidatePath(`/noel/${input.slug}`);
   return created;
+}
+
+const updatePersonSchema = baseInput.extend({
+  id: z.number(),
+  name: z.string().min(1),
+  emoji: z.string().optional().nullable(),
+});
+
+export async function updatePersonAction(input: z.infer<typeof updatePersonSchema>) {
+  assertWriteAccess(input.key);
+  const [oldData] = await db.select().from(people).where(eq(people.id, input.id)).limit(1);
+  await db
+    .update(people)
+    .set({
+      name: input.name,
+      emoji: input.emoji ?? null,
+    })
+    .where(eq(people.id, input.id));
+  const [newData] = await db.select().from(people).where(eq(people.id, input.id)).limit(1);
+  await logChange("update", "people", input.id, oldData || undefined, newData || undefined);
+  revalidatePath(`/noel/${input.slug}`);
+}
+
+const deletePersonSchema = baseInput.extend({ id: z.number() });
+export async function deletePersonAction(input: z.infer<typeof deletePersonSchema>) {
+  assertWriteAccess(input.key);
+  const [oldData] = await db.select().from(people).where(eq(people.id, input.id)).limit(1);
+  await db.delete(people).where(eq(people.id, input.id));
+  await logChange("delete", "people", input.id, oldData || undefined);
+  revalidatePath(`/noel/${input.slug}`);
 }
 
 const createItemSchema = baseInput.extend({

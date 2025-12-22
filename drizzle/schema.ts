@@ -33,6 +33,7 @@ export const people = pgTable("people", {
     .notNull()
     .references(() => events.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  emoji: text("emoji"),
 });
 
 export const items = pgTable("items", {

@@ -9,6 +9,8 @@ import {
   createDayAction,
   createMealAction,
   createPersonAction,
+  updatePersonAction,
+  deletePersonAction,
   deleteItemAction,
   getChangeLogsAction,
   moveItemAction,
@@ -35,14 +37,15 @@ import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Tras
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
-import { getPersonEmoji } from "@/lib/utils";
+import { getPersonEmoji, PERSON_EMOJIS } from "@/lib/utils";
 
 const tabOrder = ["planning", "people", "settings"] as const;
 type SheetState =
   | { type: "item"; mealId: number; item?: Item }
   | { type: "meal"; dayId: number }
   | { type: "person" }
-  | { type: "person-select" };
+  | { type: "person-select" }
+  | { type: "person-edit"; person: Person };
 
 export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initialPlan: PlanData; slug: string; writeKey?: string; writeEnabled: boolean }) {
   const [plan, setPlan] = useState(initialPlan);
@@ -215,12 +218,44 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
     });
   };
 
-  const handleCreatePerson = (name: string) => {
+  const handleCreatePerson = (name: string, emoji?: string | null) => {
     if (readOnly) return;
     startTransition(async () => {
-      const created = await createPersonAction({ name, slug, key: writeKey });
+      const created = await createPersonAction({ name, emoji: emoji ?? undefined, slug, key: writeKey });
       setPlan((prev) => ({ ...prev, people: [...prev.people, created] }));
       setSelectedPerson(created.id);
+      setSheet(null);
+    });
+  };
+
+  const handleUpdatePerson = (id: number, name: string, emoji: string | null) => {
+    if (readOnly) return;
+    startTransition(async () => {
+      await updatePersonAction({ id, name, emoji, slug, key: writeKey });
+      setPlan((prev) => ({
+        ...prev,
+        people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji } : p)),
+      }));
+      setSheet(null);
+    });
+  };
+
+  const handleDeletePerson = (id: number) => {
+    if (readOnly) return;
+    startTransition(async () => {
+      await deletePersonAction({ id, slug, key: writeKey });
+      setPlan((prev) => ({
+        ...prev,
+        people: prev.people.filter((p) => p.id !== id),
+        days: prev.days.map((day) => ({
+          ...day,
+          meals: day.meals.map((meal) => ({
+            ...meal,
+            items: meal.items.map((item) => (item.personId === id ? { ...item, personId: null, person: null } : item)),
+          })),
+        })),
+      }));
+      if (selectedPerson === id) setSelectedPerson(null);
       setSheet(null);
     });
   };
@@ -367,7 +402,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                   >
                     {planningFilter.type === "person" ? (
                       <>
-                        {getPersonEmoji(plan.people.find(p => p.id === planningFilter.personId)?.name || "", plan.people.map(p => p.name))}{" "}
+                        {getPersonEmoji(plan.people.find(p => p.id === planningFilter.personId)?.name || "", plan.people.map(p => p.name), plan.people.find(p => p.id === planningFilter.personId)?.emoji)}{" "}
                         {plan.people.find(p => p.id === planningFilter.personId)?.name}
                       </>
                     ) : (
@@ -421,7 +456,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                                     : "text-gray-600 hover:bg-gray-50"
                                 )}
                               >
-                                <span>{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
+                                <span>{getPersonEmoji(person.name, plan.people.map(p => p.name), person.emoji)}</span>
                                 <span className="truncate">{person.name}</span>
                                 {planningFilter.type === "person" && planningFilter.personId === person.id && (
                                   <Check size={14} className="ml-auto" />
@@ -588,7 +623,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       : "bg-white text-gray-700 ring-1 ring-gray-200"
                   )}
                 >
-                  <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map(p => p.name))}</span>
+                  <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map(p => p.name), person.emoji)}</span>
                   {person.name}
                 </button>
               ))}
@@ -612,10 +647,22 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       <div className="sticky top-[72px] z-20 -mx-4 px-4 py-3 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 backdrop-blur-sm border-y border-accent/20">
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-2xl shadow-sm ring-2 ring-accent/20">
-                            {getPersonEmoji(person.name, plan.people.map(p => p.name))}
+                            {getPersonEmoji(person.name, plan.people.map(p => p.name), person.emoji)}
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-xl font-black tracking-tight text-text">{person.name}</h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-xl font-black tracking-tight text-text">{person.name}</h3>
+                              {!readOnly && (
+                                <button
+                                  onClick={() => setSheet({ type: "person-edit", person })}
+                                  className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-accent transition-colors"
+                                >
+                                  <motion.div whileHover={{ rotate: 15 }}>
+                                    <Sparkles size={16} />
+                                  </motion.div>
+                                </button>
+                              )}
+                            </div>
                             <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                               {personItems.length} article{personItems.length > 1 ? 's' : ''}
                             </p>
@@ -951,6 +998,18 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
 
       <BottomSheet open={sheet?.type === "person"} onClose={() => setSheet(null)} title="Ajouter un membre">
         {sheet?.type === "person" && <PersonForm onSubmit={(name) => handleCreatePerson(name)} readOnly={readOnly} />}
+      </BottomSheet>
+
+      <BottomSheet open={sheet?.type === "person-edit"} onClose={() => setSheet(null)} title="Modifier un membre">
+        {sheet?.type === "person-edit" && (
+          <PersonEditForm
+            person={sheet.person}
+            allPeople={plan.people}
+            onSubmit={(name, emoji) => handleUpdatePerson(sheet.person.id, name, emoji)}
+            onDelete={() => handleDeletePerson(sheet.person.id)}
+            readOnly={readOnly}
+          />
+        )}
       </BottomSheet>
     </div >
   );
@@ -1355,17 +1414,119 @@ function PersonForm({ onSubmit, readOnly }: { onSubmit: (name: string) => void; 
           onChange={(e) => setName(e.target.value)}
           placeholder="Nom du membre"
           required
+          autoFocus
           disabled={readOnly}
         />
       </label>
       <button
         type="submit"
-        disabled={readOnly}
+        disabled={readOnly || !name.trim()}
         className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-sm active:scale-95 disabled:opacity-50"
       >
         Ajouter le membre
       </button>
     </form>
+  );
+}
+
+function PersonEditForm({
+  person,
+  allPeople,
+  onSubmit,
+  onDelete,
+  readOnly,
+}: {
+  person: Person;
+  allPeople: Person[];
+  onSubmit: (name: string, emoji: string | null) => void;
+  onDelete: () => void;
+  readOnly?: boolean;
+}) {
+  const [name, setName] = useState(person.name);
+  const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
+  const currentEmoji = getPersonEmoji(person.name, allPeople.map(p => p.name), person.emoji);
+
+  return (
+    <div className="space-y-6">
+      <form
+        className="space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit(name, selectedEmoji);
+        }}
+      >
+        <div className="flex justify-center py-4">
+          <div className="h-20 w-20 flex items-center justify-center rounded-3xl bg-accent/10 text-4xl shadow-sm ring-4 ring-accent/5">
+            {selectedEmoji || currentEmoji}
+          </div>
+        </div>
+
+        <label className="block space-y-1">
+          <span className="text-sm font-semibold text-gray-700">Nom de l&apos;invité</span>
+          <input
+            className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-base"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nom du membre"
+            required
+            disabled={readOnly}
+          />
+        </label>
+
+        <div className="space-y-2">
+          <span className="text-sm font-semibold text-gray-700">Choisir un emoji</span>
+          <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto no-scrollbar p-1">
+            <button
+              type="button"
+              onClick={() => setSelectedEmoji(null)}
+              className={clsx(
+                "h-10 rounded-xl flex items-center justify-center text-xl transition-all",
+                selectedEmoji === null ? "bg-accent text-white scale-110 shadow-md" : "bg-gray-50 hover:bg-gray-100"
+              )}
+            >
+              🔄
+            </button>
+            {PERSON_EMOJIS.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => setSelectedEmoji(emoji)}
+                className={clsx(
+                  "h-10 rounded-xl flex items-center justify-center text-xl transition-all",
+                  selectedEmoji === emoji ? "bg-accent scale-110 shadow-md" : "bg-gray-50 hover:bg-gray-100"
+                )}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-gray-400 italic">
+            🔄 utilise l&apos;emoji automatique basé sur le nom.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          disabled={readOnly || !name.trim()}
+          className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-lg active:scale-95 disabled:opacity-50 transition-all"
+        >
+          Enregistrer les modifications
+        </button>
+      </form>
+
+      <div className="pt-4 border-t border-gray-100">
+        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Zone de danger</p>
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={readOnly}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-red-100 bg-red-50/50 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+        >
+          <Trash2 size={16} />
+          Supprimer l&apos;invité
+        </button>
+      </div>
+    </div>
   );
 }
 
