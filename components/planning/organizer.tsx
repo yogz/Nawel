@@ -33,7 +33,7 @@ import { PlanData, Item, Meal, Person, PlanningFilter, Day } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { MealSection } from "./meal-section";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft, Pencil } from "lucide-react";
+import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft, Pencil, Scale, Euro, MessageSquare } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
@@ -702,16 +702,37 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                       </div>
                       <div className="space-y-2">
                         {personItems.map(({ item, meal, dayTitle }) => (
-                          <div key={item.id} className="premium-card p-5 relative group">
-                            <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                            <p className="text-base font-semibold">{item.name}</p>
-                            {(item.quantity || item.note) && (
-                              <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
+                          <div key={item.id} className="premium-card p-5 relative group hover:border-accent/10 transition-all">
+                            <p className="text-[10px] uppercase font-black tracking-widest text-accent/60 mb-1">{dayTitle} • {meal.title}</p>
+                            <p className="text-base font-bold text-text">{item.name}</p>
+
+                            {(item.quantity || item.note || item.price) && (
+                              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                {item.quantity && (
+                                  <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 uppercase tracking-tight">
+                                    <Scale size={12} className="text-gray-400" />
+                                    {item.quantity}
+                                  </div>
+                                )}
+                                {item.price && (
+                                  <div className="flex items-center gap-1 text-[11px] font-bold text-green-600 uppercase tracking-tight">
+                                    <Euro size={12} className="text-green-500" />
+                                    {item.price.toFixed(2)} €
+                                  </div>
+                                )}
+                                {item.note && (
+                                  <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 italic tracking-tight">
+                                    <MessageSquare size={12} className="text-gray-400" />
+                                    {item.note}
+                                  </div>
+                                )}
+                              </div>
                             )}
+
                             {!readOnly && (
                               <button
                                 onClick={() => handleAssign(item, null)}
-                                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
+                                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-700 hover:bg-amber-500 hover:text-white shadow-sm"
                                 title="Retirer l'assignation"
                               >
                                 <ArrowRightLeft size={12} />
@@ -735,16 +756,37 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
               ) : (
                 <div className="space-y-2">
                   {itemsForPerson.map(({ item, meal, dayTitle }) => (
-                    <div key={item.id} className="premium-card p-5 relative group">
-                      <p className="text-xs uppercase tracking-wide text-gray-500">{dayTitle} • {meal.title}</p>
-                      <p className="text-base font-semibold">{item.name}</p>
-                      {(item.quantity || item.note) && (
-                        <p className="text-sm text-gray-600">{[item.quantity, item.note].filter(Boolean).join(" • ")}</p>
+                    <div key={item.id} className="premium-card p-5 relative group hover:border-accent/10 transition-all">
+                      <p className="text-[10px] uppercase font-black tracking-widest text-accent/60 mb-1">{dayTitle} • {meal.title}</p>
+                      <p className="text-base font-bold text-text">{item.name}</p>
+
+                      {(item.quantity || item.note || item.price) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                          {item.quantity && (
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 uppercase tracking-tight">
+                              <Scale size={12} className="text-gray-400" />
+                              {item.quantity}
+                            </div>
+                          )}
+                          {item.price && (
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-green-600 uppercase tracking-tight">
+                              <Euro size={12} className="text-green-500" />
+                              {item.price.toFixed(2)} €
+                            </div>
+                          )}
+                          {item.note && (
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 italic tracking-tight">
+                              <MessageSquare size={12} className="text-gray-400" />
+                              {item.note}
+                            </div>
+                          )}
+                        </div>
                       )}
+
                       {!readOnly && (
                         <button
                           onClick={() => handleAssign(item, null)}
-                          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-200"
+                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-black text-amber-700 hover:bg-amber-500 hover:text-white shadow-sm"
                           title="Retirer l'assignation"
                         >
                           <ArrowRightLeft size={12} />
