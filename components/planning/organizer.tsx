@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition, useRef } from "react";
+import Link from "next/link";
 import citationsData from "@/data/citations.json";
 import {
   assignItemAction,
@@ -312,7 +313,9 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
       </AnimatePresence>
       <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-md px-4 py-4 border-b border-black/[0.03]">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-black italic tracking-tight text-accent">NAWEL ✨</h1>
+          <Link href="/" className="text-2xl font-black italic tracking-tight text-accent hover:opacity-80 transition-opacity">
+            NAWEL ✨
+          </Link>
           <div className="flex items-center gap-2">
             {!readOnly ? (
               <span className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700">
