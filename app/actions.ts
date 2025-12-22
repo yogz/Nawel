@@ -34,7 +34,7 @@ export async function createDayAction(input: z.infer<typeof createDaySchema>) {
     .values({ eventId: event.id, date: input.date, title: input.title ?? null })
     .returning();
   await logChange("create", "days", created.id, null, created);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
   return created;
 }
 
@@ -57,7 +57,7 @@ export async function createMealAction(input: z.infer<typeof createMealSchema>) 
     .values({ dayId: input.dayId, title: input.title, order: lastOrder + 1 })
     .returning();
   await logChange("create", "meals", created.id, null, created);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
   return created;
 }
 
@@ -68,7 +68,7 @@ export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
   await db.update(meals).set({ title: input.title }).where(eq(meals.id, input.id));
   const [newData] = await db.select().from(meals).where(eq(meals.id, input.id)).limit(1);
   await logChange("update", "meals", input.id, oldData || undefined, newData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const deleteMealSchema = baseInput.extend({ id: z.number() });
@@ -77,7 +77,7 @@ export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) 
   const [oldData] = await db.select().from(meals).where(eq(meals.id, input.id)).limit(1);
   await db.delete(meals).where(eq(meals.id, input.id));
   await logChange("delete", "meals", input.id, oldData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const createPersonSchema = baseInput.extend({ name: z.string().min(1), emoji: z.string().optional() });
@@ -91,7 +91,7 @@ export async function createPersonAction(input: z.infer<typeof createPersonSchem
     }).returning();
 
     await logChange("create", "people", created.id, null, created);
-    revalidatePath(`/noel/${input.slug}`);
+    revalidatePath(`/event/${input.slug}`);
     return created;
   } catch (error) {
     console.error("Error in createPersonAction:", error);
@@ -117,7 +117,7 @@ export async function updatePersonAction(input: z.infer<typeof updatePersonSchem
     .where(eq(people.id, input.id));
   const [newData] = await db.select().from(people).where(eq(people.id, input.id)).limit(1);
   await logChange("update", "people", input.id, oldData || undefined, newData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const deletePersonSchema = baseInput.extend({ id: z.number() });
@@ -126,7 +126,7 @@ export async function deletePersonAction(input: z.infer<typeof deletePersonSchem
   const [oldData] = await db.select().from(people).where(eq(people.id, input.id)).limit(1);
   await db.delete(people).where(eq(people.id, input.id));
   await logChange("delete", "people", input.id, oldData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const createItemSchema = baseInput.extend({
@@ -157,7 +157,7 @@ export async function createItemAction(input: z.infer<typeof createItemSchema>) 
     })
     .returning();
   await logChange("create", "items", created.id, null, created);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
   return created;
 }
 
@@ -185,7 +185,7 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
     .where(eq(items.id, input.id));
   const [newData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await logChange("update", "items", input.id, oldData || undefined, newData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const deleteItemSchema = baseInput.extend({ id: z.number() });
@@ -194,7 +194,7 @@ export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) 
   const [oldData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await db.delete(items).where(eq(items.id, input.id));
   await logChange("delete", "items", input.id, oldData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const assignItemSchema = baseInput.extend({ id: z.number(), personId: z.number().nullable() });
@@ -204,7 +204,7 @@ export async function assignItemAction(input: z.infer<typeof assignItemSchema>) 
   await db.update(items).set({ personId: input.personId }).where(eq(items.id, input.id));
   const [newData] = await db.select().from(items).where(eq(items.id, input.id)).limit(1);
   await logChange("update", "items", input.id, oldData || undefined, newData || undefined);
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const reorderSchema = baseInput.extend({ mealId: z.number(), itemIds: z.array(z.number()) });
@@ -216,7 +216,7 @@ export async function reorderItemsAction(input: z.infer<typeof reorderSchema>) {
   for (const query of updates) {
     await query;
   }
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const moveItemSchema = baseInput.extend({
@@ -232,7 +232,7 @@ export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
   const oldMealId = item.mealId;
 
   if (oldMealId === input.targetMealId) {
-    revalidatePath(`/noel/${input.slug}`);
+    revalidatePath(`/event/${input.slug}`);
     return;
   }
 
@@ -286,7 +286,7 @@ export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
     await db.update(items).set({ order: i }).where(eq(items.id, newMealItems[i].id));
   }
 
-  revalidatePath(`/noel/${input.slug}`);
+  revalidatePath(`/event/${input.slug}`);
 }
 
 const validateSchema = z.object({ key: z.string().optional(), slug: z.string().optional() });

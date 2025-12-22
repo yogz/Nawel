@@ -65,7 +65,7 @@ export function EventList({
           {events.map((event) => (
             <Link
               key={event.id}
-              href={`/noel/${event.slug}`}
+              href={`/event/${event.slug}`}
               className="block rounded-2xl bg-white p-5 shadow-sm border border-gray-200 transition-transform hover:scale-[1.02] active:scale-[0.98]"
             >
               <h3 className="text-lg font-bold text-gray-900">{event.name}</h3>
@@ -196,7 +196,7 @@ function EventCreatedModal({ event, onClose }: { event: Event; onClose: () => vo
 
   const handleContinue = () => {
     onClose();
-    router.push(`/noel/${event.slug}?key=${event.adminKey}`);
+    router.push(`/event/${event.slug}?key=${event.adminKey}`);
   };
 
   return (
