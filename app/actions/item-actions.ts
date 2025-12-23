@@ -32,7 +32,7 @@ export async function createItemAction(input: z.infer<typeof createItemSchema>) 
             name: input.name,
             quantity: input.quantity ?? null,
             note: input.note ?? null,
-            price: input.price ? input.price.toString() : null,
+            price: input.price ?? null,
             order,
         })
         .returning();
@@ -50,7 +50,7 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
             name: input.name,
             quantity: input.quantity,
             note: input.note,
-            price: input.price ? input.price.toString() : null,
+            price: input.price ?? null,
             personId: input.personId,
         })
         .where(eq(items.id, input.id))
