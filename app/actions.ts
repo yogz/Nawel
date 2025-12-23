@@ -378,6 +378,15 @@ const createEventSchema = z.object({
 });
 
 export async function createEventAction(input: z.infer<typeof createEventSchema>) {
+  // Check for slug uniqueness
+  const existing = await db.query.events.findFirst({
+    where: eq(events.slug, input.slug),
+  });
+
+  if (existing) {
+    throw new Error("Ce slug est déjà utilisé par un autre événement.");
+  }
+
   // Public action, generates new adminKey
   const adminKey = randomUUID();
   const [created] = await db

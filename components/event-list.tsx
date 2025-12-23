@@ -29,11 +29,18 @@ export function EventList({
   const [createdEvent, setCreatedEvent] = useState<Event | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleCreateEvent = async (slug: string, name: string, description?: string) => {
+    setError(null);
     startTransition(async () => {
-      const result = await createEventAction({ slug, name, description, key: writeKey });
-      setShowCreateForm(false);
-      setCreatedEvent(result);
+      try {
+        const result = await createEventAction({ slug, name, description, key: writeKey });
+        setShowCreateForm(false);
+        setCreatedEvent(result);
+      } catch (e: any) {
+        setError(e.message || "Une erreur est survenue");
+      }
     });
   };
 
@@ -84,8 +91,12 @@ export function EventList({
       {showCreateForm && (
         <EventForm
           onSubmit={handleCreateEvent}
-          onClose={() => setShowCreateForm(false)}
+          onClose={() => {
+            setShowCreateForm(false);
+            setError(null);
+          }}
           isPending={isPending}
+          error={error}
         />
       )}
 
@@ -103,14 +114,28 @@ function EventForm({
   onSubmit,
   onClose,
   isPending,
+  error,
 }: {
   onSubmit: (slug: string, name: string, description?: string) => void;
   onClose: () => void;
   isPending: boolean;
+  error: string | null;
 }) {
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // remove accents
+      .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+      .trim()
+      .replace(/\s+/g, "-") // replace spaces with -
+      .replace(/-+/g, "-"); // remove double -
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,12 +149,13 @@ function EventForm({
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Nom de l&apos;événement</span>
           <input
-            className="w-full rounded-xl border border-gray-200 px-3 py-2"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 outline-none focus:border-accent transition-colors"
             value={name}
             onChange={(e) => {
-              setName(e.target.value);
-              if (!slug) {
-                setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""));
+              const newName = e.target.value;
+              setName(newName);
+              if (!isSlugManuallyEdited) {
+                setSlug(generateSlug(newName));
               }
             }}
             placeholder="Noël 2024"
@@ -137,19 +163,27 @@ function EventForm({
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-sm font-semibold">Slug (URL)</span>
+          <span className="text-sm font-semibold">Slug (URL personnalisée)</span>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">/noel/</span>
+            <span className="text-sm text-gray-500">/event/</span>
             <input
-              className="flex-1 rounded-xl border border-gray-200 px-3 py-2"
+              className="flex-1 rounded-xl border border-gray-200 px-3 py-2 outline-none focus:border-accent transition-colors"
               value={slug}
-              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""))}
+              onChange={(e) => {
+                setSlug(generateSlug(e.target.value));
+                setIsSlugManuallyEdited(true);
+              }}
               placeholder="noel-2024"
               required
               pattern="[a-z0-9-]+"
             />
           </div>
-          <p className="text-xs text-gray-500">Utilisé dans l&apos;URL (lettres minuscules, chiffres et tirets uniquement)</p>
+          {error && (
+            <p className="text-xs font-semibold text-red-500">{error}</p>
+          )}
+          <p className="text-xs text-gray-500">
+            Lien unique pour votre événement
+          </p>
         </label>
         <label className="block space-y-1">
           <span className="text-sm font-semibold">Description (optionnel)</span>
