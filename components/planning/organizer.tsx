@@ -17,6 +17,7 @@ import {
   moveItemAction,
   updateItemAction,
   validateWriteKeyAction,
+  deleteEventAction,
 } from "@/app/actions";
 import {
   DndContext,
@@ -195,6 +196,27 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
     // Server sync in background
     startTransition(async () => {
       await deleteItemAction({ id: item.id, slug, key: writeKey });
+    });
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible et supprimera tout le contenu (jours, repas, personnes, articles).")) {
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await deleteEventAction({ slug, key: writeKey });
+        if (result.success) {
+          setSuccessMessage("Événement supprimé avec succès.");
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
+        }
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Une erreur est survenue lors de la suppression.");
+      }
     });
   };
 
@@ -893,7 +915,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
                 </p>
                 <button
                   onClick={handleDeleteEvent}
-                  disabled={isPending}
+                  disabled={pending}
                   className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   <Trash2 size={18} /> Supprimer l&apos;événement
