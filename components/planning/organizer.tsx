@@ -35,7 +35,7 @@ import { PlanData, Item, Meal, Person, PlanningFilter, Day } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { MealSection } from "./meal-section";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft, Pencil, Scale, Euro, MessageSquare } from "lucide-react";
+import { Check, ShieldAlert, Sparkles, ChevronDown, Plus as PlusIconLucide, Trash2, ArrowRightLeft, Pencil, Scale, Euro, MessageSquare, Share, Copy } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
@@ -47,7 +47,8 @@ type SheetState =
   | { type: "meal"; dayId: number }
   | { type: "person" }
   | { type: "person-select" }
-  | { type: "person-edit"; person: Person };
+  | { type: "person-edit"; person: Person }
+  | { type: "share" };
 
 export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initialPlan: PlanData; slug: string; writeKey?: string; writeEnabled: boolean }) {
   const [plan, setPlan] = useState(initialPlan);
@@ -441,6 +442,15 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
               <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
                 <ShieldAlert size={12} /> Miroir
               </span>
+            )}
+            {!readOnly && (
+              <button
+                onClick={() => setSheet({ type: "share" })}
+                className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-accent hover:bg-accent/20 transition-colors"
+                title="Partager l'accès"
+              >
+                <Share size={12} /> Partager
+              </button>
             )}
           </div>
         </div>
@@ -1168,7 +1178,87 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
           />
         )}
       </BottomSheet>
+
+      <BottomSheet open={sheet?.type === "share"} onClose={() => setSheet(null)} title="Partager l'événement">
+        {sheet?.type === "share" && (
+          <ShareModal
+            slug={slug}
+            adminKey={writeKey}
+            onClose={() => setSheet(null)}
+          />
+        )}
+      </BottomSheet>
     </div >
+  );
+}
+
+function ShareModal({ slug, adminKey, onClose }: { slug: string; adminKey?: string; onClose: () => void }) {
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(false);
+
+  const shareUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/event/${slug}${adminKey ? `?key=${adminKey}` : ""}`
+    : `/event/${slug}${adminKey ? `?key=${adminKey}` : ""}`;
+
+  const copyToClipboard = async (text: string, type: "link" | "key") => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (type === "link") {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      } else {
+        setCopiedKey(true);
+        setTimeout(() => setCopiedKey(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  };
+
+  return (
+    <div className="space-y-6 pb-6 pt-2">
+      <div className="space-y-2">
+        <p className="text-sm font-semibold text-gray-700">Lien de partage (avec accès édition)</p>
+        <p className="text-xs text-gray-500">
+          Ce lien permet à quiconque de modifier l&apos;événement. Partagez-le avec les participants !
+        </p>
+        <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+          <code className="flex-1 overflow-x-auto text-xs font-mono text-gray-800 whitespace-nowrap scrollbar-hide">
+            {shareUrl}
+          </code>
+          <button
+            onClick={() => copyToClipboard(shareUrl, "link")}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm border border-gray-200 text-gray-500 hover:text-accent transition-colors"
+          >
+            {copiedLink ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+          </button>
+        </div>
+      </div>
+
+      {adminKey && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-gray-700">Clé d&apos;administration seule</p>
+          <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 p-2.5">
+            <code className="flex-1 overflow-x-auto text-xs font-mono text-gray-800 whitespace-nowrap scrollbar-hide">
+              {adminKey}
+            </code>
+            <button
+              onClick={() => copyToClipboard(adminKey, "key")}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm border border-gray-200 text-gray-500 hover:text-accent transition-colors"
+            >
+              {copiedKey ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={onClose}
+        className="w-full rounded-2xl bg-accent py-3.5 text-sm font-bold text-white shadow-lg active:scale-95 transition-transform"
+      >
+        C&apos;est tout bon !
+      </button>
+    </div>
   );
 }
 
