@@ -108,6 +108,8 @@ export const createEventSchema = z.object({
     name: z.string().min(1),
     description: z.string().optional(),
     key: z.string().optional(),
+    withDefaultMeals: z.boolean().optional(),
+    date: z.string().optional(),
 });
 
 export const deleteEventSchema = baseInput;
