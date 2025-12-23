@@ -42,20 +42,22 @@ export function PlanningTab({
                                 <div className="h-10 w-10 shrink-0 grid place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
                                     <span className="text-lg font-bold">🎄</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <h2 className="text-xl font-black tracking-tight text-text">
-                                        {day.title || day.date}
-                                    </h2>
-                                    {!readOnly && (
-                                        <button
-                                            onClick={() => setSheet({ type: "day-edit", day })}
-                                            className="text-accent/40 hover:text-accent transition-colors"
-                                        >
-                                            <Pencil className="w-3.5 h-3.5" />
-                                        </button>
-                                    )}
+                                <div className="flex-1 flex flex-col min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xl font-black tracking-tight text-text truncate">
+                                            {day.title || day.date}
+                                        </h2>
+                                        {!readOnly && (
+                                            <button
+                                                onClick={() => setSheet({ type: "day-edit", day })}
+                                                className="text-accent/40 hover:text-accent transition-colors shrink-0"
+                                            >
+                                                <Pencil className="w-3.5 h-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
+                                    <CitationDisplay />
                                 </div>
-                                <CitationDisplay />
                             </div>
                             <div className="space-y-6">
                                 {day.meals.map((meal: any) => (
