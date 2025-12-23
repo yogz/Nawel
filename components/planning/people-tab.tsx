@@ -5,6 +5,22 @@ import { Sparkles, Pencil } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
+import { PlanData, Person, Item, Meal } from "@/lib/types";
+import { SheetState } from "@/hooks/use-event-state";
+
+interface PeopleTabProps {
+    plan: PlanData;
+    selectedPerson: number | null;
+    setSelectedPerson: (id: number | null) => void;
+    setSheet: (sheet: SheetState) => void;
+    readOnly?: boolean;
+}
+
+interface PersonItem {
+    item: Item;
+    meal: Meal;
+    dayTitle: string;
+}
 
 export function PeopleTab({
     plan,
@@ -12,13 +28,13 @@ export function PeopleTab({
     setSelectedPerson,
     setSheet,
     readOnly
-}: any) {
+}: PeopleTabProps) {
     const itemsByPerson = useMemo(() => {
-        const byPerson: Record<number, any[]> = {};
-        plan.people.forEach((person: any) => { byPerson[person.id] = []; });
-        plan.days.forEach((day: any) => {
-            day.meals.forEach((meal: any) => {
-                meal.items.forEach((item: any) => {
+        const byPerson: Record<number, PersonItem[]> = {};
+        plan.people.forEach((person: Person) => { byPerson[person.id] = []; });
+        plan.days.forEach((day) => {
+            day.meals.forEach((meal) => {
+                meal.items.forEach((item) => {
                     if (item.personId && byPerson[item.personId]) {
                         byPerson[item.personId].push({ item, meal, dayTitle: day.title || day.date });
                     }
@@ -40,7 +56,7 @@ export function PeopleTab({
                 >
                     Tout le monde
                 </button>
-                {plan.people.map((person: any) => (
+                {plan.people.map((person) => (
                     <div
                         key={person.id}
                         className={clsx(
@@ -52,7 +68,7 @@ export function PeopleTab({
                             onClick={() => setSelectedPerson(person.id)}
                             className="flex items-center px-4 py-2 text-sm font-semibold"
                         >
-                            <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map((p: any) => p.name), person.emoji)}</span>
+                            <span className="mr-1.5">{getPersonEmoji(person.name, plan.people.map((p) => p.name), person.emoji)}</span>
                             {person.name}
                         </button>
                         {!readOnly && (
@@ -82,7 +98,7 @@ export function PeopleTab({
             </div>
 
             <div className="space-y-8">
-                {plan.people.filter((p: any) => selectedPerson === null || selectedPerson === p.id).map((person: any) => {
+                {plan.people.filter((p) => selectedPerson === null || selectedPerson === p.id).map((person) => {
                     const personItems = itemsByPerson[person.id] || [];
                     if (personItems.length === 0 && selectedPerson === null) return null;
 
@@ -91,7 +107,7 @@ export function PeopleTab({
                             <div className="sticky top-[72px] z-20 -mx-4 px-4 py-3 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 backdrop-blur-sm border-y border-accent/20">
                                 <div className="flex items-center gap-3">
                                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 text-2xl shadow-sm ring-2 ring-accent/20">
-                                        {getPersonEmoji(person.name, plan.people.map((p: any) => p.name), person.emoji)}
+                                        {getPersonEmoji(person.name, plan.people.map((p) => p.name), person.emoji)}
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
@@ -109,7 +125,7 @@ export function PeopleTab({
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                {personItems.map(({ item, meal, dayTitle }: any) => (
+                                {personItems.map(({ item, meal, dayTitle }: PersonItem) => (
                                     <div key={item.id} className="premium-card p-5 relative group hover:border-accent/10 transition-all">
                                         <p className="text-[10px] uppercase font-black tracking-widest text-accent/60 mb-1">{dayTitle} • {meal.title}</p>
                                         <p className="text-base font-bold text-text">{item.name}</p>

@@ -9,7 +9,19 @@ import {
     createPersonAction, updatePersonAction,
     deletePersonAction, moveItemAction, deleteEventAction
 } from "@/app/actions";
-import { PlanData, Item, Meal } from "@/lib/types";
+import { PlanData, Item, Meal, Person } from "@/lib/types";
+import { SheetState } from "./use-event-state";
+
+interface UseEventHandlersParams {
+    plan: PlanData;
+    setPlan: React.Dispatch<React.SetStateAction<PlanData>>;
+    slug: string;
+    writeKey?: string;
+    readOnly: boolean;
+    setSheet: (sheet: SheetState | null) => void;
+    setSuccessMessage: (message: string | null) => void;
+    setSelectedPerson?: (id: number | null) => void;
+}
 
 export function useEventHandlers({
     plan,
@@ -19,9 +31,9 @@ export function useEventHandlers({
     readOnly,
     setSheet,
     setSuccessMessage,
-    startTransition,
     setSelectedPerson
-}: any) {
+}: UseEventHandlersParams) {
+    const [, startTransition] = useTransition();
 
     const setMealItems = (mealId: number, updater: (items: Item[]) => Item[]) => {
         setPlan((prev: PlanData) => ({
@@ -225,7 +237,7 @@ export function useEventHandlers({
                     ...prev,
                     people: [...prev.people, created].sort((a, b) => a.name.localeCompare(b.name))
                 }));
-                setSelectedPerson(created.id);
+                setSelectedPerson?.(created.id);
                 setSheet(null);
                 setSuccessMessage(`${name} a été ajouté(e) aux convives ✨`);
                 setTimeout(() => setSuccessMessage(null), 3000);

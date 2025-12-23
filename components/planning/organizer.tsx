@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -16,12 +15,12 @@ import {
 import { PlanData, Item } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Check, ShieldAlert, Share, ChevronDown } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
-import clsx from "clsx";
 import { useThemeMode } from "../theme-provider";
-import { getPersonEmoji } from "@/lib/utils";
 import { validateWriteKeyAction, getChangeLogsAction } from "@/app/actions";
+
+// Extracted Components
+import { OrganizerHeader } from "./organizer-header";
+import { PersonSelectSheet } from "./person-select-sheet";
 
 // Extracted Components
 import { SuccessToast } from "../common/success-toast";
@@ -143,95 +142,19 @@ export function Organizer({
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
-      {christmas && (
-        <div className="christmas-garland">
-          {Array.from({ length: 14 }).map((_, i) => (
-            <div key={i} className="christmas-light" />
-          ))}
-        </div>
-      )}
-
-      {readOnly && (
-        <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
-          <ShieldAlert size={16} />
-          Mode lecture (ajoute ?key=... pour éditer) 🔒
-        </div>
-      )}
+      <OrganizerHeader
+        christmas={christmas}
+        readOnly={readOnly}
+        tab={tab}
+        plan={plan}
+        planningFilter={planningFilter}
+        setPlanningFilter={setPlanningFilter}
+        setSheet={setSheet}
+        sheet={sheet}
+        unassignedItemsCount={unassignedItemsCount}
+      />
 
       <SuccessToast message={successMessage} christmas={christmas} />
-
-      <header className="sticky top-0 z-30 bg-surface/80 backdrop-blur-md px-4 py-4 border-b border-black/[0.03]">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-black italic tracking-tight text-accent hover:opacity-80 transition-opacity">
-            NAWEL ✨
-          </Link>
-          <div className="flex items-center gap-2">
-            {!readOnly ? (
-              <span className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700">
-                <Check size={12} /> Live
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
-                <ShieldAlert size={12} /> Miroir
-              </span>
-            )}
-            {!readOnly && (
-              <button
-                onClick={() => setSheet({ type: "share" })}
-                className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-accent hover:bg-accent/20 transition-colors"
-                title="Partager l'accès"
-              >
-                <Share size={12} /> Partager
-              </button>
-            )}
-          </div>
-        </div>
-
-        {tab === "planning" && (
-          <div className="mt-4 flex flex-col gap-3">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setPlanningFilter({ type: "all" })}
-                className={clsx(
-                  "rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
-                  planningFilter.type === "all" ? "bg-accent text-white shadow-md ring-2 ring-accent/20" : "bg-white text-gray-400 hover:text-gray-600"
-                )}
-              >
-                Tout le monde
-              </button>
-              <button
-                onClick={() => setPlanningFilter({ type: "unassigned" })}
-                className={clsx(
-                  "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
-                  planningFilter.type === "unassigned" ? "bg-amber-400 text-amber-950 shadow-md ring-2 ring-amber-400/20" : "bg-white text-gray-400 hover:text-amber-600"
-                )}
-              >
-                À prévoir ({unassignedItemsCount}) 🥘
-              </button>
-
-              {plan.people.length > 0 && (
-                <div className="relative">
-                  <button
-                    onClick={() => setSheet({ type: "person-select" })}
-                    className={clsx(
-                      "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
-                      planningFilter.type === "person" ? "bg-accent text-white shadow-md ring-2 ring-accent/20" : "bg-white text-gray-400 hover:text-gray-600"
-                    )}
-                  >
-                    {planningFilter.type === "person" ? (
-                      <>
-                        {getPersonEmoji(plan.people.find((p: any) => p.id === planningFilter.personId)?.name || "", plan.people.map((p: any) => p.name), plan.people.find((p: any) => p.id === planningFilter.personId)?.emoji)}{" "}
-                        {plan.people.find((p: any) => p.id === planningFilter.personId)?.name}
-                      </>
-                    ) : ("Par personne")}
-                    <ChevronDown size={14} className={clsx("transition-transform", sheet?.type === "person-select" && "rotate-180")} />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
 
       <main className="flex-1 space-y-4 px-4 py-8">
         {tab === "planning" && (
@@ -372,26 +295,12 @@ export function Organizer({
         )}
 
         {sheet?.type === "person-select" && (
-          <div className="space-y-2 p-1 max-h-96 overflow-y-auto no-scrollbar">
-            <button
-              onClick={() => { setPlanningFilter({ type: "all" }); setSheet(null); }}
-              className={clsx("flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-sm font-bold transition-all", planningFilter.type === "all" ? "bg-accent/10 text-accent ring-1 ring-accent/20" : "text-gray-600 hover:bg-gray-50")}
-            >
-              <span>Tout le monde</span>
-              {planningFilter.type === "all" && <Check size={16} className="ml-auto" />}
-            </button>
-            {plan.people.map((person: any) => (
-              <button
-                key={person.id}
-                onClick={() => { setPlanningFilter({ type: "person", personId: person.id }); setSheet(null); }}
-                className={clsx("flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-sm font-bold transition-all", planningFilter.type === "person" && planningFilter.personId === person.id ? "bg-accent/10 text-accent ring-1 ring-accent/20" : "text-gray-600 hover:bg-gray-50")}
-              >
-                <span className="text-xl">{getPersonEmoji(person.name, plan.people.map((p: any) => p.name), person.emoji)}</span>
-                <span className="truncate">{person.name}</span>
-                {planningFilter.type === "person" && planningFilter.personId === person.id && <Check size={16} className="ml-auto" />}
-              </button>
-            ))}
-          </div>
+          <PersonSelectSheet
+            people={plan.people}
+            planningFilter={planningFilter}
+            setPlanningFilter={setPlanningFilter}
+            onClose={() => setSheet(null)}
+          />
         )}
 
         {sheet?.type === "share" && (
