@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import confetti from "canvas-confetti";
 import {
     createItemAction, updateItemAction, deleteItemAction, assignItemAction,
-    createDayAction, updateDayAction, deleteDayAction,
+    createDayAction, updateDayAction, deleteDayAction, createDayWithMealsAction,
     createMealAction, updateMealTitleAction, deleteMealAction,
     createPersonAction, updatePersonAction,
     deletePersonAction, moveItemAction, deleteEventAction
@@ -168,6 +168,18 @@ export function useEventHandlers({
         return created.id;
     };
 
+    const handleCreateDayWithMeals = (date: string, title: string | undefined, meals: string[]) => {
+        if (readOnly) return;
+        startTransition(async () => {
+            const created = await createDayWithMealsAction({ date, title, meals, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: [...prev.days, created],
+            }));
+            setSheet(null);
+        });
+    };
+
     const handleCreateMeal = (dayId: number, title: string) => {
         if (readOnly) return;
         startTransition(async () => {
@@ -324,6 +336,7 @@ export function useEventHandlers({
     return {
         handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
         handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
+        handleCreateDayWithMeals,
         handleUpdateDay, handleDeleteDay, handleUpdateMealTitle, handleDeleteMeal,
         handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem
     };

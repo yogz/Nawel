@@ -10,6 +10,12 @@ export const createDaySchema = baseInput.extend({
     title: z.string().optional(),
 });
 
+export const createDayWithMealsSchema = baseInput.extend({
+    date: z.string().min(1, "Date required"),
+    title: z.string().optional(),
+    meals: z.array(z.string()).min(1, "At least one meal required"),
+});
+
 export const updateDaySchema = baseInput.extend({
     id: z.number(),
     date: z.string().optional(),

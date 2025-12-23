@@ -98,6 +98,7 @@ export function Organizer({
     handleUpdateMealTitle,
     handleDeleteMeal,
     handleCreatePerson,
+    handleCreateDayWithMeals,
     handleUpdatePerson,
     handleDeletePerson,
     handleDeleteEvent,
@@ -271,6 +272,12 @@ export function Organizer({
             day={sheet.day}
             onSubmit={(date: string, title?: string) => handleUpdateDay(sheet.day.id, date, title)}
             onDelete={handleDeleteDay}
+            onClose={() => setSheet(null)}
+          />
+        )}
+        {sheet?.type === "day-create" && (
+          <DayForm
+            onSubmit={handleCreateDayWithMeals}
             onClose={() => setSheet(null)}
           />
         )}

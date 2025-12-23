@@ -84,23 +84,30 @@ export function PlanningTab({
                     <p className="text-gray-500 mb-4">Aucun jour pour l&apos;instant.</p>
                     {!readOnly && (
                         <button
-                            onClick={() => setSheet({ type: "meal", dayId: -1 })}
-                            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 hover:bg-white/80 transition-colors"
+                            onClick={() => setSheet({ type: "day-create" })}
+                            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent hover:bg-accent/10 transition-colors"
                         >
                             <PlusIcon />
-                            Créer un jour et un repas
+                            Ajouter un jour
                         </button>
                     )}
                 </div>
             )}
             {!readOnly && planningFilter.type === "all" && plan.days.length > 0 && (
-                <div className="mt-8 px-4">
+                <div className="mt-8 px-4 flex flex-col gap-3">
                     <button
                         onClick={() => onCreateMeal(plan.days[0]?.id ?? -1)}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 hover:bg-white/80 transition-colors"
                     >
                         <PlusIcon />
                         Ajouter un repas
+                    </button>
+                    <button
+                        onClick={() => setSheet({ type: "day-create" })}
+                        className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent hover:bg-accent/10 transition-colors"
+                    >
+                        <PlusIcon />
+                        Ajouter un jour
                     </button>
                 </div>
             )}

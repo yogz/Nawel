@@ -11,7 +11,8 @@ export type SheetState =
     | { type: "person" }
     | { type: "person-select" }
     | { type: "person-edit"; person: any } // Adjusted to matched used types
-    | { type: "share" };
+    | { type: "share" }
+    | { type: "day-create" };
 
 export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     const [plan, setPlan] = useState(initialPlan);
