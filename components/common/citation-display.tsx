@@ -31,7 +31,7 @@ export function CitationDisplay() {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-[10px] italic font-medium text-accent/60 leading-tight"
+                        className="text-[13px] italic font-medium text-accent/60 leading-tight"
                     >
                         « {citation.phrase} »
                     </motion.p>
@@ -41,7 +41,7 @@ export function CitationDisplay() {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-[9px] font-bold text-accent/40 uppercase tracking-widest"
+                        className="text-[11px] font-bold text-accent/40 uppercase tracking-widest"
                     >
                         — {citation.author}
                     </motion.p>
