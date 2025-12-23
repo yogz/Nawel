@@ -2,203 +2,257 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --surface: #f7f8fb;
-  --muted: #e5e7eb;
-  --accent: #0ea5e9;
-  --accent-soft: #e0f2fe;
-  --text: #0f172a;
-  color-scheme: light;
-}
+@layer base {
 
-.theme-christmas {
-  --surface: #fffcf9;
-  --muted: #fce7e7;
-  --accent: #b91c1c;
-  --accent-soft: #fef2f2;
-  --text: #450a0a;
-  background:
-    radial-gradient(circle at 0% 0%, rgba(185, 28, 28, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(21, 128, 61, 0.05) 0%, transparent 50%),
-    #fffcf9;
-  background-attachment: fixed;
-}
-
-/* Falling Snow Effect */
-.theme-christmas::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 100;
-  background-image:
-    radial-gradient(4px 4px at 20px 30px, #fff, rgba(0, 0, 0, 0)),
-    radial-gradient(3px 3px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
-    radial-gradient(5px 5px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
-    radial-gradient(4px 4px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
-    radial-gradient(4px 4px at 110px 110px, #fff, rgba(0, 0, 0, 0)),
-    radial-gradient(3px 3px at 160px 120px, #fff, rgba(0, 0, 0, 0));
-  background-repeat: repeat;
-  background-size: 200px 200px;
-  animation: snow 10s linear infinite;
-  opacity: 0.5;
-}
-
-@keyframes snow {
-  from {
-    background-position: 0 0;
+  .theme-christmas {
+    --surface: #fffcf9;
+    --muted: #fce7e7;
+    --accent: 0 74% 42%;
+    /* Nawel Red #b91c1c in HSL */
+    --accent-soft: #fef2f2;
+    --text: #450a0a;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(185, 28, 28, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(21, 128, 61, 0.05) 0%, transparent 50%),
+      #fffcf9;
+    background-attachment: fixed;
   }
 
-  to {
-    background-position: 100px 200px;
+  /* Falling Snow Effect */
+  .theme-christmas::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+    background-image:
+      radial-gradient(4px 4px at 20px 30px, #fff, rgba(0, 0, 0, 0)),
+      radial-gradient(3px 3px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
+      radial-gradient(5px 5px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
+      radial-gradient(4px 4px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
+      radial-gradient(4px 4px at 110px 110px, #fff, rgba(0, 0, 0, 0)),
+      radial-gradient(3px 3px at 160px 120px, #fff, rgba(0, 0, 0, 0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: snow 10s linear infinite;
+    opacity: 0.5;
   }
-}
 
-body {
-  @apply min-h-screen bg-surface text-text font-sans antialiased transition-colors duration-500 overflow-x-hidden;
-}
+  @keyframes snow {
+    from {
+      background-position: 0 0;
+    }
 
-a {
-  @apply text-accent underline-offset-4 transition-all;
-}
-
-.garland {
-  background: repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px);
-  opacity: 0.8;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.garland-blink {
-  background: repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: garlandBlink 1.5s ease-in-out infinite;
-}
-
-@keyframes garlandBlink {
-  0%, 100% {
-    opacity: 0.6;
-    filter: brightness(1);
+    to {
+      background-position: 100px 200px;
+    }
   }
-  50% {
-    opacity: 1;
-    filter: brightness(1.3);
+
+  body {
+    @apply min-h-screen bg-surface text-text font-sans antialiased transition-colors duration-500 overflow-x-hidden;
   }
-}
 
-/* Christmas Light Garland */
-.christmas-garland {
-  position: relative;
-  width: 100%;
-  height: 60px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, transparent 100%);
-  margin-bottom: 1rem;
-}
-
-.christmas-garland::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: repeating-linear-gradient(
-    90deg,
-    #1a1a1a 0px,
-    #1a1a1a 8px,
-    #2a2a2a 8px,
-    #2a2a2a 16px
-  );
-  transform: translateY(-50%);
-}
-
-.christmas-light {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
-  animation: lightBlink 1.5s ease-in-out infinite;
-}
-
-.christmas-light:nth-child(1) { left: 5%; color: #ff0000; animation-delay: 0s; }
-.christmas-light:nth-child(2) { left: 12%; color: #00ff00; animation-delay: 0.2s; }
-.christmas-light:nth-child(3) { left: 19%; color: #ffff00; animation-delay: 0.4s; }
-.christmas-light:nth-child(4) { left: 26%; color: #ff00ff; animation-delay: 0.6s; }
-.christmas-light:nth-child(5) { left: 33%; color: #00ffff; animation-delay: 0.8s; }
-.christmas-light:nth-child(6) { left: 40%; color: #ff0000; animation-delay: 1s; }
-.christmas-light:nth-child(7) { left: 47%; color: #00ff00; animation-delay: 0.1s; }
-.christmas-light:nth-child(8) { left: 54%; color: #ffff00; animation-delay: 0.3s; }
-.christmas-light:nth-child(9) { left: 61%; color: #ff00ff; animation-delay: 0.5s; }
-.christmas-light:nth-child(10) { left: 68%; color: #00ffff; animation-delay: 0.7s; }
-.christmas-light:nth-child(11) { left: 75%; color: #ff0000; animation-delay: 0.9s; }
-.christmas-light:nth-child(12) { left: 82%; color: #00ff00; animation-delay: 0.15s; }
-.christmas-light:nth-child(13) { left: 89%; color: #ffff00; animation-delay: 0.35s; }
-.christmas-light:nth-child(14) { left: 96%; color: #ff00ff; animation-delay: 0.55s; }
-
-@keyframes lightBlink {
-  0%, 100% {
-    opacity: 0.3;
-    transform: translateY(-50%) scale(0.8);
-    filter: brightness(0.5);
+  a {
+    @apply text-accent underline-offset-4 transition-all;
   }
-  50% {
-    opacity: 1;
-    transform: translateY(-50%) scale(1.2);
-    filter: brightness(2);
+
+  .garland {
+    background: repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px);
+    opacity: 0.8;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
-}
 
-.glass {
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.premium-card {
-  background-color: white;
-  border-radius: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.03);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-}
-
-.premium-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Empêcher le zoom automatique sur iOS pour les inputs */
-@supports (-webkit-touch-callout: none) {
-  input[type="text"],
-  input[type="email"],
-  input[type="number"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="search"],
-  input[type="date"],
-  input[type="time"],
-  textarea,
-  select {
-    font-size: 16px !important;
+  .garland-blink {
+    background: repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 10px, #15803d 10px, #15803d 20px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: garlandBlink 1.5s ease-in-out infinite;
   }
-  
-  @media (min-width: 640px) {
+
+  @keyframes garlandBlink {
+
+    0%,
+    100% {
+      opacity: 0.6;
+      filter: brightness(1);
+    }
+
+    50% {
+      opacity: 1;
+      filter: brightness(1.3);
+    }
+  }
+
+  /* Christmas Light Garland */
+  .christmas-garland {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, transparent 100%);
+    margin-bottom: 1rem;
+  }
+
+  .christmas-garland::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(90deg,
+        #1a1a1a 0px,
+        #1a1a1a 8px,
+        #2a2a2a 8px,
+        #2a2a2a 16px);
+    transform: translateY(-50%);
+  }
+
+  .christmas-light {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    animation: lightBlink 1.5s ease-in-out infinite;
+  }
+
+  .christmas-light:nth-child(1) {
+    left: 5%;
+    color: #ff0000;
+    animation-delay: 0s;
+  }
+
+  .christmas-light:nth-child(2) {
+    left: 12%;
+    color: #00ff00;
+    animation-delay: 0.2s;
+  }
+
+  .christmas-light:nth-child(3) {
+    left: 19%;
+    color: #ffff00;
+    animation-delay: 0.4s;
+  }
+
+  .christmas-light:nth-child(4) {
+    left: 26%;
+    color: #ff00ff;
+    animation-delay: 0.6s;
+  }
+
+  .christmas-light:nth-child(5) {
+    left: 33%;
+    color: #00ffff;
+    animation-delay: 0.8s;
+  }
+
+  .christmas-light:nth-child(6) {
+    left: 40%;
+    color: #ff0000;
+    animation-delay: 1s;
+  }
+
+  .christmas-light:nth-child(7) {
+    left: 47%;
+    color: #00ff00;
+    animation-delay: 0.1s;
+  }
+
+  .christmas-light:nth-child(8) {
+    left: 54%;
+    color: #ffff00;
+    animation-delay: 0.3s;
+  }
+
+  .christmas-light:nth-child(9) {
+    left: 61%;
+    color: #ff00ff;
+    animation-delay: 0.5s;
+  }
+
+  .christmas-light:nth-child(10) {
+    left: 68%;
+    color: #00ffff;
+    animation-delay: 0.7s;
+  }
+
+  .christmas-light:nth-child(11) {
+    left: 75%;
+    color: #ff0000;
+    animation-delay: 0.9s;
+  }
+
+  .christmas-light:nth-child(12) {
+    left: 82%;
+    color: #00ff00;
+    animation-delay: 0.15s;
+  }
+
+  .christmas-light:nth-child(13) {
+    left: 89%;
+    color: #ffff00;
+    animation-delay: 0.35s;
+  }
+
+  .christmas-light:nth-child(14) {
+    left: 96%;
+    color: #ff00ff;
+    animation-delay: 0.55s;
+  }
+
+  @keyframes lightBlink {
+
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: translateY(-50%) scale(0.8);
+      filter: brightness(0.5);
+    }
+
+    50% {
+      opacity: 1;
+      transform: translateY(-50%) scale(1.2);
+      filter: brightness(2);
+    }
+  }
+
+  .glass {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .premium-card {
+    background-color: white;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+  }
+
+  .premium-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Empêcher le zoom automatique sur iOS pour les inputs */
+  @supports (-webkit-touch-callout: none) {
+
     input[type="text"],
     input[type="email"],
     input[type="number"],
@@ -209,39 +263,54 @@ a {
     input[type="time"],
     textarea,
     select {
-      font-size: 0.875rem !important; /* text-sm */
+      font-size: 16px !important;
+    }
+
+    @media (min-width: 640px) {
+
+      input[type="text"],
+      input[type="email"],
+      input[type="number"],
+      input[type="tel"],
+      input[type="url"],
+      input[type="search"],
+      input[type="date"],
+      input[type="time"],
+      textarea,
+      select {
+        font-size: 0.875rem !important;
+        /* text-sm */
+      }
     }
   }
-}
 
-@layer base {
   :root {
+    --surface: #f7f8fb;
+    --accent-soft: #e0f2fe;
+    --text: #0f172a;
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 199 89% 48%;
+    /* Nawel Blue #0ea5e9 */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+    --radius: 1rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -274,6 +343,7 @@ a {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

@@ -59,11 +59,22 @@ export function EventList({
       </div>
 
       {events.length === 0 ? (
-        <div className="rounded-2xl bg-gray-50 p-8 text-center">
-          <Calendar className="mx-auto mb-3 text-gray-400" size={48} />
-          <p className="text-gray-600">Aucun événement pour l&apos;instant.</p>
+        <div className="rounded-2xl bg-white p-12 text-center shadow-sm border border-black/[0.03] space-y-6">
+          <div className="mx-auto w-20 h-20 bg-accent/10 rounded-3xl flex items-center justify-center text-accent">
+            <Calendar size={40} />
+          </div>
+          <div>
+            <p className="text-lg font-bold text-text">Aucun événement pour l&apos;instant</p>
+            <p className="mt-1 text-sm text-gray-500 max-w-xs mx-auto">Créez votre premier événement pour commencer à organiser vos fêtes ! 🎁</p>
+          </div>
           {writeEnabled && (
-            <p className="mt-2 text-sm text-gray-500">Créez votre premier événement pour commencer !</p>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95"
+            >
+              <Plus size={18} />
+              Créer mon premier événement
+            </button>
           )}
         </div>
       ) : (
