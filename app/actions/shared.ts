@@ -5,11 +5,7 @@ import { db } from "@/lib/db";
 import { assertWriteAccess } from "@/lib/auth";
 import { events, changeLogs, people, days, meals, items } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
-
-export const baseInput = z.object({
-    key: z.string().optional(),
-    slug: z.string(),
-});
+import { validateSchema, getChangeLogsSchema } from "./schemas";
 
 // Helper to verify access against event by slug
 export async function verifyEventAccess(slug: string, key?: string | null) {
@@ -19,7 +15,6 @@ export async function verifyEventAccess(slug: string, key?: string | null) {
     return event;
 }
 
-export const validateSchema = z.object({ key: z.string().optional(), slug: z.string().optional() });
 export async function validateWriteKeyAction(input: z.infer<typeof validateSchema>) {
     if (!input.slug) return false;
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
@@ -27,7 +22,6 @@ export async function validateWriteKeyAction(input: z.infer<typeof validateSchem
     return input.key === event.adminKey;
 }
 
-export const getChangeLogsSchema = z.object({ slug: z.string() });
 export async function getChangeLogsAction(input: z.infer<typeof getChangeLogsSchema>) {
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
     if (!event) return [];

@@ -5,12 +5,8 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { days } from "@/drizzle/schema";
-import { baseInput, verifyEventAccess } from "./shared";
-
-const createDaySchema = baseInput.extend({
-    date: z.string().min(1, "Date required"),
-    title: z.string().optional(),
-});
+import { verifyEventAccess } from "./shared";
+import { createDaySchema } from "./schemas";
 
 export async function createDayAction(input: z.infer<typeof createDaySchema>) {
     const event = await verifyEventAccess(input.slug, input.key);

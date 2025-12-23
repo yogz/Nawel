@@ -7,14 +7,8 @@ import { logChange } from "@/lib/logger";
 import { events } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
-import { baseInput, verifyEventAccess } from "./shared";
-
-const createEventSchema = z.object({
-    slug: z.string().min(1).max(100),
-    name: z.string().min(1),
-    description: z.string().optional(),
-    key: z.string().optional(),
-});
+import { verifyEventAccess } from "./shared";
+import { createEventSchema, deleteEventSchema } from "./schemas";
 
 export async function createEventAction(input: z.infer<typeof createEventSchema>) {
     // Check for slug uniqueness
@@ -49,7 +43,6 @@ export async function getAllEventsAction() {
         .orderBy(desc(events.createdAt));
 }
 
-const deleteEventSchema = baseInput;
 export async function deleteEventAction(input: z.infer<typeof deleteEventSchema>) {
     const event = await verifyEventAccess(input.slug, input.key);
 
