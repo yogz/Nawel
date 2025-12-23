@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { createEventAction } from "@/app/actions";
-import { Calendar, Plus, Key, Copy, Check } from "lucide-react";
+import { Calendar, Plus } from "lucide-react";
 import { BottomSheet } from "./ui/bottom-sheet";
 import { useRouter } from "next/navigation";
 
@@ -26,8 +26,8 @@ export function EventList({
   writeKey?: string;
 }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [createdEvent, setCreatedEvent] = useState<Event | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -36,8 +36,7 @@ export function EventList({
     startTransition(async () => {
       try {
         const result = await createEventAction({ slug, name, description, key: writeKey });
-        setShowCreateForm(false);
-        setCreatedEvent(result);
+        router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: any) {
         setError(e.message || "Une erreur est survenue");
       }
@@ -97,13 +96,6 @@ export function EventList({
           }}
           isPending={isPending}
           error={error}
-        />
-      )}
-
-      {createdEvent && (
-        <EventCreatedModal
-          event={createdEvent}
-          onClose={() => setCreatedEvent(null)}
         />
       )}
     </div>
@@ -216,65 +208,6 @@ function EventForm({
   );
 }
 
-function EventCreatedModal({ event, onClose }: { event: Event; onClose: () => void }) {
-  const [copied, setCopied] = useState(false);
-  const router = useRouter();
 
-  const handleCopy = () => {
-    if (event.adminKey) {
-      navigator.clipboard.writeText(event.adminKey);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const handleContinue = () => {
-    onClose();
-    router.push(`/event/${event.slug}?key=${event.adminKey}`);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl space-y-6">
-        <div className="text-center space-y-2">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
-            <Key size={24} />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900">Bienvenue à bord ! 🎄</h3>
-          <p className="text-sm text-gray-600">
-            Votre événement <strong>{event.name}</strong> a été créé.
-          </p>
-        </div>
-
-        <div className="space-y-2 rounded-xl bg-amber-50 p-4 border border-amber-100">
-          <p className="text-xs font-semibold uppercase tracking-wider text-amber-700">Clé d&apos;administration</p>
-          <p className="text-sm text-amber-800">
-            Ceci est votre clé secrète pour gérer l&apos;événement. Conservez-la précieusement !
-            Sans elle, vous ne pourrez pas modifier l&apos;événement.
-          </p>
-          <div className="flex items-center gap-2 rounded-lg bg-white p-2 shadow-sm border border-amber-200">
-            <code className="flex-1 overflow-x-auto text-sm font-mono text-gray-800">
-              {event.adminKey}
-            </code>
-            <button
-              onClick={handleCopy}
-              className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-              title="Copier"
-            >
-              {copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
-            </button>
-          </div>
-        </div>
-
-        <button
-          onClick={handleContinue}
-          className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-lg transition-transform active:scale-95"
-        >
-          Accéder à mon événement
-        </button>
-      </div>
-    </div>
-  );
-}
 
 

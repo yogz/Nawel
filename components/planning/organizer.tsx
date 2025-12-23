@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useTransition, useRef } from "react";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import citationsData from "@/data/citations.json";
+import { useSearchParams } from "next/navigation";
 import {
   assignItemAction,
   createItemAction,
@@ -63,6 +64,19 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [logsLoading, setLogsLoading] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("new") === "true") {
+      setSheet({ type: "share" });
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
+      });
+    }
+  }, [searchParams]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -1185,6 +1199,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             slug={slug}
             adminKey={writeKey}
             onClose={() => setSheet(null)}
+            isNew={searchParams.get("new") === "true"}
           />
         )}
       </BottomSheet>
@@ -1192,7 +1207,7 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
   );
 }
 
-function ShareModal({ slug, adminKey, onClose }: { slug: string; adminKey?: string; onClose: () => void }) {
+function ShareModal({ slug, adminKey, onClose, isNew }: { slug: string; adminKey?: string; onClose: () => void; isNew?: boolean }) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
 
@@ -1217,6 +1232,18 @@ function ShareModal({ slug, adminKey, onClose }: { slug: string; adminKey?: stri
 
   return (
     <div className="space-y-6 pb-6 pt-2">
+      {isNew && (
+        <div className="rounded-2xl bg-green-50 p-4 border border-green-100">
+          <h3 className="text-lg font-bold text-green-800 flex items-center gap-2">
+            <Sparkles size={20} className="text-green-600" />
+            Bienvenue sur votre événement ! 🎄
+          </h3>
+          <p className="text-sm text-green-700 mt-1 leading-relaxed">
+            Votre événement est prêt. Pour ne pas perdre l&apos;accès en édition,
+            <strong> enregistrez l&apos;URL ci-dessous</strong> ou partagez-la tout de suite !
+          </p>
+        </div>
+      )}
       <div className="space-y-2">
         <p className="text-sm font-semibold text-gray-700">Lien de partage (avec accès édition)</p>
         <p className="text-xs text-gray-500">
