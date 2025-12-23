@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { Item, Meal, Person, PlanningFilter } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ export function MealSection({
   onAssign,
   onDelete,
   onCreate,
+  onEdit,
   readOnly,
   filter = { type: "all" },
   activeItemId,
@@ -22,6 +23,7 @@ export function MealSection({
   onAssign: (item: Item) => void;
   onDelete: (item: Item) => void;
   onCreate: () => void;
+  onEdit: () => void;
   readOnly?: boolean;
   filter?: PlanningFilter;
   activeItemId?: number | null;
@@ -49,7 +51,17 @@ export function MealSection({
       )}
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{meal.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold">{meal.title}</h3>
+          {!readOnly && (
+            <button
+              onClick={onEdit}
+              className="text-gray-300 hover:text-accent transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
         {!readOnly && filter.type === "all" && (
           <button
             onClick={onCreate}
@@ -60,17 +72,17 @@ export function MealSection({
           </button>
         )}
       </div>
-             {filteredItems.map((item) => (
-               <ItemRow
-                 key={item.id}
-                 item={item}
-                 person={people.find((p) => p.id === item.personId) || item.person}
-                 onAssign={() => onAssign(item)}
-                 onDelete={() => onDelete(item)}
-                 readOnly={readOnly}
-                 allPeopleNames={people.map(p => p.name)}
-               />
-             ))}
+      {filteredItems.map((item) => (
+        <ItemRow
+          key={item.id}
+          item={item}
+          person={people.find((p) => p.id === item.personId) || item.person}
+          onAssign={() => onAssign(item)}
+          onDelete={() => onDelete(item)}
+          readOnly={readOnly}
+          allPeopleNames={people.map(p => p.name)}
+        />
+      ))}
       {meal.items.length === 0 && (
         <p className={clsx("text-sm text-gray-500", isOver && isDraggingFromOtherMeal && "text-accent font-semibold")}>
           {isOver && isDraggingFromOtherMeal ? "Déposez ici pour déplacer l'article" : "Aucun ingrédient pour l'instant."}

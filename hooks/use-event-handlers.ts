@@ -4,7 +4,9 @@ import { useTransition } from "react";
 import confetti from "canvas-confetti";
 import {
     createItemAction, updateItemAction, deleteItemAction, assignItemAction,
-    createDayAction, createMealAction, createPersonAction, updatePersonAction,
+    createDayAction, updateDayAction, deleteDayAction,
+    createMealAction, updateMealTitleAction, deleteMealAction,
+    createPersonAction, updatePersonAction,
     deletePersonAction, moveItemAction, deleteEventAction
 } from "@/app/actions";
 import { PlanData, Item, Meal } from "@/lib/types";
@@ -40,20 +42,25 @@ export function useEventHandlers({
         });
     };
 
-    const handleUpdateItem = (item: Item, closeSheet = false) => {
+    const handleUpdateItem = (itemId: number, values: any, closeSheet = false) => {
         if (readOnly) return;
+        const found = findItem(itemId);
+        if (!found) return;
+
+        const updatedItem = { ...found.item, ...values };
+
         startTransition(async () => {
             await updateItemAction({
-                id: item.id,
-                name: item.name,
-                quantity: item.quantity,
-                note: item.note,
-                price: item.price ?? null,
-                personId: item.personId ?? null,
+                id: itemId,
+                name: updatedItem.name,
+                quantity: updatedItem.quantity,
+                note: updatedItem.note,
+                price: updatedItem.price ?? null,
+                personId: updatedItem.personId ?? null,
                 slug,
                 key: writeKey,
             });
-            setMealItems(item.mealId, (items) => items.map((it) => (it.id === item.id ? item : it)));
+            setMealItems(found.meal.id, (items) => items.map((it) => (it.id === itemId ? updatedItem : it)));
             if (closeSheet) setSheet(null);
         });
     };
@@ -153,6 +160,62 @@ export function useEventHandlers({
         });
     };
 
+    const handleUpdateMealTitle = (id: number, title: string) => {
+        if (readOnly) return;
+        startTransition(async () => {
+            await updateMealTitleAction({ id, title, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.map((d) => ({
+                    ...d,
+                    meals: d.meals.map((m) => (m.id === id ? { ...m, title } : m)),
+                })),
+            }));
+            setSheet(null);
+        });
+    };
+
+    const handleDeleteMeal = (id: number) => {
+        if (readOnly) return;
+        if (!confirm("Supprimer ce repas et tous ses articles ?")) return;
+        startTransition(async () => {
+            await deleteMealAction({ id, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.map((d) => ({
+                    ...d,
+                    meals: d.meals.filter((m) => m.id !== id),
+                })),
+            }));
+            setSheet(null);
+        });
+    };
+
+    const handleUpdateDay = (id: number, date: string, title?: string | null) => {
+        if (readOnly) return;
+        startTransition(async () => {
+            await updateDayAction({ id, date, title, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.map((d) => (d.id === id ? { ...d, date, title: title ?? null } : d)),
+            }));
+            setSheet(null);
+        });
+    };
+
+    const handleDeleteDay = (id: number) => {
+        if (readOnly) return;
+        if (!confirm("Supprimer ce jour et tous ses repas ?")) return;
+        startTransition(async () => {
+            await deleteDayAction({ id, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.filter((d) => d.id !== id),
+            }));
+            setSheet(null);
+        });
+    };
+
     const handleCreatePerson = (name: string, emoji?: string | null) => {
         if (readOnly) return;
         startTransition(async () => {
@@ -219,6 +282,7 @@ export function useEventHandlers({
     return {
         handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
         handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
+        handleUpdateDay, handleDeleteDay, handleUpdateMealTitle, handleDeleteMeal,
         handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem
     };
 }

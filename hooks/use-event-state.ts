@@ -6,6 +6,8 @@ import { PlanData, PlanningFilter, Item } from "@/lib/types";
 export type SheetState =
     | { type: "item"; mealId: number; item?: Item }
     | { type: "meal"; dayId: number }
+    | { type: "meal-edit"; meal: any }
+    | { type: "day-edit"; day: any }
     | { type: "person" }
     | { type: "person-select" }
     | { type: "person-edit"; person: any } // Adjusted to matched used types

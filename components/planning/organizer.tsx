@@ -38,25 +38,73 @@ import { SettingsTab } from "./settings-tab";
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
 
-export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initialPlan: PlanData; slug: string; writeKey?: string; writeEnabled: boolean }) {
-  const state = useEventState(initialPlan, writeEnabled);
+import { DayForm } from "../forms/day-form";
+import { MealEditForm } from "../forms/meal-edit-form";
+
+export function Organizer({
+  initialPlan,
+  slug,
+  writeKey,
+  writeEnabled: initialWriteEnabled,
+}: {
+  initialPlan: PlanData;
+  slug: string;
+  writeKey?: string;
+  writeEnabled: boolean;
+}) {
   const {
-    plan, tab, setTab, logs, setLogs, planningFilter, setPlanningFilter,
-    sheet, setSheet, selectedPerson, setSelectedPerson, readOnly, setReadOnly,
-    startTransition, activeItemId, setActiveItemId, successMessage, setSuccessMessage,
-    logsLoading, setLogsLoading, unassignedItemsCount
-  } = state;
+    plan,
+    setPlan,
+    tab,
+    setTab,
+    logs,
+    setLogs,
+    planningFilter,
+    setPlanningFilter,
+    sheet,
+    setSheet,
+    selectedPerson,
+    setSelectedPerson,
+    readOnly,
+    setReadOnly,
+    startTransition,
+    activeItemId,
+    setActiveItemId,
+    successMessage,
+    setSuccessMessage,
+    logsLoading,
+    setLogsLoading,
+    unassignedItemsCount,
+  } = useEventState(initialPlan, initialWriteEnabled);
 
   const handlers = useEventHandlers({
-    ...state,
+    plan,
+    setPlan,
     slug,
     writeKey,
+    readOnly,
+    setSheet,
+    setSelectedPerson,
+    setSuccessMessage,
   });
 
   const {
-    handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
-    handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
-    handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem
+    handleCreateItem,
+    handleUpdateItem,
+    handleAssign,
+    handleDelete,
+    handleMoveItem,
+    handleCreateDay,
+    handleCreateMeal,
+    handleUpdateDay,
+    handleDeleteDay,
+    handleUpdateMealTitle,
+    handleDeleteMeal,
+    handleCreatePerson,
+    handleUpdatePerson,
+    handleDeletePerson,
+    handleDeleteEvent,
+    findItem,
   } = handlers;
 
   const { christmas, toggle: toggleChristmas } = useThemeMode();
@@ -250,22 +298,26 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
         title={
           sheet?.type === "item" ? (sheet.item ? "Modifier l'article" : "Ajouter un article") :
             sheet?.type === "meal" ? "Ajouter un repas" :
-              sheet?.type === "person" ? "Ajouter un convive" :
-                sheet?.type === "person-edit" ? "Modifier le convive" :
-                  sheet?.type === "person-select" ? "Filtrer par personne" :
-                    sheet?.type === "share" ? "Partager l'accès" : ""
+              sheet?.type === "meal-edit" ? "Modifier le repas" :
+                sheet?.type === "day-edit" ? "Modifier le jour" :
+                  sheet?.type === "person" ? "Ajouter un convive" :
+                    sheet?.type === "person-edit" ? "Modifier le convive" :
+                      sheet?.type === "person-select" ? "Filtrer par personne" :
+                        sheet?.type === "share" ? "Partager l'accès" : ""
         }
       >
         {sheet?.type === "item" && (
           <ItemForm
             people={plan.people}
             defaultItem={sheet.item}
-            currentMealId={sheet.mealId}
-            allMeals={plan.days.flatMap(d => d.meals.map(m => ({ ...m, dayTitle: d.title || d.date })))}
-            onSubmit={(vals) => sheet.item ? handleUpdateItem({ ...sheet.item, ...vals } as any) : handleCreateItem({ ...vals, mealId: sheet.mealId })}
+            allMeals={plan.days.flatMap((d: any) => d.meals.map((m: any) => ({ ...m, dayTitle: d.title || d.date })))}
+            currentMealId={sheet.mealId || sheet.item?.mealId}
+            onSubmit={(vals) =>
+              sheet.item ? handleUpdateItem(sheet.item.id, vals) : handleCreateItem({ ...vals, mealId: sheet.mealId })
+            }
             onAssign={(pId) => sheet.item && handleAssign(sheet.item, pId)}
             onMoveMeal={(mId) => sheet.item && handleMoveItem(sheet.item.id, mId)}
-            onDelete={() => sheet.item && handleDelete(sheet.item)}
+            onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
             readOnly={readOnly}
           />
         )}
@@ -276,11 +328,29 @@ export function Organizer({ initialPlan, slug, writeKey, writeEnabled }: { initi
             defaultDayId={sheet.dayId}
             forceNewDay={sheet.dayId === -1}
             readOnly={readOnly}
-            onSubmit={async (dId, title, dDate, dTitle) => {
-              let finalDayId = dId;
-              if (dId === -1 && dDate) finalDayId = await handleCreateDay(dDate, dTitle);
-              handleCreateMeal(finalDayId, title);
+            onSubmit={async (dayId, title, newDayDate, newDayTitle) => {
+              let targetDayId = dayId;
+              if (dayId === -1 && newDayDate) {
+                targetDayId = await handleCreateDay(newDayDate, newDayTitle);
+              }
+              handleCreateMeal(targetDayId, title);
             }}
+          />
+        )}
+        {sheet?.type === "meal-edit" && (
+          <MealEditForm
+            meal={sheet.meal}
+            onSubmit={handleUpdateMealTitle}
+            onDelete={handleDeleteMeal}
+            onClose={() => setSheet(null)}
+          />
+        )}
+        {sheet?.type === "day-edit" && (
+          <DayForm
+            day={sheet.day}
+            onSubmit={(date: string, title?: string) => handleUpdateDay(sheet.day.id, date, title)}
+            onDelete={handleDeleteDay}
+            onClose={() => setSheet(null)}
           />
         )}
 

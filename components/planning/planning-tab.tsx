@@ -3,7 +3,7 @@
 import { DndContext, closestCenter, DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 import { MealSection } from "./meal-section";
 import { CitationDisplay } from "../common/citation-display";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Pencil } from "lucide-react";
 
 export function PlanningTab({
     plan,
@@ -42,12 +42,20 @@ export function PlanningTab({
                                 <div className="h-10 w-10 shrink-0 grid place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
                                     <span className="text-lg font-bold">🎄</span>
                                 </div>
-                                <div>
+                                <div className="flex items-center gap-2">
                                     <h2 className="text-xl font-black tracking-tight text-text">
                                         {day.title || day.date}
                                     </h2>
-                                    <CitationDisplay />
+                                    {!readOnly && (
+                                        <button
+                                            onClick={() => setSheet({ type: "day-edit", day })}
+                                            className="text-accent/40 hover:text-accent transition-colors"
+                                        >
+                                            <Pencil className="w-3.5 h-3.5" />
+                                        </button>
+                                    )}
                                 </div>
+                                <CitationDisplay />
                             </div>
                             <div className="space-y-6">
                                 {day.meals.map((meal: any) => (
@@ -59,6 +67,7 @@ export function PlanningTab({
                                         onAssign={(item: any) => onAssign(item, meal.id)}
                                         onDelete={onDelete}
                                         onCreate={() => onCreateItem(meal.id)}
+                                        onEdit={() => setSheet({ type: "meal-edit", meal })}
                                         filter={planningFilter}
                                         activeItemId={activeItemId}
                                     />
