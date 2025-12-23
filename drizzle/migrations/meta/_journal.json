@@ -36,6 +36,13 @@
       "when": 1766336113404,
       "tag": "0004_simple_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1766444616025,
+      "tag": "0005_regular_shadow_king",
+      "breakpoints": true
     }
   ]
 }

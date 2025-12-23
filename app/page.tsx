@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllEventsAction, createEventAction } from "./actions";
+import { getAllEventsAction, createEventAction } from "@/app/actions";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventList } from "@/components/event-list";
 
@@ -12,7 +12,10 @@ export default async function Home({
 }) {
   const events = await getAllEventsAction();
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
-  const writeEnabled = isWriteKeyValid(key);
+
+  // Creation is now public/generated, so we enable it for everyone.
+  // The 'writeKey' param is still passed to pre-fill if present, though less relevant now.
+  const writeEnabled = true;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-12">

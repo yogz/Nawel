@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import { Item, Meal, Person, PlanningFilter } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
@@ -13,6 +13,7 @@ export function MealSection({
   onAssign,
   onDelete,
   onCreate,
+  onEdit,
   readOnly,
   filter = { type: "all" },
   activeItemId,
@@ -22,6 +23,7 @@ export function MealSection({
   onAssign: (item: Item) => void;
   onDelete: (item: Item) => void;
   onCreate: () => void;
+  onEdit: () => void;
   readOnly?: boolean;
   filter?: PlanningFilter;
   activeItemId?: number | null;
@@ -49,7 +51,17 @@ export function MealSection({
       )}
     >
       <div className="mb-2 sm:mb-3 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{meal.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold">{meal.title}</h3>
+          {!readOnly && (
+            <button
+              onClick={onEdit}
+              className="text-gray-300 hover:text-accent transition-colors"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
         {!readOnly && filter.type === "all" && (
           <button
             onClick={onCreate}

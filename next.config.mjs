@@ -5,6 +5,15 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  async redirects() {
+    return [
+      {
+        source: '/noel/:slug',
+        destination: '/event/:slug',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
