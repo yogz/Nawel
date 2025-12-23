@@ -21,8 +21,6 @@ import { validateWriteKeyAction, getChangeLogsAction } from "@/app/actions";
 // Extracted Components
 import { OrganizerHeader } from "./organizer-header";
 import { PersonSelectSheet } from "./person-select-sheet";
-
-// Extracted Components
 import { SuccessToast } from "../common/success-toast";
 import { ShareModal } from "../modals/share-modal";
 import { ItemForm } from "../forms/item-form";
