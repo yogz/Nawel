@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import clsx from "clsx";
 
 export function MealForm({
@@ -27,12 +33,14 @@ export function MealForm({
             : (forceNewDay || days.length === 0 ? "new" : String(days[0].id))
     );
     const [title, setTitle] = useState("");
-    const [newDayDate, setNewDayDate] = useState("");
+    const [newDayDate, setNewDayDate] = useState<Date | undefined>(undefined);
     const [newDayTitle, setNewDayTitle] = useState("");
 
     const handleSubmit = async () => {
         if (dayId === "new") {
-            await onSubmit(-1, title, newDayDate, newDayTitle);
+            if (!newDayDate) return;
+            const formattedDate = format(newDayDate, "yyyy-MM-dd");
+            await onSubmit(-1, title, formattedDate, newDayTitle);
         } else {
             await onSubmit(Number(dayId), title);
         }
@@ -64,13 +72,29 @@ export function MealForm({
                     <p className="text-xs font-black uppercase tracking-widest text-gray-400">Nouveau jour</p>
                     <div className="space-y-2">
                         <Label htmlFor="date">Date</Label>
-                        <Input
-                            id="date"
-                            placeholder="ex: 24/12"
-                            value={newDayDate}
-                            onChange={(e) => setNewDayDate(e.target.value)}
-                            disabled={readOnly}
-                        />
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal h-12 rounded-2xl",
+                                        !newDayDate && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {newDayDate ? format(newDayDate, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 rounded-2xl shadow-xl" align="start">
+                                <Calendar
+                                    mode="single"
+                                    selected={newDayDate}
+                                    onSelect={setNewDayDate}
+                                    initialFocus
+                                    locale={fr}
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="day-title">Titre (optionnel)</Label>

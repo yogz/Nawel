@@ -30,23 +30,26 @@ export async function createDayWithMealsAction(input: z.infer<typeof createDayWi
             .values({ eventId: event.id, date: input.date, title: input.title ?? null })
             .returning();
 
-        await logChange("create", "days", day.id, null, day);
-
         const createdMeals = [];
         for (let i = 0; i < input.meals.length; i++) {
             const [meal] = await tx
                 .insert(meals)
                 .values({ dayId: day.id, title: input.meals[i], order: i })
                 .returning();
-            await logChange("create", "meals", meal.id, null, meal);
             createdMeals.push({ ...meal, items: [] });
         }
 
-        return { ...day, meals: createdMeals };
+        return { day, createdMeals };
     });
 
+    // Log changes OUTSIDE the transaction to avoid deadlock
+    await logChange("create", "days", result.day.id, null, result.day);
+    for (const meal of result.createdMeals) {
+        await logChange("create", "meals", meal.id, null, meal);
+    }
+
     revalidatePath(`/event/${input.slug}`);
-    return result;
+    return { ...result.day, meals: result.createdMeals };
 }
 
 export async function updateDayAction(input: z.infer<typeof updateDaySchema>) {

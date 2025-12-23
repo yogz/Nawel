@@ -160,23 +160,36 @@ export function useEventHandlers({
 
     const handleCreateDay = async (date: string, title?: string): Promise<number> => {
         if (readOnly) return 0;
-        const created = await createDayAction({ date, title, slug, key: writeKey });
-        setPlan((prev: PlanData) => ({
-            ...prev,
-            days: [...prev.days, { ...created, meals: [] }],
-        }));
-        return created.id;
+        try {
+            const created = await createDayAction({ date, title, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: [...prev.days, { ...created, meals: [] }].sort((a, b) => a.date.localeCompare(b.date)),
+            }));
+            return created.id;
+        } catch (error) {
+            console.error("Failed to create day:", error);
+            alert("Erreur lors de la création du jour. Vérifiez les logs console.");
+            return 0;
+        }
     };
 
     const handleCreateDayWithMeals = (date: string, title: string | undefined, meals: string[]) => {
         if (readOnly) return;
         startTransition(async () => {
-            const created = await createDayWithMealsAction({ date, title, meals, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                days: [...prev.days, created],
-            }));
-            setSheet(null);
+            try {
+                const created = await createDayWithMealsAction({ date, title, meals, slug, key: writeKey });
+                setPlan((prev: PlanData) => ({
+                    ...prev,
+                    days: [...prev.days, created].sort((a, b) => a.date.localeCompare(b.date)),
+                }));
+                setSheet(null);
+                setSuccessMessage("Nouveau jour créé avec succès ✨");
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to create day with meals:", error);
+                alert("Erreur lors de la création du jour avec repas.");
+            }
         });
     };
 
