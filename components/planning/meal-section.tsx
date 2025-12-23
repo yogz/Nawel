@@ -44,11 +44,11 @@ export function MealSection({
     <section
       ref={setNodeRef}
       className={clsx(
-        "premium-card glass p-6 overflow-hidden transition-all",
+        "premium-card glass p-3 sm:p-6 overflow-hidden transition-all",
         isOver && isDraggingFromOtherMeal && "ring-2 ring-accent ring-offset-2 bg-accent/5"
       )}
     >
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2 sm:mb-3 flex items-center justify-between">
         <h3 className="text-lg font-semibold">{meal.title}</h3>
         {!readOnly && filter.type === "all" && (
           <button
@@ -60,17 +60,17 @@ export function MealSection({
           </button>
         )}
       </div>
-             {filteredItems.map((item) => (
-               <ItemRow
-                 key={item.id}
-                 item={item}
-                 person={people.find((p) => p.id === item.personId) || item.person}
-                 onAssign={() => onAssign(item)}
-                 onDelete={() => onDelete(item)}
-                 readOnly={readOnly}
-                 allPeopleNames={people.map(p => p.name)}
-               />
-             ))}
+      {filteredItems.map((item) => (
+        <ItemRow
+          key={item.id}
+          item={item}
+          person={people.find((p) => p.id === item.personId) || item.person}
+          onAssign={() => onAssign(item)}
+          onDelete={() => onDelete(item)}
+          readOnly={readOnly}
+          allPeopleNames={people.map(p => p.name)}
+        />
+      ))}
       {meal.items.length === 0 && (
         <p className={clsx("text-sm text-gray-500", isOver && isDraggingFromOtherMeal && "text-accent font-semibold")}>
           {isOver && isDraggingFromOtherMeal ? "Déposez ici pour déplacer l'article" : "Aucun ingrédient pour l'instant."}

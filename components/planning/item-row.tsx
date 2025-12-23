@@ -45,11 +45,11 @@ export function ItemRow({
       }}
       {...listeners}
       {...attributes}
-      className="mb-2 flex items-center gap-3 rounded-2xl bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-black/[0.03] cursor-pointer group hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-200"
+      className="mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3 rounded-2xl bg-white p-3 sm:p-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-black/[0.03] cursor-pointer group hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-200"
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-base font-bold text-text truncate group-hover:text-accent transition-colors">
+          <p className="text-base font-bold text-text group-hover:text-accent transition-colors">
             {item.name}
           </p>
           <div className="shrink-0">
