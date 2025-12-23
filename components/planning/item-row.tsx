@@ -60,7 +60,7 @@ export function ItemRow({
                 className="flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-black text-accent border border-accent/10 transition-all active:scale-90 hover:bg-accent hover:text-white"
               >
                 <span className="text-sm">{getPersonEmoji(person.name, allPeopleNames, person.emoji)}</span>
-                <span className="hidden sm:inline">{person.name}</span>
+                <span className="inline-block max-w-[80px] truncate sm:max-w-none">{person.name}</span>
               </button>
             ) : (
               <button
