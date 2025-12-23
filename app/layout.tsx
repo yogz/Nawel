@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
@@ -30,6 +31,7 @@ export default function RootLayout({
           {children}
           <SnowOverlay />
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
