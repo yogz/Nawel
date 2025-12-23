@@ -94,7 +94,7 @@ export function PlanningTab({
             {!readOnly && planningFilter.type === "all" && plan.days.length > 0 && (
                 <div className="mt-8 px-4">
                     <button
-                        onClick={() => onCreateMeal(plan.days[0]?.id)}
+                        onClick={() => onCreateMeal(plan.days[0]?.id ?? -1)}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 hover:bg-white/80 transition-colors"
                     >
                         <PlusIcon />

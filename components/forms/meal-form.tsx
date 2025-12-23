@@ -21,7 +21,11 @@ export function MealForm({
     onSubmit: (dayId: number, title: string, newDayDate?: string, newDayTitle?: string) => Promise<void>;
     readOnly?: boolean;
 }) {
-    const [dayId, setDayId] = useState<string>(defaultDayId ? String(defaultDayId) : (forceNewDay ? "new" : (days[0]?.id ? String(days[0].id) : "new")));
+    const [dayId, setDayId] = useState<string>(
+        defaultDayId !== undefined && defaultDayId !== -1
+            ? String(defaultDayId)
+            : (forceNewDay || days.length === 0 ? "new" : String(days[0].id))
+    );
     const [title, setTitle] = useState("");
     const [newDayDate, setNewDayDate] = useState("");
     const [newDayTitle, setNewDayTitle] = useState("");
@@ -62,7 +66,7 @@ export function MealForm({
                         <Label htmlFor="date">Date</Label>
                         <Input
                             id="date"
-                            type="date"
+                            placeholder="ex: 24/12"
                             value={newDayDate}
                             onChange={(e) => setNewDayDate(e.target.value)}
                             disabled={readOnly}

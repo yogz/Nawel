@@ -263,7 +263,7 @@ export function Organizer({
             onAssign={(item: Item, mealId: number) => setSheet({ type: "item", mealId, item })}
             onDelete={handleDelete}
             onCreateItem={(mealId: number) => setSheet({ type: "item", mealId })}
-            onCreateMeal={() => setSheet({ type: "meal", dayId: plan.days[0]?.id })}
+            onCreateMeal={() => setSheet({ type: "meal", dayId: plan.days[0]?.id ?? -1 })}
             setSheet={setSheet}
           />
         )}
