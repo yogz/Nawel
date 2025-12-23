@@ -1,24 +1,30 @@
 import { z } from "zod";
 
+const dateSchema = z.union([z.string(), z.date()]).transform((val) => {
+    if (val instanceof Date) return val.toISOString().split('T')[0];
+    return val;
+}).refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" });
+
+
 export const baseInput = z.object({
     key: z.string().optional(),
     slug: z.string(),
 });
 
 export const createDaySchema = baseInput.extend({
-    date: z.string().min(1, "Date required"),
+    date: dateSchema,
     title: z.string().optional(),
 });
 
 export const createDayWithMealsSchema = baseInput.extend({
-    date: z.string().min(1, "Date required"),
+    date: dateSchema,
     title: z.string().optional(),
     meals: z.array(z.string()).min(1, "At least one meal required"),
 });
 
 export const updateDaySchema = baseInput.extend({
     id: z.number(),
-    date: z.string().optional(),
+    date: dateSchema.optional(),
     title: z.string().optional().nullable(),
 });
 

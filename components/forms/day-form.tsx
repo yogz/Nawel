@@ -5,6 +5,12 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_MEAL_TYPES = [
     { id: "apero", label: "Apéro" },
@@ -23,7 +29,7 @@ const PRECISION_OPTIONS = [
 ];
 
 export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
-    const [date, setDate] = useState(day?.date || "");
+    const [date, setDate] = useState<Date | undefined>(day?.date ? new Date(day.date) : undefined);
     const [title, setTitle] = useState(day?.title || "");
     const [precision, setPrecision] = useState("");
     const [hour, setHour] = useState("");
@@ -33,8 +39,13 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!date) return;
+
+        // On envoie le format YYYY-MM-DD
+        const formattedDate = format(date, "yyyy-MM-dd");
+
         if (day) {
-            onSubmit(date, title);
+            onSubmit(formattedDate, title);
         } else {
             let finalTitle = title;
             const precisionPart = hour ? hour : precision;
@@ -43,7 +54,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
             }
 
             const mealsToCreate = combineMeals ? ["Repas"] : selectedMeals.map(id => DEFAULT_MEAL_TYPES.find(m => m.id === id)?.label || id);
-            onSubmit(date, finalTitle, mealsToCreate);
+            onSubmit(formattedDate, finalTitle, mealsToCreate);
         }
     };
 
@@ -57,14 +68,30 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="date">Date (ex: 24/12)</Label>
-                    <Input
-                        id="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        placeholder="24/12"
-                        required
-                    />
+                    <Label htmlFor="date">Date</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-start text-left font-normal h-12 rounded-2xl",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? format(date, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 rounded-2xl shadow-xl" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                initialFocus
+                                locale={fr}
+                            />
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="title">Nom (optionnel)</Label>
@@ -73,6 +100,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Réveillon"
+                        className="rounded-2xl h-12"
                     />
                 </div>
 
@@ -97,7 +125,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                                 <div className="flex items-center gap-2 ml-auto">
                                     <span className="text-xs text-gray-400">ou heure:</span>
                                     <Input
-                                        className="w-20 h-9"
+                                        className="w-20 h-9 rounded-xl"
                                         placeholder="20h"
                                         value={hour}
                                         onChange={(e) => setHour(e.target.value)}
@@ -147,7 +175,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
             </div>
 
             <div className="flex flex-col gap-3 pt-2">
-                <Button type="submit" className="w-full rounded-2xl bg-accent text-white hover:bg-accent/90 h-12 text-base font-bold shadow-lg shadow-accent/20">
+                <Button type="submit" disabled={!date} className="w-full rounded-2xl bg-accent text-white hover:bg-accent/90 h-12 text-base font-bold shadow-lg shadow-accent/20">
                     {day ? "Mettre à jour" : "Créer le jour"}
                 </Button>
                 {day && onDelete && (

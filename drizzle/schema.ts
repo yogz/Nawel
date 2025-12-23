@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, integer, timestamp, real, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, varchar, text, integer, timestamp, real, index, date } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const events = pgTable(
@@ -23,7 +23,7 @@ export const days = pgTable(
     eventId: integer("event_id")
       .notNull()
       .references(() => events.id, { onDelete: "cascade" }),
-    date: varchar("date", { length: 10 }).notNull(),
+    date: date("date").notNull(),
     title: text("title"),
   },
   (table) => ({

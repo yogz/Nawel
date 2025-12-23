@@ -1,0 +1,1 @@
+ALTER TABLE "days" ALTER COLUMN "date" SET DATA TYPE varchar(50);
