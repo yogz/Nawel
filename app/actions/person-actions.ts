@@ -43,7 +43,9 @@ export async function deletePersonAction(input: z.infer<typeof deletePersonSchem
     await db.update(items).set({ personId: null }).where(eq(items.personId, input.id));
 
     const [deleted] = await db.delete(people).where(eq(people.id, input.id)).returning();
-    await logChange("delete", "people", deleted.id, deleted, null);
+    if (deleted) {
+        await logChange("delete", "people", deleted.id, deleted, null);
+    }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
 }

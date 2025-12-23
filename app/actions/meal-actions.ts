@@ -35,7 +35,9 @@ export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
 export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(meals).where(eq(meals.id, input.id)).returning();
-    await logChange("delete", "meals", deleted.id, deleted, null);
+    if (deleted) {
+        await logChange("delete", "meals", deleted.id, deleted, null);
+    }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
 }

@@ -112,9 +112,17 @@ export function useEventHandlers({
 
     const handleDelete = (item: Item) => {
         if (readOnly) return;
+        const previousPlan = plan;
         setMealItems(item.mealId, (items) => items.filter((i) => i.id !== item.id));
+        setSheet(null);
         startTransition(async () => {
-            await deleteItemAction({ id: item.id, slug, key: writeKey });
+            try {
+                await deleteItemAction({ id: item.id, slug, key: writeKey });
+            } catch (error) {
+                console.error("Failed to delete item:", error);
+                setPlan(previousPlan);
+                alert("Erreur lors de la suppression de l'article.");
+            }
         });
     };
 
@@ -190,16 +198,23 @@ export function useEventHandlers({
     const handleDeleteMeal = (id: number) => {
         if (readOnly) return;
         if (!confirm("Supprimer ce repas et tous ses articles ?")) return;
+        const previousPlan = plan;
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            days: prev.days.map((d) => ({
+                ...d,
+                meals: d.meals.filter((m) => m.id !== id),
+            })),
+        }));
+        setSheet(null);
         startTransition(async () => {
-            await deleteMealAction({ id, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                days: prev.days.map((d) => ({
-                    ...d,
-                    meals: d.meals.filter((m) => m.id !== id),
-                })),
-            }));
-            setSheet(null);
+            try {
+                await deleteMealAction({ id, slug, key: writeKey });
+            } catch (error) {
+                console.error("Failed to delete meal:", error);
+                setPlan(previousPlan);
+                alert("Erreur lors de la suppression du repas.");
+            }
         });
     };
 
@@ -218,13 +233,20 @@ export function useEventHandlers({
     const handleDeleteDay = (id: number) => {
         if (readOnly) return;
         if (!confirm("Supprimer ce jour et tous ses repas ?")) return;
+        const previousPlan = plan;
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            days: prev.days.filter((d) => d.id !== id),
+        }));
+        setSheet(null);
         startTransition(async () => {
-            await deleteDayAction({ id, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                days: prev.days.filter((d) => d.id !== id),
-            }));
-            setSheet(null);
+            try {
+                await deleteDayAction({ id, slug, key: writeKey });
+            } catch (error) {
+                console.error("Failed to delete day:", error);
+                setPlan(previousPlan);
+                alert("Erreur lors de la suppression du jour.");
+            }
         });
     };
 
@@ -262,21 +284,29 @@ export function useEventHandlers({
 
     const handleDeletePerson = (id: number) => {
         if (readOnly) return;
-        startTransition(async () => {
-            if (!confirm("Es-tu sûr de vouloir supprimer ce convive ? Tous ses articles deviendront 'À prévoir'.")) return;
-            await deletePersonAction({ id, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                people: prev.people.filter((p) => p.id !== id),
-                days: prev.days.map((day) => ({
-                    ...day,
-                    meals: day.meals.map((meal) => ({
-                        ...meal,
-                        items: meal.items.map((item) => (item.personId === id ? { ...item, personId: null, person: null } : item)),
-                    })),
+        if (!confirm("Es-tu sûr de vouloir supprimer ce convive ? Tous ses articles deviendront 'À prévoir'.")) return;
+        const previousPlan = plan;
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            people: prev.people.filter((p) => p.id !== id),
+            days: prev.days.map((day) => ({
+                ...day,
+                meals: day.meals.map((meal) => ({
+                    ...meal,
+                    items: meal.items.map((item) => (item.personId === id ? { ...item, personId: null, person: null } : item)),
                 })),
-            }));
-            setSheet(null);
+            })),
+        }));
+        setSheet(null);
+
+        startTransition(async () => {
+            try {
+                await deletePersonAction({ id, slug, key: writeKey });
+            } catch (error) {
+                console.error("Failed to delete person:", error);
+                setPlan(previousPlan);
+                alert("Erreur lors de la suppression du convive.");
+            }
         });
     };
 

@@ -35,7 +35,9 @@ export async function updateDayAction(input: z.infer<typeof updateDaySchema>) {
 export async function deleteDayAction(input: z.infer<typeof baseInput> & { id: number }) {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(days).where(eq(days.id, input.id)).returning();
-    await logChange("delete", "days", deleted.id, deleted, null);
+    if (deleted) {
+        await logChange("delete", "days", deleted.id, deleted, null);
+    }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
 }

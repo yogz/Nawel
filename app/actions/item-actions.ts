@@ -63,7 +63,9 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
 export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
-    await logChange("delete", "items", deleted.id, deleted, null);
+    if (deleted) {
+        await logChange("delete", "items", deleted.id, deleted, null);
+    }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
 }
