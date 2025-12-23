@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllEventsAction, createEventAction } from "./actions";
+import { getAllEventsAction, createEventAction } from "@/app/actions";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventList } from "@/components/event-list";
 
