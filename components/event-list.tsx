@@ -153,7 +153,7 @@ function EventForm({
       name.trim(),
       description.trim() || undefined,
       withDefaultMeals,
-      withDefaultMeals ? date : undefined,
+      date, // Pass the date regardless of withDefaultMeals
       passwordMode === "manual" ? customPassword : undefined
     );
   };
@@ -161,24 +161,38 @@ function EventForm({
   return (
     <BottomSheet open={true} onClose={onClose} title="Nouvel événement">
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* 1. Titre de l'événement */}
-        <label className="block space-y-2">
-          <span className="text-sm font-bold text-gray-900">Nom de l&apos;événement</span>
-          <input
-            className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg outline-none focus:border-accent focus:bg-white transition-all shadow-sm"
-            value={name}
-            onChange={(e) => {
-              const newName = e.target.value;
-              setName(newName);
-              if (!isSlugManuallyEdited) {
-                setSlug(generateSlug(newName));
-              }
-            }}
-            placeholder="Noël en Famille 2024"
-            required
-            autoFocus
-          />
-        </label>
+        {/* 1. Titre et Date */}
+        <div className="space-y-4">
+          <label className="block space-y-2">
+            <span className="text-sm font-bold text-gray-900">Nom de l&apos;événement</span>
+            <input
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg outline-none focus:border-accent focus:bg-white transition-all shadow-sm"
+              value={name}
+              onChange={(e) => {
+                const newName = e.target.value;
+                setName(newName);
+                if (!isSlugManuallyEdited) {
+                  setSlug(generateSlug(newName));
+                }
+              }}
+              placeholder="Noël en Famille 2024"
+              required
+              autoFocus
+            />
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-bold text-gray-900">Date de l&apos;événement</span>
+            <input
+              type="date"
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg outline-none focus:border-accent focus:bg-white transition-all shadow-sm appearance-none"
+              style={{ minHeight: '3rem' }} // Ensure good tap target size on mobile
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
+          </label>
+        </div>
 
         {/* 2. Mot de passe */}
         <div className="space-y-3">
@@ -188,8 +202,8 @@ function EventForm({
               type="button"
               onClick={() => setPasswordMode("auto")}
               className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${passwordMode === "auto"
-                ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                : "border-gray-100 bg-white hover:border-gray-200"
+                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
+                  : "border-gray-100 bg-white hover:border-gray-200"
                 }`}
             >
               <div className="flex items-center gap-2">
@@ -204,8 +218,8 @@ function EventForm({
               type="button"
               onClick={() => setPasswordMode("manual")}
               className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${passwordMode === "manual"
-                ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                : "border-gray-100 bg-white hover:border-gray-200"
+                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
+                  : "border-gray-100 bg-white hover:border-gray-200"
                 }`}
             >
               <div className="flex items-center gap-2">
@@ -221,7 +235,7 @@ function EventForm({
           {passwordMode === "manual" && (
             <div className="animate-in fade-in slide-in-from-top-1">
               <input
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:border-accent transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none focus:border-accent transition-all"
                 value={customPassword}
                 onChange={(e) => setCustomPassword(e.target.value)}
                 placeholder="Ex: mon-code-secret"
@@ -239,8 +253,8 @@ function EventForm({
               type="button"
               onClick={() => setWithDefaultMeals(true)}
               className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${withDefaultMeals
-                ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                : "border-gray-100 bg-white hover:border-gray-200"
+                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
+                  : "border-gray-100 bg-white hover:border-gray-200"
                 }`}
             >
               <div className="flex items-center gap-2">
@@ -255,8 +269,8 @@ function EventForm({
               type="button"
               onClick={() => setWithDefaultMeals(false)}
               className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${!withDefaultMeals
-                ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                : "border-gray-100 bg-white hover:border-gray-200"
+                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
+                  : "border-gray-100 bg-white hover:border-gray-200"
                 }`}
             >
               <div className="flex items-center gap-2">
@@ -268,21 +282,6 @@ function EventForm({
               <span className="text-[10px] text-gray-500">Vide</span>
             </button>
           </div>
-
-          {withDefaultMeals && (
-            <div className="pt-1 animate-in fade-in slide-in-from-top-1">
-              <label className="block space-y-1">
-                <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Date du repas</span>
-                <input
-                  type="date"
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent bg-white transition-colors"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required={withDefaultMeals}
-                />
-              </label>
-            </div>
-          )}
         </div>
 
         {/* Options avancées (Slug/Description) */}
