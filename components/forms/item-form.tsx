@@ -6,9 +6,8 @@ import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Euro, Scale, MessageSquare, ArrowRightLeft } from "lucide-react";
+import { Trash2, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 
 export function ItemForm({
@@ -36,7 +35,10 @@ export function ItemForm({
     const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
     const [note, setNote] = useState(defaultItem?.note || "");
     const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
+    const [showDetails, setShowDetails] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const isEditMode = !!defaultItem;
 
     // Auto-save logic for existing items
     useEffect(() => {
@@ -75,134 +77,145 @@ export function ItemForm({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="item-name">Nom de l&apos;article</Label>
-                    <Input
-                        id="item-name"
-                        placeholder="Ex: Fromage, Vin rouge, Bûche..."
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        disabled={readOnly}
-                        autoFocus={!defaultItem}
-                    />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="item-quantity" className="flex items-center gap-1.5">
-                            <Scale size={14} className="text-gray-400" /> Quantité
-                        </Label>
-                        <Input
-                            id="item-quantity"
-                            placeholder="Ex: 2kg, 3 bouteilles"
-                            value={quantity}
-                            onChange={(e) => setQuantity(e.target.value)}
-                            disabled={readOnly}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="item-price" className="flex items-center gap-1.5">
-                            <Euro size={14} className="text-gray-400" /> Prix approx.
-                        </Label>
-                        <Input
-                            id="item-price"
-                            type="number"
-                            inputMode="decimal"
-                            placeholder="0.00"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            disabled={readOnly}
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="item-note" className="flex items-center gap-1.5">
-                        <MessageSquare size={14} className="text-gray-400" /> Note ou préférence
-                    </Label>
-                    <Textarea
-                        id="item-note"
-                        placeholder="Marque, allergies, détails..."
-                        value={note}
-                        onChange={(e) => setNote(e.target.value)}
-                        disabled={readOnly}
-                        rows={2}
-                    />
-                </div>
+        <div className="space-y-4">
+            {/* Name - always visible */}
+            <div className="space-y-2">
+                <Label htmlFor="item-name">Article</Label>
+                <Input
+                    id="item-name"
+                    placeholder="Ex: Fromage, Vin rouge, Bûche..."
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={readOnly}
+                    autoFocus={!defaultItem}
+                    className="h-12 rounded-2xl text-base"
+                />
             </div>
 
-            <div className="space-y-4 pt-4 border-t border-black/[0.05]">
-                <div className="space-y-3">
-                    <Label className="text-xs font-black uppercase tracking-widest text-gray-400">Assigner à quelqu&apos;un</Label>
-                    <div className="grid grid-cols-3 gap-2">
+            {/* Quick details row */}
+            <div className="flex gap-2">
+                <Input
+                    placeholder="Qté (ex: 2kg)"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    disabled={readOnly}
+                    className="flex-1 h-11 rounded-xl text-sm"
+                />
+                <Input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="Prix €"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    disabled={readOnly}
+                    className="w-24 h-11 rounded-xl text-sm"
+                />
+            </div>
+
+            {/* Assign to person - compact horizontal scroll on mobile */}
+            <div className="space-y-2">
+                <Label className="text-xs text-gray-400">Qui s&apos;en occupe ?</Label>
+                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 no-scrollbar">
+                    <button
+                        onClick={() => onAssign(null)}
+                        className={clsx(
+                            "flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-all shrink-0",
+                            !defaultItem?.personId
+                                ? "bg-amber-100 text-amber-900 ring-2 ring-amber-200"
+                                : "bg-gray-50 text-gray-500"
+                        )}
+                    >
+                        <span className="text-lg">🥘</span>
+                        <span className="text-[9px] font-bold whitespace-nowrap">À prévoir</span>
+                    </button>
+                    {people.map((person) => (
                         <button
-                            onClick={() => onAssign(null)}
+                            key={person.id}
+                            onClick={() => onAssign(person.id)}
                             className={clsx(
-                                "flex flex-col items-center justify-center gap-1.5 rounded-2xl p-3 transition-all",
-                                !defaultItem?.personId ? "bg-amber-100 text-amber-900 shadow-sm ring-2 ring-amber-200" : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                                "flex flex-col items-center gap-1 rounded-xl px-3 py-2 transition-all shrink-0 min-w-[60px]",
+                                defaultItem?.personId === person.id
+                                    ? "bg-accent text-white ring-2 ring-accent/20"
+                                    : "bg-gray-50 text-gray-600"
                             )}
                         >
-                            <span className="text-xl">🥘</span>
-                            <span className="text-[10px] font-bold uppercase tracking-tight">À prévoir</span>
+                            <span className="text-lg">{getPersonEmoji(person.name, people.map(p => p.name), person.emoji)}</span>
+                            <span className="text-[9px] font-bold truncate max-w-[50px]">{person.name}</span>
                         </button>
-                        {people.map((person) => (
-                            <button
-                                key={person.id}
-                                onClick={() => onAssign(person.id)}
-                                className={clsx(
-                                    "flex flex-col items-center justify-center gap-1.5 rounded-2xl p-3 transition-all",
-                                    defaultItem?.personId === person.id ? "bg-accent text-white shadow-md ring-2 ring-accent/20" : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-                                )}
-                            >
-                                <span className="text-xl">{getPersonEmoji(person.name, people.map(p => p.name), person.emoji)}</span>
-                                <span className="w-full truncate text-[10px] font-bold uppercase tracking-tight text-center">{person.name}</span>
-                            </button>
-                        ))}
-                    </div>
+                    ))}
                 </div>
-
-                {defaultItem && allMeals && allMeals.length > 1 && (
-                    <div className="space-y-2">
-                        <Label className="text-xs font-black uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
-                            <ArrowRightLeft size={12} /> Déplacer vers un autre service
-                        </Label>
-                        <Select
-                            value={currentMealId?.toString()}
-                            onValueChange={(val) => onMoveMeal?.(Number(val))}
-                            disabled={readOnly}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Changer de service" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {allMeals.map((m) => (
-                                    <SelectItem key={m.id} value={m.id.toString()}>
-                                        {m.dayTitle} • {m.title}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                )}
             </div>
 
-            {!defaultItem && (
-                <Button className="w-full" onClick={handleSubmit} disabled={readOnly || !name.trim()}>
-                    Ajouter cet article 🎁
-                </Button>
+            {/* Expandable details */}
+            <button
+                type="button"
+                onClick={() => setShowDetails(!showDetails)}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600"
+            >
+                <ChevronDown className={clsx("w-4 h-4 transition-transform", showDetails && "rotate-180")} />
+                {showDetails ? "Moins d'options" : "Plus d'options"}
+            </button>
+
+            {showDetails && (
+                <div className="space-y-3 pt-2 border-t border-gray-100">
+                    {/* Note */}
+                    <div className="space-y-1">
+                        <Label className="text-xs text-gray-400">Note</Label>
+                        <Input
+                            placeholder="Marque, allergies, détails..."
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                            disabled={readOnly}
+                            className="h-10 rounded-xl text-sm"
+                        />
+                    </div>
+
+                    {/* Move to another meal */}
+                    {isEditMode && allMeals && allMeals.length > 1 && (
+                        <div className="space-y-1">
+                            <Label className="text-xs text-gray-400">Déplacer</Label>
+                            <Select
+                                value={currentMealId?.toString()}
+                                onValueChange={(val) => onMoveMeal?.(Number(val))}
+                                disabled={readOnly}
+                            >
+                                <SelectTrigger className="rounded-xl">
+                                    <SelectValue placeholder="Autre service" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allMeals.map((m) => (
+                                        <SelectItem key={m.id} value={m.id.toString()}>
+                                            {m.dayTitle} • {m.title}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
+                    {/* Delete button */}
+                    {isEditMode && onDelete && (
+                        <Button
+                            variant="ghost"
+                            className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 rounded-xl h-10"
+                            onClick={onDelete}
+                            disabled={readOnly}
+                        >
+                            <Trash2 size={14} className="mr-1.5" />
+                            Supprimer
+                        </Button>
+                    )}
+                </div>
             )}
 
-            {defaultItem && onDelete && (
+            {/* Add button for new items */}
+            {!isEditMode && (
                 <Button
-                    variant="ghost"
-                    className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 rounded-2xl"
-                    onClick={onDelete}
-                    disabled={readOnly}
+                    className="w-full h-12 rounded-2xl text-base"
+                    onClick={handleSubmit}
+                    disabled={readOnly || !name.trim()}
                 >
-                    <Trash2 size={16} className="mr-2" />
-                    Supprimer cet article
+                    Ajouter
                 </Button>
             )}
         </div>
