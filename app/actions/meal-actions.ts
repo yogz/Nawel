@@ -8,8 +8,9 @@ import { meals } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import { createMealSchema, mealSchema, deleteMealSchema } from "./schemas";
+import { withErrorThrower } from "@/lib/action-utils";
 
-export async function createMealAction(input: z.infer<typeof createMealSchema>) {
+export const createMealAction = withErrorThrower(async (input: z.infer<typeof createMealSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [created] = await db
         .insert(meals)
@@ -18,9 +19,9 @@ export async function createMealAction(input: z.infer<typeof createMealSchema>) 
     await logChange("create", "meals", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
-}
+});
 
-export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
+export const updateMealTitleAction = withErrorThrower(async (input: z.infer<typeof mealSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(meals)
@@ -30,9 +31,9 @@ export async function updateMealTitleAction(input: z.infer<typeof mealSchema>) {
     await logChange("update", "meals", updated.id, null, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
-}
+});
 
-export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) {
+export const deleteMealAction = withErrorThrower(async (input: z.infer<typeof deleteMealSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(meals).where(eq(meals.id, input.id)).returning();
     if (deleted) {
@@ -40,4 +41,5 @@ export async function deleteMealAction(input: z.infer<typeof deleteMealSchema>) 
     }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
+

@@ -6,6 +6,7 @@ import { assertWriteAccess } from "@/lib/auth";
 import { events, changeLogs, people, days, meals, items } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { validateSchema, getChangeLogsSchema } from "./schemas";
+import { withErrorThrower } from "@/lib/action-utils";
 
 // Helper to verify access against event by slug
 export async function verifyEventAccess(slug: string, key?: string | null) {
@@ -15,14 +16,14 @@ export async function verifyEventAccess(slug: string, key?: string | null) {
     return event;
 }
 
-export async function validateWriteKeyAction(input: z.infer<typeof validateSchema>) {
+export const validateWriteKeyAction = withErrorThrower(async (input: z.infer<typeof validateSchema>) => {
     if (!input.slug) return false;
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
     if (!event || !event.adminKey) return false;
     return input.key === event.adminKey;
-}
+});
 
-export async function getChangeLogsAction(input: z.infer<typeof getChangeLogsSchema>) {
+export const getChangeLogsAction = withErrorThrower(async (input: z.infer<typeof getChangeLogsSchema>) => {
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
     if (!event) return [];
 
@@ -92,4 +93,5 @@ export async function getChangeLogsAction(input: z.infer<typeof getChangeLogsSch
         oldData: log.oldData ? JSON.parse(log.oldData) : null,
         newData: log.newData ? JSON.parse(log.newData) : null,
     }));
-}
+});
+

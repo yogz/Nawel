@@ -9,8 +9,9 @@ import { eq } from "drizzle-orm";
 import { meals } from "@/drizzle/schema";
 import { verifyEventAccess } from "./shared";
 import { createDaySchema, updateDaySchema, createDayWithMealsSchema, baseInput } from "./schemas";
+import { withErrorThrower } from "@/lib/action-utils";
 
-export async function createDayAction(input: z.infer<typeof createDaySchema>) {
+export const createDayAction = withErrorThrower(async (input: z.infer<typeof createDaySchema>) => {
     const event = await verifyEventAccess(input.slug, input.key);
     const [created] = await db
         .insert(days)
@@ -19,9 +20,9 @@ export async function createDayAction(input: z.infer<typeof createDaySchema>) {
     await logChange("create", "days", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
-}
+});
 
-export async function createDayWithMealsAction(input: z.infer<typeof createDayWithMealsSchema>) {
+export const createDayWithMealsAction = withErrorThrower(async (input: z.infer<typeof createDayWithMealsSchema>) => {
     const event = await verifyEventAccess(input.slug, input.key);
 
     const result = await db.transaction(async (tx) => {
@@ -50,9 +51,9 @@ export async function createDayWithMealsAction(input: z.infer<typeof createDayWi
 
     revalidatePath(`/event/${input.slug}`);
     return { ...result.day, meals: result.createdMeals };
-}
+});
 
-export async function updateDayAction(input: z.infer<typeof updateDaySchema>) {
+export const updateDayAction = withErrorThrower(async (input: z.infer<typeof updateDaySchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(days)
@@ -62,9 +63,9 @@ export async function updateDayAction(input: z.infer<typeof updateDaySchema>) {
     await logChange("update", "days", updated.id, null, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
-}
+});
 
-export async function deleteDayAction(input: z.infer<typeof baseInput> & { id: number }) {
+export const deleteDayAction = withErrorThrower(async (input: z.infer<typeof baseInput> & { id: number }) => {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(days).where(eq(days.id, input.id)).returning();
     if (deleted) {
@@ -72,4 +73,5 @@ export async function deleteDayAction(input: z.infer<typeof baseInput> & { id: n
     }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
+

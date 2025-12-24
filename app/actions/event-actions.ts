@@ -10,8 +10,9 @@ import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
 import { createEventSchema, deleteEventSchema } from "./schemas";
 import { createDayWithMealsAction } from "./day-actions";
+import { withErrorThrower } from "@/lib/action-utils";
 
-export async function createEventAction(input: z.infer<typeof createEventSchema>) {
+export const createEventAction = withErrorThrower(async (input: z.infer<typeof createEventSchema>) => {
     // Check for slug uniqueness
     const existing = await db.query.events.findFirst({
         where: eq(events.slug, input.slug),
@@ -63,16 +64,16 @@ export async function createEventAction(input: z.infer<typeof createEventSchema>
 
     revalidatePath("/");
     return created;
-}
+});
 
-export async function getAllEventsAction() {
+export const getAllEventsAction = withErrorThrower(async () => {
     return await db
         .select()
         .from(events)
         .orderBy(desc(events.createdAt));
-}
+});
 
-export async function deleteEventAction(input: z.infer<typeof deleteEventSchema>) {
+export const deleteEventAction = withErrorThrower(async (input: z.infer<typeof deleteEventSchema>) => {
     const event = await verifyEventAccess(input.slug, input.key);
 
     // Log deletion before removing the record
@@ -82,4 +83,5 @@ export async function deleteEventAction(input: z.infer<typeof deleteEventSchema>
 
     revalidatePath("/");
     return { success: true };
-}
+});
+

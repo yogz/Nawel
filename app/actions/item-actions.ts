@@ -15,8 +15,9 @@ import {
     reorderSchema,
     moveItemSchema,
 } from "./schemas";
+import { withErrorThrower } from "@/lib/action-utils";
 
-export async function createItemAction(input: z.infer<typeof createItemSchema>) {
+export const createItemAction = withErrorThrower(async (input: z.infer<typeof createItemSchema>) => {
     await verifyEventAccess(input.slug, input.key);
 
     // Atomique: évite les race conditions
@@ -41,9 +42,9 @@ export async function createItemAction(input: z.infer<typeof createItemSchema>) 
     await logChange("create", "items", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
-}
+});
 
-export async function updateItemAction(input: z.infer<typeof updateItemSchema>) {
+export const updateItemAction = withErrorThrower(async (input: z.infer<typeof updateItemSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(items)
@@ -59,9 +60,9 @@ export async function updateItemAction(input: z.infer<typeof updateItemSchema>) 
     await logChange("update", "items", updated.id, null, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
-}
+});
 
-export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) {
+export const deleteItemAction = withErrorThrower(async (input: z.infer<typeof deleteItemSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
     if (deleted) {
@@ -69,9 +70,9 @@ export async function deleteItemAction(input: z.infer<typeof deleteItemSchema>) 
     }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
 
-export async function assignItemAction(input: z.infer<typeof assignItemSchema>) {
+export const assignItemAction = withErrorThrower(async (input: z.infer<typeof assignItemSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(items)
@@ -81,9 +82,9 @@ export async function assignItemAction(input: z.infer<typeof assignItemSchema>) 
     await logChange("update", "items", updated.id, null, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
-}
+});
 
-export async function reorderItemsAction(input: z.infer<typeof reorderSchema>) {
+export const reorderItemsAction = withErrorThrower(async (input: z.infer<typeof reorderSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     await db.transaction(async (tx) => {
         for (let i = 0; i < input.itemIds.length; i++) {
@@ -92,9 +93,9 @@ export async function reorderItemsAction(input: z.infer<typeof reorderSchema>) {
     });
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
 
-export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
+export const moveItemAction = withErrorThrower(async (input: z.infer<typeof moveItemSchema>) => {
     await verifyEventAccess(input.slug, input.key);
 
     const itemId = input.itemId;
@@ -155,4 +156,5 @@ export async function moveItemAction(input: z.infer<typeof moveItemSchema>) {
 
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
+

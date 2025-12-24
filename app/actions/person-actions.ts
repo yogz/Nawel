@@ -8,8 +8,9 @@ import { people, items } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import { createPersonSchema, updatePersonSchema, deletePersonSchema } from "./schemas";
+import { withErrorThrower } from "@/lib/action-utils";
 
-export async function createPersonAction(input: z.infer<typeof createPersonSchema>) {
+export const createPersonAction = withErrorThrower(async (input: z.infer<typeof createPersonSchema>) => {
     const event = await verifyEventAccess(input.slug, input.key);
     const [created] = await db
         .insert(people)
@@ -22,9 +23,9 @@ export async function createPersonAction(input: z.infer<typeof createPersonSchem
     await logChange("create", "people", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
-}
+});
 
-export async function updatePersonAction(input: z.infer<typeof updatePersonSchema>) {
+export const updatePersonAction = withErrorThrower(async (input: z.infer<typeof updatePersonSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(people)
@@ -34,9 +35,9 @@ export async function updatePersonAction(input: z.infer<typeof updatePersonSchem
     await logChange("update", "people", updated.id, null, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
-}
+});
 
-export async function deletePersonAction(input: z.infer<typeof deletePersonSchema>) {
+export const deletePersonAction = withErrorThrower(async (input: z.infer<typeof deletePersonSchema>) => {
     await verifyEventAccess(input.slug, input.key);
 
     // Unassign items first
@@ -48,4 +49,5 @@ export async function deletePersonAction(input: z.infer<typeof deletePersonSchem
     }
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
-}
+});
+
