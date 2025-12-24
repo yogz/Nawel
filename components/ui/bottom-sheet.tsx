@@ -35,7 +35,7 @@ export function BottomSheet({
             onClick={onClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-xl rounded-t-[2.5rem] bg-surface p-4 sm:p-6 shadow-2xl border-x border-t border-white/20 max-h-[85vh] flex flex-col"
+            className="relative z-10 w-full max-w-xl rounded-t-[2rem] sm:rounded-t-[2.5rem] bg-surface p-4 sm:p-6 shadow-2xl border-x border-t border-white/20 max-h-[90dvh] flex flex-col"
             initial={{ y: 400 }}
             animate={{ y: 0 }}
             exit={{ y: 400 }}

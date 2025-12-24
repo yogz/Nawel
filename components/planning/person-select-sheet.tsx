@@ -19,7 +19,7 @@ export function PersonSelectSheet({
     onClose,
 }: PersonSelectSheetProps) {
     return (
-        <div className="space-y-2 p-1 max-h-96 overflow-y-auto no-scrollbar">
+        <div className="space-y-2 p-1 overflow-y-auto no-scrollbar">
             <button
                 onClick={() => {
                     setPlanningFilter({ type: "all" });

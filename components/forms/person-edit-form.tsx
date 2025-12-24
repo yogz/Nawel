@@ -26,7 +26,7 @@ export function PersonEditForm({
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="edit-person-name">Nom</Label>

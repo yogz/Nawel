@@ -43,7 +43,7 @@ export function OrganizerHeader({
             {readOnly && (
                 <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
                     <ShieldAlert size={16} />
-                    Mode lecture (ajoute ?key=... pour éditer) 🔒
+                    🔒Mode lecture uniquement
                 </div>
             )}
 

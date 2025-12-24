@@ -75,7 +75,7 @@ export function ItemForm({
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div className="space-y-4">
                 <div className="space-y-2">
                     <Label htmlFor="item-name">Nom de l&apos;article</Label>
