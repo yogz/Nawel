@@ -1,7 +1,5 @@
 {
-  "id": "c69b38bc-dbed-4ef0-bdc6-10939b6e896e",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.days": {
@@ -30,7 +28,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.items": {
       "name": "items",
@@ -85,32 +86,35 @@
         "items_meal_id_meals_id_fk": {
           "name": "items_meal_id_meals_id_fk",
           "tableFrom": "items",
-          "tableTo": "meals",
           "columnsFrom": [
             "meal_id"
           ],
+          "tableTo": "meals",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "items_person_id_people_id_fk": {
           "name": "items_person_id_people_id_fk",
           "tableFrom": "items",
-          "tableTo": "people",
           "columnsFrom": [
             "person_id"
           ],
+          "tableTo": "people",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.meals": {
       "name": "meals",
@@ -147,19 +151,22 @@
         "meals_day_id_days_id_fk": {
           "name": "meals_day_id_days_id_fk",
           "tableFrom": "meals",
-          "tableTo": "days",
           "columnsFrom": [
             "day_id"
           ],
+          "tableTo": "days",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.people": {
       "name": "people",
@@ -181,14 +188,23 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "c69b38bc-dbed-4ef0-bdc6-10939b6e896e",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

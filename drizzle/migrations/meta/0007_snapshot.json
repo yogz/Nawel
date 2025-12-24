@@ -1,7 +1,5 @@
 {
-  "id": "ec63f382-7b70-4931-8fca-4d061f16cacc",
-  "prevId": "5a4c04d2-22bb-46f6-9843-95d36a4c1333",
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.change_logs": {
@@ -73,7 +71,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.days": {
       "name": "days",
@@ -106,30 +107,41 @@
       },
       "indexes": {
         "days_event_id_idx": {
-          "name": "days_event_id_idx",
           "columns": [
-            "event_id"
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "days_event_id_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "days_event_id_events_id_fk": {
           "name": "days_event_id_events_id_fk",
           "tableFrom": "days",
-          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
+          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.events": {
       "name": "events",
@@ -175,11 +187,19 @@
       },
       "indexes": {
         "events_created_at_idx": {
-          "name": "events_created_at_idx",
           "columns": [
-            "created_at"
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "events_created_at_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
@@ -187,12 +207,15 @@
       "uniqueConstraints": {
         "events_slug_unique": {
           "name": "events_slug_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "slug"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.items": {
       "name": "items",
@@ -250,50 +273,69 @@
       },
       "indexes": {
         "items_meal_id_idx": {
-          "name": "items_meal_id_idx",
           "columns": [
-            "meal_id"
+            {
+              "expression": "meal_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "items_meal_id_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         },
         "items_person_id_idx": {
-          "name": "items_person_id_idx",
           "columns": [
-            "person_id"
+            {
+              "expression": "person_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "items_person_id_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "items_meal_id_meals_id_fk": {
           "name": "items_meal_id_meals_id_fk",
           "tableFrom": "items",
-          "tableTo": "meals",
           "columnsFrom": [
             "meal_id"
           ],
+          "tableTo": "meals",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "items_person_id_people_id_fk": {
           "name": "items_person_id_people_id_fk",
           "tableFrom": "items",
-          "tableTo": "people",
           "columnsFrom": [
             "person_id"
           ],
+          "tableTo": "people",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.meals": {
       "name": "meals",
@@ -327,30 +369,41 @@
       },
       "indexes": {
         "meals_day_id_idx": {
-          "name": "meals_day_id_idx",
           "columns": [
-            "day_id"
+            {
+              "expression": "day_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "meals_day_id_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "meals_day_id_days_id_fk": {
           "name": "meals_day_id_days_id_fk",
           "tableFrom": "meals",
-          "tableTo": "days",
           "columnsFrom": [
             "day_id"
           ],
+          "tableTo": "days",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.people": {
       "name": "people",
@@ -383,37 +436,54 @@
       },
       "indexes": {
         "people_event_id_idx": {
-          "name": "people_event_id_idx",
           "columns": [
-            "event_id"
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "people_event_id_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {
         "people_event_id_events_id_fk": {
           "name": "people_event_id_events_id_fk",
           "tableFrom": "people",
-          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
+          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "ec63f382-7b70-4931-8fca-4d061f16cacc",
+  "prevId": "5a4c04d2-22bb-46f6-9843-95d36a4c1333",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

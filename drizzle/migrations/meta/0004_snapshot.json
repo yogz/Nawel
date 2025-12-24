@@ -1,7 +1,5 @@
 {
-  "id": "71ae5bc2-f60c-44df-bde7-a55927efe0f3",
-  "prevId": "e84721c0-d7e4-40fd-8bfa-9a128c52f098",
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.change_logs": {
@@ -73,7 +71,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.days": {
       "name": "days",
@@ -109,19 +110,22 @@
         "days_event_id_events_id_fk": {
           "name": "days_event_id_events_id_fk",
           "tableFrom": "days",
-          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
+          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.events": {
       "name": "events",
@@ -165,12 +169,15 @@
       "uniqueConstraints": {
         "events_slug_unique": {
           "name": "events_slug_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "slug"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.items": {
       "name": "items",
@@ -231,32 +238,35 @@
         "items_meal_id_meals_id_fk": {
           "name": "items_meal_id_meals_id_fk",
           "tableFrom": "items",
-          "tableTo": "meals",
           "columnsFrom": [
             "meal_id"
           ],
+          "tableTo": "meals",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "items_person_id_people_id_fk": {
           "name": "items_person_id_people_id_fk",
           "tableFrom": "items",
-          "tableTo": "people",
           "columnsFrom": [
             "person_id"
           ],
+          "tableTo": "people",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.meals": {
       "name": "meals",
@@ -293,19 +303,22 @@
         "meals_day_id_days_id_fk": {
           "name": "meals_day_id_days_id_fk",
           "tableFrom": "meals",
-          "tableTo": "days",
           "columnsFrom": [
             "day_id"
           ],
+          "tableTo": "days",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.people": {
       "name": "people",
@@ -335,26 +348,35 @@
         "people_event_id_events_id_fk": {
           "name": "people_event_id_events_id_fk",
           "tableFrom": "people",
-          "tableTo": "events",
           "columnsFrom": [
             "event_id"
           ],
+          "tableTo": "events",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "71ae5bc2-f60c-44df-bde7-a55927efe0f3",
+  "prevId": "e84721c0-d7e4-40fd-8bfa-9a128c52f098",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }
