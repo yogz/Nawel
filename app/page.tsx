@@ -5,11 +5,10 @@ import { EventList } from "@/components/event-list";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
+export default async function Home(props: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const searchParams = await props.searchParams;
   const events = await getAllEventsAction();
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
 

@@ -8,7 +8,7 @@ export function SnowOverlay() {
     const [isActive, setIsActive] = useState(false);
     const { christmas } = useThemeMode();
     const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
-    const requestRef = useRef<number>();
+    const requestRef = useRef<number | undefined>(undefined);
     const snowFlakesRef = useRef<Snowflake[]>([]);
     const accumulationRef = useRef<number[]>([]);
 

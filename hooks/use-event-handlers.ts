@@ -54,7 +54,7 @@ export function useEventHandlers({
         });
     };
 
-    const handleUpdateItem = (itemId: number, values: any, closeSheet = false) => {
+    const handleUpdateItem = (itemId: number, values: Partial<Item>, closeSheet = false) => {
         if (readOnly) return;
         const found = findItem(itemId);
         if (!found) return;
@@ -81,11 +81,11 @@ export function useEventHandlers({
         if (readOnly) return;
 
         setMealItems(item.mealId, (items) =>
-            items.map((it) => (it.id === item.id ? { ...it, personId, person: personId ? plan.people.find((p: any) => p.id === personId) : null } : it))
+            items.map((it) => (it.id === item.id ? { ...it, personId, person: personId ? plan.people.find((p: Person) => p.id === personId) ?? null : null } : it))
         );
         setSheet(null);
 
-        const person = personId ? plan.people.find((p: any) => p.id === personId) : null;
+        const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
         const personName = person?.name || "À prévoir";
         setSuccessMessage(`Article assigné à ${personName} ✓`);
         setTimeout(() => setSuccessMessage(null), 3000);

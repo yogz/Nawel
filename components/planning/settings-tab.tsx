@@ -2,6 +2,26 @@
 
 import { MessageSquare, Trash2, Sparkles } from "lucide-react";
 
+interface ChangeLog {
+    id: number;
+    action: string;
+    tableName: string;
+    recordId: number;
+    oldData: { name?: string; title?: string } | null;
+    newData: { name?: string; title?: string } | null;
+    createdAt: string;
+    actionType?: string;
+}
+
+interface SettingsTabProps {
+    logsLoading: boolean;
+    logs: ChangeLog[];
+    christmas: boolean;
+    toggleChristmas: () => void;
+    onDeleteEvent: () => void;
+    readOnly: boolean;
+}
+
 export function SettingsTab({
     logsLoading,
     logs,
@@ -9,7 +29,7 @@ export function SettingsTab({
     toggleChristmas,
     onDeleteEvent,
     readOnly
-}: any) {
+}: SettingsTabProps) {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="premium-card p-6 space-y-4">
@@ -40,7 +60,7 @@ export function SettingsTab({
                     </div>
                 ) : (
                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 no-scrollbar">
-                        {logs.map((log: any) => (
+                        {logs.map((log) => (
                             <div key={log.id} className="text-[11px] p-3 rounded-xl bg-gray-50/50 border border-gray-100 hover:border-accent/10 transition-colors">
                                 <div className="flex justify-between items-start mb-1">
                                     <span className="font-black uppercase tracking-tighter text-accent/60 italic">{log.actionType} {log.tableName}</span>

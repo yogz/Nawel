@@ -36,7 +36,7 @@ export function ItemForm({
     const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
     const [note, setNote] = useState(defaultItem?.note || "");
     const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
-    const timerRef = useRef<NodeJS.Timeout>();
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Auto-save logic for existing items
     useEffect(() => {

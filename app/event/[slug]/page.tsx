@@ -6,11 +6,12 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 type Props = {
-  params: { slug: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const plan = await fetchPlan(params.slug);
   return {
     title: `Nawel - ${plan.event?.name || params.slug}`,
@@ -18,8 +19,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-
-export default async function Page({ params, searchParams }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
   const plan = await fetchPlan(params.slug);
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
   const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);

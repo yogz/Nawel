@@ -4,6 +4,34 @@
 
 @layer base {
 
+  /* Theme Aurore - Dégradé subtil rose/violet/bleu */
+  .theme-aurora {
+    --surface: #faf8ff;
+    --muted: #f0e6ff;
+    --accent: 270 60% 55%;
+    --accent-soft: #f5f0ff;
+    --text: #1a1025;
+    background:
+      radial-gradient(ellipse at 0% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 0%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
+      #faf8ff;
+    background-attachment: fixed;
+  }
+
+  .theme-aurora .premium-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 255, 0.9) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.1);
+    box-shadow: 0 4px 24px rgba(168, 85, 247, 0.08);
+  }
+
+  .theme-aurora .glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(250, 245, 255, 0.7) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(168, 85, 247, 0.15);
+  }
+
   .theme-christmas {
     --surface: #fffcf9;
     --muted: #fce7e7;
@@ -346,5 +374,23 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Safe areas iOS */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -19,11 +19,12 @@ import {
 export async function createItemAction(input: z.infer<typeof createItemSchema>) {
     await verifyEventAccess(input.slug, input.key);
 
-    const lastItem = await db.query.items.findFirst({
-        where: eq(items.mealId, input.mealId),
-        orderBy: [asc(items.order)],
-    });
-    const order = lastItem ? lastItem.order + 1 : 0;
+    // Atomique: évite les race conditions
+    const [{ maxOrder }] = await db
+        .select({ maxOrder: sql<number | null>`MAX(${items.order})` })
+        .from(items)
+        .where(eq(items.mealId, input.mealId));
+    const order = (maxOrder ?? -1) + 1;
 
     const [created] = await db
         .insert(items)

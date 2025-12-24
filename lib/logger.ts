@@ -5,18 +5,18 @@ import { changeLogs } from "@/drizzle/schema";
 type Action = "create" | "update" | "delete";
 type TableName = "items" | "meals" | "people" | "days" | "events";
 
-function getUserInfo() {
+async function getUserInfo() {
   try {
-    const headersList = headers();
+    const headersList = await headers();
     const userAgent = headersList.get("user-agent") || null;
     const referer = headersList.get("referer") || null;
-    
+
     // Récupérer l'IP (priorité aux headers de proxy)
     const forwardedFor = headersList.get("x-forwarded-for");
     const realIp = headersList.get("x-real-ip");
     const cfConnectingIp = headersList.get("cf-connecting-ip"); // Cloudflare
     const userIp = cfConnectingIp || realIp || (forwardedFor ? forwardedFor.split(",")[0].trim() : null) || null;
-    
+
     return {
       userIp,
       userAgent,
@@ -40,7 +40,7 @@ export async function logChange(
   newData?: Record<string, any> | null
 ) {
   try {
-    const userInfo = getUserInfo();
+    const userInfo = await getUserInfo();
     await db.insert(changeLogs).values({
       action,
       tableName,
