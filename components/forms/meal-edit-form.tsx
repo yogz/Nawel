@@ -16,7 +16,7 @@ export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-2">
-                <Label htmlFor="meal-title">Nom du repas</Label>
+                <Label htmlFor="meal-title">Nom du service</Label>
                 <Input
                     id="meal-title"
                     value={title}
@@ -38,7 +38,7 @@ export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
                         onClick={() => onDelete(meal.id)}
                         className="w-full rounded-2xl"
                     >
-                        Supprimer le repas
+                        Supprimer le service
                     </Button>
                 )}
                 <Button type="button" variant="outline" onClick={onClose} className="w-full rounded-2xl">

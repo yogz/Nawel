@@ -166,7 +166,7 @@ export function ItemForm({
                 {defaultItem && allMeals && allMeals.length > 1 && (
                     <div className="space-y-2">
                         <Label className="text-xs font-black uppercase tracking-widest text-gray-400 flex items-center gap-1.5">
-                            <ArrowRightLeft size={12} /> Déplacer vers un autre repas
+                            <ArrowRightLeft size={12} /> Déplacer vers un autre service
                         </Label>
                         <Select
                             value={currentMealId?.toString()}
@@ -174,7 +174,7 @@ export function ItemForm({
                             disabled={readOnly}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Changer de repas" />
+                                <SelectValue placeholder="Changer de service" />
                             </SelectTrigger>
                             <SelectContent>
                                 {allMeals.map((m) => (

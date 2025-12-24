@@ -31,11 +31,11 @@ export function EventList({
 
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateEvent = async (slug: string, name: string, description?: string, withDefaultMeals?: boolean, date?: string, key?: string) => {
+  const handleCreateEvent = async (slug: string, name: string, description?: string, creationMode?: "total" | "classique" | "apero" | "zero", date?: string, key?: string) => {
     setError(null);
     startTransition(async () => {
       try {
-        const result = await createEventAction({ slug, name, description, key: key || writeKey, withDefaultMeals, date });
+        const result = await createEventAction({ slug, name, description, key: key || writeKey, creationMode, date });
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: any) {
         setError(e.message || "Une erreur est survenue");
@@ -119,7 +119,7 @@ function EventForm({
   isPending,
   error,
 }: {
-  onSubmit: (slug: string, name: string, description?: string, withDefaultMeals?: boolean, date?: string, key?: string) => void;
+  onSubmit: (slug: string, name: string, description?: string, creationMode?: "total" | "classique" | "apero" | "zero", date?: string, key?: string) => void;
   onClose: () => void;
   isPending: boolean;
   error: string | null;
@@ -127,9 +127,8 @@ function EventForm({
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [withDefaultMeals, setWithDefaultMeals] = useState(true);
+  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">("total");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [passwordMode, setPasswordMode] = useState<"auto" | "manual">("auto");
   const [customPassword, setCustomPassword] = useState("");
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -152,9 +151,9 @@ function EventForm({
       slug.trim().toLowerCase().replace(/\s+/g, "-"),
       name.trim(),
       description.trim() || undefined,
-      withDefaultMeals,
-      date, // Pass the date regardless of withDefaultMeals
-      passwordMode === "manual" ? customPassword : undefined
+      creationMode,
+      date, // Pass the date regardless of mode
+      customPassword.trim() || undefined
     );
   };
 
@@ -194,93 +193,35 @@ function EventForm({
           </label>
         </div>
 
-        {/* 2. Mot de passe */}
-        <div className="space-y-3">
-          <span className="text-sm font-bold text-gray-900">Administration (modification)</span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => setPasswordMode("auto")}
-              className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${passwordMode === "auto"
-                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                  : "border-gray-100 bg-white hover:border-gray-200"
-                }`}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordMode === "auto" ? "border-accent bg-accent" : "border-gray-300"}`}>
-                  {passwordMode === "auto" && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                </div>
-                <span className={`text-sm font-bold ${passwordMode === "auto" ? "text-accent" : "text-gray-700"}`}>Auto</span>
-              </div>
-              <span className="text-[10px] text-gray-500">Lien sécurisé généré</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setPasswordMode("manual")}
-              className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${passwordMode === "manual"
-                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                  : "border-gray-100 bg-white hover:border-gray-200"
-                }`}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordMode === "manual" ? "border-accent bg-accent" : "border-gray-300"}`}>
-                  {passwordMode === "manual" && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                </div>
-                <span className={`text-sm font-bold ${passwordMode === "manual" ? "text-accent" : "text-gray-700"}`}>Choisi</span>
-              </div>
-              <span className="text-[10px] text-gray-500">Choisissez votre clé</span>
-            </button>
-          </div>
 
-          {passwordMode === "manual" && (
-            <div className="animate-in fade-in slide-in-from-top-1">
-              <input
-                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm outline-none focus:border-accent transition-all"
-                value={customPassword}
-                onChange={(e) => setCustomPassword(e.target.value)}
-                placeholder="Ex: mon-code-secret"
-                required={passwordMode === "manual"}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* 3. Choix entre création rapide ou de zéro */}
+        {/* 3. Choix du mode de création */}
         <div className="space-y-3">
           <span className="text-sm font-bold text-gray-900">Mode de création</span>
           <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => setWithDefaultMeals(true)}
-              className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${withDefaultMeals
+            {[
+              { id: "total", label: "La totale", desc: "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre" },
+              { id: "classique", label: "Le classique", desc: "Entrée, Plat, Dessert" },
+              { id: "apero", label: "L'apéro", desc: "Apéro, Boissons" },
+              { id: "zero", label: "De zéro", desc: "Vide" },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => setCreationMode(mode.id as any)}
+                className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${creationMode === mode.id
                   ? "border-accent bg-accent/5 ring-4 ring-accent/10"
                   : "border-gray-100 bg-white hover:border-gray-200"
-                }`}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${withDefaultMeals ? "border-accent bg-accent" : "border-gray-300"}`}>
-                  {withDefaultMeals && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                  }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${creationMode === mode.id ? "border-accent bg-accent" : "border-gray-300"}`}>
+                    {creationMode === mode.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                  </div>
+                  <span className={`text-sm font-bold ${creationMode === mode.id ? "text-accent" : "text-gray-700"}`}>{mode.label}</span>
                 </div>
-                <span className={`text-sm font-bold ${withDefaultMeals ? "text-accent" : "text-gray-700"}`}>Rapide</span>
-              </div>
-              <span className="text-[10px] text-gray-500">All-in (Apéro, Plat...)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setWithDefaultMeals(false)}
-              className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${!withDefaultMeals
-                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                  : "border-gray-100 bg-white hover:border-gray-200"
-                }`}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${!withDefaultMeals ? "border-accent bg-accent" : "border-gray-300"}`}>
-                  {!withDefaultMeals && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                </div>
-                <span className={`text-sm font-bold ${!withDefaultMeals ? "text-accent" : "text-gray-700"}`}>De zéro</span>
-              </div>
-              <span className="text-[10px] text-gray-500">Vide</span>
-            </button>
+                <span className="text-[10px] text-gray-500 leading-tight">{mode.desc}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -311,6 +252,15 @@ function EventForm({
                 {error && <p className="text-xs font-semibold text-red-500 mt-1">{error}</p>}
               </label>
               <label className="block space-y-1">
+                <span className="text-sm font-semibold">Clé d&apos;administration (optionnel)</span>
+                <input
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
+                  value={customPassword}
+                  onChange={(e) => setCustomPassword(e.target.value)}
+                  placeholder="Ex: mon-code-secret"
+                />
+              </label>
+              <label className="block space-y-1">
                 <span className="text-sm font-semibold">Description (optionnel)</span>
                 <textarea
                   className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
@@ -335,7 +285,7 @@ function EventForm({
           </button>
           <button
             type="submit"
-            disabled={isPending || !slug.trim() || !name.trim() || (passwordMode === "manual" && !customPassword.trim())}
+            disabled={isPending || !slug.trim() || !name.trim()}
             className="flex-[2] rounded-2xl bg-accent px-4 py-4 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all active:scale-95 disabled:opacity-50"
           >
             {isPending ? "Création en cours..." : "Valider l'événement"}

@@ -34,15 +34,31 @@ export async function createEventAction(input: z.infer<typeof createEventSchema>
         .returning();
     await logChange("create", "events", created.id, null, created);
 
-    if (input.withDefaultMeals) {
+    if (input.creationMode && input.creationMode !== "zero") {
         const defaultDate = input.date || new Date().toISOString().split('T')[0];
-        await createDayWithMealsAction({
-            slug: created.slug,
-            key: adminKey,
-            date: defaultDate,
-            title: "Repas complet",
-            meals: ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"],
-        });
+        let meals: string[] = [];
+
+        switch (input.creationMode) {
+            case "total":
+                meals = ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"];
+                break;
+            case "classique":
+                meals = ["Entree", "Plats", "Dessert"];
+                break;
+            case "apero":
+                meals = ["Aperitif", "Boissons"];
+                break;
+        }
+
+        if (meals.length > 0) {
+            await createDayWithMealsAction({
+                slug: created.slug,
+                key: adminKey,
+                date: defaultDate,
+                title: "Repas complet",
+                meals: meals,
+            });
+        }
     }
 
     revalidatePath("/");

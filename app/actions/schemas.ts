@@ -108,7 +108,7 @@ export const createEventSchema = z.object({
     name: z.string().min(1),
     description: z.string().optional(),
     key: z.string().optional(),
-    withDefaultMeals: z.boolean().optional(),
+    creationMode: z.enum(["total", "classique", "apero", "zero"]).optional(),
     date: z.string().optional(),
 });
 

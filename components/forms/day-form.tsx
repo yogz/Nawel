@@ -53,7 +53,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                 finalTitle = finalTitle ? `${finalTitle} (${precisionPart})` : precisionPart.charAt(0).toUpperCase() + precisionPart.slice(1);
             }
 
-            const mealsToCreate = combineMeals ? ["Repas"] : selectedMeals.map(id => DEFAULT_MEAL_TYPES.find(m => m.id === id)?.label || id);
+            const mealsToCreate = combineMeals ? ["Service"] : selectedMeals.map(id => DEFAULT_MEAL_TYPES.find(m => m.id === id)?.label || id);
             onSubmit(formattedDate, finalTitle, mealsToCreate);
         }
     };
@@ -135,7 +135,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                         </div>
 
                         <div className="space-y-4 pt-2">
-                            <Label>Repas à créer</Label>
+                            <Label>Services à créer</Label>
                             <div className="grid grid-cols-2 gap-3">
                                 {DEFAULT_MEAL_TYPES.map((type) => (
                                     <div
@@ -166,7 +166,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                                     onCheckedChange={(checked: boolean) => setCombineMeals(!!checked)}
                                 />
                                 <Label htmlFor="combine" className="text-xs font-medium text-gray-500 leading-tight">
-                                    Tout organiser dans le même repas (recommandé pour une organisation simple)
+                                    Tout organiser dans le même service (recommandé pour une organisation simple)
                                 </Label>
                             </div>
                         </div>
@@ -176,7 +176,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
 
             <div className="flex flex-col gap-3 pt-2">
                 <Button type="submit" disabled={!date} className="w-full rounded-2xl bg-accent text-white hover:bg-accent/90 h-12 text-base font-bold shadow-lg shadow-accent/20">
-                    {day ? "Mettre à jour" : "Créer le jour"}
+                    {day ? "Mettre à jour" : "Créer le repas"}
                 </Button>
                 {day && onDelete && (
                     <Button
@@ -185,7 +185,7 @@ export function DayForm({ day, onSubmit, onDelete, onClose }: any) {
                         onClick={() => onDelete(day.id)}
                         className="w-full rounded-2xl h-11"
                     >
-                        Supprimer le jour
+                        Supprimer le repas
                     </Button>
                 )}
                 <Button type="button" variant="ghost" onClick={onClose} className="w-full rounded-2xl h-11 text-gray-400">

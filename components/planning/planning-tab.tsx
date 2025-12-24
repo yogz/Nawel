@@ -81,14 +81,14 @@ export function PlanningTab({
             </div>
             {plan.days.length === 0 && planningFilter.type === "all" && (
                 <div className="px-4 py-8 text-center">
-                    <p className="text-gray-500 mb-4">Aucun jour pour l&apos;instant.</p>
+                    <p className="text-gray-500 mb-4">Aucun repas pour l&apos;instant.</p>
                     {!readOnly && (
                         <button
                             onClick={() => setSheet({ type: "day-create" })}
                             className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent hover:bg-accent/10 transition-colors"
                         >
                             <PlusIcon />
-                            Ajouter un jour
+                            Ajouter un repas
                         </button>
                     )}
                 </div>
@@ -100,14 +100,14 @@ export function PlanningTab({
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 hover:bg-white/80 transition-colors"
                     >
                         <PlusIcon />
-                        Ajouter un repas
+                        Ajouter un service
                     </button>
                     <button
                         onClick={() => setSheet({ type: "day-create" })}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent hover:bg-accent/10 transition-colors"
                     >
                         <PlusIcon />
-                        Ajouter un jour
+                        Ajouter un repas
                     </button>
                 </div>
             )}

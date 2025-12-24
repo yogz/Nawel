@@ -217,9 +217,9 @@ export function Organizer({
         onClose={() => setSheet(null)}
         title={
           sheet?.type === "item" ? (sheet.item ? "Modifier l'article" : "Ajouter un article") :
-            sheet?.type === "meal" ? "Ajouter un repas" :
-              sheet?.type === "meal-edit" ? "Modifier le repas" :
-                sheet?.type === "day-edit" ? "Modifier le jour" :
+            sheet?.type === "meal" ? "Ajouter un service" :
+              sheet?.type === "meal-edit" ? "Modifier le service" :
+                sheet?.type === "day-edit" ? "Modifier le repas" :
                   sheet?.type === "person" ? "Ajouter un convive" :
                     sheet?.type === "person-edit" ? "Modifier le convive" :
                       sheet?.type === "person-select" ? "Filtrer par personne" :

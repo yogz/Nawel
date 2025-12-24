@@ -50,10 +50,10 @@ export function MealForm({
         <div className="space-y-6">
             {!forceNewDay && days.length > 0 && (
                 <div className="space-y-2">
-                    <Label>Choisir le jour</Label>
+                    <Label>Choisir le repas</Label>
                     <Select value={dayId} onValueChange={setDayId} disabled={readOnly}>
                         <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner un jour" />
+                            <SelectValue placeholder="Sélectionner un repas" />
                         </SelectTrigger>
                         <SelectContent>
                             {days.map((day) => (
@@ -61,7 +61,7 @@ export function MealForm({
                                     {day.title || day.date}
                                 </SelectItem>
                             ))}
-                            <SelectItem value="new">+ Nouveau jour</SelectItem>
+                            <SelectItem value="new">+ Nouveau repas</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -69,7 +69,7 @@ export function MealForm({
 
             {(dayId === "new" || forceNewDay) && (
                 <div className="space-y-4 rounded-2xl bg-gray-50 p-4 border border-gray-100">
-                    <p className="text-xs font-black uppercase tracking-widest text-gray-400">Nouveau jour</p>
+                    <p className="text-xs font-black uppercase tracking-widest text-gray-400">Nouveau repas</p>
                     <div className="space-y-2">
                         <Label htmlFor="date">Date</Label>
                         <Popover>
@@ -110,7 +110,7 @@ export function MealForm({
             )}
 
             <div className="space-y-2">
-                <Label htmlFor="meal-title">Nom du repas</Label>
+                <Label htmlFor="meal-title">Nom du service</Label>
                 <Input
                     id="meal-title"
                     placeholder="Ex: Dîner, Apéro, Petit-déj..."
@@ -126,7 +126,7 @@ export function MealForm({
                 onClick={handleSubmit}
                 disabled={readOnly || !title.trim() || ((dayId === "new" || forceNewDay) && !newDayDate)}
             >
-                Ajouter le repas
+                Ajouter le service
             </Button>
         </div>
     );
