@@ -20,6 +20,8 @@ import {
   ExternalLink,
   Pencil,
   Trash2,
+  Copy,
+  Check,
 } from "lucide-react";
 
 export function EventList({
@@ -33,6 +35,21 @@ export function EventList({
     null
   );
   const [isPending, startTransition] = useTransition();
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const getEditUrl = (event: EventWithStats) => {
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+    return event.adminKey
+      ? `${baseUrl}/event/${event.slug}?key=${event.adminKey}`
+      : `${baseUrl}/event/${event.slug}`;
+  };
+
+  const copyToClipboard = async (event: EventWithStats) => {
+    const url = getEditUrl(event);
+    await navigator.clipboard.writeText(url);
+    setCopiedId(event.id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -108,9 +125,36 @@ export function EventList({
                     <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
-                <p className="text-sm text-muted-foreground mb-3">
+                <p className="text-sm text-muted-foreground mb-2">
                   /{event.slug} &middot; Créé le {formatDate(event.createdAt)}
                 </p>
+
+                {/* URL d'édition */}
+                <div className="flex items-center gap-2 mb-3 p-2 bg-black/5 rounded-lg">
+                  <code className="text-xs text-text/70 truncate flex-1 font-mono">
+                    {getEditUrl(event)}
+                  </code>
+                  <button
+                    onClick={() => copyToClipboard(event)}
+                    className="p-1.5 hover:bg-black/10 rounded-md transition-colors shrink-0"
+                    title="Copier l'URL"
+                  >
+                    {copiedId === event.id ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                  <Link
+                    href={getEditUrl(event)}
+                    target="_blank"
+                    className="p-1.5 hover:bg-black/10 rounded-md transition-colors shrink-0"
+                    title="Ouvrir en mode édition"
+                  >
+                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                </div>
+
                 {event.description && (
                   <p className="text-sm text-text/80 mb-3 line-clamp-2">
                     {event.description}

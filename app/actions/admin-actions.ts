@@ -28,6 +28,7 @@ export type EventWithStats = {
   slug: string;
   name: string;
   description: string | null;
+  adminKey: string | null;
   createdAt: Date;
   daysCount: number;
   mealsCount: number;
@@ -72,6 +73,7 @@ export async function getAllEventsAction(): Promise<EventWithStats[]> {
         slug: event.slug,
         name: event.name,
         description: event.description,
+        adminKey: event.adminKey,
         createdAt: event.createdAt,
         daysCount: daysResult?.count ?? 0,
         mealsCount: mealsResult[0]?.count ?? 0,
