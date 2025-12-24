@@ -1,6 +1,7 @@
 "use client";
 
-import { MessageSquare, Trash2, Sparkles } from "lucide-react";
+import { MessageSquare, Trash2, Sparkles, Check } from "lucide-react";
+import { useThemeMode, type ThemeName } from "@/components/theme-provider";
 
 interface ChangeLog {
     id: number;
@@ -16,8 +17,6 @@ interface ChangeLog {
 interface SettingsTabProps {
     logsLoading: boolean;
     logs: ChangeLog[];
-    christmas: boolean;
-    toggleChristmas: () => void;
     onDeleteEvent: () => void;
     readOnly: boolean;
 }
@@ -25,28 +24,42 @@ interface SettingsTabProps {
 export function SettingsTab({
     logsLoading,
     logs,
-    christmas,
-    toggleChristmas,
     onDeleteEvent,
     readOnly
 }: SettingsTabProps) {
+    const { theme, setTheme, themes } = useThemeMode();
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="premium-card p-6 space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-widest text-text/40 flex items-center gap-2">
                     <Sparkles size={14} /> Ambiance
                 </h3>
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
-                    <div>
-                        <p className="text-sm font-bold text-text">Mode Festif</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Activer les décorations de Noël</p>
-                    </div>
-                    <button
-                        onClick={toggleChristmas}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${christmas ? 'bg-accent' : 'bg-gray-200'}`}
-                    >
-                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${christmas ? 'translate-x-6' : 'translate-x-1'}`} />
-                    </button>
+                <div className="grid grid-cols-1 gap-3">
+                    {themes.map((t) => (
+                        <button
+                            key={t.id}
+                            onClick={() => setTheme(t.id)}
+                            className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
+                                theme === t.id
+                                    ? "bg-accent/10 border-accent/30 ring-2 ring-accent/20"
+                                    : "bg-gray-50/50 border-gray-100 hover:border-gray-200"
+                            }`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl">{t.emoji}</span>
+                                <div className="text-left">
+                                    <p className="text-sm font-bold text-text">{t.label}</p>
+                                    <p className="text-[10px] text-gray-500 font-medium">{t.description}</p>
+                                </div>
+                            </div>
+                            {theme === t.id && (
+                                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-accent text-white">
+                                    <Check size={14} />
+                                </div>
+                            )}
+                        </button>
+                    ))}
                 </div>
             </div>
 

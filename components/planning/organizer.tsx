@@ -204,8 +204,6 @@ export function Organizer({
           <SettingsTab
             logsLoading={logsLoading}
             logs={logs}
-            christmas={christmas}
-            toggleChristmas={() => { }} // Will be handled by theme provider
             onDeleteEvent={handleDeleteEvent}
             readOnly={readOnly}
           />
