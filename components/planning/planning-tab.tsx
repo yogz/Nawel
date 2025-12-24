@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { DndContext, closestCenter, DragStartEvent, DragEndEvent } from "@dnd-kit/core";
 import { MealSection } from "./meal-section";
 import { CitationDisplay } from "../common/citation-display";
@@ -19,6 +20,14 @@ export function PlanningTab({
     onCreateMeal,
     setSheet
 }: any) {
+    const [hasMounted, setHasMounted] = useState(false);
+
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
+    if (!hasMounted) return null;
+
     return (
         <DndContext
             sensors={sensors}
