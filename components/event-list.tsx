@@ -113,6 +113,13 @@ export function EventList({
   );
 }
 
+const CREATION_MODES = [
+  { id: "total", label: "La totale", desc: "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre", emoji: "🍽️" },
+  { id: "classique", label: "Le classique", desc: "Entrée, Plat, Dessert", emoji: "🍴" },
+  { id: "apero", label: "L'apéro", desc: "Apéro, Boissons", emoji: "🥂" },
+  { id: "zero", label: "De zéro", desc: "Vide", emoji: "📝" },
+] as const;
+
 function EventForm({
   onSubmit,
   onClose,
@@ -124,6 +131,7 @@ function EventForm({
   isPending: boolean;
   error: string | null;
 }) {
+  const [step, setStep] = useState(1);
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -137,35 +145,64 @@ function EventForm({
     return text
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove accents
-      .replace(/[^a-z0-9\s-]/g, "") // remove special chars
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
       .trim()
-      .replace(/\s+/g, "-") // replace spaces with -
-      .replace(/-+/g, "-"); // remove double -
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!slug.trim() || !name.trim()) return;
     onSubmit(
       slug.trim().toLowerCase().replace(/\s+/g, "-"),
       name.trim(),
       description.trim() || undefined,
       creationMode,
-      date, // Pass the date regardless of mode
+      date,
       customPassword.trim() || undefined
     );
   };
 
+  const canGoNext = () => {
+    if (step === 1) return name.trim().length > 0 && date.length > 0;
+    if (step === 2) return true;
+    return true;
+  };
+
+  const goNext = () => {
+    if (step < 3 && canGoNext()) setStep(step + 1);
+  };
+
+  const goBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const selectedMode = CREATION_MODES.find(m => m.id === creationMode);
+
+  const stepTitles = ["Votre événement", "Type de menu", "Confirmation"];
+
   return (
-    <BottomSheet open={true} onClose={onClose} title="Nouvel événement">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* 1. Titre et Date */}
+    <BottomSheet open={true} onClose={onClose} title={stepTitles[step - 1]}>
+      {/* Progress indicator */}
+      <div className="flex gap-1.5 mb-6">
+        {[1, 2, 3].map((s) => (
+          <div
+            key={s}
+            className={`h-1 flex-1 rounded-full transition-all ${
+              s <= step ? "bg-accent" : "bg-gray-200"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Step 1: Name & Date */}
+      {step === 1 && (
         <div className="space-y-4">
           <label className="block space-y-2">
             <span className="text-sm font-bold text-gray-900">Nom de l&apos;événement</span>
             <input
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg outline-none focus:border-accent focus:bg-white transition-all shadow-sm"
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none focus:border-accent focus:bg-white transition-all"
               value={name}
               onChange={(e) => {
                 const newName = e.target.value;
@@ -175,95 +212,153 @@ function EventForm({
                 }
               }}
               placeholder="Noël en Famille 2024"
-              required
               autoFocus
             />
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-gray-900">Date de l&apos;événement</span>
+            <span className="text-sm font-bold text-gray-900">Date</span>
             <input
               type="date"
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-lg outline-none focus:border-accent focus:bg-white transition-all shadow-sm appearance-none"
-              style={{ minHeight: '3rem' }} // Ensure good tap target size on mobile
+              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none focus:border-accent focus:bg-white transition-all"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              required
             />
           </label>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={!canGoNext()}
+              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
+            >
+              Suivant
+            </button>
+          </div>
         </div>
+      )}
 
+      {/* Step 2: Creation Mode */}
+      {step === 2 && (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-500">Choisissez les catégories de départ</p>
 
-        {/* 3. Choix du mode de création */}
-        <div className="space-y-3">
-          <span className="text-sm font-bold text-gray-900">Mode de création</span>
-          <div className="grid grid-cols-2 gap-2">
-            {[
-              { id: "total", label: "La totale", desc: "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre" },
-              { id: "classique", label: "Le classique", desc: "Entrée, Plat, Dessert" },
-              { id: "apero", label: "L'apéro", desc: "Apéro, Boissons" },
-              { id: "zero", label: "De zéro", desc: "Vide" },
-            ].map((mode) => (
+          <div className="space-y-2">
+            {CREATION_MODES.map((mode) => (
               <button
                 key={mode.id}
                 type="button"
-                onClick={() => setCreationMode(mode.id as any)}
-                className={`flex flex-col items-start gap-1 rounded-2xl border-2 p-3 text-left transition-all ${creationMode === mode.id
-                  ? "border-accent bg-accent/5 ring-4 ring-accent/10"
-                  : "border-gray-100 bg-white hover:border-gray-200"
-                  }`}
+                onClick={() => setCreationMode(mode.id)}
+                className={`w-full flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all ${
+                  creationMode === mode.id
+                    ? "border-accent bg-accent/5"
+                    : "border-gray-100 bg-white"
+                }`}
               >
-                <div className="flex items-center gap-2">
-                  <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${creationMode === mode.id ? "border-accent bg-accent" : "border-gray-300"}`}>
-                    {creationMode === mode.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                  </div>
-                  <span className={`text-sm font-bold ${creationMode === mode.id ? "text-accent" : "text-gray-700"}`}>{mode.label}</span>
+                <span className="text-2xl">{mode.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <span className={`block text-sm font-bold ${creationMode === mode.id ? "text-accent" : "text-gray-700"}`}>
+                    {mode.label}
+                  </span>
+                  <span className="block text-xs text-gray-500 truncate">{mode.desc}</span>
                 </div>
-                <span className="text-[10px] text-gray-500 leading-tight">{mode.desc}</span>
+                <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                  creationMode === mode.id ? "border-accent bg-accent" : "border-gray-300"
+                }`}>
+                  {creationMode === mode.id && <div className="h-2 w-2 rounded-full bg-white" />}
+                </div>
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Options avancées (Slug/Description) */}
-        <div className="pt-2">
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={goBack}
+              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+            >
+              Retour
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95"
+            >
+              Suivant
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Confirmation */}
+      {step === 3 && (
+        <div className="space-y-4">
+          {/* Summary */}
+          <div className="rounded-2xl bg-gray-50 p-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500">Événement</span>
+              <span className="text-sm font-bold text-gray-900">{name}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500">Date</span>
+              <span className="text-sm font-medium text-gray-700">
+                {new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500">Menu</span>
+              <span className="text-sm font-medium text-gray-700">{selectedMode?.emoji} {selectedMode?.label}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-gray-500">URL</span>
+              <span className="text-sm font-mono text-accent">/{slug}</span>
+            </div>
+          </div>
+
+          {/* Advanced options */}
           <button
             type="button"
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-xs font-semibold text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-xs font-semibold text-gray-400 hover:text-gray-600"
           >
-            {showAdvanced ? "↑ Masquer les options" : "↓ Plus d'options (URL, Description)"}
+            {showAdvanced ? "↑ Masquer les options" : "↓ Options avancées"}
           </button>
 
           {showAdvanced && (
-            <div className="mt-4 space-y-4 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-top-2">
+            <div className="space-y-3 pt-2 border-t border-gray-100">
               <label className="block space-y-1">
-                <span className="text-sm font-semibold">Lien personnalisé (/event/...)</span>
+                <span className="text-xs font-semibold text-gray-600">URL personnalisée</span>
                 <input
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
                   value={slug}
                   onChange={(e) => {
                     setSlug(generateSlug(e.target.value));
                     setIsSlugManuallyEdited(true);
                   }}
                   placeholder="nom-de-levenement"
-                  pattern="[a-z0-9-]+"
                 />
-                {error && <p className="text-xs font-semibold text-red-500 mt-1">{error}</p>}
               </label>
               <label className="block space-y-1">
-                <span className="text-sm font-semibold">Clé d&apos;administration (optionnel)</span>
+                <span className="text-xs font-semibold text-gray-600">Clé admin (optionnel)</span>
                 <input
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
                   value={customPassword}
                   onChange={(e) => setCustomPassword(e.target.value)}
-                  placeholder="Ex: mon-code-secret"
+                  placeholder="mon-code-secret"
                 />
               </label>
               <label className="block space-y-1">
-                <span className="text-sm font-semibold">Description (optionnel)</span>
+                <span className="text-xs font-semibold text-gray-600">Description (optionnel)</span>
                 <textarea
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-accent"
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent resize-none"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Une petite description..."
@@ -272,26 +367,30 @@ function EventForm({
               </label>
             </div>
           )}
-        </div>
 
-        {/* 4. Bouton Valider */}
-        <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-4 text-sm font-bold text-gray-600 transition-all active:scale-95"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            disabled={isPending || !slug.trim() || !name.trim()}
-            className="flex-[2] rounded-2xl bg-accent px-4 py-4 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all active:scale-95 disabled:opacity-50"
-          >
-            {isPending ? "Création en cours..." : "Valider l'événement"}
-          </button>
+          {error && (
+            <p className="text-xs font-semibold text-red-500 bg-red-50 p-2 rounded-lg">{error}</p>
+          )}
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={goBack}
+              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+            >
+              Retour
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isPending || !slug.trim() || !name.trim()}
+              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
+            >
+              {isPending ? "Création..." : "Créer"}
+            </button>
+          </div>
         </div>
-      </form>
+      )}
     </BottomSheet>
   );
 }
