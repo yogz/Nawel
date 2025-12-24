@@ -106,51 +106,176 @@
     transform: scale(1.05);
   }
 
+  /* Theme Christmas - Magical Winter Wonderland */
   .theme-christmas {
-    --surface: #fffcf9;
+    --surface: #fefcfa;
     --muted: #fce7e7;
     --accent: 0 74% 42%;
-    /* Nawel Red #b91c1c in HSL */
+    --accent-glow: 0 100% 50%;
     --accent-soft: #fef2f2;
     --text: #450a0a;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(185, 28, 28, 0.05) 0%, transparent 50%),
-      radial-gradient(circle at 100% 100%, rgba(21, 128, 61, 0.05) 0%, transparent 50%),
-      #fffcf9;
+    --gold: #d4af37;
+    --green: #15803d;
+
+    background: linear-gradient(180deg, #fefcfa 0%, #fff5f5 50%, #f0fdf4 100%);
     background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
   }
 
-  /* Falling Snow Effect */
+  /* Animated gradient orbs - red and green */
   .theme-christmas::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(185, 28, 28, 0.12) 0%, transparent 35%),
+      radial-gradient(circle at 80% 30%, rgba(21, 128, 61, 0.1) 0%, transparent 35%),
+      radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 30%),
+      radial-gradient(circle at 70% 70%, rgba(185, 28, 28, 0.1) 0%, transparent 35%),
+      radial-gradient(circle at 10% 60%, rgba(21, 128, 61, 0.08) 0%, transparent 30%);
+    filter: blur(60px);
+    animation: christmas-mesh 25s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Twinkling stars overlay */
+  .theme-christmas::after {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 100;
+    z-index: 0;
     background-image:
-      radial-gradient(4px 4px at 20px 30px, #fff, rgba(0, 0, 0, 0)),
-      radial-gradient(3px 3px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
-      radial-gradient(5px 5px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
-      radial-gradient(4px 4px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
-      radial-gradient(4px 4px at 110px 110px, #fff, rgba(0, 0, 0, 0)),
-      radial-gradient(3px 3px at 160px 120px, #fff, rgba(0, 0, 0, 0));
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    animation: snow 10s linear infinite;
-    opacity: 0.5;
+      radial-gradient(2px 2px at 10% 10%, rgba(212, 175, 55, 0.8), transparent),
+      radial-gradient(2px 2px at 30% 25%, rgba(255, 255, 255, 0.9), transparent),
+      radial-gradient(1px 1px at 50% 15%, rgba(212, 175, 55, 0.7), transparent),
+      radial-gradient(2px 2px at 70% 35%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 85% 20%, rgba(212, 175, 55, 0.6), transparent),
+      radial-gradient(2px 2px at 15% 45%, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(1px 1px at 90% 50%, rgba(212, 175, 55, 0.8), transparent),
+      radial-gradient(2px 2px at 25% 60%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(1px 1px at 60% 55%, rgba(212, 175, 55, 0.7), transparent),
+      radial-gradient(2px 2px at 45% 75%, rgba(255, 255, 255, 0.8), transparent);
+    background-size: 100% 100%;
+    animation: twinkle 4s ease-in-out infinite alternate;
+    pointer-events: none;
+    opacity: 0.6;
   }
 
-  @keyframes snow {
-    from {
-      background-position: 0 0;
-    }
+  @keyframes christmas-mesh {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    25% { transform: translate(3%, 5%) rotate(2deg) scale(1.05); }
+    50% { transform: translate(-2%, 3%) rotate(-1deg) scale(0.98); }
+    75% { transform: translate(4%, -2%) rotate(3deg) scale(1.02); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
 
-    to {
-      background-position: 100px 200px;
-    }
+  @keyframes twinkle {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.5; }
+  }
+
+  /* Frosted glass cards for Christmas */
+  .theme-christmas .premium-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(185, 28, 28, 0.1);
+    box-shadow:
+      0 4px 24px rgba(185, 28, 28, 0.06),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+      0 1px 0 rgba(255, 255, 255, 0.8) inset;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .theme-christmas .premium-card:hover {
+    transform: translateY(-2px);
+    border: 1px solid rgba(185, 28, 28, 0.2);
+    box-shadow:
+      0 12px 32px rgba(185, 28, 28, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+      0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  }
+
+  /* Christmas glass effect */
+  .theme-christmas .glass {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(254, 242, 242, 0.6) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(185, 28, 28, 0.15);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 4px 16px rgba(185, 28, 28, 0.05);
+  }
+
+  /* Festive button glow */
+  .theme-christmas .btn-festive {
+    background: linear-gradient(135deg, hsl(0 74% 42%), hsl(0 74% 35%));
+    color: white;
+    box-shadow:
+      0 4px 15px rgba(185, 28, 28, 0.3),
+      0 0 20px rgba(185, 28, 28, 0.1);
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .theme-christmas .btn-festive::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .theme-christmas .btn-festive:hover {
+    filter: brightness(1.1);
+    box-shadow:
+      0 6px 20px rgba(185, 28, 28, 0.4),
+      0 0 30px rgba(185, 28, 28, 0.15);
+    transform: scale(1.02);
+  }
+
+  /* Soft falling snow - subtle layer */
+  .theme-christmas .snow-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    background-image:
+      radial-gradient(3px 3px at 20px 30px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(4px 4px at 50px 160px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(3px 3px at 90px 40px, rgba(255,255,255,0.8), transparent),
+      radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(3px 3px at 160px 120px, rgba(255,255,255,0.7), transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: snow-fall 12s linear infinite;
+    opacity: 0.6;
+  }
+
+  @keyframes snow-fall {
+    from { background-position: 0 0; }
+    to { background-position: 50px 200px; }
   }
 
   body {
