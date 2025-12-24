@@ -338,10 +338,15 @@ export function useEventHandlers({
     const handleDeleteEvent = async () => {
         if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) return;
         startTransition(async () => {
-            const result = await deleteEventAction({ slug, key: writeKey });
-            if (result.success) {
-                setSuccessMessage("Événement supprimé avec succès.");
-                setTimeout(() => { window.location.href = "/"; }, 1500);
+            try {
+                const result = await deleteEventAction({ slug, key: writeKey });
+                if (result.success) {
+                    setSuccessMessage("Événement supprimé avec succès.");
+                    setTimeout(() => { window.location.href = "/"; }, 1500);
+                }
+            } catch (error) {
+                console.error("Failed to delete event:", error);
+                alert("Erreur lors de la suppression de l'événement.");
             }
         });
     };
