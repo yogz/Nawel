@@ -30,6 +30,9 @@ export function isDatabaseError(error: any): boolean {
         "enotfound",
         "etimedout",
         "econnrefused",
+        "dns timeout",
+        "address not found",
+        "neon.tech",
     ];
 
     return dbKeywords.some(keyword =>
