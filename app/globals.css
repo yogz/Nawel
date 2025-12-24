@@ -4,32 +4,106 @@
 
 @layer base {
 
-  /* Theme Aurore - Dégradé subtil rose/violet/bleu */
+  /* Theme Aurore - Vibrant, animé et immersif */
   .theme-aurora {
-    --surface: #faf8ff;
-    --muted: #f0e6ff;
-    --accent: 270 60% 55%;
-    --accent-soft: #f5f0ff;
-    --text: #1a1025;
-    background:
-      radial-gradient(ellipse at 0% 0%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 100% 0%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 100%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
-      #faf8ff;
-    background-attachment: fixed;
+    --surface: #fdfaff;
+    --muted: #f3ebff;
+    --accent: 280 85% 65%; /* Vibrant Purple */
+    --accent-glow: 280 100% 75%;
+    --accent-soft: #f8f2ff;
+    --text: #1a0b2e;
+    
+    background: #fdfaff;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .theme-aurora::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background: 
+      radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 70% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 20% 80%, rgba(34, 211, 238, 0.1) 0%, transparent 40%);
+    filter: blur(80px);
+    animation: aurora-mesh 20s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Floating Orbs for extra "pop" */
+  .theme-aurora::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image: 
+      radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.2), transparent 25%),
+      radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.2), transparent 25%);
+    animation: aurora-floats 15s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes aurora-mesh {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    33% { transform: translate(5%, 10%) rotate(5deg) scale(1.1); }
+    66% { transform: translate(-5%, 5%) rotate(-5deg) scale(0.9); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
+
+  @keyframes aurora-floats {
+    0% { opacity: 0.4; filter: blur(40px); }
+    50% { opacity: 0.8; filter: blur(60px); }
+    100% { opacity: 0.4; filter: blur(40px); }
   }
 
   .theme-aurora .premium-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 255, 0.9) 100%);
-    border: 1px solid rgba(168, 85, 247, 0.1);
-    box-shadow: 0 4px 24px rgba(168, 85, 247, 0.08);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    box-shadow: 
+      0 4px 24px rgba(168, 85, 247, 0.08),
+      0 0 0 1px rgba(168, 85, 247, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .theme-aurora .premium-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    box-shadow: 
+      0 12px 32px rgba(168, 85, 247, 0.15),
+      0 0 20px rgba(168, 85, 247, 0.1);
   }
 
   .theme-aurora .glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(250, 245, 255, 0.7) 100%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(168, 85, 247, 0.15);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 240, 255, 0.5) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+
+  /* Accent highlights for buttons and interactive elements in Aurora */
+  .theme-aurora .btn-aurora {
+    background: linear-gradient(135deg, hsl(280 85% 65%), hsl(260 85% 60%));
+    color: white;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .theme-aurora .btn-aurora:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+    transform: scale(1.05);
   }
 
   .theme-christmas {

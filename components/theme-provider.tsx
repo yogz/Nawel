@@ -7,7 +7,7 @@ export type ThemeName = "none" | "christmas" | "aurora";
 const THEMES: { id: ThemeName; label: string; description: string; emoji: string }[] = [
   { id: "none", label: "Classique", description: "Interface sobre et minimaliste", emoji: "🌙" },
   { id: "christmas", label: "Noël", description: "Ambiance festive avec neige", emoji: "🎄" },
-  { id: "aurora", label: "Aurore", description: "Dégradés doux violet et rose", emoji: "🌸" },
+  { id: "aurora", label: "Aurore", description: "Vibrant et animé, dégradés magiques", emoji: "✨" },
 ];
 
 const ThemeContext = createContext<{
@@ -19,10 +19,10 @@ const ThemeContext = createContext<{
   toggle: () => void;
 }>({
   theme: "christmas",
-  setTheme: () => {},
+  setTheme: () => { },
   themes: THEMES,
   christmas: true,
-  toggle: () => {},
+  toggle: () => { },
 });
 
 const STORAGE_KEY = "nawel-theme";
