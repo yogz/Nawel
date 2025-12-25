@@ -41,14 +41,17 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
   };
 
   const handleGoogleAuth = async () => {
+    console.log("Starting Google Auth...");
     setIsPending(true);
     setError(null);
     try {
-      await authClient.signIn.social({
+      const res = await authClient.signIn.social({
         provider: "google",
         callbackURL: "/",
       });
+      console.log("Social sign in response:", res);
     } catch (err: any) {
+      console.error("Google Auth Error:", err);
       setError(err.message || "Une erreur est survenue");
       setIsPending(false);
     }
