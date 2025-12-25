@@ -23,6 +23,13 @@ export const createEventAction = withErrorThrower(
       throw new Error("Ce slug est déjà utilisé par un autre événement.");
     }
 
+    // Get current session to set ownerId
+    const { auth } = await import("@/lib/auth-config");
+    const { headers } = await import("next/headers");
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
     // Public action, uses provided key or generates new adminKey
     const adminKey = input.key && input.key.trim() !== "" ? input.key : randomUUID();
     const [created] = await db
@@ -32,6 +39,7 @@ export const createEventAction = withErrorThrower(
         name: input.name,
         description: input.description ?? null,
         adminKey: adminKey,
+        ownerId: session?.user.id ?? null,
       })
       .returning();
     await logChange("create", "events", created.id, null, created);

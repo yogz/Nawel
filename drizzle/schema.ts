@@ -1,4 +1,15 @@
-import { pgTable, serial, varchar, text, integer, timestamp, real, index, date, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  varchar,
+  text,
+  integer,
+  timestamp,
+  real,
+  index,
+  date,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // ============================================
@@ -96,10 +107,12 @@ export const events = pgTable(
     name: text("name").notNull(),
     description: text("description"),
     adminKey: varchar("admin_key", { length: 100 }), // Nullable for migration
+    ownerId: text("owner_id").references(() => user.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => ({
     createdAtIdx: index("events_created_at_idx").on(table.createdAt),
+    ownerIdIdx: index("events_owner_id_idx").on(table.ownerId),
   })
 );
 
@@ -188,9 +201,13 @@ export const ingredients = pgTable(
   })
 );
 
-export const eventRelations = relations(events, ({ many }) => ({
+export const eventRelations = relations(events, ({ one, many }) => ({
   meals: many(meals),
   people: many(people),
+  owner: one(user, {
+    fields: [events.ownerId],
+    references: [user.id],
+  }),
 }));
 
 export const mealRelations = relations(meals, ({ one, many }) => ({

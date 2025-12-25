@@ -6,6 +6,7 @@ import { createEventAction } from "@/app/actions";
 import { Calendar, Plus } from "lucide-react";
 import { BottomSheet } from "./ui/bottom-sheet";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 type Event = {
   id: number;
@@ -14,6 +15,7 @@ type Event = {
   description: string | null;
   createdAt: Date | null;
   adminKey: string | null;
+  ownerId: string | null;
 };
 
 export function EventList({
@@ -28,6 +30,7 @@ export function EventList({
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -95,22 +98,34 @@ export function EventList({
         </div>
       ) : (
         <div className="space-y-3">
-          {events.map((event) => (
-            <Link
-              key={event.id}
-              href={`/event/${event.slug}`}
-              className="block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-transform hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <h3 className="text-lg font-bold text-gray-900">{event.name}</h3>
-              {event.description && (
-                <p className="mt-1 text-sm text-gray-600">{event.description}</p>
-              )}
-              <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
-                <Calendar size={14} />
-                <span>/{event.slug}</span>
-              </div>
-            </Link>
-          ))}
+          {events.map((event) => {
+            const isOwner = session?.user?.id === event.ownerId;
+            return (
+              <Link
+                key={event.id}
+                href={`/event/${event.slug}${isOwner ? `?key=${event.adminKey}` : ""}`}
+                className="group relative block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-accent/30 hover:shadow-md active:scale-[0.98]"
+              >
+                <div className="flex items-start justify-between">
+                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-accent">
+                    {event.name}
+                  </h3>
+                  {isOwner && (
+                    <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+                      Propriétaire
+                    </span>
+                  )}
+                </div>
+                {event.description && (
+                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">{event.description}</p>
+                )}
+                <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                  <Calendar size={14} />
+                  <span>/{event.slug}</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
 
