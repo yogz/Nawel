@@ -23,8 +23,8 @@ export function SuccessToast({ message, christmas }: { message: string | null; c
                                 </>
                             ) : (
                                 <>
-                                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-green-500">
-                                        <Check size={12} strokeWidth={3} className="text-white" />
+                                    <div className="flex items-center justify-center w-5 h-5 rounded-full bg-white">
+                                        <Check size={12} strokeWidth={4} className="text-black" />
                                     </div>
                                     <span className="font-semibold text-sm">{message}</span>
                                 </>

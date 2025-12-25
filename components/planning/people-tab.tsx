@@ -132,8 +132,8 @@ export function PeopleTab({
                                         {(item.quantity || item.note || item.price) && (
                                             <div className="mt-3 flex flex-wrap gap-2">
                                                 {item.quantity && <span className="rounded-lg bg-gray-50 px-2 py-1 text-[10px] font-bold text-gray-500 uppercase">📦 {item.quantity}</span>}
-                                                {item.price && <span className="rounded-lg bg-green-50 px-2 py-1 text-[10px] font-bold text-green-600 uppercase">💶 {item.price}€</span>}
-                                                {item.note && <span className="rounded-lg bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-500 uppercase">📝 {item.note}</span>}
+                                                {item.price && <span className="rounded-lg bg-zinc-100 px-2 py-1 text-[10px] font-bold text-zinc-900 uppercase">💶 {item.price}€</span>}
+                                                {item.note && <span className="rounded-lg bg-zinc-100 px-2 py-1 text-[10px] font-bold text-zinc-900 uppercase">📝 {item.note}</span>}
                                             </div>
                                         )}
                                     </div>

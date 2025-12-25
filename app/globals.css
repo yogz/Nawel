@@ -8,11 +8,12 @@
   .theme-aurora {
     --surface: #fdfaff;
     --muted: #f3ebff;
-    --accent: 280 85% 65%; /* Vibrant Purple */
+    --accent: 280 85% 65%;
+    /* Vibrant Purple */
     --accent-glow: 280 100% 75%;
     --accent-soft: #f8f2ff;
     --text: #1a0b2e;
-    
+
     background: #fdfaff;
     position: relative;
     overflow-x: hidden;
@@ -26,7 +27,7 @@
     width: 200%;
     height: 200%;
     z-index: -1;
-    background: 
+    background:
       radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
       radial-gradient(circle at 70% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
       radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
@@ -45,7 +46,7 @@
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-image: 
+    background-image:
       radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.2), transparent 25%),
       radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.2), transparent 25%);
     animation: aurora-floats 15s ease-in-out infinite alternate;
@@ -53,23 +54,45 @@
   }
 
   @keyframes aurora-mesh {
-    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    33% { transform: translate(5%, 10%) rotate(5deg) scale(1.1); }
-    66% { transform: translate(-5%, 5%) rotate(-5deg) scale(0.9); }
-    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+
+    33% {
+      transform: translate(5%, 10%) rotate(5deg) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-5%, 5%) rotate(-5deg) scale(0.9);
+    }
+
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
   }
 
   @keyframes aurora-floats {
-    0% { opacity: 0.4; filter: blur(40px); }
-    50% { opacity: 0.8; filter: blur(60px); }
-    100% { opacity: 0.4; filter: blur(40px); }
+    0% {
+      opacity: 0.4;
+      filter: blur(40px);
+    }
+
+    50% {
+      opacity: 0.8;
+      filter: blur(60px);
+    }
+
+    100% {
+      opacity: 0.4;
+      filter: blur(40px);
+    }
   }
 
   .theme-aurora .premium-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(168, 85, 247, 0.2);
-    box-shadow: 
+    box-shadow:
       0 4px 24px rgba(168, 85, 247, 0.08),
       0 0 0 1px rgba(168, 85, 247, 0.05);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -78,7 +101,7 @@
   .theme-aurora .premium-card:hover {
     transform: translateY(-4px) scale(1.01);
     border: 1px solid rgba(168, 85, 247, 0.4);
-    box-shadow: 
+    box-shadow:
       0 12px 32px rgba(168, 85, 247, 0.15),
       0 0 20px rgba(168, 85, 247, 0.1);
   }
@@ -170,17 +193,39 @@
   }
 
   @keyframes christmas-mesh {
-    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    25% { transform: translate(3%, 5%) rotate(2deg) scale(1.05); }
-    50% { transform: translate(-2%, 3%) rotate(-1deg) scale(0.98); }
-    75% { transform: translate(4%, -2%) rotate(3deg) scale(1.02); }
-    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+
+    25% {
+      transform: translate(3%, 5%) rotate(2deg) scale(1.05);
+    }
+
+    50% {
+      transform: translate(-2%, 3%) rotate(-1deg) scale(0.98);
+    }
+
+    75% {
+      transform: translate(4%, -2%) rotate(3deg) scale(1.02);
+    }
+
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
   }
 
   @keyframes twinkle {
-    0% { opacity: 0.4; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0.5; }
+    0% {
+      opacity: 0.4;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+
+    100% {
+      opacity: 0.5;
+    }
   }
 
   /* Frosted glass cards for Christmas */
@@ -239,8 +284,13 @@
   }
 
   @keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
+    0% {
+      left: -100%;
+    }
+
+    100% {
+      left: 100%;
+    }
   }
 
   .theme-christmas .btn-festive:hover {
@@ -261,12 +311,12 @@
     pointer-events: none;
     z-index: 50;
     background-image:
-      radial-gradient(3px 3px at 20px 30px, rgba(255,255,255,0.8), transparent),
-      radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
-      radial-gradient(4px 4px at 50px 160px, rgba(255,255,255,0.7), transparent),
-      radial-gradient(3px 3px at 90px 40px, rgba(255,255,255,0.8), transparent),
-      radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.6), transparent),
-      radial-gradient(3px 3px at 160px 120px, rgba(255,255,255,0.7), transparent);
+      radial-gradient(3px 3px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(4px 4px at 50px 160px, rgba(255, 255, 255, 0.7), transparent),
+      radial-gradient(3px 3px at 90px 40px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(3px 3px at 160px 120px, rgba(255, 255, 255, 0.7), transparent);
     background-repeat: repeat;
     background-size: 200px 200px;
     animation: snow-fall 12s linear infinite;
@@ -274,8 +324,13 @@
   }
 
   @keyframes snow-fall {
-    from { background-position: 0 0; }
-    to { background-position: 50px 200px; }
+    from {
+      background-position: 0 0;
+    }
+
+    to {
+      background-position: 50px 200px;
+    }
   }
 
   body {
@@ -459,13 +514,20 @@
   .premium-card {
     background-color: white;
     border-radius: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 10px 15px -3px rgba(0, 0, 0, 0.03),
+      0 0 0 1px rgba(0, 0, 0, 0.01);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .premium-card:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    box-shadow:
+      0 20px 25px -5px rgba(0, 0, 0, 0.08),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -512,30 +574,30 @@
   }
 
   :root {
-    --surface: #f7f8fb;
-    --accent-soft: #e0f2fe;
-    --text: #0f172a;
+    --surface: #ffffff;
+    --accent-soft: #f4f4f5;
+    --text: #09090b;
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 199 89% 48%;
-    /* Nawel Blue #0ea5e9 */
-    --accent-foreground: 210 40% 98%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 0 0% 0%;
+    /* Sober Black */
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 199 89% 48%;
-    --radius: 1rem;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 1.25rem;
   }
 
   .dark {
@@ -585,6 +647,7 @@
 
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

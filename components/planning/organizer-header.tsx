@@ -54,11 +54,11 @@ export function OrganizerHeader({
                     </Link>
                     <div className="flex items-center gap-2">
                         {!readOnly ? (
-                            <span className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-green-700">
+                            <span className="flex items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
                                 <Check size={12} />Live
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
+                            <span className="flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
                                 <ShieldAlert size={12} />Miroir
                             </span>
                         )}
@@ -125,8 +125,8 @@ function PlanningFilters({
                     className={clsx(
                         "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
                         planningFilter.type === "unassigned"
-                            ? "bg-amber-400 text-amber-950 shadow-md ring-2 ring-amber-400/20"
-                            : "bg-white text-gray-400 hover:text-amber-600"
+                            ? "bg-zinc-900 text-white shadow-md ring-2 ring-zinc-900/20"
+                            : "bg-white text-gray-400 hover:text-zinc-600"
                     )}
                 >
                     À prévoir ({unassignedItemsCount}) 🥘

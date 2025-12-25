@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 export type ThemeName = "none" | "christmas" | "aurora";
 
 const THEMES: { id: ThemeName; label: string; description: string; emoji: string }[] = [
-  { id: "none", label: "Classique", description: "Interface sobre et minimaliste", emoji: "🌙" },
+  { id: "none", label: "Classique", description: "Sérious, sobre et minimaliste Noir & Blanc", emoji: "⚫️" },
   { id: "christmas", label: "Noël", description: "Ambiance festive avec neige", emoji: "🎄" },
   { id: "aurora", label: "Aurore", description: "Vibrant et animé, dégradés magiques", emoji: "✨" },
 ];
