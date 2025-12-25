@@ -14,17 +14,17 @@ export async function generateIngredients(
   peopleCount: number = 4
 ): Promise<GeneratedIngredient[]> {
   const model = "mistralai/mistral-small-3.1-24b-instruct:free";
-  const systemPrompt = `Tu es un assistant culinaire expert. Quand on te donne le nom d'un plat ou d'une recette, tu dois lister les ingrédients nécessaires pour le préparer pour ${peopleCount} personne${peopleCount > 1 ? "s" : ""}.
+  const systemPrompt = `Tu es un chef cuisinier français expert. Pour un plat donné, liste les ingrédients nécessaires pour ${peopleCount} personne${peopleCount > 1 ? "s" : ""}.
 
-Réponds UNIQUEMENT avec un tableau JSON d'objets ayant cette structure:
-[{"name": "nom de l'ingrédient", "quantity": "quantité suggérée"}]
+Format de réponse: JSON uniquement, sans texte autour.
+[{"name": "ingrédient", "quantity": "quantité"}]
 
 Règles:
-- Garde les quantités simples (ex: "500g", "2", "1 bouquet", "3 c. à soupe")
-- Liste entre 5 et 15 ingrédients maximum
-- Sois concis et pratique
-- N'ajoute aucun texte avant ou après le JSON`;
-  const userPrompt = `Liste les ingrédients pour: ${itemName}`;
+- Ingrédients principaux en premier, puis secondaires
+- Quantités précises: "200g", "2 pièces", "1 c. à soupe", "1/2 litre"
+- 5-12 ingrédients selon la complexité du plat
+- Si ce n'est pas un plat cuisiné (ex: boisson, fromage), réponds []`;
+  const userPrompt = `Ingrédients pour: ${itemName}`;
 
   console.log(`[OpenRouter] Requesting ingredients for "${itemName}" (${peopleCount} pers.)`);
   console.log(`[OpenRouter] Model: ${model}`);
