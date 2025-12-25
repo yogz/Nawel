@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Drizzle migrations (auto-generated)
+drizzle/migrations/
+drizzle/meta/
+
+# Package manager
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Environment
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# Coverage
+coverage/

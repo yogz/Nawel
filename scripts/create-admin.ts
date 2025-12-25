@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { auth } from "../lib/auth-config";
+import { auth } from "@/lib/auth-config";
 
 const email = process.argv[2];
 const password = process.argv[3];
@@ -30,8 +30,8 @@ async function createAdmin() {
     }
 
     // Set role to admin directly in database
-    const { db } = await import("../lib/db");
-    const { user } = await import("../drizzle/schema");
+    const { db } = await import("@/lib/db");
+    const { user } = await import("@drizzle/schema");
     const { eq } = await import("drizzle-orm");
 
     await db.update(user).set({ role: "admin" }).where(eq(user.id, result.user.id));
