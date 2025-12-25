@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { ingredients, ingredientCache } from "@drizzle/schema";
@@ -15,6 +16,7 @@ import {
 } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 import { generateIngredients as generateFromAI, GeneratedIngredient } from "@/lib/openrouter";
+import { auth } from "@/lib/auth-config";
 
 // Normalize dish name for cache key (lowercase, trimmed, no extra spaces)
 function normalizeDishName(name: string): string {
@@ -39,6 +41,14 @@ const MIN_CONFIRMATIONS = 3;
 
 export const generateIngredientsAction = withErrorThrower(
   async (input: z.infer<typeof generateIngredientsSchema>) => {
+    // Require authenticated user for AI generation
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    if (!session) {
+      throw new Error("Vous devez être connecté pour utiliser la génération IA.");
+    }
+
     await verifyEventAccess(input.slug, input.key);
 
     // First, delete existing ingredients for this item
