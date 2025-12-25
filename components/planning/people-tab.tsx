@@ -100,7 +100,7 @@ export function PeopleTab({
             <div className="space-y-8">
                 {plan.people.filter((p) => selectedPerson === null || selectedPerson === p.id).map((person) => {
                     const personItems = itemsByPerson[person.id] || [];
-                    if (personItems.length === 0 && selectedPerson === null) return null;
+                    // Show everyone even if they have no items, so they appear in "hero mode"
 
                     return (
                         <div key={person.id} className="space-y-3">
