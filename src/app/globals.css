@@ -128,54 +128,113 @@
     transform: scale(1.05);
   }
 
-  /* Theme Lisibilité - Contraste élevé pour accessibilité */
+  /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */
   .theme-readable {
+    /* Base Colors Overrides */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 45 100% 50%;
+    --radius: 0.25rem;
+
+    /* Theme-specific tokens */
     --surface: #000000;
-    --muted: #1c1c1e;
-    --accent: 45 100% 50%; /* Bright Yellow/Gold */
-    --accent-glow: 45 100% 60%;
-    --accent-soft: #2c2c2e;
     --text: #ffffff;
-    --radius: 0.5rem; /* Less rounded for more structured feel */
+    --accent-glow: 45 100% 70%;
+    --accent-soft: #1a1a1a;
 
-    background: #000000;
-    font-weight: 500; /* Bolded text by default for better readability */
+    background: #000000 !important;
+    color: #ffffff !important;
+
+    /* Typography Overrides */
+    font-size: 1.25rem !important;
+    /* 20px base */
+    line-height: 1.6 !important;
+    letter-spacing: 0.03em !important;
+    font-weight: 600 !important;
   }
 
-  .theme-readable .premium-card {
-    background: #1c1c1e;
-    border: 3px solid white;
-    box-shadow: none;
-    transition: transform 0.2s ease;
-  }
-
-  .theme-readable .premium-card:hover {
-    transform: scale(1.02);
-    border-color: hsl(var(--accent));
+  /* Force borders and visibility on components */
+  .theme-readable .premium-card,
+  .theme-readable [class*="card"] {
+    background: #0a0a0a !important;
+    border: 3px solid white !important;
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    margin-bottom: 1.5rem !important;
   }
 
   .theme-readable .glass {
-    background: #000000;
-    border: 2px solid white;
-    backdrop-filter: none;
+    background: #000000 !important;
+    border: 3px solid white !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  .theme-readable .btn-readable {
-    background: hsl(var(--accent));
-    color: black;
-    font-weight: 800;
-    border: 3px solid white;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .theme-readable button:not(.btn-readable),
+  .theme-readable [role="button"] {
+    border: 3px solid white !important;
+    background: #1a1a1a !important;
+    color: white !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    padding: 0.75rem 1.5rem !important;
+    min-height: 3.5rem !important;
+  }
+
+  .theme-readable .btn-readable,
+  .theme-readable button[class*="primary"],
+  .theme-readable button[class*="accent"] {
+    background: hsl(45 100% 50%) !important;
+    color: black !important;
+    border: 4px solid white !important;
+    text-transform: uppercase !important;
   }
 
   .theme-readable input,
   .theme-readable textarea,
   .theme-readable select {
-    border: 2px solid white !important;
-    background: #1c1c1e !important;
+    border: 3px solid white !important;
+    background: #000000 !important;
     color: white !important;
-    font-size: 18px !important; /* Larger font for accessibility */
+    font-size: 1.25rem !important;
+    padding: 1rem !important;
+    border-radius: 4px !important;
+  }
+
+  .theme-readable label {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: hsl(45 100% 50%) !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+  }
+
+  .theme-readable svg {
+    stroke-width: 3px !important;
+  }
+
+  .theme-readable .text-gray-500,
+  .theme-readable .text-muted-foreground {
+    color: #ffffff !important;
+    /* Force white for muted text */
+    opacity: 0.9 !important;
+    font-weight: 700 !important;
   }
 
   /* Theme Christmas - Magical Winter Wonderland */
