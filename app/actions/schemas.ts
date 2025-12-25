@@ -120,6 +120,7 @@ export const deleteEventSchema = baseInput;
 export const generateIngredientsSchema = baseInput.extend({
     itemId: z.number(),
     itemName: z.string().min(1),
+    peopleCount: z.number().int().min(1).optional(),
 });
 
 export const createIngredientSchema = baseInput.extend({

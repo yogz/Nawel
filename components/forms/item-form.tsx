@@ -43,7 +43,7 @@ export function ItemForm({
     readOnly?: boolean;
     // Ingredient props
     ingredients?: Ingredient[];
-    onGenerateIngredients?: () => Promise<void>;
+    onGenerateIngredients?: (name: string, note?: string) => Promise<void>;
     onToggleIngredient?: (id: number, checked: boolean) => void;
     onDeleteIngredient?: (id: number) => void;
     onCreateIngredient?: (name: string, quantity?: string) => void;
@@ -235,7 +235,7 @@ export function ItemForm({
                     {!readOnly && (!ingredients || ingredients.length === 0) && (
                         <button
                             type="button"
-                            onClick={onGenerateIngredients}
+                            onClick={() => onGenerateIngredients(name, note)}
                             disabled={isGenerating || !name.trim()}
                             className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
                         >

@@ -354,12 +354,13 @@ export function useEventHandlers({
     };
 
     // Ingredient handlers
-    const handleGenerateIngredients = async (itemId: number, itemName: string) => {
+    const handleGenerateIngredients = async (itemId: number, itemName: string, peopleCount?: number) => {
         if (readOnly) return [];
         try {
             const generated = await generateIngredientsAction({
                 itemId,
                 itemName,
+                peopleCount,
                 slug,
                 key: writeKey,
             });

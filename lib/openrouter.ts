@@ -10,14 +10,15 @@ export interface GeneratedIngredient {
 }
 
 export async function generateIngredients(
-  itemName: string
+  itemName: string,
+  peopleCount: number = 4
 ): Promise<GeneratedIngredient[]> {
   const result = await client.chat.send({
     model: "mistralai/mistral-small-3.1-24b-instruct:free",
     messages: [
       {
         role: "system",
-        content: `Tu es un assistant culinaire expert. Quand on te donne le nom d'un plat ou d'une recette, tu dois lister les ingrédients nécessaires pour le préparer pour 4 personnes.
+        content: `Tu es un assistant culinaire expert. Quand on te donne le nom d'un plat ou d'une recette, tu dois lister les ingrédients nécessaires pour le préparer pour ${peopleCount} personne${peopleCount > 1 ? "s" : ""}.
 
 Réponds UNIQUEMENT avec un tableau JSON d'objets ayant cette structure:
 [{"name": "nom de l'ingrédient", "quantity": "quantité suggérée"}]

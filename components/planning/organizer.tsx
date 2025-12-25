@@ -259,10 +259,31 @@ export function Organizer({
             readOnly={readOnly}
             // Ingredient props
             ingredients={sheet.item?.ingredients}
-            onGenerateIngredients={sheet.item ? async () => {
+            onGenerateIngredients={sheet.item ? async (currentName, currentNote) => {
               setIsGenerating(true);
               try {
-                await handleGenerateIngredients(sheet.item!.id, sheet.item!.name);
+                // Try to extract people count from the note (e.g., "Pour 5 personnes")
+                let peopleCount = undefined;
+                if (currentNote) {
+                  const match = currentNote.match(/Pour (\d+) personne/i);
+                  if (match) {
+                    peopleCount = parseInt(match[1]);
+                  }
+                }
+
+                await handleGenerateIngredients(
+                  sheet.item!.id,
+                  currentName || sheet.item!.name,
+                  peopleCount || (() => {
+                    const mealId = sheet.mealId || sheet.item?.mealId;
+                    if (!mealId) return undefined;
+                    for (const day of plan.days) {
+                      const meal = day.meals.find((m: any) => m.id === mealId);
+                      if (meal) return (meal as any).peopleCount;
+                    }
+                    return undefined;
+                  })()
+                );
                 setSuccessMessage("Ingredients generes avec succes!");
                 setTimeout(() => setSuccessMessage(null), 3000);
               } catch (error) {

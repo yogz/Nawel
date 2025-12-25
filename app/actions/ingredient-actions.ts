@@ -24,7 +24,7 @@ export const generateIngredientsAction = withErrorThrower(
         await db.delete(ingredients).where(eq(ingredients.itemId, input.itemId));
 
         // Generate ingredients from AI
-        const generatedIngredients = await generateFromAI(input.itemName);
+        const generatedIngredients = await generateFromAI(input.itemName, input.peopleCount);
 
         if (generatedIngredients.length === 0) {
             throw new Error("Impossible de générer les ingrédients. Réessayez.");
