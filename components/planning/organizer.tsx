@@ -162,7 +162,7 @@ export function Organizer({
         unassignedItemsCount={unassignedItemsCount}
       />
 
-      <SuccessToast message={successMessage} christmas={christmas} />
+      <SuccessToast message={successMessage?.text || null} type={successMessage?.type || "success"} christmas={christmas} />
 
       <main className="flex-1 space-y-4 px-4 py-8">
         {tab === "planning" && (
@@ -238,7 +238,13 @@ export function Organizer({
         {sheet?.type === "item" && (
           <ItemForm
             people={plan.people}
-            defaultItem={sheet.item}
+            defaultItem={(() => {
+              if (sheet.item) {
+                const found = findItem(sheet.item.id);
+                return found?.item || sheet.item;
+              }
+              return undefined;
+            })()}
             allServices={plan.meals.flatMap((m: any) => m.services.map((s: any) => ({ ...s, mealTitle: m.title || m.date })))}
             currentServiceId={sheet.serviceId || sheet.item?.serviceId}
             servicePeopleCount={(() => {
@@ -258,7 +264,13 @@ export function Organizer({
             onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
             readOnly={readOnly}
             // Ingredient props
-            ingredients={sheet.item?.ingredients}
+            ingredients={(() => {
+              if (sheet.item) {
+                const found = findItem(sheet.item.id);
+                return found?.item.ingredients || sheet.item.ingredients;
+              }
+              return undefined;
+            })()}
             onGenerateIngredients={sheet.item ? async (currentName, currentNote) => {
               setIsGenerating(true);
               try {
@@ -284,11 +296,12 @@ export function Organizer({
                     return undefined;
                   })()
                 );
-                setSuccessMessage("Ingredients generes avec succes!");
+                setSuccessMessage({ text: "Ingrédients générés ! ✨", type: "success" });
                 setTimeout(() => setSuccessMessage(null), 3000);
               } catch (error) {
                 console.error("Failed to generate ingredients:", error);
-                alert("Erreur lors de la generation des ingredients. Verifiez votre connexion et reessayez.");
+                setSuccessMessage({ text: "Erreur de génération ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
               } finally {
                 setIsGenerating(false);
               }

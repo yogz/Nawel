@@ -21,7 +21,7 @@ interface UseEventHandlersParams {
     writeKey?: string;
     readOnly: boolean;
     setSheet: (sheet: SheetState | null) => void;
-    setSuccessMessage: (message: string | null) => void;
+    setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
     setSelectedPerson?: (id: number | null) => void;
 }
 
@@ -50,9 +50,17 @@ export function useEventHandlers({
     const handleCreateItem = (data: { serviceId: number; name: string; quantity?: string; note?: string; price?: number }) => {
         if (readOnly) return;
         startTransition(async () => {
-            const created = await createItemAction({ ...data, slug, key: writeKey });
-            setServiceItems(data.serviceId, (items) => [...items, { ...created, person: null }]);
-            setSheet(null);
+            try {
+                const created = await createItemAction({ ...data, slug, key: writeKey });
+                setServiceItems(data.serviceId, (items) => [...items, { ...created, person: null }]);
+                setSheet(null);
+                setSuccessMessage({ text: `${data.name} ajouté ! ✨`, type: "success" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to create item:", error);
+                setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
         });
     };
 
@@ -89,7 +97,7 @@ export function useEventHandlers({
 
         const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
         const personName = person?.name || "À prévoir";
-        setSuccessMessage(`Article assigné à ${personName} ✓`);
+        setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
         setTimeout(() => setSuccessMessage(null), 3000);
 
         if (person && (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")) {
@@ -117,13 +125,17 @@ export function useEventHandlers({
         const previousPlan = plan;
         setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
         setSheet(null);
+        setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
+        setTimeout(() => setSuccessMessage(null), 3000);
+
         startTransition(async () => {
             try {
                 await deleteItemAction({ id: item.id, slug, key: writeKey });
             } catch (error) {
                 console.error("Failed to delete item:", error);
                 setPlan(previousPlan);
-                alert("Erreur lors de la suppression de l'article.");
+                setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
@@ -168,10 +180,13 @@ export function useEventHandlers({
                 ...prev,
                 meals: [...prev.meals, { ...created, services: [] }].sort((a, b) => a.date.localeCompare(b.date)),
             }));
+            setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+            setTimeout(() => setSuccessMessage(null), 3000);
             return created.id;
         } catch (error) {
             console.error("Failed to create meal:", error);
-            alert("Erreur lors de la création du repas. Vérifiez les logs console.");
+            setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
+            setTimeout(() => setSuccessMessage(null), 3000);
             return 0;
         }
     };
@@ -186,11 +201,12 @@ export function useEventHandlers({
                     meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
                 }));
                 setSheet(null);
-                setSuccessMessage("Nouveau repas créé avec succès ✨");
+                setSuccessMessage({ text: "Nouveau repas créé ✨", type: "success" });
                 setTimeout(() => setSuccessMessage(null), 3000);
             } catch (error) {
                 console.error("Failed to create meal with services:", error);
-                alert("Erreur lors de la création du repas avec services.");
+                setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
@@ -198,33 +214,48 @@ export function useEventHandlers({
     const handleCreateService = (mealId: number, title: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            const created = await createServiceAction({ mealId, title, peopleCount, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                meals: prev.meals.map((m) => (m.id === mealId ? { ...m, services: [...m.services, { ...created, items: [] }] } : m)),
-            }));
-            setSheet(null);
+            try {
+                const created = await createServiceAction({ mealId, title, peopleCount, slug, key: writeKey });
+                setPlan((prev: PlanData) => ({
+                    ...prev,
+                    meals: prev.meals.map((m) => (m.id === mealId ? { ...m, services: [...m.services, { ...created, items: [] }] } : m)),
+                }));
+                setSheet(null);
+                setSuccessMessage({ text: "Service ajouté ! ✓", type: "success" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to create service:", error);
+                setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
         });
     };
 
     const handleUpdateService = (id: number, title?: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            await updateServiceAction({ id, title, peopleCount, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                meals: prev.meals.map((m) => ({
-                    ...m,
-                    services: m.services.map((s) => (s.id === id ? { ...s, ...(title !== undefined && { title }), ...(peopleCount !== undefined && { peopleCount }) } : s)),
-                })),
-            }));
-            setSheet(null);
+            try {
+                await updateServiceAction({ id, title, peopleCount, slug, key: writeKey });
+                setPlan((prev: PlanData) => ({
+                    ...prev,
+                    meals: prev.meals.map((m) => ({
+                        ...m,
+                        services: m.services.map((s) => (s.id === id ? { ...s, ...(title !== undefined && { title }), ...(peopleCount !== undefined && { peopleCount }) } : s)),
+                    })),
+                }));
+                setSheet(null);
+                setSuccessMessage({ text: "Service mis à jour ✓", type: "success" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to update service:", error);
+                setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
         });
     };
 
     const handleDeleteService = (id: number) => {
         if (readOnly) return;
-        if (!confirm("Supprimer ce service et tous ses articles ?")) return;
         const previousPlan = plan;
         setPlan((prev: PlanData) => ({
             ...prev,
@@ -234,13 +265,17 @@ export function useEventHandlers({
             })),
         }));
         setSheet(null);
+        setSuccessMessage({ text: "Service supprimé ✓", type: "success" });
+        setTimeout(() => setSuccessMessage(null), 3000);
+
         startTransition(async () => {
             try {
                 await deleteServiceAction({ id, slug, key: writeKey });
             } catch (error) {
                 console.error("Failed to delete service:", error);
                 setPlan(previousPlan);
-                alert("Erreur lors de la suppression du service.");
+                setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
@@ -248,31 +283,41 @@ export function useEventHandlers({
     const handleUpdateMeal = (id: number, date: string, title?: string | null) => {
         if (readOnly) return;
         startTransition(async () => {
-            await updateMealAction({ id, date, title, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                meals: prev.meals.map((m) => (m.id === id ? { ...m, date, title: title ?? null } : m)),
-            }));
-            setSheet(null);
+            try {
+                await updateMealAction({ id, date, title, slug, key: writeKey });
+                setPlan((prev: PlanData) => ({
+                    ...prev,
+                    meals: prev.meals.map((m) => (m.id === id ? { ...m, date, title: title ?? null } : m)),
+                }));
+                setSheet(null);
+                setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to update meal:", error);
+                setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
         });
     };
 
     const handleDeleteMeal = (id: number) => {
         if (readOnly) return;
-        if (!confirm("Supprimer ce repas et tous ses services ?")) return;
         const previousPlan = plan;
         setPlan((prev: PlanData) => ({
             ...prev,
             meals: prev.meals.filter((m) => m.id !== id),
         }));
         setSheet(null);
+        setSuccessMessage({ text: "Repas supprimé ✓", type: "success" });
+        setTimeout(() => setSuccessMessage(null), 3000);
         startTransition(async () => {
             try {
-                await deleteMealAction({ id, slug, key: writeKey });
+                await deleteMealAction({ id: id, slug, key: writeKey });
             } catch (error) {
                 console.error("Failed to delete meal:", error);
                 setPlan(previousPlan);
-                alert("Erreur lors de la suppression du repas.");
+                setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
@@ -288,11 +333,12 @@ export function useEventHandlers({
                 }));
                 setSelectedPerson?.(created.id);
                 setSheet(null);
-                setSuccessMessage(`${name} a été ajouté(e) aux convives ✨`);
+                setSuccessMessage({ text: `${name} ajouté(e) ! ✨`, type: "success" });
                 setTimeout(() => setSuccessMessage(null), 3000);
             } catch (error) {
                 console.error("Failed to create person:", error);
-                alert("Erreur lors de l'ajout du convive.");
+                setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
@@ -300,19 +346,27 @@ export function useEventHandlers({
     const handleUpdatePerson = (id: number, name: string, emoji: string | null) => {
         if (readOnly) return;
         startTransition(async () => {
-            await updatePersonAction({ id, name, emoji, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji } : p)),
-            }));
-            setSheet(null);
+            try {
+                await updatePersonAction({ id, name, emoji, slug, key: writeKey });
+                setPlan((prev: PlanData) => ({
+                    ...prev,
+                    people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji } : p)),
+                }));
+                setSheet(null);
+                setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            } catch (error) {
+                console.error("Failed to update person:", error);
+                setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
         });
     };
 
     const handleDeletePerson = (id: number) => {
         if (readOnly) return;
-        if (!confirm("Es-tu sûr de vouloir supprimer ce convive ? Tous ses articles deviendront 'À prévoir'.")) return;
         const previousPlan = plan;
+        const person = plan.people.find(p => p.id === id);
         setPlan((prev: PlanData) => ({
             ...prev,
             people: prev.people.filter((p) => p.id !== id),
@@ -325,6 +379,8 @@ export function useEventHandlers({
             })),
         }));
         setSheet(null);
+        setSuccessMessage({ text: `${person?.name || "Convive"} supprimé ✓`, type: "success" });
+        setTimeout(() => setSuccessMessage(null), 3000);
 
         startTransition(async () => {
             try {
@@ -332,23 +388,24 @@ export function useEventHandlers({
             } catch (error) {
                 console.error("Failed to delete person:", error);
                 setPlan(previousPlan);
-                alert("Erreur lors de la suppression du convive.");
+                setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };
 
     const handleDeleteEvent = async () => {
-        if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?")) return;
         startTransition(async () => {
             try {
                 const result = await deleteEventAction({ slug, key: writeKey });
                 if (result.success) {
-                    setSuccessMessage("Événement supprimé avec succès.");
+                    setSuccessMessage({ text: "Événement supprimé ✓", type: "success" });
                     setTimeout(() => { window.location.href = "/"; }, 1500);
                 }
             } catch (error) {
                 console.error("Failed to delete event:", error);
-                alert("Erreur lors de la suppression de l'événement.");
+                setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+                setTimeout(() => setSuccessMessage(null), 3000);
             }
         });
     };

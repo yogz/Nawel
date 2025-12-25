@@ -24,7 +24,7 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     const [readOnly, setReadOnly] = useState(!writeEnabled);
     const [pending, startTransition] = useTransition();
     const [activeItemId, setActiveItemId] = useState<number | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<{ text: string; type?: "success" | "error" } | null>(null);
     const [logsLoading, setLogsLoading] = useState(false);
 
     const unassignedItemsCount = useMemo(() => {
