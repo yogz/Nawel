@@ -536,7 +536,6 @@ export function useEventHandlers({
 
     const handleDeleteAllIngredients = (itemId: number) => {
         if (readOnly) return;
-        if (!confirm("Supprimer tous les ingrédients ?")) return;
 
         setPlan((prev: PlanData) => ({
             ...prev,
