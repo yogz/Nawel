@@ -22,7 +22,8 @@ Format de réponse: JSON uniquement, sans texte autour.
 Règles:
 - Ingrédients principaux en premier, puis secondaires
 - Quantités précises: "200g", "2 pièces", "1 c. à soupe", "1/2 litre"
-- 5-12 ingrédients selon la complexité du plat
+- Liste uniquement les ingrédients nécessaires (pas de remplissage)
+- 12 ingrédients maximum
 - Si ce n'est pas un plat cuisiné (ex: boisson, fromage), réponds []`;
   const userPrompt = `Ingrédients pour: ${itemName}`;
 
