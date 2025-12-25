@@ -14,18 +14,26 @@ export const createMealAction = withErrorThrower(async (input: z.infer<typeof cr
     await verifyEventAccess(input.slug, input.key);
     const [created] = await db
         .insert(meals)
-        .values({ dayId: input.dayId, title: input.title })
+        .values({
+            dayId: input.dayId,
+            title: input.title,
+            peopleCount: input.peopleCount ?? 1
+        })
         .returning();
     await logChange("create", "meals", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
 });
 
-export const updateMealTitleAction = withErrorThrower(async (input: z.infer<typeof mealSchema>) => {
+export const updateMealAction = withErrorThrower(async (input: z.infer<typeof mealSchema>) => {
     await verifyEventAccess(input.slug, input.key);
+    const updateData: any = {};
+    if (input.title !== undefined) updateData.title = input.title;
+    if (input.peopleCount !== undefined) updateData.peopleCount = input.peopleCount;
+
     const [updated] = await db
         .update(meals)
-        .set({ title: input.title })
+        .set(updateData)
         .where(eq(meals.id, input.id))
         .returning();
     await logChange("update", "meals", updated.id, null, updated);

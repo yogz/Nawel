@@ -1,0 +1,1 @@
+ALTER TABLE "meals" ADD COLUMN "people_count" integer DEFAULT 1 NOT NULL;

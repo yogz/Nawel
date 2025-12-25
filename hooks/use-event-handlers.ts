@@ -5,7 +5,7 @@ import confetti from "canvas-confetti";
 import {
     createItemAction, updateItemAction, deleteItemAction, assignItemAction,
     createDayAction, updateDayAction, deleteDayAction, createDayWithMealsAction,
-    createMealAction, updateMealTitleAction, deleteMealAction,
+    createMealAction, updateMealAction, deleteMealAction,
     createPersonAction, updatePersonAction,
     deletePersonAction, moveItemAction, deleteEventAction,
     generateIngredientsAction, createIngredientAction, updateIngredientAction,
@@ -195,10 +195,10 @@ export function useEventHandlers({
         });
     };
 
-    const handleCreateMeal = (dayId: number, title: string) => {
+    const handleCreateMeal = (dayId: number, title: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            const created = await createMealAction({ dayId, title, slug, key: writeKey });
+            const created = await createMealAction({ dayId, title, peopleCount, slug, key: writeKey });
             setPlan((prev: PlanData) => ({
                 ...prev,
                 days: prev.days.map((d) => (d.id === dayId ? { ...d, meals: [...d.meals, { ...created, items: [] }] } : d)),
@@ -207,15 +207,15 @@ export function useEventHandlers({
         });
     };
 
-    const handleUpdateMealTitle = (id: number, title: string) => {
+    const handleUpdateMeal = (id: number, title?: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            await updateMealTitleAction({ id, title, slug, key: writeKey });
+            await updateMealAction({ id, title, peopleCount, slug, key: writeKey });
             setPlan((prev: PlanData) => ({
                 ...prev,
                 days: prev.days.map((d) => ({
                     ...d,
-                    meals: d.meals.map((m) => (m.id === id ? { ...m, title } : m)),
+                    meals: d.meals.map((m) => (m.id === id ? { ...m, ...(title !== undefined && { title }), ...(peopleCount !== undefined && { peopleCount }) } : m)),
                 })),
             }));
             setSheet(null);
@@ -400,11 +400,11 @@ export function useEventHandlers({
                     items: meal.items.map((item) =>
                         item.id === itemId
                             ? {
-                                  ...item,
-                                  ingredients: item.ingredients?.map((ing) =>
-                                      ing.id === ingredientId ? { ...ing, checked } : ing
-                                  ),
-                              }
+                                ...item,
+                                ingredients: item.ingredients?.map((ing) =>
+                                    ing.id === ingredientId ? { ...ing, checked } : ing
+                                ),
+                            }
                             : item
                     ),
                 })),
@@ -433,9 +433,9 @@ export function useEventHandlers({
                     items: meal.items.map((item) =>
                         item.id === itemId
                             ? {
-                                  ...item,
-                                  ingredients: item.ingredients?.filter((ing) => ing.id !== ingredientId),
-                              }
+                                ...item,
+                                ingredients: item.ingredients?.filter((ing) => ing.id !== ingredientId),
+                            }
                             : item
                     ),
                 })),
@@ -502,7 +502,7 @@ export function useEventHandlers({
         handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
         handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
         handleCreateDayWithMeals,
-        handleUpdateDay, handleDeleteDay, handleUpdateMealTitle, handleDeleteMeal,
+        handleUpdateDay, handleDeleteDay, handleUpdateMeal, handleDeleteMeal,
         handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem,
         // Ingredient handlers
         handleGenerateIngredients, handleToggleIngredient, handleDeleteIngredient,

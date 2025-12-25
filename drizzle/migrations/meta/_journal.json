@@ -71,6 +71,13 @@
       "when": 1766627856814,
       "tag": "0009_bouncy_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1766654638112,
+      "tag": "0010_sloppy_monster_badoon",
+      "breakpoints": true
     }
   ]
 }

@@ -7,10 +7,11 @@ import { Label } from "../ui/label";
 
 export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
     const [title, setTitle] = useState(meal?.title || "");
+    const [peopleCount, setPeopleCount] = useState(meal?.peopleCount || 1);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(meal.id, title);
+        onSubmit(meal.id, title, peopleCount);
     };
 
     return (
@@ -24,6 +25,19 @@ export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
                     placeholder="Dîner, Apéro..."
                     required
                     autoFocus
+                />
+            </div>
+
+            <div className="grid gap-2">
+                <Label htmlFor="people-count">Nombre de personnes</Label>
+                <Input
+                    id="people-count"
+                    type="number"
+                    min="1"
+                    value={peopleCount}
+                    onChange={(e) => setPeopleCount(parseInt(e.target.value) || 1)}
+                    placeholder="Ex: 8"
+                    required
                 />
             </div>
 

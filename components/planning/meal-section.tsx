@@ -53,6 +53,11 @@ export function MealSection({
       <div className="mb-2 sm:mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-semibold">{meal.title}</h3>
+          {(meal as any).peopleCount > 1 && (
+            <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+              {meal.peopleCount} pers.
+            </span>
+          )}
           {!readOnly && (
             <button
               onClick={onEdit}

@@ -95,7 +95,7 @@ export function Organizer({
     handleCreateMeal,
     handleUpdateDay,
     handleDeleteDay,
-    handleUpdateMealTitle,
+    handleUpdateMeal,
     handleDeleteMeal,
     handleCreatePerson,
     handleCreateDayWithMeals,
@@ -241,6 +241,15 @@ export function Organizer({
             defaultItem={sheet.item}
             allMeals={plan.days.flatMap((d: any) => d.meals.map((m: any) => ({ ...m, dayTitle: d.title || d.date })))}
             currentMealId={sheet.mealId || sheet.item?.mealId}
+            mealPeopleCount={(() => {
+              const mealId = sheet.mealId || sheet.item?.mealId;
+              if (!mealId) return undefined;
+              for (const day of plan.days) {
+                const meal = day.meals.find((m: any) => m.id === mealId);
+                if (meal) return (meal as any).peopleCount;
+              }
+              return undefined;
+            })()}
             onSubmit={(vals) =>
               sheet.item ? handleUpdateItem(sheet.item.id, vals) : handleCreateItem({ ...vals, mealId: sheet.mealId })
             }
@@ -254,6 +263,11 @@ export function Organizer({
               setIsGenerating(true);
               try {
                 await handleGenerateIngredients(sheet.item!.id, sheet.item!.name);
+                setSuccessMessage("Ingredients generes avec succes!");
+                setTimeout(() => setSuccessMessage(null), 3000);
+              } catch (error) {
+                console.error("Failed to generate ingredients:", error);
+                alert("Erreur lors de la generation des ingredients. Verifiez votre connexion et reessayez.");
               } finally {
                 setIsGenerating(false);
               }
@@ -272,19 +286,19 @@ export function Organizer({
             defaultDayId={sheet.dayId}
             forceNewDay={sheet.dayId === -1}
             readOnly={readOnly}
-            onSubmit={async (dayId, title, newDayDate, newDayTitle) => {
+            onSubmit={async (dayId, title, peopleCount, newDayDate, newDayTitle) => {
               let targetDayId = dayId;
               if (dayId === -1 && newDayDate) {
-                targetDayId = await handleCreateDay(newDayDate, newDayTitle);
+                targetDayId = await handleCreateDay(newDayDate, newDayTitle || undefined);
               }
-              handleCreateMeal(targetDayId, title);
+              handleCreateMeal(targetDayId, title, peopleCount);
             }}
           />
         )}
         {sheet?.type === "meal-edit" && (
           <MealEditForm
             meal={sheet.meal}
-            onSubmit={handleUpdateMealTitle}
+            onSubmit={handleUpdateMeal}
             onDelete={handleDeleteMeal}
             onClose={() => setSheet(null)}
           />

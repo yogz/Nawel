@@ -16,6 +16,7 @@ export function ItemForm({
     defaultItem,
     allMeals,
     currentMealId,
+    mealPeopleCount,
     onSubmit,
     onAssign,
     onMoveMeal,
@@ -34,6 +35,7 @@ export function ItemForm({
     defaultItem?: Item;
     allMeals?: Array<Meal & { dayTitle: string }>;
     currentMealId?: number;
+    mealPeopleCount?: number;
     onSubmit: (values: { name: string; quantity?: string; note?: string; price?: number }) => void;
     onAssign: (personId: number | null) => void;
     onMoveMeal?: (targetMealId: number) => void;
@@ -48,9 +50,10 @@ export function ItemForm({
     onDeleteAllIngredients?: () => void;
     isGenerating?: boolean;
 }) {
+    const defaultNote = !defaultItem && mealPeopleCount ? `Pour ${mealPeopleCount} personne${mealPeopleCount > 1 ? "s" : ""}` : "";
     const [name, setName] = useState(defaultItem?.name || "");
     const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
-    const [note, setNote] = useState(defaultItem?.note || "");
+    const [note, setNote] = useState(defaultItem?.note || defaultNote);
     const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
     const [showDetails, setShowDetails] = useState(false);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -228,8 +231,8 @@ export function ItemForm({
             {/* AI Ingredients section - only for existing items */}
             {isEditMode && onGenerateIngredients && (
                 <div className="space-y-3 pt-3 border-t border-gray-100">
-                    {/* Generate button - show if no ingredients or allow regeneration */}
-                    {!readOnly && (
+                    {/* Generate button - only show if NO ingredients yet */}
+                    {!readOnly && (!ingredients || ingredients.length === 0) && (
                         <button
                             type="button"
                             onClick={onGenerateIngredients}
@@ -241,11 +244,6 @@ export function ItemForm({
                                     <Loader2 size={16} className="animate-spin" />
                                     Generation en cours...
                                 </>
-                            ) : ingredients && ingredients.length > 0 ? (
-                                <>
-                                    <Sparkles size={16} />
-                                    Regenerer les ingredients
-                                </>
                             ) : (
                                 <>
                                     <Sparkles size={16} />
@@ -253,6 +251,14 @@ export function ItemForm({
                                 </>
                             )}
                         </button>
+                    )}
+
+                    {/* Loading state with message */}
+                    {isGenerating && (
+                        <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
+                            <Loader2 size={18} className="animate-spin text-purple-500" />
+                            <span>L&apos;IA analyse votre plat...</span>
+                        </div>
                     )}
 
                     {/* Ingredient list */}

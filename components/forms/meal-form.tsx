@@ -24,7 +24,7 @@ export function MealForm({
     days: Day[];
     defaultDayId?: number;
     forceNewDay?: boolean;
-    onSubmit: (dayId: number, title: string, newDayDate?: string, newDayTitle?: string) => Promise<void>;
+    onSubmit: (dayId: number, title: string, peopleCount: number, newDayDate?: string, newDayTitle?: string) => Promise<void>;
     readOnly?: boolean;
 }) {
     const [dayId, setDayId] = useState<string>(
@@ -33,6 +33,7 @@ export function MealForm({
             : (forceNewDay || days.length === 0 ? "new" : String(days[0].id))
     );
     const [title, setTitle] = useState("");
+    const [peopleCount, setPeopleCount] = useState(1);
     const [newDayDate, setNewDayDate] = useState<Date | undefined>(undefined);
     const [newDayTitle, setNewDayTitle] = useState("");
 
@@ -40,9 +41,9 @@ export function MealForm({
         if (dayId === "new") {
             if (!newDayDate) return;
             const formattedDate = format(newDayDate, "yyyy-MM-dd");
-            await onSubmit(-1, title, formattedDate, newDayTitle);
+            await onSubmit(-1, title, peopleCount, formattedDate, newDayTitle);
         } else {
-            await onSubmit(Number(dayId), title);
+            await onSubmit(Number(dayId), title, peopleCount);
         }
     };
 
@@ -118,6 +119,19 @@ export function MealForm({
                     onChange={(e) => setTitle(e.target.value)}
                     disabled={readOnly}
                     autoFocus
+                />
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="people-count">Nombre de personnes</Label>
+                <Input
+                    id="people-count"
+                    type="number"
+                    min="1"
+                    placeholder="Ex: 8"
+                    value={peopleCount}
+                    onChange={(e) => setPeopleCount(parseInt(e.target.value) || 1)}
+                    disabled={readOnly}
                 />
             </div>
 

@@ -31,11 +31,13 @@ export const updateDaySchema = baseInput.extend({
 export const createMealSchema = baseInput.extend({
     dayId: z.number(),
     title: z.string().min(1, "Title required"),
+    peopleCount: z.number().int().min(1).optional(),
 });
 
 export const mealSchema = baseInput.extend({
     id: z.number(),
-    title: z.string().min(1)
+    title: z.string().min(1).optional(),
+    peopleCount: z.number().int().min(1).optional(),
 });
 
 export const deleteMealSchema = baseInput.extend({

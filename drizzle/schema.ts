@@ -110,7 +110,7 @@ export const days = pgTable(
     eventId: integer("event_id")
       .notNull()
       .references(() => events.id, { onDelete: "cascade" }),
-    date: date("date").notNull(),
+    date: varchar("date", { length: 50 }).notNull(),
     title: text("title"),
   },
   (table) => ({
@@ -127,6 +127,7 @@ export const meals = pgTable(
       .references(() => days.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     order: integer("order_index").notNull().default(0),
+    peopleCount: integer("people_count").notNull().default(1),
   },
   (table) => ({
     dayIdIdx: index("meals_day_id_idx").on(table.dayId),
@@ -247,3 +248,20 @@ export const changeLogs = pgTable("change_logs", {
   referer: text("referer"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// Cache for AI-generated ingredients (to reduce API costs)
+export const ingredientCache = pgTable(
+  "ingredient_cache",
+  {
+    id: serial("id").primaryKey(),
+    dishName: text("dish_name").notNull().unique(), // normalized (lowercase, trimmed)
+    ingredients: text("ingredients").notNull(), // JSON array [{name, quantity}]
+    baseServings: integer("base_servings").notNull().default(4), // number of servings for quantities
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    expiresAt: timestamp("expires_at").notNull(), // TTL - 30 days from creation
+  },
+  (table) => ({
+    dishNameIdx: index("ingredient_cache_dish_name_idx").on(table.dishName),
+    expiresAtIdx: index("ingredient_cache_expires_at_idx").on(table.expiresAt),
+  })
+);
