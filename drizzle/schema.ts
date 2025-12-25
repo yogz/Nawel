@@ -251,6 +251,7 @@ export const changeLogs = pgTable("change_logs", {
 
 // Cache for AI-generated ingredients (to reduce API costs)
 // Key = dishName + peopleCount (e.g., "raclette" + 4 ≠ "raclette" + 6)
+// Cache is only trusted after 3 consistent AI responses (confirmations >= 3)
 export const ingredientCache = pgTable(
   "ingredient_cache",
   {
@@ -258,12 +259,12 @@ export const ingredientCache = pgTable(
     dishName: text("dish_name").notNull(), // normalized (lowercase, trimmed)
     peopleCount: integer("people_count").notNull(), // number of servings
     ingredients: text("ingredients").notNull(), // JSON array [{name, quantity}]
+    confirmations: integer("confirmations").notNull().default(1), // number of times AI returned same result
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    expiresAt: timestamp("expires_at").notNull(), // TTL - 30 days from creation
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
     // Unique constraint on dishName + peopleCount
     dishPeopleIdx: index("ingredient_cache_dish_people_idx").on(table.dishName, table.peopleCount),
-    expiresAtIdx: index("ingredient_cache_expires_at_idx").on(table.expiresAt),
   })
 );

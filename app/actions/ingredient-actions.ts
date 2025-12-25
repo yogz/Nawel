@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { ingredients, ingredientCache } from "@/drizzle/schema";
-import { eq, and, gt, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
     generateIngredientsSchema,
@@ -21,8 +21,21 @@ function normalizeDishName(name: string): string {
     return name.toLowerCase().trim().replace(/\s+/g, " ");
 }
 
-// Cache TTL: 30 days in milliseconds
-const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+// Normalize ingredient name for comparison
+function normalizeIngredientName(name: string): string {
+    return name.toLowerCase().trim();
+}
+
+// Compare two ingredient lists - returns true if they have the same ingredient names
+function ingredientsMatch(a: GeneratedIngredient[], b: GeneratedIngredient[]): boolean {
+    const namesA = a.map(i => normalizeIngredientName(i.name)).sort();
+    const namesB = b.map(i => normalizeIngredientName(i.name)).sort();
+    if (namesA.length !== namesB.length) return false;
+    return namesA.every((name, idx) => name === namesB[idx]);
+}
+
+// Minimum confirmations required before trusting cache
+const MIN_CONFIRMATIONS = 3;
 
 export const generateIngredientsAction = withErrorThrower(
     async (input: z.infer<typeof generateIngredientsSchema>) => {
@@ -33,7 +46,6 @@ export const generateIngredientsAction = withErrorThrower(
 
         const normalizedName = normalizeDishName(input.itemName);
         const peopleCount = input.peopleCount || 4;
-        const now = new Date();
 
         // Check cache for this dish + people count
         const [cached] = await db
@@ -42,37 +54,64 @@ export const generateIngredientsAction = withErrorThrower(
             .where(
                 and(
                     eq(ingredientCache.dishName, normalizedName),
-                    eq(ingredientCache.peopleCount, peopleCount),
-                    gt(ingredientCache.expiresAt, now)
+                    eq(ingredientCache.peopleCount, peopleCount)
                 )
             )
             .limit(1);
 
         let generatedIngredients: GeneratedIngredient[];
 
-        if (cached) {
-            // Cache hit - use cached ingredients
-            console.log(`[Cache] HIT for "${normalizedName}" (${peopleCount} pers.)`);
+        if (cached && cached.confirmations >= MIN_CONFIRMATIONS) {
+            // Cache is trusted (3+ confirmations) - use it directly
+            console.log(`[Cache] TRUSTED HIT for "${normalizedName}" (${peopleCount} pers.) - ${cached.confirmations} confirmations`);
             generatedIngredients = JSON.parse(cached.ingredients);
         } else {
-            // Cache miss - call AI
-            console.log(`[Cache] MISS for "${normalizedName}" (${peopleCount} pers.)`);
+            // Need to call AI (either no cache or not enough confirmations)
+            console.log(`[Cache] ${cached ? `VALIDATING (${cached.confirmations}/${MIN_CONFIRMATIONS})` : 'MISS'} for "${normalizedName}" (${peopleCount} pers.)`);
             generatedIngredients = await generateFromAI(input.itemName, peopleCount);
 
             if (generatedIngredients.length === 0) {
                 throw new Error("Impossible de générer les ingrédients. Réessayez.");
             }
 
-            // Store in cache only if we have at least 3 ingredients (quality threshold)
+            // Only cache if we have at least 3 ingredients (quality threshold)
             if (generatedIngredients.length >= 3) {
-                const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
-                await db.insert(ingredientCache).values({
-                    dishName: normalizedName,
-                    peopleCount,
-                    ingredients: JSON.stringify(generatedIngredients),
-                    expiresAt,
-                });
-                console.log(`[Cache] Stored "${normalizedName}" (${peopleCount} pers.) until ${expiresAt.toISOString()}`);
+                if (cached) {
+                    // Compare with existing cache
+                    const cachedIngredients: GeneratedIngredient[] = JSON.parse(cached.ingredients);
+                    if (ingredientsMatch(generatedIngredients, cachedIngredients)) {
+                        // Same ingredients - increment confirmations
+                        const newConfirmations = cached.confirmations + 1;
+                        await db
+                            .update(ingredientCache)
+                            .set({
+                                confirmations: newConfirmations,
+                                updatedAt: new Date()
+                            })
+                            .where(eq(ingredientCache.id, cached.id));
+                        console.log(`[Cache] CONFIRMED "${normalizedName}" (${newConfirmations}/${MIN_CONFIRMATIONS})`);
+                    } else {
+                        // Different ingredients - replace cache, reset confirmations
+                        await db
+                            .update(ingredientCache)
+                            .set({
+                                ingredients: JSON.stringify(generatedIngredients),
+                                confirmations: 1,
+                                updatedAt: new Date()
+                            })
+                            .where(eq(ingredientCache.id, cached.id));
+                        console.log(`[Cache] REPLACED "${normalizedName}" - ingredients differ, reset to 1/${MIN_CONFIRMATIONS}`);
+                    }
+                } else {
+                    // No cache exists - create new entry
+                    await db.insert(ingredientCache).values({
+                        dishName: normalizedName,
+                        peopleCount,
+                        ingredients: JSON.stringify(generatedIngredients),
+                        confirmations: 1,
+                    });
+                    console.log(`[Cache] CREATED "${normalizedName}" (1/${MIN_CONFIRMATIONS})`);
+                }
             }
         }
 
