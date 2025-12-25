@@ -16,6 +16,7 @@ export function useIngredientHandlers({
   slug,
   writeKey,
   readOnly,
+  setSuccessMessage,
 }: IngredientHandlerParams) {
   const [, startTransition] = useTransition();
 
@@ -27,33 +28,36 @@ export function useIngredientHandlers({
     if (readOnly) {
       return [];
     }
-    try {
-      const generated = await generateIngredientsAction({
-        itemId,
-        itemName,
-        peopleCount,
-        slug,
-        key: writeKey,
-      });
 
-      setPlan((prev: PlanData) => ({
-        ...prev,
-        meals: prev.meals.map((meal) => ({
-          ...meal,
-          services: meal.services.map((service) => ({
-            ...service,
-            items: service.items.map((item) =>
-              item.id === itemId ? { ...item, ingredients: generated } : item
-            ),
-          })),
-        })),
-      }));
+    const result = await generateIngredientsAction({
+      itemId,
+      itemName,
+      peopleCount,
+      slug,
+      key: writeKey,
+    });
 
-      return generated;
-    } catch (error) {
-      console.error("Failed to generate ingredients:", error);
-      throw error;
+    if (!result.success) {
+      setSuccessMessage({ text: result.error, type: "error" });
+      return [];
     }
+
+    const generated = result.data;
+
+    setPlan((prev: PlanData) => ({
+      ...prev,
+      meals: prev.meals.map((meal) => ({
+        ...meal,
+        services: meal.services.map((service) => ({
+          ...service,
+          items: service.items.map((item) =>
+            item.id === itemId ? { ...item, ingredients: generated } : item
+          ),
+        })),
+      })),
+    }));
+
+    return generated;
   };
 
   const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {

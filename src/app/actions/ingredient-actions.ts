@@ -39,14 +39,27 @@ function ingredientsMatch(a: GeneratedIngredient[], b: GeneratedIngredient[]): b
 // Minimum confirmations required before trusting cache
 const MIN_CONFIRMATIONS = 3;
 
-export const generateIngredientsAction = withErrorThrower(
-  async (input: z.infer<typeof generateIngredientsSchema>) => {
+type IngredientData = {
+  id: number;
+  name: string;
+  order: number;
+  quantity: string | null;
+  itemId: number;
+  checked: boolean;
+};
+
+type GenerateResult = { success: true; data: IngredientData[] } | { success: false; error: string };
+
+export async function generateIngredientsAction(
+  input: z.infer<typeof generateIngredientsSchema>
+): Promise<GenerateResult> {
+  try {
     // Require authenticated user for AI generation
     const session = await auth.api.getSession({
       headers: await headers(),
     });
     if (!session) {
-      throw new Error("Vous devez être connecté pour utiliser la génération IA.");
+      return { success: false, error: "Vous devez être connecté pour utiliser la génération IA." };
     }
 
     await verifyEventAccess(input.slug, input.key);
@@ -82,10 +95,16 @@ export const generateIngredientsAction = withErrorThrower(
       console.log(
         `[Cache] ${cached ? `VALIDATING (${cached.confirmations}/${MIN_CONFIRMATIONS})` : "MISS"} for "${normalizedName}" (${peopleCount} pers.)`
       );
-      generatedIngredients = await generateFromAI(input.itemName, peopleCount);
 
-      if (generatedIngredients.length === 0) {
-        throw new Error("Impossible de générer les ingrédients. Réessayez.");
+      try {
+        generatedIngredients = await generateFromAI(input.itemName, peopleCount);
+      } catch (aiError) {
+        console.error("[AI] Generation failed:", aiError);
+        return { success: false, error: "L'IA n'a pas pu générer les ingrédients. Réessayez." };
+      }
+
+      if (!generatedIngredients || generatedIngredients.length === 0) {
+        return { success: false, error: "L'IA n'a retourné aucun ingrédient. Réessayez." };
       }
 
       // Only cache if we have at least 3 ingredients (quality threshold)
@@ -133,8 +152,8 @@ export const generateIngredientsAction = withErrorThrower(
       }
     }
 
-    if (generatedIngredients.length === 0) {
-      throw new Error("Impossible de générer les ingrédients. Réessayez.");
+    if (!generatedIngredients || generatedIngredients.length === 0) {
+      return { success: false, error: "Aucun ingrédient généré. Réessayez." };
     }
 
     // Insert all ingredients
@@ -157,9 +176,12 @@ export const generateIngredientsAction = withErrorThrower(
     });
 
     revalidatePath(`/event/${input.slug}`);
-    return inserted;
+    return { success: true, data: inserted };
+  } catch (error) {
+    console.error("[generateIngredientsAction] Unexpected error:", error);
+    return { success: false, error: "Une erreur inattendue est survenue. Réessayez." };
   }
-);
+}
 
 export const createIngredientAction = withErrorThrower(
   async (input: z.infer<typeof createIngredientSchema>) => {
