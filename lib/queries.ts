@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "./db";
-import { days, items, meals, people, events, ingredients } from "@/drizzle/schema";
+import { meals, items, services, people, events, ingredients } from "@/drizzle/schema";
 
 export async function fetchPlan(slug: string) {
   // Trouver l'événement par slug
@@ -9,15 +9,15 @@ export async function fetchPlan(slug: string) {
   });
 
   if (!event) {
-    return { event: null, days: [], people: [] };
+    return { event: null, meals: [], people: [] };
   }
 
-  const dayList = await db.query.days.findMany({
-    where: eq(days.eventId, event.id),
-    orderBy: asc(days.date),
+  const mealList = await db.query.meals.findMany({
+    where: eq(meals.eventId, event.id),
+    orderBy: asc(meals.date),
     with: {
-      meals: {
-        orderBy: asc(meals.order),
+      services: {
+        orderBy: asc(services.order),
         with: {
           items: {
             orderBy: asc(items.order),
@@ -37,7 +37,7 @@ export async function fetchPlan(slug: string) {
     where: eq(people.eventId, event.id),
     orderBy: asc(people.name),
   });
-  return { event, days: dayList, people: peopleList };
+  return { event, meals: mealList, people: peopleList };
 }
 
 export async function fetchAllEvents() {

@@ -4,15 +4,15 @@ import { useState, useTransition, useMemo } from "react";
 import { PlanData, PlanningFilter, Item } from "@/lib/types";
 
 export type SheetState =
-    | { type: "item"; mealId: number; item?: Item }
-    | { type: "meal"; dayId: number }
+    | { type: "item"; serviceId: number; item?: Item }
+    | { type: "service"; mealId: number }
+    | { type: "service-edit"; service: any }
     | { type: "meal-edit"; meal: any }
-    | { type: "day-edit"; day: any }
     | { type: "person" }
     | { type: "person-select" }
-    | { type: "person-edit"; person: any } // Adjusted to matched used types
+    | { type: "person-edit"; person: any }
     | { type: "share" }
-    | { type: "day-create" };
+    | { type: "meal-create" };
 
 export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     const [plan, setPlan] = useState(initialPlan);
@@ -29,15 +29,15 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
 
     const unassignedItemsCount = useMemo(() => {
         let count = 0;
-        plan.days.forEach((day) => {
-            day.meals.forEach((meal) => {
-                meal.items.forEach((item) => {
+        plan.meals.forEach((meal) => {
+            meal.services.forEach((service) => {
+                service.items.forEach((item) => {
                     if (!item.personId) count++;
                 });
             });
         });
         return count;
-    }, [plan.days]);
+    }, [plan.meals]);
 
     return {
         plan, setPlan,

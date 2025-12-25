@@ -5,24 +5,24 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
-export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
-    const [title, setTitle] = useState(meal?.title || "");
-    const [peopleCount, setPeopleCount] = useState(meal?.peopleCount || 1);
+export function ServiceEditForm({ service, onSubmit, onDelete, onClose }: any) {
+    const [title, setTitle] = useState(service?.title || "");
+    const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 1);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(meal.id, title, peopleCount);
+        onSubmit(service.id, title, peopleCount);
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-2">
-                <Label htmlFor="meal-title">Nom du service</Label>
+                <Label htmlFor="service-title">Nom du service</Label>
                 <Input
-                    id="meal-title"
+                    id="service-title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Dîner, Apéro..."
+                    placeholder="Entrée, Plat, Dessert..."
                     required
                     autoFocus
                 />
@@ -49,7 +49,7 @@ export function MealEditForm({ meal, onSubmit, onDelete, onClose }: any) {
                     <Button
                         type="button"
                         variant="destructive"
-                        onClick={() => onDelete(meal.id)}
+                        onClick={() => onDelete(service.id)}
                         className="w-full rounded-2xl"
                     >
                         Supprimer le service

@@ -24,7 +24,7 @@ import { PersonSelectSheet } from "./person-select-sheet";
 import { SuccessToast } from "../common/success-toast";
 import { ShareModal } from "../modals/share-modal";
 import { ItemForm } from "../forms/item-form";
-import { MealForm } from "../forms/meal-form";
+import { ServiceForm } from "../forms/service-form";
 import { PersonForm } from "../forms/person-form";
 import { PersonEditForm } from "../forms/person-edit-form";
 import { PlanningTab } from "./planning-tab";
@@ -35,8 +35,8 @@ import { SettingsTab } from "./settings-tab";
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
 
-import { DayForm } from "../forms/day-form";
-import { MealEditForm } from "../forms/meal-edit-form";
+import { MealForm } from "../forms/meal-form";
+import { ServiceEditForm } from "../forms/service-edit-form";
 
 export function Organizer({
   initialPlan,
@@ -91,14 +91,14 @@ export function Organizer({
     handleAssign,
     handleDelete,
     handleMoveItem,
-    handleCreateDay,
     handleCreateMeal,
-    handleUpdateDay,
-    handleDeleteDay,
+    handleCreateService,
     handleUpdateMeal,
     handleDeleteMeal,
+    handleUpdateService,
+    handleDeleteService,
     handleCreatePerson,
-    handleCreateDayWithMeals,
+    handleCreateMealWithServices,
     handleUpdatePerson,
     handleDeletePerson,
     handleDeleteEvent,
@@ -181,20 +181,20 @@ export function Organizer({
               const found = findItem(itemId);
               if (!found) return;
 
-              if (typeof over.id === "string" && over.id.startsWith("meal-")) {
-                handleMoveItem(itemId, Number(over.id.replace("meal-", "")));
+              if (typeof over.id === "string" && over.id.startsWith("service-")) {
+                handleMoveItem(itemId, Number(over.id.replace("service-", "")));
               } else if (typeof over.id === "number") {
                 const targetItem = findItem(over.id);
-                if (targetItem && targetItem.meal.id !== found.meal.id) {
-                  const targetIndex = targetItem.meal.items.findIndex((i: any) => i.id === over.id);
-                  handleMoveItem(itemId, targetItem.meal.id, targetIndex);
+                if (targetItem && targetItem.service.id !== found.service.id) {
+                  const targetIndex = targetItem.service.items.findIndex((i: any) => i.id === over.id);
+                  handleMoveItem(itemId, targetItem.service.id, targetIndex);
                 }
               }
             }}
-            onAssign={(item: Item, mealId: number) => setSheet({ type: "item", mealId, item })}
+            onAssign={(item: Item, serviceId: number) => setSheet({ type: "item", serviceId, item })}
             onDelete={handleDelete}
-            onCreateItem={(mealId: number) => setSheet({ type: "item", mealId })}
-            onCreateMeal={() => setSheet({ type: "meal", dayId: plan.days[0]?.id ?? -1 })}
+            onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
+            onCreateService={() => setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })}
             setSheet={setSheet}
           />
         )}
@@ -226,9 +226,9 @@ export function Organizer({
         onClose={() => setSheet(null)}
         title={
           sheet?.type === "item" ? (sheet.item ? "Modifier l'article" : "Ajouter un article") :
-            sheet?.type === "meal" ? "Ajouter un service" :
-              sheet?.type === "meal-edit" ? "Modifier le service" :
-                sheet?.type === "day-edit" ? "Modifier le repas" :
+            sheet?.type === "service" ? "Ajouter un service" :
+              sheet?.type === "service-edit" ? "Modifier le service" :
+                sheet?.type === "meal-edit" ? "Modifier le repas" :
                   sheet?.type === "person" ? "Ajouter un convive" :
                     sheet?.type === "person-edit" ? "Modifier le convive" :
                       sheet?.type === "person-select" ? "Filtrer par personne" :
@@ -239,22 +239,22 @@ export function Organizer({
           <ItemForm
             people={plan.people}
             defaultItem={sheet.item}
-            allMeals={plan.days.flatMap((d: any) => d.meals.map((m: any) => ({ ...m, dayTitle: d.title || d.date })))}
-            currentMealId={sheet.mealId || sheet.item?.mealId}
-            mealPeopleCount={(() => {
-              const mealId = sheet.mealId || sheet.item?.mealId;
-              if (!mealId) return undefined;
-              for (const day of plan.days) {
-                const meal = day.meals.find((m: any) => m.id === mealId);
-                if (meal) return (meal as any).peopleCount;
+            allServices={plan.meals.flatMap((m: any) => m.services.map((s: any) => ({ ...s, mealTitle: m.title || m.date })))}
+            currentServiceId={sheet.serviceId || sheet.item?.serviceId}
+            servicePeopleCount={(() => {
+              const serviceId = sheet.serviceId || sheet.item?.serviceId;
+              if (!serviceId) return undefined;
+              for (const meal of plan.meals) {
+                const service = meal.services.find((s: any) => s.id === serviceId);
+                if (service) return (service as any).peopleCount;
               }
               return undefined;
             })()}
             onSubmit={(vals) =>
-              sheet.item ? handleUpdateItem(sheet.item.id, vals) : handleCreateItem({ ...vals, mealId: sheet.mealId })
+              sheet.item ? handleUpdateItem(sheet.item.id, vals) : handleCreateItem({ ...vals, serviceId: sheet.serviceId })
             }
             onAssign={(pId) => sheet.item && handleAssign(sheet.item, pId)}
-            onMoveMeal={(mId) => sheet.item && handleMoveItem(sheet.item.id, mId)}
+            onMoveService={(sId) => sheet.item && handleMoveItem(sheet.item.id, sId)}
             onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
             readOnly={readOnly}
             // Ingredient props
@@ -275,11 +275,11 @@ export function Organizer({
                   sheet.item!.id,
                   currentName || sheet.item!.name,
                   peopleCount || (() => {
-                    const mealId = sheet.mealId || sheet.item?.mealId;
-                    if (!mealId) return undefined;
-                    for (const day of plan.days) {
-                      const meal = day.meals.find((m: any) => m.id === mealId);
-                      if (meal) return (meal as any).peopleCount;
+                    const serviceId = sheet.serviceId || sheet.item?.serviceId;
+                    if (!serviceId) return undefined;
+                    for (const meal of plan.meals) {
+                      const service = meal.services.find((s: any) => s.id === serviceId);
+                      if (service) return (service as any).peopleCount;
                     }
                     return undefined;
                   })()
@@ -301,40 +301,40 @@ export function Organizer({
           />
         )}
 
-        {sheet?.type === "meal" && (
-          <MealForm
-            days={plan.days}
-            defaultDayId={sheet.dayId}
-            forceNewDay={sheet.dayId === -1}
+        {sheet?.type === "service" && (
+          <ServiceForm
+            meals={plan.meals}
+            defaultMealId={sheet.mealId}
+            forceNewMeal={sheet.mealId === -1}
             readOnly={readOnly}
-            onSubmit={async (dayId, title, peopleCount, newDayDate, newDayTitle) => {
-              let targetDayId = dayId;
-              if (dayId === -1 && newDayDate) {
-                targetDayId = await handleCreateDay(newDayDate, newDayTitle || undefined);
+            onSubmit={async (mealId, title, peopleCount, newMealDate, newMealTitle) => {
+              let targetMealId = mealId;
+              if (mealId === -1 && newMealDate) {
+                targetMealId = await handleCreateMeal(newMealDate, newMealTitle || undefined);
               }
-              handleCreateMeal(targetDayId, title, peopleCount);
+              handleCreateService(targetMealId, title, peopleCount);
             }}
           />
         )}
+        {sheet?.type === "service-edit" && (
+          <ServiceEditForm
+            service={sheet.service}
+            onSubmit={handleUpdateService}
+            onDelete={handleDeleteService}
+            onClose={() => setSheet(null)}
+          />
+        )}
         {sheet?.type === "meal-edit" && (
-          <MealEditForm
+          <MealForm
             meal={sheet.meal}
-            onSubmit={handleUpdateMeal}
+            onSubmit={(date: string, title?: string) => handleUpdateMeal(sheet.meal.id, date, title)}
             onDelete={handleDeleteMeal}
             onClose={() => setSheet(null)}
           />
         )}
-        {sheet?.type === "day-edit" && (
-          <DayForm
-            day={sheet.day}
-            onSubmit={(date: string, title?: string) => handleUpdateDay(sheet.day.id, date, title)}
-            onDelete={handleDeleteDay}
-            onClose={() => setSheet(null)}
-          />
-        )}
-        {sheet?.type === "day-create" && (
-          <DayForm
-            onSubmit={handleCreateDayWithMeals}
+        {sheet?.type === "meal-create" && (
+          <MealForm
+            onSubmit={handleCreateMealWithServices}
             onClose={() => setSheet(null)}
           />
         )}

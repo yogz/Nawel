@@ -9,7 +9,7 @@ import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
 import { createEventSchema, deleteEventSchema } from "./schemas";
-import { createDayWithMealsAction } from "./day-actions";
+import { createMealWithServicesAction } from "./meal-actions";
 import { withErrorThrower } from "@/lib/action-utils";
 
 export const createEventAction = withErrorThrower(async (input: z.infer<typeof createEventSchema>) => {
@@ -37,27 +37,27 @@ export const createEventAction = withErrorThrower(async (input: z.infer<typeof c
 
     if (input.creationMode && input.creationMode !== "zero") {
         const defaultDate = input.date || new Date().toISOString().split('T')[0];
-        let meals: string[] = [];
+        let services: string[] = [];
 
         switch (input.creationMode) {
             case "total":
-                meals = ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"];
+                services = ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"];
                 break;
             case "classique":
-                meals = ["Entree", "Plats", "Dessert"];
+                services = ["Entree", "Plats", "Dessert"];
                 break;
             case "apero":
-                meals = ["Aperitif", "Boissons"];
+                services = ["Aperitif", "Boissons"];
                 break;
         }
 
-        if (meals.length > 0) {
-            await createDayWithMealsAction({
+        if (services.length > 0) {
+            await createMealWithServicesAction({
                 slug: created.slug,
                 key: adminKey,
                 date: defaultDate,
                 title: "Repas complet",
-                meals: meals,
+                services: services,
             });
         }
     }

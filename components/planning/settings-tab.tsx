@@ -82,6 +82,7 @@ export function SettingsTab({
                                 <p className="text-text/70 leading-relaxed truncate">
                                     {log.tableName === "items" && (log.newData?.name || log.oldData?.name)}
                                     {log.tableName === "people" && (log.newData?.name || log.oldData?.name)}
+                                    {log.tableName === "services" && (log.newData?.title || log.oldData?.title)}
                                     {log.tableName === "meals" && (log.newData?.title || log.oldData?.title)}
                                 </p>
                             </div>

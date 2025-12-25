@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { events, days, meals, people, items } from "@/drizzle/schema";
+import { events, meals, services, people, items } from "@/drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { eq, sql, count } from "drizzle-orm";
@@ -30,8 +30,8 @@ export type EventWithStats = {
   description: string | null;
   adminKey: string | null;
   createdAt: Date;
-  daysCount: number;
   mealsCount: number;
+  servicesCount: number;
   peopleCount: number;
   itemsCount: number;
 };
@@ -45,28 +45,28 @@ export async function getAllEventsAction(): Promise<EventWithStats[]> {
 
   const eventsWithStats: EventWithStats[] = await Promise.all(
     allEvents.map(async (event) => {
-      const [daysResult] = await db
+      const [mealsResult] = await db
         .select({ count: count() })
-        .from(days)
-        .where(eq(days.eventId, event.id));
+        .from(meals)
+        .where(eq(meals.eventId, event.id));
 
       const [peopleResult] = await db
         .select({ count: count() })
         .from(people)
         .where(eq(people.eventId, event.id));
 
-      const mealsResult = await db
+      const servicesResult = await db
         .select({ count: count() })
-        .from(meals)
-        .innerJoin(days, eq(meals.dayId, days.id))
-        .where(eq(days.eventId, event.id));
+        .from(services)
+        .innerJoin(meals, eq(services.mealId, meals.id))
+        .where(eq(meals.eventId, event.id));
 
       const itemsResult = await db
         .select({ count: count() })
         .from(items)
-        .innerJoin(meals, eq(items.mealId, meals.id))
-        .innerJoin(days, eq(meals.dayId, days.id))
-        .where(eq(days.eventId, event.id));
+        .innerJoin(services, eq(items.serviceId, services.id))
+        .innerJoin(meals, eq(services.mealId, meals.id))
+        .where(eq(meals.eventId, event.id));
 
       return {
         id: event.id,
@@ -75,8 +75,8 @@ export async function getAllEventsAction(): Promise<EventWithStats[]> {
         description: event.description,
         adminKey: event.adminKey,
         createdAt: event.createdAt,
-        daysCount: daysResult?.count ?? 0,
-        mealsCount: mealsResult[0]?.count ?? 0,
+        mealsCount: mealsResult?.count ?? 0,
+        servicesCount: servicesResult[0]?.count ?? 0,
         peopleCount: peopleResult?.count ?? 0,
         itemsCount: itemsResult[0]?.count ?? 0,
       };

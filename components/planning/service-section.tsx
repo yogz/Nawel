@@ -3,12 +3,12 @@
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { Plus, Pencil } from "lucide-react";
-import { Item, Meal, Person, PlanningFilter } from "@/lib/types";
+import { Item, Service, Person, PlanningFilter } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
 
-export function MealSection({
-  meal,
+export function ServiceSection({
+  service,
   people,
   onAssign,
   onDelete,
@@ -18,7 +18,7 @@ export function MealSection({
   filter = { type: "all" },
   activeItemId,
 }: {
-  meal: Meal;
+  service: Service;
   people: Person[];
   onAssign: (item: Item) => void;
   onDelete: (item: Item) => void;
@@ -29,33 +29,33 @@ export function MealSection({
   activeItemId?: number | null;
 }) {
   const filteredItems = useMemo(() => {
-    if (filter.type === "unassigned") return meal.items.filter((i) => !i.personId);
-    if (filter.type === "person") return meal.items.filter((i) => i.personId === filter.personId);
-    return meal.items;
-  }, [meal.items, filter]);
+    if (filter.type === "unassigned") return service.items.filter((i) => !i.personId);
+    if (filter.type === "person") return service.items.filter((i) => i.personId === filter.personId);
+    return service.items;
+  }, [service.items, filter]);
 
   const { setNodeRef, isOver } = useDroppable({
-    id: `meal-${meal.id}`,
+    id: `service-${service.id}`,
   });
 
   if (filter.type !== "all" && filteredItems.length === 0) return null;
 
-  const isDraggingFromOtherMeal = activeItemId !== null && activeItemId !== undefined && !meal.items.some((i) => i.id === activeItemId);
+  const isDraggingFromOtherService = activeItemId !== null && activeItemId !== undefined && !service.items.some((i) => i.id === activeItemId);
 
   return (
     <section
       ref={setNodeRef}
       className={clsx(
         "premium-card glass p-3 sm:p-6 overflow-hidden transition-all",
-        isOver && isDraggingFromOtherMeal && "ring-2 ring-accent ring-offset-2 bg-accent/5"
+        isOver && isDraggingFromOtherService && "ring-2 ring-accent ring-offset-2 bg-accent/5"
       )}
     >
       <div className="mb-2 sm:mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold">{meal.title}</h3>
-          {(meal as any).peopleCount > 1 && (
+          <h3 className="text-lg font-semibold">{service.title}</h3>
+          {(service as any).peopleCount > 1 && (
             <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-              {meal.peopleCount} pers.
+              {service.peopleCount} pers.
             </span>
           )}
           {!readOnly && (
@@ -88,9 +88,9 @@ export function MealSection({
           allPeopleNames={people.map(p => p.name)}
         />
       ))}
-      {meal.items.length === 0 && (
-        <p className={clsx("text-sm text-gray-500", isOver && isDraggingFromOtherMeal && "text-accent font-semibold")}>
-          {isOver && isDraggingFromOtherMeal ? "Déposez ici pour déplacer l'article" : "Aucun ingrédient pour l'instant."}
+      {service.items.length === 0 && (
+        <p className={clsx("text-sm text-gray-500", isOver && isDraggingFromOtherService && "text-accent font-semibold")}>
+          {isOver && isDraggingFromOtherService ? "Déposez ici pour déplacer l'article" : "Aucun ingrédient pour l'instant."}
         </p>
       )}
     </section>

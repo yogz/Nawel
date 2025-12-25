@@ -5,7 +5,7 @@ import { Sparkles, Pencil } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { PlanData, Person, Item, Meal } from "@/lib/types";
+import { PlanData, Person, Item, Service } from "@/lib/types";
 import { SheetState } from "@/hooks/use-event-state";
 
 interface PeopleTabProps {
@@ -18,8 +18,8 @@ interface PeopleTabProps {
 
 interface PersonItem {
     item: Item;
-    meal: Meal;
-    dayTitle: string;
+    service: Service;
+    mealTitle: string;
 }
 
 export function PeopleTab({
@@ -32,17 +32,17 @@ export function PeopleTab({
     const itemsByPerson = useMemo(() => {
         const byPerson: Record<number, PersonItem[]> = {};
         plan.people.forEach((person: Person) => { byPerson[person.id] = []; });
-        plan.days.forEach((day) => {
-            day.meals.forEach((meal) => {
-                meal.items.forEach((item) => {
+        plan.meals.forEach((meal) => {
+            meal.services.forEach((service) => {
+                service.items.forEach((item) => {
                     if (item.personId && byPerson[item.personId]) {
-                        byPerson[item.personId].push({ item, meal, dayTitle: day.title || day.date });
+                        byPerson[item.personId].push({ item, service, mealTitle: meal.title || meal.date });
                     }
                 });
             });
         });
         return byPerson;
-    }, [plan.days, plan.people]);
+    }, [plan.meals, plan.people]);
 
     return (
         <div className="space-y-4">
@@ -125,9 +125,9 @@ export function PeopleTab({
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                {personItems.map(({ item, meal, dayTitle }: PersonItem) => (
+                                {personItems.map(({ item, service, mealTitle }: PersonItem) => (
                                     <div key={item.id} className="premium-card p-5 relative group hover:border-accent/10 transition-all">
-                                        <p className="text-[10px] uppercase font-black tracking-widest text-accent/60 mb-1">{dayTitle} • {meal.title}</p>
+                                        <p className="text-[10px] uppercase font-black tracking-widest text-accent/60 mb-1">{mealTitle} • {service.title}</p>
                                         <p className="text-base font-bold text-text">{item.name}</p>
                                         {(item.quantity || item.note || item.price) && (
                                             <div className="mt-3 flex flex-wrap gap-2">

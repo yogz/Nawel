@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { events, days, people } from "@/drizzle/schema";
+import { events, meals, people } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import * as dotenv from "dotenv";
 
@@ -29,12 +29,12 @@ async function migrateToEvents() {
 
     console.log(`✅ Événement créé avec l'ID: ${defaultEvent.id}`);
 
-    // Mettre à jour tous les jours existants pour les lier à l'événement
-    console.log("🔗 Liaison des jours à l'événement...");
-    const allDays = await db.select().from(days);
-    for (const day of allDays) {
-      await db.update(days).set({ eventId: defaultEvent.id }).where(eq(days.id, day.id));
-      console.log(`  ✓ Jour ${day.id} lié à l'événement`);
+    // Mettre à jour tous les repas existants pour les lier à l'événement
+    console.log("🔗 Liaison des repas à l'événement...");
+    const allMeals = await db.select().from(meals);
+    for (const meal of allMeals) {
+      await db.update(meals).set({ eventId: defaultEvent.id }).where(eq(meals.id, meal.id));
+      console.log(`  ✓ Repas ${meal.id} lié à l'événement`);
     }
 
     // Mettre à jour toutes les personnes existantes pour les lier à l'événement
@@ -53,5 +53,3 @@ async function migrateToEvents() {
 }
 
 migrateToEvents();
-
-

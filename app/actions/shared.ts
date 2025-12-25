@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { assertWriteAccess } from "@/lib/auth";
-import { events, changeLogs, people, days, meals, items } from "@/drizzle/schema";
+import { events, changeLogs, people, meals, services, items } from "@/drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { validateSchema, getChangeLogsSchema } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
@@ -36,8 +36,8 @@ export const getChangeLogsAction = withErrorThrower(async (input: z.infer<typeof
     const logsByTable: Record<string, typeof allLogs> = {
         events: [],
         people: [],
-        days: [],
         meals: [],
+        services: [],
         items: [],
     };
 
@@ -47,43 +47,43 @@ export const getChangeLogsAction = withErrorThrower(async (input: z.infer<typeof
         }
     }
 
-    const [peopleRecords, daysRecords, mealsRecords, itemsRecords] = await Promise.all([
+    const [peopleRecords, mealsRecords, servicesRecords, itemsRecords] = await Promise.all([
         logsByTable.people.length > 0
             ? db.query.people.findMany({
                 where: eq(people.eventId, event.id),
             })
             : [],
-        logsByTable.days.length > 0
-            ? db.query.days.findMany({
-                where: eq(days.eventId, event.id),
-            })
-            : [],
         logsByTable.meals.length > 0
             ? db.query.meals.findMany({
-                with: { day: true },
+                where: eq(meals.eventId, event.id),
+            })
+            : [],
+        logsByTable.services.length > 0
+            ? db.query.services.findMany({
+                with: { meal: true },
             })
             : [],
         logsByTable.items.length > 0
             ? db.query.items.findMany({
-                with: { meal: { with: { day: true } } },
+                with: { service: { with: { meal: true } } },
             })
             : [],
     ]);
 
     const peopleIds = new Set(peopleRecords.map((p) => p.id));
-    const daysIds = new Set(daysRecords.map((d) => d.id));
-    const mealsIds = new Set(
-        mealsRecords.filter((m) => m.day?.eventId === event.id).map((m) => m.id)
+    const mealsIds = new Set(mealsRecords.map((m) => m.id));
+    const servicesIds = new Set(
+        servicesRecords.filter((s) => s.meal?.eventId === event.id).map((s) => s.id)
     );
     const itemsIds = new Set(
-        itemsRecords.filter((i) => i.meal?.day?.eventId === event.id).map((i) => i.id)
+        itemsRecords.filter((i) => i.service?.meal?.eventId === event.id).map((i) => i.id)
     );
 
     const filteredLogs = allLogs.filter((log) => {
         if (log.tableName === 'events') return log.recordId === event.id;
         if (log.tableName === 'people') return peopleIds.has(log.recordId);
-        if (log.tableName === 'days') return daysIds.has(log.recordId);
         if (log.tableName === 'meals') return mealsIds.has(log.recordId);
+        if (log.tableName === 'services') return servicesIds.has(log.recordId);
         if (log.tableName === 'items') return itemsIds.has(log.recordId);
         return false;
     }).slice(0, 100);

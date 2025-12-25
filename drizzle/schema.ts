@@ -103,8 +103,8 @@ export const events = pgTable(
   })
 );
 
-export const days = pgTable(
-  "days",
+export const meals = pgTable(
+  "meals",
   {
     id: serial("id").primaryKey(),
     eventId: integer("event_id")
@@ -114,23 +114,23 @@ export const days = pgTable(
     title: text("title"),
   },
   (table) => ({
-    eventIdIdx: index("days_event_id_idx").on(table.eventId),
+    eventIdIdx: index("meals_event_id_idx").on(table.eventId),
   })
 );
 
-export const meals = pgTable(
-  "meals",
+export const services = pgTable(
+  "services",
   {
     id: serial("id").primaryKey(),
-    dayId: integer("day_id")
+    mealId: integer("meal_id")
       .notNull()
-      .references(() => days.id, { onDelete: "cascade" }),
+      .references(() => meals.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     order: integer("order_index").notNull().default(0),
     peopleCount: integer("people_count").notNull().default(1),
   },
   (table) => ({
-    dayIdIdx: index("meals_day_id_idx").on(table.dayId),
+    mealIdIdx: index("services_meal_id_idx").on(table.mealId),
   })
 );
 
@@ -153,9 +153,9 @@ export const items = pgTable(
   "items",
   {
     id: serial("id").primaryKey(),
-    mealId: integer("meal_id")
+    serviceId: integer("service_id")
       .notNull()
-      .references(() => meals.id, { onDelete: "cascade" }),
+      .references(() => services.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     quantity: text("quantity"),
     note: text("note"),
@@ -166,7 +166,7 @@ export const items = pgTable(
     order: integer("order_index").notNull().default(0),
   },
   (table) => ({
-    mealIdIdx: index("items_meal_id_idx").on(table.mealId),
+    serviceIdIdx: index("items_service_id_idx").on(table.serviceId),
     personIdIdx: index("items_person_id_idx").on(table.personId),
   })
 );
@@ -189,30 +189,30 @@ export const ingredients = pgTable(
 );
 
 export const eventRelations = relations(events, ({ many }) => ({
-  days: many(days),
+  meals: many(meals),
   people: many(people),
 }));
 
-export const dayRelations = relations(days, ({ one, many }) => ({
+export const mealRelations = relations(meals, ({ one, many }) => ({
   event: one(events, {
-    fields: [days.eventId],
+    fields: [meals.eventId],
     references: [events.id],
   }),
-  meals: many(meals),
+  services: many(services),
 }));
 
-export const mealRelations = relations(meals, ({ one, many }) => ({
-  day: one(days, {
-    fields: [meals.dayId],
-    references: [days.id],
+export const serviceRelations = relations(services, ({ one, many }) => ({
+  meal: one(meals, {
+    fields: [services.mealId],
+    references: [meals.id],
   }),
   items: many(items),
 }));
 
 export const itemRelations = relations(items, ({ one, many }) => ({
-  meal: one(meals, {
-    fields: [items.mealId],
-    references: [meals.id],
+  service: one(services, {
+    fields: [items.serviceId],
+    references: [services.id],
   }),
   person: one(people, {
     fields: [items.personId],

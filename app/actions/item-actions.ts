@@ -24,13 +24,13 @@ export const createItemAction = withErrorThrower(async (input: z.infer<typeof cr
     const [{ maxOrder }] = await db
         .select({ maxOrder: sql<number | null>`MAX(${items.order})` })
         .from(items)
-        .where(eq(items.mealId, input.mealId));
+        .where(eq(items.serviceId, input.serviceId));
     const order = (maxOrder ?? -1) + 1;
 
     const [created] = await db
         .insert(items)
         .values({
-            mealId: input.mealId,
+            serviceId: input.serviceId,
             name: input.name,
             quantity: input.quantity ?? null,
             note: input.note ?? null,
@@ -99,7 +99,7 @@ export const moveItemAction = withErrorThrower(async (input: z.infer<typeof move
     await verifyEventAccess(input.slug, input.key);
 
     const itemId = input.itemId;
-    const targetMealId = input.targetMealId;
+    const targetServiceId = input.targetServiceId;
     const targetOrder = input.targetOrder;
 
     await db.transaction(async (tx) => {
@@ -109,45 +109,45 @@ export const moveItemAction = withErrorThrower(async (input: z.infer<typeof move
         });
         if (!item) throw new Error("Item not found");
 
-        const sourceMealId = item.mealId;
+        const sourceServiceId = item.serviceId;
 
-        if (sourceMealId === targetMealId) {
+        if (sourceServiceId === targetServiceId) {
             if (targetOrder === undefined) return;
-            // Reorder within same meal
-            const mealItems = await tx.query.items.findMany({
-                where: eq(items.mealId, sourceMealId),
+            // Reorder within same service
+            const serviceItems = await tx.query.items.findMany({
+                where: eq(items.serviceId, sourceServiceId),
                 orderBy: [asc(items.order)],
             });
-            const newItems = mealItems.filter((i) => i.id !== itemId);
+            const newItems = serviceItems.filter((i) => i.id !== itemId);
             newItems.splice(targetOrder, 0, item);
             for (let i = 0; i < newItems.length; i++) {
                 await tx.update(items).set({ order: i }).where(eq(items.id, newItems[i].id));
             }
         } else {
-            // 2. Remove from source meal and shift others
+            // 2. Remove from source service and shift others
             await tx
                 .update(items)
                 .set({ order: sql`${items.order} - 1` })
-                .where(sql`${items.mealId} = ${sourceMealId} AND ${items.order} > ${item.order}`);
+                .where(sql`${items.serviceId} = ${sourceServiceId} AND ${items.order} > ${item.order}`);
 
-            // 3. Prepare space in target meal
-            const mealItems = await tx.query.items.findMany({
-                where: eq(items.mealId, targetMealId),
+            // 3. Prepare space in target service
+            const serviceItems = await tx.query.items.findMany({
+                where: eq(items.serviceId, targetServiceId),
                 orderBy: [asc(items.order)],
             });
 
-            const finalOrder = targetOrder !== undefined ? targetOrder : mealItems.length;
+            const finalOrder = targetOrder !== undefined ? targetOrder : serviceItems.length;
 
             await tx
                 .update(items)
                 .set({ order: sql`${items.order} + 1` })
-                .where(sql`${items.mealId} = ${targetMealId} AND ${items.order} >= ${finalOrder}`);
+                .where(sql`${items.serviceId} = ${targetServiceId} AND ${items.order} >= ${finalOrder}`);
 
             // 4. Update the item itself
             await tx
                 .update(items)
                 .set({
-                    mealId: targetMealId,
+                    serviceId: targetServiceId,
                     order: finalOrder,
                 })
                 .where(eq(items.id, itemId));

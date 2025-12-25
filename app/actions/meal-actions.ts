@@ -4,36 +4,59 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { meals } from "@/drizzle/schema";
+import { meals, services } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
-import { createMealSchema, mealSchema, deleteMealSchema } from "./schemas";
+import { createMealSchema, updateMealSchema, createMealWithServicesSchema, deleteMealSchema, baseInput } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
 export const createMealAction = withErrorThrower(async (input: z.infer<typeof createMealSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
+    const event = await verifyEventAccess(input.slug, input.key);
     const [created] = await db
         .insert(meals)
-        .values({
-            dayId: input.dayId,
-            title: input.title,
-            peopleCount: input.peopleCount ?? 1
-        })
+        .values({ eventId: event.id, date: input.date, title: input.title ?? null })
         .returning();
     await logChange("create", "meals", created.id, null, created);
     revalidatePath(`/event/${input.slug}`);
     return created;
 });
 
-export const updateMealAction = withErrorThrower(async (input: z.infer<typeof mealSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
-    const updateData: any = {};
-    if (input.title !== undefined) updateData.title = input.title;
-    if (input.peopleCount !== undefined) updateData.peopleCount = input.peopleCount;
+export const createMealWithServicesAction = withErrorThrower(async (input: z.infer<typeof createMealWithServicesSchema>) => {
+    const event = await verifyEventAccess(input.slug, input.key);
 
+    const result = await db.transaction(async (tx) => {
+        const [meal] = await tx
+            .insert(meals)
+            .values({ eventId: event.id, date: input.date, title: input.title ?? null })
+            .returning();
+
+        const createdServices = [];
+        for (let i = 0; i < input.services.length; i++) {
+            const [service] = await tx
+                .insert(services)
+                .values({ mealId: meal.id, title: input.services[i], order: i })
+                .returning();
+            createdServices.push({ ...service, items: [] });
+        }
+
+        return { meal, createdServices };
+    });
+
+    // Log changes OUTSIDE the transaction to avoid deadlock
+    await logChange("create", "meals", result.meal.id, null, result.meal);
+    for (const service of result.createdServices) {
+        await logChange("create", "services", service.id, null, service);
+    }
+
+    revalidatePath(`/event/${input.slug}`);
+    return { ...result.meal, services: result.createdServices };
+});
+
+export const updateMealAction = withErrorThrower(async (input: z.infer<typeof updateMealSchema>) => {
+    await verifyEventAccess(input.slug, input.key);
     const [updated] = await db
         .update(meals)
-        .set(updateData)
+        .set({ date: input.date, title: input.title })
         .where(eq(meals.id, input.id))
         .returning();
     await logChange("update", "meals", updated.id, null, updated);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Item, Person, Meal, Ingredient } from "@/lib/types";
+import { Item, Person, Service, Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,12 +14,12 @@ import clsx from "clsx";
 export function ItemForm({
     people,
     defaultItem,
-    allMeals,
-    currentMealId,
-    mealPeopleCount,
+    allServices,
+    currentServiceId,
+    servicePeopleCount,
     onSubmit,
     onAssign,
-    onMoveMeal,
+    onMoveService,
     onDelete,
     readOnly,
     // Ingredient props
@@ -33,12 +33,12 @@ export function ItemForm({
 }: {
     people: Person[];
     defaultItem?: Item;
-    allMeals?: Array<Meal & { dayTitle: string }>;
-    currentMealId?: number;
-    mealPeopleCount?: number;
+    allServices?: Array<Service & { mealTitle: string }>;
+    currentServiceId?: number;
+    servicePeopleCount?: number;
     onSubmit: (values: { name: string; quantity?: string; note?: string; price?: number }) => void;
     onAssign: (personId: number | null) => void;
-    onMoveMeal?: (targetMealId: number) => void;
+    onMoveService?: (targetServiceId: number) => void;
     onDelete?: () => void;
     readOnly?: boolean;
     // Ingredient props
@@ -50,7 +50,7 @@ export function ItemForm({
     onDeleteAllIngredients?: () => void;
     isGenerating?: boolean;
 }) {
-    const defaultNote = !defaultItem && mealPeopleCount ? `Pour ${mealPeopleCount} personne${mealPeopleCount > 1 ? "s" : ""}` : "";
+    const defaultNote = !defaultItem && servicePeopleCount ? `Pour ${servicePeopleCount} personne${servicePeopleCount > 1 ? "s" : ""}` : "";
     const [name, setName] = useState(defaultItem?.name || "");
     const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
     const [note, setNote] = useState(defaultItem?.note || defaultNote);
@@ -190,22 +190,22 @@ export function ItemForm({
                         />
                     </div>
 
-                    {/* Move to another meal */}
-                    {isEditMode && allMeals && allMeals.length > 1 && (
+                    {/* Move to another service */}
+                    {isEditMode && allServices && allServices.length > 1 && (
                         <div className="space-y-1">
                             <Label className="text-xs text-gray-400">Déplacer</Label>
                             <Select
-                                value={currentMealId?.toString()}
-                                onValueChange={(val) => onMoveMeal?.(Number(val))}
+                                value={currentServiceId?.toString()}
+                                onValueChange={(val) => onMoveService?.(Number(val))}
                                 disabled={readOnly}
                             >
                                 <SelectTrigger className="rounded-xl">
                                     <SelectValue placeholder="Autre service" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {allMeals.map((m) => (
-                                        <SelectItem key={m.id} value={m.id.toString()}>
-                                            {m.dayTitle} • {m.title}
+                                    {allServices.map((s) => (
+                                        <SelectItem key={s.id} value={s.id.toString()}>
+                                            {s.mealTitle} • {s.title}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

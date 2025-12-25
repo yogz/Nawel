@@ -4,14 +4,14 @@ import { useTransition } from "react";
 import confetti from "canvas-confetti";
 import {
     createItemAction, updateItemAction, deleteItemAction, assignItemAction,
-    createDayAction, updateDayAction, deleteDayAction, createDayWithMealsAction,
-    createMealAction, updateMealAction, deleteMealAction,
+    createMealAction, updateMealAction, deleteMealAction, createMealWithServicesAction,
+    createServiceAction, updateServiceAction, deleteServiceAction,
     createPersonAction, updatePersonAction,
     deletePersonAction, moveItemAction, deleteEventAction,
     generateIngredientsAction, createIngredientAction, updateIngredientAction,
     deleteIngredientAction, deleteAllIngredientsAction
 } from "@/app/actions";
-import { PlanData, Item, Meal, Person } from "@/lib/types";
+import { PlanData, Item, Service, Person } from "@/lib/types";
 import { SheetState } from "./use-event-state";
 
 interface UseEventHandlersParams {
@@ -37,21 +37,21 @@ export function useEventHandlers({
 }: UseEventHandlersParams) {
     const [, startTransition] = useTransition();
 
-    const setMealItems = (mealId: number, updater: (items: Item[]) => Item[]) => {
+    const setServiceItems = (serviceId: number, updater: (items: Item[]) => Item[]) => {
         setPlan((prev: PlanData) => ({
             ...prev,
-            days: prev.days.map((day) => ({
-                ...day,
-                meals: day.meals.map((meal) => (meal.id === mealId ? { ...meal, items: updater(meal.items) } : meal)),
+            meals: prev.meals.map((meal) => ({
+                ...meal,
+                services: meal.services.map((service) => (service.id === serviceId ? { ...service, items: updater(service.items) } : service)),
             })),
         }));
     };
 
-    const handleCreateItem = (data: { mealId: number; name: string; quantity?: string; note?: string; price?: number }) => {
+    const handleCreateItem = (data: { serviceId: number; name: string; quantity?: string; note?: string; price?: number }) => {
         if (readOnly) return;
         startTransition(async () => {
             const created = await createItemAction({ ...data, slug, key: writeKey });
-            setMealItems(data.mealId, (items) => [...items, { ...created, person: null }]);
+            setServiceItems(data.serviceId, (items) => [...items, { ...created, person: null }]);
             setSheet(null);
         });
     };
@@ -74,7 +74,7 @@ export function useEventHandlers({
                 slug,
                 key: writeKey,
             });
-            setMealItems(found.meal.id, (items) => items.map((it) => (it.id === itemId ? updatedItem : it)));
+            setServiceItems(found.service.id, (items) => items.map((it) => (it.id === itemId ? updatedItem : it)));
             if (closeSheet) setSheet(null);
         });
     };
@@ -82,7 +82,7 @@ export function useEventHandlers({
     const handleAssign = (item: Item, personId: number | null) => {
         if (readOnly) return;
 
-        setMealItems(item.mealId, (items) =>
+        setServiceItems(item.serviceId, (items) =>
             items.map((it) => (it.id === item.id ? { ...it, personId, person: personId ? plan.people.find((p: Person) => p.id === personId) ?? null : null } : it))
         );
         setSheet(null);
@@ -115,7 +115,7 @@ export function useEventHandlers({
     const handleDelete = (item: Item) => {
         if (readOnly) return;
         const previousPlan = plan;
-        setMealItems(item.mealId, (items) => items.filter((i) => i.id !== item.id));
+        setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
         setSheet(null);
         startTransition(async () => {
             try {
@@ -128,95 +128,130 @@ export function useEventHandlers({
         });
     };
 
-    const findItem = (itemId: number): { item: Item; meal: Meal; dayId: number } | null => {
-        for (const day of plan.days) {
-            for (const meal of day.meals) {
-                const item = (meal.items as Item[]).find((i: Item) => i.id === itemId);
-                if (item) return { item, meal, dayId: day.id };
+    const findItem = (itemId: number): { item: Item; service: Service; mealId: number } | null => {
+        for (const meal of plan.meals) {
+            for (const service of meal.services) {
+                const item = (service.items as Item[]).find((i: Item) => i.id === itemId);
+                if (item) return { item, service, mealId: meal.id };
             }
         }
         return null;
     };
 
-    const handleMoveItem = (itemId: number, targetMealId: number, targetOrder?: number) => {
+    const handleMoveItem = (itemId: number, targetServiceId: number, targetOrder?: number) => {
         if (readOnly) return;
         const found = findItem(itemId);
         if (!found) return;
 
-        const { item, meal: sourceMeal } = found;
-        if (sourceMeal.id === targetMealId) return;
+        const { item, service: sourceService } = found;
+        if (sourceService.id === targetServiceId) return;
 
         startTransition(async () => {
-            setMealItems(sourceMeal.id, (items) => items.filter((i) => i.id !== itemId));
-            setMealItems(targetMealId, (items) => {
-                const newItems = [...items, { ...item, mealId: targetMealId }];
+            setServiceItems(sourceService.id, (items) => items.filter((i) => i.id !== itemId));
+            setServiceItems(targetServiceId, (items) => {
+                const newItems = [...items, { ...item, serviceId: targetServiceId }];
                 if (targetOrder !== undefined && targetOrder < newItems.length) {
                     const [moved] = newItems.splice(newItems.length - 1, 1);
                     newItems.splice(targetOrder, 0, moved);
                 }
                 return newItems;
             });
-            await moveItemAction({ itemId, targetMealId, targetOrder, slug, key: writeKey });
+            await moveItemAction({ itemId, targetServiceId, targetOrder, slug, key: writeKey });
         });
     };
 
-    const handleCreateDay = async (date: string, title?: string): Promise<number> => {
+    const handleCreateMeal = async (date: string, title?: string): Promise<number> => {
         if (readOnly) return 0;
         try {
-            const created = await createDayAction({ date, title, slug, key: writeKey });
+            const created = await createMealAction({ date, title, slug, key: writeKey });
             setPlan((prev: PlanData) => ({
                 ...prev,
-                days: [...prev.days, { ...created, meals: [] }].sort((a, b) => a.date.localeCompare(b.date)),
+                meals: [...prev.meals, { ...created, services: [] }].sort((a, b) => a.date.localeCompare(b.date)),
             }));
             return created.id;
         } catch (error) {
-            console.error("Failed to create day:", error);
-            alert("Erreur lors de la création du jour. Vérifiez les logs console.");
+            console.error("Failed to create meal:", error);
+            alert("Erreur lors de la création du repas. Vérifiez les logs console.");
             return 0;
         }
     };
 
-    const handleCreateDayWithMeals = (date: string, title: string | undefined, meals: string[]) => {
+    const handleCreateMealWithServices = (date: string, title: string | undefined, services: string[]) => {
         if (readOnly) return;
         startTransition(async () => {
             try {
-                const created = await createDayWithMealsAction({ date, title, meals, slug, key: writeKey });
+                const created = await createMealWithServicesAction({ date, title, services, slug, key: writeKey });
                 setPlan((prev: PlanData) => ({
                     ...prev,
-                    days: [...prev.days, created].sort((a, b) => a.date.localeCompare(b.date)),
+                    meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
                 }));
                 setSheet(null);
-                setSuccessMessage("Nouveau jour créé avec succès ✨");
+                setSuccessMessage("Nouveau repas créé avec succès ✨");
                 setTimeout(() => setSuccessMessage(null), 3000);
             } catch (error) {
-                console.error("Failed to create day with meals:", error);
-                alert("Erreur lors de la création du jour avec repas.");
+                console.error("Failed to create meal with services:", error);
+                alert("Erreur lors de la création du repas avec services.");
             }
         });
     };
 
-    const handleCreateMeal = (dayId: number, title: string, peopleCount?: number) => {
+    const handleCreateService = (mealId: number, title: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            const created = await createMealAction({ dayId, title, peopleCount, slug, key: writeKey });
+            const created = await createServiceAction({ mealId, title, peopleCount, slug, key: writeKey });
             setPlan((prev: PlanData) => ({
                 ...prev,
-                days: prev.days.map((d) => (d.id === dayId ? { ...d, meals: [...d.meals, { ...created, items: [] }] } : d)),
+                meals: prev.meals.map((m) => (m.id === mealId ? { ...m, services: [...m.services, { ...created, items: [] }] } : m)),
             }));
             setSheet(null);
         });
     };
 
-    const handleUpdateMeal = (id: number, title?: string, peopleCount?: number) => {
+    const handleUpdateService = (id: number, title?: string, peopleCount?: number) => {
         if (readOnly) return;
         startTransition(async () => {
-            await updateMealAction({ id, title, peopleCount, slug, key: writeKey });
+            await updateServiceAction({ id, title, peopleCount, slug, key: writeKey });
             setPlan((prev: PlanData) => ({
                 ...prev,
-                days: prev.days.map((d) => ({
-                    ...d,
-                    meals: d.meals.map((m) => (m.id === id ? { ...m, ...(title !== undefined && { title }), ...(peopleCount !== undefined && { peopleCount }) } : m)),
+                meals: prev.meals.map((m) => ({
+                    ...m,
+                    services: m.services.map((s) => (s.id === id ? { ...s, ...(title !== undefined && { title }), ...(peopleCount !== undefined && { peopleCount }) } : s)),
                 })),
+            }));
+            setSheet(null);
+        });
+    };
+
+    const handleDeleteService = (id: number) => {
+        if (readOnly) return;
+        if (!confirm("Supprimer ce service et tous ses articles ?")) return;
+        const previousPlan = plan;
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            meals: prev.meals.map((m) => ({
+                ...m,
+                services: m.services.filter((s) => s.id !== id),
+            })),
+        }));
+        setSheet(null);
+        startTransition(async () => {
+            try {
+                await deleteServiceAction({ id, slug, key: writeKey });
+            } catch (error) {
+                console.error("Failed to delete service:", error);
+                setPlan(previousPlan);
+                alert("Erreur lors de la suppression du service.");
+            }
+        });
+    };
+
+    const handleUpdateMeal = (id: number, date: string, title?: string | null) => {
+        if (readOnly) return;
+        startTransition(async () => {
+            await updateMealAction({ id, date, title, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                meals: prev.meals.map((m) => (m.id === id ? { ...m, date, title: title ?? null } : m)),
             }));
             setSheet(null);
         });
@@ -224,14 +259,11 @@ export function useEventHandlers({
 
     const handleDeleteMeal = (id: number) => {
         if (readOnly) return;
-        if (!confirm("Supprimer ce repas et tous ses articles ?")) return;
+        if (!confirm("Supprimer ce repas et tous ses services ?")) return;
         const previousPlan = plan;
         setPlan((prev: PlanData) => ({
             ...prev,
-            days: prev.days.map((d) => ({
-                ...d,
-                meals: d.meals.filter((m) => m.id !== id),
-            })),
+            meals: prev.meals.filter((m) => m.id !== id),
         }));
         setSheet(null);
         startTransition(async () => {
@@ -241,38 +273,6 @@ export function useEventHandlers({
                 console.error("Failed to delete meal:", error);
                 setPlan(previousPlan);
                 alert("Erreur lors de la suppression du repas.");
-            }
-        });
-    };
-
-    const handleUpdateDay = (id: number, date: string, title?: string | null) => {
-        if (readOnly) return;
-        startTransition(async () => {
-            await updateDayAction({ id, date, title, slug, key: writeKey });
-            setPlan((prev: PlanData) => ({
-                ...prev,
-                days: prev.days.map((d) => (d.id === id ? { ...d, date, title: title ?? null } : d)),
-            }));
-            setSheet(null);
-        });
-    };
-
-    const handleDeleteDay = (id: number) => {
-        if (readOnly) return;
-        if (!confirm("Supprimer ce jour et tous ses repas ?")) return;
-        const previousPlan = plan;
-        setPlan((prev: PlanData) => ({
-            ...prev,
-            days: prev.days.filter((d) => d.id !== id),
-        }));
-        setSheet(null);
-        startTransition(async () => {
-            try {
-                await deleteDayAction({ id, slug, key: writeKey });
-            } catch (error) {
-                console.error("Failed to delete day:", error);
-                setPlan(previousPlan);
-                alert("Erreur lors de la suppression du jour.");
             }
         });
     };
@@ -316,11 +316,11 @@ export function useEventHandlers({
         setPlan((prev: PlanData) => ({
             ...prev,
             people: prev.people.filter((p) => p.id !== id),
-            days: prev.days.map((day) => ({
-                ...day,
-                meals: day.meals.map((meal) => ({
-                    ...meal,
-                    items: meal.items.map((item) => (item.personId === id ? { ...item, personId: null, person: null } : item)),
+            meals: prev.meals.map((meal) => ({
+                ...meal,
+                services: meal.services.map((service) => ({
+                    ...service,
+                    items: service.items.map((item) => (item.personId === id ? { ...item, personId: null, person: null } : item)),
                 })),
             })),
         }));
@@ -368,11 +368,11 @@ export function useEventHandlers({
             // Update local state
             setPlan((prev: PlanData) => ({
                 ...prev,
-                days: prev.days.map((day) => ({
-                    ...day,
-                    meals: day.meals.map((meal) => ({
-                        ...meal,
-                        items: meal.items.map((item) =>
+                meals: prev.meals.map((meal) => ({
+                    ...meal,
+                    services: meal.services.map((service) => ({
+                        ...service,
+                        items: service.items.map((item) =>
                             item.id === itemId
                                 ? { ...item, ingredients: generated }
                                 : item
@@ -394,11 +394,11 @@ export function useEventHandlers({
         // Optimistic update
         setPlan((prev: PlanData) => ({
             ...prev,
-            days: prev.days.map((day) => ({
-                ...day,
-                meals: day.meals.map((meal) => ({
-                    ...meal,
-                    items: meal.items.map((item) =>
+            meals: prev.meals.map((meal) => ({
+                ...meal,
+                services: meal.services.map((service) => ({
+                    ...service,
+                    items: service.items.map((item) =>
                         item.id === itemId
                             ? {
                                 ...item,
@@ -427,11 +427,11 @@ export function useEventHandlers({
 
         setPlan((prev: PlanData) => ({
             ...prev,
-            days: prev.days.map((day) => ({
-                ...day,
-                meals: day.meals.map((meal) => ({
-                    ...meal,
-                    items: meal.items.map((item) =>
+            meals: prev.meals.map((meal) => ({
+                ...meal,
+                services: meal.services.map((service) => ({
+                    ...service,
+                    items: service.items.map((item) =>
                         item.id === itemId
                             ? {
                                 ...item,
@@ -462,11 +462,11 @@ export function useEventHandlers({
 
             setPlan((prev: PlanData) => ({
                 ...prev,
-                days: prev.days.map((day) => ({
-                    ...day,
-                    meals: day.meals.map((meal) => ({
-                        ...meal,
-                        items: meal.items.map((item) =>
+                meals: prev.meals.map((meal) => ({
+                    ...meal,
+                    services: meal.services.map((service) => ({
+                        ...service,
+                        items: service.items.map((item) =>
                             item.id === itemId
                                 ? { ...item, ingredients: [...(item.ingredients || []), created] }
                                 : item
@@ -483,11 +483,11 @@ export function useEventHandlers({
 
         setPlan((prev: PlanData) => ({
             ...prev,
-            days: prev.days.map((day) => ({
-                ...day,
-                meals: day.meals.map((meal) => ({
-                    ...meal,
-                    items: meal.items.map((item) =>
+            meals: prev.meals.map((meal) => ({
+                ...meal,
+                services: meal.services.map((service) => ({
+                    ...service,
+                    items: service.items.map((item) =>
                         item.id === itemId ? { ...item, ingredients: [] } : item
                     ),
                 })),
@@ -501,9 +501,9 @@ export function useEventHandlers({
 
     return {
         handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
-        handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
-        handleCreateDayWithMeals,
-        handleUpdateDay, handleDeleteDay, handleUpdateMeal, handleDeleteMeal,
+        handleMoveItem, handleCreateMeal, handleCreateService, handleCreatePerson,
+        handleCreateMealWithServices,
+        handleUpdateMeal, handleDeleteMeal, handleUpdateService, handleDeleteService,
         handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem,
         // Ingredient handlers
         handleGenerateIngredients, handleToggleIngredient, handleDeleteIngredient,

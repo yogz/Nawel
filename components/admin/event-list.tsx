@@ -163,11 +163,11 @@ export function EventList({
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {event.daysCount} jour{event.daysCount > 1 ? "s" : ""}
+                    {event.mealsCount} repas
                   </span>
                   <span className="flex items-center gap-1">
                     <Utensils className="w-4 h-4" />
-                    {event.mealsCount} repas
+                    {event.servicesCount} service{event.servicesCount > 1 ? "s" : ""}
                   </span>
                   <span className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -259,7 +259,7 @@ export function EventList({
           <p className="text-muted-foreground">
             Êtes-vous sûr de vouloir supprimer{" "}
             <strong className="text-text">{deletingEvent?.name}</strong> ? Cette
-            action est irréversible et supprimera tous les jours, repas,
+            action est irréversible et supprimera tous les repas, services,
             articles et convives associés.
           </p>
 

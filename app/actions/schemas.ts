@@ -11,33 +11,37 @@ export const baseInput = z.object({
     slug: z.string(),
 });
 
-export const createDaySchema = baseInput.extend({
+export const createMealSchema = baseInput.extend({
     date: dateSchema,
     title: z.string().optional(),
 });
 
-export const createDayWithMealsSchema = baseInput.extend({
+export const createMealWithServicesSchema = baseInput.extend({
     date: dateSchema,
     title: z.string().optional(),
-    meals: z.array(z.string()).min(1, "At least one meal required"),
+    services: z.array(z.string()).min(1, "At least one service required"),
 });
 
-export const updateDaySchema = baseInput.extend({
+export const updateMealSchema = baseInput.extend({
     id: z.number(),
     date: dateSchema.optional(),
     title: z.string().optional().nullable(),
 });
 
-export const createMealSchema = baseInput.extend({
-    dayId: z.number(),
+export const createServiceSchema = baseInput.extend({
+    mealId: z.number(),
     title: z.string().min(1, "Title required"),
     peopleCount: z.number().int().min(1).optional(),
 });
 
-export const mealSchema = baseInput.extend({
+export const serviceSchema = baseInput.extend({
     id: z.number(),
     title: z.string().min(1).optional(),
     peopleCount: z.number().int().min(1).optional(),
+});
+
+export const deleteServiceSchema = baseInput.extend({
+    id: z.number()
 });
 
 export const deleteMealSchema = baseInput.extend({
@@ -60,7 +64,7 @@ export const deletePersonSchema = baseInput.extend({
 });
 
 export const createItemSchema = baseInput.extend({
-    mealId: z.number(),
+    serviceId: z.number(),
     name: z.string().min(1),
     quantity: z.string().optional(),
     note: z.string().optional(),
@@ -86,13 +90,13 @@ export const assignItemSchema = baseInput.extend({
 });
 
 export const reorderSchema = baseInput.extend({
-    mealId: z.number(),
+    serviceId: z.number(),
     itemIds: z.array(z.number())
 });
 
 export const moveItemSchema = baseInput.extend({
     itemId: z.number(),
-    targetMealId: z.number(),
+    targetServiceId: z.number(),
     targetOrder: z.number().optional(),
 });
 

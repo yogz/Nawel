@@ -1,147 +1,228 @@
 "use client";
 
 import { useState } from "react";
-import { Day } from "@/lib/types";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
-import clsx from "clsx";
 
-export function MealForm({
-    days,
-    defaultDayId,
-    forceNewDay,
-    onSubmit,
-    readOnly,
-}: {
-    days: Day[];
-    defaultDayId?: number;
-    forceNewDay?: boolean;
-    onSubmit: (dayId: number, title: string, peopleCount: number, newDayDate?: string, newDayTitle?: string) => Promise<void>;
-    readOnly?: boolean;
-}) {
-    const [dayId, setDayId] = useState<string>(
-        defaultDayId !== undefined && defaultDayId !== -1
-            ? String(defaultDayId)
-            : (forceNewDay || days.length === 0 ? "new" : String(days[0].id))
-    );
-    const [title, setTitle] = useState("");
-    const [peopleCount, setPeopleCount] = useState(1);
-    const [newDayDate, setNewDayDate] = useState<Date | undefined>(undefined);
-    const [newDayTitle, setNewDayTitle] = useState("");
+const DEFAULT_SERVICE_TYPES = [
+    { id: "apero", label: "Apéro", emoji: "🥂" },
+    { id: "entree", label: "Entrée", emoji: "🥗" },
+    { id: "plat", label: "Plat", emoji: "🍽️" },
+    { id: "fromage", label: "Fromage", emoji: "🧀" },
+    { id: "dessert", label: "Dessert", emoji: "🍰" },
+    { id: "boisson", label: "Boissons", emoji: "🍷" },
+    { id: "autre", label: "Autre", emoji: "📦" },
+];
 
-    const handleSubmit = async () => {
-        if (dayId === "new") {
-            if (!newDayDate) return;
-            const formattedDate = format(newDayDate, "yyyy-MM-dd");
-            await onSubmit(-1, title, peopleCount, formattedDate, newDayTitle);
+const QUICK_OPTIONS = [
+    { id: "simple", label: "Un seul service", emoji: "🍴", services: ["Service"] },
+    { id: "complet", label: "Menu complet", emoji: "🍽️", services: ["Entrée", "Plat", "Dessert"] },
+    { id: "custom", label: "Personnalisé", emoji: "✨", services: [] },
+];
+
+export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
+    const [step, setStep] = useState(1);
+    const [date, setDate] = useState<Date | undefined>(meal?.date ? new Date(meal.date) : undefined);
+    const [title, setTitle] = useState(meal?.title || "");
+    const [quickOption, setQuickOption] = useState<string>("simple");
+    const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
+
+    const isEditMode = !!meal;
+    const totalSteps = isEditMode ? 1 : 2;
+
+    const handleSubmit = () => {
+        if (!date) return;
+        const formattedDate = format(date, "yyyy-MM-dd");
+
+        if (isEditMode) {
+            onSubmit(formattedDate, title);
         } else {
-            await onSubmit(Number(dayId), title, peopleCount);
+            let servicesToCreate: string[];
+            if (quickOption === "custom") {
+                servicesToCreate = selectedServices.map(id => DEFAULT_SERVICE_TYPES.find(m => m.id === id)?.label || id);
+            } else {
+                servicesToCreate = QUICK_OPTIONS.find(o => o.id === quickOption)?.services || ["Service"];
+            }
+            onSubmit(formattedDate, title, servicesToCreate);
         }
     };
 
+    const toggleService = (id: string) => {
+        setSelectedServices(prev =>
+            prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]
+        );
+    };
+
+    const canGoNext = () => {
+        if (step === 1) return !!date;
+        return true;
+    };
+
     return (
-        <div className="space-y-6">
-            {!forceNewDay && days.length > 0 && (
-                <div className="space-y-2">
-                    <Label>Choisir le repas</Label>
-                    <Select value={dayId} onValueChange={setDayId} disabled={readOnly}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner un repas" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {days.map((day) => (
-                                <SelectItem key={day.id} value={String(day.id)}>
-                                    {day.title || day.date}
-                                </SelectItem>
-                            ))}
-                            <SelectItem value="new">+ Nouveau repas</SelectItem>
-                        </SelectContent>
-                    </Select>
+        <div className="space-y-4">
+            {/* Progress */}
+            {!isEditMode && (
+                <div className="flex gap-1.5 mb-2">
+                    {[1, 2].map((s) => (
+                        <div
+                            key={s}
+                            className={`h-1 flex-1 rounded-full transition-all ${s <= step ? "bg-accent" : "bg-gray-200"}`}
+                        />
+                    ))}
                 </div>
             )}
 
-            {(dayId === "new" || forceNewDay) && (
-                <div className="space-y-4 rounded-2xl bg-gray-50 p-4 border border-gray-100">
-                    <p className="text-xs font-black uppercase tracking-widest text-gray-400">Nouveau repas</p>
-                    <div className="space-y-2">
-                        <Label htmlFor="date">Date</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full justify-start text-left font-normal h-12 rounded-2xl",
-                                        !newDayDate && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {newDayDate ? format(newDayDate, "PPP", { locale: fr }) : <span>Choisir une date</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 rounded-2xl shadow-xl" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={newDayDate}
-                                    onSelect={setNewDayDate}
-                                    initialFocus
-                                    locale={fr}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="day-title">Titre (optionnel)</Label>
-                        <Input
-                            id="day-title"
-                            placeholder="Ex: Réveillon, Jour J..."
-                            value={newDayTitle}
-                            onChange={(e) => setNewDayTitle(e.target.value)}
-                            disabled={readOnly}
+            {/* Step 1: Date */}
+            {step === 1 && (
+                <div className="space-y-4">
+                    <div className="flex justify-center">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            locale={fr}
+                            className="rounded-2xl border shadow-sm"
                         />
                     </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="title">Nom du repas (optionnel)</Label>
+                        <Input
+                            id="title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Ex: Réveillon, Jour de l'an..."
+                            className="rounded-2xl h-12"
+                        />
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            className="flex-1 rounded-2xl h-12"
+                        >
+                            Annuler
+                        </Button>
+                        {isEditMode ? (
+                            <Button
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={!date}
+                                className="flex-[2] rounded-2xl h-12 bg-accent"
+                            >
+                                Enregistrer
+                            </Button>
+                        ) : (
+                            <Button
+                                type="button"
+                                onClick={() => setStep(2)}
+                                disabled={!canGoNext()}
+                                className="flex-[2] rounded-2xl h-12 bg-accent"
+                            >
+                                Suivant
+                            </Button>
+                        )}
+                    </div>
+
+                    {isEditMode && onDelete && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => onDelete(meal.id)}
+                            className="w-full rounded-2xl h-11 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        >
+                            Supprimer ce repas
+                        </Button>
+                    )}
                 </div>
             )}
 
-            <div className="space-y-2">
-                <Label htmlFor="meal-title">Nom du service</Label>
-                <Input
-                    id="meal-title"
-                    placeholder="Ex: Dîner, Apéro, Petit-déj..."
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    disabled={readOnly}
-                    autoFocus
-                />
-            </div>
+            {/* Step 2: Services (creation only) */}
+            {step === 2 && !isEditMode && (
+                <div className="space-y-4">
+                    <p className="text-sm text-gray-500">Comment organiser ce repas ?</p>
 
-            <div className="space-y-2">
-                <Label htmlFor="people-count">Nombre de personnes</Label>
-                <Input
-                    id="people-count"
-                    type="number"
-                    min="1"
-                    placeholder="Ex: 8"
-                    value={peopleCount}
-                    onChange={(e) => setPeopleCount(parseInt(e.target.value) || 1)}
-                    disabled={readOnly}
-                />
-            </div>
+                    {/* Quick options */}
+                    <div className="space-y-2">
+                        {QUICK_OPTIONS.map((opt) => (
+                            <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => setQuickOption(opt.id)}
+                                className={`w-full flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all ${
+                                    quickOption === opt.id
+                                        ? "border-accent bg-accent/5"
+                                        : "border-gray-100 bg-white"
+                                }`}
+                            >
+                                <span className="text-2xl">{opt.emoji}</span>
+                                <div className="flex-1">
+                                    <span className={`block text-sm font-bold ${quickOption === opt.id ? "text-accent" : "text-gray-700"}`}>
+                                        {opt.label}
+                                    </span>
+                                    {opt.services.length > 0 && (
+                                        <span className="block text-xs text-gray-500">{opt.services.join(", ")}</span>
+                                    )}
+                                </div>
+                                <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                                    quickOption === opt.id ? "border-accent bg-accent" : "border-gray-300"
+                                }`}>
+                                    {quickOption === opt.id && <div className="h-2 w-2 rounded-full bg-white" />}
+                                </div>
+                            </button>
+                        ))}
+                    </div>
 
-            <Button
-                className="w-full"
-                onClick={handleSubmit}
-                disabled={readOnly || !title.trim() || ((dayId === "new" || forceNewDay) && !newDayDate)}
-            >
-                Ajouter le service
-            </Button>
+                    {/* Custom service selection */}
+                    {quickOption === "custom" && (
+                        <div className="space-y-2 pt-2">
+                            <Label className="text-xs text-gray-400">Sélectionnez les services</Label>
+                            <div className="flex flex-wrap gap-2">
+                                {DEFAULT_SERVICE_TYPES.map((type) => (
+                                    <button
+                                        key={type.id}
+                                        type="button"
+                                        onClick={() => toggleService(type.id)}
+                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 text-sm transition-all ${
+                                            selectedServices.includes(type.id)
+                                                ? "border-accent bg-accent/10 text-accent"
+                                                : "border-gray-100 text-gray-600"
+                                        }`}
+                                    >
+                                        <span>{type.emoji}</span>
+                                        <span className="font-medium">{type.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex gap-3 pt-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setStep(1)}
+                            className="flex-1 rounded-2xl h-12"
+                        >
+                            Retour
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={quickOption === "custom" && selectedServices.length === 0}
+                            className="flex-[2] rounded-2xl h-12 bg-accent"
+                        >
+                            Créer
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

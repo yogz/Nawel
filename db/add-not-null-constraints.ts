@@ -8,11 +8,11 @@ async function addNotNullConstraints() {
   console.log("🔧 Ajout des contraintes NOT NULL...");
 
   try {
-    // S'assurer que tous les jours ont un eventId
+    // S'assurer que tous les repas ont un eventId
     await db.execute(
-      sql`UPDATE days SET event_id = (SELECT id FROM events WHERE slug = 'family' LIMIT 1) WHERE event_id IS NULL`
+      sql`UPDATE meals SET event_id = (SELECT id FROM events WHERE slug = 'family' LIMIT 1) WHERE event_id IS NULL`
     );
-    console.log("✓ Jours mis à jour");
+    console.log("✓ Repas mis à jour");
 
     // S'assurer que toutes les personnes ont un eventId
     await db.execute(
@@ -21,8 +21,8 @@ async function addNotNullConstraints() {
     console.log("✓ Personnes mises à jour");
 
     // Ajouter les contraintes NOT NULL
-    await db.execute(sql`ALTER TABLE days ALTER COLUMN event_id SET NOT NULL`);
-    console.log("✓ Contrainte NOT NULL ajoutée à days.event_id");
+    await db.execute(sql`ALTER TABLE meals ALTER COLUMN event_id SET NOT NULL`);
+    console.log("✓ Contrainte NOT NULL ajoutée à meals.event_id");
 
     await db.execute(sql`ALTER TABLE people ALTER COLUMN event_id SET NOT NULL`);
     console.log("✓ Contrainte NOT NULL ajoutée à people.event_id");
@@ -35,6 +35,3 @@ async function addNotNullConstraints() {
 }
 
 addNotNullConstraints();
-
-
-
