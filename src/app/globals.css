@@ -179,6 +179,21 @@
     margin-bottom: 1.5rem !important;
   }
 
+  /* Global color overrides for theme-readable to prevent black-on-black */
+  .theme-readable
+    *:not(button):not([class*="btn-"]):not([class*="bg-primary"]):not([class*="bg-accent"]) {
+    color: #ffffff !important;
+  }
+
+  /* Specific override for common dark text classes in Tailwind */
+  .theme-readable [class*="text-gray-9"],
+  .theme-readable [class*="text-slate-9"],
+  .theme-readable [class*="text-zinc-9"],
+  .theme-readable [class*="text-black"],
+  .theme-readable [class*="text-neutral-9"] {
+    color: #ffffff !important;
+  }
+
   .theme-readable .glass {
     background: #000000 !important;
     border: 3px solid white !important;
@@ -199,11 +214,20 @@
 
   .theme-readable .btn-readable,
   .theme-readable button[class*="primary"],
-  .theme-readable button[class*="accent"] {
+  .theme-readable button[class*="accent"],
+  .theme-readable [class*="bg-primary"],
+  .theme-readable [class*="bg-accent"] {
     background: hsl(45 100% 50%) !important;
     color: black !important;
     border: 4px solid white !important;
     text-transform: uppercase !important;
+  }
+
+  /* Ensure text inside primary elements is black */
+  .theme-readable [class*="bg-primary"] *,
+  .theme-readable [class*="bg-accent"] *,
+  .theme-readable .btn-readable * {
+    color: black !important;
   }
 
   .theme-readable input,
@@ -227,10 +251,12 @@
 
   .theme-readable svg {
     stroke-width: 3px !important;
+    stroke: white !important;
   }
 
   .theme-readable .text-gray-500,
-  .theme-readable .text-muted-foreground {
+  .theme-readable .text-muted-foreground,
+  .theme-readable .text-gray-600 {
     color: #ffffff !important;
     /* Force white for muted text */
     opacity: 0.9 !important;
