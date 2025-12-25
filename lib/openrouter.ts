@@ -13,7 +13,7 @@ export async function generateIngredients(
   itemName: string
 ): Promise<GeneratedIngredient[]> {
   const result = await client.chat.send({
-    model: "anthropic/claude-3-haiku",
+    model: "deepseek/deepseek-r1-distill-llama-70b:free",
     messages: [
       {
         role: "system",
