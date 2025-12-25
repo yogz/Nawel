@@ -113,3 +113,30 @@ export const createEventSchema = z.object({
 });
 
 export const deleteEventSchema = baseInput;
+
+// Ingredient schemas
+export const generateIngredientsSchema = baseInput.extend({
+    itemId: z.number(),
+    itemName: z.string().min(1),
+});
+
+export const createIngredientSchema = baseInput.extend({
+    itemId: z.number(),
+    name: z.string().min(1),
+    quantity: z.string().optional(),
+});
+
+export const updateIngredientSchema = baseInput.extend({
+    id: z.number(),
+    name: z.string().min(1).optional(),
+    quantity: z.string().optional().nullable(),
+    checked: z.boolean().optional(),
+});
+
+export const deleteIngredientSchema = baseInput.extend({
+    id: z.number(),
+});
+
+export const deleteAllIngredientsSchema = baseInput.extend({
+    itemId: z.number(),
+});

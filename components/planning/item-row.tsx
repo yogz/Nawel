@@ -5,7 +5,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { Item, Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
-import { Scale, Euro, MessageSquare } from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
 
 export function ItemRow({
   item,
@@ -74,7 +74,7 @@ export function ItemRow({
           </div>
         </div>
 
-        {(item.quantity || item.note || item.price) && (
+        {(item.quantity || item.note || item.price || (item.ingredients && item.ingredients.length > 0)) && (
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
             {item.quantity && (
               <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 uppercase tracking-tight">
@@ -92,6 +92,12 @@ export function ItemRow({
               <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 italic tracking-tight">
                 <MessageSquare size={12} className="text-gray-400" />
                 <span className="truncate max-w-[150px]">{item.note}</span>
+              </div>
+            )}
+            {item.ingredients && item.ingredients.length > 0 && (
+              <div className="flex items-center gap-1 text-[11px] font-bold text-purple-500 uppercase tracking-tight">
+                <ChefHat size={12} className="text-purple-400" />
+                {item.ingredients.filter(i => i.checked).length}/{item.ingredients.length}
               </div>
             )}
           </div>

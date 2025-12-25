@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Item, Person, Meal } from "@/lib/types";
+import { Item, Person, Meal, Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, ChevronDown } from "lucide-react";
+import { Trash2, ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { IngredientList } from "@/components/planning/ingredient-list";
 import clsx from "clsx";
 
 export function ItemForm({
@@ -20,6 +21,14 @@ export function ItemForm({
     onMoveMeal,
     onDelete,
     readOnly,
+    // Ingredient props
+    ingredients,
+    onGenerateIngredients,
+    onToggleIngredient,
+    onDeleteIngredient,
+    onCreateIngredient,
+    onDeleteAllIngredients,
+    isGenerating,
 }: {
     people: Person[];
     defaultItem?: Item;
@@ -30,6 +39,14 @@ export function ItemForm({
     onMoveMeal?: (targetMealId: number) => void;
     onDelete?: () => void;
     readOnly?: boolean;
+    // Ingredient props
+    ingredients?: Ingredient[];
+    onGenerateIngredients?: () => Promise<void>;
+    onToggleIngredient?: (id: number, checked: boolean) => void;
+    onDeleteIngredient?: (id: number) => void;
+    onCreateIngredient?: (name: string, quantity?: string) => void;
+    onDeleteAllIngredients?: () => void;
+    isGenerating?: boolean;
 }) {
     const [name, setName] = useState(defaultItem?.name || "");
     const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
@@ -204,6 +221,50 @@ export function ItemForm({
                             <Trash2 size={14} className="mr-1.5" />
                             Supprimer
                         </Button>
+                    )}
+                </div>
+            )}
+
+            {/* AI Ingredients section - only for existing items */}
+            {isEditMode && onGenerateIngredients && (
+                <div className="space-y-3 pt-3 border-t border-gray-100">
+                    {/* Generate button - show if no ingredients or allow regeneration */}
+                    {!readOnly && (
+                        <button
+                            type="button"
+                            onClick={onGenerateIngredients}
+                            disabled={isGenerating || !name.trim()}
+                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                        >
+                            {isGenerating ? (
+                                <>
+                                    <Loader2 size={16} className="animate-spin" />
+                                    Generation en cours...
+                                </>
+                            ) : ingredients && ingredients.length > 0 ? (
+                                <>
+                                    <Sparkles size={16} />
+                                    Regenerer les ingredients
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles size={16} />
+                                    Generer les ingredients
+                                </>
+                            )}
+                        </button>
+                    )}
+
+                    {/* Ingredient list */}
+                    {ingredients && ingredients.length > 0 && onToggleIngredient && onDeleteIngredient && onCreateIngredient && onDeleteAllIngredients && (
+                        <IngredientList
+                            ingredients={ingredients}
+                            onToggle={onToggleIngredient}
+                            onDelete={onDeleteIngredient}
+                            onCreate={onCreateIngredient}
+                            onDeleteAll={onDeleteAllIngredients}
+                            readOnly={readOnly}
+                        />
                     )}
                 </div>
             )}

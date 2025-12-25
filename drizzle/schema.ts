@@ -170,6 +170,23 @@ export const items = pgTable(
   })
 );
 
+export const ingredients = pgTable(
+  "ingredients",
+  {
+    id: serial("id").primaryKey(),
+    itemId: integer("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    quantity: text("quantity"),
+    checked: boolean("checked").notNull().default(false),
+    order: integer("order_index").notNull().default(0),
+  },
+  (table) => ({
+    itemIdIdx: index("ingredients_item_id_idx").on(table.itemId),
+  })
+);
+
 export const eventRelations = relations(events, ({ many }) => ({
   days: many(days),
   people: many(people),
@@ -191,7 +208,7 @@ export const mealRelations = relations(meals, ({ one, many }) => ({
   items: many(items),
 }));
 
-export const itemRelations = relations(items, ({ one }) => ({
+export const itemRelations = relations(items, ({ one, many }) => ({
   meal: one(meals, {
     fields: [items.mealId],
     references: [meals.id],
@@ -199,6 +216,14 @@ export const itemRelations = relations(items, ({ one }) => ({
   person: one(people, {
     fields: [items.personId],
     references: [people.id],
+  }),
+  ingredients: many(ingredients),
+}));
+
+export const ingredientRelations = relations(ingredients, ({ one }) => ({
+  item: one(items, {
+    fields: [ingredients.itemId],
+    references: [items.id],
   }),
 }));
 

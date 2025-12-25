@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -103,7 +103,16 @@ export function Organizer({
     handleDeletePerson,
     handleDeleteEvent,
     findItem,
+    // Ingredient handlers
+    handleGenerateIngredients,
+    handleToggleIngredient,
+    handleDeleteIngredient,
+    handleCreateIngredient,
+    handleDeleteAllIngredients,
   } = handlers;
+
+  // State for ingredient generation
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const { christmas, toggle: toggleChristmas } = useThemeMode();
   const searchParams = useSearchParams();
@@ -239,6 +248,21 @@ export function Organizer({
             onMoveMeal={(mId) => sheet.item && handleMoveItem(sheet.item.id, mId)}
             onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
             readOnly={readOnly}
+            // Ingredient props
+            ingredients={sheet.item?.ingredients}
+            onGenerateIngredients={sheet.item ? async () => {
+              setIsGenerating(true);
+              try {
+                await handleGenerateIngredients(sheet.item!.id, sheet.item!.name);
+              } finally {
+                setIsGenerating(false);
+              }
+            } : undefined}
+            onToggleIngredient={sheet.item ? (id, checked) => handleToggleIngredient(id, sheet.item!.id, checked) : undefined}
+            onDeleteIngredient={sheet.item ? (id) => handleDeleteIngredient(id, sheet.item!.id) : undefined}
+            onCreateIngredient={sheet.item ? (name, qty) => handleCreateIngredient(sheet.item!.id, name, qty) : undefined}
+            onDeleteAllIngredients={sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined}
+            isGenerating={isGenerating}
           />
         )}
 

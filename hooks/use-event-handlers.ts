@@ -7,7 +7,9 @@ import {
     createDayAction, updateDayAction, deleteDayAction, createDayWithMealsAction,
     createMealAction, updateMealTitleAction, deleteMealAction,
     createPersonAction, updatePersonAction,
-    deletePersonAction, moveItemAction, deleteEventAction
+    deletePersonAction, moveItemAction, deleteEventAction,
+    generateIngredientsAction, createIngredientAction, updateIngredientAction,
+    deleteIngredientAction, deleteAllIngredientsAction
 } from "@/app/actions";
 import { PlanData, Item, Meal, Person } from "@/lib/types";
 import { SheetState } from "./use-event-state";
@@ -351,11 +353,159 @@ export function useEventHandlers({
         });
     };
 
+    // Ingredient handlers
+    const handleGenerateIngredients = async (itemId: number, itemName: string) => {
+        if (readOnly) return [];
+        try {
+            const generated = await generateIngredientsAction({
+                itemId,
+                itemName,
+                slug,
+                key: writeKey,
+            });
+
+            // Update local state
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.map((day) => ({
+                    ...day,
+                    meals: day.meals.map((meal) => ({
+                        ...meal,
+                        items: meal.items.map((item) =>
+                            item.id === itemId
+                                ? { ...item, ingredients: generated }
+                                : item
+                        ),
+                    })),
+                })),
+            }));
+
+            return generated;
+        } catch (error) {
+            console.error("Failed to generate ingredients:", error);
+            throw error;
+        }
+    };
+
+    const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {
+        if (readOnly) return;
+
+        // Optimistic update
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            days: prev.days.map((day) => ({
+                ...day,
+                meals: day.meals.map((meal) => ({
+                    ...meal,
+                    items: meal.items.map((item) =>
+                        item.id === itemId
+                            ? {
+                                  ...item,
+                                  ingredients: item.ingredients?.map((ing) =>
+                                      ing.id === ingredientId ? { ...ing, checked } : ing
+                                  ),
+                              }
+                            : item
+                    ),
+                })),
+            })),
+        }));
+
+        startTransition(async () => {
+            await updateIngredientAction({
+                id: ingredientId,
+                checked,
+                slug,
+                key: writeKey,
+            });
+        });
+    };
+
+    const handleDeleteIngredient = (ingredientId: number, itemId: number) => {
+        if (readOnly) return;
+
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            days: prev.days.map((day) => ({
+                ...day,
+                meals: day.meals.map((meal) => ({
+                    ...meal,
+                    items: meal.items.map((item) =>
+                        item.id === itemId
+                            ? {
+                                  ...item,
+                                  ingredients: item.ingredients?.filter((ing) => ing.id !== ingredientId),
+                              }
+                            : item
+                    ),
+                })),
+            })),
+        }));
+
+        startTransition(async () => {
+            await deleteIngredientAction({ id: ingredientId, slug, key: writeKey });
+        });
+    };
+
+    const handleCreateIngredient = (itemId: number, name: string, quantity?: string) => {
+        if (readOnly) return;
+
+        startTransition(async () => {
+            const created = await createIngredientAction({
+                itemId,
+                name,
+                quantity,
+                slug,
+                key: writeKey,
+            });
+
+            setPlan((prev: PlanData) => ({
+                ...prev,
+                days: prev.days.map((day) => ({
+                    ...day,
+                    meals: day.meals.map((meal) => ({
+                        ...meal,
+                        items: meal.items.map((item) =>
+                            item.id === itemId
+                                ? { ...item, ingredients: [...(item.ingredients || []), created] }
+                                : item
+                        ),
+                    })),
+                })),
+            }));
+        });
+    };
+
+    const handleDeleteAllIngredients = (itemId: number) => {
+        if (readOnly) return;
+        if (!confirm("Supprimer tous les ingrédients ?")) return;
+
+        setPlan((prev: PlanData) => ({
+            ...prev,
+            days: prev.days.map((day) => ({
+                ...day,
+                meals: day.meals.map((meal) => ({
+                    ...meal,
+                    items: meal.items.map((item) =>
+                        item.id === itemId ? { ...item, ingredients: [] } : item
+                    ),
+                })),
+            })),
+        }));
+
+        startTransition(async () => {
+            await deleteAllIngredientsAction({ itemId, slug, key: writeKey });
+        });
+    };
+
     return {
         handleCreateItem, handleUpdateItem, handleAssign, handleDelete,
         handleMoveItem, handleCreateDay, handleCreateMeal, handleCreatePerson,
         handleCreateDayWithMeals,
         handleUpdateDay, handleDeleteDay, handleUpdateMealTitle, handleDeleteMeal,
-        handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem
+        handleUpdatePerson, handleDeletePerson, handleDeleteEvent, findItem,
+        // Ingredient handlers
+        handleGenerateIngredients, handleToggleIngredient, handleDeleteIngredient,
+        handleCreateIngredient, handleDeleteAllIngredients
     };
 }

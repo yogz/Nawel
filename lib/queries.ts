@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "./db";
-import { days, items, meals, people, events } from "@/drizzle/schema";
+import { days, items, meals, people, events, ingredients } from "@/drizzle/schema";
 
 export async function fetchPlan(slug: string) {
   // Trouver l'événement par slug
@@ -23,6 +23,9 @@ export async function fetchPlan(slug: string) {
             orderBy: asc(items.order),
             with: {
               person: true,
+              ingredients: {
+                orderBy: asc(ingredients.order),
+              },
             },
           },
         },
