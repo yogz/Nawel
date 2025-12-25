@@ -40,7 +40,9 @@ export function EventList({
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
-    key?: string
+    key?: string,
+    adults?: number,
+    children?: number
   ) => {
     setError(null);
     startTransition(async () => {
@@ -52,6 +54,8 @@ export function EventList({
           key: key || writeKey,
           creationMode,
           date,
+          adults: adults ?? 0,
+          children: children ?? 0,
         });
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: any) {
@@ -168,7 +172,9 @@ function EventForm({
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
-    key?: string
+    key?: string,
+    adults?: number,
+    children?: number
   ) => void;
   onClose: () => void;
   isPending: boolean;
@@ -185,6 +191,8 @@ function EventForm({
   const [customPassword, setCustomPassword] = useState("");
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
 
   const generateSlug = (text: string) => {
     return text
@@ -205,7 +213,9 @@ function EventForm({
       description.trim() || undefined,
       creationMode,
       date,
-      customPassword.trim() || undefined
+      customPassword.trim() || undefined,
+      adults,
+      children
     );
   };
 
@@ -270,6 +280,29 @@ function EventForm({
               onChange={(e) => setDate(e.target.value)}
             />
           </label>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="block space-y-2">
+              <span className="text-sm font-bold text-gray-900">Adultes</span>
+              <input
+                type="number"
+                min="0"
+                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
+                value={adults}
+                onChange={(e) => setAdults(Math.max(0, parseInt(e.target.value) || 0))}
+              />
+            </label>
+            <label className="block space-y-2">
+              <span className="text-sm font-bold text-gray-900">Enfants</span>
+              <input
+                type="number"
+                min="0"
+                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
+                value={children}
+                onChange={(e) => setChildren(Math.max(0, parseInt(e.target.value) || 0))}
+              />
+            </label>
+          </div>
 
           <div className="flex gap-3 pt-4">
             <button
@@ -364,6 +397,12 @@ function EventForm({
                   month: "long",
                   year: "numeric",
                 })}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">Convives</span>
+              <span className="text-sm font-medium text-gray-700">
+                {adults} adultes, {children} enfants
               </span>
             </div>
             <div className="flex items-center justify-between">

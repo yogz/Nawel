@@ -108,6 +108,8 @@ export const events = pgTable(
     description: text("description"),
     adminKey: varchar("admin_key", { length: 100 }), // Nullable for migration
     ownerId: text("owner_id").references(() => user.id, { onDelete: "set null" }),
+    adults: integer("adults").notNull().default(0),
+    children: integer("children").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => ({

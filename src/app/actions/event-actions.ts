@@ -40,6 +40,8 @@ export const createEventAction = withErrorThrower(
         description: input.description ?? null,
         adminKey: adminKey,
         ownerId: session?.user.id ?? null,
+        adults: input.adults ?? 0,
+        children: input.children ?? 0,
       })
       .returning();
     await logChange("create", "events", created.id, null, created);

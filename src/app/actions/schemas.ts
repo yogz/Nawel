@@ -133,6 +133,8 @@ export const createEventSchema = z.object({
   key: safeKey.optional(),
   creationMode: z.enum(["total", "classique", "apero", "zero"]).optional(),
   date: z.string().optional(),
+  adults: z.number().int().min(0).max(1000).optional().default(0),
+  children: z.number().int().min(0).max(1000).optional().default(0),
 });
 
 export const deleteEventSchema = baseInput;

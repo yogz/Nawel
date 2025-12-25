@@ -128,6 +128,56 @@
     transform: scale(1.05);
   }
 
+  /* Theme Lisibilité - Contraste élevé pour accessibilité */
+  .theme-readable {
+    --surface: #000000;
+    --muted: #1c1c1e;
+    --accent: 45 100% 50%; /* Bright Yellow/Gold */
+    --accent-glow: 45 100% 60%;
+    --accent-soft: #2c2c2e;
+    --text: #ffffff;
+    --radius: 0.5rem; /* Less rounded for more structured feel */
+
+    background: #000000;
+    font-weight: 500; /* Bolded text by default for better readability */
+  }
+
+  .theme-readable .premium-card {
+    background: #1c1c1e;
+    border: 3px solid white;
+    box-shadow: none;
+    transition: transform 0.2s ease;
+  }
+
+  .theme-readable .premium-card:hover {
+    transform: scale(1.02);
+    border-color: hsl(var(--accent));
+  }
+
+  .theme-readable .glass {
+    background: #000000;
+    border: 2px solid white;
+    backdrop-filter: none;
+  }
+
+  .theme-readable .btn-readable {
+    background: hsl(var(--accent));
+    color: black;
+    font-weight: 800;
+    border: 3px solid white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .theme-readable input,
+  .theme-readable textarea,
+  .theme-readable select {
+    border: 2px solid white !important;
+    background: #1c1c1e !important;
+    color: white !important;
+    font-size: 18px !important; /* Larger font for accessibility */
+  }
+
   /* Theme Christmas - Magical Winter Wonderland */
   .theme-christmas {
     --surface: #fefcfa;

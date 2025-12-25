@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type ThemeName = "none" | "christmas" | "aurora";
+export type ThemeName = "none" | "christmas" | "aurora" | "readable";
 
 const THEMES: { id: ThemeName; label: string; description: string; emoji: string }[] = [
   {
@@ -17,6 +17,12 @@ const THEMES: { id: ThemeName; label: string; description: string; emoji: string
     label: "Aurore",
     description: "Vibrant et animé, dégradés magiques",
     emoji: "✨",
+  },
+  {
+    id: "readable",
+    label: "Lisibilité",
+    description: "Contraste élevé, texte agrandi",
+    emoji: "👓",
   },
 ];
 
@@ -49,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Retirer tous les thèmes
-    document.body.classList.remove("theme-christmas", "theme-aurora");
+    document.body.classList.remove("theme-christmas", "theme-aurora", "theme-readable");
     // Ajouter le thème actif
     if (theme !== "none") {
       document.body.classList.add(`theme-${theme}`);
