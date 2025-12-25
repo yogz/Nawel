@@ -41,19 +41,23 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
   };
 
   const handleGoogleAuth = async () => {
-    console.log("Starting Google Auth...");
+    console.log("GOOGLE_AUTH_CLICKED: Starting process...");
     setIsPending(true);
     setError(null);
     try {
+      console.log("GOOGLE_AUTH_CALLING_SIGN_IN: Calling authClient.signIn.social...");
       const res = await authClient.signIn.social({
         provider: "google",
         callbackURL: "/",
       });
-      console.log("Social sign in response:", res);
+      console.log("GOOGLE_AUTH_RESPONSE: Response received:", res);
     } catch (err: any) {
-      console.error("Google Auth Error:", err);
+      console.error("GOOGLE_AUTH_ERROR: Caught error:", err);
       setError(err.message || "Une erreur est survenue");
       setIsPending(false);
+    } finally {
+      console.log("GOOGLE_AUTH_FINISHED: Setting pending to false if error");
+      // Note: redirection usually happens before this if successful
     }
   };
 
