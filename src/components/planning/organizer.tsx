@@ -283,7 +283,14 @@ export function Organizer({
           />
         )}
 
-        {tab === "shopping" && <ShoppingTab plan={plan} slug={slug} writeKey={writeKey} />}
+        {tab === "shopping" && (
+          <ShoppingTab
+            plan={plan}
+            slug={slug}
+            writeKey={writeKey}
+            currentUserId={session?.user?.id}
+          />
+        )}
       </main>
 
       <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
