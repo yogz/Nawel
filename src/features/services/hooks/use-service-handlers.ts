@@ -51,19 +51,44 @@ export function useServiceHandlers({
     startTransition(async () => {
       try {
         await updateServiceAction({ id, title, peopleCount, slug, key: writeKey });
+
+        // Utility for scaling (to avoid repeating it)
+        const { scaleQuantity } = await import("@/lib/utils");
+
         setPlan((prev: PlanData) => ({
           ...prev,
           meals: prev.meals.map((m) => ({
             ...m,
-            services: m.services.map((s) =>
-              s.id === id
-                ? {
-                    ...s,
-                    ...(title !== undefined && { title }),
-                    ...(peopleCount !== undefined && { peopleCount }),
-                  }
-                : s
-            ),
+            services: m.services.map((s) => {
+              if (s.id !== id) return s;
+
+              const oldPeopleCount = s.peopleCount;
+              const newPeopleCount = peopleCount ?? oldPeopleCount;
+
+              const updatedService = {
+                ...s,
+                ...(title !== undefined && { title }),
+                ...(peopleCount !== undefined && { peopleCount }),
+              };
+
+              // Scale items and ingredients in local state if peopleCount changed
+              if (
+                peopleCount !== undefined &&
+                peopleCount !== oldPeopleCount &&
+                oldPeopleCount > 0
+              ) {
+                updatedService.items = s.items.map((item) => ({
+                  ...item,
+                  quantity: scaleQuantity(item.quantity, oldPeopleCount, newPeopleCount),
+                  ingredients: item.ingredients?.map((ing) => ({
+                    ...ing,
+                    quantity: scaleQuantity(ing.quantity, oldPeopleCount, newPeopleCount),
+                  })),
+                }));
+              }
+
+              return updatedService;
+            }),
           })),
         }));
         setSheet(null);

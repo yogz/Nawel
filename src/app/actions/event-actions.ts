@@ -68,6 +68,8 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         date: defaultDate,
         title: "Repas complet",
         services: services,
+        adults: created.adults,
+        children: created.children,
       });
     }
   }

@@ -66,14 +66,31 @@ export interface OrganizerHandlers {
   handleAssign: (item: Item, personId: number | null) => void;
   handleDelete: (item: Item) => void;
   handleMoveItem: (itemId: number, serviceId: number, index?: number) => void;
-  handleCreateMeal: (date: string, title?: string) => Promise<number>;
+  handleCreateMeal: (
+    date: string,
+    title?: string,
+    adults?: number,
+    children?: number
+  ) => Promise<number>;
   handleCreateService: (mealId: number, title: string, peopleCount?: number) => void;
-  handleUpdateMeal: (id: number, date: string, title?: string) => void;
+  handleUpdateMeal: (
+    id: number,
+    date: string,
+    title?: string,
+    adults?: number,
+    children?: number
+  ) => void;
   handleDeleteMeal: (meal: Meal) => void;
   handleUpdateService: (id: number, title: string, peopleCount?: number) => void;
   handleDeleteService: (service: Service) => void;
   handleCreatePerson: (name: string, emoji?: string) => void;
-  handleCreateMealWithServices: (date: string, title?: string, services?: string[]) => void;
+  handleCreateMealWithServices: (
+    date: string,
+    title?: string,
+    services?: string[],
+    adults?: number,
+    children?: number
+  ) => void;
   handleUpdatePerson: (id: number, name: string, emoji?: string | null) => void;
   handleDeletePerson: (id: number) => void;
   handleGenerateIngredients: (itemId: number, name: string, peopleCount?: number) => Promise<void>;

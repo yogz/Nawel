@@ -33,18 +33,24 @@ export const baseInput = z.object({
 export const createMealSchema = baseInput.extend({
   date: dateSchema,
   title: safeText(200).optional(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
 });
 
 export const createMealWithServicesSchema = baseInput.extend({
   date: dateSchema,
   title: safeText(200).optional(),
   services: z.array(safeStrictText(100)).min(1, "At least one service required"),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
 });
 
 export const updateMealSchema = baseInput.extend({
   id: z.number().int().positive(),
   date: dateSchema.optional(),
   title: safeText(200).optional().nullable(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
 });
 
 export const createServiceSchema = baseInput.extend({
@@ -181,6 +187,8 @@ export const deleteEventAdminSchema = z.object({
 
 export const updateUserSchema = z.object({
   name: safeStrictText(100),
-  email: z.string().email(),
-  image: z.string().url().optional().nullable(),
+});
+
+export const deleteUserSchema = z.object({
+  confirm: z.boolean(),
 });

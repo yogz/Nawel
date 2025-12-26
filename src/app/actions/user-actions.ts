@@ -3,8 +3,11 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { createSafeAction } from "@/lib/action-utils";
-import { updateUserSchema } from "./schemas";
+import { updateUserSchema, deleteUserSchema } from "./schemas";
 import { revalidatePath } from "next/cache";
+import { db } from "@/lib/db";
+import { events } from "@drizzle/schema";
+import { eq } from "drizzle-orm";
 
 /**
  * Updates the current user's profile information.
@@ -21,33 +24,52 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
   }
 
   try {
-    // 1. Update basic info (name, image)
+    // Update basic info (name)
     await auth.api.updateUser({
       headers: currentHeaders,
       body: {
         name: data.name,
-        image: data.image || undefined,
       },
     });
-
-    // 2. Update email if it has changed
-    // BetterAuth will handle the verification process depending on the configuration.
-    if (data.email.toLowerCase() !== session.user.email.toLowerCase()) {
-      await auth.api.changeEmail({
-        headers: currentHeaders,
-        body: {
-          newEmail: data.email,
-        },
-      });
-    }
 
     revalidatePath("/");
     return { success: true };
   } catch (error: any) {
-    // Map BetterAuth errors to user-friendly messages if needed
-    if (error.message?.includes("email") && error.message?.includes("exists")) {
-      throw new Error("Cette adresse email est déjà utilisée par un autre compte.");
-    }
     throw error;
+  }
+});
+
+/**
+ * Permanently deletes the user account and all associated events.
+ */
+export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) => {
+  const currentHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: currentHeaders,
+  });
+
+  if (!session) {
+    throw new Error("Vous devez être connecté pour supprimer votre compte.");
+  }
+
+  if (!data.confirm) {
+    throw new Error("La confirmation est requise.");
+  }
+
+  try {
+    // 1. Delete all events owned by this user
+    await db.delete(events).where(eq(events.ownerId, session.user.id));
+
+    // 2. Delete the user account via BetterAuth
+    // This will also invalidate sessions and delete accounts linked to this user.
+    await auth.api.deleteUser({
+      headers: currentHeaders,
+      body: {},
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Delete user error:", error);
+    throw new Error("Une erreur est survenue lors de la suppression de votre compte.");
   }
 });

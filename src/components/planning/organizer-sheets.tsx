@@ -217,6 +217,7 @@ export function OrganizerSheets({
         <ServiceForm
           meals={plan.meals}
           defaultMealId={sheet.mealId}
+          defaultPeopleCount={(plan.event?.adults || 0) + (plan.event?.children || 0)}
           forceNewMeal={sheet.mealId === -1}
           readOnly={readOnly}
           onSubmit={async (
@@ -245,13 +246,30 @@ export function OrganizerSheets({
       {sheet?.type === "meal-edit" && (
         <MealForm
           meal={sheet.meal}
-          onSubmit={(date: string, title?: string) => handleUpdateMeal(sheet.meal.id, date, title)}
+          onSubmit={(
+            date: string,
+            title?: string,
+            _servs?: string[],
+            adults?: number,
+            children?: number
+          ) => handleUpdateMeal(sheet.meal.id, date, title, adults, children)}
           onDelete={handleDeleteMeal}
           onClose={() => setSheet(null)}
         />
       )}
       {sheet?.type === "meal-create" && (
-        <MealForm onSubmit={handleCreateMealWithServices} onClose={() => setSheet(null)} />
+        <MealForm
+          defaultAdults={plan.event?.adults || 0}
+          defaultChildren={plan.event?.children || 0}
+          onSubmit={(
+            date: string,
+            title?: string,
+            services?: string[],
+            adults?: number,
+            children?: number
+          ) => handleCreateMealWithServices(date, title, services, adults, children)}
+          onClose={() => setSheet(null)}
+        />
       )}
 
       {sheet?.type === "person" && <PersonForm readOnly={readOnly} onSubmit={handleCreatePerson} />}

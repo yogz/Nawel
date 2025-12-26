@@ -54,6 +54,11 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * SESSION_EXPIRE_DAYS,
     updateAge: 60 * 60 * 24 * SESSION_REFRESH_DAYS,
   },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;

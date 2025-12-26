@@ -27,18 +27,30 @@ const QUICK_OPTIONS = [
 
 export function MealForm({
   meal,
+  defaultAdults = 0,
+  defaultChildren = 0,
   onSubmit,
   onDelete,
   onClose,
 }: {
   meal?: Meal;
-  onSubmit: (date: string, title: string, services?: string[]) => void;
+  defaultAdults?: number;
+  defaultChildren?: number;
+  onSubmit: (
+    date: string,
+    title: string,
+    services?: string[],
+    adults?: number,
+    children?: number
+  ) => void;
   onDelete?: (meal: Meal) => void;
   onClose: () => void;
 }) {
   const [step, setStep] = useState(1);
   const [date, setDate] = useState<Date | undefined>(meal?.date ? new Date(meal.date) : undefined);
   const [title, setTitle] = useState(meal?.title || "");
+  const [adults, setAdults] = useState(meal?.adults ?? defaultAdults);
+  const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [quickOption, setQuickOption] = useState<string>("simple");
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
 
@@ -53,7 +65,7 @@ export function MealForm({
     const formattedDate = format(date, "yyyy-MM-dd");
 
     if (isEditMode) {
-      onSubmit(formattedDate, title);
+      onSubmit(formattedDate, title, undefined, adults, children);
     } else {
       let servicesToCreate: string[];
       if (quickOption === "custom") {
@@ -63,7 +75,7 @@ export function MealForm({
       } else {
         servicesToCreate = QUICK_OPTIONS.find((o) => o.id === quickOption)?.services || ["Service"];
       }
-      onSubmit(formattedDate, title, servicesToCreate);
+      onSubmit(formattedDate, title, servicesToCreate, adults, children);
     }
   };
 
@@ -116,6 +128,31 @@ export function MealForm({
               placeholder="Ex: Réveillon, Jour de l'an..."
               className="h-12 rounded-2xl"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="adults">Adultes</Label>
+              <Input
+                id="adults"
+                type="number"
+                min="0"
+                value={adults}
+                onChange={(e) => setAdults(Math.max(0, parseInt(e.target.value) || 0))}
+                className="h-12 rounded-2xl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="children">Enfants</Label>
+              <Input
+                id="children"
+                type="number"
+                min="0"
+                value={children}
+                onChange={(e) => setChildren(Math.max(0, parseInt(e.target.value) || 0))}
+                className="h-12 rounded-2xl"
+              />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-2">

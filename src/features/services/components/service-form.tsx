@@ -22,12 +22,14 @@ import { cn } from "@/lib/utils";
 export function ServiceForm({
   meals,
   defaultMealId,
+  defaultPeopleCount = 1,
   forceNewMeal,
   onSubmit,
   readOnly,
 }: {
   meals: Meal[];
   defaultMealId?: number;
+  defaultPeopleCount?: number;
   forceNewMeal?: boolean;
   onSubmit: (
     mealId: number,
@@ -38,15 +40,21 @@ export function ServiceForm({
   ) => Promise<void>;
   readOnly?: boolean;
 }) {
-  const [mealId, setMealId] = useState<string>(
+  const initialMealId =
     defaultMealId !== undefined && defaultMealId !== -1
       ? String(defaultMealId)
       : forceNewMeal || meals.length === 0
         ? "new"
-        : String(meals[0].id)
-  );
+        : String(meals[0].id);
+
+  const initialMeal = meals.find((m) => String(m.id) === initialMealId);
+  const initialPeople = initialMeal
+    ? initialMeal.adults + initialMeal.children
+    : defaultPeopleCount;
+
+  const [mealId, setMealId] = useState<string>(initialMealId);
   const [title, setTitle] = useState("");
-  const [peopleCount, setPeopleCount] = useState(1);
+  const [peopleCount, setPeopleCount] = useState(initialPeople);
   const [newMealDate, setNewMealDate] = useState<Date | undefined>(undefined);
   const [newMealTitle, setNewMealTitle] = useState("");
 
@@ -67,7 +75,19 @@ export function ServiceForm({
       {!forceNewMeal && meals.length > 0 && (
         <div className="space-y-2">
           <Label>Choisir le repas</Label>
-          <Select value={mealId} onValueChange={setMealId} disabled={readOnly}>
+          <Select
+            value={mealId}
+            onValueChange={(val) => {
+              setMealId(val);
+              const meal = meals.find((m) => String(m.id) === val);
+              if (meal) {
+                setPeopleCount(meal.adults + meal.children);
+              } else {
+                setPeopleCount(defaultPeopleCount);
+              }
+            }}
+            disabled={readOnly}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Sélectionner un repas" />
             </SelectTrigger>
