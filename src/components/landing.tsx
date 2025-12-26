@@ -22,28 +22,28 @@ export function Landing() {
       description:
         "Créez votre menu de fête en quelques secondes. Organisez les plats par services (Entrée, Plat, Dessert) et suivez l'avancement en temps réel.",
       icon: <Calendar className="h-6 w-6" />,
-      image: "/feature-menu.png",
+      image: "/aura-menu.png",
     },
     {
       title: "Qui apporte quoi ?",
       description:
         "Plus de doublons ! Vos invités choisissent directement ce qu'ils souhaitent apporter. Une interface claire pour une coordination parfaite.",
       icon: <Users className="h-6 w-6" />,
-      image: "/feature-guests.png",
+      image: "/aura-collaboration.png",
     },
     {
       title: "L'IA à votre service",
       description:
         "Laissez notre IA générer la liste précise des ingrédients pour chaque plat. Fini les oublis de dernière minute au supermarché.",
       icon: <Sparkles className="h-6 w-6" />,
-      image: "/feature-ingredients.png",
+      image: "/aura-ai.png",
     },
     {
       title: "Liste de courses intelligente",
       description:
         "Une liste de courses partagée et organisée par personne. Cochez vos articles au fur et à mesure, même sans connexion.",
       icon: <Share2 className="h-6 w-6" />,
-      image: "/feature-todo.png",
+      image: "/aura-checklist.png",
     },
   ];
 
@@ -56,13 +56,13 @@ export function Landing() {
       >
         <div className="absolute inset-0 -z-10">
           <Image
-            src="/hero.png"
-            alt="Hero Christmas"
+            src="/aura-hero.png"
+            alt="Hero Aura"
             fill
-            className="object-cover opacity-20 blur-sm"
+            className="object-cover opacity-60"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/0 via-white/50 to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-white/40 to-white" />
         </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
