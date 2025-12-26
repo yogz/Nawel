@@ -51,30 +51,30 @@ export function OrganizerHeader({
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="text-2xl font-black italic tracking-tight text-accent transition-opacity hover:opacity-80"
+            className="shrink-0 text-xl font-black italic tracking-tight text-accent transition-opacity hover:opacity-80 sm:text-2xl"
           >
             NAWEL ✨
           </Link>
           <div className="flex items-center gap-2">
             {!readOnly ? (
-              <span className="flex items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-                <Check size={12} />
-                Live
+              <span className="flex items-center gap-1 rounded-full bg-zinc-900 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white sm:gap-1.5 sm:px-3 sm:text-[11px]">
+                <Check size={10} className="sm:h-3 sm:w-3" />
+                <span className="xs:inline hidden">Live</span>
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                <ShieldAlert size={12} />
-                Miroir
+              <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
+                <ShieldAlert size={10} className="sm:h-3 sm:w-3" />
+                <span className="xs:inline hidden">Miroir</span>
               </span>
             )}
             {!readOnly && (
               <button
                 onClick={() => setSheet({ type: "share" })}
-                className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent/20"
+                className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent/20 sm:gap-1.5 sm:px-3 sm:text-[11px]"
                 title="Partager l'accès"
               >
-                <Share size={12} />
-                Partager
+                <Share size={10} className="sm:h-3 sm:w-3" />
+                <span className="hidden sm:inline">Partager</span>
               </button>
             )}
             <UserNav />
@@ -115,11 +115,11 @@ function PlanningFilters({
 }: PlanningFiltersProps) {
   return (
     <div className="mt-4 flex flex-col gap-3">
-      <div className="flex gap-2">
+      <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 sm:overflow-visible sm:pb-0">
         <button
           onClick={() => setPlanningFilter({ type: "all" })}
           className={clsx(
-            "rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
+            "whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all sm:px-4 sm:text-xs",
             planningFilter.type === "all"
               ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
               : "bg-white text-gray-400 hover:text-gray-600"
@@ -130,7 +130,7 @@ function PlanningFilters({
         <button
           onClick={() => setPlanningFilter({ type: "unassigned" })}
           className={clsx(
-            "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
+            "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all sm:px-4 sm:text-xs",
             planningFilter.type === "unassigned"
               ? "bg-zinc-900 text-white shadow-md ring-2 ring-zinc-900/20"
               : "bg-white text-gray-400 hover:text-zinc-600"
@@ -144,7 +144,7 @@ function PlanningFilters({
             <button
               onClick={() => setSheet({ type: "person-select" })}
               className={clsx(
-                "flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all",
+                "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all sm:px-4 sm:text-xs",
                 planningFilter.type === "person"
                   ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
                   : "bg-white text-gray-400 hover:text-gray-600"

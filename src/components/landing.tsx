@@ -73,21 +73,21 @@ export function Landing() {
             <Sparkles className="h-4 w-4" />
             La nouvelle façon de festoyer
           </span>
-          <h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-7xl">Nawel</h1>
-          <p className="mx-auto mb-10 max-w-2xl text-xl text-gray-600 sm:text-2xl">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight sm:mb-6 sm:text-7xl">Nawel</h1>
+          <p className="mx-auto mb-8 max-w-2xl px-4 text-lg leading-relaxed text-gray-600 sm:mb-10 sm:text-2xl">
             L&apos;organisateur d&apos;événements qui rend les préparatifs aussi magiques que la
             fête elle-même.
           </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
             <Link
               href="/login"
-              className="group flex items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-lg font-semibold text-white transition-all hover:bg-gray-800 hover:ring-4 hover:ring-gray-100"
+              className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-gray-800 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
               Commencer maintenant
             </Link>
             <Link
               href="#discover"
-              className="flex items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-8 py-4 text-lg font-semibold text-gray-900 transition-all hover:bg-gray-50"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
               Découvrir
             </Link>
@@ -104,9 +104,9 @@ export function Landing() {
       </motion.section>
 
       {/* Features Section */}
-      <section id="discover" className="relative z-10 bg-gray-50 py-32">
+      <section id="discover" className="relative z-10 bg-gray-50 py-16 sm:py-32">
         <div className="max-xl mx-auto px-6">
-          <div className="grid gap-24 sm:gap-32">
+          <div className="grid gap-16 sm:gap-32">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -116,14 +116,16 @@ export function Landing() {
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 className={`flex flex-col items-center gap-12 sm:flex-row ${index % 2 === 1 ? "sm:flex-row-reverse" : ""}`}
               >
-                <div className="flex-1 space-y-6">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                <div className="flex-1 space-y-4 sm:space-y-6">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-gray-100 sm:h-12 sm:w-12 sm:rounded-2xl">
                     {feature.icon}
                   </div>
-                  <h2 className="text-3xl font-bold sm:text-4xl">{feature.title}</h2>
-                  <p className="text-lg leading-relaxed text-gray-600">{feature.description}</p>
+                  <h2 className="text-2xl font-bold sm:text-4xl">{feature.title}</h2>
+                  <p className="text-base leading-relaxed text-gray-600 sm:text-lg">
+                    {feature.description}
+                  </p>
                 </div>
-                <div className="relative aspect-[16/10] flex-1 overflow-hidden rounded-3xl bg-gray-200 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5">
+                <div className="relative aspect-[16/10] w-full flex-1 overflow-hidden rounded-2xl bg-gray-200 shadow-xl shadow-gray-200 ring-1 ring-gray-900/5 sm:rounded-3xl sm:shadow-2xl">
                   <Image
                     src={feature.image}
                     alt={feature.title}
@@ -139,17 +141,19 @@ export function Landing() {
       </section>
 
       {/* Call to Action Footer */}
-      <section className="bg-white py-32 text-center">
-        <div className="mx-auto max-w-4xl px-6">
-          <h2 className="mb-8 text-4xl font-bold sm:text-6xl">Prêt à simplifier vos fêtes ?</h2>
-          <p className="mb-12 text-xl text-gray-600">
+      <section className="bg-white px-6 py-20 text-center sm:py-32">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-6 text-3xl font-bold sm:mb-8 sm:text-6xl">
+            Prêt à simplifier vos fêtes ?
+          </h2>
+          <p className="mb-8 text-lg text-gray-600 sm:mb-12 sm:text-xl">
             Rejoignez des milliers de familles qui utilisent déjà Nawel.
           </p>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center rounded-full bg-red-600 px-10 py-5 text-xl font-bold text-white transition-all hover:scale-105 hover:bg-red-700"
+            className="inline-flex w-full items-center justify-center rounded-full bg-red-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-red-700 sm:w-auto sm:px-10 sm:py-5 sm:text-xl"
           >
-            S&apos;identifier / Créer un compte
+            Commencer maintenant
           </Link>
         </div>
       </section>
