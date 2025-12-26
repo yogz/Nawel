@@ -5,6 +5,7 @@ import { Check, ShieldAlert, Share, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
+import { UserNav } from "@/components/auth/user-nav";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -76,6 +77,7 @@ export function OrganizerHeader({
                 Partager
               </button>
             )}
+            <UserNav />
           </div>
         </div>
 

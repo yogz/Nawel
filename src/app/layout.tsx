@@ -45,9 +45,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={inter.variable}>
       <body className="bg-gray-50 antialiased">
         <ThemeProvider>
-          <div className="flex justify-end p-4">
-            <UserNav />
-          </div>
           {children}
           <SnowOverlay />
         </ThemeProvider>
