@@ -229,6 +229,8 @@ export function OrganizerSheets({
             sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined
           }
           isGenerating={isGenerating}
+          isAuthenticated={!!currentUserId}
+          onRequestAuth={onAuth}
         />
       )}
 

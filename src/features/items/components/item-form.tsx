@@ -36,6 +36,9 @@ export function ItemForm({
   onCreateIngredient,
   onDeleteAllIngredients,
   isGenerating,
+  // Auth props for AI features
+  isAuthenticated,
+  onRequestAuth,
 }: {
   people: Person[];
   defaultItem?: Item;
@@ -55,6 +58,9 @@ export function ItemForm({
   onCreateIngredient?: (name: string, quantity?: string) => void;
   onDeleteAllIngredients?: () => void;
   isGenerating?: boolean;
+  // Auth props for AI features
+  isAuthenticated?: boolean;
+  onRequestAuth?: () => void;
 }) {
   const defaultNote =
     !defaultItem && servicePeopleCount
@@ -261,11 +267,13 @@ export function ItemForm({
           itemNote={note}
           readOnly={readOnly}
           isGenerating={isGenerating}
+          isAuthenticated={isAuthenticated}
           onGenerateIngredients={onGenerateIngredients}
           onToggleIngredient={onToggleIngredient}
           onDeleteIngredient={onDeleteIngredient}
           onCreateIngredient={onCreateIngredient}
           onDeleteAllIngredients={onDeleteAllIngredients}
+          onRequestAuth={onRequestAuth}
         />
       )}
 
