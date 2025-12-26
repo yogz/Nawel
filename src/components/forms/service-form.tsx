@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Meal } from "@/lib/types";
+import { type Meal } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,7 +52,9 @@ export function ServiceForm({
 
   const handleSubmit = async () => {
     if (mealId === "new") {
-      if (!newMealDate) return;
+      if (!newMealDate) {
+        return;
+      }
       const formattedDate = format(newMealDate, "yyyy-MM-dd");
       await onSubmit(-1, title, peopleCount, formattedDate, newMealTitle);
     } else {

@@ -4,16 +4,27 @@ import { admin } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
 
+// Parse trusted origins from environment variable, with safe defaults for development
+const getTrustedOrigins = (): string[] => {
+  const envOrigins = process.env.BETTER_AUTH_TRUSTED_ORIGINS;
+  if (envOrigins) {
+    return envOrigins
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean);
+  }
+  // Development-only defaults (production should always set BETTER_AUTH_TRUSTED_ORIGINS)
+  if (process.env.NODE_ENV === "development") {
+    return ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"];
+  }
+  // Production: only trust the configured base URL
+  return process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL.replace(/\/$/, "")] : [];
+};
+
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://172.20.10.12:3000", // Observed in user logs
-    "http://172.20.10.12:3001",
-  ],
+  trustedOrigins: getTrustedOrigins(),
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {

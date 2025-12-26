@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Item, Person, Service, Ingredient } from "@/lib/types";
+import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,7 +71,9 @@ export function ItemForm({
 
   // Auto-save logic for existing items
   useEffect(() => {
-    if (!defaultItem || readOnly) return;
+    if (!defaultItem || readOnly) {
+      return;
+    }
 
     const hasChanged =
       name !== defaultItem.name ||
@@ -80,7 +82,9 @@ export function ItemForm({
       price !== (defaultItem.price?.toString() || "");
 
     if (hasChanged) {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
       timerRef.current = setTimeout(() => {
         onSubmit({
           name,
@@ -92,7 +96,9 @@ export function ItemForm({
     }
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
   }, [name, quantity, note, price, defaultItem, readOnly, onSubmit]);
 

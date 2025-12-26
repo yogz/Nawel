@@ -1,12 +1,7 @@
-import Link from "next/link";
-import { getAllEventsAction, createEventAction } from "@/app/actions";
-import { isWriteKeyValid } from "@/lib/auth";
+import { getAllEventsAction } from "@/app/actions";
 import { EventList } from "@/components/event-list";
 
 export const dynamic = "force-dynamic";
-
-import { auth } from "@/lib/auth-config";
-import { headers } from "next/headers";
 
 export default async function Home(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -14,10 +9,6 @@ export default async function Home(props: {
   const searchParams = await props.searchParams;
   const events = await getAllEventsAction();
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
-
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
 
   // Events visible to the user:
   // 1. All events (currently public)

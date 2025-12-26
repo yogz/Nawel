@@ -1,26 +1,32 @@
 "use server";
 
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { assertWriteAccess, hasWriteAccess } from "@/lib/auth";
-import { events, changeLogs, people, meals, services, items } from "@drizzle/schema";
+import { events, changeLogs, people, meals } from "@drizzle/schema";
 import { eq, desc } from "drizzle-orm";
-import { validateSchema, getChangeLogsSchema } from "./schemas";
+import { type validateSchema, type getChangeLogsSchema } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
 // Helper to verify access against event by slug
 export async function verifyEventAccess(slug: string, key?: string | null) {
   const event = await db.query.events.findFirst({ where: eq(events.slug, slug) });
-  if (!event) throw new Error("Event not found");
+  if (!event) {
+    throw new Error("Event not found");
+  }
   await assertWriteAccess(key, event);
   return event;
 }
 
 export const validateWriteKeyAction = withErrorThrower(
   async (input: z.infer<typeof validateSchema>) => {
-    if (!input.slug) return false;
+    if (!input.slug) {
+      return false;
+    }
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
-    if (!event) return false;
+    if (!event) {
+      return false;
+    }
     return hasWriteAccess(input.key, event);
   }
 );
@@ -28,7 +34,9 @@ export const validateWriteKeyAction = withErrorThrower(
 export const getChangeLogsAction = withErrorThrower(
   async (input: z.infer<typeof getChangeLogsSchema>) => {
     const event = await db.query.events.findFirst({ where: eq(events.slug, input.slug) });
-    if (!event) return [];
+    if (!event) {
+      return [];
+    }
 
     const allLogs = await db
       .select()
@@ -84,11 +92,21 @@ export const getChangeLogsAction = withErrorThrower(
 
     const filteredLogs = allLogs
       .filter((log) => {
-        if (log.tableName === "events") return log.recordId === event.id;
-        if (log.tableName === "people") return peopleIds.has(log.recordId);
-        if (log.tableName === "meals") return mealsIds.has(log.recordId);
-        if (log.tableName === "services") return servicesIds.has(log.recordId);
-        if (log.tableName === "items") return itemsIds.has(log.recordId);
+        if (log.tableName === "events") {
+          return log.recordId === event.id;
+        }
+        if (log.tableName === "people") {
+          return peopleIds.has(log.recordId);
+        }
+        if (log.tableName === "meals") {
+          return mealsIds.has(log.recordId);
+        }
+        if (log.tableName === "services") {
+          return servicesIds.has(log.recordId);
+        }
+        if (log.tableName === "items") {
+          return itemsIds.has(log.recordId);
+        }
         return false;
       })
       .slice(0, 100);

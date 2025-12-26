@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Mail, Globe, Loader2 } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
 
 export function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");

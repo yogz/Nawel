@@ -206,7 +206,9 @@ function EventForm({
   };
 
   const handleSubmit = () => {
-    if (!slug.trim() || !name.trim()) return;
+    if (!slug.trim() || !name.trim()) {
+      return;
+    }
     onSubmit(
       slug.trim().toLowerCase().replace(/\s+/g, "-"),
       name.trim(),
@@ -220,17 +222,25 @@ function EventForm({
   };
 
   const canGoNext = () => {
-    if (step === 1) return name.trim().length > 0 && date.length > 0;
-    if (step === 2) return true;
+    if (step === 1) {
+      return name.trim().length > 0 && date.length > 0;
+    }
+    if (step === 2) {
+      return true;
+    }
     return true;
   };
 
   const goNext = () => {
-    if (step < 3 && canGoNext()) setStep(step + 1);
+    if (step < 3 && canGoNext()) {
+      setStep(step + 1);
+    }
   };
 
   const goBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 1) {
+      setStep(step - 1);
+    }
   };
 
   const selectedMode = CREATION_MODES.find((m) => m.id === creationMode);
@@ -238,7 +248,7 @@ function EventForm({
   const stepTitles = ["Votre événement", "Type de menu", "Confirmation"];
 
   return (
-    <BottomSheet open={true} onClose={onClose} title={stepTitles[step - 1]}>
+    <BottomSheet open onClose={onClose} title={stepTitles[step - 1]}>
       {/* Progress indicator */}
       <div className="mb-6 flex gap-1.5">
         {[1, 2, 3].map((s) => (

@@ -1,19 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { items } from "@drizzle/schema";
 import { eq, asc, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
-  createItemSchema,
-  updateItemSchema,
-  deleteItemSchema,
-  assignItemSchema,
-  reorderSchema,
-  moveItemSchema,
+  type createItemSchema,
+  type updateItemSchema,
+  type deleteItemSchema,
+  type assignItemSchema,
+  type reorderSchema,
+  type moveItemSchema,
 } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
@@ -115,12 +115,16 @@ export const moveItemAction = withErrorThrower(async (input: z.infer<typeof move
     const item = await tx.query.items.findFirst({
       where: eq(items.id, itemId),
     });
-    if (!item) throw new Error("Item not found");
+    if (!item) {
+      throw new Error("Item not found");
+    }
 
     const sourceServiceId = item.serviceId;
 
     if (sourceServiceId === targetServiceId) {
-      if (targetOrder === undefined) return;
+      if (targetOrder === undefined) {
+        return;
+      }
       // Reorder within same service
       const serviceItems = await tx.query.items.findMany({
         where: eq(items.serviceId, sourceServiceId),

@@ -23,7 +23,7 @@ async function getUserInfo() {
       userAgent,
       referer,
     };
-  } catch (error) {
+  } catch (_error) {
     // En cas d'erreur, retourner des valeurs null
     return {
       userIp: null,

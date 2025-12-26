@@ -16,7 +16,9 @@ export class DatabaseError extends Error {
  * Specifically targets errors from the 'postgres' driver.
  */
 export function isDatabaseError(error: any): boolean {
-  if (error instanceof DatabaseError) return true;
+  if (error instanceof DatabaseError) {
+    return true;
+  }
 
   const errorMessage = error?.message?.toLowerCase() || "";
   const errorStack = error?.stack?.toLowerCase() || "";

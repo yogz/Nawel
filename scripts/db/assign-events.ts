@@ -1,6 +1,6 @@
 import { db } from "../../src/lib/db";
-import { user, events } from "../../drizzle/schema";
-import { eq, isNull } from "drizzle-orm";
+import { events } from "../../drizzle/schema";
+import { isNull } from "drizzle-orm";
 
 async function run() {
   const userId = "IvGnqiWcWzC6odd9QcGAhjWuKe2C5SB4";

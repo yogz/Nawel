@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
-import { Person, PlanningFilter } from "@/lib/types";
+import { type Person, type PlanningFilter } from "@/lib/types";
 
 interface PersonSelectSheetProps {
   people: Person[];

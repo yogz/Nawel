@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Check, ShieldAlert, Share, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
-import { PlanData, PlanningFilter } from "@/lib/types";
-import { SheetState } from "@/hooks/use-event-state";
+import { type PlanData, type PlanningFilter } from "@/lib/types";
+import { type SheetState } from "@/hooks/use-event-state";
 
 interface OrganizerHeaderProps {
   christmas: boolean;

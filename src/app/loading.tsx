@@ -11,7 +11,7 @@ export default function Loading() {
         <div className="relative h-16 w-16">
           <div
             className={`absolute inset-0 animate-ping rounded-full opacity-75 ${christmas ? "bg-red-200" : "bg-accent/20"}`}
-          ></div>
+          />
           <div
             className={`relative flex h-16 w-16 items-center justify-center rounded-full text-3xl ${christmas ? "bg-red-100" : "bg-accent/10"}`}
           >

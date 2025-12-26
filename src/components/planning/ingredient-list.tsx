@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
-import { Ingredient } from "@/lib/types";
+import { type Ingredient } from "@/lib/types";
 import clsx from "clsx";
 
 interface IngredientListProps {
@@ -37,7 +37,9 @@ export function IngredientList({
     }
   };
 
-  if (ingredients.length === 0) return null;
+  if (ingredients.length === 0) {
+    return null;
+  }
 
   const checkedCount = ingredients.filter((i) => i.checked).length;
 

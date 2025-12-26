@@ -9,10 +9,10 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
-  DragStartEvent,
-  DragEndEvent,
+  type DragStartEvent,
+  type DragEndEvent,
 } from "@dnd-kit/core";
-import { PlanData, Item } from "@/lib/types";
+import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { useThemeMode } from "../theme-provider";
@@ -64,7 +64,6 @@ export function Organizer({
     setSelectedPerson,
     readOnly,
     setReadOnly,
-    startTransition,
     activeItemId,
     setActiveItemId,
     successMessage,
@@ -114,7 +113,7 @@ export function Organizer({
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const { christmas, toggle: toggleChristmas } = useThemeMode();
+  const { christmas } = useThemeMode();
   const searchParams = useSearchParams();
 
   const sensors = useSensors(
@@ -180,10 +179,14 @@ export function Organizer({
             onDragEnd={(e: DragEndEvent) => {
               setActiveItemId(null);
               const { active, over } = e;
-              if (!over || !active.id) return;
+              if (!over || !active.id) {
+                return;
+              }
               const itemId = Number(active.id);
               const found = findItem(itemId);
-              if (!found) return;
+              if (!found) {
+                return;
+              }
 
               if (typeof over.id === "string" && over.id.startsWith("service-")) {
                 handleMoveItem(itemId, Number(over.id.replace("service-", "")));
@@ -270,10 +273,14 @@ export function Organizer({
             currentServiceId={sheet.serviceId || sheet.item?.serviceId}
             servicePeopleCount={(() => {
               const serviceId = sheet.serviceId || sheet.item?.serviceId;
-              if (!serviceId) return undefined;
+              if (!serviceId) {
+                return undefined;
+              }
               for (const meal of plan.meals) {
                 const service = meal.services.find((s: any) => s.id === serviceId);
-                if (service) return (service as any).peopleCount;
+                if (service) {
+                  return (service as any).peopleCount;
+                }
               }
               return undefined;
             })()}
@@ -314,10 +321,14 @@ export function Organizer({
                         peopleCount ||
                           (() => {
                             const serviceId = sheet.serviceId || sheet.item?.serviceId;
-                            if (!serviceId) return undefined;
+                            if (!serviceId) {
+                              return undefined;
+                            }
                             for (const meal of plan.meals) {
                               const service = meal.services.find((s: any) => s.id === serviceId);
-                              if (service) return (service as any).peopleCount;
+                              if (service) {
+                                return (service as any).peopleCount;
+                              }
                             }
                             return undefined;
                           })()

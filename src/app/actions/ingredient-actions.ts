@@ -2,20 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { ingredients, ingredientCache } from "@drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
-  generateIngredientsSchema,
-  createIngredientSchema,
-  updateIngredientSchema,
-  deleteIngredientSchema,
-  deleteAllIngredientsSchema,
+  type generateIngredientsSchema,
+  type createIngredientSchema,
+  type updateIngredientSchema,
+  type deleteIngredientSchema,
+  type deleteAllIngredientsSchema,
 } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
-import { generateIngredients as generateFromAI, GeneratedIngredient } from "@/lib/openrouter";
+import { generateIngredients as generateFromAI, type GeneratedIngredient } from "@/lib/openrouter";
 import { auth } from "@/lib/auth-config";
 
 // Normalize dish name for cache key (lowercase, trimmed, no extra spaces)
@@ -32,7 +32,9 @@ function normalizeIngredientName(name: string): string {
 function ingredientsMatch(a: GeneratedIngredient[], b: GeneratedIngredient[]): boolean {
   const namesA = a.map((i) => normalizeIngredientName(i.name)).sort();
   const namesB = b.map((i) => normalizeIngredientName(i.name)).sort();
-  if (namesA.length !== namesB.length) return false;
+  if (namesA.length !== namesB.length) {
+    return false;
+  }
   return namesA.every((name, idx) => name === namesB[idx]);
 }
 

@@ -24,7 +24,7 @@ export function SnowOverlay() {
     wind: number;
     opacity: number;
 
-    constructor(width: number, height: number) {
+    constructor(width: number, _height: number) {
       this.x = Math.random() * width;
       this.y = -10; // Start slightly above viewport
       this.radius = Math.random() * 4 + 2; // Increased size: 2-6px
@@ -38,8 +38,12 @@ export function SnowOverlay() {
       this.x += Math.sin(this.y * 0.01) + this.wind;
 
       // Wrap around horizontally
-      if (this.x > width) this.x = 0;
-      if (this.x < 0) this.x = width;
+      if (this.x > width) {
+        this.x = 0;
+      }
+      if (this.x < 0) {
+        this.x = width;
+      }
     }
 
     draw(ctx: CanvasRenderingContext2D) {
@@ -94,21 +98,29 @@ export function SnowOverlay() {
     });
 
     return () => {
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
       events.forEach((event) => {
         window.removeEventListener(event, resetIdleTimer);
       });
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
     };
   }, []); // Empty dependency array to run only once!
 
   // Snow animation loop
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     const updateCanvasSize = () => {
       canvas.width = window.innerWidth;
@@ -204,13 +216,17 @@ export function SnowOverlay() {
     if (isActive) {
       animate();
     } else {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     return () => {
       window.removeEventListener("resize", updateCanvasSize);
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
     };
   }, [isActive, christmas]);
 

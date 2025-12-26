@@ -5,8 +5,8 @@ import { Sparkles, Pencil } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { PlanData, Person, Item, Service } from "@/lib/types";
-import { SheetState } from "@/hooks/use-event-state";
+import { type PlanData, type Person, type Item, type Service } from "@/lib/types";
+import { type SheetState } from "@/hooks/use-event-state";
 
 interface PeopleTabProps {
   plan: PlanData;

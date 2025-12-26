@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { Item, Person } from "@/lib/types";
+import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
 
@@ -11,7 +11,7 @@ export function ItemRow({
   item,
   person,
   onAssign,
-  onDelete,
+  onDelete: _onDelete,
   readOnly,
   allPeopleNames,
 }: {

@@ -58,7 +58,9 @@ export function getPersonEmoji(
   allPeopleNames?: string[],
   existingEmoji?: string | null
 ): string {
-  if (existingEmoji) return existingEmoji;
+  if (existingEmoji) {
+    return existingEmoji;
+  }
 
   if (allPeopleNames && allPeopleNames.length > 0) {
     const uniqueNames = Array.from(new Set(allPeopleNames)).sort();

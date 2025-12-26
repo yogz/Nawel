@@ -1,5 +1,12 @@
-import { InferSelectModel } from "drizzle-orm";
-import { meals, items, services, people, events, ingredients } from "@drizzle/schema";
+import { type InferSelectModel } from "drizzle-orm";
+import {
+  type meals,
+  type items,
+  type services,
+  type people,
+  type events,
+  type ingredients,
+} from "@drizzle/schema";
 
 export type Meal = InferSelectModel<typeof meals> & {
   services: Service[];

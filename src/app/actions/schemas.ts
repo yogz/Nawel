@@ -18,7 +18,9 @@ const safeKey = z.string().transform((val) => sanitizeKey(val, 100));
 const dateSchema = z
   .union([z.string(), z.date()])
   .transform((val) => {
-    if (val instanceof Date) return val.toISOString().split("T")[0];
+    if (val instanceof Date) {
+      return val.toISOString().split("T")[0];
+    }
     return val;
   })
   .refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" });

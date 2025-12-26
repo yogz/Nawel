@@ -11,16 +11,16 @@ export interface BaseHandlerParams {
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
 }
 
-export interface ItemHandlerParams extends BaseHandlerParams {}
+export type ItemHandlerParams = BaseHandlerParams;
 
-export interface MealHandlerParams extends BaseHandlerParams {}
+export type MealHandlerParams = BaseHandlerParams;
 
-export interface ServiceHandlerParams extends BaseHandlerParams {}
+export type ServiceHandlerParams = BaseHandlerParams;
 
 export interface PersonHandlerParams extends BaseHandlerParams {
   setSelectedPerson?: (id: number | null) => void;
 }
 
-export interface IngredientHandlerParams extends BaseHandlerParams {}
+export type IngredientHandlerParams = BaseHandlerParams;
 
 export type { PlanData, Item, Service, Person, SheetState };

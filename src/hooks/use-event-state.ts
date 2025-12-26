@@ -48,7 +48,9 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
-          if (!item.personId) count++;
+          if (!item.personId) {
+            count++;
+          }
         });
       });
     });

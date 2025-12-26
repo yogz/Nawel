@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { Person } from "@/lib/types";
+import { type Person } from "@/lib/types";
 import { PERSON_EMOJIS, getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

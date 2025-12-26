@@ -1,18 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { meals, services } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
-  createMealSchema,
-  updateMealSchema,
-  createMealWithServicesSchema,
-  deleteMealSchema,
-  baseInput,
+  type createMealSchema,
+  type updateMealSchema,
+  type createMealWithServicesSchema,
+  type deleteMealSchema,
 } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
