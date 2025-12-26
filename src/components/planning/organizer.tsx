@@ -16,6 +16,7 @@ import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction } from "@/app/actions";
+import { useSession } from "@/lib/auth-client";
 
 // Extracted Components
 import { OrganizerHeader } from "./organizer-header";
@@ -64,6 +65,8 @@ export function Organizer({
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
+  const { data: session } = useSession();
+
   const handlers = useEventHandlers({
     plan,
     setPlan,
@@ -75,7 +78,15 @@ export function Organizer({
     setSuccessMessage,
   });
 
-  const { handleMoveItem, handleDelete, findItem, handleDeleteEvent } = handlers;
+  const {
+    handleMoveItem,
+    handleDelete,
+    findItem,
+    handleDeleteEvent,
+    handleClaimPerson,
+    handleUnclaimPerson,
+    handleCreatePerson,
+  } = handlers;
 
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
@@ -187,6 +198,9 @@ export function Organizer({
             setSelectedPerson={setSelectedPerson}
             setSheet={setSheet}
             readOnly={readOnly}
+            currentUserId={session?.user?.id}
+            onClaim={handleClaimPerson}
+            onUnclaim={handleUnclaimPerson}
           />
         )}
 
@@ -215,6 +229,7 @@ export function Organizer({
         setSuccessMessage={setSuccessMessage}
         planningFilter={planningFilter}
         setPlanningFilter={setPlanningFilter}
+        currentUserId={session?.user?.id}
       />
     </div>
   );

@@ -80,7 +80,14 @@ export const deleteMealSchema = baseInput.extend({
 export const createPersonSchema = baseInput.extend({
   name: safeStrictText(50),
   emoji: safeEmoji.optional(),
+  userId: z.string().optional(),
 });
+
+export const claimPersonSchema = baseInput.extend({
+  personId: z.number().int().positive(),
+});
+
+export const unclaimPersonSchema = claimPersonSchema;
 
 export const updatePersonSchema = baseInput.extend({
   id: z.number().int().positive(),

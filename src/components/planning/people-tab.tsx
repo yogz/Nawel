@@ -13,6 +13,9 @@ interface PeopleTabProps {
   setSelectedPerson: (id: number | null) => void;
   setSheet: (sheet: Sheet) => void;
   readOnly?: boolean;
+  currentUserId?: string;
+  onClaim?: (personId: number) => void;
+  onUnclaim?: (personId: number) => void;
 }
 
 interface PersonItem {
@@ -27,6 +30,9 @@ export function PeopleTab({
   setSelectedPerson,
   setSheet,
   readOnly,
+  currentUserId,
+  onClaim,
+  onUnclaim,
 }: PeopleTabProps) {
   const itemsByPerson = useMemo(() => {
     const byPerson: Record<number, PersonItem[]> = {};
@@ -98,6 +104,11 @@ export function PeopleTab({
                 <Pencil size={12} />
               </button>
             )}
+            {person.userId === currentUserId && (
+              <span className="mr-3 text-[10px] font-black uppercase tracking-widest text-accent/60">
+                Moi
+              </span>
+            )}
           </div>
         ))}
         {!readOnly && (
@@ -133,6 +144,38 @@ export function PeopleTab({
                         <h3 className="text-xl font-black tracking-tight text-text">
                           {person.name}
                         </h3>
+                        {person.userId === currentUserId ? (
+                          <div className="flex items-center gap-2">
+                            <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/30">
+                              C'est vous ! 👋
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm("Voulez-vous ne plus être associé à ce profil ?")) {
+                                  onUnclaim?.(person.id);
+                                }
+                              }}
+                              className="text-[10px] font-bold text-gray-400 underline underline-offset-2 hover:text-red-500"
+                            >
+                              Délier
+                            </button>
+                          </div>
+                        ) : (
+                          currentUserId &&
+                          !plan.people.some((p) => p.userId === currentUserId) &&
+                          !person.userId && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onClaim?.(person.id);
+                              }}
+                              className="rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent transition-all hover:bg-accent hover:text-white active:scale-95"
+                            >
+                              C'est moi !
+                            </button>
+                          )
+                        )}
                         {!readOnly && (
                           <button
                             onClick={() => setSheet({ type: "person-edit", person })}

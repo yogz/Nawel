@@ -70,6 +70,8 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleCreatePerson: personHandlers.handleCreatePerson,
     handleUpdatePerson: personHandlers.handleUpdatePerson,
     handleDeletePerson: personHandlers.handleDeletePerson,
+    handleClaimPerson: personHandlers.handleClaimPerson,
+    handleUnclaimPerson: personHandlers.handleUnclaimPerson,
 
     // Event handlers
     handleDeleteEvent: eventHandlers.handleDeleteEvent,

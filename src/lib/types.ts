@@ -94,7 +94,9 @@ export interface OrganizerHandlers {
     peopleCount?: number
   ) => void;
   handleDeleteService: (service: Service) => void;
-  handleCreatePerson: (name: string, emoji?: string) => void;
+  handleCreatePerson: (name: string, emoji?: string, userId?: string) => void;
+  handleClaimPerson: (personId: number) => void;
+  handleUnclaimPerson: (personId: number) => void;
   handleCreateMealWithServices: (
     date: string,
     title?: string,

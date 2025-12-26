@@ -1,7 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
-import { createPersonAction, updatePersonAction, deletePersonAction } from "@/app/actions";
+import {
+  createPersonAction,
+  updatePersonAction,
+  deletePersonAction,
+  claimPersonAction,
+  unclaimPersonAction,
+} from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
 
@@ -17,7 +23,7 @@ export function usePersonHandlers({
 }: PersonHandlerParams) {
   const [, startTransition] = useTransition();
 
-  const handleCreatePerson = (name: string, emoji?: string | null) => {
+  const handleCreatePerson = (name: string, emoji?: string | null, userId?: string) => {
     if (readOnly) {
       return;
     }
@@ -26,6 +32,7 @@ export function usePersonHandlers({
         const created = await createPersonAction({
           name,
           emoji: emoji ?? undefined,
+          userId,
           slug,
           key: writeKey,
         });
@@ -96,9 +103,51 @@ export function usePersonHandlers({
     });
   };
 
+  const handleClaimPerson = (personId: number) => {
+    if (readOnly) {
+      return;
+    }
+    startTransition(async () => {
+      try {
+        const updated = await claimPersonAction({ personId, slug, key: writeKey });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) =>
+            p.id === personId ? { ...p, userId: updated.userId } : p
+          ),
+        }));
+        setSuccessMessage({ text: "Compte associé ! ✨", type: "success" });
+      } catch (error) {
+        console.error("Failed to claim person:", error);
+        setSuccessMessage({ text: "Erreur lors de l'association ❌", type: "error" });
+      }
+    });
+  };
+
+  const handleUnclaimPerson = (personId: number) => {
+    if (readOnly) {
+      return;
+    }
+    startTransition(async () => {
+      try {
+        await unclaimPersonAction({ personId, slug, key: writeKey });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) => (p.id === personId ? { ...p, userId: null } : p)),
+        }));
+        setSuccessMessage({ text: "Compte délié ✓", type: "success" });
+      } catch (error) {
+        console.error("Failed to unclaim person:", error);
+        setSuccessMessage({ text: "Erreur lors de la déliaison ❌", type: "error" });
+      }
+    });
+  };
+
   return {
     handleCreatePerson,
     handleUpdatePerson,
     handleDeletePerson,
+    handleClaimPerson,
+    handleUnclaimPerson,
   };
 }

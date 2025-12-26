@@ -45,6 +45,20 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     .returning();
   await logChange("create", "events", created.id, null, created);
 
+  // Automatically add owner as a guest if they are logged in
+  if (session?.user) {
+    const [person] = await db
+      .insert(require("@drizzle/schema").people)
+      .values({
+        eventId: created.id,
+        name: session.user.name,
+        emoji: "👑", // Set a crown for the creator
+        userId: session.user.id,
+      })
+      .returning();
+    await logChange("create", "people", person.id, null, person);
+  }
+
   if (input.creationMode && input.creationMode !== "zero") {
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
     let services: string[] = [];

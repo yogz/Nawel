@@ -78,6 +78,7 @@ export const verification = pgTable(
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  people: many(people),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -161,9 +162,11 @@ export const people = pgTable(
       .references(() => events.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     emoji: text("emoji"),
+    userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
   },
   (table) => ({
     eventIdIdx: index("people_event_id_idx").on(table.eventId),
+    userIdIdx: index("people_user_id_idx").on(table.userId),
   })
 );
 
@@ -256,6 +259,10 @@ export const personRelations = relations(people, ({ one, many }) => ({
     references: [events.id],
   }),
   items: many(items),
+  user: one(user, {
+    fields: [people.userId],
+    references: [user.id],
+  }),
 }));
 
 export const changeLogs = pgTable("change_logs", {

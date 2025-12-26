@@ -7,8 +7,16 @@ import { logChange } from "@/lib/logger";
 import { people, items } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
-import { createPersonSchema, updatePersonSchema, deletePersonSchema } from "./schemas";
+import {
+  createPersonSchema,
+  updatePersonSchema,
+  deletePersonSchema,
+  claimPersonSchema,
+  unclaimPersonSchema,
+} from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
+import { auth } from "@/lib/auth-config";
+import { headers } from "next/headers";
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
@@ -18,6 +26,7 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
       eventId: event.id,
       name: input.name,
       emoji: input.emoji ?? null,
+      userId: input.userId ?? null,
     })
     .returning();
   await logChange("create", "people", created.id, null, created);
@@ -49,4 +58,47 @@ export const deletePersonAction = createSafeAction(deletePersonSchema, async (in
   }
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
+});
+export const claimPersonAction = createSafeAction(claimPersonSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized: Please log in to claim a profile");
+  }
+
+  const [updated] = await db
+    .update(people)
+    .set({ userId: session.user.id })
+    .where(eq(people.id, input.personId))
+    .returning();
+
+  await logChange("update", "people", updated.id, null, updated);
+  revalidatePath(`/event/${input.slug}`);
+  return updated;
+});
+
+export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const [updated] = await db
+    .update(people)
+    .set({ userId: null })
+    .where(eq(people.id, input.personId))
+    .returning();
+
+  await logChange("update", "people", updated.id, null, updated);
+  revalidatePath(`/event/${input.slug}`);
+  return updated;
 });

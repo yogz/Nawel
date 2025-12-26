@@ -31,6 +31,7 @@ interface OrganizerSheetsProps {
   setSuccessMessage: (msg: { text: string; type: "success" | "error" } | null) => void;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
+  currentUserId?: string;
 }
 
 export function OrganizerSheets({
@@ -46,6 +47,7 @@ export function OrganizerSheets({
   setSuccessMessage,
   planningFilter,
   setPlanningFilter,
+  currentUserId,
 }: OrganizerSheetsProps) {
   const searchParams = useSearchParams();
 
@@ -278,7 +280,13 @@ export function OrganizerSheets({
         />
       )}
 
-      {sheet?.type === "person" && <PersonForm readOnly={readOnly} onSubmit={handleCreatePerson} />}
+      {sheet?.type === "person" && (
+        <PersonForm
+          readOnly={readOnly}
+          onSubmit={handleCreatePerson}
+          currentUserId={currentUserId}
+        />
+      )}
 
       {sheet?.type === "person-edit" && (
         <PersonEditForm
