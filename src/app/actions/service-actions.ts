@@ -4,12 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { services, items, ingredients, meals } from "@drizzle/schema";
+import { services, meals } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import { createServiceSchema, serviceSchema, deleteServiceSchema } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
-import { scaleQuantity } from "@/lib/utils";
 
 export const createServiceAction = createSafeAction(createServiceSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
@@ -77,35 +76,6 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
       })
       .where(eq(services.id, input.id))
       .returning();
-
-    // 3. Cascade quantity update to items and ingredients if peopleCount changed
-    if (newPeopleCount !== oldPeopleCount && oldPeopleCount > 0) {
-      const serviceItems = await tx.query.items.findMany({
-        where: eq(items.serviceId, input.id),
-        with: {
-          ingredients: true,
-        },
-      });
-
-      for (const item of serviceItems) {
-        // Scale Item quantity
-        const newItemQuantity = scaleQuantity(item.quantity, oldPeopleCount, newPeopleCount);
-        if (newItemQuantity !== item.quantity) {
-          await tx.update(items).set({ quantity: newItemQuantity }).where(eq(items.id, item.id));
-        }
-
-        // Scale Ingredients quantity
-        for (const ing of item.ingredients) {
-          const newIngQuantity = scaleQuantity(ing.quantity, oldPeopleCount, newPeopleCount);
-          if (newIngQuantity !== ing.quantity) {
-            await tx
-              .update(ingredients)
-              .set({ quantity: newIngQuantity })
-              .where(eq(ingredients.id, ing.id));
-          }
-        }
-      }
-    }
 
     return updatedService;
   });

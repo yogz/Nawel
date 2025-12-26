@@ -102,8 +102,6 @@ export function useMealHandlers({
       try {
         await updateMealAction({ id, date, title, slug, key: writeKey, adults, children });
 
-        const { scaleQuantity } = await import("@/lib/utils");
-
         setPlan((prev: PlanData) => ({
           ...prev,
           meals: prev.meals.map((m) => {
