@@ -68,7 +68,21 @@ export function Organizer({
 
   const { data: session, isPending: isSessionLoading } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(false);
+  const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(() => {
+    // Initialize from localStorage (only on client)
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("nawel_guest_prompt_dismissed") === "true";
+    }
+    return false;
+  });
+
+  // Persist guest prompt dismissal to localStorage
+  const dismissGuestPrompt = () => {
+    setHasDismissedGuestPrompt(true);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("nawel_guest_prompt_dismissed", "true");
+    }
+  };
 
   const handlers = useEventHandlers({
     plan,
@@ -286,7 +300,7 @@ export function Organizer({
         setPlanningFilter={setPlanningFilter}
         currentUserId={session?.user?.id}
         onAuth={() => setIsAuthModalOpen(true)}
-        onDismissGuestPrompt={() => setHasDismissedGuestPrompt(true)}
+        onDismissGuestPrompt={dismissGuestPrompt}
         onJoinNew={() => {
           joinEventAction({ slug, key: writeKey }).then((result) => {
             if (result && !plan.people.some((p) => p.id === result.id)) {
