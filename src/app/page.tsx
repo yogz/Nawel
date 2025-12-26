@@ -13,7 +13,7 @@ export default async function Home(props: {
 
   // Events visible to the user:
   // 1. All events (currently public)
-  // 2. OR filter? For now let's keep it simple as requested: "propriétaire de l'événement"
+  // 2. OR filter? For now let's keep it simple as requested: "Mon Événement"
   // If the user is logged in, they can see their events marked somehow?
   // Or just enable editing for them.
 
