@@ -101,6 +101,7 @@ export function IngredientList({
             <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
               <Input
                 placeholder="Nom de l'ingrédient"
+                aria-label="Nom de l'ingrédient"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="h-11 rounded-xl"
@@ -109,6 +110,7 @@ export function IngredientList({
               />
               <Input
                 placeholder="Quantité (ex: 200g)"
+                aria-label="Quantité"
                 value={newQuantity}
                 onChange={(e) => setNewQuantity(e.target.value)}
                 className="h-11 rounded-xl"
@@ -130,6 +132,7 @@ export function IngredientList({
                     setNewName("");
                     setNewQuantity("");
                   }}
+                  aria-label="Annuler"
                   className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-500 transition-all hover:bg-gray-100 active:scale-95"
                 >
                   <X size={16} />
