@@ -12,6 +12,7 @@ import { PersonSelectSheet } from "./person-select-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams } from "next/navigation";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
+import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
 
 import {
   type PlanData,
@@ -36,6 +37,7 @@ interface OrganizerSheetsProps {
   currentUserId?: string;
   onAuth: () => void;
   onDismissGuestPrompt: () => void;
+  onJoinNew: () => void;
 }
 
 export function OrganizerSheets({
@@ -54,6 +56,7 @@ export function OrganizerSheets({
   currentUserId,
   onAuth,
   onDismissGuestPrompt,
+  onJoinNew,
 }: OrganizerSheetsProps) {
   const searchParams = useSearchParams();
 
@@ -338,6 +341,19 @@ export function OrganizerSheets({
             onDismissGuestPrompt();
           }}
           onAuth={onAuth}
+        />
+      )}
+
+      {sheet?.type === "claim-person" && (
+        <ClaimPersonSheet
+          open={true}
+          unclaimed={sheet.unclaimed}
+          onClose={() => setSheet(null)}
+          onClaim={(id) => {
+            handlers.handleClaimPerson(id);
+            setSheet(null);
+          }}
+          onJoinNew={onJoinNew}
         />
       )}
 

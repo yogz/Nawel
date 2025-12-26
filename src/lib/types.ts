@@ -49,6 +49,7 @@ export type Sheet =
   | { type: "person-select" }
   | { type: "share" }
   | { type: "guest-access" }
+  | { type: "claim-person"; unclaimed: Person[] }
   | { type: "shopping-list"; person: Person };
 
 // Basic item data for creation/updates

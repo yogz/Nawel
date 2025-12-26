@@ -120,19 +120,35 @@ export function Organizer({
     }
   }, [searchParams, setSheet]);
 
-  // Auto-join effect
+  // Auto-join / Claim effect
   useEffect(() => {
     if (session?.user?.id && !readOnly) {
-      joinEventAction({ slug, key: writeKey }).then((result) => {
-        if (result && !plan.people.some((p) => p.id === result.id)) {
-          setPlan((prev) => ({
-            ...prev,
-            people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
-          }));
+      // Check if user is already a participant
+      const isParticipant = plan.people.some((p) => p.userId === session.user.id);
+      if (isParticipant) return;
+
+      // Find unclaimed people
+      const unclaimed = plan.people.filter((p) => !p.userId);
+
+      if (unclaimed.length > 0) {
+        // If sheet is already open (like guest-access or just closing one), don't override immediately
+        // unless it's specifically for joining.
+        if (!sheet || sheet.type === "guest-access") {
+          setSheet({ type: "claim-person", unclaimed });
         }
-      });
+      } else {
+        // No one to claim, automatically join
+        joinEventAction({ slug, key: writeKey }).then((result) => {
+          if (result && !plan.people.some((p) => p.id === result.id)) {
+            setPlan((prev) => ({
+              ...prev,
+              people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
+            }));
+          }
+        });
+      }
     }
-  }, [session, slug, writeKey, readOnly, plan.people, setPlan]);
+  }, [session, slug, writeKey, readOnly, plan.people, setPlan, sheet, setSheet]);
 
   // Guest prompt effect
   useEffect(() => {
@@ -271,6 +287,17 @@ export function Organizer({
         currentUserId={session?.user?.id}
         onAuth={() => setIsAuthModalOpen(true)}
         onDismissGuestPrompt={() => setHasDismissedGuestPrompt(true)}
+        onJoinNew={() => {
+          joinEventAction({ slug, key: writeKey }).then((result) => {
+            if (result && !plan.people.some((p) => p.id === result.id)) {
+              setPlan((prev) => ({
+                ...prev,
+                people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
+              }));
+            }
+            setSheet(null);
+          });
+        }}
       />
 
       <AuthModal open={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
