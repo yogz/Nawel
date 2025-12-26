@@ -6,6 +6,8 @@ import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { eq, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
+import { updateEventAdminSchema, deleteEventAdminSchema } from "./schemas";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({
@@ -36,7 +38,7 @@ export type EventWithStats = {
   itemsCount: number;
 };
 
-export async function getAllEventsAction(): Promise<EventWithStats[]> {
+export const getAllEventsAction = withErrorThrower(async (): Promise<EventWithStats[]> => {
   await requireAdmin();
 
   const allEvents = await db.query.events.findMany({
@@ -84,13 +86,9 @@ export async function getAllEventsAction(): Promise<EventWithStats[]> {
   );
 
   return eventsWithStats;
-}
+});
 
-export async function updateEventAdminAction(input: {
-  id: number;
-  name: string;
-  description: string | null;
-}): Promise<void> {
+export const updateEventAdminAction = createSafeAction(updateEventAdminSchema, async (input) => {
   await requireAdmin();
 
   await db
@@ -102,12 +100,12 @@ export async function updateEventAdminAction(input: {
     .where(eq(events.id, input.id));
 
   revalidatePath("/admin");
-}
+});
 
-export async function deleteEventAdminAction(id: number): Promise<void> {
+export const deleteEventAdminAction = createSafeAction(deleteEventAdminSchema, async (input) => {
   await requireAdmin();
 
-  await db.delete(events).where(eq(events.id, id));
+  await db.delete(events).where(eq(events.id, input.id));
 
   revalidatePath("/admin");
-}
+});

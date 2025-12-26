@@ -35,6 +35,8 @@ export function sanitizeSlug(input: string, maxLength: number = 50): string {
     return "";
   }
   return input
+    .normalize("NFD") // Split accented characters
+    .replace(/[\u0300-\u036f]/g, "") // Remove accent marks
     .slice(0, maxLength)
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, "-")

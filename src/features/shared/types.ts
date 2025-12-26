@@ -1,5 +1,4 @@
-import type { PlanData, Item, Service, Person } from "@/lib/types";
-import type { SheetState } from "@/hooks/use-event-state";
+import type { PlanData, Item, Service, Person, Sheet } from "@/lib/types";
 
 export interface BaseHandlerParams {
   plan: PlanData;
@@ -7,7 +6,7 @@ export interface BaseHandlerParams {
   slug: string;
   writeKey?: string;
   readOnly: boolean;
-  setSheet: (sheet: SheetState | null) => void;
+  setSheet: (sheet: Sheet | null) => void;
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
 }
 
@@ -23,4 +22,4 @@ export interface PersonHandlerParams extends BaseHandlerParams {
 
 export type IngredientHandlerParams = BaseHandlerParams;
 
-export type { PlanData, Item, Service, Person, SheetState };
+export type { PlanData, Item, Service, Person, Sheet };

@@ -4,7 +4,7 @@
 export class DatabaseError extends Error {
   constructor(
     message: string,
-    public originalError?: any
+    public originalError?: unknown
   ) {
     super(message);
     this.name = "DatabaseError";
@@ -15,13 +15,14 @@ export class DatabaseError extends Error {
  * Checks if an error is likely related to a database connection or availability issue.
  * Specifically targets errors from the 'postgres' driver.
  */
-export function isDatabaseError(error: any): boolean {
+export function isDatabaseError(error: unknown): boolean {
   if (error instanceof DatabaseError) {
     return true;
   }
 
-  const errorMessage = error?.message?.toLowerCase() || "";
-  const errorStack = error?.stack?.toLowerCase() || "";
+  const err = error as Record<string, unknown> | null;
+  const errorMessage = String(err?.message || "").toLowerCase();
+  const errorStack = String(err?.stack || "").toLowerCase();
 
   const dbKeywords = [
     "connection refused",

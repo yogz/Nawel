@@ -168,3 +168,13 @@ export const deleteIngredientSchema = baseInput.extend({
 export const deleteAllIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),
 });
+
+export const updateEventAdminSchema = z.object({
+  id: z.number().int().positive(),
+  name: safeText(100),
+  description: safeText(500).optional().nullable(),
+});
+
+export const deleteEventAdminSchema = z.object({
+  id: z.number().int().positive(),
+});

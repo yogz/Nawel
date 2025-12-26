@@ -33,8 +33,12 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         });
       }
       onClose();
-    } catch (err: any) {
-      setError(err.message || "Une erreur est survenue");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Une erreur est survenue");
+      }
     } finally {
       setIsPending(false);
     }

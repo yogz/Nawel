@@ -13,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Sparkles, Loader2 } from "lucide-react";
-import { IngredientList } from "@/components/planning/ingredient-list";
+import { Trash2, ChevronDown } from "lucide-react";
 import clsx from "clsx";
+import { ItemIngredients } from "./item-ingredients";
 
 export function ItemForm({
   people,
@@ -135,6 +135,7 @@ export function ItemForm({
           onChange={(e) => setQuantity(e.target.value)}
           disabled={readOnly}
           className="h-11 flex-1 rounded-xl text-sm"
+          aria-label="Quantité"
         />
         <Input
           type="number"
@@ -144,6 +145,7 @@ export function ItemForm({
           onChange={(e) => setPrice(e.target.value)}
           disabled={readOnly}
           className="h-11 w-24 rounded-xl text-sm"
+          aria-label="Prix en euros"
         />
       </div>
 
@@ -252,55 +254,19 @@ export function ItemForm({
       )}
 
       {/* AI Ingredients section - only for existing items */}
-      {isEditMode && onGenerateIngredients && (
-        <div className="space-y-3 border-t border-gray-100 pt-3">
-          {/* Generate button - only show if NO ingredients yet */}
-          {!readOnly && (!ingredients || ingredients.length === 0) && (
-            <button
-              type="button"
-              onClick={() => onGenerateIngredients(name, note)}
-              disabled={isGenerating || !name.trim()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Generation en cours...
-                </>
-              ) : (
-                <>
-                  <Sparkles size={16} />
-                  Generer les ingredients
-                </>
-              )}
-            </button>
-          )}
-
-          {/* Loading state with message */}
-          {isGenerating && (
-            <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
-              <Loader2 size={18} className="animate-spin text-purple-500" />
-              <span>L&apos;IA analyse votre plat...</span>
-            </div>
-          )}
-
-          {/* Ingredient list */}
-          {ingredients &&
-            ingredients.length > 0 &&
-            onToggleIngredient &&
-            onDeleteIngredient &&
-            onCreateIngredient &&
-            onDeleteAllIngredients && (
-              <IngredientList
-                ingredients={ingredients}
-                onToggle={onToggleIngredient}
-                onDelete={onDeleteIngredient}
-                onCreate={onCreateIngredient}
-                onDeleteAll={onDeleteAllIngredients}
-                readOnly={readOnly}
-              />
-            )}
-        </div>
+      {isEditMode && (
+        <ItemIngredients
+          ingredients={ingredients}
+          itemName={name}
+          itemNote={note}
+          readOnly={readOnly}
+          isGenerating={isGenerating}
+          onGenerateIngredients={onGenerateIngredients}
+          onToggleIngredient={onToggleIngredient}
+          onDeleteIngredient={onDeleteIngredient}
+          onCreateIngredient={onCreateIngredient}
+          onDeleteAllIngredients={onDeleteAllIngredients}
+        />
       )}
 
       {/* Add button for new items */}

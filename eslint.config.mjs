@@ -7,14 +7,6 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   prettier,
-  // Allow console.log in scripts directory
-  {
-    files: ["scripts/**/*.ts"],
-    rules: {
-      "no-console": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-    },
-  },
   {
     rules: {
       "@next/next/no-html-link-for-pages": "off",
@@ -26,7 +18,7 @@ const eslintConfig = defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/consistent-type-imports": [
         "error",
         {
@@ -52,6 +44,14 @@ const eslintConfig = defineConfig([
     "drizzle/migrations/**",
     "drizzle/meta/**",
   ]),
+  // Allow console.log and any in scripts directory (must come last to override global rules)
+  {
+    files: ["scripts/**/*.ts"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

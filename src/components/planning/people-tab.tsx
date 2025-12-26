@@ -5,14 +5,13 @@ import { Sparkles, Pencil } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { type PlanData, type Person, type Item, type Service } from "@/lib/types";
-import { type SheetState } from "@/hooks/use-event-state";
+import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
 
 interface PeopleTabProps {
   plan: PlanData;
   selectedPerson: number | null;
   setSelectedPerson: (id: number | null) => void;
-  setSheet: (sheet: SheetState) => void;
+  setSheet: (sheet: Sheet) => void;
   readOnly?: boolean;
 }
 

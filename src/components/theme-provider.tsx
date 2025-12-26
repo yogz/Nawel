@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type ThemeName = "none" | "christmas" | "aurora" | "readable";
 
@@ -47,11 +47,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeName>("christmas");
 
   // Synchronous hydration to avoid theme flash - localStorage is client-only
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useLayoutEffect(() => {
+  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as ThemeName | null;
     if (stored && THEMES.some((t) => t.id === stored)) {
-      setThemeState(stored);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setThemeState((current) => (current !== stored ? stored : current));
     }
   }, []);
 

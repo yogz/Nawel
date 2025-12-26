@@ -9,7 +9,7 @@ import {
   assignItemAction,
   moveItemAction,
 } from "@/app/actions";
-import type { Item, Service, Person, PlanData } from "@/lib/types";
+import type { Item, Service, Person, PlanData, ItemData } from "@/lib/types";
 import type { ItemHandlerParams } from "@/features/shared/types";
 
 export function useItemHandlers({
@@ -47,22 +47,22 @@ export function useItemHandlers({
     return null;
   };
 
-  const handleCreateItem = (data: {
-    serviceId: number;
-    name: string;
-    quantity?: string;
-    note?: string;
-    price?: number;
-  }) => {
+  const handleCreateItem = (data: ItemData) => {
     if (readOnly) {
       return;
     }
+    if (typeof data.serviceId !== "number") {
+      console.error("Missing serviceId for item creation");
+      return;
+    }
+    // Type assertion safe because we checked serviceId
+    const itemData = data as ItemData & { serviceId: number };
     startTransition(async () => {
       try {
-        const created = await createItemAction({ ...data, slug, key: writeKey });
-        setServiceItems(data.serviceId, (items) => [...items, { ...created, person: null }]);
+        const created = await createItemAction({ ...itemData, slug, key: writeKey });
+        setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person: null }]);
         setSheet(null);
-        setSuccessMessage({ text: `${data.name} ajouté ! ✨`, type: "success" });
+        setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
       } catch (error) {
         console.error("Failed to create item:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });

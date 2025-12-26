@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Check, ShieldAlert, Share, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
-import { type PlanData, type PlanningFilter } from "@/lib/types";
-import { type SheetState } from "@/hooks/use-event-state";
+import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -14,8 +13,8 @@ interface OrganizerHeaderProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (sheet: SheetState) => void;
-  sheet: SheetState | null;
+  setSheet: (sheet: Sheet) => void;
+  sheet: Sheet | null;
   unassignedItemsCount: number;
 }
 
@@ -99,8 +98,8 @@ interface PlanningFiltersProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (sheet: SheetState) => void;
-  sheet: SheetState | null;
+  setSheet: (sheet: Sheet) => void;
+  sheet: Sheet | null;
   unassignedItemsCount: number;
 }
 

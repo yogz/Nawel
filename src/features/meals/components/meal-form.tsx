@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { type Meal } from "@/lib/types";
 
 const DEFAULT_SERVICE_TYPES = [
   { id: "apero", label: "Apéro", emoji: "🥂" },
@@ -24,7 +25,17 @@ const QUICK_OPTIONS = [
   { id: "custom", label: "Personnalisé", emoji: "✨", services: [] },
 ];
 
-export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
+export function MealForm({
+  meal,
+  onSubmit,
+  onDelete,
+  onClose,
+}: {
+  meal?: Meal;
+  onSubmit: (date: string, title: string, services?: string[]) => void;
+  onDelete?: (meal: Meal) => void;
+  onClose: () => void;
+}) {
   const [step, setStep] = useState(1);
   const [date, setDate] = useState<Date | undefined>(meal?.date ? new Date(meal.date) : undefined);
   const [title, setTitle] = useState(meal?.title || "");
@@ -141,7 +152,7 @@ export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => onDelete(meal.id)}
+              onClick={() => onDelete(meal)}
               className="h-11 w-full rounded-2xl text-red-500 hover:bg-red-50 hover:text-red-600"
             >
               Supprimer ce repas

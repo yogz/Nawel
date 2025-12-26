@@ -1,98 +1,90 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { type z } from "zod";
+
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { items } from "@drizzle/schema";
 import { eq, asc, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
-  type createItemSchema,
-  type updateItemSchema,
-  type deleteItemSchema,
-  type assignItemSchema,
-  type reorderSchema,
-  type moveItemSchema,
+  createItemSchema,
+  updateItemSchema,
+  deleteItemSchema,
+  assignItemSchema,
+  reorderSchema,
+  moveItemSchema,
 } from "./schemas";
-import { withErrorThrower } from "@/lib/action-utils";
+import { createSafeAction } from "@/lib/action-utils";
 
-export const createItemAction = withErrorThrower(
-  async (input: z.infer<typeof createItemSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
+export const createItemAction = createSafeAction(createItemSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
 
-    // Atomique: évite les race conditions
-    const [{ maxOrder }] = await db
-      .select({ maxOrder: sql<number | null>`MAX(${items.order})` })
-      .from(items)
-      .where(eq(items.serviceId, input.serviceId));
-    const order = (maxOrder ?? -1) + 1;
+  // Atomique: évite les race conditions
+  const [{ maxOrder }] = await db
+    .select({ maxOrder: sql<number | null>`MAX(${items.order})` })
+    .from(items)
+    .where(eq(items.serviceId, input.serviceId));
+  const order = (maxOrder ?? -1) + 1;
 
-    const [created] = await db
-      .insert(items)
-      .values({
-        serviceId: input.serviceId,
-        name: input.name,
-        quantity: input.quantity ?? null,
-        note: input.note ?? null,
-        price: input.price ?? null,
-        order,
-      })
-      .returning();
+  const [created] = await db
+    .insert(items)
+    .values({
+      serviceId: input.serviceId,
+      name: input.name,
+      quantity: input.quantity ?? null,
+      note: input.note ?? null,
+      price: input.price ?? null,
+      order,
+    })
+    .returning();
 
-    await logChange("create", "items", created.id, null, created);
-    revalidatePath(`/event/${input.slug}`);
-    return created;
+  await logChange("create", "items", created.id, null, created);
+  revalidatePath(`/event/${input.slug}`);
+  return created;
+});
+
+export const updateItemAction = createSafeAction(updateItemSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+  const [updated] = await db
+    .update(items)
+    .set({
+      name: input.name,
+      quantity: input.quantity,
+      note: input.note,
+      price: input.price ?? null,
+      personId: input.personId,
+    })
+    .where(eq(items.id, input.id))
+    .returning();
+  await logChange("update", "items", updated.id, null, updated);
+  revalidatePath(`/event/${input.slug}`);
+  return updated;
+});
+
+export const deleteItemAction = createSafeAction(deleteItemSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+  const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
+  if (deleted) {
+    await logChange("delete", "items", deleted.id, deleted, null);
   }
-);
+  revalidatePath(`/event/${input.slug}`);
+  return { success: true };
+});
 
-export const updateItemAction = withErrorThrower(
-  async (input: z.infer<typeof updateItemSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
-    const [updated] = await db
-      .update(items)
-      .set({
-        name: input.name,
-        quantity: input.quantity,
-        note: input.note,
-        price: input.price ?? null,
-        personId: input.personId,
-      })
-      .where(eq(items.id, input.id))
-      .returning();
-    await logChange("update", "items", updated.id, null, updated);
-    revalidatePath(`/event/${input.slug}`);
-    return updated;
-  }
-);
+export const assignItemAction = createSafeAction(assignItemSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+  const [updated] = await db
+    .update(items)
+    .set({ personId: input.personId })
+    .where(eq(items.id, input.id))
+    .returning();
+  await logChange("update", "items", updated.id, null, updated);
+  revalidatePath(`/event/${input.slug}`);
+  return updated;
+});
 
-export const deleteItemAction = withErrorThrower(
-  async (input: z.infer<typeof deleteItemSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
-    const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
-    if (deleted) {
-      await logChange("delete", "items", deleted.id, deleted, null);
-    }
-    revalidatePath(`/event/${input.slug}`);
-    return { success: true };
-  }
-);
-
-export const assignItemAction = withErrorThrower(
-  async (input: z.infer<typeof assignItemSchema>) => {
-    await verifyEventAccess(input.slug, input.key);
-    const [updated] = await db
-      .update(items)
-      .set({ personId: input.personId })
-      .where(eq(items.id, input.id))
-      .returning();
-    await logChange("update", "items", updated.id, null, updated);
-    revalidatePath(`/event/${input.slug}`);
-    return updated;
-  }
-);
-
-export const reorderItemsAction = withErrorThrower(async (input: z.infer<typeof reorderSchema>) => {
+export const reorderItemsAction = createSafeAction(reorderSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
   await db.transaction(async (tx) => {
     for (let i = 0; i < input.itemIds.length; i++) {
@@ -103,7 +95,7 @@ export const reorderItemsAction = withErrorThrower(async (input: z.infer<typeof 
   return { success: true };
 });
 
-export const moveItemAction = withErrorThrower(async (input: z.infer<typeof moveItemSchema>) => {
+export const moveItemAction = createSafeAction(moveItemSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
 
   const itemId = input.itemId;

@@ -1,11 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { type Service } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-export function ServiceEditForm({ service, onSubmit, onDelete, onClose }: any) {
+export function ServiceEditForm({
+  service,
+  onSubmit,
+  onDelete,
+  onClose,
+}: {
+  service: Service;
+  onSubmit: (id: number, title: string, peopleCount?: number) => void;
+  onDelete: (service: Service) => void;
+  onClose: () => void;
+}) {
   const [title, setTitle] = useState(service?.title || "");
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 1);
 
@@ -52,7 +63,7 @@ export function ServiceEditForm({ service, onSubmit, onDelete, onClose }: any) {
           <Button
             type="button"
             variant="destructive"
-            onClick={() => onDelete(service.id)}
+            onClick={() => onDelete(service)}
             className="w-full rounded-2xl"
           >
             Supprimer le service

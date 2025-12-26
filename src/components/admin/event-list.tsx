@@ -79,7 +79,7 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
     }
 
     startTransition(async () => {
-      await deleteEventAdminAction(deletingEvent.id);
+      await deleteEventAdminAction({ id: deletingEvent.id });
       setEvents((prev) => prev.filter((event) => event.id !== deletingEvent.id));
       setDeletingEvent(null);
     });

@@ -4,12 +4,23 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { type ReactNode } from "react";
 
+import { type DraggableSyntheticListeners } from "@dnd-kit/core";
+
 export function SortableRow({
   id,
   children,
 }: {
   id: number;
-  children: (attributes: any, listeners: any) => ReactNode;
+  children: (
+    attributes: {
+      role: string;
+      tabIndex: number;
+      "aria-pressed": boolean | undefined;
+      "aria-roledescription": string;
+      "aria-describedby": string;
+    },
+    listeners: DraggableSyntheticListeners
+  ) => ReactNode;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,

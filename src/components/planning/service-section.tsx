@@ -62,7 +62,7 @@ export function ServiceSection({
       <div className="mb-2 flex items-center justify-between sm:mb-3">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-semibold">{service.title}</h3>
-          {(service as any).peopleCount > 1 && (
+          {(service.peopleCount || 0) > 1 && (
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400">
               {service.peopleCount} pers.
             </span>

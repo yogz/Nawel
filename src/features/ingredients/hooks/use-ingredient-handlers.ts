@@ -26,7 +26,7 @@ export function useIngredientHandlers({
     peopleCount?: number
   ) => {
     if (readOnly) {
-      return [];
+      return;
     }
 
     const result = await generateIngredientsAction({
@@ -39,7 +39,7 @@ export function useIngredientHandlers({
 
     if (!result.success) {
       setSuccessMessage({ text: result.error, type: "error" });
-      return [];
+      return;
     }
 
     const generated = result.data;
@@ -56,8 +56,6 @@ export function useIngredientHandlers({
         })),
       })),
     }));
-
-    return generated;
   };
 
   const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {

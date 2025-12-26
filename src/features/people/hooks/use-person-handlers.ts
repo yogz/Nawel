@@ -43,7 +43,7 @@ export function usePersonHandlers({
     });
   };
 
-  const handleUpdatePerson = (id: number, name: string, emoji: string | null) => {
+  const handleUpdatePerson = (id: number, name: string, emoji?: string | null) => {
     if (readOnly) {
       return;
     }
@@ -52,7 +52,7 @@ export function usePersonHandlers({
         await updatePersonAction({ id, name, emoji, slug, key: writeKey });
         setPlan((prev: PlanData) => ({
           ...prev,
-          people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji } : p)),
+          people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji: emoji ?? null } : p)),
         }));
         setSheet(null);
         setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });

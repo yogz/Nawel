@@ -1,7 +1,11 @@
 "use client";
 
-import type { PlanData } from "@/lib/types";
-import type { SheetState } from "./use-event-state";
+import type {
+  PlanData,
+  Sheet,
+  Meal,
+  Service,
+} from "@/lib/types"; /* added Meal, Service imports and removed SheetState */
 import { useItemHandlers } from "@/features/items";
 import { useMealHandlers } from "@/features/meals";
 import { useServiceHandlers } from "@/features/services";
@@ -15,7 +19,7 @@ interface UseEventHandlersParams {
   slug: string;
   writeKey?: string;
   readOnly: boolean;
-  setSheet: (sheet: SheetState | null) => void;
+  setSheet: (sheet: Sheet | null) => void; /* Sheet type */
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
   setSelectedPerson?: (id: number | null) => void;
 }
@@ -55,12 +59,12 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleCreateMeal: mealHandlers.handleCreateMeal,
     handleCreateMealWithServices: mealHandlers.handleCreateMealWithServices,
     handleUpdateMeal: mealHandlers.handleUpdateMeal,
-    handleDeleteMeal: mealHandlers.handleDeleteMeal,
+    handleDeleteMeal: (meal: Meal) => mealHandlers.handleDeleteMeal(meal.id),
 
     // Service handlers
     handleCreateService: serviceHandlers.handleCreateService,
     handleUpdateService: serviceHandlers.handleUpdateService,
-    handleDeleteService: serviceHandlers.handleDeleteService,
+    handleDeleteService: (service: Service) => serviceHandlers.handleDeleteService(service.id),
 
     // Person handlers
     handleCreatePerson: personHandlers.handleCreatePerson,

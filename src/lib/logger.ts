@@ -37,8 +37,8 @@ export async function logChange(
   action: Action,
   tableName: TableName,
   recordId: number,
-  oldData?: Record<string, any> | null,
-  newData?: Record<string, any> | null
+  oldData?: Record<string, unknown> | null,
+  newData?: Record<string, unknown> | null
 ) {
   try {
     const userInfo = await getUserInfo();

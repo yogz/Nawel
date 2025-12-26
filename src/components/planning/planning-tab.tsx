@@ -1,10 +1,33 @@
 "use client";
 
-import { useState, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
 import { PlusIcon, Pencil } from "lucide-react";
+
+import {
+  type DragEndEvent,
+  type DragStartEvent,
+  type SensorDescriptor,
+  type SensorOptions,
+} from "@dnd-kit/core";
+import { type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
+
+interface PlanningTabProps {
+  plan: PlanData;
+  planningFilter: PlanningFilter;
+  activeItemId: number | null;
+  readOnly?: boolean;
+  sensors: SensorDescriptor<SensorOptions>[];
+  onDragStart: (event: DragStartEvent) => void;
+  onDragEnd: (event: DragEndEvent) => void;
+  onAssign: (item: Item, serviceId?: number) => void;
+  onDelete: (item: Item) => void;
+  onCreateItem: (serviceId: number) => void;
+  onCreateService: (mealId: number) => void;
+  setSheet: (sheet: Sheet) => void;
+}
 
 export function PlanningTab({
   plan,
@@ -19,12 +42,11 @@ export function PlanningTab({
   onCreateItem,
   onCreateService,
   setSheet,
-}: any) {
+}: PlanningTabProps) {
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Hydration pattern - must be synchronous to avoid flicker
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useLayoutEffect(() => setHasMounted(true), []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setHasMounted(true), []);
 
   if (!hasMounted) {
     return null;
@@ -38,9 +60,9 @@ export function PlanningTab({
       onDragEnd={onDragEnd}
     >
       <div className="space-y-12">
-        {plan.meals.map((meal: any) => {
-          const hasMatch = meal.services.some((s: any) =>
-            s.items.some((i: any) => {
+        {plan.meals.map((meal) => {
+          const hasMatch = meal.services.some((s) =>
+            s.items.some((i) => {
               if (planningFilter.type === "all") {
                 return true;
               }
@@ -81,13 +103,13 @@ export function PlanningTab({
                 </div>
               </div>
               <div className="space-y-6">
-                {meal.services.map((service: any) => (
+                {meal.services.map((service) => (
                   <ServiceSection
                     key={service.id}
                     service={service}
                     people={plan.people}
                     readOnly={readOnly}
-                    onAssign={(item: any) => onAssign(item, service.id)}
+                    onAssign={(item) => onAssign(item, service.id)}
                     onDelete={onDelete}
                     onCreate={() => onCreateItem(service.id)}
                     onEdit={() => setSheet({ type: "service-edit", service })}

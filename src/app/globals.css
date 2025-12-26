@@ -115,7 +115,7 @@
 
   /* Accent highlights for buttons and interactive elements in Aurora */
   .theme-aurora .btn-aurora {
-    background: linear-gradient(135deg, hsl(280 85% 65%), hsl(260 85% 60%));
+    background: linear-gradient(135deg, hsl(280 85% 45%), hsl(260 85% 40%));
     color: white;
     box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
     border: none;
@@ -784,6 +784,11 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
   }
 }
 

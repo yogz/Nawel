@@ -42,11 +42,7 @@ export function useMealHandlers({
     }
   };
 
-  const handleCreateMealWithServices = (
-    date: string,
-    title: string | undefined,
-    services: string[]
-  ) => {
+  const handleCreateMealWithServices = (date: string, title?: string, services: string[] = []) => {
     if (readOnly) {
       return;
     }
