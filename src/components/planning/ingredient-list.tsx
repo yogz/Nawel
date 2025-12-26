@@ -98,36 +98,43 @@ export function IngredientList({
       {!readOnly && (
         <>
           {showAddForm ? (
-            <div className="mt-2 flex gap-2">
+            <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
               <Input
-                placeholder="Ingredient"
+                placeholder="Nom de l'ingrédient"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="h-9 flex-1 rounded-xl text-sm"
+                className="h-11 rounded-xl"
                 onKeyDown={(e) => e.key === "Enter" && handleAdd()}
                 autoFocus
               />
               <Input
-                placeholder="Qte"
+                placeholder="Quantité (ex: 200g)"
                 value={newQuantity}
                 onChange={(e) => setNewQuantity(e.target.value)}
-                className="h-9 w-20 rounded-xl text-sm"
+                className="h-11 rounded-xl"
                 onKeyDown={(e) => e.key === "Enter" && handleAdd()}
               />
-              <button
-                type="button"
-                onClick={handleAdd}
-                className="rounded-lg bg-accent px-3 py-1 text-sm font-semibold text-white"
-              >
-                +
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="px-2 py-1 text-gray-400 hover:text-gray-600"
-              >
-                <X size={16} />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  disabled={!newName.trim()}
+                  className="flex-1 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
+                >
+                  Ajouter
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setNewName("");
+                    setNewQuantity("");
+                  }}
+                  className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-500 transition-all hover:bg-gray-100 active:scale-95"
+                >
+                  <X size={16} />
+                </button>
+              </div>
             </div>
           ) : (
             <button

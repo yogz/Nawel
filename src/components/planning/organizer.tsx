@@ -309,7 +309,10 @@ export function Organizer({
         planningFilter={planningFilter}
         setPlanningFilter={setPlanningFilter}
         currentUserId={session?.user?.id}
-        onAuth={() => setIsAuthModalOpen(true)}
+        onAuth={() => {
+          setSheet(null); // Close guest-access sheet first
+          setIsAuthModalOpen(true);
+        }}
         onDismissGuestPrompt={dismissGuestPrompt}
         onJoinNew={() => {
           joinEventAction({ slug, key: writeKey }).then((result) => {
