@@ -15,7 +15,7 @@ import {
 import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../tab-bar";
 import { useThemeMode } from "../theme-provider";
-import { validateWriteKeyAction, getChangeLogsAction } from "@/app/actions";
+import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 
 // Extracted Components
@@ -25,6 +25,7 @@ import { OrganizerSheets } from "./organizer-sheets";
 import { PlanningTab } from "./planning-tab";
 import { PeopleTab } from "./people-tab";
 import { SettingsTab } from "./settings-tab";
+import { AuthModal } from "../auth/auth-modal";
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
@@ -65,7 +66,9 @@ export function Organizer({
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
-  const { data: session } = useSession();
+  const { data: session, isPending: isSessionLoading } = useSession();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(false);
 
   const handlers = useEventHandlers({
     plan,
@@ -116,6 +119,42 @@ export function Organizer({
       window.history.replaceState({}, "", url.toString());
     }
   }, [searchParams, setSheet]);
+
+  // Auto-join effect
+  useEffect(() => {
+    if (session?.user?.id && !readOnly) {
+      joinEventAction({ slug, key: writeKey }).then((result) => {
+        if (result && !plan.people.some((p) => p.id === result.id)) {
+          setPlan((prev) => ({
+            ...prev,
+            people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
+          }));
+        }
+      });
+    }
+  }, [session, slug, writeKey, readOnly, plan.people, setPlan]);
+
+  // Guest prompt effect
+  useEffect(() => {
+    if (
+      !session &&
+      !isSessionLoading &&
+      !readOnly &&
+      !hasDismissedGuestPrompt &&
+      !sheet &&
+      !isAuthModalOpen
+    ) {
+      setSheet({ type: "guest-access" });
+    }
+  }, [
+    session,
+    isSessionLoading,
+    readOnly,
+    hasDismissedGuestPrompt,
+    sheet,
+    setSheet,
+    isAuthModalOpen,
+  ]);
 
   useEffect(() => {
     validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
@@ -230,7 +269,11 @@ export function Organizer({
         planningFilter={planningFilter}
         setPlanningFilter={setPlanningFilter}
         currentUserId={session?.user?.id}
+        onAuth={() => setIsAuthModalOpen(true)}
+        onDismissGuestPrompt={() => setHasDismissedGuestPrompt(true)}
       />
+
+      <AuthModal open={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </div>
   );
 }

@@ -48,6 +48,7 @@ export type Sheet =
   | { type: "person-edit"; person: Person }
   | { type: "person-select" }
   | { type: "share" }
+  | { type: "guest-access" }
   | { type: "shopping-list"; person: Person };
 
 // Basic item data for creation/updates

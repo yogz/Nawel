@@ -11,6 +11,7 @@ import { PersonEditForm } from "@/features/people/components/person-edit-form";
 import { PersonSelectSheet } from "./person-select-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams } from "next/navigation";
+import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 
 import {
   type PlanData,
@@ -33,6 +34,8 @@ interface OrganizerSheetsProps {
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
+  onAuth: () => void;
+  onDismissGuestPrompt: () => void;
 }
 
 export function OrganizerSheets({
@@ -49,6 +52,8 @@ export function OrganizerSheets({
   planningFilter,
   setPlanningFilter,
   currentUserId,
+  onAuth,
+  onDismissGuestPrompt,
 }: OrganizerSheetsProps) {
   const searchParams = useSearchParams();
 
@@ -106,6 +111,9 @@ export function OrganizerSheets({
     }
     if (sheet?.type === "shopping-list") {
       return `Liste de courses`;
+    }
+    if (sheet?.type === "guest-access") {
+      return "Accès invité";
     }
     return "";
   };
@@ -319,6 +327,17 @@ export function OrganizerSheets({
           adminKey={writeKey}
           onClose={() => setSheet(null)}
           isNew={searchParams.get("new") === "true"}
+        />
+      )}
+
+      {sheet?.type === "guest-access" && (
+        <GuestAccessSheet
+          open={true}
+          onClose={() => {
+            setSheet(null);
+            onDismissGuestPrompt();
+          }}
+          onAuth={onAuth}
         />
       )}
 

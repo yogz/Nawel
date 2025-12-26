@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { people, items } from "@drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
   createPersonSchema,
@@ -13,10 +13,45 @@ import {
   deletePersonSchema,
   claimPersonSchema,
   unclaimPersonSchema,
+  baseInput,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
+
+export const joinEventAction = createSafeAction(baseInput, async (input) => {
+  const event = await verifyEventAccess(input.slug, input.key);
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  // Check if already a participant
+  const existing = await db.query.people.findFirst({
+    where: and(eq(people.eventId, event.id), eq(people.userId, session.user.id)),
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  const [created] = await db
+    .insert(people)
+    .values({
+      eventId: event.id,
+      name: session.user.name,
+      userId: session.user.id,
+    })
+    .returning();
+
+  await logChange("create", "people", created.id, null, created);
+  revalidatePath(`/event/${input.slug}`);
+  return created;
+});
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
