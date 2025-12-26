@@ -109,6 +109,14 @@ export function ShoppingListSheet({
 
   return (
     <div className="space-y-4">
+      {/* Full page link - at top for easy access */}
+      <Button asChild variant="outline" size="sm" className="w-full">
+        <Link href={fullPageUrl}>
+          <ExternalLink size={14} className="mr-2" />
+          Ouvrir en plein écran
+        </Link>
+      </Button>
+
       {/* Header with progress */}
       <div className="flex items-center justify-between rounded-xl bg-accent/5 p-3">
         <div className="flex items-center gap-3">
@@ -206,16 +214,6 @@ export function ShoppingListSheet({
             </motion.button>
           );
         })}
-      </div>
-
-      {/* Full page link */}
-      <div className="mt-4 border-t border-gray-100 pt-4">
-        <Button asChild variant="outline" className="w-full">
-          <Link href={fullPageUrl}>
-            <ExternalLink size={16} className="mr-2" />
-            Ouvrir en plein écran
-          </Link>
-        </Button>
       </div>
     </div>
   );
