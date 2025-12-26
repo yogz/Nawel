@@ -1,13 +1,18 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { events, meals, services, people, items } from "@drizzle/schema";
+import { events, meals, services, people, items, ingredientCache } from "@drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { eq, count } from "drizzle-orm";
+import { eq, count, desc, ilike } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
-import { updateEventAdminSchema, deleteEventAdminSchema } from "./schemas";
+import {
+  updateEventAdminSchema,
+  deleteEventAdminSchema,
+  deleteCacheEntrySchema,
+  updateCacheEntrySchema,
+} from "./schemas";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({
@@ -31,6 +36,8 @@ export type EventWithStats = {
   name: string;
   description: string | null;
   adminKey: string | null;
+  adults: number;
+  children: number;
   createdAt: Date;
   mealsCount: number;
   servicesCount: number;
@@ -76,6 +83,8 @@ export const getAllEventsAction = withErrorThrower(async (): Promise<EventWithSt
         name: event.name,
         description: event.description,
         adminKey: event.adminKey,
+        adults: event.adults,
+        children: event.children,
         createdAt: event.createdAt,
         mealsCount: mealsResult?.count ?? 0,
         servicesCount: servicesResult[0]?.count ?? 0,
@@ -91,15 +100,30 @@ export const getAllEventsAction = withErrorThrower(async (): Promise<EventWithSt
 export const updateEventAdminAction = createSafeAction(updateEventAdminSchema, async (input) => {
   await requireAdmin();
 
+  // Check slug uniqueness if it's being changed
+  if (input.slug) {
+    const existing = await db.query.events.findFirst({
+      where: eq(events.slug, input.slug),
+    });
+    if (existing && existing.id !== input.id) {
+      throw new Error("Ce slug est déjà utilisé par un autre événement.");
+    }
+  }
+
   await db
     .update(events)
     .set({
       name: input.name,
       description: input.description,
+      ...(input.slug && { slug: input.slug }),
+      ...(input.adminKey !== undefined && { adminKey: input.adminKey || null }),
+      ...(input.adults !== undefined && { adults: input.adults }),
+      ...(input.children !== undefined && { children: input.children }),
     })
     .where(eq(events.id, input.id));
 
   revalidatePath("/admin");
+  return { success: true };
 });
 
 export const deleteEventAdminAction = createSafeAction(deleteEventAdminSchema, async (input) => {
@@ -108,4 +132,77 @@ export const deleteEventAdminAction = createSafeAction(deleteEventAdminSchema, a
   await db.delete(events).where(eq(events.id, input.id));
 
   revalidatePath("/admin");
+});
+
+// ==========================================
+// Cache Admin Actions
+// ==========================================
+
+export type CacheEntry = {
+  id: number;
+  dishName: string;
+  peopleCount: number;
+  ingredients: string; // JSON string
+  confirmations: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export const getAllCacheEntriesAction = withErrorThrower(
+  async (search?: string): Promise<CacheEntry[]> => {
+    await requireAdmin();
+
+    if (search && search.trim()) {
+      return await db
+        .select()
+        .from(ingredientCache)
+        .where(ilike(ingredientCache.dishName, `%${search.trim()}%`))
+        .orderBy(desc(ingredientCache.updatedAt));
+    }
+
+    return await db.select().from(ingredientCache).orderBy(desc(ingredientCache.updatedAt));
+  }
+);
+
+export const deleteCacheEntryAction = createSafeAction(deleteCacheEntrySchema, async (input) => {
+  await requireAdmin();
+
+  await db.delete(ingredientCache).where(eq(ingredientCache.id, input.id));
+
+  revalidatePath("/admin/cache");
+  return { success: true };
+});
+
+export const updateCacheEntryAction = createSafeAction(updateCacheEntrySchema, async (input) => {
+  await requireAdmin();
+
+  // Validate JSON structure
+  try {
+    const parsed = JSON.parse(input.ingredients);
+    if (!Array.isArray(parsed)) {
+      throw new Error("Les ingrédients doivent être un tableau");
+    }
+  } catch {
+    throw new Error("Format JSON invalide");
+  }
+
+  await db
+    .update(ingredientCache)
+    .set({
+      ingredients: input.ingredients,
+      updatedAt: new Date(),
+    })
+    .where(eq(ingredientCache.id, input.id));
+
+  revalidatePath("/admin/cache");
+  return { success: true };
+});
+
+export const clearAllCacheAction = withErrorThrower(async () => {
+  await requireAdmin();
+
+  await db.delete(ingredientCache);
+
+  revalidatePath("/admin/cache");
+  return { success: true };
 });

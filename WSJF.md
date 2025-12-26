@@ -5,15 +5,16 @@ Chaque ligne inclut une "Hint" technique pour guider l'implémentation par l'IA.
 
 ## ✅ Tâches Terminées
 
-| ID     | Tâche                                        | Note                                                                       |
-| :----- | :------------------------------------------- | :------------------------------------------------------------------------- |
-| **1**  | **Système d'authentification**               | _Better Auth implémenté. Sessions fonctionnelles._                         |
-| **2**  | **Restreindre IA aux utilisateurs vérifiés** | _Check session dans `ingredient-actions.ts`. Erreur si non connecté._      |
-| **9**  | **Gérer les cas d'erreur IA (réponse vide)** | _Retour structuré `{success, error}`. Gestion try/catch._                  |
-| **15** | **Convives lors de la création d'event**     | _Champs `adults` et `children` ajoutés au formulaire._                     |
-| **6**  | **Préciser Adultes / Enfants**               | _Colonnes `adults`/`children` dans `events`. UI avec inputs séparés._      |
-| **17** | **Profil Utilisateur**                       | _Tiroir de profil avec modification nom, email et avatar implémenté._      |
-| **4**  | **Logique de calcul Convives**               | _Cascade Event -> Meal -> Service -> Item quantity (scaling) implémentée._ |
+| ID     | Tâche                                        | Note                                                                          |
+| :----- | :------------------------------------------- | :---------------------------------------------------------------------------- |
+| **1**  | **Système d'authentification**               | _Better Auth implémenté. Sessions fonctionnelles._                            |
+| **2**  | **Restreindre IA aux utilisateurs vérifiés** | _Check session dans `ingredient-actions.ts`. Erreur si non connecté._         |
+| **9**  | **Gérer les cas d'erreur IA (réponse vide)** | _Retour structuré `{success, error}`. Gestion try/catch._                     |
+| **15** | **Convives lors de la création d'event**     | _Champs `adults` et `children` ajoutés au formulaire._                        |
+| **6**  | **Préciser Adultes / Enfants**               | _Colonnes `adults`/`children` dans `events`. UI avec inputs séparés._         |
+| **17** | **Profil Utilisateur**                       | _Tiroir de profil avec modification nom, email et avatar implémenté._         |
+| **4**  | **Logique de calcul Convives**               | _Cascade Event -> Meal -> Service -> Item quantity (scaling) implémentée._    |
+| **11** | **Page Admin : Cache Recettes**              | _Page `/admin/cache`. Actions: Voir, Modifier, Supprimer. Recherche par nom._ |
 
 ---
 
@@ -28,8 +29,7 @@ Chaque ligne inclut une "Hint" technique pour guider l'implémentation par l'IA.
 | **6**  | **5**  | **Suggestion de vins (IA)**               | 4.2 | `ai-actions.ts`: Nouvelle fonction `suggestWine(mealContext)`. Prompt: "Suggère 3 vins pour ce menu...". UI: Afficher sous le menu. |
 | **7**  | **16** | **Tests E2E (Cypress/Playwright)**        | 4.6 | Installer Playwright. Créer test: Login -> Create Event -> Add Meal. Vérifier que ça ne casse pas sur une PR.                       |
 | **9**  | **3**  | **Liste des courses par utilisateur**     | 2.9 | `schema.ts`: Table `UserShoppingList` (relation Item). UI: Bouton "Ajouter à ma liste". Page `/shopping-list`.                      |
-| **10** | **11** | **Page Admin : Cache Recettes**           | 3.3 | Page `/admin/cache`. Table des `CachedRecipes`. Actions: Voir détails, Delete (invalider cache).                                    |
-| **11** | **7**  | **Résumé des comptes / Remboursements**   | 1.6 | `schema.ts`: `Expenses` (who, amount, event). Algo "Minimiser les transactions". UI: Tableau "Qui doit combien à qui".              |
-| **12** | **8**  | **Passer en Full API (Mobile)**           | 1.5 | Refactor Server Actions -> Route Handlers (`app/api/...`). Préparer pour React Native / Flutter.                                    |
+| **10** | **7**  | **Résumé des comptes / Remboursements**   | 1.6 | `schema.ts`: `Expenses` (who, amount, event). Algo "Minimiser les transactions". UI: Tableau "Qui doit combien à qui".              |
+| **11** | **8**  | **Passer en Full API (Mobile)**           | 1.5 | Refactor Server Actions -> Route Handlers (`app/api/...`). Préparer pour React Native / Flutter.                                    |
 
 > **Note**: BV = Business Value. L'ordre est déterminé par le score WSJF (Valeur / Effort).

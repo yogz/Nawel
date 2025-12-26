@@ -192,6 +192,10 @@ export const updateEventAdminSchema = z.object({
   id: z.number().int().positive(),
   name: safeText(100),
   description: safeText(500).optional().nullable(),
+  slug: safeSlug.optional(),
+  adminKey: safeKey.optional().nullable(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
 });
 
 export const deleteEventAdminSchema = z.object({
@@ -204,4 +208,14 @@ export const updateUserSchema = z.object({
 
 export const deleteUserSchema = z.object({
   confirm: z.boolean(),
+});
+
+// Admin Cache schemas
+export const deleteCacheEntrySchema = z.object({
+  id: z.number().int().positive(),
+});
+
+export const updateCacheEntrySchema = z.object({
+  id: z.number().int().positive(),
+  ingredients: z.string().min(2, "JSON invalide"), // JSON string of ingredients
 });

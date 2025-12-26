@@ -22,6 +22,8 @@ import {
   Trash2,
   Copy,
   Check,
+  Baby,
+  User,
 } from "lucide-react";
 
 export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }) {
@@ -54,22 +56,42 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
+    const slug = formData.get("slug") as string;
+    const adminKey = formData.get("adminKey") as string;
+    const adults = parseInt(formData.get("adults") as string) || 0;
+    const children = parseInt(formData.get("children") as string) || 0;
 
     startTransition(async () => {
-      await updateEventAdminAction({
-        id: editingEvent.id,
-        name,
-        description: description || null,
-      });
+      try {
+        await updateEventAdminAction({
+          id: editingEvent.id,
+          name,
+          description: description || null,
+          slug: slug || undefined,
+          adminKey: adminKey || null,
+          adults,
+          children,
+        });
 
-      setEvents((prev) =>
-        prev.map((event) =>
-          event.id === editingEvent.id
-            ? { ...event, name, description: description || null }
-            : event
-        )
-      );
-      setEditingEvent(null);
+        setEvents((prev) =>
+          prev.map((event) =>
+            event.id === editingEvent.id
+              ? {
+                  ...event,
+                  name,
+                  description: description || null,
+                  slug: slug || event.slug,
+                  adminKey: adminKey || null,
+                  adults,
+                  children,
+                }
+              : event
+          )
+        );
+        setEditingEvent(null);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : "Erreur lors de la mise à jour");
+      }
     });
   };
 
@@ -156,6 +178,14 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
                 )}
                 <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    {event.adults} adulte{event.adults > 1 ? "s" : ""}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Baby className="h-4 w-4" />
+                    {event.children} enfant{event.children > 1 ? "s" : ""}
+                  </span>
+                  <span className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
                     {event.mealsCount} repas
                   </span>
@@ -208,14 +238,70 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="slug">Slug (URL)</Label>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">/event/</span>
+              <Input
+                id="slug"
+                name="slug"
+                defaultValue={editingEvent?.slug}
+                required
+                disabled={isPending}
+                className="flex-1"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
               name="description"
               defaultValue={editingEvent?.description || ""}
-              rows={3}
+              rows={2}
               disabled={isPending}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="adults">Adultes</Label>
+              <Input
+                id="adults"
+                name="adults"
+                type="number"
+                min="0"
+                max="1000"
+                defaultValue={editingEvent?.adults ?? 0}
+                disabled={isPending}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="children">Enfants</Label>
+              <Input
+                id="children"
+                name="children"
+                type="number"
+                min="0"
+                max="1000"
+                defaultValue={editingEvent?.children ?? 0}
+                disabled={isPending}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="adminKey">Clé Admin</Label>
+            <Input
+              id="adminKey"
+              name="adminKey"
+              defaultValue={editingEvent?.adminKey || ""}
+              disabled={isPending}
+              placeholder="Laisser vide pour aucune clé"
+            />
+            <p className="text-xs text-muted-foreground">
+              Utilisée pour accéder en mode édition via ?key=...
+            </p>
           </div>
 
           <div className="flex gap-2 pt-2">
