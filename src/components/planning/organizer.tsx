@@ -98,6 +98,11 @@ export function Organizer({
         origin: { y: 0.6 },
         colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
       });
+
+      // Clear the "new" parameter from the URL without a full page reload
+      const url = new URL(window.location.href);
+      url.searchParams.delete("new");
+      window.history.replaceState({}, "", url.toString());
     }
   }, [searchParams, setSheet]);
 

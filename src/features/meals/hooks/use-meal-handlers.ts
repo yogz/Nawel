@@ -80,7 +80,7 @@ export function useMealHandlers({
           meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
         }));
         setSheet(null);
-        setSuccessMessage({ text: "Nouveau repas créé ✨", type: "success" });
+        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
       } catch (error) {
         console.error("Failed to create meal with services:", error);
         setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
