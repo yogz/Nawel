@@ -9,6 +9,7 @@ import { ServiceEditForm } from "@/features/services/components/service-edit-for
 import { PersonForm } from "@/features/people/components/person-form";
 import { PersonEditForm } from "@/features/people/components/person-edit-form";
 import { PersonSelectSheet } from "./person-select-sheet";
+import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -102,6 +103,9 @@ export function OrganizerSheets({
     }
     if (sheet?.type === "share") {
       return "Partager l'accès";
+    }
+    if (sheet?.type === "shopping-list") {
+      return `Liste de courses`;
     }
     return "";
   };
@@ -315,6 +319,17 @@ export function OrganizerSheets({
           adminKey={writeKey}
           onClose={() => setSheet(null)}
           isNew={searchParams.get("new") === "true"}
+        />
+      )}
+
+      {sheet?.type === "shopping-list" && (
+        <ShoppingListSheet
+          person={sheet.person}
+          plan={plan}
+          slug={slug}
+          writeKey={writeKey}
+          onToggleIngredient={handleToggleIngredient}
+          onToggleItemChecked={handlers.handleToggleItemChecked}
         />
       )}
     </BottomSheet>

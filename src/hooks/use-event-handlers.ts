@@ -54,6 +54,7 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleDelete: itemHandlers.handleDelete,
     handleMoveItem: itemHandlers.handleMoveItem,
     findItem: itemHandlers.findItem,
+    handleToggleItemChecked: itemHandlers.handleToggleItemChecked,
 
     // Meal handlers
     handleCreateMeal: mealHandlers.handleCreateMeal,

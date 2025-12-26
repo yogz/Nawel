@@ -14,6 +14,7 @@ import {
   assignItemSchema,
   reorderSchema,
   moveItemSchema,
+  toggleItemCheckedSchema,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
 
@@ -160,4 +161,15 @@ export const moveItemAction = createSafeAction(moveItemSchema, async (input) => 
 
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
+});
+
+export const toggleItemCheckedAction = createSafeAction(toggleItemCheckedSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+  const [updated] = await db
+    .update(items)
+    .set({ checked: input.checked })
+    .where(eq(items.id, input.id))
+    .returning();
+  revalidatePath(`/event/${input.slug}`);
+  return updated;
 });

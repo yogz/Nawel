@@ -185,6 +185,7 @@ export const items = pgTable(
       onDelete: "set null",
     }),
     order: integer("order_index").notNull().default(0),
+    checked: boolean("checked").notNull().default(false),
   },
   (table) => ({
     serviceIdIdx: index("items_service_id_idx").on(table.serviceId),

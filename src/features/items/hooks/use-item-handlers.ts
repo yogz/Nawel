@@ -8,6 +8,7 @@ import {
   deleteItemAction,
   assignItemAction,
   moveItemAction,
+  toggleItemCheckedAction,
 } from "@/app/actions";
 import type { Item, Service, Person, PlanData, ItemData } from "@/lib/types";
 import type { ItemHandlerParams } from "@/features/shared/types";
@@ -221,6 +222,30 @@ export function useItemHandlers({
     });
   };
 
+  const handleToggleItemChecked = (itemId: number, checked: boolean) => {
+    if (readOnly) return;
+
+    const found = findItem(itemId);
+    if (!found) return;
+
+    // Optimistic update
+    setServiceItems(found.service.id, (items) =>
+      items.map((it) => (it.id === itemId ? { ...it, checked } : it))
+    );
+
+    startTransition(async () => {
+      try {
+        await toggleItemCheckedAction({ id: itemId, checked, slug, key: writeKey });
+      } catch (error) {
+        console.error("Failed to toggle item checked:", error);
+        // Revert on error
+        setServiceItems(found.service.id, (items) =>
+          items.map((it) => (it.id === itemId ? { ...it, checked: !checked } : it))
+        );
+      }
+    });
+  };
+
   return {
     handleCreateItem,
     handleUpdateItem,
@@ -228,5 +253,6 @@ export function useItemHandlers({
     handleDelete,
     handleMoveItem,
     findItem,
+    handleToggleItemChecked,
   };
 }

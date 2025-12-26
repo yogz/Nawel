@@ -136,6 +136,11 @@ export const moveItemSchema = baseInput.extend({
   targetOrder: z.number().int().min(0).optional(),
 });
 
+export const toggleItemCheckedSchema = baseInput.extend({
+  id: z.number().int().positive(),
+  checked: z.boolean(),
+});
+
 export const validateSchema = z.object({
   key: safeKey.optional(),
   slug: safeSlug.optional(),

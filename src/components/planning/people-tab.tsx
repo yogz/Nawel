@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Sparkles, Pencil } from "lucide-react";
+import { Sparkles, Pencil, ShoppingCart } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -191,6 +191,16 @@ export function PeopleTab({
                         {personItems.length} article{personItems.length > 1 ? "s" : ""}
                       </p>
                     </div>
+                    {personItems.length > 0 && (
+                      <button
+                        onClick={() => setSheet({ type: "shopping-list", person })}
+                        aria-label={`Afficher la liste de courses de ${person.name}`}
+                        className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
+                      >
+                        <ShoppingCart size={14} />
+                        <span className="hidden sm:inline">Liste de courses</span>
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-2">

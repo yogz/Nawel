@@ -47,7 +47,8 @@ export type Sheet =
   | { type: "person" }
   | { type: "person-edit"; person: Person }
   | { type: "person-select" }
-  | { type: "share" };
+  | { type: "share" }
+  | { type: "shopping-list"; person: Person };
 
 // Basic item data for creation/updates
 export type ItemData = {
@@ -117,4 +118,5 @@ export interface OrganizerHandlers {
   handleDeleteIngredient: (id: number, itemId: number) => void;
   handleCreateIngredient: (itemId: number, name: string, quantity?: string) => void;
   handleDeleteAllIngredients: (itemId: number) => void;
+  handleToggleItemChecked: (itemId: number, checked: boolean) => void;
 }
