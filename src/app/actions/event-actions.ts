@@ -96,6 +96,24 @@ export const getAllEventsAction = withErrorThrower(async () => {
   return await db.select().from(events).orderBy(desc(events.createdAt));
 });
 
+export const getMyEventsAction = withErrorThrower(async () => {
+  const { auth } = await import("@/lib/auth-config");
+  const { headers } = await import("next/headers");
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return [];
+  }
+
+  return await db
+    .select()
+    .from(events)
+    .where(eq(events.ownerId, session.user.id))
+    .orderBy(desc(events.createdAt));
+});
+
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
 
