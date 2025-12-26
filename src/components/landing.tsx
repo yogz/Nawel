@@ -18,24 +18,32 @@ export function Landing() {
 
   const features = [
     {
-      title: "Organisation sans effort",
+      title: "Menu & Services",
       description:
-        "Coordonnez vos repas de fêtes simplement. Plus besoin de jongler avec des messages interminables.",
+        "Créez votre menu de fête en quelques secondes. Organisez les plats par services (Entrée, Plat, Dessert) et suivez l'avancement en temps réel.",
       icon: <Calendar className="h-6 w-6" />,
-      image: "/feature.png",
+      image: "/feature-menu.png",
     },
     {
-      title: "Partage Collaboratif",
+      title: "Qui apporte quoi ?",
       description:
-        "Partagez un lien unique avec vos proches. Chacun peut choisir ce qu'il apporte en un clic.",
-      icon: <Share2 className="h-6 w-6" />,
-      image: "/feature.png",
+        "Plus de doublons ! Vos invités choisissent directement ce qu'ils souhaitent apporter. Une interface claire pour une coordination parfaite.",
+      icon: <Users className="h-6 w-6" />,
+      image: "/feature-guests.png",
     },
     {
-      title: "Gérez vos Invités",
-      description: "Gardez un œil sur qui vient et ce qui manque. L'hôte parfait, sans le stress.",
-      icon: <Users className="h-6 w-6" />,
-      image: "/feature.png",
+      title: "L'IA à votre service",
+      description:
+        "Laissez notre IA générer la liste précise des ingrédients pour chaque plat. Fini les oublis de dernière minute au supermarché.",
+      icon: <Sparkles className="h-6 w-6" />,
+      image: "/feature-ingredients.png",
+    },
+    {
+      title: "Liste de courses intelligente",
+      description:
+        "Une liste de courses partagée et organisée par personne. Cochez vos articles au fur et à mesure, même sans connexion.",
+      icon: <Share2 className="h-6 w-6" />,
+      image: "/feature-todo.png",
     },
   ];
 
@@ -115,13 +123,14 @@ export function Landing() {
                   <h2 className="text-3xl font-bold sm:text-4xl">{feature.title}</h2>
                   <p className="text-lg leading-relaxed text-gray-600">{feature.description}</p>
                 </div>
-                <div className="relative aspect-[4/3] flex-1 overflow-hidden rounded-3xl bg-gray-200 shadow-2xl shadow-gray-200">
+                <div className="relative aspect-[16/10] flex-1 overflow-hidden rounded-3xl bg-gray-200 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5">
                   <Image
                     src={feature.image}
                     alt={feature.title}
                     fill
-                    className="object-cover transition-transform duration-700 hover:scale-110"
+                    className="object-cover object-top transition-transform duration-700 hover:scale-105"
                   />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent" />
                 </div>
               </motion.div>
             ))}
