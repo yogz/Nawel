@@ -50,7 +50,10 @@ export const createMealWithServicesAction = createSafeAction(
         })
         .returning();
 
-      const totalGuests = (input.adults ?? event.adults) + (input.children ?? event.children);
+      const adults = input.adults ?? event.adults;
+      const children = input.children ?? event.children;
+      const totalGuests = adults + children;
+
       const createdServices = [];
       for (let i = 0; i < input.services.length; i++) {
         const [service] = await tx
@@ -59,7 +62,9 @@ export const createMealWithServicesAction = createSafeAction(
             mealId: meal.id,
             title: input.services[i],
             order: i,
-            peopleCount: totalGuests || 1,
+            adults: adults,
+            children: children,
+            peopleCount: totalGuests || 0,
           })
           .returning();
         createdServices.push({ ...service, items: [] });
@@ -108,50 +113,8 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
       .where(eq(meals.id, input.id))
       .returning();
 
-    // 3. Cascade to services if guests changed
-    if (guestsChanged) {
-      const newTotal = newAdults + newChildren;
-      const oldTotal = oldAdults + oldChildren;
-
-      const mealServices = await tx.query.services.findMany({
-        where: eq(services.mealId, updatedMeal.id),
-      });
-
-      for (const service of mealServices) {
-        const serviceOldPeople = service.peopleCount;
-
-        // Update service peopleCount
-        await tx.update(services).set({ peopleCount: newTotal }).where(eq(services.id, service.id));
-
-        // Scale items in this service
-        if (serviceOldPeople > 0 && newTotal !== serviceOldPeople) {
-          const serviceItems = await tx.query.items.findMany({
-            where: eq(items.serviceId, service.id),
-            with: { ingredients: true },
-          });
-
-          for (const item of serviceItems) {
-            const newItemQuantity = scaleQuantity(item.quantity, serviceOldPeople, newTotal);
-            if (newItemQuantity !== item.quantity) {
-              await tx
-                .update(items)
-                .set({ quantity: newItemQuantity })
-                .where(eq(items.id, item.id));
-            }
-
-            for (const ing of item.ingredients) {
-              const newIngQuantity = scaleQuantity(ing.quantity, serviceOldPeople, newTotal);
-              if (newIngQuantity !== ing.quantity) {
-                await tx
-                  .update(ingredients)
-                  .set({ quantity: newIngQuantity })
-                  .where(eq(ingredients.id, ing.id));
-              }
-            }
-          }
-        }
-      }
-    }
+    // 3. Cascade to services removed to respect "initialization only" propagation rule.
+    // Future adjustments to service guests should be made at the service level.
 
     return updatedMeal;
   });

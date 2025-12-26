@@ -16,7 +16,13 @@ export function useServiceHandlers({
 }: ServiceHandlerParams) {
   const [, startTransition] = useTransition();
 
-  const handleCreateService = (mealId: number, title: string, peopleCount?: number) => {
+  const handleCreateService = (
+    mealId: number,
+    title: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => {
     if (readOnly) {
       return;
     }
@@ -25,6 +31,8 @@ export function useServiceHandlers({
         const created = await createServiceAction({
           mealId,
           title,
+          adults,
+          children,
           peopleCount,
           slug,
           key: writeKey,
@@ -44,13 +52,27 @@ export function useServiceHandlers({
     });
   };
 
-  const handleUpdateService = (id: number, title?: string, peopleCount?: number) => {
+  const handleUpdateService = (
+    id: number,
+    title?: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => {
     if (readOnly) {
       return;
     }
     startTransition(async () => {
       try {
-        await updateServiceAction({ id, title, peopleCount, slug, key: writeKey });
+        await updateServiceAction({
+          id,
+          title,
+          adults,
+          children,
+          peopleCount,
+          slug,
+          key: writeKey,
+        });
 
         // Utility for scaling (to avoid repeating it)
         const { scaleQuantity } = await import("@/lib/utils");
@@ -68,6 +90,8 @@ export function useServiceHandlers({
               const updatedService = {
                 ...s,
                 ...(title !== undefined && { title }),
+                ...(adults !== undefined && { adults }),
+                ...(children !== undefined && { children }),
                 ...(peopleCount !== undefined && { peopleCount }),
               };
 

@@ -13,16 +13,24 @@ export function ServiceEditForm({
   onClose,
 }: {
   service: Service;
-  onSubmit: (id: number, title: string, peopleCount?: number) => void;
+  onSubmit: (
+    id: number,
+    title: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => void;
   onDelete: (service: Service) => void;
   onClose: () => void;
 }) {
   const [title, setTitle] = useState(service?.title || "");
-  const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 1);
+  const [adults, setAdults] = useState(service?.adults || 0);
+  const [children, setChildren] = useState(service?.children || 0);
+  const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(service.id, title, peopleCount);
+    onSubmit(service.id, title, adults, children, peopleCount);
   };
 
   return (
@@ -39,14 +47,49 @@ export function ServiceEditForm({
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="edit-adults">Adultes</Label>
+          <Input
+            id="edit-adults"
+            type="number"
+            min="0"
+            value={adults}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 0;
+              setAdults(val);
+              setPeopleCount(val + children);
+            }}
+            placeholder="Ex: 5"
+            required
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="edit-children">Enfants</Label>
+          <Input
+            id="edit-children"
+            type="number"
+            min="0"
+            value={children}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 0;
+              setChildren(val);
+              setPeopleCount(adults + val);
+            }}
+            placeholder="Ex: 2"
+            required
+          />
+        </div>
+      </div>
+
       <div className="grid gap-2">
-        <Label htmlFor="people-count">Nombre de personnes</Label>
+        <Label htmlFor="people-count">Nombre de personnes (Total)</Label>
         <Input
           id="people-count"
           type="number"
-          min="1"
+          min="0"
           value={peopleCount}
-          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 1)}
+          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
           placeholder="Ex: 8"
           required
         />

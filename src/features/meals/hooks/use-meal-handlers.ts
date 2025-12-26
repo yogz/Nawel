@@ -122,30 +122,8 @@ export function useMealHandlers({
               children: newChildren,
             };
 
-            // Cascade to services if total changed
-            if (newTotal !== oldTotal && oldTotal > 0) {
-              updatedMeal.services = m.services.map((s) => ({
-                ...s,
-                peopleCount: newTotal,
-                items: s.items.map((item) => ({
-                  ...item,
-                  quantity: scaleQuantity(item.quantity, s.peopleCount, newTotal),
-                  ingredients: item.ingredients?.map((ing) => ({
-                    ...ing,
-                    quantity: scaleQuantity(ing.quantity, s.peopleCount, newTotal),
-                  })),
-                })),
-              }));
-            } else if (newTotal !== oldTotal && oldTotal === 0) {
-              // Handle case where old total was 0 (should use current service peopleCount as base if possible,
-              // but if it's 0 too, just set to newTotal)
-              updatedMeal.services = m.services.map((s) => ({
-                ...s,
-                peopleCount: newTotal,
-                // If s.peopleCount was 0 or 1, scaling is ambiguous.
-                // Usually we just update the count.
-              }));
-            }
+            // Cascade to services removed to respect "initialization only" propagation rule.
+            // Future adjustments to service guests should be made at the service level.
 
             return updatedMeal;
           }),

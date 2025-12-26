@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { services, items, ingredients } from "@drizzle/schema";
+import { services, items, ingredients, meals } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import { createServiceSchema, serviceSchema, deleteServiceSchema } from "./schemas";
@@ -13,14 +13,36 @@ import { scaleQuantity } from "@/lib/utils";
 
 export const createServiceAction = createSafeAction(createServiceSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
+
+  // Fetch parent meal for initialization if counts not provided
+  let adults = input.adults;
+  let children = input.children;
+
+  if (adults === undefined || children === undefined) {
+    const meal = await db.query.meals.findFirst({
+      where: eq(meals.id, input.mealId),
+    });
+    if (meal) {
+      adults = adults ?? meal.adults;
+      children = children ?? meal.children;
+    }
+  }
+
+  const finalAdults = adults ?? 0;
+  const finalChildren = children ?? 0;
+  const finalPeopleCount = input.peopleCount ?? finalAdults + finalChildren;
+
   const [created] = await db
     .insert(services)
     .values({
       mealId: input.mealId,
       title: input.title,
-      peopleCount: input.peopleCount ?? 1,
+      adults: finalAdults,
+      children: finalChildren,
+      peopleCount: finalPeopleCount,
     })
     .returning();
+
   await logChange("create", "services", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
@@ -38,14 +60,20 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
     if (!current) throw new Error("Service non trouvé");
 
     const oldPeopleCount = current.peopleCount;
-    const newPeopleCount = input.peopleCount ?? oldPeopleCount;
+
+    const newAdults = input.adults !== undefined ? input.adults : current.adults;
+    const newChildren = input.children !== undefined ? input.children : current.children;
+    const newPeopleCount =
+      input.peopleCount !== undefined ? input.peopleCount : newAdults + newChildren;
 
     // 2. Update service
     const [updatedService] = await tx
       .update(services)
       .set({
         ...(input.title !== undefined && { title: input.title }),
-        ...(input.peopleCount !== undefined && { peopleCount: input.peopleCount }),
+        adults: newAdults,
+        children: newChildren,
+        peopleCount: newPeopleCount,
       })
       .where(eq(services.id, input.id))
       .returning();

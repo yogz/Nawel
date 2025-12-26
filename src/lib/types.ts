@@ -14,7 +14,6 @@ export type Meal = InferSelectModel<typeof meals> & {
 
 export type Service = InferSelectModel<typeof services> & {
   items: Item[];
-  peopleCount?: number;
 };
 
 export type Person = InferSelectModel<typeof people>;
@@ -72,7 +71,13 @@ export interface OrganizerHandlers {
     adults?: number,
     children?: number
   ) => Promise<number>;
-  handleCreateService: (mealId: number, title: string, peopleCount?: number) => void;
+  handleCreateService: (
+    mealId: number,
+    title: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => void;
   handleUpdateMeal: (
     id: number,
     date: string,
@@ -81,7 +86,13 @@ export interface OrganizerHandlers {
     children?: number
   ) => void;
   handleDeleteMeal: (meal: Meal) => void;
-  handleUpdateService: (id: number, title: string, peopleCount?: number) => void;
+  handleUpdateService: (
+    id: number,
+    title: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => void;
   handleDeleteService: (service: Service) => void;
   handleCreatePerson: (name: string, emoji?: string) => void;
   handleCreateMealWithServices: (
@@ -93,7 +104,13 @@ export interface OrganizerHandlers {
   ) => void;
   handleUpdatePerson: (id: number, name: string, emoji?: string | null) => void;
   handleDeletePerson: (id: number) => void;
-  handleGenerateIngredients: (itemId: number, name: string, peopleCount?: number) => Promise<void>;
+  handleGenerateIngredients: (
+    itemId: number,
+    name: string,
+    adults?: number,
+    children?: number,
+    peopleCount?: number
+  ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;
   handleCreateIngredient: (itemId: number, name: string, quantity?: string) => void;

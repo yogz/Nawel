@@ -23,6 +23,8 @@ export function useIngredientHandlers({
   const handleGenerateIngredients = async (
     itemId: number,
     itemName: string,
+    adults?: number,
+    children?: number,
     peopleCount?: number
   ) => {
     if (readOnly) {
@@ -32,6 +34,8 @@ export function useIngredientHandlers({
     const result = await generateIngredientsAction({
       itemId,
       itemName,
+      adults,
+      children,
       peopleCount,
       slug,
       key: writeKey,

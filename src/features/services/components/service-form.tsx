@@ -22,18 +22,24 @@ import { cn } from "@/lib/utils";
 export function ServiceForm({
   meals,
   defaultMealId,
-  defaultPeopleCount = 1,
+  defaultAdults = 0,
+  defaultChildren = 0,
+  defaultPeopleCount = 0,
   forceNewMeal,
   onSubmit,
   readOnly,
 }: {
   meals: Meal[];
   defaultMealId?: number;
+  defaultAdults?: number;
+  defaultChildren?: number;
   defaultPeopleCount?: number;
   forceNewMeal?: boolean;
   onSubmit: (
     mealId: number,
     title: string,
+    adults: number,
+    children: number,
     peopleCount: number,
     newMealDate?: string,
     newMealTitle?: string
@@ -48,12 +54,16 @@ export function ServiceForm({
         : String(meals[0].id);
 
   const initialMeal = meals.find((m) => String(m.id) === initialMealId);
+  const initialAdults = initialMeal ? initialMeal.adults : defaultAdults;
+  const initialChildren = initialMeal ? initialMeal.children : defaultChildren;
   const initialPeople = initialMeal
     ? initialMeal.adults + initialMeal.children
     : defaultPeopleCount;
 
   const [mealId, setMealId] = useState<string>(initialMealId);
   const [title, setTitle] = useState("");
+  const [adults, setAdults] = useState(initialAdults);
+  const [children, setChildren] = useState(initialChildren);
   const [peopleCount, setPeopleCount] = useState(initialPeople);
   const [newMealDate, setNewMealDate] = useState<Date | undefined>(undefined);
   const [newMealTitle, setNewMealTitle] = useState("");
@@ -64,9 +74,9 @@ export function ServiceForm({
         return;
       }
       const formattedDate = format(newMealDate, "yyyy-MM-dd");
-      await onSubmit(-1, title, peopleCount, formattedDate, newMealTitle);
+      await onSubmit(-1, title, adults, children, peopleCount, formattedDate, newMealTitle);
     } else {
-      await onSubmit(Number(mealId), title, peopleCount);
+      await onSubmit(Number(mealId), title, adults, children, peopleCount);
     }
   };
 
@@ -81,8 +91,12 @@ export function ServiceForm({
               setMealId(val);
               const meal = meals.find((m) => String(m.id) === val);
               if (meal) {
+                setAdults(meal.adults);
+                setChildren(meal.children);
                 setPeopleCount(meal.adults + meal.children);
               } else {
+                setAdults(initialAdults);
+                setChildren(initialChildren);
                 setPeopleCount(defaultPeopleCount);
               }
             }}
@@ -163,15 +177,48 @@ export function ServiceForm({
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="adults">Adultes</Label>
+          <Input
+            id="adults"
+            type="number"
+            min="0"
+            value={adults}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 0;
+              setAdults(val);
+              setPeopleCount(val + children);
+            }}
+            disabled={readOnly}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="children">Enfants</Label>
+          <Input
+            id="children"
+            type="number"
+            min="0"
+            value={children}
+            onChange={(e) => {
+              const val = parseInt(e.target.value) || 0;
+              setChildren(val);
+              setPeopleCount(adults + val);
+            }}
+            disabled={readOnly}
+          />
+        </div>
+      </div>
+
       <div className="space-y-2">
-        <Label htmlFor="people-count">Nombre de personnes</Label>
+        <Label htmlFor="people-count">Nombre de personnes (Total)</Label>
         <Input
           id="people-count"
           type="number"
-          min="1"
+          min="0"
           placeholder="Ex: 8"
           value={peopleCount}
-          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 1)}
+          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
           disabled={readOnly}
         />
       </div>

@@ -56,13 +56,17 @@ export const updateMealSchema = baseInput.extend({
 export const createServiceSchema = baseInput.extend({
   mealId: z.number().int().positive(),
   title: safeText(200),
-  peopleCount: z.number().int().min(1).max(100).optional(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
+  peopleCount: z.number().int().min(0).max(1000).optional(),
 });
 
 export const serviceSchema = baseInput.extend({
   id: z.number().int().positive(),
   title: safeText(200).optional(),
-  peopleCount: z.number().int().min(1).max(100).optional(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
+  peopleCount: z.number().int().min(0).max(1000).optional(),
 });
 
 export const deleteServiceSchema = baseInput.extend({
@@ -151,7 +155,9 @@ export const deleteEventSchema = baseInput;
 export const generateIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),
   itemName: safeStrictText(100),
-  peopleCount: z.number().int().min(1).max(50).optional(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
+  peopleCount: z.number().int().min(0).max(1000).optional(),
 });
 
 export const createIngredientSchema = baseInput.extend({

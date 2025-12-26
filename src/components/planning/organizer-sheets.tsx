@@ -167,6 +167,24 @@ export function OrganizerSheets({
                     await handleGenerateIngredients(
                       sheet.item!.id,
                       currentName || sheet.item!.name,
+                      (() => {
+                        const serviceId = sheet.serviceId || sheet.item?.serviceId;
+                        if (!serviceId) return undefined;
+                        for (const meal of plan.meals) {
+                          const service = meal.services.find((s) => s.id === serviceId);
+                          if (service) return service.adults;
+                        }
+                        return undefined;
+                      })(),
+                      (() => {
+                        const serviceId = sheet.serviceId || sheet.item?.serviceId;
+                        if (!serviceId) return undefined;
+                        for (const meal of plan.meals) {
+                          const service = meal.services.find((s) => s.id === serviceId);
+                          if (service) return service.children;
+                        }
+                        return undefined;
+                      })(),
                       peopleCount ||
                         (() => {
                           const serviceId = sheet.serviceId || sheet.item?.serviceId;
@@ -217,13 +235,17 @@ export function OrganizerSheets({
         <ServiceForm
           meals={plan.meals}
           defaultMealId={sheet.mealId}
+          defaultAdults={plan.event?.adults || 0}
+          defaultChildren={plan.event?.children || 0}
           defaultPeopleCount={(plan.event?.adults || 0) + (plan.event?.children || 0)}
           forceNewMeal={sheet.mealId === -1}
           readOnly={readOnly}
           onSubmit={async (
             mealId: number,
             title: string,
-            peopleCount?: number,
+            adults: number,
+            children: number,
+            peopleCount: number,
             newMealDate?: string,
             newMealTitle?: string
           ) => {
@@ -231,7 +253,7 @@ export function OrganizerSheets({
             if (mealId === -1 && newMealDate) {
               targetMealId = await handleCreateMeal(newMealDate, newMealTitle || undefined);
             }
-            handleCreateService(targetMealId, title, peopleCount);
+            handleCreateService(targetMealId, title, adults, children, peopleCount);
           }}
         />
       )}

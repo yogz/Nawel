@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
-import { ingredients, ingredientCache } from "@drizzle/schema";
+import { ingredients, ingredientCache, items } from "@drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -71,9 +71,21 @@ export const generateIngredientsAction = createSafeAction(
       await db.delete(ingredients).where(eq(ingredients.itemId, input.itemId));
 
       const normalizedName = normalizeDishName(input.itemName);
-      const peopleCount = input.peopleCount || 4;
+      const peopleCount = input.peopleCount || 0;
+
+      // Fetch item to check for custom quantity
+      const item = await db.query.items.findFirst({
+        where: eq(items.id, input.itemId),
+      });
+
+      const details = {
+        adults: input.adults,
+        children: input.children,
+        description: item?.quantity || undefined,
+      };
 
       // Check cache for this dish + people count
+      // (Cache remains on peopleCount for now to keep it simple, but prompt will be detailed)
       const [cached] = await db
         .select()
         .from(ingredientCache)
@@ -93,7 +105,7 @@ export const generateIngredientsAction = createSafeAction(
       } else {
         // Need to call AI (either no cache or not enough confirmations)
         try {
-          generatedIngredients = await generateFromAI(input.itemName, peopleCount);
+          generatedIngredients = await generateFromAI(input.itemName, peopleCount, details);
         } catch (aiError) {
           console.error("[AI] Generation failed:", aiError);
           return {
