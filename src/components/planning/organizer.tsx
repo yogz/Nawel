@@ -334,11 +334,9 @@ export function Organizer({
                           })()
                       );
                       setSuccessMessage({ text: "Ingrédients générés ! ✨", type: "success" });
-                      setTimeout(() => setSuccessMessage(null), 3000);
                     } catch (error) {
                       console.error("Failed to generate ingredients:", error);
                       setSuccessMessage({ text: "Erreur de génération ❌", type: "error" });
-                      setTimeout(() => setSuccessMessage(null), 3000);
                     } finally {
                       setIsGenerating(false);
                     }

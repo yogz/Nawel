@@ -63,11 +63,9 @@ export function useItemHandlers({
         setServiceItems(data.serviceId, (items) => [...items, { ...created, person: null }]);
         setSheet(null);
         setSuccessMessage({ text: `${data.name} ajouté ! ✨`, type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to create item:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -126,7 +124,6 @@ export function useItemHandlers({
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
     setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
-    setTimeout(() => setSuccessMessage(null), 3000);
 
     // Easter egg for Cécile
     if (
@@ -184,7 +181,6 @@ export function useItemHandlers({
     setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
     setSheet(null);
     setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
-    setTimeout(() => setSuccessMessage(null), 3000);
 
     startTransition(async () => {
       try {
@@ -193,7 +189,6 @@ export function useItemHandlers({
         console.error("Failed to delete item:", error);
         setPlan(previousPlan);
         setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };

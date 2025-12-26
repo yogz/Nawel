@@ -34,12 +34,10 @@ export function useMealHandlers({
         ),
       }));
       setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
-      setTimeout(() => setSuccessMessage(null), 3000);
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
       setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
-      setTimeout(() => setSuccessMessage(null), 3000);
       return 0;
     }
   };
@@ -67,11 +65,9 @@ export function useMealHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Nouveau repas créé ✨", type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to create meal with services:", error);
         setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -89,11 +85,9 @@ export function useMealHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to update meal:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -109,7 +103,6 @@ export function useMealHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: "Repas supprimé ✓", type: "success" });
-    setTimeout(() => setSuccessMessage(null), 3000);
     startTransition(async () => {
       try {
         await deleteMealAction({ id, slug, key: writeKey });
@@ -117,7 +110,6 @@ export function useMealHandlers({
         console.error("Failed to delete meal:", error);
         setPlan(previousPlan);
         setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };

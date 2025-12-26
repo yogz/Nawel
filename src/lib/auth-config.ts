@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
+import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 
 // Parse trusted origins from environment variable, with safe defaults for development
 const getTrustedOrigins = (): string[] => {
@@ -50,8 +51,8 @@ export const auth = betterAuth({
     }),
   ],
   session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
+    expiresIn: 60 * 60 * 24 * SESSION_EXPIRE_DAYS,
+    updateAge: 60 * 60 * 24 * SESSION_REFRESH_DAYS,
   },
 });
 
