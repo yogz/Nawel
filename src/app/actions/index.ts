@@ -5,4 +5,5 @@ export * from "./person-actions";
 export * from "./item-actions";
 export * from "./ingredient-actions";
 export * from "./event-actions";
+export * from "./user-actions";
 export * from "./schemas";

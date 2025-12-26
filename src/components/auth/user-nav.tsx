@@ -4,11 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { AuthModal } from "./auth-modal";
-import { LogOut, User as UserIcon, LogIn } from "lucide-react";
+import { ProfileDrawer } from "./profile-drawer";
+import { LogOut, User as UserIcon, LogIn, Settings } from "lucide-react";
 
 export function UserNav() {
   const { data: session, isPending } = useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProfileDrawer, setShowProfileDrawer] = useState(false);
 
   if (isPending) {
     return <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />;
@@ -33,22 +35,35 @@ export function UserNav() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2 rounded-full border border-gray-100 bg-white p-1 pr-4 shadow-sm">
+      <button
+        onClick={() => setShowProfileDrawer(true)}
+        className="group flex items-center gap-2 rounded-full border border-transparent bg-white p-1 pr-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
+      >
         {user.image ? (
           <Image
             src={user.image}
             alt={user.name || "User avatar"}
             width={32}
             height={32}
-            className="h-8 w-8 rounded-full border border-gray-100"
+            className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-white"
           />
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 transition-all duration-300 group-hover:bg-black group-hover:text-white">
             <UserIcon size={16} />
           </div>
         )}
-        <span className="max-w-[100px] truncate text-xs font-bold text-gray-700">{user.name}</span>
-      </div>
+        <div className="flex flex-col items-start">
+          <span className="max-w-[100px] truncate text-xs font-bold leading-tight text-gray-700">
+            {user.name}
+          </span>
+          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase leading-tight tracking-widest text-gray-400 transition-colors group-hover:text-black">
+            <Settings size={8} className="stroke-[3]" /> Profil
+          </span>
+        </div>
+      </button>
+
+      <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
+
       <button
         onClick={() => signOut()}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-100 bg-white text-gray-400 shadow-sm transition-all hover:text-red-500 active:scale-95"

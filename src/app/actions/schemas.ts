@@ -178,3 +178,9 @@ export const updateEventAdminSchema = z.object({
 export const deleteEventAdminSchema = z.object({
   id: z.number().int().positive(),
 });
+
+export const updateUserSchema = z.object({
+  name: safeStrictText(100),
+  email: z.string().email(),
+  image: z.string().url().optional().nullable(),
+});
