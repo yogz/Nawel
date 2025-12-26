@@ -12,31 +12,34 @@ export async function fetchPlan(slug: string) {
     return { event: null, meals: [], people: [] };
   }
 
-  const mealList = await db.query.meals.findMany({
-    where: eq(meals.eventId, event.id),
-    orderBy: asc(meals.date),
-    with: {
-      services: {
-        orderBy: asc(services.order),
-        with: {
-          items: {
-            orderBy: asc(items.order),
-            with: {
-              person: true,
-              ingredients: {
-                orderBy: asc(ingredients.order),
+  // Parallelize the two independent queries for better performance
+  const [mealList, peopleList] = await Promise.all([
+    db.query.meals.findMany({
+      where: eq(meals.eventId, event.id),
+      orderBy: asc(meals.date),
+      with: {
+        services: {
+          orderBy: asc(services.order),
+          with: {
+            items: {
+              orderBy: asc(items.order),
+              with: {
+                person: true,
+                ingredients: {
+                  orderBy: asc(ingredients.order),
+                },
               },
             },
           },
         },
       },
-    },
-  });
+    }),
+    db.query.people.findMany({
+      where: eq(people.eventId, event.id),
+      orderBy: asc(people.name),
+    }),
+  ]);
 
-  const peopleList = await db.query.people.findMany({
-    where: eq(people.eventId, event.id),
-    orderBy: asc(people.name),
-  });
   return { event, meals: mealList, people: peopleList };
 }
 

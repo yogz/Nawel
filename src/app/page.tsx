@@ -1,7 +1,8 @@
 import { getAllEventsAction } from "@/app/actions";
 import { EventList } from "@/components/event-list";
 
-export const dynamic = "force-dynamic";
+// ISR: revalidate every 60 seconds, on-demand via revalidatePath() from server actions
+export const revalidate = 60;
 
 export default async function Home(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

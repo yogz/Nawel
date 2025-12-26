@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -7,21 +8,23 @@ import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
 
-export function ItemRow({
-  item,
-  person,
-  onAssign,
-  onDelete: _onDelete,
-  readOnly,
-  allPeopleNames,
-}: {
+interface ItemRowProps {
   item: Item;
   person?: Person | null;
   onAssign: () => void;
   onDelete: () => void;
   readOnly?: boolean;
   allPeopleNames?: string[];
-}) {
+}
+
+function ItemRowComponent({
+  item,
+  person,
+  onAssign,
+  onDelete: _onDelete,
+  readOnly,
+  allPeopleNames,
+}: ItemRowProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.id,
     disabled: readOnly,
@@ -119,3 +122,20 @@ export function ItemRow({
     </motion.div>
   );
 }
+
+// Memoize to prevent re-renders when parent re-renders but item hasn't changed
+export const ItemRow = memo(ItemRowComponent, (prev, next) => {
+  // Custom comparison for performance - only re-render when these change
+  return (
+    prev.item.id === next.item.id &&
+    prev.item.name === next.item.name &&
+    prev.item.quantity === next.item.quantity &&
+    prev.item.note === next.item.note &&
+    prev.item.price === next.item.price &&
+    prev.item.personId === next.item.personId &&
+    prev.item.ingredients?.length === next.item.ingredients?.length &&
+    prev.person?.id === next.person?.id &&
+    prev.person?.name === next.person?.name &&
+    prev.readOnly === next.readOnly
+  );
+});
