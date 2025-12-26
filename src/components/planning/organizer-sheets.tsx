@@ -168,36 +168,20 @@ export function OrganizerSheets({
                       sheet.item!.id,
                       currentName || sheet.item!.name,
                       (() => {
-                        const serviceId = sheet.serviceId || sheet.item?.serviceId;
-                        if (!serviceId) return undefined;
-                        for (const meal of plan.meals) {
-                          const service = meal.services.find((s) => s.id === serviceId);
-                          if (service) return service.adults;
-                        }
-                        return undefined;
+                        const sId = sheet.serviceId || sheet.item?.serviceId;
+                        const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                        return s?.adults;
                       })(),
                       (() => {
-                        const serviceId = sheet.serviceId || sheet.item?.serviceId;
-                        if (!serviceId) return undefined;
-                        for (const meal of plan.meals) {
-                          const service = meal.services.find((s) => s.id === serviceId);
-                          if (service) return service.children;
-                        }
-                        return undefined;
+                        const sId = sheet.serviceId || sheet.item?.serviceId;
+                        const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                        return s?.children;
                       })(),
                       peopleCount ||
                         (() => {
-                          const serviceId = sheet.serviceId || sheet.item?.serviceId;
-                          if (!serviceId) {
-                            return undefined;
-                          }
-                          for (const meal of plan.meals) {
-                            const service = meal.services.find((s) => s.id === serviceId);
-                            if (service) {
-                              return service.peopleCount;
-                            }
-                          }
-                          return undefined;
+                          const sId = sheet.serviceId || sheet.item?.serviceId;
+                          const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                          return s?.peopleCount;
                         })()
                     );
                     setSuccessMessage({ text: "Ingrédients générés ! ✨", type: "success" });
