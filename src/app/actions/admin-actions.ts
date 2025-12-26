@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { events, meals, services, people, items, ingredientCache } from "@drizzle/schema";
+import { events, meals, services, people, items, ingredientCache, user } from "@drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { eq, count, desc, ilike } from "drizzle-orm";
@@ -12,6 +12,8 @@ import {
   deleteEventAdminSchema,
   deleteCacheEntrySchema,
   updateCacheEntrySchema,
+  deleteUserAdminSchema,
+  toggleUserBanAdminSchema,
 } from "./schemas";
 
 async function requireAdmin() {
@@ -204,5 +206,82 @@ export const clearAllCacheAction = withErrorThrower(async () => {
   await db.delete(ingredientCache);
 
   revalidatePath("/admin/cache");
+  return { success: true };
+});
+
+// ==========================================
+// User Admin Actions
+// ==========================================
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string | null;
+  banned: boolean | null;
+  createdAt: Date;
+  eventsCount: number;
+  peopleCount: number;
+};
+
+export const getAllUsersAction = withErrorThrower(async (): Promise<AdminUser[]> => {
+  await requireAdmin();
+
+  const allUsers = await db.query.user.findMany({
+    orderBy: (user, { desc }) => [desc(user.createdAt)],
+  });
+
+  const usersWithStats: AdminUser[] = await Promise.all(
+    allUsers.map(async (u) => {
+      const [eventsResult] = await db
+        .select({ count: count() })
+        .from(events)
+        .where(eq(events.ownerId, u.id));
+
+      const [peopleResult] = await db
+        .select({ count: count() })
+        .from(people)
+        .where(eq(people.userId, u.id));
+
+      return {
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role ?? "user",
+        banned: u.banned,
+        createdAt: u.createdAt,
+        eventsCount: eventsResult?.count ?? 0,
+        peopleCount: peopleResult?.count ?? 0,
+      };
+    })
+  );
+
+  return usersWithStats;
+});
+
+export const toggleUserBanAdminAction = createSafeAction(
+  toggleUserBanAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    await db
+      .update(user)
+      .set({
+        banned: input.banned,
+        updatedAt: new Date(),
+      })
+      .where(eq(user.id, input.id));
+
+    revalidatePath("/admin/users");
+    return { success: true };
+  }
+);
+
+export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, async (input) => {
+  await requireAdmin();
+
+  await db.delete(user).where(eq(user.id, input.id));
+
+  revalidatePath("/admin/users");
   return { success: true };
 });

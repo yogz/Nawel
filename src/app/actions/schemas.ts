@@ -215,6 +215,15 @@ export const deleteUserSchema = z.object({
   confirm: z.boolean(),
 });
 
+export const deleteUserAdminSchema = z.object({
+  id: z.string(),
+});
+
+export const toggleUserBanAdminSchema = z.object({
+  id: z.string(),
+  banned: z.boolean(),
+});
+
 // Admin Cache schemas
 export const deleteCacheEntrySchema = z.object({
   id: z.number().int().positive(),

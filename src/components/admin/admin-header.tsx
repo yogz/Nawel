@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield, Calendar, Database } from "lucide-react";
+import { LogOut, Shield, Calendar, Database, Users } from "lucide-react";
 import clsx from "clsx";
 
 type User = {
@@ -17,6 +17,7 @@ type User = {
 const navItems = [
   { href: "/admin", label: "Événements", icon: Calendar },
   { href: "/admin/cache", label: "Cache IA", icon: Database },
+  { href: "/admin/users", label: "Utilisateurs", icon: Users },
 ];
 
 export function AdminHeader({ user }: { user: User }) {
