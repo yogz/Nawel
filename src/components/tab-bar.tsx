@@ -13,7 +13,10 @@ type TabKey = (typeof tabs)[number]["key"];
 
 export function TabBar({ active, onChange }: { active: TabKey; onChange: (key: TabKey) => void }) {
   return (
-    <nav className="bg-surface/90 pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.05] backdrop-blur-lg">
+    <nav
+      className="bg-surface/95 fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.05] backdrop-blur-lg"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
       <div className="mx-auto flex max-w-xl items-center justify-around py-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
