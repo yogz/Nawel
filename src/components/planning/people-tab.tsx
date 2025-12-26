@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Sparkles, Pencil, ShoppingCart } from "lucide-react";
+import { Sparkles, Pencil, ShoppingCart, Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -205,34 +205,53 @@ export function PeopleTab({
                 </div>
                 <div className="space-y-2">
                   {personItems.map(({ item, service, mealTitle }: PersonItem) => (
-                    <div
+                    <motion.button
                       key={item.id}
-                      className="premium-card group relative p-5 transition-all hover:border-accent/10"
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setSheet({ type: "item", serviceId: service.id, item })}
+                      disabled={readOnly}
+                      aria-label={`Modifier l'article ${item.name}`}
+                      className="group w-full cursor-pointer rounded-2xl border border-black/[0.03] bg-white p-4 text-left shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-200 hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] disabled:cursor-default"
                     >
                       <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-accent/60">
                         {mealTitle} • {service.title}
                       </p>
-                      <p className="text-base font-bold text-text">{item.name}</p>
-                      {(item.quantity || item.note || item.price) && (
-                        <div className="mt-3 flex flex-wrap gap-2">
+                      <p className="text-base font-bold text-text transition-colors group-hover:text-accent">
+                        {item.name}
+                      </p>
+                      {(item.quantity ||
+                        item.note ||
+                        item.price ||
+                        (item.ingredients && item.ingredients.length > 0)) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                           {item.quantity && (
-                            <span className="rounded-lg bg-gray-50 px-2 py-1 text-[10px] font-bold uppercase text-gray-500">
-                              📦 {item.quantity}
-                            </span>
+                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-gray-500">
+                              <Scale size={12} className="text-gray-400" />
+                              {item.quantity}
+                            </div>
                           )}
                           {item.price && (
-                            <span className="rounded-lg bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase text-zinc-900">
-                              💶 {item.price}€
-                            </span>
+                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-green-600">
+                              <Euro size={12} className="text-green-500" />
+                              {item.price.toFixed(2)} €
+                            </div>
                           )}
                           {item.note && (
-                            <span className="rounded-lg bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase text-zinc-900">
-                              📝 {item.note}
-                            </span>
+                            <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-500">
+                              <MessageSquare size={12} className="text-gray-400" />
+                              <span className="max-w-[150px] truncate">{item.note}</span>
+                            </div>
+                          )}
+                          {item.ingredients && item.ingredients.length > 0 && (
+                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-purple-500">
+                              <ChefHat size={12} className="text-purple-400" />
+                              {item.ingredients.filter((i) => i.checked).length}/
+                              {item.ingredients.length}
+                            </div>
                           )}
                         </div>
                       )}
-                    </div>
+                    </motion.button>
                   ))}
                   {personItems.length === 0 && (
                     <div className="rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/50 py-8 text-center">
