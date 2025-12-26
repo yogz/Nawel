@@ -19,7 +19,7 @@ export interface ChangeLog {
 
 export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [plan, setPlan] = useState(initialPlan);
-  const [tab, setTab] = useState<"planning" | "people" | "settings">("planning");
+  const [tab, setTab] = useState<"planning" | "people" | "settings" | "shopping">("planning");
   const [logs, setLogs] = useState<ChangeLog[]>([]);
   const [planningFilter, setPlanningFilter] = useState<PlanningFilter>({ type: "all" });
   const [sheet, setSheet] = useState<Sheet | null>(null);

@@ -1,7 +1,9 @@
 "use client";
 
-import { Loader2, Sparkles, Lock } from "lucide-react";
+import { useState } from "react";
+import { Loader2, Sparkles, Lock, Plus, X } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
+import { Input } from "@/components/ui/input";
 import { type Ingredient } from "@/lib/types";
 
 interface ItemIngredientsProps {
@@ -33,15 +35,31 @@ export function ItemIngredients({
   onDeleteAllIngredients,
   onRequestAuth,
 }: ItemIngredientsProps) {
+  const [showManualAdd, setShowManualAdd] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newQuantity, setNewQuantity] = useState("");
+
   if (!onGenerateIngredients) {
     return null;
   }
 
+  const handleManualAdd = () => {
+    if (newName.trim() && onCreateIngredient) {
+      onCreateIngredient(newName.trim(), newQuantity.trim() || undefined);
+      setNewName("");
+      setNewQuantity("");
+      setShowManualAdd(false);
+    }
+  };
+
+  const hasNoIngredients = !ingredients || ingredients.length === 0;
+
   return (
     <div className="space-y-3 border-t border-gray-100 pt-3">
-      {/* Generate button - only show if NO ingredients yet */}
-      {!readOnly && (!ingredients || ingredients.length === 0) && (
-        <>
+      {/* Buttons when NO ingredients yet */}
+      {!readOnly && hasNoIngredients && !showManualAdd && (
+        <div className="space-y-2">
+          {/* AI Generate button */}
           {isAuthenticated ? (
             <button
               type="button"
@@ -71,7 +89,61 @@ export function ItemIngredients({
               Connectez-vous pour générer les ingrédients
             </button>
           )}
-        </>
+
+          {/* Manual add button */}
+          <button
+            type="button"
+            onClick={() => setShowManualAdd(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
+          >
+            <Plus size={16} />
+            Ajouter manuellement
+          </button>
+        </div>
+      )}
+
+      {/* Manual add form when no ingredients */}
+      {!readOnly && hasNoIngredients && showManualAdd && (
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Nom de l'ingrédient"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="h-10 flex-1 rounded-xl text-sm"
+              onKeyDown={(e) => e.key === "Enter" && handleManualAdd()}
+              autoFocus
+            />
+            <Input
+              placeholder="Qté"
+              value={newQuantity}
+              onChange={(e) => setNewQuantity(e.target.value)}
+              className="h-10 w-24 rounded-xl text-sm"
+              onKeyDown={(e) => e.key === "Enter" && handleManualAdd()}
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleManualAdd}
+              disabled={!newName.trim()}
+              className="flex-1 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-accent/90 disabled:opacity-50"
+            >
+              Ajouter
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowManualAdd(false);
+                setNewName("");
+                setNewQuantity("");
+              }}
+              className="rounded-xl px-4 py-2 text-sm text-gray-500 transition-all hover:bg-gray-100"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Loading state with message */}

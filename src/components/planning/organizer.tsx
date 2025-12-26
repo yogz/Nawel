@@ -25,6 +25,7 @@ import { OrganizerSheets } from "./organizer-sheets";
 import { PlanningTab } from "./planning-tab";
 import { PeopleTab } from "./people-tab";
 import { SettingsTab } from "./settings-tab";
+import { ShoppingTab } from "./shopping-tab";
 import { AuthModal } from "../auth/auth-modal";
 
 // Custom Hooks
@@ -281,9 +282,11 @@ export function Organizer({
             readOnly={readOnly}
           />
         )}
+
+        {tab === "shopping" && <ShoppingTab plan={plan} slug={slug} writeKey={writeKey} />}
       </main>
 
-      <TabBar active={tab} onChange={setTab} />
+      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
 
       <OrganizerSheets
         sheet={sheet}

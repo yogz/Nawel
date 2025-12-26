@@ -1,17 +1,31 @@
 "use client";
 
-import { CalendarRange, Settings, Users } from "lucide-react";
+import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
 import clsx from "clsx";
 
-const tabs = [
+const authenticatedTabs = [
+  { key: "planning", label: "Menu", icon: CalendarRange },
+  { key: "people", label: "Convives", icon: Users },
+  { key: "shopping", label: "Courses", icon: ShoppingCart },
+] as const;
+
+const guestTabs = [
   { key: "planning", label: "Menu", icon: CalendarRange },
   { key: "people", label: "Convives", icon: Users },
   { key: "settings", label: "Prefs", icon: Settings },
 ] as const;
 
-type TabKey = (typeof tabs)[number]["key"];
+export type TabKey = "planning" | "people" | "shopping" | "settings";
 
-export function TabBar({ active, onChange }: { active: TabKey; onChange: (key: TabKey) => void }) {
+interface TabBarProps {
+  active: TabKey;
+  onChange: (key: TabKey) => void;
+  isAuthenticated?: boolean;
+}
+
+export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
+  const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
+
   return (
     <nav
       className="bg-surface/95 fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.05] backdrop-blur-lg"
@@ -39,5 +53,3 @@ export function TabBar({ active, onChange }: { active: TabKey; onChange: (key: T
     </nav>
   );
 }
-
-export type { TabKey };

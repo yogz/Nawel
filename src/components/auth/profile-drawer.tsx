@@ -7,9 +7,10 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import { updateUserAction, deleteUserAction } from "@/app/actions/user-actions";
-import { Loader2, User, Trash2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Loader2, User, Trash2, AlertTriangle, ArrowLeft, Sparkles, Check } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useThemeMode } from "../theme-provider";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface ProfileDrawerProps {
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const router = useRouter();
   const { data: session, isPending: sessionPending } = useSession();
+  const { theme, setTheme, themes } = useThemeMode();
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -130,6 +132,41 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
                     required
                   />
+                </div>
+              </div>
+
+              {/* Theme Selection */}
+              <div className="space-y-2">
+                <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  <Sparkles size={12} />
+                  Ambiance
+                </Label>
+                <div className="grid grid-cols-1 gap-2">
+                  {themes.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTheme(t.id)}
+                      className={`flex items-center justify-between rounded-xl border p-3 transition-all ${
+                        theme === t.id
+                          ? "border-accent/30 bg-accent/10 ring-2 ring-accent/20"
+                          : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-xl">{t.emoji}</span>
+                        <div className="text-left">
+                          <p className="text-xs font-bold text-text">{t.label}</p>
+                          <p className="text-[9px] font-medium text-gray-500">{t.description}</p>
+                        </div>
+                      </div>
+                      {theme === t.id && (
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white">
+                          <Check size={12} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
