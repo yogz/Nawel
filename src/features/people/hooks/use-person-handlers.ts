@@ -36,11 +36,9 @@ export function usePersonHandlers({
         setSelectedPerson?.(created.id);
         setSheet(null);
         setSuccessMessage({ text: `${name} ajouté(e) ! ✨`, type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to create person:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -58,11 +56,9 @@ export function usePersonHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to update person:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -88,7 +84,6 @@ export function usePersonHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: `${person?.name || "Convive"} supprimé ✓`, type: "success" });
-    setTimeout(() => setSuccessMessage(null), 3000);
 
     startTransition(async () => {
       try {
@@ -97,7 +92,6 @@ export function usePersonHandlers({
         console.error("Failed to delete person:", error);
         setPlan(previousPlan);
         setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };

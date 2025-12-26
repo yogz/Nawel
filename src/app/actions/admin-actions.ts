@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { events, meals, services, people, items } from "@drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { eq, sql, count } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {

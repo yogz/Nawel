@@ -3,7 +3,8 @@ import { isWriteKeyValid } from "@/lib/auth";
 import { Organizer } from "@/components/planning/organizer";
 import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+// ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
+export const revalidate = 30;
 
 type Props = {
   params: Promise<{ slug: string }>;

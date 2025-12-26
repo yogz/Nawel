@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarRange, ListChecks, Settings, Users } from "lucide-react";
+import { CalendarRange, Settings, Users } from "lucide-react";
 import clsx from "clsx";
 
 const tabs = [

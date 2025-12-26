@@ -2,21 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { ingredients, ingredientCache } from "@drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
-  generateIngredientsSchema,
-  createIngredientSchema,
-  updateIngredientSchema,
-  deleteIngredientSchema,
-  deleteAllIngredientsSchema,
+  type generateIngredientsSchema,
+  type createIngredientSchema,
+  type updateIngredientSchema,
+  type deleteIngredientSchema,
+  type deleteAllIngredientsSchema,
 } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
-import { generateIngredients as generateFromAI, GeneratedIngredient } from "@/lib/openrouter";
+import { generateIngredients as generateFromAI, type GeneratedIngredient } from "@/lib/openrouter";
 import { auth } from "@/lib/auth-config";
+import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
 
 // Normalize dish name for cache key (lowercase, trimmed, no extra spaces)
 function normalizeDishName(name: string): string {
@@ -32,12 +33,11 @@ function normalizeIngredientName(name: string): string {
 function ingredientsMatch(a: GeneratedIngredient[], b: GeneratedIngredient[]): boolean {
   const namesA = a.map((i) => normalizeIngredientName(i.name)).sort();
   const namesB = b.map((i) => normalizeIngredientName(i.name)).sort();
-  if (namesA.length !== namesB.length) return false;
+  if (namesA.length !== namesB.length) {
+    return false;
+  }
   return namesA.every((name, idx) => name === namesB[idx]);
 }
-
-// Minimum confirmations required before trusting cache
-const MIN_CONFIRMATIONS = 3;
 
 type IngredientData = {
   id: number;
@@ -84,18 +84,11 @@ export async function generateIngredientsAction(
 
     let generatedIngredients: GeneratedIngredient[];
 
-    if (cached && cached.confirmations >= MIN_CONFIRMATIONS) {
+    if (cached && cached.confirmations >= AI_CACHE_MIN_CONFIRMATIONS) {
       // Cache is trusted (3+ confirmations) - use it directly
-      console.log(
-        `[Cache] TRUSTED HIT for "${normalizedName}" (${peopleCount} pers.) - ${cached.confirmations} confirmations`
-      );
       generatedIngredients = JSON.parse(cached.ingredients);
     } else {
       // Need to call AI (either no cache or not enough confirmations)
-      console.log(
-        `[Cache] ${cached ? `VALIDATING (${cached.confirmations}/${MIN_CONFIRMATIONS})` : "MISS"} for "${normalizedName}" (${peopleCount} pers.)`
-      );
-
       try {
         generatedIngredients = await generateFromAI(input.itemName, peopleCount);
       } catch (aiError) {
@@ -122,9 +115,6 @@ export async function generateIngredientsAction(
                 updatedAt: new Date(),
               })
               .where(eq(ingredientCache.id, cached.id));
-            console.log(
-              `[Cache] CONFIRMED "${normalizedName}" (${newConfirmations}/${MIN_CONFIRMATIONS})`
-            );
           } else {
             // Different ingredients - replace cache, reset confirmations
             await db
@@ -135,9 +125,6 @@ export async function generateIngredientsAction(
                 updatedAt: new Date(),
               })
               .where(eq(ingredientCache.id, cached.id));
-            console.log(
-              `[Cache] REPLACED "${normalizedName}" - ingredients differ, reset to 1/${MIN_CONFIRMATIONS}`
-            );
           }
         } else {
           // No cache exists - create new entry
@@ -147,7 +134,6 @@ export async function generateIngredientsAction(
             ingredients: JSON.stringify(generatedIngredients),
             confirmations: 1,
           });
-          console.log(`[Cache] CREATED "${normalizedName}" (1/${MIN_CONFIRMATIONS})`);
         }
       }
     }

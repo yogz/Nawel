@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { Plus, Pencil } from "lucide-react";
-import { Item, Service, Person, PlanningFilter } from "@/lib/types";
+import { type Item, type Service, type Person, type PlanningFilter } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
 
@@ -29,9 +29,12 @@ export function ServiceSection({
   activeItemId?: number | null;
 }) {
   const filteredItems = useMemo(() => {
-    if (filter.type === "unassigned") return service.items.filter((i) => !i.personId);
-    if (filter.type === "person")
+    if (filter.type === "unassigned") {
+      return service.items.filter((i) => !i.personId);
+    }
+    if (filter.type === "person") {
       return service.items.filter((i) => i.personId === filter.personId);
+    }
     return service.items;
   }, [service.items, filter]);
 
@@ -39,7 +42,9 @@ export function ServiceSection({
     id: `service-${service.id}`,
   });
 
-  if (filter.type !== "all" && filteredItems.length === 0) return null;
+  if (filter.type !== "all" && filteredItems.length === 0) {
+    return null;
+  }
 
   const isDraggingFromOtherService =
     activeItemId !== null &&

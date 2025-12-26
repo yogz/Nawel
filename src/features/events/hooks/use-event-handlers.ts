@@ -20,7 +20,6 @@ export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHand
       } catch (error) {
         console.error("Failed to delete event:", error);
         setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };

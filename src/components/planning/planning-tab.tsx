@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { DndContext, closestCenter, DragStartEvent, DragEndEvent } from "@dnd-kit/core";
+import { useState, useLayoutEffect } from "react";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
 import { PlusIcon, Pencil } from "lucide-react";
@@ -22,11 +22,13 @@ export function PlanningTab({
 }: any) {
   const [hasMounted, setHasMounted] = useState(false);
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+  // Hydration pattern - must be synchronous to avoid flicker
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useLayoutEffect(() => setHasMounted(true), []);
 
-  if (!hasMounted) return null;
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <DndContext
@@ -39,13 +41,21 @@ export function PlanningTab({
         {plan.meals.map((meal: any) => {
           const hasMatch = meal.services.some((s: any) =>
             s.items.some((i: any) => {
-              if (planningFilter.type === "all") return true;
-              if (planningFilter.type === "unassigned") return !i.personId;
-              if (planningFilter.type === "person") return i.personId === planningFilter.personId;
+              if (planningFilter.type === "all") {
+                return true;
+              }
+              if (planningFilter.type === "unassigned") {
+                return !i.personId;
+              }
+              if (planningFilter.type === "person") {
+                return i.personId === planningFilter.personId;
+              }
               return false;
             })
           );
-          if (planningFilter.type !== "all" && !hasMatch) return null;
+          if (planningFilter.type !== "all" && !hasMatch) {
+            return null;
+          }
 
           return (
             <div key={meal.id} className="space-y-6">

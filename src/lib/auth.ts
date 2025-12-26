@@ -32,6 +32,8 @@ export async function assertWriteAccess(
 }
 
 export function isWriteKeyValid(key: string | undefined | null, eventKey: string | null) {
-  if (!eventKey) return false;
+  if (!eventKey) {
+    return false;
+  }
   return key === eventKey;
 }

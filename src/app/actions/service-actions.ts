@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { services } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
-import { createServiceSchema, serviceSchema, deleteServiceSchema } from "./schemas";
+import { type createServiceSchema, type serviceSchema, type deleteServiceSchema } from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
 export const createServiceAction = withErrorThrower(
@@ -31,8 +31,12 @@ export const updateServiceAction = withErrorThrower(
   async (input: z.infer<typeof serviceSchema>) => {
     await verifyEventAccess(input.slug, input.key);
     const updateData: any = {};
-    if (input.title !== undefined) updateData.title = input.title;
-    if (input.peopleCount !== undefined) updateData.peopleCount = input.peopleCount;
+    if (input.title !== undefined) {
+      updateData.title = input.title;
+    }
+    if (input.peopleCount !== undefined) {
+      updateData.peopleCount = input.peopleCount;
+    }
 
     const [updated] = await db
       .update(services)

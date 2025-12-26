@@ -37,11 +37,9 @@ export function useServiceHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Service ajouté ! ✓", type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to create service:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -70,11 +68,9 @@ export function useServiceHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Service mis à jour ✓", type: "success" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error("Failed to update service:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };
@@ -93,7 +89,6 @@ export function useServiceHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: "Service supprimé ✓", type: "success" });
-    setTimeout(() => setSuccessMessage(null), 3000);
 
     startTransition(async () => {
       try {
@@ -102,7 +97,6 @@ export function useServiceHandlers({
         console.error("Failed to delete service:", error);
         setPlan(previousPlan);
         setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
-        setTimeout(() => setSuccessMessage(null), 3000);
       }
     });
   };

@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+// Scripts for seeding data
 import { db } from "@/lib/db";
 import { meals, items, services, people, events } from "@drizzle/schema";
 

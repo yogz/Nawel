@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useMemo } from "react";
 import type { PlanData, PlanningFilter, Item, Service, Meal, Person } from "@/lib/types";
+import { useToast } from "./use-toast";
 
 export interface ChangeLog {
   id: number;
@@ -37,10 +38,8 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [readOnly, setReadOnly] = useState(!writeEnabled);
   const [pending, startTransition] = useTransition();
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
-  const [successMessage, setSuccessMessage] = useState<{
-    text: string;
-    type?: "success" | "error";
-  } | null>(null);
+  // Toast messages with auto-dismiss - no need for manual setTimeout
+  const { message: successMessage, setMessage: setSuccessMessage } = useToast();
   const [logsLoading, setLogsLoading] = useState(false);
 
   const unassignedItemsCount = useMemo(() => {
@@ -48,7 +47,9 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
-          if (!item.personId) count++;
+          if (!item.personId) {
+            count++;
+          }
         });
       });
     });

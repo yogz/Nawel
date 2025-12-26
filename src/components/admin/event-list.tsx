@@ -47,7 +47,9 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingEvent) return;
+    if (!editingEvent) {
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
@@ -72,7 +74,9 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
   };
 
   const handleDelete = async () => {
-    if (!deletingEvent) return;
+    if (!deletingEvent) {
+      return;
+    }
 
     startTransition(async () => {
       await deleteEventAdminAction(deletingEvent.id);

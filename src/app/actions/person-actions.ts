@@ -1,13 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { people, items } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
-import { createPersonSchema, updatePersonSchema, deletePersonSchema } from "./schemas";
+import {
+  type createPersonSchema,
+  type updatePersonSchema,
+  type deletePersonSchema,
+} from "./schemas";
 import { withErrorThrower } from "@/lib/action-utils";
 
 export const createPersonAction = withErrorThrower(

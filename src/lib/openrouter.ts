@@ -20,13 +20,17 @@ function sanitizeInput(input: string, maxLength: number = 100): string {
 
 // Sanitize number input
 function sanitizeNumber(input: number, min: number, max: number, defaultVal: number): number {
-  if (typeof input !== "number" || isNaN(input)) return defaultVal;
+  if (typeof input !== "number" || isNaN(input)) {
+    return defaultVal;
+  }
   return Math.max(min, Math.min(max, Math.floor(input)));
 }
 
 // Validate output structure
 function validateIngredients(data: unknown): GeneratedIngredient[] {
-  if (!Array.isArray(data)) return [];
+  if (!Array.isArray(data)) {
+    return [];
+  }
   return data
     .filter(
       (item): item is { name: string; quantity?: string } =>
@@ -63,12 +67,6 @@ RÈGLES STRICTES:
 - Quantités simples: "200g", "2 pièces", "1 c. à soupe"`;
   const userPrompt = `<dish>${sanitizedName}</dish>`;
 
-  console.log(
-    `[OpenRouter] Requesting ingredients for "${sanitizedName}" (${sanitizedCount} pers.)`
-  );
-  console.log(`[OpenRouter] Model: ${model}`);
-  console.log(`[OpenRouter] System: ${systemPrompt.split("\n")[0]}...`);
-
   const result = await client.chat.send({
     model,
     messages: [
@@ -85,7 +83,6 @@ RÈGLES STRICTES:
   });
 
   const rawContent = result.choices?.[0]?.message?.content;
-  console.log(`[OpenRouter] Raw Response:`, rawContent);
   const content = typeof rawContent === "string" ? rawContent : "[]";
 
   try {

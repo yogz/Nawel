@@ -32,10 +32,13 @@ export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
 
   const isEditMode = !!meal;
-  const totalSteps = isEditMode ? 1 : 2;
+  // totalSteps reserved for future wizard UI
+  const _totalSteps = isEditMode ? 1 : 2;
 
   const handleSubmit = () => {
-    if (!date) return;
+    if (!date) {
+      return;
+    }
     const formattedDate = format(date, "yyyy-MM-dd");
 
     if (isEditMode) {
@@ -60,7 +63,9 @@ export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
   };
 
   const canGoNext = () => {
-    if (step === 1) return !!date;
+    if (step === 1) {
+      return !!date;
+    }
     return true;
   };
 

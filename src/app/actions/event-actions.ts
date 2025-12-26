@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { events } from "@drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
-import { createEventSchema, deleteEventSchema } from "./schemas";
+import { type createEventSchema, type deleteEventSchema } from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { withErrorThrower } from "@/lib/action-utils";
 

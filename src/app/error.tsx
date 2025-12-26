@@ -45,7 +45,7 @@ export default function Error({
             <p className="mb-1 font-bold">Actions suggérées :</p>
             <ul className="list-inside list-disc space-y-1">
               <li>Vérifiez votre connexion internet.</li>
-              <li>Vérifiez si l'adresse de la base de données est accessible.</li>
+              <li>Vérifiez si l&apos;adresse de la base de données est accessible.</li>
               <li>Réessayez dans quelques instants.</li>
             </ul>
           </div>
@@ -59,7 +59,7 @@ export default function Error({
           <Link href="/">
             <Button variant="outline" className="flex w-full items-center gap-2 px-8">
               <Home size={18} />
-              Retour à l'accueil
+              Retour à l&apos;accueil
             </Button>
           </Link>
         </div>

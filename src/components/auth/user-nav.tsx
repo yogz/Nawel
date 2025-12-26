@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { AuthModal } from "./auth-modal";
@@ -9,7 +10,9 @@ export function UserNav() {
   const { data: session, isPending } = useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  if (isPending) return <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />;
+  if (isPending) {
+    return <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />;
+  }
 
   if (!session) {
     return (
@@ -32,9 +35,11 @@ export function UserNav() {
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2 rounded-full border border-gray-100 bg-white p-1 pr-4 shadow-sm">
         {user.image ? (
-          <img
+          <Image
             src={user.image}
-            alt={user.name}
+            alt={user.name || "User avatar"}
+            width={32}
+            height={32}
             className="h-8 w-8 rounded-full border border-gray-100"
           />
         ) : (
