@@ -6,6 +6,7 @@ import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleIcon } from "./google-icon";
 
 export function LoginForm() {
   const router = useRouter();
@@ -79,6 +80,35 @@ export function LoginForm() {
             {loading ? "Connexion..." : "Se connecter"}
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 font-medium text-gray-400">Ou continuer avec</span>
+          </div>
+        </div>
+
+        <button
+          onClick={async () => {
+            setLoading(true);
+            try {
+              await signIn.social({
+                provider: "google",
+                callbackURL: "/admin",
+              });
+            } catch (err) {
+              console.error(err);
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white py-4 text-sm font-bold text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
+        >
+          <GoogleIcon className="h-5 w-5" />
+          Se connecter avec Google
+        </button>
       </div>
     </div>
   );

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { BottomSheet } from "../ui/bottom-sheet";
-import { Globe, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { GoogleIcon } from "./google-icon";
 
 export function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState("");
@@ -120,10 +121,10 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         <button
           onClick={handleGoogleAuth}
           disabled={isPending}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-gray-100 bg-white py-4 text-sm font-bold text-gray-700 transition-all hover:border-gray-200 active:scale-95"
+          className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white py-4 text-sm font-bold text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
         >
-          <Globe size={18} className="text-gray-400" />
-          Google
+          <GoogleIcon className="h-5 w-5" />
+          {mode === "signin" ? "Se connecter avec Google" : "S'inscrire avec Google"}
         </button>
 
         <p className="text-center text-sm text-gray-500">
