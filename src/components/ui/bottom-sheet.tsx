@@ -15,6 +15,16 @@ export function BottomSheet({
   title: string;
   children: React.ReactNode;
 }) {
+  // Lock body scroll when sheet is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -43,11 +53,12 @@ export function BottomSheet({
             aria-hidden="true"
           />
           <motion.div
-            className="relative z-10 flex max-h-[90dvh] w-full max-w-xl flex-col rounded-t-[2rem] border-x border-t border-white/20 bg-surface p-4 shadow-2xl sm:rounded-t-[2.5rem] sm:p-6"
-            initial={{ y: 400 }}
+            className="relative z-10 flex max-h-[85vh] w-full max-w-xl flex-col rounded-t-[2rem] border-x border-t border-white/20 bg-surface p-4 shadow-2xl sm:rounded-t-[2.5rem] sm:p-6"
+            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: 400 }}
-            transition={{ type: "spring", damping: 22 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             <div className="mb-3 flex flex-shrink-0 items-center justify-between sm:mb-4">
               <h3 id="sheet-title" className="text-base font-semibold text-text sm:text-lg">
