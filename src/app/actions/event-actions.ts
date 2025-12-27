@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { events } from "@drizzle/schema";
+import { events, people } from "@drizzle/schema";
 import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
@@ -48,7 +48,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   // Automatically add owner as a guest if they are logged in
   if (session?.user) {
     const [person] = await db
-      .insert(require("@drizzle/schema").people)
+      .insert(people)
       .values({
         eventId: created.id,
         name: session.user.name,
@@ -114,13 +114,8 @@ export const getMyEventsAction = withErrorThrower(async () => {
       exists(
         db
           .select()
-          .from(require("@drizzle/schema").people)
-          .where(
-            and(
-              eq(require("@drizzle/schema").people.eventId, events.id),
-              eq(require("@drizzle/schema").people.userId, session.user.id)
-            )
-          )
+          .from(people)
+          .where(and(eq(people.eventId, events.id), eq(people.userId, session.user.id)))
       )
     ),
     with: {
