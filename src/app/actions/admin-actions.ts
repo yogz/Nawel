@@ -303,9 +303,9 @@ export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, asy
 // Model Comparison Admin Actions
 // ==========================================
 
-import { testModelWithPrompt, AVAILABLE_FREE_MODELS, type ModelTestResult } from "@/lib/openrouter";
+import { testModelWithPrompt, type ModelTestResult } from "@/lib/openrouter";
 
-export { AVAILABLE_FREE_MODELS, type ModelTestResult };
+export type { ModelTestResult };
 
 export const testModelsAction = withErrorThrower(
   async (
