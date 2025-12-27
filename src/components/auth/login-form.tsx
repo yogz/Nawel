@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,6 +116,17 @@ export function LoginForm() {
           <GoogleIcon className="h-5 w-5" />
           Se connecter avec Google
         </button>
+
+        {isUserMode && (
+          <div className="mt-8 text-center">
+            <Link
+              href="/create-event"
+              className="text-sm font-medium text-gray-500 transition-colors hover:text-accent"
+            >
+              Continuer sans compte
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -26,6 +26,8 @@ export function EventForm({
   onClose,
   isPending,
   error,
+  inline = false,
+  showWarnings = false,
 }: {
   onSubmit: (
     slug: string,
@@ -40,6 +42,8 @@ export function EventForm({
   onClose: () => void;
   isPending: boolean;
   error: string | null;
+  inline?: boolean;
+  showWarnings?: boolean;
 }) {
   const [step, setStep] = useState(1);
   const [slug, setSlug] = useState("");
@@ -108,8 +112,8 @@ export function EventForm({
 
   const stepTitles = ["Votre événement", "Type de menu", "Confirmation"];
 
-  return (
-    <BottomSheet open onClose={onClose} title={stepTitles[step - 1]}>
+  const content = (
+    <>
       {/* Progress indicator */}
       <div className="mb-6 flex gap-1.5">
         {[1, 2, 3].map((s) => (
@@ -121,6 +125,25 @@ export function EventForm({
           />
         ))}
       </div>
+
+      {showWarnings && step === 1 && (
+        <div className="mb-6 space-y-3">
+          <div className="flex gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-amber-800">
+            <div className="shrink-0 pt-0.5">⚠️</div>
+            <p className="text-xs leading-relaxed">
+              <strong>Attention :</strong> Gardez précieusement l&apos;URL de votre événement. Sans
+              compte, si vous perdez ce lien, vous ne pourrez plus le modifier.
+            </p>
+          </div>
+          <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-blue-800">
+            <div className="shrink-0 pt-0.5">✨</div>
+            <p className="text-xs leading-relaxed">
+              <strong>Note :</strong> La génération par l&apos;IA et d&apos;autres fonctions
+              avancées nécessitent un compte utilisateur.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Step 1: Name & Date */}
       {step === 1 && (
@@ -359,6 +382,16 @@ export function EventForm({
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (inline) {
+    return <div className="w-full">{content}</div>;
+  }
+
+  return (
+    <BottomSheet open onClose={onClose} title={stepTitles[step - 1]}>
+      {content}
     </BottomSheet>
   );
 }
