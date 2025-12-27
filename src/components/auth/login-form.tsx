@@ -63,51 +63,51 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex w-full max-w-sm flex-col items-center px-4">
+    <div className="isolate flex w-full max-w-sm flex-col items-center px-4">
       <div className="relative w-full">
         {/* Animated Aura Background */}
-        <div className="absolute -inset-12 -z-10 overflow-visible">
+        <div className="absolute -inset-16 z-0 overflow-visible">
           <motion.div
             animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 90, 180, 270, 360],
-              opacity: [0.4, 0.6, 0.4],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-purple-600/50 via-accent/50 to-red-600/50 blur-3xl"
-          />
-          <motion.div
-            animate={{
-              scale: [1.1, 1, 1.1],
-              rotate: [360, 270, 180, 90, 0],
-              opacity: [0.3, 0.5, 0.3],
+              scale: [1, 1.15, 1],
+              rotate: [0, 120, 240, 360],
+              opacity: [0.6, 0.8, 0.6],
             }}
             transition={{
               duration: 10,
               repeat: Infinity,
               ease: "linear",
             }}
-            className="absolute inset-0 rounded-[3rem] bg-gradient-to-bl from-accent/40 via-purple-600/40 to-blue-600/40 blur-[40px]"
+            className="absolute inset-0 rounded-[4rem] bg-gradient-to-tr from-purple-600 via-accent to-red-500 blur-3xl"
           />
           <motion.div
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.2, 0.4, 0.2],
+              scale: [1.15, 1, 1.15],
+              rotate: [360, 240, 120, 0],
+              opacity: [0.5, 0.7, 0.5],
             }}
             transition={{
-              duration: 5,
+              duration: 12,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="absolute inset-0 rounded-[4rem] bg-gradient-to-bl from-accent via-purple-500 to-blue-400 blur-[50px]"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 6,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute inset-0 rounded-[3rem] bg-purple-500/30 blur-[60px]"
+            className="absolute inset-0 rounded-[4rem] bg-purple-400 blur-[80px]"
           />
         </div>
 
-        <div className="relative w-full overflow-hidden rounded-3xl border border-white/40 bg-white/70 p-8 shadow-2xl backdrop-blur-xl transition-all">
+        <div className="relative z-10 w-full overflow-hidden rounded-3xl border border-white/50 bg-white/80 p-8 shadow-2xl backdrop-blur-2xl transition-all">
           <div className="relative z-10">
             <h1 className="mb-2 text-center text-3xl font-black tracking-tight text-gray-900">
               {isUserMode
