@@ -33,10 +33,7 @@ export type PlanData = {
   people: Person[];
 };
 
-export type PlanningFilter =
-  | { type: "all" }
-  | { type: "unassigned" }
-  | { type: "person"; personId: number };
+export type PlanningFilter = { type: "all" } | { type: "unassigned" };
 
 export type Sheet =
   | { type: "item"; item?: Item; serviceId?: number }
@@ -46,7 +43,6 @@ export type Sheet =
   | { type: "meal-create" }
   | { type: "person" }
   | { type: "person-edit"; person: Person }
-  | { type: "person-select" }
   | { type: "share" }
   | { type: "guest-access" }
   | { type: "claim-person"; unclaimed: Person[] }

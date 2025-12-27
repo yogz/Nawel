@@ -8,7 +8,6 @@ import { MealForm } from "@/features/meals/components/meal-form";
 import { ServiceEditForm } from "@/features/services/components/service-edit-form";
 import { PersonForm } from "@/features/people/components/person-form";
 import { PersonEditForm } from "@/features/people/components/person-edit-form";
-import { PersonSelectSheet } from "./person-select-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams } from "next/navigation";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
@@ -105,9 +104,6 @@ export function OrganizerSheets({
     }
     if (sheet?.type === "person-edit") {
       return "Modifier le convive";
-    }
-    if (sheet?.type === "person-select") {
-      return "Filtrer par personne";
     }
     if (sheet?.type === "share") {
       return "Partager l'accès";
@@ -314,15 +310,6 @@ export function OrganizerSheets({
             handleUpdatePerson(sheet.person.id, name, emoji ?? undefined)
           }
           onDelete={() => handleDeletePerson(sheet.person.id)}
-        />
-      )}
-
-      {sheet?.type === "person-select" && (
-        <PersonSelectSheet
-          people={plan.people}
-          planningFilter={planningFilter}
-          setPlanningFilter={setPlanningFilter}
-          onClose={() => setSheet(null)}
         />
       )}
 
