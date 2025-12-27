@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,10 @@ import { GoogleIcon } from "./google-icon";
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const isUserMode = mode === "user";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,13 +28,13 @@ export function LoginForm() {
       const { error } = await signIn.email({
         email,
         password,
-        callbackURL: "/admin",
+        callbackURL: isUserMode ? "/" : "/admin",
       });
 
       if (error) {
         setError(error.message || "Erreur de connexion");
       } else {
-        router.push("/admin");
+        router.push(isUserMode ? "/" : "/admin");
         router.refresh();
       }
     } catch {
@@ -43,7 +47,9 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <div className="rounded-2xl border border-white/20 bg-white/80 p-8 shadow-lg backdrop-blur-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold text-text">Administration</h1>
+        <h1 className="mb-6 text-center text-2xl font-bold text-text">
+          {isUserMode ? "Connexion" : "Administration"}
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -96,7 +102,7 @@ export function LoginForm() {
             try {
               await signIn.social({
                 provider: "google",
-                callbackURL: "/admin",
+                callbackURL: isUserMode ? "/" : "/admin",
               });
             } catch (err) {
               console.error(err);

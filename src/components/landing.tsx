@@ -80,7 +80,7 @@ export function Landing() {
           </p>
           <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
             <Link
-              href="/login"
+              href="/login?mode=user"
               className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-gray-800 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
               Commencer maintenant
@@ -150,7 +150,7 @@ export function Landing() {
             Rejoignez des milliers de familles qui utilisent déjà Nawel.
           </p>
           <Link
-            href="/login"
+            href="/login?mode=user"
             className="inline-flex w-full items-center justify-center rounded-full bg-red-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-red-700 sm:w-auto sm:px-10 sm:py-5 sm:text-xl"
           >
             Commencer maintenant

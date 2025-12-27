@@ -31,7 +31,7 @@ export default async function Home(props: {
       <div className="mb-8 pt-8 text-center">
         <p className="text-sm uppercase tracking-[0.2em] text-gray-500">Tableau de bord 🎄</p>
         <h1 className="mt-2 text-3xl font-bold">Mes Événements ✨</h1>
-        <p className="mt-2 text-gray-600">Retrouvez tous les événements que vous organisez.</p>
+        <p className="mt-2 text-gray-600">Retrouvez tous vos événements en un seul endroit.</p>
       </div>
 
       <EventList events={events} writeEnabled={true} writeKey={key} />

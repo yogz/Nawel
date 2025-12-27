@@ -5,7 +5,7 @@ import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { events } from "@drizzle/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
 import { createEventSchema, deleteEventSchema } from "./schemas";
@@ -107,11 +107,27 @@ export const getMyEventsAction = withErrorThrower(async () => {
     return [];
   }
 
-  return await db
-    .select()
-    .from(events)
-    .where(eq(events.ownerId, session.user.id))
-    .orderBy(desc(events.createdAt));
+  // Use db.query to get relations easily
+  return await db.query.events.findMany({
+    where: or(
+      eq(events.ownerId, session.user.id),
+      exists(
+        db
+          .select()
+          .from(require("@drizzle/schema").people)
+          .where(
+            and(
+              eq(require("@drizzle/schema").people.eventId, events.id),
+              eq(require("@drizzle/schema").people.userId, session.user.id)
+            )
+          )
+      )
+    ),
+    with: {
+      meals: true,
+    },
+    orderBy: desc(events.createdAt),
+  });
 });
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
