@@ -298,3 +298,28 @@ export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, asy
   revalidatePath("/admin/users");
   return { success: true };
 });
+
+// ==========================================
+// Model Comparison Admin Actions
+// ==========================================
+
+import { testModelWithPrompt, AVAILABLE_FREE_MODELS, type ModelTestResult } from "@/lib/openrouter";
+
+export { AVAILABLE_FREE_MODELS, type ModelTestResult };
+
+export const testModelsAction = withErrorThrower(
+  async (
+    models: string[],
+    systemPrompt: string,
+    userPrompt: string
+  ): Promise<ModelTestResult[]> => {
+    await requireAdmin();
+
+    // Test tous les modèles en parallèle
+    const results = await Promise.all(
+      models.map((model) => testModelWithPrompt(model, systemPrompt, userPrompt))
+    );
+
+    return results;
+  }
+);
