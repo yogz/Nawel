@@ -86,7 +86,7 @@ export async function generateIngredients(
   const model = "mistralai/mistral-7b-instruct:free";
 
   const systemPrompt = `Tu es un expert en logistique culinaire. 
-Ta mission : Générer une liste d'ingrédients précise pour le plat : "${sanitizedName}".
+Ta mission : Générer une liste d'ingrédients précise a acheter pour le plat : "${sanitizedName}".
 
 CONTRAINTES DE CALCUL :
 - Cible : ${guestDescription}
