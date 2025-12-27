@@ -39,17 +39,16 @@ const INGREDIENTS_SCHEMA = {
 
 // Liste des modèles gratuits pour comparaison
 export const AVAILABLE_FREE_MODELS = [
-  "openai/gpt-oss-20b:free",
-  "google/gemma-3n-e2b-it:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-  "allenai/olmo-3-32b-think:free",
-  "arcee-ai/trinity-mini:free",
-  "google/gemma-3-27b-it:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "mistralai/mistral-7b-instruct:free",
   "allenai/olmo-3.1-32b-think:free",
-  "google/gemma-3n-e4b-it:free",
-  "xiaomi/mimo-v2-flash:free",
+  "mistralai/devstral-2512:free",
+  "nex-agi/deepseek-v3.1-nex-n1:free",
+  "arcee-ai/trinity-mini:free",
+  "tngtech/tng-r1t-chimera:free",
+  "allenai/olmo-3-32b-think:free",
+  "openai/gpt-oss-20b:free",
+  "qwen/qwen3-4b:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "google/gemma-3-4b-it:free",
 ] as const;
 
 export type AvailableFreeModel = (typeof AVAILABLE_FREE_MODELS)[number];
