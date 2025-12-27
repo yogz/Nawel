@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { testModelsAction, type ModelTestResult } from "@/app/actions/admin-actions";
+import { testModelsAction } from "@/app/actions/admin-actions";
 import {
   AVAILABLE_FREE_MODELS,
   getDefaultSystemPrompt,
   getDefaultUserPrompt,
+  type ModelTestResult,
 } from "@/lib/openrouter";
 import { Play, Loader2, CheckCircle, XCircle, Clock, ChefHat } from "lucide-react";
 import clsx from "clsx";

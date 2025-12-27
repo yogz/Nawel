@@ -305,8 +305,6 @@ export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, asy
 
 import { testModelWithPrompt, type ModelTestResult } from "@/lib/openrouter";
 
-export type { ModelTestResult };
-
 export const testModelsAction = withErrorThrower(
   async (
     models: string[],
