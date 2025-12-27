@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, UserPlus } from "lucide-react";
+import { Plus, UserPlus, User } from "lucide-react";
 
 export function PersonForm({
   onSubmit,
@@ -61,9 +61,9 @@ export function PersonForm({
           </div>
           <Label
             htmlFor="is-me"
-            className="cursor-pointer text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent"
+            className="flex cursor-pointer items-center gap-1.5 text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent"
           >
-            C&apos;est moi ! 👋
+            C&apos;est moi ! <User size={14} className="text-accent" />
           </Label>
         </div>
       )}

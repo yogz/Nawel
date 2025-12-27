@@ -2,17 +2,23 @@
 
 import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus } from "lucide-react";
 
 const CREATION_MODES = [
   {
     id: "total",
     label: "La totale",
     desc: "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre",
-    emoji: "🍽️",
+    icon: <UtensilsCrossed size={20} />,
   },
-  { id: "classique", label: "Le classique", desc: "Entrée, Plat, Dessert", emoji: "🍴" },
-  { id: "apero", label: "L'apéro", desc: "Apéro, Boissons", emoji: "🥂" },
-  { id: "zero", label: "De zéro", desc: "Vide", emoji: "📝" },
+  {
+    id: "classique",
+    label: "Le classique",
+    desc: "Entrée, Plat, Dessert",
+    icon: <Utensils size={20} />,
+  },
+  { id: "apero", label: "L'apéro", desc: "Apéro, Boissons", icon: <GlassWater size={20} /> },
+  { id: "zero", label: "De zéro", desc: "Vide", icon: <FilePlus size={20} /> },
 ] as const;
 
 export function EventForm({
@@ -206,7 +212,9 @@ export function EventForm({
                     : "border-gray-100 bg-white"
                 }`}
               >
-                <span className="text-2xl">{mode.emoji}</span>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-white">
+                  {mode.icon}
+                </div>
                 <div className="min-w-0 flex-1">
                   <span
                     className={`block text-sm font-bold ${creationMode === mode.id ? "text-accent" : "text-gray-700"}`}
@@ -272,8 +280,9 @@ export function EventForm({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500">Menu</span>
-              <span className="text-sm font-medium text-gray-700">
-                {selectedMode?.emoji} {selectedMode?.label}
+              <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <span className="text-accent">{selectedMode?.icon}</span>
+                {selectedMode?.label}
               </span>
             </div>
             <div className="flex items-center justify-between">

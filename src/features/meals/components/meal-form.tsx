@@ -8,24 +8,64 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { type Meal } from "@/lib/types";
-import { Sparkles, ArrowLeft, Check, CalendarIcon, Loader2, Trash2 } from "lucide-react";
+import {
+  Sparkles,
+  ArrowLeft,
+  Check,
+  CalendarIcon,
+  Loader2,
+  Trash2,
+  UtensilsCrossed,
+  Salad,
+  GlassWater,
+  Cake,
+  Wine,
+  Package,
+  CircleDot,
+  Plus,
+} from "lucide-react";
 import clsx from "clsx";
 
 const DEFAULT_SERVICE_TYPES = [
-  { id: "apero", label: "Apéro", emoji: "🥂" },
-  { id: "entree", label: "Entrée", emoji: "🥗" },
-  { id: "plat", label: "Plat", emoji: "🍽️" },
-  { id: "fromage", label: "Fromage", emoji: "🧀" },
-  { id: "dessert", label: "Dessert", emoji: "🍰" },
-  { id: "boisson", label: "Boissons", emoji: "🍷" },
-  { id: "autre", label: "Autre", emoji: "📦" },
+  { id: "apero", label: "Apéro", icon: <GlassWater size={20} /> },
+  { id: "entree", label: "Entrée", icon: <Salad size={20} /> },
+  { id: "plat", label: "Plat", icon: <UtensilsCrossed size={20} /> },
+  { id: "fromage", label: "Fromage", icon: <CircleDot size={20} /> },
+  { id: "dessert", label: "Dessert", icon: <Cake size={20} /> },
+  { id: "boisson", label: "Boissons", icon: <Wine size={20} /> },
+  { id: "autre", label: "Autre", icon: <Package size={20} /> },
 ];
 
 const QUICK_OPTIONS = [
-  { id: "simple", label: "Un seul service", emoji: "🍴", services: ["Service"] },
-  { id: "complet", label: "Menu complet", emoji: "🍽️", services: ["Entrée", "Plat", "Dessert"] },
-  { id: "custom", label: "Personnalisé", emoji: "✨", services: [] },
-];
+  {
+    id: "apero",
+    label: "Apéro",
+    icon: <GlassWater size={20} />,
+    services: ["Boissons", "Apéritif"] as string[],
+  },
+  { id: "entree", label: "Entrée", icon: <Salad size={20} />, services: ["Entrée"] as string[] },
+  {
+    id: "plat",
+    label: "Plat",
+    icon: <UtensilsCrossed size={20} />,
+    services: ["Plat"] as string[],
+  },
+  { id: "dessert", label: "Dessert", icon: <Cake size={20} />, services: ["Dessert"] as string[] },
+  {
+    id: "fromage",
+    label: "Fromage",
+    icon: <CircleDot size={20} />,
+    services: ["Fromage"] as string[],
+  },
+  {
+    id: "boissons",
+    label: "Boissons",
+    icon: <Wine size={20} />,
+    services: ["Boissons"] as string[],
+  },
+  { id: "autre", label: "Autre", icon: <Package size={20} />, services: ["Divers"] as string[] },
+  { id: "custom", label: "Sur mesure", icon: <Plus size={20} />, services: [] as string[] },
+] as const;
 
 export function MealForm({
   meal,
@@ -251,11 +291,11 @@ export function MealForm({
                 >
                   <div
                     className={clsx(
-                      "flex h-12 w-12 items-center justify-center rounded-2xl text-2xl transition-all duration-300",
+                      "flex h-12 w-12 items-center justify-center rounded-full text-2xl transition-all duration-300",
                       isSelected ? "bg-accent text-white shadow-lg shadow-accent/20" : "bg-gray-100"
                     )}
                   >
-                    {opt.emoji}
+                    {opt.icon}
                   </div>
                   <div className="flex-1">
                     <span
@@ -313,7 +353,7 @@ export function MealForm({
                             : "bg-gray-100"
                         )}
                       >
-                        {type.emoji}
+                        {type.icon}
                       </div>
                       <span className="text-[10px] font-black uppercase tracking-widest">
                         {type.label}
