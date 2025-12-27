@@ -82,7 +82,9 @@ export async function generateIngredients(
     return [];
   }
 
-  const model = "mistralai/mistral-small-3.1-24b-instruct:free";
+  //  const model = "mistralai/mistral-small-3.1-24b-instruct:free";
+  const model = "mistralai/mistral-7b-instruct:free";
+
   const systemPrompt = `Tu es un expert en logistique culinaire. 
 Ta mission : Générer une liste d'ingrédients précise pour le plat : "${sanitizedName}".
 
