@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { AuthModal } from "./auth-modal";
 import { ProfileDrawer } from "./profile-drawer";
-import { User as UserIcon, LogIn } from "lucide-react";
+import { User as UserIcon, LogIn, Settings } from "lucide-react";
 
 export function UserNav() {
   const { data: session, isPending } = useSession();
@@ -37,15 +37,29 @@ export function UserNav() {
     <div className="flex items-center gap-3">
       <button
         onClick={() => setShowProfileDrawer(true)}
-        className="group relative h-9 w-9 overflow-hidden rounded-full border border-gray-200 shadow-sm transition-all hover:border-accent hover:shadow-md active:scale-95"
+        className="group flex items-center gap-2 rounded-full border border-transparent bg-white p-1 pr-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
       >
         {user.image ? (
-          <Image src={user.image} alt={user.name || "User avatar"} fill className="object-cover" />
+          <Image
+            src={user.image}
+            alt={user.name || "User avatar"}
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-accent"
+          />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gray-50 text-gray-500 transition-colors group-hover:bg-accent/10 group-hover:text-accent">
-            <UserIcon size={18} />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+            <UserIcon size={16} />
           </div>
         )}
+        <div className="flex flex-col items-start">
+          <span className="max-w-[100px] truncate text-xs font-bold leading-tight text-gray-700">
+            {user.name}
+          </span>
+          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase leading-tight tracking-widest text-gray-400 transition-colors group-hover:text-black">
+            <Settings size={8} className="stroke-[3]" /> Profil
+          </span>
+        </div>
       </button>
 
       <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
