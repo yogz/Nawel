@@ -91,17 +91,24 @@ export function OrganizerHeader({
             {!readOnly && (
               <button
                 onClick={handleShare}
-                className="btn-shine group flex h-10 items-center gap-2 rounded-full border border-transparent bg-white px-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
+                className="btn-shine group flex items-center gap-2 rounded-full border border-transparent bg-white p-1 pr-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
                 title="Partager l'accès"
               >
-                {copied ? (
-                  <CheckCircle size={16} className="text-green-500" />
-                ) : (
-                  <Share size={16} className="text-accent" />
-                )}
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
-                  Partager
-                </span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+                  {copied ? (
+                    <CheckCircle size={16} className="text-green-500 group-hover:text-white" />
+                  ) : (
+                    <Share size={16} />
+                  )}
+                </div>
+                <div className="flex flex-col items-start gap-0.5">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
+                    Partager
+                  </span>
+                  <span className="text-[8px] font-bold uppercase tracking-widest text-gray-400 transition-colors group-hover:text-black">
+                    Accès
+                  </span>
+                </div>
               </button>
             )}
             <UserNav />
