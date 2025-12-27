@@ -45,10 +45,10 @@ export function UserNav() {
             alt={user.name || "User avatar"}
             width={32}
             height={32}
-            className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-white"
+            className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-accent"
           />
         ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 transition-all duration-300 group-hover:bg-black group-hover:text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
             <UserIcon size={16} />
           </div>
         )}
