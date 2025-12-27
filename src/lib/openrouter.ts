@@ -5,7 +5,11 @@ const client = new OpenRouter({
 });
 
 // Modèles gratuits avec fallback automatique
-const FREE_MODELS = ["mistralai/mistral-7b-instruct:free", "openai/gpt-oss-20b:free"] as const;
+const FREE_MODELS = [
+  "mistralai/devstral-2512:free",
+  "mistralai/mistral-7b-instruct:free",
+  "openai/gpt-oss-20b:free",
+] as const;
 
 type ChatParams = Parameters<typeof client.chat.send>[0];
 
@@ -169,7 +173,7 @@ export async function generateIngredients(
   }
 
   const systemPrompt = `Tu es un expert en logistique culinaire.
-Ta mission : Générer une liste d'ingrédients à acheter pour le plat demandé.
+Ta mission : Générer une liste d'ingrédients à acheter pour faire de façon classic le plat demandé.
 
 CONTRAINTES :
 - Cible : ${guestDescription}
