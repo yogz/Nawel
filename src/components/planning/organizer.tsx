@@ -212,6 +212,8 @@ export function Organizer({
         setSheet={setSheet}
         sheet={sheet}
         unassignedItemsCount={unassignedItemsCount}
+        slug={slug}
+        writeKey={writeKey}
       />
 
       <SuccessToast

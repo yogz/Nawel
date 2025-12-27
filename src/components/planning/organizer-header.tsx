@@ -1,7 +1,6 @@
-"use client";
-
+import { useState } from "react";
 import Link from "next/link";
-import { Check, ShieldAlert, Share, ChevronDown } from "lucide-react";
+import { Check, ShieldAlert, Share, ChevronDown, CheckCircle } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
@@ -17,6 +16,8 @@ interface OrganizerHeaderProps {
   setSheet: (sheet: Sheet) => void;
   sheet: Sheet | null;
   unassignedItemsCount: number;
+  slug: string;
+  writeKey?: string;
 }
 
 export function OrganizerHeader({
@@ -29,7 +30,32 @@ export function OrganizerHeader({
   setSheet,
   sheet,
   unassignedItemsCount,
+  slug,
+  writeKey,
 }: OrganizerHeaderProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${baseUrl}/event/${slug}${writeKey ? `?key=${writeKey}` : ""}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Événement - ${plan.event?.name || slug}`,
+          text: `Rejoins l'événement "${plan.event?.name || slug}" sur Nawel !`,
+          url,
+        });
+      } catch {
+        // User cancelled or error
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <>
       {christmas && (
@@ -69,11 +95,15 @@ export function OrganizerHeader({
             )}
             {!readOnly && (
               <button
-                onClick={() => setSheet({ type: "share" })}
+                onClick={handleShare}
                 className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent/20 sm:gap-1.5 sm:px-3 sm:text-[11px]"
                 title="Partager l'accès"
               >
-                <Share size={10} className="sm:h-3 sm:w-3" />
+                {copied ? (
+                  <CheckCircle size={10} className="text-green-500 sm:h-3 sm:w-3" />
+                ) : (
+                  <Share size={10} className="sm:h-3 sm:w-3" />
+                )}
                 <span className="hidden sm:inline">Partager</span>
               </button>
             )}
