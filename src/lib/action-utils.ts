@@ -21,7 +21,7 @@ export function withErrorThrower<Args extends unknown[], T>(action: (...args: Ar
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createSafeAction<T extends z.ZodType<any>, R>(
+export function createSafeAction<T extends z.ZodType<unknown>, R>(
   schema: T,
   action: (data: z.infer<T>) => Promise<R>
 ) {

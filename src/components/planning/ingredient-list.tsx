@@ -87,6 +87,7 @@ export function IngredientList({
                 type="button"
                 onClick={() => onDelete(ing.id)}
                 className="text-gray-300 transition-colors hover:text-red-500"
+                aria-label="Supprimer"
               >
                 <X size={14} />
               </button>
