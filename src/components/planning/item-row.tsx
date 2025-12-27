@@ -8,6 +8,8 @@ import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
 
+import { Button } from "../ui/button";
+
 interface ItemRowProps {
   item: Item;
   person?: Person | null;
@@ -56,34 +58,26 @@ function ItemRowComponent({
             {item.name}
           </p>
           <div className="shrink-0">
-            {person ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAssign();
-                }}
-                disabled={readOnly}
-                className="bg-accent-soft flex items-center gap-1.5 rounded-full border border-accent/10 px-2.5 py-1 text-xs font-black text-accent transition-all hover:bg-accent hover:text-white active:scale-90"
-              >
+            <Button
+              variant="premium"
+              size="premium"
+              className="h-8 p-1 pr-3"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAssign();
+              }}
+              disabled={readOnly}
+              icon={
                 <span className="text-sm">
-                  {getPersonEmoji(person.name, allPeopleNames, person.emoji)}
+                  {person ? getPersonEmoji(person.name, allPeopleNames, person.emoji) : "🥘"}
                 </span>
-                <span className="inline-block max-w-[80px] truncate sm:max-w-none">
-                  {person.name}
-                </span>
-              </button>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAssign();
-                }}
-                disabled={readOnly}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-500/20 bg-amber-400 text-lg font-black text-amber-950 shadow-sm transition-all hover:scale-110 active:scale-90"
-              >
-                ?
-              </button>
-            )}
+              }
+              iconClassName={!person ? "bg-amber-100 text-amber-600 group-hover:bg-amber-500" : ""}
+            >
+              <span className="inline-block max-w-[80px] truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:max-w-none">
+                {person ? person.name : "À prévoir"}
+              </span>
+            </Button>
           </div>
         </div>
 

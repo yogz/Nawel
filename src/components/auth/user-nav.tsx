@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useSession } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 import { AuthModal } from "./auth-modal";
 import { ProfileDrawer } from "./profile-drawer";
 import { User as UserIcon, LogIn, Settings } from "lucide-react";
@@ -19,13 +20,14 @@ export function UserNav() {
   if (!session) {
     return (
       <>
-        <button
+        <Button
+          variant="premium"
+          size="premium"
           onClick={() => setShowAuthModal(true)}
-          className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 shadow-sm transition-all hover:scale-105 active:scale-95"
+          icon={<LogIn size={16} />}
         >
-          <LogIn size={16} />
-          Se connecter
-        </button>
+          <span className="text-xs font-bold text-gray-700">Se connecter</span>
+        </Button>
         <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
     );

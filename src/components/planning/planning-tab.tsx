@@ -13,6 +13,7 @@ import {
   type SensorOptions,
 } from "@dnd-kit/core";
 import { type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
+import { Button } from "../ui/button";
 
 interface PlanningTabProps {
   plan: PlanData;
@@ -88,12 +89,13 @@ export function PlanningTab({
                       {meal.title || meal.date}
                     </h2>
                     {!readOnly && (
-                      <button
+                      <Button
+                        variant="premium"
+                        className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
+                        icon={<Pencil className="h-3 w-3" />}
+                        iconClassName="h-6 w-6"
                         onClick={() => setSheet({ type: "meal-edit", meal })}
-                        className="shrink-0 text-accent/40 transition-colors hover:text-accent"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </button>
+                      />
                     )}
                   </div>
                   <CitationDisplay />
@@ -123,32 +125,36 @@ export function PlanningTab({
         <div className="px-4 py-8 text-center">
           <p className="mb-4 text-gray-500">Aucun repas pour l&apos;instant.</p>
           {!readOnly && (
-            <button
+            <Button
+              variant="premium"
+              className="w-full border-2 border-dashed border-accent/20 bg-accent/5 p-4 pr-6"
+              icon={<PlusIcon />}
               onClick={() => setSheet({ type: "meal-create" })}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent transition-colors hover:bg-accent/10"
             >
-              <PlusIcon />
-              Ajouter un repas
-            </button>
+              <span className="font-semibold text-accent">Ajouter un repas</span>
+            </Button>
           )}
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
         <div className="mt-8 flex flex-col gap-3 px-4">
-          <button
+          <Button
+            variant="premium"
+            className="w-full border-2 border-dashed border-gray-200 p-4 pr-6"
+            icon={<PlusIcon />}
+            iconClassName="bg-gray-100 text-gray-400 group-hover:bg-gray-900"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white/50 px-4 py-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-white/80"
           >
-            <PlusIcon />
-            Ajouter un service
-          </button>
-          <button
+            <span className="font-semibold text-gray-600">Ajouter un service</span>
+          </Button>
+          <Button
+            variant="premium"
+            className="w-full border-2 border-dashed border-accent/20 bg-accent/5 p-4 pr-6"
+            icon={<PlusIcon />}
             onClick={() => setSheet({ type: "meal-create" })}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-4 text-sm font-semibold text-accent transition-colors hover:bg-accent/10"
           >
-            <PlusIcon />
-            Ajouter un repas
-          </button>
+            <span className="font-semibold text-accent">Ajouter un repas</span>
+          </Button>
         </div>
       )}
     </DndContext>

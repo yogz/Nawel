@@ -7,6 +7,8 @@ import { type Item, type Service, type Person, type PlanningFilter } from "@/lib
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
 
+import { Button } from "../ui/button";
+
 export function ServiceSection({
   service,
   people,
@@ -58,26 +60,26 @@ export function ServiceSection({
     >
       <div className="mb-2 flex items-center justify-between sm:mb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold">{service.title}</h3>
+          <h3 className="text-lg font-semibold text-text">{service.title}</h3>
           {(service.peopleCount || 0) > 1 && (
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400">
               {service.peopleCount} pers.
             </span>
           )}
           {!readOnly && (
-            <button onClick={onEdit} className="text-gray-300 transition-colors hover:text-accent">
-              <Pencil className="h-3.5 w-3.5" />
-            </button>
+            <Button
+              variant="premium"
+              className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
+              icon={<Pencil className="h-3 w-3" />}
+              iconClassName="h-6 w-6"
+              onClick={onEdit}
+            />
           )}
         </div>
         {!readOnly && filter.type === "all" && (
-          <button
-            onClick={onCreate}
-            className="flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-sm font-semibold text-white shadow-sm active:scale-95"
-          >
-            <Plus size={16} />
-            Ajouter
-          </button>
+          <Button variant="premium" size="premium" onClick={onCreate} icon={<Plus size={16} />}>
+            <span className="text-xs font-bold text-gray-700">Ajouter</span>
+          </Button>
         )}
       </div>
       {filteredItems.map((item) => (

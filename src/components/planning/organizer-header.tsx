@@ -5,6 +5,8 @@ import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -136,41 +138,57 @@ function PlanningFilters({
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
       <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 sm:overflow-visible sm:pb-0">
-        <button
+        <Button
+          variant="premium"
+          size="premium"
+          active={planningFilter.type === "all"}
           onClick={() => setPlanningFilter({ type: "all" })}
-          className={clsx(
-            "whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all sm:px-4 sm:text-xs",
-            planningFilter.type === "all"
-              ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-              : "bg-white text-gray-400 hover:text-gray-600"
-          )}
+          icon={<span>🌟</span>}
+          iconClassName="h-7 w-7"
         >
-          Tout le monde
-        </button>
-        <button
+          <span
+            className={cn(
+              "whitespace-nowrap text-[10px] font-black uppercase tracking-wider sm:text-xs",
+              planningFilter.type === "all" ? "text-accent" : "text-gray-400"
+            )}
+          >
+            Tout le monde
+          </span>
+        </Button>
+
+        <Button
+          variant="premium"
+          size="premium"
+          active={planningFilter.type === "unassigned"}
           onClick={() => setPlanningFilter({ type: "unassigned" })}
-          className={clsx(
-            "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all sm:px-4 sm:text-xs",
-            planningFilter.type === "unassigned"
-              ? "bg-zinc-900 text-white shadow-md ring-2 ring-zinc-900/20"
-              : "bg-white text-gray-400 hover:text-zinc-600"
-          )}
+          icon={<span>🥘</span>}
+          iconClassName="h-7 w-7"
         >
-          À prévoir ({unassignedItemsCount}) 🥘
-        </button>
+          <span
+            className={cn(
+              "whitespace-nowrap text-[10px] font-black uppercase tracking-wider sm:text-xs",
+              planningFilter.type === "unassigned" ? "text-accent" : "text-gray-400"
+            )}
+          >
+            À prévoir ({unassignedItemsCount})
+          </span>
+        </Button>
       </div>
 
       {!readOnly && (
-        <button
+        <Button
+          variant="premium"
+          size="premium"
+          shine
           onClick={handleShare}
-          className="flex shrink-0 items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-gray-700 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95 sm:px-4 sm:text-xs"
+          icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
+          iconClassName={cn("h-7 w-7", copied && "bg-green-500 text-white")}
           title="Partager l'accès"
         >
-          <div className="flex h-4 w-4 items-center justify-center text-accent">
-            {copied ? <CheckCircle size={14} className="text-green-500" /> : <Share size={14} />}
-          </div>
-          <span className="truncate">Partager</span>
-        </button>
+          <span className="truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:text-xs">
+            {copied ? "Copié !" : "Partager"}
+          </span>
+        </Button>
       )}
     </div>
   );
