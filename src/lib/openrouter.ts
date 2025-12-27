@@ -162,6 +162,7 @@ FALLBACK :
     console.log(`Valeur utilisée: ${guestDescription}`);
     console.log("System:", systemPrompt);
     console.log("User:", userPrompt);
+    console.log("Model:", FREE_MODELS[0]);
   }
 
   let content: string;
