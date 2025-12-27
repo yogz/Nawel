@@ -141,7 +141,7 @@ export function Landing() {
       </section>
 
       {/* Call to Action Footer */}
-      <section className="bg-white px-6 py-20 text-center sm:py-32">
+      <section className="relative z-10 bg-white px-6 py-20 text-center sm:py-32">
         <div className="mx-auto max-w-4xl">
           <h2 className="mb-6 text-3xl font-bold sm:mb-8 sm:text-6xl">
             Prêt à simplifier vos fêtes ?

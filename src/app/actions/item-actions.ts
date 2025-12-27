@@ -47,6 +47,12 @@ export const createItemAction = createSafeAction(createItemSchema, async (input)
 
 export const updateItemAction = createSafeAction(updateItemSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
+
+  // Fetch old data for audit log
+  const oldItem = await db.query.items.findFirst({
+    where: eq(items.id, input.id),
+  });
+
   const [updated] = await db
     .update(items)
     .set({
@@ -58,7 +64,7 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
     })
     .where(eq(items.id, input.id))
     .returning();
-  await logChange("update", "items", updated.id, null, updated);
+  await logChange("update", "items", updated.id, oldItem, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -75,6 +81,12 @@ export const deleteItemAction = createSafeAction(deleteItemSchema, async (input)
 
 export const assignItemAction = createSafeAction(assignItemSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
+
+  // Fetch old data for audit log
+  const oldItem = await db.query.items.findFirst({
+    where: eq(items.id, input.id),
+  });
+
   const [updated] = await db
     .update(items)
     .set({ personId: input.personId })

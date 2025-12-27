@@ -18,6 +18,7 @@ const navItems = [
   { href: "/admin", label: "Événements", icon: Calendar },
   { href: "/admin/cache", label: "Cache IA", icon: Database },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
+  { href: "/admin/logs", label: "Audit Logs", icon: Shield },
 ];
 
 export function AdminHeader({ user }: { user: User }) {

@@ -1,15 +1,21 @@
 import { headers } from "next/headers";
 import { db } from "./db";
 import { changeLogs } from "@drizzle/schema";
+import { auth } from "./auth-config";
 
 type Action = "create" | "update" | "delete";
-type TableName = "items" | "services" | "people" | "meals" | "events";
+type TableName = "items" | "services" | "people" | "meals" | "events" | "ingredients";
 
 async function getUserInfo() {
   try {
     const headersList = await headers();
     const userAgent = headersList.get("user-agent") || null;
     const referer = headersList.get("referer") || null;
+
+    // Récupérer la session pour le userId
+    const session = await auth.api.getSession({
+      headers: headersList,
+    });
 
     // Récupérer l'IP (priorité aux headers de proxy)
     const forwardedFor = headersList.get("x-forwarded-for");
@@ -22,6 +28,7 @@ async function getUserInfo() {
       userIp,
       userAgent,
       referer,
+      userId: session?.user?.id || null,
     };
   } catch (_error) {
     // En cas d'erreur, retourner des valeurs null
@@ -29,6 +36,7 @@ async function getUserInfo() {
       userIp: null,
       userAgent: null,
       referer: null,
+      userId: null,
     };
   }
 }
@@ -46,6 +54,7 @@ export async function logChange(
       action,
       tableName,
       recordId,
+      userId: userInfo.userId,
       oldData: oldData ? JSON.stringify(oldData) : null,
       newData: newData ? JSON.stringify(newData) : null,
       userIp: userInfo.userIp,

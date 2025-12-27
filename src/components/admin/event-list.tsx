@@ -145,6 +145,15 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
                 </div>
                 <p className="mb-2 text-sm text-muted-foreground">
                   /{event.slug} &middot; Créé le {formatDate(event.createdAt)}
+                  {event.owner && (
+                    <>
+                      {" "}
+                      &middot; Par{" "}
+                      <span className="text-text/90 font-medium" title={event.owner.email}>
+                        {event.owner.name}
+                      </span>
+                    </>
+                  )}
                 </p>
 
                 {/* URL d'édition */}

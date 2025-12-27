@@ -271,6 +271,7 @@ export const changeLogs = pgTable("change_logs", {
   action: varchar("action", { length: 20 }).notNull(), // 'create', 'update', 'delete'
   tableName: varchar("table_name", { length: 50 }).notNull(), // 'items', 'meals', 'people', 'days'
   recordId: integer("record_id").notNull(),
+  userId: text("user_id"), // Nullable for anonymous actions
   oldData: text("old_data"), // JSON string of old data (for update/delete)
   newData: text("new_data"), // JSON string of new data (for create/update)
   userIp: varchar("user_ip", { length: 100 }),

@@ -80,7 +80,12 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
     return updatedService;
   });
 
-  await logChange("update", "services", updated.id, null, updated);
+  // Fetch old data for audit (the transaction logic could be optimized but this is safe)
+  const oldService = await db.query.services.findFirst({
+    where: eq(services.id, input.id),
+  });
+
+  await logChange("update", "services", updated.id, oldService, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });

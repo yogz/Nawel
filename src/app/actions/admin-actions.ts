@@ -45,12 +45,19 @@ export type EventWithStats = {
   servicesCount: number;
   peopleCount: number;
   itemsCount: number;
+  owner?: {
+    name: string;
+    email: string;
+  } | null;
 };
 
 export const getAllEventsAction = withErrorThrower(async (): Promise<EventWithStats[]> => {
   await requireAdmin();
 
   const allEvents = await db.query.events.findMany({
+    with: {
+      owner: true,
+    },
     orderBy: (events, { desc }) => [desc(events.createdAt)],
   });
 
@@ -92,6 +99,12 @@ export const getAllEventsAction = withErrorThrower(async (): Promise<EventWithSt
         servicesCount: servicesResult[0]?.count ?? 0,
         peopleCount: peopleResult?.count ?? 0,
         itemsCount: itemsResult[0]?.count ?? 0,
+        owner: event.owner
+          ? {
+              name: event.owner.name,
+              email: event.owner.email,
+            }
+          : null,
       };
     })
   );

@@ -71,12 +71,18 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
 
 export const updatePersonAction = createSafeAction(updatePersonSchema, async (input) => {
   await verifyEventAccess(input.slug, input.key);
+
+  const oldPerson = await db.query.people.findFirst({
+    where: eq(people.id, input.id),
+  });
+
   const [updated] = await db
     .update(people)
     .set({ name: input.name, emoji: input.emoji })
     .where(eq(people.id, input.id))
     .returning();
-  await logChange("update", "people", updated.id, null, updated);
+
+  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -105,13 +111,17 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
     throw new Error("Unauthorized: Please log in to claim a profile");
   }
 
+  const oldPerson = await db.query.people.findFirst({
+    where: eq(people.id, input.personId),
+  });
+
   const [updated] = await db
     .update(people)
     .set({ userId: session.user.id })
     .where(eq(people.id, input.personId))
     .returning();
 
-  await logChange("update", "people", updated.id, null, updated);
+  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -127,13 +137,17 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
     throw new Error("Unauthorized");
   }
 
+  const oldPerson = await db.query.people.findFirst({
+    where: eq(people.id, input.personId),
+  });
+
   const [updated] = await db
     .update(people)
     .set({ userId: null })
     .where(eq(people.id, input.personId))
     .returning();
 
-  await logChange("update", "people", updated.id, null, updated);
+  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });

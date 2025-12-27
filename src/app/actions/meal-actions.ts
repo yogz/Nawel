@@ -117,7 +117,16 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
     return updatedMeal;
   });
 
-  await logChange("update", "meals", updated.id, null, updated);
+  // Re-fetch old data if not already captured or use transaction result
+  // The transaction in updateMealAction already fetches 'current' meal
+  // Let's modify the transaction to return both old and new data for cleaner logging
+
+  // Actually, I'll just refetch here for simplicity since logChange is outside transaction anyway
+  const oldMeal = await db.query.meals.findFirst({
+    where: eq(meals.id, input.id),
+  });
+
+  await logChange("update", "meals", updated.id, oldMeal, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
