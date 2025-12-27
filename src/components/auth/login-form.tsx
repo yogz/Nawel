@@ -109,7 +109,7 @@ export function LoginForm() {
 
         <div className="relative z-10 w-full overflow-hidden rounded-3xl border border-white/50 bg-white/80 p-8 shadow-2xl backdrop-blur-2xl transition-all">
           <div className="relative z-10">
-            <h1 className="mb-2 text-center text-3xl font-black tracking-tight text-gray-900">
+            <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
               {isUserMode
                 ? authMode === "signin"
                   ? "Ravi de vous revoir !"
@@ -247,12 +247,12 @@ export function LoginForm() {
       </div>
 
       {isUserMode && (
-        <div className="mt-12 text-center">
+        <div className="relative z-20 mt-12 text-center">
           <Link
             href="/create-event"
-            className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 transition-colors hover:text-gray-600"
+            className="rounded-full bg-white/40 px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 backdrop-blur-sm transition-all hover:bg-white/60 hover:text-gray-700"
           >
-            Continuer sans identifier
+            Continuer sans s&apos;identifier
           </Link>
         </div>
       )}

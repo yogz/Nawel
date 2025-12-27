@@ -8,23 +8,11 @@ import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
-interface ShoppingItem {
-  type: "ingredient";
-  ingredient: Ingredient;
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-interface ShoppingItemOnly {
-  type: "item";
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-type ShoppingListItem = ShoppingItem | ShoppingItemOnly;
+import {
+  aggregateShoppingList,
+  formatAggregatedQuantity,
+  type AggregatedShoppingItem,
+} from "@/lib/shopping-utils";
 
 interface ShoppingListSheetProps {
   person: Person;
@@ -50,7 +38,13 @@ export function ShoppingListSheet({
 
   // Build shopping list from person's assigned items
   const shoppingList = useMemo(() => {
-    const list: ShoppingListItem[] = [];
+    const flatList: {
+      type: "ingredient" | "item";
+      ingredient?: Ingredient;
+      item: Item;
+      mealTitle: string;
+      serviceTitle: string;
+    }[] = [];
 
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
@@ -60,7 +54,7 @@ export function ShoppingListSheet({
           // If item has ingredients, add each ingredient
           if (item.ingredients && item.ingredients.length > 0) {
             item.ingredients.forEach((ing) => {
-              list.push({
+              flatList.push({
                 type: "ingredient",
                 ingredient: ing,
                 item,
@@ -70,7 +64,7 @@ export function ShoppingListSheet({
             });
           } else {
             // No ingredients, add the item itself
-            list.push({
+            flatList.push({
               type: "item",
               item,
               mealTitle: meal.title || meal.date,
@@ -81,20 +75,21 @@ export function ShoppingListSheet({
       });
     });
 
-    return list;
+    return aggregateShoppingList(flatList);
   }, [plan.meals, person.id]);
 
-  const checkedCount = shoppingList.filter((item) =>
-    item.type === "ingredient" ? item.ingredient.checked : item.item.checked
-  ).length;
+  const checkedCount = shoppingList.filter((item) => item.checked).length;
 
-  const handleToggle = (listItem: ShoppingListItem) => {
+  const handleToggle = (aggregatedItem: AggregatedShoppingItem) => {
     startTransition(() => {
-      if (listItem.type === "ingredient") {
-        onToggleIngredient(listItem.ingredient.id, listItem.item.id, !listItem.ingredient.checked);
-      } else {
-        onToggleItemChecked(listItem.item.id, !listItem.item.checked);
-      }
+      const newChecked = !aggregatedItem.checked;
+      aggregatedItem.sources.forEach((source) => {
+        if (source.type === "ingredient") {
+          onToggleIngredient(source.ingredient!.id, source.item.id, newChecked);
+        } else {
+          onToggleItemChecked(source.item.id, newChecked);
+        }
+      });
     });
   };
 
@@ -143,24 +138,17 @@ export function ShoppingListSheet({
 
       {/* Shopping list */}
       <div className="space-y-2">
-        {shoppingList.map((listItem, idx) => {
-          const isChecked =
-            listItem.type === "ingredient" ? listItem.ingredient.checked : listItem.item.checked;
-          const key =
-            listItem.type === "ingredient"
-              ? `ing-${listItem.ingredient.id}`
-              : `item-${listItem.item.id}`;
-
-          const itemName =
-            listItem.type === "ingredient" ? listItem.ingredient.name : listItem.item.name;
+        {shoppingList.map((aggregatedItem, idx) => {
+          const isChecked = aggregatedItem.checked;
+          const itemName = aggregatedItem.name;
 
           return (
             <motion.button
-              key={key}
+              key={aggregatedItem.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.03 }}
-              onClick={() => handleToggle(listItem)}
+              onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
               aria-label={`${isChecked ? "Décocher" : "Cocher"} ${itemName}`}
               aria-pressed={isChecked}
@@ -190,25 +178,31 @@ export function ShoppingListSheet({
                       isChecked ? "text-green-700 line-through" : "text-text"
                     )}
                   >
-                    {listItem.type === "ingredient" ? listItem.ingredient.name : listItem.item.name}
+                    {itemName}
                   </span>
-                  {listItem.type === "ingredient" && listItem.ingredient.quantity && (
+                  {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
                     <span className="text-sm text-muted-foreground">
-                      {listItem.ingredient.quantity}
+                      {formatAggregatedQuantity(aggregatedItem.quantity, aggregatedItem.unit)}
                     </span>
-                  )}
-                  {listItem.type === "item" && listItem.item.quantity && (
-                    <span className="text-sm text-muted-foreground">{listItem.item.quantity}</span>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {listItem.type === "ingredient" ? (
+                  {aggregatedItem.sources.length > 1 ? (
+                    <span className="font-medium text-accent">
+                      {aggregatedItem.sources.length} sources
+                    </span>
+                  ) : (
                     <>
-                      <span className="font-medium">{listItem.item.name}</span>
-                      {" · "}
+                      {aggregatedItem.sources[0].type === "ingredient" ? (
+                        <>
+                          <span className="font-medium">{aggregatedItem.sources[0].item.name}</span>
+                          {" · "}
+                        </>
+                      ) : null}
+                      {aggregatedItem.sources[0].mealTitle} ·{" "}
+                      {aggregatedItem.sources[0].serviceTitle}
                     </>
-                  ) : null}
-                  {listItem.mealTitle} · {listItem.serviceTitle}
+                  )}
                 </p>
               </div>
             </motion.button>

@@ -9,6 +9,11 @@ import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
+  aggregateShoppingList,
+  formatAggregatedQuantity,
+  type AggregatedShoppingItem,
+} from "@/lib/shopping-utils";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -22,23 +27,6 @@ interface ShoppingTabProps {
   writeKey?: string;
   currentUserId?: string;
 }
-
-interface ShoppingItem {
-  type: "ingredient";
-  ingredient: Ingredient;
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-interface ShoppingItemOnly {
-  type: "item";
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-type ShoppingListItem = ShoppingItem | ShoppingItemOnly;
 
 export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTabProps) {
   const [isPending, startTransition] = useTransition();
@@ -74,7 +62,14 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
 
   // Build shopping list for selected person or all
   const shoppingList = useMemo(() => {
-    const list: ShoppingListItem[] = [];
+    const flatList: {
+      type: "ingredient" | "item";
+      ingredient?: Ingredient;
+      item: Item;
+      mealTitle: string;
+      serviceTitle: string;
+    }[] = [];
+
     const targetPersonIds =
       selectedPersonId === "all"
         ? peopleWithItems.map((p) => p.id)
@@ -89,7 +84,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
 
           if (item.ingredients && item.ingredients.length > 0) {
             item.ingredients.forEach((ing) => {
-              list.push({
+              flatList.push({
                 type: "ingredient",
                 ingredient: ing,
                 item,
@@ -98,7 +93,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               });
             });
           } else {
-            list.push({
+            flatList.push({
               type: "item",
               item,
               mealTitle: meal.title || meal.date,
@@ -109,33 +104,37 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       });
     });
 
-    return list;
+    return aggregateShoppingList(flatList);
   }, [plan.meals, selectedPersonId, displayPerson, peopleWithItems]);
 
-  const checkedCount = shoppingList.filter((item) =>
-    item.type === "ingredient" ? item.ingredient.checked : item.item.checked
-  ).length;
+  const checkedCount = shoppingList.filter((item) => item.checked).length;
 
   const progressPercent =
     shoppingList.length > 0 ? Math.round((checkedCount / shoppingList.length) * 100) : 0;
 
-  const handleToggle = (listItem: ShoppingListItem) => {
+  const handleToggle = (aggregatedItem: AggregatedShoppingItem) => {
     startTransition(async () => {
-      if (listItem.type === "ingredient") {
-        await updateIngredientAction({
-          id: listItem.ingredient.id,
-          checked: !listItem.ingredient.checked,
-          slug,
-          key: writeKey,
-        });
-      } else {
-        await toggleItemCheckedAction({
-          id: listItem.item.id,
-          checked: !listItem.item.checked,
-          slug,
-          key: writeKey,
-        });
-      }
+      const newChecked = !aggregatedItem.checked;
+
+      const promises = aggregatedItem.sources.map((source) => {
+        if (source.type === "ingredient") {
+          return updateIngredientAction({
+            id: source.ingredient!.id,
+            checked: newChecked,
+            slug,
+            key: writeKey,
+          });
+        } else {
+          return toggleItemCheckedAction({
+            id: source.item.id,
+            checked: newChecked,
+            slug,
+            key: writeKey,
+          });
+        }
+      });
+
+      await Promise.all(promises);
     });
   };
 
@@ -171,8 +170,13 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
   // Calculate per-person summaries for "all" view
   const personSummaries = useMemo(() => {
     return peopleWithItems.map((person) => {
-      let totalItems = 0;
-      let checkedItems = 0;
+      const flatList: {
+        type: "ingredient" | "item";
+        ingredient?: Ingredient;
+        item: Item;
+        mealTitle: string;
+        serviceTitle: string;
+      }[] = [];
 
       plan.meals.forEach((meal) => {
         meal.services.forEach((service) => {
@@ -180,15 +184,30 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
             if (item.personId !== person.id) return;
 
             if (item.ingredients && item.ingredients.length > 0) {
-              totalItems += item.ingredients.length;
-              checkedItems += item.ingredients.filter((i) => i.checked).length;
+              item.ingredients.forEach((ing) => {
+                flatList.push({
+                  type: "ingredient",
+                  ingredient: ing,
+                  item,
+                  mealTitle: meal.title || meal.date,
+                  serviceTitle: service.title,
+                });
+              });
             } else {
-              totalItems += 1;
-              if (item.checked) checkedItems += 1;
+              flatList.push({
+                type: "item",
+                item,
+                mealTitle: meal.title || meal.date,
+                serviceTitle: service.title,
+              });
             }
           });
         });
       });
+
+      const aggregated = aggregateShoppingList(flatList);
+      const totalItems = aggregated.length;
+      const checkedItems = aggregated.filter((i) => i.checked).length;
 
       return { person, totalItems, checkedItems };
     });
@@ -399,23 +418,17 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
 
       {/* Shopping list */}
       <div className="space-y-2">
-        {shoppingList.map((listItem, idx) => {
-          const isChecked =
-            listItem.type === "ingredient" ? listItem.ingredient.checked : listItem.item.checked;
-          const key =
-            listItem.type === "ingredient"
-              ? `ing-${listItem.ingredient.id}`
-              : `item-${listItem.item.id}`;
-          const itemName =
-            listItem.type === "ingredient" ? listItem.ingredient.name : listItem.item.name;
+        {shoppingList.map((aggregatedItem, idx) => {
+          const isChecked = aggregatedItem.checked;
+          const itemName = aggregatedItem.name;
 
           return (
             <motion.button
-              key={key}
+              key={aggregatedItem.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.02 }}
-              onClick={() => handleToggle(listItem)}
+              onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
               aria-label={`${isChecked ? "Décocher" : "Cocher"} ${itemName}`}
               aria-pressed={isChecked}
@@ -447,23 +460,29 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                   >
                     {itemName}
                   </span>
-                  {listItem.type === "ingredient" && listItem.ingredient.quantity && (
+                  {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
                     <span className="text-sm text-muted-foreground">
-                      {listItem.ingredient.quantity}
+                      {formatAggregatedQuantity(aggregatedItem.quantity, aggregatedItem.unit)}
                     </span>
-                  )}
-                  {listItem.type === "item" && listItem.item.quantity && (
-                    <span className="text-sm text-muted-foreground">{listItem.item.quantity}</span>
                   )}
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {listItem.type === "ingredient" && (
+                  {aggregatedItem.sources.length > 1 ? (
+                    <span className="font-medium text-accent">
+                      {aggregatedItem.sources.length} sources
+                    </span>
+                  ) : (
                     <>
-                      <span className="font-medium">{listItem.item.name}</span>
-                      {" · "}
+                      {aggregatedItem.sources[0].type === "ingredient" && (
+                        <>
+                          <span className="font-medium">{aggregatedItem.sources[0].item.name}</span>
+                          {" · "}
+                        </>
+                      )}
+                      {aggregatedItem.sources[0].mealTitle} ·{" "}
+                      {aggregatedItem.sources[0].serviceTitle}
                     </>
                   )}
-                  {listItem.mealTitle} · {listItem.serviceTitle}
                 </p>
               </div>
             </motion.button>

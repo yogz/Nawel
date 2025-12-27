@@ -4,29 +4,25 @@ import { useState, useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Share2, ShoppingBag, Copy, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Share2,
+  ShoppingBag,
+  Copy,
+  CheckCircle,
+  ChevronDown,
+} from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
-
-interface ShoppingItem {
-  type: "ingredient";
-  ingredient: Ingredient;
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-interface ShoppingItemOnly {
-  type: "item";
-  item: Item;
-  mealTitle: string;
-  serviceTitle: string;
-}
-
-type ShoppingListItem = ShoppingItem | ShoppingItemOnly;
+import {
+  aggregateShoppingList,
+  formatAggregatedQuantity,
+  type AggregatedShoppingItem,
+} from "@/lib/shopping-utils";
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -47,10 +43,17 @@ export function ShoppingPage({
   const [plan, setPlan] = useState(initialPlan);
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Build shopping list from person's assigned items
   const shoppingList = useMemo(() => {
-    const list: ShoppingListItem[] = [];
+    const flatList: {
+      type: "ingredient" | "item";
+      ingredient?: Ingredient;
+      item: Item;
+      mealTitle: string;
+      serviceTitle: string;
+    }[] = [];
 
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
@@ -59,7 +62,7 @@ export function ShoppingPage({
 
           if (item.ingredients && item.ingredients.length > 0) {
             item.ingredients.forEach((ing) => {
-              list.push({
+              flatList.push({
                 type: "ingredient",
                 ingredient: ing,
                 item,
@@ -68,7 +71,7 @@ export function ShoppingPage({
               });
             });
           } else {
-            list.push({
+            flatList.push({
               type: "item",
               item,
               mealTitle: meal.title || meal.date,
@@ -79,74 +82,77 @@ export function ShoppingPage({
       });
     });
 
-    return list;
+    return aggregateShoppingList(flatList);
   }, [plan.meals, person.id]);
 
-  const checkedCount = shoppingList.filter((item) =>
-    item.type === "ingredient" ? item.ingredient.checked : item.item.checked
-  ).length;
+  const checkedCount = shoppingList.filter((item) => item.checked).length;
 
   const progressPercent =
     shoppingList.length > 0 ? Math.round((checkedCount / shoppingList.length) * 100) : 0;
 
-  const handleToggle = (listItem: ShoppingListItem) => {
+  const toggleExpanded = (id: string) => {
+    setExpandedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggle = (aggregatedItem: AggregatedShoppingItem) => {
     if (!writeEnabled) return;
 
     startTransition(async () => {
-      if (listItem.type === "ingredient") {
-        const newChecked = !listItem.ingredient.checked;
+      const newChecked = !aggregatedItem.checked;
 
-        // Optimistic update
-        setPlan((prev) => ({
-          ...prev,
-          meals: prev.meals.map((meal) => ({
-            ...meal,
-            services: meal.services.map((service) => ({
-              ...service,
-              items: service.items.map((item) =>
-                item.id === listItem.item.id
-                  ? {
-                      ...item,
-                      ingredients: item.ingredients?.map((ing) =>
-                        ing.id === listItem.ingredient.id ? { ...ing, checked: newChecked } : ing
-                      ),
-                    }
-                  : item
-              ),
-            })),
+      // Optimistic update
+      setPlan((prev) => ({
+        ...prev,
+        meals: prev.meals.map((meal) => ({
+          ...meal,
+          services: meal.services.map((service) => ({
+            ...service,
+            items: service.items.map((item) => {
+              const matchingSource = aggregatedItem.sources.find((s) => s.item.id === item.id);
+              if (!matchingSource) return item;
+
+              if (matchingSource.type === "item") {
+                return { ...item, checked: newChecked };
+              } else {
+                return {
+                  ...item,
+                  ingredients: item.ingredients?.map((ing) => {
+                    const isPartOfGroup = aggregatedItem.sources.some(
+                      (s) => s.type === "ingredient" && s.ingredient?.id === ing.id
+                    );
+                    return isPartOfGroup ? { ...ing, checked: newChecked } : ing;
+                  }),
+                };
+              }
+            }),
           })),
-        }));
+        })),
+      }));
 
-        await updateIngredientAction({
-          id: listItem.ingredient.id,
-          checked: newChecked,
-          slug,
-          key: writeKey,
-        });
-      } else {
-        const newChecked = !listItem.item.checked;
+      const promises = aggregatedItem.sources.map((source) => {
+        if (source.type === "ingredient") {
+          return updateIngredientAction({
+            id: source.ingredient!.id,
+            checked: newChecked,
+            slug,
+            key: writeKey,
+          });
+        } else {
+          return toggleItemCheckedAction({
+            id: source.item.id,
+            checked: newChecked,
+            slug,
+            key: writeKey,
+          });
+        }
+      });
 
-        // Optimistic update
-        setPlan((prev) => ({
-          ...prev,
-          meals: prev.meals.map((meal) => ({
-            ...meal,
-            services: meal.services.map((service) => ({
-              ...service,
-              items: service.items.map((item) =>
-                item.id === listItem.item.id ? { ...item, checked: newChecked } : item
-              ),
-            })),
-          })),
-        }));
-
-        await toggleItemCheckedAction({
-          id: listItem.item.id,
-          checked: newChecked,
-          slug,
-          key: writeKey,
-        });
-      }
+      await Promise.all(promises);
     });
   };
 
@@ -241,80 +247,135 @@ export function ShoppingPage({
             <p className="text-muted-foreground">Aucun article assigné</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {shoppingList.map((listItem, idx) => {
-              const isChecked =
-                listItem.type === "ingredient"
-                  ? listItem.ingredient.checked
-                  : listItem.item.checked;
-              const key =
-                listItem.type === "ingredient"
-                  ? `ing-${listItem.ingredient.id}`
-                  : `item-${listItem.item.id}`;
-              const itemName =
-                listItem.type === "ingredient" ? listItem.ingredient.name : listItem.item.name;
+          <div className="space-y-3">
+            {shoppingList.map((aggregatedItem, idx) => {
+              const isChecked = aggregatedItem.checked;
+              const isExpanded = expandedItems.has(aggregatedItem.id);
+              const hasMultipleSources = aggregatedItem.sources.length > 1;
 
               return (
-                <motion.button
-                  key={key}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.02 }}
-                  onClick={() => handleToggle(listItem)}
-                  disabled={isPending || !writeEnabled}
-                  aria-label={`${isChecked ? "Décocher" : "Cocher"} ${itemName}`}
-                  aria-pressed={isChecked}
-                  className={clsx(
-                    "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
-                    isChecked
-                      ? "border-green-200 bg-green-50"
-                      : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
-                    !writeEnabled && "cursor-default"
-                  )}
-                >
-                  {/* Checkbox */}
-                  <div
+                <div key={aggregatedItem.id} className="space-y-2">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.02 }}
                     className={clsx(
-                      "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
-                      isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
+                      "group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
+                      isChecked
+                        ? "border-green-200 bg-green-50 shadow-sm"
+                        : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
+                      !writeEnabled && "cursor-default"
                     )}
                   >
-                    {isChecked && <Check size={14} strokeWidth={3} />}
-                  </div>
-
-                  {/* Content */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline gap-2">
-                      <span
-                        className={clsx(
-                          "text-base font-semibold",
-                          isChecked ? "text-green-700 line-through" : "text-text"
-                        )}
-                      >
-                        {itemName}
-                      </span>
-                      {listItem.type === "ingredient" && listItem.ingredient.quantity && (
-                        <span className="text-sm text-muted-foreground">
-                          {listItem.ingredient.quantity}
-                        </span>
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => handleToggle(aggregatedItem)}
+                      disabled={isPending || !writeEnabled}
+                      aria-label={`${isChecked ? "Décocher" : "Cocher"} ${aggregatedItem.name}`}
+                      aria-pressed={isChecked}
+                      className={clsx(
+                        "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
+                        isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300",
+                        !writeEnabled && "cursor-default"
                       )}
-                      {listItem.type === "item" && listItem.item.quantity && (
-                        <span className="text-sm text-muted-foreground">
-                          {listItem.item.quantity}
-                        </span>
+                    >
+                      {isChecked && <Check size={14} strokeWidth={3} />}
+                    </button>
+
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <div className="flex items-baseline gap-2 overflow-hidden">
+                          <span
+                            className={clsx(
+                              "truncate text-base font-semibold",
+                              isChecked ? "text-green-700 line-through" : "text-text"
+                            )}
+                          >
+                            {aggregatedItem.name}
+                          </span>
+                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                            <span className="shrink-0 text-sm font-medium text-muted-foreground">
+                              {formatAggregatedQuantity(
+                                aggregatedItem.quantity,
+                                aggregatedItem.unit
+                              )}
+                            </span>
+                          )}
+                        </div>
+
+                        {hasMultipleSources && (
+                          <button
+                            onClick={() => toggleExpanded(aggregatedItem.id)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
+                            aria-label={isExpanded ? "Voir moins" : "Voir les sources"}
+                          >
+                            <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
+                              <ChevronDown size={14} className="text-muted-foreground" />
+                            </motion.div>
+                          </button>
+                        )}
+                      </div>
+
+                      {!isExpanded && (
+                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                          {hasMultipleSources ? (
+                            <span className="font-medium text-accent">
+                              {aggregatedItem.sources.length} sources
+                            </span>
+                          ) : (
+                            <>
+                              {aggregatedItem.sources[0].type === "ingredient" && (
+                                <>
+                                  <span className="font-medium">
+                                    {aggregatedItem.sources[0].item.name}
+                                  </span>
+                                  {" · "}
+                                </>
+                              )}
+                              {aggregatedItem.sources[0].mealTitle} ·{" "}
+                              {aggregatedItem.sources[0].serviceTitle}
+                            </>
+                          )}
+                        </p>
+                      )}
+
+                      {/* Expanded View */}
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="mt-3 space-y-2 border-t border-black/5 pt-3"
+                        >
+                          {aggregatedItem.sources.map((source, sIdx) => (
+                            <div key={sIdx} className="flex items-center justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-xs font-medium text-text">
+                                  {source.type === "ingredient" ? (
+                                    <>
+                                      <span className="text-muted-foreground">Dans</span>{" "}
+                                      {source.item.name}
+                                    </>
+                                  ) : (
+                                    source.mealTitle
+                                  )}
+                                </p>
+                                <p className="truncate text-[10px] text-muted-foreground">
+                                  {source.mealTitle} · {source.serviceTitle}
+                                </p>
+                              </div>
+                              {source.originalQuantity && (
+                                <span className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                                  {source.originalQuantity}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </motion.div>
                       )}
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {listItem.type === "ingredient" && (
-                        <>
-                          <span className="font-medium">{listItem.item.name}</span>
-                          {" · "}
-                        </>
-                      )}
-                      {listItem.mealTitle} · {listItem.serviceTitle}
-                    </p>
-                  </div>
-                </motion.button>
+                  </motion.div>
+                </div>
               );
             })}
           </div>
