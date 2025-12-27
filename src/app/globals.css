@@ -12,6 +12,7 @@
     --accent-glow: 280 100% 75%;
     --accent-soft: #f8f2ff;
     --text: #1a0b2e;
+    --shine-color: rgba(168, 85, 247, 0.5);
 
     background: #fdfaff;
     position: relative;
@@ -157,6 +158,7 @@
     --text: #ffffff;
     --accent-glow: 45 100% 70%;
     --accent-soft: #1a1a1a;
+    --shine-color: rgba(255, 255, 255, 0.4);
 
     background: #000000 !important;
     color: #ffffff !important;
@@ -273,6 +275,7 @@
     --text: #450a0a;
     --gold: #d4af37;
     --green: #15803d;
+    --shine-color: rgba(212, 175, 55, 0.6);
 
     background: linear-gradient(180deg, #fefcfa 0%, #fff5f5 50%, #f0fdf4 100%);
     background-attachment: fixed;
@@ -726,6 +729,7 @@
     --surface: #ffffff;
     --accent-soft: #f4f4f5;
     --text: #09090b;
+    --shine-color: rgba(255, 255, 255, 0.4);
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -829,18 +833,22 @@
   position: absolute;
   top: -50%;
   left: -60%;
-  width: 20%;
+  width: 40%;
   height: 200%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(to right, transparent, var(--shine-color), transparent);
   transform: rotate(30deg);
-  animation: shine-sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: shine-sweep 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes shine-sweep {
   0% {
     left: -60%;
   }
-  25%,
+
+  15% {
+    left: 140%;
+  }
+
   100% {
     left: 140%;
   }

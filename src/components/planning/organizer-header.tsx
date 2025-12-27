@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Check, ShieldAlert, Share, ChevronDown, CheckCircle } from "lucide-react";
+import { ShieldAlert, Share, ChevronDown, CheckCircle } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
@@ -91,7 +91,7 @@ export function OrganizerHeader({
             {!readOnly && (
               <button
                 onClick={handleShare}
-                className="btn-shine group flex h-10 items-center gap-2 rounded-full border border-gray-100 bg-white px-4 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
+                className="btn-shine group flex h-10 items-center gap-2 rounded-full border border-transparent bg-white px-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
                 title="Partager l'accès"
               >
                 {copied ? (
