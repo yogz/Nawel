@@ -7,6 +7,13 @@ import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -137,42 +144,29 @@ function PlanningFilters({
 
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
-      <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1 sm:overflow-visible sm:pb-0">
-        <Button
-          variant="premium"
-          size="premium"
-          active={planningFilter.type === "all"}
-          onClick={() => setPlanningFilter({ type: "all" })}
-          icon={<Stars size={14} />}
-          iconClassName="h-7 w-7"
+      <div className="flex items-center gap-2">
+        <Select
+          value={planningFilter.type}
+          onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
         >
-          <span
-            className={cn(
-              "whitespace-nowrap text-[10px] font-black uppercase tracking-wider sm:text-xs",
-              planningFilter.type === "all" ? "text-accent" : "text-gray-400"
-            )}
-          >
-            Tout le monde
-          </span>
-        </Button>
-
-        <Button
-          variant="premium"
-          size="premium"
-          active={planningFilter.type === "unassigned"}
-          onClick={() => setPlanningFilter({ type: "unassigned" })}
-          icon={<CircleHelp size={14} />}
-          iconClassName="h-7 w-7"
-        >
-          <span
-            className={cn(
-              "whitespace-nowrap text-[10px] font-black uppercase tracking-wider sm:text-xs",
-              planningFilter.type === "unassigned" ? "text-accent" : "text-gray-400"
-            )}
-          >
-            À prévoir ({unassignedItemsCount})
-          </span>
-        </Button>
+          <SelectTrigger className="h-10 w-auto gap-2 rounded-full border-none bg-white py-1 pl-3 pr-8 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 focus:ring-accent/20">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent align="start">
+            <SelectItem value="all" textValue="Tout le monde">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-accent">
+                <Stars size={14} className="h-4 w-4" />
+                <span>Tout le monde</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="unassigned" textValue={`À prévoir (${unassignedItemsCount})`}>
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-accent">
+                <CircleHelp size={14} className="h-4 w-4" />
+                <span>À prévoir ({unassignedItemsCount})</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {!readOnly && (
