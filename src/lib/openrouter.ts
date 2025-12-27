@@ -53,8 +53,7 @@ export const AVAILABLE_FREE_MODELS = [
   "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
   "qwen/qwen3-4b:free",
   "mistralai/mistral-small-3.1-24b-instruct:free",
-  "google/gemma-3-4b-it:free",
-  "google/gemma-3-27b-it:free",
+  "mistralai/mistral-7b-instruct:free",
 ] as const;
 
 export type AvailableFreeModel = (typeof AVAILABLE_FREE_MODELS)[number];
@@ -128,7 +127,7 @@ function validateIngredients(data: unknown): GeneratedIngredient[] {
         item.name.length < 100 &&
         (item.quantity === undefined || typeof item.quantity === "string")
     )
-    .slice(0, 12); // Max 12 ingredients
+    .slice(0, 15); // Max 15 ingredients
 }
 
 export async function generateIngredients(
@@ -176,7 +175,7 @@ CONTRAINTES :
 - Cible : ${guestDescription}
 - Ajuste les quantités pour cette cible exacte
 - Si enfants mentionnés, adapte les portions
-- Maximum 12 ingrédients essentiels
+- Maximum 15 ingrédients essentiels
 - Unités : g, kg, ml, cl, L, c. à soupe, c. à café, pièces, pincée
 
 FALLBACK :
@@ -331,7 +330,7 @@ CONTRAINTES :
 - Cible : ${guestDescription}
 - Ajuste les quantités pour cette cible exacte
 - Si enfants mentionnés, adapte les portions
-- Maximum 12 ingrédients essentiels
+- Maximum 15 ingrédients essentiels
 - Unités : g, kg, ml, cl, L, c. à soupe, c. à café, pièces, pincée
 
 FALLBACK :
