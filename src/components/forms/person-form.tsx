@@ -32,8 +32,17 @@ export function PersonForm({
           autoFocus
         />
       </div>
-      <Button className="w-full" onClick={() => onSubmit(name)} disabled={readOnly || !name.trim()}>
-        Ajouter au groupe ✨
+      <Button
+        variant="premium"
+        className="w-full py-6 pr-8 shadow-md"
+        icon={<span>✨</span>}
+        onClick={() => onSubmit(name)}
+        disabled={readOnly || !name.trim()}
+        shine
+      >
+        <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+          Ajouter au groupe
+        </span>
       </Button>
     </div>
   );

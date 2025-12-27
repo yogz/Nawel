@@ -157,11 +157,16 @@ export function ServiceForm({
       </div>
 
       <Button
-        className="w-full"
+        variant="premium"
+        className="w-full py-6 pr-8 shadow-md"
+        icon={<CalendarIcon size={16} />}
         onClick={handleSubmit}
         disabled={readOnly || !title.trim() || ((mealId === "new" || forceNewMeal) && !newMealDate)}
+        shine
       >
-        Ajouter le service
+        <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+          Ajouter le service
+        </span>
       </Button>
     </div>
   );

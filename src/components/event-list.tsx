@@ -19,6 +19,8 @@ type Event = {
   meals?: { date: string }[];
 };
 
+import { Button } from "./ui/button";
+
 export function EventList({
   events,
   writeEnabled,
@@ -149,36 +151,46 @@ export function EventList({
       <div className="flex items-center justify-between border-b border-gray-100 pb-4">
         <h2 className="text-xl font-black">Événements</h2>
         {writeEnabled && (
-          <button
+          <Button
+            variant="premium"
+            className="h-10 pr-6"
+            icon={<Plus size={16} />}
             onClick={() => setShowCreateForm(true)}
-            className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95"
+            shine
           >
-            <Plus size={16} />
-            <span className="hidden sm:inline">Nouvel événement</span>
-            <span className="sm:hidden">Nouveau</span>
-          </button>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
+              <span className="hidden sm:inline">Nouvel événement</span>
+              <span className="sm:hidden">Nouveau</span>
+            </span>
+          </Button>
         )}
       </div>
 
       {events.length === 0 ? (
-        <div className="space-y-6 rounded-3xl border border-black/[0.03] bg-white p-12 text-center shadow-sm">
+        <div className="space-y-10 rounded-[32px] border border-black/[0.03] bg-white p-12 text-center shadow-sm">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/10 text-accent">
             <Calendar size={40} />
           </div>
-          <div>
-            <p className="text-lg font-bold text-text">Aucun événement pour l&apos;instant</p>
-            <p className="mx-auto mt-1 max-w-xs text-sm text-gray-500">
+          <div className="space-y-2">
+            <h3 className="text-xl font-black text-text">Aucun événement</h3>
+            <p className="mx-auto max-w-[240px] text-xs font-medium leading-relaxed text-gray-400">
               Créez votre premier événement pour commencer à organiser vos fêtes ! 🎁
             </p>
           </div>
           {writeEnabled && (
-            <button
-              onClick={() => setShowCreateForm(true)}
-              className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all hover:scale-105 active:scale-95"
-            >
-              <Plus size={18} />
-              Créer mon premier événement
-            </button>
+            <div className="flex justify-center">
+              <Button
+                variant="premium"
+                className="py-7 pr-8 shadow-xl shadow-accent/10"
+                icon={<Plus size={18} />}
+                onClick={() => setShowCreateForm(true)}
+                shine
+              >
+                <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                  Créer mon premier événement
+                </span>
+              </Button>
+            </div>
           )}
         </div>
       ) : (

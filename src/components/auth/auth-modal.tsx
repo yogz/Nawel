@@ -4,6 +4,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { Loader2 } from "lucide-react";
+import { Button } from "../ui/button";
 import { GoogleIcon } from "./google-icon";
 
 export function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -70,23 +71,27 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
       <div className="space-y-6 py-4">
         <form onSubmit={handleCredentialsAuth} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-900">Email</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
+              className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-base outline-none transition-all focus:border-accent focus:bg-white"
               placeholder="votre@email.com"
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-900">Mot de passe</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Mot de passe
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
+              className="w-full rounded-2xl border border-gray-100 bg-gray-50 px-4 py-4 text-base outline-none transition-all focus:border-accent focus:bg-white"
               placeholder="••••••••"
               required
             />
@@ -94,19 +99,25 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
           {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full rounded-2xl bg-accent py-4 text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
-          >
-            {isPending ? (
-              <Loader2 className="mx-auto h-5 w-5 animate-spin" />
-            ) : mode === "signin" ? (
-              "Se connecter"
-            ) : (
-              "S'inscrire"
-            )}
-          </button>
+          <div className="pt-2">
+            <Button
+              type="submit"
+              variant="premium"
+              className="w-full py-7 pr-8 shadow-md"
+              disabled={isPending}
+              shine
+            >
+              <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                {isPending ? (
+                  <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+                ) : mode === "signin" ? (
+                  "Se connecter"
+                ) : (
+                  "S'inscrire"
+                )}
+              </span>
+            </Button>
+          </div>
         </form>
 
         <div className="relative">

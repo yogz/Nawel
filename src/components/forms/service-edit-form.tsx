@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -41,25 +42,35 @@ export function ServiceEditForm({ service, onSubmit, onDelete, onClose }: any) {
         />
       </div>
 
-      <div className="flex flex-col gap-3">
-        <Button
-          type="submit"
-          className="w-full rounded-2xl bg-accent text-white hover:bg-accent/90"
-        >
-          Mettre à jour
+      <div className="flex flex-col gap-3 pt-2">
+        <Button type="submit" variant="premium" className="w-full py-6 pr-8 shadow-md" shine>
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+            Mettre à jour
+          </span>
         </Button>
         {onDelete && (
           <Button
             type="button"
-            variant="destructive"
+            variant="premium"
+            className="w-full border-red-100 bg-red-50/30"
+            icon={<Trash2 size={16} />}
+            iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
             onClick={() => onDelete(service.id)}
-            className="w-full rounded-2xl"
           >
-            Supprimer le service
+            <span className="text-xs font-black uppercase tracking-widest text-red-600">
+              Supprimer le service
+            </span>
           </Button>
         )}
-        <Button type="button" variant="outline" onClick={onClose} className="w-full rounded-2xl">
-          Annuler
+        <Button
+          type="button"
+          variant="premium"
+          onClick={onClose}
+          className="w-full border-gray-100 bg-gray-50/50"
+        >
+          <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+            Annuler
+          </span>
         </Button>
       </div>
     </form>

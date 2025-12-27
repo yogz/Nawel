@@ -177,37 +177,64 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               </div>
 
               {/* Theme Selection */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
                   <Sparkles size={12} />
                   Ambiance
                 </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {themes.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setTheme(t.id)}
-                      className={`flex items-center justify-between rounded-xl border p-3 transition-all ${
-                        theme === t.id
-                          ? "border-accent/30 bg-accent/10 ring-2 ring-accent/20"
-                          : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-xl">{t.emoji}</span>
-                        <div className="text-left">
-                          <p className="text-xs font-bold text-text">{t.label}</p>
-                          <p className="text-[9px] font-medium text-gray-500">{t.description}</p>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {themes.map((t) => {
+                    const isSelected = theme === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setTheme(t.id)}
+                        className={clsx(
+                          "flex items-center justify-between rounded-2xl border-2 p-3.5 transition-all active:scale-[0.98]",
+                          isSelected
+                            ? "border-accent bg-accent/5 ring-1 ring-accent/20"
+                            : "border-gray-50 bg-white hover:border-gray-200"
+                        )}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={clsx(
+                              "flex h-11 w-11 items-center justify-center rounded-xl text-2xl transition-all duration-300",
+                              isSelected
+                                ? "bg-accent text-white shadow-lg shadow-accent/20"
+                                : "bg-gray-100"
+                            )}
+                          >
+                            {t.emoji}
+                          </div>
+                          <div className="text-left">
+                            <p
+                              className={clsx(
+                                "text-xs font-black uppercase tracking-widest",
+                                isSelected ? "text-accent" : "text-gray-700"
+                              )}
+                            >
+                              {t.label}
+                            </p>
+                            <p className="mt-0.5 text-[10px] font-bold text-gray-400">
+                              {t.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      {theme === t.id && (
-                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white">
-                          <Check size={12} />
+                        <div
+                          className={clsx(
+                            "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all",
+                            isSelected ? "border-accent bg-accent" : "border-gray-200 bg-white"
+                          )}
+                        >
+                          {isSelected && (
+                            <div className="h-2.5 w-2.5 rounded-full bg-white shadow-sm" />
+                          )}
                         </div>
-                      )}
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -221,46 +248,51 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           )}
 
           <div className="space-y-3 pt-2">
-            <button
-              type="button"
+            <Button
+              variant="premium"
+              className="w-full border-gray-100 bg-gray-50/50"
+              icon={<LogOut size={16} />}
+              iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
               onClick={async () => {
                 await signOut();
                 onClose();
                 router.refresh();
               }}
-              className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-50 py-4 text-[10px] font-black uppercase tracking-widest text-gray-600 transition-all hover:bg-gray-100 active:scale-[0.98]"
             >
-              <LogOut
-                size={16}
-                className="text-gray-400 transition-colors group-hover:text-red-500"
-              />
-              <span>Se déconnecter</span>
-            </button>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                Se déconnecter
+              </span>
+            </Button>
 
             {/* Advanced Options Section */}
             <div className="pt-2">
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="flex w-full items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+                className="group flex w-full items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
               >
-                <ChevronDown
-                  size={14}
-                  className={clsx("transition-transform", showAdvanced && "rotate-180")}
-                />
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+                  <ChevronDown
+                    size={10}
+                    className={clsx("transition-transform", showAdvanced && "rotate-180")}
+                  />
+                </div>
                 Options avancées
               </button>
 
               {showAdvanced && (
                 <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-                  <button
-                    type="button"
+                  <Button
+                    variant="premium"
+                    className="w-full border-red-100 bg-red-50/30"
+                    icon={<Trash2 size={14} />}
+                    iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50/50 py-3 text-[10px] font-bold uppercase tracking-widest text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
                   >
-                    <Trash2 size={14} />
-                    Supprimer mon compte
-                  </button>
+                    <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
+                      Supprimer mon compte
+                    </span>
+                  </Button>
                 </div>
               )}
             </div>
@@ -287,30 +319,34 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             </div>
           )}
 
-          <div className="space-y-3">
+          <div className="space-y-4 pt-2">
             <Button
+              variant="premium"
+              className="w-full border-red-100 bg-red-50/30 py-7 pr-8 shadow-xl shadow-red-500/10"
+              icon={
+                isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />
+              }
+              iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
               onClick={handleDeleteAccount}
               disabled={isDeleting}
-              className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-red-500 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-500/10 transition-all hover:bg-red-600 active:scale-[0.98]"
+              shine
             >
-              {isDeleting ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <>
-                  <Trash2 size={18} />
-                  <span>Confirmer la suppression</span>
-                </>
-              )}
+              <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
+                Confirmer la suppression
+              </span>
             </Button>
 
-            <button
+            <Button
+              variant="premium"
+              className="w-full border-gray-100 bg-gray-50/50"
+              icon={<ArrowLeft size={16} />}
               onClick={() => setShowDeleteConfirm(false)}
               disabled={isDeleting}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-50 py-4 text-xs font-bold text-gray-700 transition-all hover:bg-gray-100"
             >
-              <ArrowLeft size={16} />
-              Retour
-            </button>
+              <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                Retour
+              </span>
+            </Button>
           </div>
         </div>
       )}

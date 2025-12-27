@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Sparkles, Loader2 } from "lucide-react";
+import { Trash2, ChevronDown, Sparkles, Loader2, Plus } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
 import clsx from "clsx";
 
@@ -147,43 +147,76 @@ export function ItemForm({
         />
       </div>
 
-      {/* Assign to person - compact horizontal scroll on mobile */}
+      {/* Assign to person - refined cards */}
       <div className="space-y-2">
-        <Label className="text-xs text-gray-400">Qui s&apos;en occupe ?</Label>
+        <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
+          Qui s&apos;en occupe ?
+        </Label>
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
             onClick={() => onAssign(null)}
             className={clsx(
-              "flex shrink-0 flex-col items-center gap-1 rounded-xl px-3 py-2 transition-all",
+              "flex shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all active:scale-95",
               !defaultItem?.personId
-                ? "bg-amber-100 text-amber-900 ring-2 ring-amber-200"
-                : "bg-gray-50 text-gray-500"
+                ? "bg-amber-50 ring-2 ring-amber-200"
+                : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
             )}
           >
-            <span className="text-lg">🥘</span>
-            <span className="whitespace-nowrap text-[9px] font-bold">À prévoir</span>
-          </button>
-          {people.map((person) => (
-            <button
-              key={person.id}
-              onClick={() => onAssign(person.id)}
+            <div
               className={clsx(
-                "flex min-w-[60px] shrink-0 flex-col items-center gap-1 rounded-xl px-3 py-2 transition-all",
-                defaultItem?.personId === person.id
-                  ? "bg-accent text-white ring-2 ring-accent/20"
-                  : "bg-gray-50 text-gray-600"
+                "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                !defaultItem?.personId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
               )}
             >
-              <span className="text-lg">
-                {getPersonEmoji(
-                  person.name,
-                  people.map((p) => p.name),
-                  person.emoji
+              <span className="text-lg">🥘</span>
+            </div>
+            <span
+              className={clsx(
+                "whitespace-nowrap text-[9px] font-black uppercase tracking-widest",
+                !defaultItem?.personId ? "text-amber-900" : "text-gray-400"
+              )}
+            >
+              À prévoir
+            </span>
+          </button>
+          {people.map((person) => {
+            const isSelected = defaultItem?.personId === person.id;
+            return (
+              <button
+                key={person.id}
+                onClick={() => onAssign(person.id)}
+                className={clsx(
+                  "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all active:scale-95",
+                  isSelected
+                    ? "bg-accent/5 ring-2 ring-accent/30"
+                    : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
                 )}
-              </span>
-              <span className="max-w-[50px] truncate text-[9px] font-bold">{person.name}</span>
-            </button>
-          ))}
+              >
+                <div
+                  className={clsx(
+                    "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                    isSelected ? "bg-accent text-white" : "bg-accent/10 text-accent"
+                  )}
+                >
+                  <span className="text-lg">
+                    {getPersonEmoji(
+                      person.name,
+                      people.map((p) => p.name),
+                      person.emoji
+                    )}
+                  </span>
+                </div>
+                <span
+                  className={clsx(
+                    "max-w-[60px] truncate text-[9px] font-black uppercase tracking-widest",
+                    isSelected ? "text-accent" : "text-gray-400"
+                  )}
+                >
+                  {person.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -191,41 +224,47 @@ export function ItemForm({
       <button
         type="button"
         onClick={() => setShowDetails(!showDetails)}
-        className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600"
+        className="group flex items-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
       >
-        <ChevronDown
-          className={clsx("h-4 w-4 transition-transform", showDetails && "rotate-180")}
-        />
+        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+          <ChevronDown
+            className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
+          />
+        </div>
         {showDetails ? "Moins d'options" : "Plus d'options"}
       </button>
 
       {showDetails && (
-        <div className="space-y-3 border-t border-gray-100 pt-2">
+        <div className="space-y-4 border-t border-gray-100 pt-4">
           {/* Note */}
-          <div className="space-y-1">
-            <Label className="text-xs text-gray-400">Note</Label>
+          <div className="space-y-2">
+            <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
+              Note
+            </Label>
             <Input
               placeholder="Marque, allergies, détails..."
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={readOnly}
-              className="h-10 rounded-xl text-sm"
+              className="h-11 rounded-xl text-sm"
             />
           </div>
 
           {/* Move to another service */}
           {isEditMode && allServices && allServices.length > 1 && (
-            <div className="space-y-1">
-              <Label className="text-xs text-gray-400">Déplacer</Label>
+            <div className="space-y-2">
+              <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
+                Déplacer
+              </Label>
               <Select
                 value={currentServiceId?.toString()}
                 onValueChange={(val) => onMoveService?.(Number(val))}
                 disabled={readOnly}
               >
-                <SelectTrigger className="rounded-xl">
+                <SelectTrigger className="h-11 rounded-xl">
                   <SelectValue placeholder="Autre service" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   {allServices.map((s) => (
                     <SelectItem key={s.id} value={s.id.toString()}>
                       {s.mealTitle} • {s.title}
@@ -238,39 +277,44 @@ export function ItemForm({
 
           {/* Delete button */}
           {isEditMode && onDelete && (
-            <Button
-              variant="ghost"
-              className="h-10 w-full rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600"
-              onClick={onDelete}
-              disabled={readOnly}
-            >
-              <Trash2 size={14} className="mr-1.5" />
-              Supprimer
-            </Button>
+            <div className="pt-2">
+              <Button
+                variant="premium"
+                className="w-full border-red-100 bg-red-50/30"
+                icon={<Trash2 size={14} />}
+                iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+                onClick={onDelete}
+                disabled={readOnly}
+              >
+                <span className="text-xs font-black uppercase tracking-widest text-red-600">
+                  Supprimer l&apos;article
+                </span>
+              </Button>
+            </div>
           )}
         </div>
       )}
 
       {/* AI Ingredients section - only for existing items */}
       {isEditMode && onGenerateIngredients && (
-        <div className="space-y-3 border-t border-gray-100 pt-3">
+        <div className="space-y-3 border-t border-gray-100 pt-1">
           {/* Generate button - only show if NO ingredients yet */}
           {!readOnly && (!ingredients || ingredients.length === 0) && (
             <button
               type="button"
               onClick={() => onGenerateIngredients(name, note)}
               disabled={isGenerating || !name.trim()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
             >
               {isGenerating ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Generation en cours...
+                  Generation...
                 </>
               ) : (
                 <>
                   <Sparkles size={16} />
-                  Generer les ingredients
+                  Générer les ingrédients
                 </>
               )}
             </button>
@@ -278,7 +322,7 @@ export function ItemForm({
 
           {/* Loading state with message */}
           {isGenerating && (
-            <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-400">
               <Loader2 size={18} className="animate-spin text-purple-500" />
               <span>L&apos;IA analyse votre plat...</span>
             </div>
@@ -305,13 +349,20 @@ export function ItemForm({
 
       {/* Add button for new items */}
       {!isEditMode && (
-        <Button
-          className="h-12 w-full rounded-2xl text-base"
-          onClick={handleSubmit}
-          disabled={readOnly || !name.trim()}
-        >
-          Ajouter
-        </Button>
+        <div className="pt-4">
+          <Button
+            variant="premium"
+            className="w-full py-6 pr-8 shadow-md"
+            icon={<Plus />}
+            onClick={handleSubmit}
+            disabled={readOnly || !name.trim()}
+            shine
+          >
+            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+              Ajouter l&apos;article
+            </span>
+          </Button>
+        </div>
       )}
     </div>
   );
