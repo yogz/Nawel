@@ -53,11 +53,33 @@ export function ModelComparison() {
   const runComparison = () => {
     if (selectedModels.length === 0) return;
 
+    console.group("🧪 Model Comparison Test");
+    console.log("📋 Selected models:", selectedModels);
+    console.log("📝 System Prompt:\n", systemPrompt);
+    console.log("💬 User Prompt:", userPrompt);
+    console.groupEnd();
+
     startTransition(async () => {
       try {
         const testResults = await testModelsAction(selectedModels, systemPrompt, userPrompt);
         // Sort by response time
-        setResults(testResults.sort((a, b) => a.responseTimeMs - b.responseTimeMs));
+        const sortedResults = testResults.sort((a, b) => a.responseTimeMs - b.responseTimeMs);
+        setResults(sortedResults);
+
+        // Log results
+        console.group("📊 Model Comparison Results");
+        sortedResults.forEach((result, index) => {
+          const status = result.success ? "✅" : "❌";
+          console.group(`${status} #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
+          if (result.success) {
+            console.log("Ingredients:", result.ingredients);
+            console.log("Raw response:", result.rawResponse);
+          } else {
+            console.error("Error:", result.error);
+          }
+          console.groupEnd();
+        });
+        console.groupEnd();
       } catch (error) {
         console.error("Test failed:", error);
       }
@@ -66,6 +88,14 @@ export function ModelComparison() {
 
   const getModelShortName = (model: string) => {
     return model.replace(":free", "").split("/").pop() || model;
+  };
+
+  const formatRawResponse = (raw: string): string => {
+    try {
+      return JSON.stringify(JSON.parse(raw), null, 2);
+    } catch {
+      return raw; // Retourne la réponse brute si ce n'est pas du JSON
+    }
   };
 
   return (
@@ -237,7 +267,7 @@ export function ModelComparison() {
                       Voir la réponse brute
                     </summary>
                     <pre className="mt-2 overflow-auto rounded-lg bg-gray-900 p-3 text-xs text-green-400">
-                      {JSON.stringify(JSON.parse(result.rawResponse), null, 2)}
+                      {formatRawResponse(result.rawResponse)}
                     </pre>
                   </details>
                 )}

@@ -45,10 +45,16 @@ export const AVAILABLE_FREE_MODELS = [
   "arcee-ai/trinity-mini:free",
   "tngtech/tng-r1t-chimera:free",
   "allenai/olmo-3-32b-think:free",
+  "kwaipilot/kat-coder-pro:free",
+  "alibaba/tongyi-deepresearch-30b-a3b:free",
+  "nvidia/nemotron-nano-9b-v2:free",
   "openai/gpt-oss-20b:free",
+  "z-ai/glm-4.5-air:free",
+  "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
   "qwen/qwen3-4b:free",
   "mistralai/mistral-small-3.1-24b-instruct:free",
   "google/gemma-3-4b-it:free",
+  "google/gemma-3-27b-it:free",
 ] as const;
 
 export type AvailableFreeModel = (typeof AVAILABLE_FREE_MODELS)[number];
@@ -68,7 +74,13 @@ async function callWithFallback(
 
   for (const model of FREE_MODELS) {
     try {
-      const result = await client.chat.send({ ...params, model, stream: false });
+      const result = await client.chat.send({
+        ...params,
+        model,
+        stream: false,
+        // Plugin pour réparer les JSON malformés
+        plugins: [{ id: "response-healing" }],
+      } as Parameters<typeof client.chat.send>[0]);
       return result as ChatCompletionResponse;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
@@ -253,7 +265,9 @@ export async function testModelWithPrompt(
       maxTokens: 400,
       responseFormat: INGREDIENTS_SCHEMA,
       stream: false,
-    });
+      // Plugin pour réparer les JSON malformés
+      plugins: [{ id: "response-healing" }],
+    } as Parameters<typeof client.chat.send>[0]);
 
     const responseTimeMs = Math.round(performance.now() - startTime);
     const rawContent = (result as ChatCompletionResponse).choices?.[0]?.message?.content;
@@ -281,12 +295,29 @@ export async function testModelWithPrompt(
     }
   } catch (error) {
     const responseTimeMs = Math.round(performance.now() - startTime);
+
+    // Log détaillé de l'erreur provider
+    console.error(`[${model}] Provider error:`, error);
+
+    // Extraire plus de détails si disponible
+    let errorMessage = error instanceof Error ? error.message : String(error);
+    if (error && typeof error === "object") {
+      const err = error as {
+        statusCode?: number;
+        code?: string;
+        metadata?: { provider_name?: string };
+      };
+      if (err.statusCode) errorMessage = `[${err.statusCode}] ${errorMessage}`;
+      if (err.metadata?.provider_name)
+        errorMessage = `${err.metadata.provider_name}: ${errorMessage}`;
+    }
+
     return {
       model,
       success: false,
       ingredients: [],
       responseTimeMs,
-      error: error instanceof Error ? error.message : String(error),
+      error: errorMessage,
     };
   }
 }
