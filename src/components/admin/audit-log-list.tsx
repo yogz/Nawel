@@ -80,6 +80,91 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
     }
   };
 
+  const renderChangeSummary = (log: AuditLogEntry) => {
+    if (log.action === "create")
+      return <span className="text-xs font-medium text-green-600">Nouveau record crée</span>;
+    if (log.action === "delete")
+      return <span className="text-xs font-medium text-red-600">Record supprimé</span>;
+    if (!log.oldData || !log.newData) return null;
+
+    try {
+      const oldObj = JSON.parse(log.oldData);
+      const newObj = JSON.parse(log.newData);
+      const changes: string[] = [];
+
+      const skipKeys = [
+        "updatedAt",
+        "createdAt",
+        "id",
+        "eventId",
+        "mealId",
+        "personId",
+        "key",
+        "adminKey",
+      ];
+
+      const formatVal = (v: any) => {
+        if (v === null || v === undefined) return "vide";
+        if (typeof v === "object") return "...";
+        return String(v);
+      };
+
+      Object.keys(newObj).forEach((key) => {
+        if (skipKeys.includes(key)) return;
+        if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
+          changes.push(`${key}: ${formatVal(oldObj[key])} → ${formatVal(newObj[key])}`);
+        }
+      });
+
+      if (changes.length === 0)
+        return (
+          <span className="text-[10px] italic text-muted-foreground">Aucun changement visible</span>
+        );
+
+      return (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {changes.slice(0, 4).map((change, i) => (
+            <span
+              key={i}
+              className="rounded border border-primary/10 bg-primary/5 px-2 py-0.5 text-[9px] font-medium text-primary"
+            >
+              {change}
+            </span>
+          ))}
+          {changes.length > 4 && (
+            <span className="self-center text-[9px] text-muted-foreground">
+              +{changes.length - 4} autres
+            </span>
+          )}
+        </div>
+      );
+    } catch {
+      return null;
+    }
+  };
+
+  const getRecordDisplayName = (log: AuditLogEntry) => {
+    try {
+      const data = log.newData
+        ? JSON.parse(log.newData)
+        : log.oldData
+          ? JSON.parse(log.oldData)
+          : null;
+      if (!data) return `#${log.recordId}`;
+      const name = data.name || data.title || data.dishName || data.email;
+      return name ? (
+        <>
+          <span className="font-bold text-primary">{name}</span>
+          <span className="ml-1 text-[10px] text-muted-foreground">#{log.recordId}</span>
+        </>
+      ) : (
+        `#${log.recordId}`
+      );
+    } catch {
+      return `#${log.recordId}`;
+    }
+  };
+
   const JsonViewer = ({ data, label }: { data: string | null; label: string }) => {
     if (!data) return null;
     try {
@@ -126,8 +211,7 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
               <div className="flex flex-wrap items-center gap-2">
                 {getActionBadge(log.action)}
                 <span className="text-sm font-semibold text-text">
-                  {log.tableName}{" "}
-                  <span className="font-normal text-muted-foreground">#{log.recordId}</span>
+                  {log.tableName} {getRecordDisplayName(log)}
                 </span>
               </div>
 
@@ -147,6 +231,7 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
                   </span>
                 )}
               </div>
+              {renderChangeSummary(log)}
             </div>
 
             <Button
