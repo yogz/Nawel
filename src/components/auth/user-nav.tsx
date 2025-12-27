@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { useSession, signOut } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 import { AuthModal } from "./auth-modal";
 import { ProfileDrawer } from "./profile-drawer";
-import { LogOut, User as UserIcon, LogIn, Settings } from "lucide-react";
+import { User as UserIcon, LogIn, Settings } from "lucide-react";
 
 export function UserNav() {
   const { data: session, isPending } = useSession();
@@ -63,14 +63,6 @@ export function UserNav() {
       </button>
 
       <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
-
-      <button
-        onClick={() => signOut()}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-100 bg-white text-gray-400 shadow-sm transition-all hover:text-red-500 active:scale-95"
-        title="Déconnexion"
-      >
-        <LogOut size={18} />
-      </button>
     </div>
   );
 }

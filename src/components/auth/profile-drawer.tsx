@@ -7,10 +7,21 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import { updateUserAction, deleteUserAction } from "@/app/actions/user-actions";
-import { Loader2, User, Trash2, AlertTriangle, ArrowLeft, Sparkles, Check } from "lucide-react";
+import {
+  Loader2,
+  User,
+  Trash2,
+  AlertTriangle,
+  ArrowLeft,
+  Sparkles,
+  Check,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useThemeMode } from "../theme-provider";
+import clsx from "clsx";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -31,6 +42,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Sync state with session when drawer opens
   useEffect(() => {
@@ -39,27 +51,36 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       setError(null);
       setSuccess(false);
       setShowDeleteConfirm(false);
+      setShowAdvanced(false);
     }
   }, [session, open]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      await updateUserAction({ name });
-      setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 1500);
-    } catch (err: any) {
-      setError(err.message || "Une erreur est survenue lors de la mise à jour.");
-    } finally {
-      setIsSubmitting(false);
+  // Auto-save logic for name
+  useEffect(() => {
+    if (!open || !session?.user || name === (session.user.name || "")) {
+      return;
     }
-  };
+
+    const saveChanges = async () => {
+      setIsSubmitting(true);
+      setError(null);
+      setSuccess(false);
+
+      try {
+        await updateUserAction({ name });
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 2000);
+      } catch (err) {
+        const error = err as Error;
+        setError(error.message || "Une erreur est survenue lors de la mise à jour.");
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    const timeoutId = setTimeout(saveChanges, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [name, open, session?.user]);
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -72,13 +93,16 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       onClose();
       router.push("/");
       router.refresh();
-    } catch (err: any) {
-      setError(err.message || "Erreur lors de la suppression du compte.");
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || "Erreur lors de la suppression du compte.");
       setIsDeleting(false);
     }
   };
 
-  if (sessionPending || !session) return null;
+  if (sessionPending || !session) {
+    return null;
+  }
 
   return (
     <BottomSheet
@@ -87,7 +111,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       title={showDeleteConfirm ? "Supprimer mon compte" : "Paramètres du profil"}
     >
       {!showDeleteConfirm ? (
-        <form onSubmit={handleSubmit} className="space-y-6 px-1 pb-12">
+        <div className="space-y-6 px-1 pb-12">
           <div className="space-y-6">
             {/* Avatar Display (Read Only) */}
             <div className="flex flex-col items-center gap-2">
@@ -106,9 +130,26 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   </div>
                 )}
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                {session.user.email}
-              </p>
+              <div className="text-center">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                  {session.user.email}
+                </p>
+                {/* Auto-save status indicator */}
+                <div className="mt-1 h-4">
+                  {isSubmitting && (
+                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-accent">
+                      <Loader2 size={10} className="animate-spin" />
+                      <span>Enregistrement...</span>
+                    </div>
+                  )}
+                  {success && (
+                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-green-500">
+                      <Check size={10} />
+                      <span>Synchronisé</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -179,30 +220,52 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             </div>
           )}
 
-          {success && (
-            <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-xs font-bold text-green-600 animate-in fade-in slide-in-from-top-2">
-              <p>Profil mis à jour ! ✨</p>
-            </div>
-          )}
-
           <div className="space-y-3 pt-2">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="h-14 w-full rounded-2xl bg-black text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-black/10 transition-all hover:bg-zinc-800 active:scale-[0.98]"
-            >
-              {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : "Enregistrer"}
-            </Button>
-
             <button
               type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="w-full py-3 text-[10px] font-bold uppercase tracking-widest text-red-400 transition-colors hover:text-red-600"
+              onClick={async () => {
+                await signOut();
+                onClose();
+                router.refresh();
+              }}
+              className="group flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-50 py-4 text-[10px] font-black uppercase tracking-widest text-gray-600 transition-all hover:bg-gray-100 active:scale-[0.98]"
             >
-              Supprimer mon compte
+              <LogOut
+                size={16}
+                className="text-gray-400 transition-colors group-hover:text-red-500"
+              />
+              <span>Se déconnecter</span>
             </button>
+
+            {/* Advanced Options Section */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="flex w-full items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+              >
+                <ChevronDown
+                  size={14}
+                  className={clsx("transition-transform", showAdvanced && "rotate-180")}
+                />
+                Options avancées
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50/50 py-3 text-[10px] font-bold uppercase tracking-widest text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 size={14} />
+                    Supprimer mon compte
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </form>
+        </div>
       ) : (
         <div className="space-y-6 px-1 pb-12 animate-in fade-in slide-in-from-right-4">
           <div className="flex flex-col items-center gap-4 text-center">

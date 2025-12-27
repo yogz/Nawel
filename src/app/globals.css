@@ -817,3 +817,31 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Shine effect for premium buttons */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 20%;
+  height: 200%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: rotate(30deg);
+  animation: shine-sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -60%;
+  }
+  25%,
+  100% {
+    left: 140%;
+  }
+}

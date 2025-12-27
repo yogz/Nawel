@@ -82,12 +82,7 @@ export function OrganizerHeader({
             NAWEL ✨
           </Link>
           <div className="flex items-center gap-2">
-            {!readOnly ? (
-              <span className="flex items-center gap-1 rounded-full bg-zinc-900 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white sm:gap-1.5 sm:px-3 sm:text-[11px]">
-                <Check size={10} className="sm:h-3 sm:w-3" />
-                <span className="xs:inline hidden">Live</span>
-              </span>
-            ) : (
+            {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
                 <ShieldAlert size={10} className="sm:h-3 sm:w-3" />
                 <span className="xs:inline hidden">Miroir</span>
@@ -96,15 +91,17 @@ export function OrganizerHeader({
             {!readOnly && (
               <button
                 onClick={handleShare}
-                className="flex items-center gap-1 rounded-full bg-accent/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:bg-accent/20 sm:gap-1.5 sm:px-3 sm:text-[11px]"
+                className="btn-shine group flex h-10 items-center gap-2 rounded-full border border-gray-100 bg-white px-4 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                 title="Partager l'accès"
               >
                 {copied ? (
-                  <CheckCircle size={10} className="text-green-500 sm:h-3 sm:w-3" />
+                  <CheckCircle size={16} className="text-green-500" />
                 ) : (
-                  <Share size={10} className="sm:h-3 sm:w-3" />
+                  <Share size={16} className="text-accent" />
                 )}
-                <span className="hidden sm:inline">Partager</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
+                  Partager
+                </span>
               </button>
             )}
             <UserNav />
