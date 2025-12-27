@@ -66,30 +66,44 @@ export function LoginForm() {
     <div className="flex w-full max-w-sm flex-col items-center px-4">
       <div className="relative w-full">
         {/* Animated Aura Background */}
-        <div className="absolute -inset-4 -z-10 overflow-visible">
+        <div className="absolute -inset-12 -z-10 overflow-visible">
           <motion.div
             animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.15, 0.25, 0.15],
+              scale: [1, 1.1, 1],
+              rotate: [0, 90, 180, 270, 360],
+              opacity: [0.4, 0.6, 0.4],
             }}
             transition={{
-              duration: 4,
+              duration: 8,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: "linear",
             }}
-            className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-purple-500/30 via-accent/30 to-red-500/30 blur-2xl"
+            className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-purple-600/50 via-accent/50 to-red-600/50 blur-3xl"
           />
           <motion.div
             animate={{
-              scale: [1.05, 1, 1.05],
-              opacity: [0.1, 0.2, 0.1],
+              scale: [1.1, 1, 1.1],
+              rotate: [360, 270, 180, 90, 0],
+              opacity: [0.3, 0.5, 0.3],
             }}
             transition={{
-              duration: 6,
+              duration: 10,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="absolute inset-0 rounded-[3rem] bg-gradient-to-bl from-accent/40 via-purple-600/40 to-blue-600/40 blur-[40px]"
+          />
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 5,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-bl from-accent/20 via-purple-500/20 to-blue-500/20 blur-3xl"
+            className="absolute inset-0 rounded-[3rem] bg-purple-500/30 blur-[60px]"
           />
         </div>
 
