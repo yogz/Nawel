@@ -2,7 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 export function BottomSheet({
   open,
@@ -15,6 +16,13 @@ export function BottomSheet({
   title: string;
   children: React.ReactNode;
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
   // Lock body scroll when sheet is open
   useEffect(() => {
     if (open) {
@@ -35,14 +43,16 @@ export function BottomSheet({
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="sheet-title"
-          className="fixed inset-0 z-50 flex items-end justify-center"
+          className="fixed inset-0 z-[100] flex items-end justify-center"
         >
           <motion.div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -53,29 +63,38 @@ export function BottomSheet({
             aria-hidden="true"
           />
           <motion.div
-            className="relative z-10 flex max-h-[85vh] w-full max-w-xl flex-col rounded-t-[2rem] border-x border-t border-white/20 bg-surface p-4 shadow-2xl sm:rounded-t-[2.5rem] sm:p-6"
-            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+            className="relative z-10 flex max-h-[90dvh] w-full max-w-xl flex-col rounded-t-[2rem] border-x border-t border-white/20 bg-surface p-4 shadow-2xl sm:rounded-t-[2.5rem] sm:p-6"
+            style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
+            {/* Handle bar for mobile feel */}
+            <div className="mx-auto mb-4 h-1.5 w-12 shrink-0 rounded-full bg-black/10 transition-colors hover:bg-black/20" />
+
             <div className="mb-3 flex flex-shrink-0 items-center justify-between sm:mb-4">
-              <h3 id="sheet-title" className="text-base font-semibold text-text sm:text-lg">
+              <h3
+                id="sheet-title"
+                className="text-base font-black tracking-tight text-text sm:text-lg"
+              >
                 {title}
               </h3>
               <button
                 onClick={onClose}
-                className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 active:scale-95 sm:p-2"
+                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 sm:p-2"
                 aria-label="Close"
               >
                 <X size={18} />
               </button>
             </div>
-            <div className="-mx-4 flex-1 overflow-y-auto px-4 sm:-mx-6 sm:px-6">{children}</div>
+            <div className="scrollbar-none -mx-4 flex-1 overflow-y-auto px-4 sm:-mx-6 sm:px-6">
+              {children}
+            </div>
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
