@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
+import { signIn, signUp } from "@/lib/auth-client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
+import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function LoginForm() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,108 +29,219 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const { error } = await signIn.email({
-        email,
-        password,
-        callbackURL: isUserMode ? "/" : "/admin",
-      });
-
-      if (error) {
-        setError(error.message || "Erreur de connexion");
+      if (authMode === "signin") {
+        const { error } = await signIn.email({
+          email,
+          password,
+          callbackURL: isUserMode ? "/" : "/admin",
+        });
+        if (error) {
+          setError(error.message || "Erreur de connexion");
+          setLoading(false);
+          return;
+        }
       } else {
-        router.push(isUserMode ? "/" : "/admin");
-        router.refresh();
+        const { error } = await signUp.email({
+          email,
+          password,
+          name: email.split("@")[0],
+          callbackURL: "/",
+        });
+        if (error) {
+          setError(error.message || "Erreur d'inscription");
+          setLoading(false);
+          return;
+        }
       }
+
+      router.push(isUserMode ? "/" : "/admin");
+      router.refresh();
     } catch {
       setError("Une erreur est survenue");
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="rounded-2xl border border-white/20 bg-white/80 p-8 shadow-lg backdrop-blur-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold text-text">
-          {isUserMode ? "Connexion" : "Administration"}
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@example.com"
-              required
-              disabled={loading}
-              className="bg-white/50"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Mot de passe</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              disabled={loading}
-              className="bg-white/50"
-            />
-          </div>
-
-          {error && <p className="rounded-md bg-red-50 p-2 text-sm text-red-600">{error}</p>}
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Connexion..." : "Se connecter"}
-          </Button>
-        </form>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-gray-200" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 font-medium text-gray-400">Ou continuer avec</span>
-          </div>
+    <div className="flex w-full max-w-sm flex-col items-center px-4">
+      <div className="relative w-full">
+        {/* Animated Aura Background */}
+        <div className="absolute -inset-4 -z-10 overflow-visible">
+          <motion.div
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.15, 0.25, 0.15],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-purple-500/30 via-accent/30 to-red-500/30 blur-2xl"
+          />
+          <motion.div
+            animate={{
+              scale: [1.05, 1, 1.05],
+              opacity: [0.1, 0.2, 0.1],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-bl from-accent/20 via-purple-500/20 to-blue-500/20 blur-3xl"
+          />
         </div>
 
-        <button
-          onClick={async () => {
-            setLoading(true);
-            try {
-              await signIn.social({
-                provider: "google",
-                callbackURL: isUserMode ? "/" : "/admin",
-              });
-            } catch (err) {
-              console.error(err);
-              setLoading(false);
-            }
-          }}
-          disabled={loading}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white py-4 text-sm font-bold text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
-        >
-          <GoogleIcon className="h-5 w-5" />
-          Se connecter avec Google
-        </button>
+        <div className="relative w-full overflow-hidden rounded-3xl border border-white/40 bg-white/70 p-8 shadow-2xl backdrop-blur-xl transition-all">
+          <div className="relative z-10">
+            <h1 className="mb-2 text-center text-3xl font-black tracking-tight text-gray-900">
+              {isUserMode
+                ? authMode === "signin"
+                  ? "Ravi de vous revoir !"
+                  : "Bienvenue à bord !"
+                : "Administration"}
+            </h1>
+            <p className="mb-8 text-center text-sm font-medium text-gray-500">
+              {isUserMode
+                ? authMode === "signin"
+                  ? "Connectez-vous pour continuer"
+                  : "Créez votre compte en un instant"
+                : "Espace réservé aux administrateurs"}
+            </p>
 
-        {isUserMode && (
-          <div className="mt-8 text-center">
-            <Link
-              href="/create-event"
-              className="text-sm font-medium text-gray-500 transition-colors hover:text-accent"
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  required
+                  disabled={loading}
+                  className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="password"
+                  className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  Mot de passe
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  disabled={loading}
+                  className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
+                />
+              </div>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-500"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <Button
+                type="submit"
+                className="h-12 w-full rounded-2xl bg-gray-900 font-bold text-white shadow-xl shadow-gray-900/10 transition-all hover:bg-gray-800 active:scale-95 disabled:opacity-50"
+                disabled={loading}
+              >
+                {loading
+                  ? authMode === "signin"
+                    ? "Connexion..."
+                    : "Création..."
+                  : authMode === "signin"
+                    ? "Se connecter"
+                    : "S'inscrire"}
+              </Button>
+            </form>
+
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-100" />
+              </div>
+              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
+                <span className="bg-transparent px-3 text-gray-400">Ou continuer avec</span>
+              </div>
+            </div>
+
+            <button
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await signIn.social({
+                    provider: "google",
+                    callbackURL: isUserMode ? "/" : "/admin",
+                  });
+                } catch (err) {
+                  console.error(err);
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
             >
-              Continuer sans compte
-            </Link>
+              <GoogleIcon className="h-5 w-5" />
+              S&apos;identifier avec Google
+            </button>
+
+            {isUserMode && (
+              <p className="mt-8 text-center text-xs font-semibold text-gray-500">
+                {authMode === "signin" ? (
+                  <>
+                    Pas encore de compte ?{" "}
+                    <button
+                      onClick={() => setAuthMode("signup")}
+                      className="font-bold text-accent hover:underline"
+                    >
+                      S&apos;inscrire
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    Déjà un compte ?{" "}
+                    <button
+                      onClick={() => setAuthMode("signin")}
+                      className="font-bold text-accent hover:underline"
+                    >
+                      Se connecter
+                    </button>
+                  </>
+                )}
+              </p>
+            )}
           </div>
-        )}
+        </div>
       </div>
+
+      {isUserMode && (
+        <div className="mt-12 text-center">
+          <Link
+            href="/create-event"
+            className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 transition-colors hover:text-gray-600"
+          >
+            Continuer sans identifier
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

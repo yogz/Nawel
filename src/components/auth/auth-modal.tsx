@@ -132,10 +132,10 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         <button
           onClick={handleGoogleAuth}
           disabled={isPending}
-          className="flex w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white py-4 text-sm font-bold text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
+          className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
         >
           <GoogleIcon className="h-5 w-5" />
-          {mode === "signin" ? "Se connecter avec Google" : "S'inscrire avec Google"}
+          {mode === "signin" ? "S'identifier avec Google" : "S'inscrire avec Google"}
         </button>
 
         <p className="text-center text-sm text-gray-500">
