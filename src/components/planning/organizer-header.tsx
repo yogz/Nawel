@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { ShieldAlert, Share, ChevronDown, CheckCircle } from "lucide-react";
+import { ShieldAlert, Share, ChevronDown, CheckCircle, CircleHelp } from "lucide-react";
 import clsx from "clsx";
 import { getPersonEmoji } from "@/lib/utils";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
@@ -161,7 +161,7 @@ function PlanningFilters({
           size="premium"
           active={planningFilter.type === "unassigned"}
           onClick={() => setPlanningFilter({ type: "unassigned" })}
-          icon={<span>🥘</span>}
+          icon={<CircleHelp size={14} />}
           iconClassName="h-7 w-7"
         >
           <span

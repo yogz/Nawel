@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -165,8 +165,13 @@ export function ServiceForm({
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="service-title">Nom du service</Label>
+      <div className="space-y-4">
+        <Label
+          htmlFor="service-title"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          Nom du service
+        </Label>
         <Input
           id="service-title"
           placeholder="Ex: Entrée, Plat, Dessert..."
@@ -174,12 +179,18 @@ export function ServiceForm({
           onChange={(e) => setTitle(e.target.value)}
           disabled={readOnly}
           autoFocus
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="adults">Adultes</Label>
+          <Label
+            htmlFor="adults"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          >
+            Adultes
+          </Label>
           <Input
             id="adults"
             type="number"
@@ -191,10 +202,16 @@ export function ServiceForm({
               setPeopleCount(val + children);
             }}
             disabled={readOnly}
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="children">Enfants</Label>
+          <Label
+            htmlFor="children"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          >
+            Enfants
+          </Label>
           <Input
             id="children"
             type="number"
@@ -206,12 +223,18 @@ export function ServiceForm({
               setPeopleCount(adults + val);
             }}
             disabled={readOnly}
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="people-count">Nombre de personnes (Total)</Label>
+        <Label
+          htmlFor="people-count"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          Nombre de personnes (Total)
+        </Label>
         <Input
           id="people-count"
           type="number"
@@ -220,16 +243,26 @@ export function ServiceForm({
           value={peopleCount}
           onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
           disabled={readOnly}
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
         />
       </div>
 
-      <Button
-        className="w-full"
-        onClick={handleSubmit}
-        disabled={readOnly || !title.trim() || ((mealId === "new" || forceNewMeal) && !newMealDate)}
-      >
-        Ajouter le service
-      </Button>
+      <div className="pt-4">
+        <Button
+          variant="premium"
+          className="w-full py-7 pr-8 shadow-md"
+          icon={<Plus />}
+          onClick={handleSubmit}
+          disabled={
+            readOnly || !title.trim() || ((mealId === "new" || forceNewMeal) && !newMealDate)
+          }
+          shine
+        >
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+            Ajouter le service
+          </span>
+        </Button>
+      </div>
     </div>
   );
 }

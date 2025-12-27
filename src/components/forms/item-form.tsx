@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Sparkles, Loader2, Plus } from "lucide-react";
+import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
 import clsx from "clsx";
 
@@ -168,7 +168,7 @@ export function ItemForm({
                 !defaultItem?.personId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
               )}
             >
-              <span className="text-lg">🥘</span>
+              <CircleHelp size={18} />
             </div>
             <span
               className={clsx(

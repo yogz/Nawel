@@ -6,7 +6,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
-import { Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
 
 import { Button } from "../ui/button";
 
@@ -68,11 +68,19 @@ function ItemRowComponent({
               }}
               disabled={readOnly}
               icon={
-                <span className="text-sm">
-                  {person ? getPersonEmoji(person.name, allPeopleNames, person.emoji) : "🥘"}
-                </span>
+                person ? (
+                  <span className="text-sm">
+                    {getPersonEmoji(person.name, allPeopleNames, person.emoji)}
+                  </span>
+                ) : (
+                  <CircleHelp size={14} />
+                )
               }
-              iconClassName={!person ? "bg-amber-100 text-amber-600 group-hover:bg-amber-500" : ""}
+              iconClassName={
+                !person
+                  ? "bg-amber-100 text-amber-600 group-hover:bg-amber-500 group-hover:text-white"
+                  : ""
+              }
             >
               <span className="inline-block max-w-[80px] truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:max-w-none">
                 {person ? person.name : "À prévoir"}

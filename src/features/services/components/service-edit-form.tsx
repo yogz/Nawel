@@ -5,6 +5,7 @@ import { type Service } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Trash2, Check } from "lucide-react";
 
 export function ServiceEditForm({
   service,
@@ -35,8 +36,13 @@ export function ServiceEditForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-2">
-        <Label htmlFor="service-title">Nom du service</Label>
+      <div className="space-y-2">
+        <Label
+          htmlFor="service-title"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          Nom du service
+        </Label>
         <Input
           id="service-title"
           value={title}
@@ -44,12 +50,18 @@ export function ServiceEditForm({
           placeholder="Entrée, Plat, Dessert..."
           required
           autoFocus
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="edit-adults">Adultes</Label>
+        <div className="space-y-2">
+          <Label
+            htmlFor="edit-adults"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          >
+            Adultes
+          </Label>
           <Input
             id="edit-adults"
             type="number"
@@ -62,10 +74,16 @@ export function ServiceEditForm({
             }}
             placeholder="Ex: 5"
             required
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
           />
         </div>
-        <div className="grid gap-2">
-          <Label htmlFor="edit-children">Enfants</Label>
+        <div className="space-y-2">
+          <Label
+            htmlFor="edit-children"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          >
+            Enfants
+          </Label>
           <Input
             id="edit-children"
             type="number"
@@ -78,12 +96,18 @@ export function ServiceEditForm({
             }}
             placeholder="Ex: 2"
             required
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
           />
         </div>
       </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="people-count">Nombre de personnes (Total)</Label>
+      <div className="space-y-2">
+        <Label
+          htmlFor="people-count"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          Nombre de personnes (Total)
+        </Label>
         <Input
           id="people-count"
           type="number"
@@ -92,28 +116,47 @@ export function ServiceEditForm({
           onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
           placeholder="Ex: 8"
           required
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
         />
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 pt-2">
         <Button
           type="submit"
-          className="w-full rounded-2xl bg-accent text-white hover:bg-accent/90"
+          variant="premium"
+          className="w-full py-6 pr-8 shadow-md"
+          icon={<Check />}
+          shine
         >
-          Mettre à jour
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+            Mettre à jour
+          </span>
         </Button>
+
         {onDelete && (
           <Button
             type="button"
-            variant="destructive"
+            variant="premium"
+            className="w-full border-red-100 bg-red-50/30"
+            icon={<Trash2 size={16} />}
+            iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
             onClick={() => onDelete(service)}
-            className="w-full rounded-2xl"
           >
-            Supprimer le service
+            <span className="text-xs font-black uppercase tracking-widest text-red-600">
+              Supprimer le service
+            </span>
           </Button>
         )}
-        <Button type="button" variant="outline" onClick={onClose} className="w-full rounded-2xl">
-          Annuler
+
+        <Button
+          type="button"
+          variant="premium"
+          onClick={onClose}
+          className="w-full py-5 shadow-sm ring-1 ring-gray-100"
+        >
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+            Annuler
+          </span>
         </Button>
       </div>
     </form>

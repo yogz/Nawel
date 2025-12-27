@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Check } from "lucide-react";
 import { type Person } from "@/lib/types";
 import { PERSON_EMOJIS, getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,22 +29,30 @@ export function PersonEditForm({
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="edit-person-name">Nom</Label>
+          <Label
+            htmlFor="edit-person-name"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          >
+            Nom
+          </Label>
           <Input
             id="edit-person-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={readOnly}
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
           />
         </div>
 
         <div className="space-y-3">
-          <Label>Emoji Signature</Label>
+          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+            Emoji Signature
+          </Label>
           <div className="no-scrollbar grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
             <button
               onClick={() => setSelectedEmoji(null)}
               className={clsx(
-                "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
+                "flex aspect-square items-center justify-center rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                 selectedEmoji === null
                   ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
                   : "bg-gray-50 text-gray-400 hover:bg-gray-100"
@@ -67,7 +75,7 @@ export function PersonEditForm({
               </button>
             ))}
           </div>
-          <p className="text-[10px] italic text-gray-400">
+          <p className="mt-1 text-center text-[10px] italic text-gray-400">
             Par défaut:{" "}
             {getPersonEmoji(
               name,
@@ -77,17 +85,30 @@ export function PersonEditForm({
         </div>
       </div>
 
-      <div className="space-y-3 border-t pt-4">
+      <div className="space-y-3 border-t border-gray-100 pt-6">
         <Button
-          className="w-full"
+          variant="premium"
+          className="w-full py-6 pr-8 shadow-md"
+          icon={<Check />}
           onClick={() => onSubmit(name, selectedEmoji)}
           disabled={readOnly || !name.trim()}
+          shine
         >
-          Enregistrer les modifications
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+            Enregistrer
+          </span>
         </Button>
-        <Button variant="destructive" className="w-full" onClick={onDelete} disabled={readOnly}>
-          <Trash2 size={16} className="mr-2" />
-          Supprimer ce convive
+        <Button
+          variant="premium"
+          className="w-full border-red-100 bg-red-50/30"
+          icon={<Trash2 size={16} />}
+          iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+          onClick={onDelete}
+          disabled={readOnly}
+        >
+          <span className="text-xs font-black uppercase tracking-widest text-red-600">
+            Supprimer ce convive
+          </span>
         </Button>
       </div>
     </div>
