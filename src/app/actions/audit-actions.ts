@@ -59,3 +59,33 @@ export const getAuditLogsAction = withErrorThrower(
     return logs;
   }
 );
+
+export const deleteAuditLogsAction = withErrorThrower(
+  async (options: { olderThanDays?: number; deleteAll?: boolean }) => {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || session.user.role !== "admin") {
+      throw new Error("Unauthorized");
+    }
+
+    if (options.deleteAll) {
+      await db.delete(changeLogs);
+      return { success: true, count: null };
+    }
+
+    if (options.olderThanDays !== undefined) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - options.olderThanDays);
+
+      const result = await db
+        .delete(changeLogs)
+        .where(sql`${changeLogs.createdAt} < ${cutoff.toISOString()}`);
+
+      return { success: true };
+    }
+
+    throw new Error("Invalid options provided for deletion");
+  }
+);

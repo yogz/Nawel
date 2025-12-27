@@ -1,13 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { type AuditLogEntry } from "@/app/actions/audit-actions";
+import { useState, useTransition } from "react";
+import { type AuditLogEntry, deleteAuditLogsAction } from "@/app/actions/audit-actions";
 import { Button } from "@/components/ui/button";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import { Search, Eye, History, User, Globe, Link } from "lucide-react";
+import {
+  Search,
+  Eye,
+  History,
+  User,
+  Globe,
+  Link,
+  Settings,
+  Trash2,
+  AlertCircle,
+} from "lucide-react";
 
 export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) {
+  const [logs, setLogs] = useState(initialLogs);
   const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
+  const [showManageModal, setShowManageModal] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleBatchDelete = (days?: number) => {
+    const confirmMsg = days
+      ? `Supprimer tous les logs de plus de ${days} jours ?`
+      : "Supprimer TOUS les logs d'audit ? Cette action est irréversible.";
+
+    if (!confirm(confirmMsg)) return;
+
+    startTransition(async () => {
+      try {
+        await deleteAuditLogsAction(days ? { olderThanDays: days } : { deleteAll: true });
+        // Refresh to show empty state
+        window.location.reload();
+      } catch (error) {
+        alert("Erreur lors de la suppression");
+      }
+    });
+  };
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("fr-FR", {
@@ -73,8 +104,20 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
 
   return (
     <>
+      <div className="mb-6 flex justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowManageModal(true)}
+          className="bg-white/50 backdrop-blur-sm"
+        >
+          <Settings className="mr-2 h-4 w-4" />
+          Gérer les logs
+        </Button>
+      </div>
+
       <div className="space-y-3">
-        {initialLogs.map((log) => (
+        {logs.map((log) => (
           <div
             key={log.id}
             className="group flex flex-col justify-between gap-4 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-sm backdrop-blur-sm transition-all hover:shadow-md sm:flex-row sm:items-center"
@@ -166,6 +209,69 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
             </div>
           </div>
         )}
+      </BottomSheet>
+
+      <BottomSheet
+        open={showManageModal}
+        onClose={() => setShowManageModal(false)}
+        title="Gestion du journal d'audit"
+      >
+        <div className="space-y-6">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="flex gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+              <div className="text-sm text-amber-800">
+                <p className="mb-1 font-semibold">Maintenance de la base de données</p>
+                <p>
+                  La suppression des anciens logs permet de libérer de l&apos;espace et
+                  d&apos;améliorer les performances.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3">
+            <Button
+              variant="outline"
+              className="h-auto justify-start px-4 py-3"
+              onClick={() => handleBatchDelete(30)}
+              disabled={isPending}
+            >
+              <div className="text-left">
+                <p className="font-semibold">Plus de 30 jours</p>
+                <p className="text-xs text-muted-foreground">
+                  Conserver uniquement le dernier mois
+                </p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto justify-start px-4 py-3"
+              onClick={() => handleBatchDelete(7)}
+              disabled={isPending}
+            >
+              <div className="text-left">
+                <p className="font-semibold">Plus de 7 jours</p>
+                <p className="text-xs text-muted-foreground">
+                  Conserver uniquement la dernière semaine
+                </p>
+              </div>
+            </Button>
+
+            <div className="border-t pt-4">
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() => handleBatchDelete()}
+                disabled={isPending}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Tout supprimer
+              </Button>
+            </div>
+          </div>
+        </div>
       </BottomSheet>
     </>
   );
