@@ -101,37 +101,30 @@ export function ServiceEditForm({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label
-          htmlFor="people-count"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-        >
-          Nombre de personnes (Total)
-        </Label>
-        <Input
-          id="people-count"
-          type="number"
-          min="0"
-          value={peopleCount}
-          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
-          placeholder="Ex: 8"
-          required
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-        />
-      </div>
-
       <div className="flex flex-col gap-3 pt-2">
-        <Button
-          type="submit"
-          variant="premium"
-          className="w-full py-6 pr-8 shadow-md"
-          icon={<Check />}
-          shine
-        >
-          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            Mettre à jour
-          </span>
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="premium"
+            onClick={onClose}
+            className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+          >
+            <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+              Annuler
+            </span>
+          </Button>
+          <Button
+            type="submit"
+            variant="premium"
+            className="flex-[2] py-6 pr-8 shadow-md"
+            icon={<Check />}
+            shine
+          >
+            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+              Mettre à jour
+            </span>
+          </Button>
+        </div>
 
         {onDelete && (
           <Button
@@ -147,17 +140,6 @@ export function ServiceEditForm({
             </span>
           </Button>
         )}
-
-        <Button
-          type="button"
-          variant="premium"
-          onClick={onClose}
-          className="w-full py-5 shadow-sm ring-1 ring-gray-100"
-        >
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-            Annuler
-          </span>
-        </Button>
       </div>
     </form>
   );

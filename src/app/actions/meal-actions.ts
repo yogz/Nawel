@@ -24,6 +24,8 @@ export const createMealAction = createSafeAction(createMealSchema, async (input)
       title: input.title ?? null,
       adults: input.adults ?? event.adults,
       children: input.children ?? event.children,
+      time: input.time ?? null,
+      address: input.address ?? null,
     })
     .returning();
   await logChange("create", "meals", created.id, null, created);
@@ -45,6 +47,8 @@ export const createMealWithServicesAction = createSafeAction(
           title: input.title ?? null,
           adults: input.adults ?? event.adults,
           children: input.children ?? event.children,
+          time: input.time ?? null,
+          address: input.address ?? null,
         })
         .returning();
 
@@ -107,6 +111,8 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
         title: input.title,
         adults: input.adults,
         children: input.children,
+        time: input.time,
+        address: input.address,
       })
       .where(eq(meals.id, input.id))
       .returning();

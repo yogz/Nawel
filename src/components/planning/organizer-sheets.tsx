@@ -248,11 +248,20 @@ export function OrganizerSheets({
             children: number,
             peopleCount: number,
             newMealDate?: string,
-            newMealTitle?: string
+            newMealTitle?: string,
+            newMealTime?: string,
+            newMealAddress?: string
           ) => {
             let targetMealId = mealId;
             if (mealId === -1 && newMealDate) {
-              targetMealId = await handleCreateMeal(newMealDate, newMealTitle || undefined);
+              targetMealId = await handleCreateMeal(
+                newMealDate,
+                newMealTitle || undefined,
+                undefined,
+                undefined,
+                newMealTime,
+                newMealAddress
+              );
             }
             handleCreateService(targetMealId, title, adults, children, peopleCount);
           }}
@@ -274,8 +283,10 @@ export function OrganizerSheets({
             title?: string,
             _servs?: string[],
             adults?: number,
-            children?: number
-          ) => handleUpdateMeal(sheet.meal.id, date, title, adults, children)}
+            children?: number,
+            time?: string,
+            address?: string
+          ) => handleUpdateMeal(sheet.meal.id, date, title, adults, children, time, address)}
           onDelete={handleDeleteMeal}
           onClose={() => setSheet(null)}
         />
@@ -289,8 +300,10 @@ export function OrganizerSheets({
             title?: string,
             services?: string[],
             adults?: number,
-            children?: number
-          ) => handleCreateMealWithServices(date, title, services, adults, children)}
+            children?: number,
+            time?: string,
+            address?: string
+          ) => handleCreateMealWithServices(date, title, services, adults, children, time, address)}
           onClose={() => setSheet(null)}
         />
       )}

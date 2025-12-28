@@ -35,6 +35,8 @@ export const createMealSchema = baseInput.extend({
   title: safeText(200).optional(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
+  time: z.string().optional(),
+  address: safeText(500).optional(),
 });
 
 export const createMealWithServicesSchema = baseInput.extend({
@@ -43,6 +45,8 @@ export const createMealWithServicesSchema = baseInput.extend({
   services: z.array(safeStrictText(100)).min(1, "At least one service required"),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
+  time: z.string().optional(),
+  address: safeText(500).optional(),
 });
 
 export const updateMealSchema = baseInput.extend({
@@ -51,6 +55,8 @@ export const updateMealSchema = baseInput.extend({
   title: safeText(200).optional().nullable(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
+  time: z.string().optional().nullable(),
+  address: safeText(500).optional().nullable(),
 });
 
 export const createServiceSchema = baseInput.extend({

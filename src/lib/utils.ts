@@ -79,15 +79,24 @@ export function getPersonEmoji(
 }
 
 export function generateGoogleCalendarUrl(
-  meal: { date: string; title?: string | null },
+  meal: { date: string; title?: string | null; time?: string | null; address?: string | null },
   eventName: string
 ) {
   const title = meal.title ? `${eventName} - ${meal.title}` : eventName;
   const dateStr = meal.date.replace(/-/g, ""); // "YYYYMMDD"
 
-  // Create a 2-hour window by default (Noon UTC for simplicity, or we could improve this)
-  const start = `${dateStr}T120000Z`;
-  const end = `${dateStr}T140000Z`;
+  let start = `${dateStr}T120000Z`;
+  let end = `${dateStr}T140000Z`;
+
+  if (meal.time) {
+    const [hours, minutes] = meal.time.split(":");
+    const h = hours.padStart(2, "0");
+    const m = minutes.padStart(2, "0");
+    start = `${dateStr}T${h}${m}00`;
+    // Add 2 hours by default, keeping it simple
+    const endH = (parseInt(h) + 2).toString().padStart(2, "0");
+    end = `${dateStr}T${endH}${m}00`;
+  }
 
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -95,6 +104,10 @@ export function generateGoogleCalendarUrl(
     dates: `${start}/${end}`,
     details: `Rejoins-nous pour "${title}" sur Nawel !`,
   });
+
+  if (meal.address) {
+    params.append("location", meal.address);
+  }
 
   return `https://www.google.com/calendar/render?${params.toString()}`;
 }

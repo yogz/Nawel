@@ -60,21 +60,23 @@ export function ServiceSection({
     >
       <div className="mb-2 flex items-center justify-between sm:mb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-text">{service.title}</h3>
+          {!readOnly ? (
+            <button
+              onClick={onEdit}
+              className="group flex items-center gap-2 text-left transition-colors hover:text-accent"
+              aria-label={`Modifier le service ${service.title}`}
+            >
+              <h3 className="text-lg font-semibold tracking-tight text-text group-hover:text-accent">
+                {service.title}
+              </h3>
+            </button>
+          ) : (
+            <h3 className="text-lg font-semibold text-text">{service.title}</h3>
+          )}
           {(service.peopleCount || 0) > 1 && (
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-400">
               {service.peopleCount} pers.
             </span>
-          )}
-          {!readOnly && (
-            <Button
-              variant="premium"
-              className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
-              icon={<Pencil className="h-3 w-3" />}
-              iconClassName="h-6 w-6"
-              onClick={onEdit}
-              aria-label={`Modifier le service ${service.title}`}
-            />
           )}
         </div>
         {!readOnly && filter.type === "all" && (

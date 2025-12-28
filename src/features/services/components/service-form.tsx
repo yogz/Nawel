@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Plus, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,9 @@ export function ServiceForm({
     children: number,
     peopleCount: number,
     newMealDate?: string,
-    newMealTitle?: string
+    newMealTitle?: string,
+    newMealTime?: string,
+    newMealAddress?: string
   ) => Promise<void>;
   readOnly?: boolean;
 }) {
@@ -67,6 +69,8 @@ export function ServiceForm({
   const [peopleCount, setPeopleCount] = useState(initialPeople);
   const [newMealDate, setNewMealDate] = useState<Date | undefined>(undefined);
   const [newMealTitle, setNewMealTitle] = useState("");
+  const [newMealTime, setNewMealTime] = useState("");
+  const [newMealAddress, setNewMealAddress] = useState("");
 
   const handleSubmit = async () => {
     if (mealId === "new") {
@@ -74,7 +78,17 @@ export function ServiceForm({
         return;
       }
       const formattedDate = format(newMealDate, "yyyy-MM-dd");
-      await onSubmit(-1, title, adults, children, peopleCount, formattedDate, newMealTitle);
+      await onSubmit(
+        -1,
+        title,
+        adults,
+        children,
+        peopleCount,
+        formattedDate,
+        newMealTitle,
+        newMealTime,
+        newMealAddress
+      );
     } else {
       await onSubmit(Number(mealId), title, adults, children, peopleCount);
     }
@@ -124,16 +138,17 @@ export function ServiceForm({
           </p>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Popover>
+            <Popover modal={true}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "h-12 w-full justify-start rounded-2xl text-left font-normal",
+                    "h-10 w-full justify-start rounded-xl border-gray-100 bg-gray-50/50 text-left font-normal",
                     !newMealDate && "text-muted-foreground"
                   )}
+                  disabled={readOnly}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
                   {newMealDate ? (
                     format(newMealDate, "PPP", { locale: fr })
                   ) : (
@@ -141,7 +156,10 @@ export function ServiceForm({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto rounded-2xl p-0 shadow-xl" align="start">
+              <PopoverContent
+                className="z-[100] w-auto overflow-hidden rounded-2xl p-0 shadow-xl"
+                align="center"
+              >
                 <Calendar
                   mode="single"
                   selected={newMealDate}
@@ -160,7 +178,38 @@ export function ServiceForm({
               value={newMealTitle}
               onChange={(e) => setNewMealTitle(e.target.value)}
               disabled={readOnly}
+              className="h-10 rounded-xl"
             />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="meal-time">Heure</Label>
+              <div className="relative">
+                <Input
+                  id="meal-time"
+                  type="time"
+                  value={newMealTime}
+                  onChange={(e) => setNewMealTime(e.target.value)}
+                  disabled={readOnly}
+                  className="h-10 rounded-xl pl-9"
+                />
+                <Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="meal-address">Adresse</Label>
+            <div className="relative">
+              <Input
+                id="meal-address"
+                placeholder="Ex: 123 Rue de la Fête"
+                value={newMealAddress}
+                onChange={(e) => setNewMealAddress(e.target.value)}
+                disabled={readOnly}
+                className="h-10 rounded-xl pl-9"
+              />
+              <MapPin className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
           </div>
         </div>
       )}
@@ -226,25 +275,6 @@ export function ServiceForm({
             className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
           />
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label
-          htmlFor="people-count"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-        >
-          Nombre de personnes (Total)
-        </Label>
-        <Input
-          id="people-count"
-          type="number"
-          min="0"
-          placeholder="Ex: 8"
-          value={peopleCount}
-          onChange={(e) => setPeopleCount(parseInt(e.target.value) || 0)}
-          disabled={readOnly}
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-        />
       </div>
 
       <div className="pt-4">

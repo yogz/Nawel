@@ -126,6 +126,8 @@ export const meals = pgTable(
       .notNull()
       .references(() => events.id, { onDelete: "cascade" }),
     date: varchar("date", { length: 50 }).notNull(),
+    time: varchar("time", { length: 20 }),
+    address: text("address"),
     title: text("title"),
     adults: integer("adults").notNull().default(0),
     children: integer("children").notNull().default(0),

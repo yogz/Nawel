@@ -25,7 +25,9 @@ export function useMealHandlers({
     date: string,
     title?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ): Promise<number> => {
     if (readOnly) {
       return 0;
@@ -38,6 +40,8 @@ export function useMealHandlers({
         key: writeKey,
         adults,
         children,
+        time,
+        address,
       });
       setPlan((prev: PlanData) => ({
         ...prev,
@@ -59,7 +63,9 @@ export function useMealHandlers({
     title?: string,
     services: string[] = [],
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => {
     if (readOnly) {
       return;
@@ -74,6 +80,8 @@ export function useMealHandlers({
           key: writeKey,
           adults,
           children,
+          time,
+          address,
         });
         setPlan((prev: PlanData) => ({
           ...prev,
@@ -93,14 +101,26 @@ export function useMealHandlers({
     date: string,
     title?: string | null,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => {
     if (readOnly) {
       return;
     }
     startTransition(async () => {
       try {
-        await updateMealAction({ id, date, title, slug, key: writeKey, adults, children });
+        await updateMealAction({
+          id,
+          date,
+          title,
+          slug,
+          key: writeKey,
+          adults,
+          children,
+          time,
+          address,
+        });
 
         setPlan((prev: PlanData) => ({
           ...prev,
@@ -118,6 +138,8 @@ export function useMealHandlers({
               title: title ?? null,
               adults: newAdults,
               children: newChildren,
+              time: time ?? m.time,
+              address: address ?? m.address,
             };
 
             // Cascade to services removed to respect "initialization only" propagation rule.

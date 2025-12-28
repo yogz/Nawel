@@ -23,7 +23,11 @@ import {
   Package,
   CircleDot,
   Plus,
+  Clock,
+  MapPin,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import clsx from "clsx";
 
 const DEFAULT_SERVICE_TYPES = [
@@ -83,7 +87,9 @@ export function MealForm({
     title: string,
     services?: string[],
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => void;
   onDelete?: (meal: Meal) => void;
   onClose: () => void;
@@ -93,6 +99,8 @@ export function MealForm({
   const [title, setTitle] = useState(meal?.title || "");
   const [adults, setAdults] = useState(meal?.adults ?? defaultAdults);
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
+  const [time, setTime] = useState(meal?.time || "");
+  const [address, setAddress] = useState(meal?.address || "");
   const [quickOption, setQuickOption] = useState<string>("simple");
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
 
@@ -103,7 +111,7 @@ export function MealForm({
     const formattedDate = format(date, "yyyy-MM-dd");
 
     if (isEditMode) {
-      onSubmit(formattedDate, title, undefined, adults, children);
+      onSubmit(formattedDate, title, undefined, adults, children, time, address);
     } else {
       let servicesToCreate: string[];
       if (quickOption === "custom") {
@@ -113,7 +121,7 @@ export function MealForm({
       } else {
         servicesToCreate = QUICK_OPTIONS.find((o) => o.id === quickOption)?.services || ["Service"];
       }
-      onSubmit(formattedDate, title, servicesToCreate, adults, children);
+      onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
     }
   };
 
@@ -146,30 +154,96 @@ export function MealForm({
 
       {step === 1 && (
         <div className="space-y-4">
-          <div className="flex justify-center p-1">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              locale={fr}
-              className="rounded-[28px] border-none bg-gray-50/50 p-4 shadow-inner"
-            />
+          <div className="space-y-2">
+            <Label
+              htmlFor="date"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              Date
+            </Label>
+            <Popover modal={true}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "h-12 w-full justify-start rounded-2xl border-gray-100 bg-gray-50/50 text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="z-[100] w-auto overflow-hidden rounded-2xl p-0 shadow-xl"
+                align="center"
+              >
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(newDate) => {
+                    setDate(newDate);
+                  }}
+                  initialFocus
+                  locale={fr}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="time"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                Heure
+              </Label>
+              <div className="relative">
+                <Input
+                  id="time"
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                />
+                <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="title"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                Nom du repas
+              </Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Réveillon..."
+                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label
-              htmlFor="title"
+              htmlFor="address"
               className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
             >
-              Nom du repas
+              Adresse
             </Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Réveillon, Jour de l'an..."
-              className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-            />
+            <div className="relative">
+              <Input
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Ex: 123 Rue de la Fête, Paris"
+                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+              />
+              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -230,7 +304,7 @@ export function MealForm({
                   shine
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    Enregistrer
+                    Mettre à jour
                   </span>
                 </Button>
               ) : (

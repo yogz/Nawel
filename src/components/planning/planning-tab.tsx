@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
-import { PlusIcon, Pencil, CalendarPlus } from "lucide-react";
+import { PlusIcon, Pencil, CalendarPlus, Clock, MapPin } from "lucide-react";
 import { generateGoogleCalendarUrl } from "@/lib/utils";
 
 import {
@@ -90,9 +90,21 @@ export function PlanningTab({
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex items-center gap-2">
-                    <h2 className="truncate text-xl font-black tracking-tight text-text">
-                      {meal.title || meal.date}
-                    </h2>
+                    {!readOnly ? (
+                      <button
+                        onClick={() => setSheet({ type: "meal-edit", meal })}
+                        className="group flex min-w-0 items-center gap-2 text-left transition-colors hover:text-accent"
+                        aria-label={`Modifier le repas ${meal.title || meal.date}`}
+                      >
+                        <h2 className="truncate text-xl font-black tracking-tight text-text group-hover:text-accent">
+                          {meal.title || meal.date}
+                        </h2>
+                      </button>
+                    ) : (
+                      <h2 className="truncate text-xl font-black tracking-tight text-text">
+                        {meal.title || meal.date}
+                      </h2>
+                    )}
                     <div className="flex items-center gap-1.5 transition-opacity">
                       <Button
                         variant="premium"
@@ -102,17 +114,21 @@ export function PlanningTab({
                         aria-label="Ajouter au calendrier Google"
                         onClick={() => window.open(calendarUrl, "_blank")}
                       />
-                      {!readOnly && (
-                        <Button
-                          variant="premium"
-                          className="h-7 w-7 p-0 pr-0 text-gray-400 ring-0 hover:text-accent hover:ring-1"
-                          icon={<Pencil className="h-3 w-3" />}
-                          iconClassName="h-6 w-6 bg-accent/5 group-hover:bg-accent/10"
-                          onClick={() => setSheet({ type: "meal-edit", meal })}
-                          aria-label={`Modifier le repas ${meal.title || meal.date}`}
-                        />
-                      )}
                     </div>
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    {meal.time && (
+                      <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-500">
+                        <Clock className="h-3 w-3" />
+                        {meal.time}
+                      </div>
+                    )}
+                    {meal.address && (
+                      <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-500">
+                        <MapPin className="h-3 w-3" />
+                        <span className="max-w-[200px] truncate">{meal.address}</span>
+                      </div>
+                    )}
                   </div>
                   <CitationDisplay />
                 </div>

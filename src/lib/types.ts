@@ -73,7 +73,9 @@ export interface OrganizerHandlers {
     date: string,
     title?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => Promise<number>;
   handleCreateService: (
     mealId: number,
@@ -87,7 +89,9 @@ export interface OrganizerHandlers {
     date: string,
     title?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => void;
   handleDeleteMeal: (meal: Meal) => void;
   handleUpdateService: (
@@ -106,7 +110,9 @@ export interface OrganizerHandlers {
     title?: string,
     services?: string[],
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => void;
   handleUpdatePerson: (id: number, name: string, emoji?: string | null) => void;
   handleDeletePerson: (id: number) => void;
