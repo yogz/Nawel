@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, UserPlus, User } from "lucide-react";
@@ -10,10 +11,12 @@ export function PersonForm({
   onSubmit,
   readOnly,
   currentUserId,
+  currentUserImage,
 }: {
   onSubmit: (name: string, emoji?: string, userId?: string) => void;
   readOnly?: boolean;
   currentUserId?: string;
+  currentUserImage?: string | null;
 }) {
   const [name, setName] = useState("");
   const [isMe, setIsMe] = useState(false);
@@ -63,7 +66,20 @@ export function PersonForm({
             htmlFor="is-me"
             className="flex cursor-pointer items-center gap-1.5 text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent"
           >
-            C&apos;est moi ! <User size={14} className="text-accent" />
+            C&apos;est moi !{" "}
+            {isMe && currentUserImage ? (
+              <div className="h-5 w-5 overflow-hidden rounded-full border border-accent/20">
+                <Image
+                  src={currentUserImage}
+                  alt="Moi"
+                  width={20}
+                  height={20}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <User size={14} className="text-accent" />
+            )}
           </Label>
         </div>
       )}

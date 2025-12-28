@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 import { GoogleIcon } from "./google-icon";
 
 export function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -71,10 +72,14 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
       <div className="space-y-6 py-4">
         <form onSubmit={handleCredentialsAuth} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <Label
+              htmlFor="auth-email"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
               Email
-            </label>
+            </Label>
             <input
+              id="auth-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -84,10 +89,14 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            <Label
+              htmlFor="auth-password"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
               Mot de passe
-            </label>
+            </Label>
             <input
+              id="auth-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -97,7 +106,11 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
             />
           </div>
 
-          {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
+          {error && (
+            <p role="alert" className="text-xs font-semibold text-red-500">
+              {error}
+            </p>
+          )}
 
           <div className="pt-2">
             <Button

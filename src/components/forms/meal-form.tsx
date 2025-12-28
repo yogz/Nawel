@@ -184,7 +184,7 @@ export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
                   type="button"
                   onClick={() => setQuickOption(opt.id)}
                   className={clsx(
-                    "flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98]",
+                    "flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.98]",
                     isSelected
                       ? "border-accent bg-accent/5 ring-1 ring-accent/20"
                       : "border-gray-50 bg-white hover:border-gray-200"
@@ -238,7 +238,7 @@ export function MealForm({ meal, onSubmit, onDelete, onClose }: any) {
                       type="button"
                       onClick={() => toggleService(type.id)}
                       className={clsx(
-                        "flex items-center gap-2 rounded-xl border-2 px-3 py-2 transition-all active:scale-95",
+                        "flex items-center gap-2 rounded-xl border-2 px-3 py-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-95",
                         isSelected
                           ? "border-accent bg-accent/10 text-accent"
                           : "border-gray-50 text-gray-500 hover:border-gray-200"

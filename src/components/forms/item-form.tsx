@@ -129,22 +129,34 @@ export function ItemForm({
 
       {/* Quick details row */}
       <div className="flex gap-2">
-        <Input
-          placeholder="Qté (ex: 2kg)"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          disabled={readOnly}
-          className="h-11 flex-1 rounded-xl text-sm"
-        />
-        <Input
-          type="number"
-          inputMode="decimal"
-          placeholder="Prix €"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          disabled={readOnly}
-          className="h-11 w-24 rounded-xl text-sm"
-        />
+        <div className="flex-1">
+          <Label htmlFor="item-quantity" className="sr-only">
+            Quantité
+          </Label>
+          <Input
+            id="item-quantity"
+            placeholder="Qté (ex: 2kg)"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            disabled={readOnly}
+            className="h-11 rounded-xl text-sm"
+          />
+        </div>
+        <div className="w-24">
+          <Label htmlFor="item-price" className="sr-only">
+            Prix
+          </Label>
+          <Input
+            id="item-price"
+            type="number"
+            inputMode="decimal"
+            placeholder="Prix €"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            disabled={readOnly}
+            className="h-11 rounded-xl text-sm"
+          />
+        </div>
       </div>
 
       {/* Assign to person - refined cards */}
@@ -155,8 +167,9 @@ export function ItemForm({
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
             onClick={() => onAssign(null)}
+            aria-label="Marquer comme à prévoir"
             className={clsx(
-              "flex shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all active:scale-95",
+              "flex shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-95",
               !defaultItem?.personId
                 ? "bg-amber-50 ring-2 ring-amber-200"
                 : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
@@ -185,8 +198,9 @@ export function ItemForm({
               <button
                 key={person.id}
                 onClick={() => onAssign(person.id)}
+                aria-label={`Assigner à ${person.name}`}
                 className={clsx(
-                  "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all active:scale-95",
+                  "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-2xl p-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-95",
                   isSelected
                     ? "bg-accent/5 ring-2 ring-accent/30"
                     : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
@@ -238,10 +252,14 @@ export function ItemForm({
         <div className="space-y-4 border-t border-gray-100 pt-4">
           {/* Note */}
           <div className="space-y-2">
-            <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
+            <Label
+              htmlFor="item-note"
+              className="text-xs font-black uppercase tracking-wider text-gray-400"
+            >
               Note
             </Label>
             <Input
+              id="item-note"
               placeholder="Marque, allergies, détails..."
               value={note}
               onChange={(e) => setNote(e.target.value)}

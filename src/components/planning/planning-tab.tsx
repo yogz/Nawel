@@ -99,7 +99,7 @@ export function PlanningTab({
                         className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
                         icon={<CalendarPlus className="h-3.5 w-3.5" />}
                         iconClassName="h-6 w-6"
-                        title="Ajouter au calendrier Google"
+                        aria-label="Ajouter au calendrier Google"
                         onClick={() => window.open(calendarUrl, "_blank")}
                       />
                       {!readOnly && (
@@ -109,6 +109,7 @@ export function PlanningTab({
                           icon={<Pencil className="h-3 w-3" />}
                           iconClassName="h-6 w-6 bg-accent/5 group-hover:bg-accent/10"
                           onClick={() => setSheet({ type: "meal-edit", meal })}
+                          aria-label={`Modifier le repas ${meal.title || meal.date}`}
                         />
                       )}
                     </div>

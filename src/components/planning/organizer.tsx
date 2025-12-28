@@ -311,6 +311,7 @@ export function Organizer({
         planningFilter={planningFilter}
         setPlanningFilter={setPlanningFilter}
         currentUserId={session?.user?.id}
+        currentUserImage={session?.user?.image}
         onAuth={() => {
           setSheet(null); // Close guest-access sheet first
           setIsAuthModalOpen(true);

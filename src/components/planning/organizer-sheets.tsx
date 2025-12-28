@@ -34,6 +34,7 @@ interface OrganizerSheetsProps {
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
+  currentUserImage?: string | null;
   onAuth: () => void;
   onDismissGuestPrompt: () => void;
   onJoinNew: () => void;
@@ -53,6 +54,7 @@ export function OrganizerSheets({
   planningFilter,
   setPlanningFilter,
   currentUserId,
+  currentUserImage,
   onAuth,
   onDismissGuestPrompt,
   onJoinNew,
@@ -298,6 +300,7 @@ export function OrganizerSheets({
           readOnly={readOnly}
           onSubmit={handleCreatePerson}
           currentUserId={currentUserId}
+          currentUserImage={currentUserImage}
         />
       )}
 

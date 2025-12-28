@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
+import { sanitizeStrictText } from "@/lib/sanitize";
 import { events, people } from "@drizzle/schema";
 import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
@@ -51,7 +52,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       .insert(people)
       .values({
         eventId: created.id,
-        name: session.user.name,
+        name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
         emoji: "👑", // Set a crown for the creator
         userId: session.user.id,
       })

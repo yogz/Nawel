@@ -17,6 +17,7 @@ export async function fetchPlan(slug: string): Promise<PlanData> {
   const peopleList = await db.query.people.findMany({
     where: eq(people.eventId, event.id),
     orderBy: asc(people.name),
+    with: { user: true },
   });
 
   // 3. Récupérer les repas
@@ -35,7 +36,9 @@ export async function fetchPlan(slug: string): Promise<PlanData> {
           items: {
             orderBy: asc(items.order),
             with: {
-              person: true,
+              person: {
+                with: { user: true },
+              },
               ingredients: {
                 orderBy: asc(ingredients.order),
               },

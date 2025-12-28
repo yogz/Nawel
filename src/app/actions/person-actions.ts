@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
+import { sanitizeStrictText } from "@/lib/sanitize";
 import { people, items } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
@@ -43,7 +44,7 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
     .insert(people)
     .values({
       eventId: event.id,
-      name: session.user.name,
+      name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
       userId: session.user.id,
     })
     .returning();

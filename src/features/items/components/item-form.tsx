@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -207,17 +208,27 @@ export function ItemForm({
               >
                 <div
                   className={clsx(
-                    "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                    "flex h-9 w-9 items-center justify-center overflow-hidden rounded-full transition-all duration-300",
                     isSelected ? "bg-accent text-white" : "bg-accent/10 text-accent"
                   )}
                 >
-                  <span className="text-lg">
-                    {getPersonEmoji(
-                      person.name,
-                      people.map((p) => p.name),
-                      person.emoji
-                    )}
-                  </span>
+                  {person.user?.image ? (
+                    <Image
+                      src={person.user.image}
+                      alt={person.name}
+                      width={36}
+                      height={36}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-lg">
+                      {getPersonEmoji(
+                        person.name,
+                        people.map((p) => p.name),
+                        person.emoji
+                      )}
+                    </span>
+                  )}
                 </div>
                 <span
                   className={clsx(

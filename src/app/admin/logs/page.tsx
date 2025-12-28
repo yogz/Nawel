@@ -28,7 +28,7 @@ export default async function AdminLogsPage() {
     );
   }
 
-  const logs = await getAuditLogsAction();
+  const logs = await getAuditLogsAction({});
 
   return (
     <div className="min-h-screen bg-surface">

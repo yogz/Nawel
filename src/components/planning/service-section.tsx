@@ -73,6 +73,7 @@ export function ServiceSection({
               icon={<Pencil className="h-3 w-3" />}
               iconClassName="h-6 w-6"
               onClick={onEdit}
+              aria-label={`Modifier le service ${service.title}`}
             />
           )}
         </div>

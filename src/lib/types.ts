@@ -16,7 +16,12 @@ export type Service = InferSelectModel<typeof services> & {
   items: Item[];
 };
 
-export type Person = InferSelectModel<typeof people>;
+export type Person = InferSelectModel<typeof people> & {
+  user?: {
+    image?: string | null;
+    name?: string | null;
+  } | null;
+};
 
 export type Ingredient = InferSelectModel<typeof ingredients>;
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trash2, Check } from "lucide-react";
+import Image from "next/image";
 import { type Person } from "@/lib/types";
 import { PERSON_EMOJIS, getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,22 @@ export function PersonEditForm({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+        {person.user?.image && (
+          <div className="flex flex-col items-center gap-2 pb-2">
+            <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-accent/20 bg-accent/5 shadow-sm">
+              <Image
+                src={person.user.image}
+                alt={person.name}
+                width={80}
+                height={80}
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-accent">
+              Utilise votre photo Google
+            </p>
+          </div>
+        )}
         <div className="space-y-2">
           <Label
             htmlFor="edit-person-name"
