@@ -6,6 +6,7 @@ import { User, Plus, Loader2, Check } from "lucide-react";
 import { type Person } from "@/lib/types";
 import { getPersonEmoji, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function ClaimPersonSheet({
   open,
@@ -20,6 +21,7 @@ export function ClaimPersonSheet({
   onClaim: (personId: number) => Promise<void>;
   onJoinNew: () => void;
 }) {
+  const t = useTranslations("EventDashboard.Sheets.ClaimPerson");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -34,13 +36,10 @@ export function ClaimPersonSheet({
   };
 
   return (
-    <BottomSheet open={open} onClose={onClose} title="C'est vous ?">
+    <BottomSheet open={open} onClose={onClose} title={t("title")}>
       <div className="space-y-6 py-6 transition-all duration-300">
         <div className="space-y-2 px-4 text-center">
-          <p className="text-gray-600">
-            Des convives sont déjà inscrits. Si votre nom est dans cette liste, vous pouvez y lier
-            votre compte.
-          </p>
+          <p className="text-gray-600">{t("description")}</p>
         </div>
 
         <div className="grid gap-3 px-4">
@@ -68,7 +67,7 @@ export function ClaimPersonSheet({
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-base font-bold text-gray-900">{p.name}</div>
-                    <div className="text-xs font-medium text-gray-500">C&apos;est mon profil</div>
+                    <div className="text-xs font-medium text-gray-500">{t("itsMe")}</div>
                   </div>
                   <div
                     className={cn(
@@ -93,7 +92,7 @@ export function ClaimPersonSheet({
               icon={isPending ? <Loader2 className="animate-spin" /> : <Check />}
             >
               <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                {isPending ? "Association..." : "Valider mon identité"}
+                {isPending ? t("associating") : t("validateButton")}
               </span>
             </Button>
           </div>
@@ -103,7 +102,7 @@ export function ClaimPersonSheet({
               <span className="w-full border-t border-gray-100" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
-              <span className="bg-white px-3 font-bold text-gray-300">Ou bien</span>
+              <span className="bg-white px-3 font-bold text-gray-300">{t("orSeparator")}</span>
             </div>
           </div>
 
@@ -116,8 +115,8 @@ export function ClaimPersonSheet({
               <Plus className="h-6 w-6" />
             </div>
             <div className="text-left">
-              <div className="text-base font-bold">Créer un nouveau profil</div>
-              <div className="text-xs text-white/60">Je ne suis pas dans la liste ci-dessus</div>
+              <div className="text-base font-bold">{t("newProfileButton")}</div>
+              <div className="text-xs text-white/60">{t("newProfileDescription")}</div>
             </div>
           </button>
         </div>

@@ -62,6 +62,7 @@ export type ItemData = {
   quantity?: string;
   note?: string;
   price?: number;
+  personId?: number | null;
   serviceId?: number; // Optional for updates, required for creation implies different types but we can keep it loose or split
 };
 
@@ -124,7 +125,8 @@ export interface OrganizerHandlers {
     name: string,
     adults?: number,
     children?: number,
-    peopleCount?: number
+    peopleCount?: number,
+    locale?: string
   ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;

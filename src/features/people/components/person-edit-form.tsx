@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 export function PersonEditForm({
   person,
@@ -23,6 +24,8 @@ export function PersonEditForm({
   onDelete: () => void;
   readOnly?: boolean;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Person");
+  const tCommon = useTranslations("EventDashboard.Forms.Shared");
   const [name, setName] = useState(person.name);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
 
@@ -41,7 +44,7 @@ export function PersonEditForm({
               />
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-accent">
-              Utilise votre photo Google
+              {t("googlePhotoNotice")}
             </p>
           </div>
         )}
@@ -50,7 +53,7 @@ export function PersonEditForm({
             htmlFor="edit-person-name"
             className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
           >
-            Nom
+            {t("nameLabel")}
           </Label>
           <Input
             id="edit-person-name"
@@ -63,7 +66,7 @@ export function PersonEditForm({
 
         <div className="space-y-3">
           <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            Emoji Signature
+            {t("emojiLabel")}
           </Label>
           <div className="no-scrollbar grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
             <button
@@ -75,7 +78,7 @@ export function PersonEditForm({
                   : "bg-gray-50 text-gray-400 hover:bg-gray-100"
               )}
             >
-              Auto
+              {t("autoEmoji")}
             </button>
             {PERSON_EMOJIS.map((emoji) => (
               <button
@@ -93,7 +96,7 @@ export function PersonEditForm({
             ))}
           </div>
           <p className="mt-1 text-center text-[10px] italic text-gray-400">
-            Par défaut:{" "}
+            {t("defaultEmoji")}{" "}
             {getPersonEmoji(
               name,
               allPeople.map((p) => p.name)
@@ -112,7 +115,7 @@ export function PersonEditForm({
           shine
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            Enregistrer
+            {tCommon("save")}
           </span>
         </Button>
         <Button
@@ -124,7 +127,7 @@ export function PersonEditForm({
           disabled={readOnly}
         >
           <span className="text-xs font-black uppercase tracking-widest text-red-600">
-            Supprimer ce convive
+            {t("deleteButton")}
           </span>
         </Button>
       </div>

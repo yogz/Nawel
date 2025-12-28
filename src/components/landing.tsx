@@ -2,11 +2,14 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Sparkles, Share2, Users, Calendar } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "./language-switcher";
 
 export function Landing() {
+  const t = useTranslations("Landing");
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -18,30 +21,26 @@ export function Landing() {
 
   const features = [
     {
-      title: "Menu & Services",
-      description:
-        "Créez votre menu de fête en quelques secondes. Organisez les plats par services (Entrée, Plat, Dessert) et suivez l'avancement en temps réel.",
+      title: t("feature1Title"),
+      description: t("feature1Description"),
       icon: <Calendar className="h-6 w-6" />,
       image: "/aura-menu.png",
     },
     {
-      title: "Qui apporte quoi ?",
-      description:
-        "Plus de doublons ! Vos invités choisissent directement ce qu'ils souhaitent apporter. Une interface claire pour une coordination parfaite.",
+      title: t("feature2Title"),
+      description: t("feature2Description"),
       icon: <Users className="h-6 w-6" />,
       image: "/aura-collaboration.png",
     },
     {
-      title: "L'IA à votre service",
-      description:
-        "Laissez notre IA générer la liste précise des ingrédients pour chaque plat. Fini les oublis de dernière minute au supermarché.",
+      title: t("feature3Title"),
+      description: t("feature3Description"),
       icon: <Sparkles className="h-6 w-6" />,
       image: "/aura-ai.png",
     },
     {
-      title: "Liste de courses intelligente",
-      description:
-        "Une liste de courses partagée et organisée par personne. Cochez vos articles au fur et à mesure, même sans connexion.",
+      title: t("feature4Title"),
+      description: t("feature4Description"),
       icon: <Share2 className="h-6 w-6" />,
       image: "/aura-checklist.png",
     },
@@ -54,6 +53,9 @@ export function Landing() {
         style={{ opacity: heroOpacity, scale: heroScale }}
         className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
       >
+        <div className="absolute right-6 top-6 z-50">
+          <LanguageSwitcher />
+        </div>
         <div className="absolute inset-0 -z-10">
           <Image
             src="/aura-hero.png"
@@ -71,25 +73,26 @@ export function Landing() {
         >
           <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-sm font-medium text-red-600">
             <Sparkles className="h-4 w-4" />
-            La nouvelle façon de festoyer
+            {t("badge")}
           </span>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight sm:mb-6 sm:text-7xl">Nawel</h1>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight sm:mb-6 sm:text-7xl">
+            {t("title")}
+          </h1>
           <p className="mx-auto mb-8 max-w-2xl px-4 text-lg leading-relaxed text-gray-600 sm:mb-10 sm:text-2xl">
-            L&apos;organisateur d&apos;événements qui rend les préparatifs aussi magiques que la
-            fête elle-même.
+            {t("heroDescription")}
           </p>
           <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
             <Link
               href="/login?mode=user"
               className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:bg-gray-800 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
-              Commencer maintenant
+              {t("getStarted")}
             </Link>
             <Link
               href="#discover"
               className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
-              Découvrir
+              {t("discover")}
             </Link>
           </div>
         </motion.div>
@@ -143,23 +146,19 @@ export function Landing() {
       {/* Call to Action Footer */}
       <section className="relative z-10 bg-white px-6 py-20 text-center sm:py-32">
         <div className="mx-auto max-w-4xl">
-          <h2 className="mb-6 text-3xl font-bold sm:mb-8 sm:text-6xl">
-            Prêt à simplifier vos fêtes ?
-          </h2>
-          <p className="mb-8 text-lg text-gray-600 sm:mb-12 sm:text-xl">
-            Rejoignez des milliers de familles qui utilisent déjà Nawel.
-          </p>
+          <h2 className="mb-6 text-3xl font-bold sm:mb-8 sm:text-6xl">{t("ctaTitle")}</h2>
+          <p className="mb-8 text-lg text-gray-600 sm:mb-12 sm:text-xl">{t("ctaDescription")}</p>
           <Link
             href="/login?mode=user"
             className="inline-flex w-full items-center justify-center rounded-full bg-red-600 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-red-700 sm:w-auto sm:px-10 sm:py-5 sm:text-xl"
           >
-            Commencer maintenant
+            {t("getStarted")}
           </Link>
         </div>
       </section>
 
       <footer className="border-t border-gray-100 py-12 text-center text-sm text-gray-500">
-        <p>© 2025 Nawel. Fait avec ✨ pour vos plus beaux moments.</p>
+        <p>{t("footer")}</p>
       </footer>
     </div>
   );

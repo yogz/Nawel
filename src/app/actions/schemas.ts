@@ -111,6 +111,7 @@ export const createItemSchema = baseInput.extend({
   quantity: safeText(50).optional(),
   note: safeText(500).optional(),
   price: z.number().min(0).max(100000).optional(),
+  personId: z.number().int().positive().optional().nullable(),
 });
 
 export const updateItemSchema = baseInput.extend({
@@ -176,6 +177,7 @@ export const generateIngredientsSchema = baseInput.extend({
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),
+  locale: z.string().optional(),
 });
 
 export const createIngredientSchema = baseInput.extend({

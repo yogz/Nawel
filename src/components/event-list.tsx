@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import { useRouter, Link } from "@/i18n/navigation";
 import { createEventAction } from "@/app/actions";
 import { Calendar, Plus, Clock, History } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
 

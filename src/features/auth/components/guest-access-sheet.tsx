@@ -2,6 +2,7 @@
 
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { UserPlus, UserCircle, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function GuestAccessSheet({
   open,
@@ -12,14 +13,12 @@ export function GuestAccessSheet({
   onClose: () => void;
   onAuth: () => void;
 }) {
+  const t = useTranslations("EventDashboard.Sheets.GuestAccess");
   return (
-    <BottomSheet open={open} onClose={onClose} title="Bienvenue !">
+    <BottomSheet open={open} onClose={onClose} title={t("title")}>
       <div className="space-y-6 py-6 font-sans">
         <div className="space-y-2 px-4 text-center">
-          <p className="text-gray-600">
-            Vous avez un lien d&apos;édition pour cet événement. Pour apparaître dans la liste des
-            participants et mieux collaborer, nous vous conseillons de vous connecter.
-          </p>
+          <p className="text-gray-600">{t("description")}</p>
         </div>
 
         <div className="grid gap-3 px-4">
@@ -32,8 +31,8 @@ export function GuestAccessSheet({
                 <UserCircle className="h-6 w-6" />
               </div>
               <div className="text-left">
-                <div className="font-bold">S&apos;identifier / S&apos;inscrire</div>
-                <div className="text-xs text-white/80">Devenir participant officiel</div>
+                <div className="font-bold">{t("identifyButton")}</div>
+                <div className="text-xs text-white/80">{t("identifyDescription")}</div>
               </div>
             </div>
             <ArrowRight className="h-5 w-5 opacity-50" />
@@ -48,8 +47,8 @@ export function GuestAccessSheet({
                 <UserPlus className="h-6 w-6" />
               </div>
               <div className="text-left">
-                <div className="font-bold">Continuer sans compte</div>
-                <div className="text-xs text-gray-500">Edition possible, mais non identifiée</div>
+                <div className="font-bold">{t("continueButton")}</div>
+                <div className="text-xs text-gray-500">{t("continueDescription")}</div>
               </div>
             </div>
             <ArrowRight className="h-5 w-5 text-gray-300" />

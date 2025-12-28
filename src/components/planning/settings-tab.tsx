@@ -3,6 +3,7 @@
 import { MessageSquare, Trash2, Sparkles, Check } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import type { ChangeLog } from "@/hooks/use-event-state";
+import { useTranslations } from "next-intl";
 
 interface SettingsTabProps {
   logsLoading: boolean;
@@ -12,13 +13,14 @@ interface SettingsTabProps {
 }
 
 export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: SettingsTabProps) {
+  const t = useTranslations("EventDashboard.Settings");
   const { theme, setTheme, themes } = useThemeMode();
 
   return (
     <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
       <div className="premium-card space-y-4 p-6">
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
-          <Sparkles size={14} /> Ambiance
+          <Sparkles size={14} /> {t("ambiance")}
         </h3>
         <div className="grid grid-cols-1 gap-3">
           {themes.map((t) => (
@@ -50,7 +52,7 @@ export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: Sett
 
       <div className="premium-card space-y-4 p-6">
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
-          <MessageSquare size={14} /> Historique des changements
+          <MessageSquare size={14} /> {t("history")}
         </h3>
         {logsLoading ? (
           <div className="space-y-3">
@@ -82,7 +84,7 @@ export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: Sett
               </div>
             ))}
             {logs.length === 0 && (
-              <p className="py-4 text-center text-xs text-gray-400">Aucun changement récent</p>
+              <p className="py-4 text-center text-xs text-gray-400">{t("noChanges")}</p>
             )}
           </div>
         )}
@@ -91,16 +93,16 @@ export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: Sett
       {!readOnly && (
         <div className="premium-card border-red-100 bg-red-50/10 p-6">
           <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-red-900/40">
-            <Trash2 size={14} /> Zone de danger
+            <Trash2 size={14} /> {t("dangerZone")}
           </h3>
           <button
             onClick={onDeleteEvent}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-black uppercase tracking-widest text-red-600 transition-all hover:bg-red-100"
           >
-            <Trash2 size={16} /> Supprimer l&apos;événement
+            <Trash2 size={16} /> {t("deleteEvent")}
           </button>
           <p className="mt-3 text-center text-[10px] font-medium text-red-900/40">
-            Cette action est irréversible.
+            {t("irreversible")}
           </p>
         </div>
       )}

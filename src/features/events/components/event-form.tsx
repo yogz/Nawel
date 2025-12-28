@@ -3,23 +3,7 @@
 import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus } from "lucide-react";
-
-const CREATION_MODES = [
-  {
-    id: "total",
-    label: "La totale",
-    desc: "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre",
-    icon: <UtensilsCrossed size={20} />,
-  },
-  {
-    id: "classique",
-    label: "Le classique",
-    desc: "Entrée, Plat, Dessert",
-    icon: <Utensils size={20} />,
-  },
-  { id: "apero", label: "L'apéro", desc: "Apéro, Boissons", icon: <GlassWater size={20} /> },
-  { id: "zero", label: "De zéro", desc: "Vide", icon: <FilePlus size={20} /> },
-] as const;
+import { useTranslations, useLocale } from "next-intl";
 
 export function EventForm({
   onSubmit,
@@ -45,6 +29,8 @@ export function EventForm({
   inline?: boolean;
   showWarnings?: boolean;
 }) {
+  const t = useTranslations("CreateEvent");
+  const locale = useLocale();
   const [step, setStep] = useState(1);
   const [slug, setSlug] = useState("");
   const [name, setName] = useState("");
@@ -58,6 +44,33 @@ export function EventForm({
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [adults, setAdults] = useState(0);
   const [children, setChildren] = useState(0);
+
+  const CREATION_MODES = [
+    {
+      id: "total",
+      label: t("modeTotalLabel"),
+      desc: t("modeTotalDesc"),
+      icon: <UtensilsCrossed size={20} />,
+    },
+    {
+      id: "classique",
+      label: t("modeClassicLabel"),
+      desc: t("modeClassicDesc"),
+      icon: <Utensils size={20} />,
+    },
+    {
+      id: "apero",
+      label: t("modeAperoLabel"),
+      desc: t("modeAperoDesc"),
+      icon: <GlassWater size={20} />,
+    },
+    {
+      id: "zero",
+      label: t("modeZeroLabel"),
+      desc: t("modeZeroDesc"),
+      icon: <FilePlus size={20} />,
+    },
+  ] as const;
 
   const generateSlug = (text: string) => {
     return text
@@ -110,7 +123,7 @@ export function EventForm({
 
   const selectedMode = CREATION_MODES.find((m) => m.id === creationMode);
 
-  const stepTitles = ["Votre événement", "Type de menu", "Confirmation"];
+  const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
 
   const content = (
     <>
@@ -131,15 +144,13 @@ export function EventForm({
           <div className="flex gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-amber-800">
             <div className="shrink-0 pt-0.5">⚠️</div>
             <p className="text-xs leading-relaxed">
-              <strong>Attention :</strong> Gardez précieusement l&apos;URL de votre événement. Sans
-              compte, si vous perdez ce lien, vous ne pourrez plus le modifier.
+              <strong>{t("summaryEvent")} :</strong> {t("warningLoss")}
             </p>
           </div>
           <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-blue-800">
             <div className="shrink-0 pt-0.5">✨</div>
             <p className="text-xs leading-relaxed">
-              <strong>Note :</strong> La génération par l&apos;IA et d&apos;autres fonctions
-              avancées nécessitent un compte utilisateur.
+              <strong>Note :</strong> {t("warningAccount")}
             </p>
           </div>
         </div>
@@ -149,7 +160,7 @@ export function EventForm({
       {step === 1 && (
         <div className="space-y-4">
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-gray-900">Nom de l&apos;événement</span>
+            <span className="text-sm font-bold text-gray-900">{t("eventNameLabel")}</span>
             <input
               className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
               value={name}
@@ -160,13 +171,13 @@ export function EventForm({
                   setSlug(generateSlug(newName));
                 }
               }}
-              placeholder="Noël en Famille 2024"
+              placeholder={t("eventNamePlaceholder")}
               autoFocus
             />
           </label>
 
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-gray-900">Date</span>
+            <span className="text-sm font-bold text-gray-900">{t("dateLabel")}</span>
             <input
               type="date"
               className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
@@ -177,7 +188,7 @@ export function EventForm({
 
           <div className="grid grid-cols-2 gap-4">
             <label className="block space-y-2">
-              <span className="text-sm font-bold text-gray-900">Adultes</span>
+              <span className="text-sm font-bold text-gray-900">{t("adultsLabel")}</span>
               <input
                 type="number"
                 min="0"
@@ -187,7 +198,7 @@ export function EventForm({
               />
             </label>
             <label className="block space-y-2">
-              <span className="text-sm font-bold text-gray-900">Enfants</span>
+              <span className="text-sm font-bold text-gray-900">{t("childrenLabel")}</span>
               <input
                 type="number"
                 min="0"
@@ -204,7 +215,7 @@ export function EventForm({
               onClick={onClose}
               className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
             >
-              Annuler
+              {t("cancelButton")}
             </button>
             <button
               type="button"
@@ -212,7 +223,7 @@ export function EventForm({
               disabled={!canGoNext()}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
             >
-              Suivant
+              {t("nextButton")}
             </button>
           </div>
         </div>
@@ -221,7 +232,7 @@ export function EventForm({
       {/* Step 2: Creation Mode */}
       {step === 2 && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-500">Choisissez les catégories de départ</p>
+          <p className="text-sm text-gray-500">{t("menuDescription")}</p>
 
           <div className="space-y-2">
             {CREATION_MODES.map((mode) => (
@@ -263,14 +274,14 @@ export function EventForm({
               onClick={goBack}
               className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
             >
-              Retour
+              {t("backButton")}
             </button>
             <button
               type="button"
               onClick={goNext}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95"
             >
-              Suivant
+              {t("nextButton")}
             </button>
           </div>
         </div>
@@ -282,13 +293,13 @@ export function EventForm({
           {/* Summary */}
           <div className="space-y-2 rounded-2xl bg-gray-50 p-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Événement</span>
+              <span className="text-xs text-gray-500">{t("summaryEvent")}</span>
               <span className="text-sm font-bold text-gray-900">{name}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Date</span>
+              <span className="text-xs text-gray-500">{t("summaryDate")}</span>
               <span className="text-sm font-medium text-gray-700">
-                {new Date(date).toLocaleDateString("fr-FR", {
+                {new Date(date).toLocaleDateString(locale === "fr" ? "fr-FR" : locale, {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
@@ -298,18 +309,18 @@ export function EventForm({
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-500">Convives</span>
               <span className="text-sm font-medium text-gray-700">
-                {adults} adultes, {children} enfants
+                {t("summaryGuests", { adults, children })}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Menu</span>
+              <span className="text-xs text-gray-500">{t("summaryMenu")}</span>
               <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <span className="text-accent">{selectedMode?.icon}</span>
                 {selectedMode?.label}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">URL</span>
+              <span className="text-xs text-gray-500">{t("summaryUrl")}</span>
               <span className="font-mono text-sm text-accent">/{slug}</span>
             </div>
           </div>
@@ -320,13 +331,13 @@ export function EventForm({
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="text-xs font-semibold text-gray-400 hover:text-gray-600"
           >
-            {showAdvanced ? "↑ Masquer les options" : "↓ Options avancées"}
+            {showAdvanced ? t("hideOptions") : t("showOptions")}
           </button>
 
           {showAdvanced && (
             <div className="space-y-3 border-t border-gray-100 pt-2">
               <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">URL personnalisée</span>
+                <span className="text-xs font-semibold text-gray-600">{t("customUrlLabel")}</span>
                 <input
                   className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
                   value={slug}
@@ -334,25 +345,25 @@ export function EventForm({
                     setSlug(generateSlug(e.target.value));
                     setIsSlugManuallyEdited(true);
                   }}
-                  placeholder="nom-de-levenement"
+                  placeholder={t("customUrlPlaceholder")}
                 />
               </label>
               <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">Clé admin (optionnel)</span>
+                <span className="text-xs font-semibold text-gray-600">{t("adminKeyLabel")}</span>
                 <input
                   className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
                   value={customPassword}
                   onChange={(e) => setCustomPassword(e.target.value)}
-                  placeholder="mon-code-secret"
+                  placeholder={t("adminKeyPlaceholder")}
                 />
               </label>
               <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">Description (optionnel)</span>
+                <span className="text-xs font-semibold text-gray-600">{t("descriptionLabel")}</span>
                 <textarea
                   className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Une petite description..."
+                  placeholder={t("descriptionPlaceholder")}
                   rows={2}
                 />
               </label>
@@ -360,7 +371,9 @@ export function EventForm({
           )}
 
           {error && (
-            <p className="rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-500">{error}</p>
+            <p className="rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-500">
+              {error === "Une erreur est survenue" ? t("errorDefault") : error}
+            </p>
           )}
 
           <div className="flex gap-3 pt-4">
@@ -369,7 +382,7 @@ export function EventForm({
               onClick={goBack}
               className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
             >
-              Retour
+              {t("backButton")}
             </button>
             <button
               type="button"
@@ -377,7 +390,7 @@ export function EventForm({
               disabled={isPending || !slug.trim() || !name.trim()}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
             >
-              {isPending ? "Création..." : "Créer"}
+              {isPending ? t("creatingButton") : t("createButton")}
             </button>
           </div>
         </div>

@@ -1,12 +1,18 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { getAllCacheEntriesAction } from "@/app/actions/admin-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { ModelComparison } from "@/components/admin/model-comparison";
+import { CacheList } from "@/components/admin/cache-list";
+
+import { setRequestLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminModelsPage() {
+export default async function AdminCachePage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -26,17 +32,19 @@ export default async function AdminModelsPage() {
     );
   }
 
+  const cacheEntries = await getAllCacheEntriesAction();
+
   return (
     <div className="min-h-screen bg-surface">
       <AdminHeader user={session.user} />
       <main className="mx-auto max-w-6xl p-4 sm:p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-text">Comparaison des Modèles IA</h1>
+          <h1 className="text-2xl font-bold text-text">Cache des Recettes IA</h1>
           <p className="text-muted-foreground">
-            Testez et comparez les performances des différents modèles gratuits OpenRouter.
+            Gérez les ingrédients mis en cache par l&apos;IA pour optimiser les performances.
           </p>
         </div>
-        <ModelComparison />
+        <CacheList initialEntries={cacheEntries} />
       </main>
     </div>
   );

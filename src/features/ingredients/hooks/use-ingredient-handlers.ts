@@ -25,7 +25,8 @@ export function useIngredientHandlers({
     itemName: string,
     adults?: number,
     children?: number,
-    peopleCount?: number
+    peopleCount?: number,
+    locale?: string
   ) => {
     if (readOnly) {
       return;
@@ -39,6 +40,7 @@ export function useIngredientHandlers({
       peopleCount,
       slug,
       key: writeKey,
+      locale,
     });
 
     if (!result.success) {

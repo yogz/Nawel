@@ -16,6 +16,7 @@ import {
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
 import { generateIngredients as generateFromAI, type GeneratedIngredient } from "@/lib/openrouter";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth-config";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
 
@@ -78,11 +79,30 @@ export const generateIngredientsAction = createSafeAction(
         where: eq(items.id, input.itemId),
       });
 
-      const details = {
-        adults: input.adults,
-        children: input.children,
-        description: item?.quantity || undefined,
-      };
+      const tAi = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "EventDashboard.AI",
+      });
+
+      // Construct localized guest description
+      let guestDescription = "";
+      if (item?.quantity) {
+        guestDescription = item.quantity;
+      } else if (input.adults !== undefined && input.children !== undefined) {
+        const parts = [];
+        if (input.adults > 0) {
+          parts.push(tAi("adults", { count: input.adults }));
+        }
+        if (input.children > 0) {
+          parts.push(tAi("children", { count: input.children }));
+        }
+        guestDescription = parts.join(tAi("and"));
+      } else {
+        guestDescription = tAi("people", { count: input.peopleCount || 0 });
+      }
+
+      const systemPrompt = tAi("systemPrompt", { guestDescription });
+      const userPrompt = tAi("userPrompt", { itemName: input.itemName });
 
       // Check cache for this dish + people count
       // (Cache remains on peopleCount for now to keep it simple, but prompt will be detailed)
@@ -105,12 +125,18 @@ export const generateIngredientsAction = createSafeAction(
       } else {
         // Need to call AI (either no cache or not enough confirmations)
         try {
-          generatedIngredients = await generateFromAI(input.itemName, peopleCount, details);
+          generatedIngredients = await generateFromAI(input.itemName, peopleCount, {
+            adults: input.adults,
+            children: input.children,
+            description: item?.quantity || undefined,
+            systemPrompt,
+            userPrompt,
+          });
         } catch (aiError) {
           console.error("[AI] Generation failed:", aiError);
           return {
             success: false,
-            error: "L'IA n'a pas pu générer les ingrédients. Réessayez.",
+            error: tAi.has("generationError") ? tAi("generationError") : "Erreur de génération IA.",
           };
         }
 

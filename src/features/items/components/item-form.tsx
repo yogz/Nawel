@@ -17,6 +17,8 @@ import {
 import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp } from "lucide-react";
 import clsx from "clsx";
 import { ItemIngredients } from "./item-ingredients";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 export function ItemForm({
   people,
@@ -53,7 +55,7 @@ export function ItemForm({
   readOnly?: boolean;
   // Ingredient props
   ingredients?: Ingredient[];
-  onGenerateIngredients?: (name: string, note?: string) => Promise<void>;
+  onGenerateIngredients?: (name: string, note?: string, locale?: string) => Promise<void>;
   onToggleIngredient?: (id: number, checked: boolean) => void;
   onDeleteIngredient?: (id: number) => void;
   onCreateIngredient?: (name: string, quantity?: string) => void;
@@ -63,14 +65,18 @@ export function ItemForm({
   isAuthenticated?: boolean;
   onRequestAuth?: () => void;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Item");
+  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const params = useParams();
+  const locale = params.locale as string;
+
   const defaultNote =
-    !defaultItem && servicePeopleCount
-      ? `Pour ${servicePeopleCount} personne${servicePeopleCount > 1 ? "s" : ""}`
-      : "";
+    !defaultItem && servicePeopleCount ? t("defaultNote", { count: servicePeopleCount }) : "";
   const [name, setName] = useState(defaultItem?.name || "");
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
   const [note, setNote] = useState(defaultItem?.note || defaultNote);
   const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
+  const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -115,7 +121,18 @@ export function ItemForm({
       quantity: quantity || undefined,
       note: note || undefined,
       price: price ? parseFloat(price) : undefined,
-    });
+      personId: !isEditMode ? selectedPersonId : undefined,
+    } as any);
+  };
+
+  const currentPersonId = isEditMode ? defaultItem.personId : selectedPersonId;
+
+  const handlePersonClick = (personId: number | null) => {
+    if (isEditMode) {
+      onAssign(personId);
+    } else {
+      setSelectedPersonId(personId);
+    }
   };
 
   return (
@@ -126,11 +143,11 @@ export function ItemForm({
           htmlFor="item-name"
           className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
         >
-          Article
+          {t("label")}
         </Label>
         <Input
           id="item-name"
-          placeholder="Ex: Fromage, Vin rouge, Bûche..."
+          placeholder={t("placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={readOnly}
@@ -142,36 +159,36 @@ export function ItemForm({
       {/* Quick details row */}
       <div className="flex gap-2">
         <Input
-          placeholder="Qté (ex: 2kg)"
+          placeholder={t("quantityPlaceholder")}
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           disabled={readOnly}
           className="h-11 flex-1 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
-          aria-label="Quantité"
+          aria-label={t("quantityLabel")}
         />
         <Input
           type="number"
           inputMode="decimal"
-          placeholder="Prix €"
+          placeholder={t("pricePlaceholder")}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           disabled={readOnly}
           className="h-11 w-24 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
-          aria-label="Prix en euros"
+          aria-label={t("priceLabel")}
         />
       </div>
 
       {/* Assign to person - refined cards */}
       <div className="space-y-2">
         <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-          Qui s&apos;en occupe ?
+          {t("assignLabel")}
         </Label>
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
-            onClick={() => onAssign(null)}
+            onClick={() => handlePersonClick(null)}
             className={clsx(
               "flex shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
-              !defaultItem?.personId
+              !currentPersonId
                 ? "bg-amber-50 ring-2 ring-amber-200"
                 : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
             )}
@@ -179,7 +196,7 @@ export function ItemForm({
             <div
               className={clsx(
                 "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
-                !defaultItem?.personId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
+                !currentPersonId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
               )}
             >
               <CircleHelp size={18} />
@@ -187,18 +204,18 @@ export function ItemForm({
             <span
               className={clsx(
                 "whitespace-nowrap text-[9px] font-black uppercase tracking-widest",
-                !defaultItem?.personId ? "text-amber-900" : "text-gray-400"
+                !currentPersonId ? "text-amber-900" : "text-gray-400"
               )}
             >
-              À prévoir
+              {t("unassigned")}
             </span>
           </button>
           {people.map((person) => {
-            const isSelected = defaultItem?.personId === person.id;
+            const isSelected = currentPersonId === person.id;
             return (
               <button
                 key={person.id}
-                onClick={() => onAssign(person.id)}
+                onClick={() => handlePersonClick(person.id)}
                 className={clsx(
                   "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
                   isSelected
@@ -255,17 +272,17 @@ export function ItemForm({
             className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
           />
         </div>
-        {showDetails ? "Moins d'options" : "Plus d'options"}
+        {showDetails ? tCommon("showLess") : tCommon("showMore")}
       </button>
 
       {showDetails && (
         <div className="space-y-4 border-t border-gray-100 pt-4">
           <div className="space-y-2">
             <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Note
+              {t("note")}
             </Label>
             <Input
-              placeholder="Marque, allergies, détails..."
+              placeholder={t("notePlaceholder")}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={readOnly}
@@ -284,7 +301,7 @@ export function ItemForm({
                 disabled={readOnly}
               >
                 <SelectTrigger className="h-11 rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white">
-                  <SelectValue placeholder="Autre service" />
+                  <SelectValue placeholder={t("movePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
                   {allServices.map((s) => (
@@ -308,7 +325,7 @@ export function ItemForm({
                 disabled={readOnly}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-red-600">
-                  Supprimer
+                  {tCommon("delete")}
                 </span>
               </Button>
             </div>
@@ -322,10 +339,11 @@ export function ItemForm({
           ingredients={ingredients}
           itemName={name}
           itemNote={note}
-          readOnly={readOnly}
           isGenerating={isGenerating}
           isAuthenticated={isAuthenticated}
-          onGenerateIngredients={onGenerateIngredients}
+          onGenerateIngredients={
+            onGenerateIngredients ? (n, o) => onGenerateIngredients(n, o, locale) : undefined
+          }
           onToggleIngredient={onToggleIngredient}
           onDeleteIngredient={onDeleteIngredient}
           onCreateIngredient={onCreateIngredient}
@@ -346,7 +364,7 @@ export function ItemForm({
             shine
           >
             <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              Ajouter l&apos;article
+              {t("addButton")}
             </span>
           </Button>
         </div>

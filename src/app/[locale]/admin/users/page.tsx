@@ -1,13 +1,18 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAllEventsAction } from "@/app/actions/admin-actions";
+import { getAllUsersAction } from "@/app/actions/admin-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { EventList } from "@/components/admin/event-list";
+import { UserList } from "@/components/admin/user-list";
+
+import { setRequestLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminUsersPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -27,19 +32,19 @@ export default async function AdminPage() {
     );
   }
 
-  const events = await getAllEventsAction();
+  const users = await getAllUsersAction();
 
   return (
     <div className="min-h-screen bg-surface">
       <AdminHeader user={session.user} />
       <main className="mx-auto max-w-6xl p-4 sm:p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-text">Gestion des événements</h1>
+          <h1 className="text-2xl font-bold text-text">Gestion des utilisateurs</h1>
           <p className="text-muted-foreground">
-            {events.length} événement{events.length > 1 ? "s" : ""} au total
+            {users.length} utilisateur{users.length > 1 ? "s" : ""} au total
           </p>
         </div>
-        <EventList initialEvents={events} />
+        <UserList initialUsers={users} />
       </main>
     </div>
   );

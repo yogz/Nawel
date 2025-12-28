@@ -16,8 +16,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Plus, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr, enUS, el, de, es, pt } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+
+const dateLocales: Record<string, any> = {
+  fr,
+  en: enUS,
+  el,
+  de,
+  es,
+  pt,
+};
 
 export function ServiceForm({
   meals,
@@ -48,6 +59,12 @@ export function ServiceForm({
   ) => Promise<void>;
   readOnly?: boolean;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Service");
+  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const tMeal = useTranslations("EventDashboard.Forms.Meal");
+  const params = useParams();
+  const currentLocale = (params.locale as string) || "fr";
+  const dateLocale = dateLocales[currentLocale] || fr;
   const initialMealId =
     defaultMealId !== undefined && defaultMealId !== -1
       ? String(defaultMealId)
@@ -98,7 +115,7 @@ export function ServiceForm({
     <div className="space-y-6">
       {!forceNewMeal && meals.length > 0 && (
         <div className="space-y-2">
-          <Label>Choisir le repas</Label>
+          <Label>{t("selectMealLabel")}</Label>
           <Select
             value={mealId}
             onValueChange={(val) => {
@@ -117,7 +134,7 @@ export function ServiceForm({
             disabled={readOnly}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Sélectionner un repas" />
+              <SelectValue placeholder={t("selectMealPlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {meals.map((meal) => (
@@ -125,7 +142,12 @@ export function ServiceForm({
                   {meal.title || meal.date}
                 </SelectItem>
               ))}
-              <SelectItem value="new">+ Nouveau repas</SelectItem>
+              <SelectItem value="new">
+                <span className="flex items-center gap-1.5 text-accent">
+                  <Plus size={14} />
+                  {t("newMealOption")}
+                </span>
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -134,7 +156,7 @@ export function ServiceForm({
       {(mealId === "new" || forceNewMeal) && (
         <div className="space-y-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-400">
-            Nouveau repas
+            {t("newMealSection")}
           </p>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
@@ -150,9 +172,9 @@ export function ServiceForm({
                 >
                   <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
                   {newMealDate ? (
-                    format(newMealDate, "PPP", { locale: fr })
+                    format(newMealDate, "PPP", { locale: dateLocale })
                   ) : (
-                    <span>Choisir une date</span>
+                    <span>{tMeal("datePlaceholder")}</span>
                   )}
                 </Button>
               </PopoverTrigger>
@@ -165,16 +187,16 @@ export function ServiceForm({
                   selected={newMealDate}
                   onSelect={setNewMealDate}
                   initialFocus
-                  locale={fr}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="meal-title">Titre (optionnel)</Label>
+            <Label htmlFor="meal-title">{tMeal("titleLabel")}</Label>
             <Input
               id="meal-title"
-              placeholder="Ex: Réveillon, Jour J..."
+              placeholder={tMeal("titlePlaceholder")}
               value={newMealTitle}
               onChange={(e) => setNewMealTitle(e.target.value)}
               disabled={readOnly}
@@ -183,7 +205,7 @@ export function ServiceForm({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="meal-time">Heure</Label>
+              <Label htmlFor="meal-time">{tMeal("timeLabel")}</Label>
               <div className="relative">
                 <Input
                   id="meal-time"
@@ -198,11 +220,11 @@ export function ServiceForm({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="meal-address">Adresse</Label>
+            <Label htmlFor="meal-address">{tMeal("addressLabel")}</Label>
             <div className="relative">
               <Input
                 id="meal-address"
-                placeholder="Ex: 123 Rue de la Fête"
+                placeholder={tMeal("addressPlaceholder")}
                 value={newMealAddress}
                 onChange={(e) => setNewMealAddress(e.target.value)}
                 disabled={readOnly}
@@ -219,11 +241,11 @@ export function ServiceForm({
           htmlFor="service-title"
           className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
         >
-          Nom du service
+          {t("label")}
         </Label>
         <Input
           id="service-title"
-          placeholder="Ex: Entrée, Plat, Dessert..."
+          placeholder={t("placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={readOnly}
@@ -238,7 +260,7 @@ export function ServiceForm({
             htmlFor="adults"
             className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
           >
-            Adultes
+            {tCommon("adultsLabel")}
           </Label>
           <Select
             value={String(adults)}
@@ -250,12 +272,12 @@ export function ServiceForm({
             disabled={readOnly}
           >
             <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder="Adultes" />
+              <SelectValue placeholder={tCommon("adultsLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
               {Array.from({ length: 51 }, (_, i) => (
                 <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {i === 1 ? "adulte" : "adultes"}
+                  {i} {tCommon("adultsCount", { count: i })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -266,7 +288,7 @@ export function ServiceForm({
             htmlFor="children"
             className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
           >
-            Enfants
+            {tCommon("childrenLabel")}
           </Label>
           <Select
             value={String(children)}
@@ -278,12 +300,12 @@ export function ServiceForm({
             disabled={readOnly}
           >
             <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder="Enfants" />
+              <SelectValue placeholder={tCommon("childrenLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
               {Array.from({ length: 51 }, (_, i) => (
                 <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {i === 1 ? "enfant" : "enfants"}
+                  {i} {tCommon("childrenCount", { count: i })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -303,7 +325,7 @@ export function ServiceForm({
           shine
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            Ajouter le service
+            {t("addButton")}
           </span>
         </Button>
       </div>

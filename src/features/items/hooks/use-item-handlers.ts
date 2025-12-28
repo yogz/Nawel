@@ -61,7 +61,10 @@ export function useItemHandlers({
     startTransition(async () => {
       try {
         const created = await createItemAction({ ...itemData, slug, key: writeKey });
-        setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person: null }]);
+        const person = itemData.personId
+          ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
+          : null;
+        setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
         setSheet(null);
         setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
       } catch (error) {

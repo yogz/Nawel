@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { isDatabaseError } from "@/lib/errors";
 import { Button } from "@/components/ui/button";
 import { ShieldAlert, RefreshCcw, Home } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Error({
   error,
@@ -13,6 +14,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("Error");
   const isDbError = isDatabaseError(error);
 
   useEffect(() => {
@@ -31,22 +33,20 @@ export default function Error({
 
         <div className="space-y-2">
           <h1 className="text-2xl font-black tracking-tight text-text sm:text-3xl">
-            {isDbError ? "Oups ! Connexion impossible" : "Quelque chose s'est mal passé"}
+            {isDbError ? t("dbTitle") : t("defaultTitle")}
           </h1>
           <p className="text-gray-500">
-            {isDbError
-              ? "Désolé, nous ne parvenons pas à contacter notre base de données. Cela peut être dû à un problème de connexion internet ou à une maintenance temporaire."
-              : "Une erreur inattendue est survenue. Nos lutins travaillent déjà à la résolution du problème !"}
+            {isDbError ? t("dbDescription") : t("defaultDescription")}
           </p>
         </div>
 
         {isDbError && (
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4 text-left text-sm text-gray-600">
-            <p className="mb-1 font-bold">Actions suggérées :</p>
+            <p className="mb-1 font-bold">{t("suggestedActions")}</p>
             <ul className="list-inside list-disc space-y-1">
-              <li>Vérifiez votre connexion internet.</li>
-              <li>Vérifiez si l&apos;adresse de la base de données est accessible.</li>
-              <li>Réessayez dans quelques instants.</li>
+              <li>{t("actionInternet")}</li>
+              <li>{t("actionDatabase")}</li>
+              <li>{t("actionRetry")}</li>
             </ul>
           </div>
         )}
@@ -54,18 +54,18 @@ export default function Error({
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button onClick={() => reset()} className="flex items-center gap-2 px-8">
             <RefreshCcw size={18} />
-            Réessayer
+            {t("retryButton")}
           </Button>
           <Link href="/">
             <Button variant="outline" className="flex w-full items-center gap-2 px-8">
               <Home size={18} />
-              Retour à l&apos;accueil
+              {t("homeButton")}
             </Button>
           </Link>
         </div>
 
         <p className="font-mono text-[10px] italic text-gray-400">
-          Error ID: {error.digest || "N/A"}
+          {t("errorId")}: {error.digest || "N/A"}
         </p>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export function ShareModal({
   slug,
@@ -15,6 +16,7 @@ export function ShareModal({
   onClose: () => void;
   isNew?: boolean;
 }) {
+  const t = useTranslations("EventDashboard.Sheets.Share");
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
 
@@ -39,17 +41,15 @@ export function ShareModal({
           ✨
         </div>
         <h3 className="text-xl font-black tracking-tight text-text">
-          {isNew ? "Événement créé !" : "Partager l'accès"}
+          {isNew ? t("eventCreated") : t("title")}
         </h3>
-        <p className="mt-2 text-sm text-gray-500">
-          Utilise ce lien pour que d&apos;autres puissent éditer l&apos;événement.
-        </p>
+        <p className="mt-2 text-sm text-gray-500">{t("description")}</p>
       </div>
 
       <div className="space-y-4">
         <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
           <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            Lien d&apos;administration
+            {t("adminLinkLabel")}
           </p>
           <div className="flex items-center gap-2">
             <code className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-3 py-2 font-mono text-xs text-gray-600 ring-1 ring-black/[0.05]">
@@ -69,7 +69,7 @@ export function ShareModal({
         {adminKey && (
           <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-              Clé d&apos;accès seule
+              {t("accessKeyLabel")}
             </p>
             <div className="flex items-center gap-2">
               <code className="flex-1 rounded-lg bg-white px-3 py-2 font-mono text-xs font-bold text-accent ring-1 ring-black/[0.05]">
@@ -89,7 +89,7 @@ export function ShareModal({
       </div>
 
       <Button className="w-full" onClick={onClose}>
-        J&apos;ai bien noté, fermer
+        {t("closeButton")}
       </Button>
     </div>
   );

@@ -142,26 +142,23 @@ export function Organizer({
       const isParticipant = plan.people.some((p) => p.userId === session.user.id);
       if (isParticipant) return;
 
-      // Find unclaimed people
-      const unclaimed = plan.people.filter((p) => !p.userId);
-
-      if (unclaimed.length > 0) {
-        // If sheet is already open (like guest-access or just closing one), don't override immediately
-        // unless it's specifically for joining.
-        if (!sheet || sheet.type === "guest-access") {
-          setSheet({ type: "claim-person", unclaimed });
+      // Automatically join to ensure visibility in dashboard
+      joinEventAction({ slug, key: writeKey }).then((result) => {
+        if (result && !plan.people.some((p) => p.id === result.id)) {
+          setPlan((prev) => ({
+            ...prev,
+            people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
+          }));
         }
-      } else {
-        // No one to claim, automatically join
-        joinEventAction({ slug, key: writeKey }).then((result) => {
-          if (result && !plan.people.some((p) => p.id === result.id)) {
-            setPlan((prev) => ({
-              ...prev,
-              people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
-            }));
+
+        // After joining, check if there are unclaimed people they might want to claim instead
+        const unclaimed = plan.people.filter((p) => !p.userId);
+        if (unclaimed.length > 0) {
+          if (!sheet || sheet.type === "guest-access") {
+            setSheet({ type: "claim-person", unclaimed });
           }
-        });
-      }
+        }
+      });
     }
   }, [session, slug, writeKey, readOnly, plan.people, setPlan, sheet, setSheet]);
 

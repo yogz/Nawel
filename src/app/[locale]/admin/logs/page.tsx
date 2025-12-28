@@ -1,13 +1,19 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAllCacheEntriesAction } from "@/app/actions/admin-actions";
+import { getAuditLogsAction } from "@/app/actions/audit-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { CacheList } from "@/components/admin/cache-list";
+import { AuditLogList } from "@/components/admin/audit-log-list";
+import { Shield } from "lucide-react";
+
+import { setRequestLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminCachePage() {
+export default async function AdminLogsPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -27,19 +33,23 @@ export default async function AdminCachePage() {
     );
   }
 
-  const cacheEntries = await getAllCacheEntriesAction();
+  const logs = await getAuditLogsAction({});
 
   return (
     <div className="min-h-screen bg-surface">
       <AdminHeader user={session.user} />
       <main className="mx-auto max-w-6xl p-4 sm:p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-text">Cache des Recettes IA</h1>
-          <p className="text-muted-foreground">
-            Gérez les ingrédients mis en cache par l&apos;IA pour optimiser les performances.
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="flex items-center gap-2 text-2xl font-bold text-text">
+              <Shield className="h-6 w-6 text-primary" />
+              Journal d&apos;audit
+            </h1>
+            <p className="text-muted-foreground">Traçabilité des modifications de données</p>
+          </div>
         </div>
-        <CacheList initialEntries={cacheEntries} />
+
+        <AuditLogList initialLogs={logs} />
       </main>
     </div>
   );

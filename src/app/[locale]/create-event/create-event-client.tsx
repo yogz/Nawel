@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 
-export default function CreateEventPage() {
+export default function CreateEventClient() {
+  const t = useTranslations("CreateEvent");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -50,14 +51,12 @@ export default function CreateEventPage() {
         className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent"
       >
         <ArrowLeft size={16} />
-        Retour à la connexion
+        {t("backToLogin")}
       </Link>
 
       <div className="mb-10 space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">Créer un événement</h1>
-        <p className="text-gray-600">
-          Organisez votre événement rapidement, sans avoir à créer de compte.
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
+        <p className="text-gray-600">{t("description")}</p>
       </div>
 
       <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl shadow-gray-200/50">

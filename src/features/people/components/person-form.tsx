@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, UserPlus, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function PersonForm({
   onSubmit,
@@ -18,6 +19,7 @@ export function PersonForm({
   currentUserId?: string;
   currentUserImage?: string | null;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Person");
   const [name, setName] = useState("");
   const [isMe, setIsMe] = useState(false);
 
@@ -33,11 +35,11 @@ export function PersonForm({
           htmlFor="person-name"
           className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
         >
-          Nom du convive
+          {t("label")}
         </Label>
         <Input
           id="person-name"
-          placeholder="Ex: Jean-Michel"
+          placeholder={t("placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => {
@@ -66,7 +68,7 @@ export function PersonForm({
             htmlFor="is-me"
             className="flex cursor-pointer items-center gap-1.5 text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent"
           >
-            C&apos;est moi !{" "}
+            {t("isMe")}{" "}
             {isMe && currentUserImage ? (
               <div className="h-5 w-5 overflow-hidden rounded-full border border-accent/20">
                 <Image
@@ -94,7 +96,7 @@ export function PersonForm({
           shine
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            Ajouter au groupe
+            {t("addButton")}
           </span>
         </Button>
       </div>

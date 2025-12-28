@@ -1,14 +1,17 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAuditLogsAction } from "@/app/actions/audit-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { AuditLogList } from "@/components/admin/audit-log-list";
-import { Shield } from "lucide-react";
+import { ModelComparison } from "@/components/admin/model-comparison";
+
+import { setRequestLocale } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminLogsPage() {
+export default async function AdminModelsPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -28,23 +31,17 @@ export default async function AdminLogsPage() {
     );
   }
 
-  const logs = await getAuditLogsAction({});
-
   return (
     <div className="min-h-screen bg-surface">
       <AdminHeader user={session.user} />
       <main className="mx-auto max-w-6xl p-4 sm:p-6">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 text-2xl font-bold text-text">
-              <Shield className="h-6 w-6 text-primary" />
-              Journal d&apos;audit
-            </h1>
-            <p className="text-muted-foreground">Traçabilité des modifications de données</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-text">Comparaison des Modèles IA</h1>
+          <p className="text-muted-foreground">
+            Testez et comparez les performances des différents modèles gratuits OpenRouter.
+          </p>
         </div>
-
-        <AuditLogList initialLogs={logs} />
+        <ModelComparison />
       </main>
     </div>
   );
