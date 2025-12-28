@@ -51,6 +51,7 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
 
   await logChange("create", "people", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return created;
 });
 
@@ -67,6 +68,7 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
     .returning();
   await logChange("create", "people", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return created;
 });
 
@@ -85,6 +87,7 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
 
   await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return updated;
 });
 
@@ -99,6 +102,7 @@ export const deletePersonAction = createSafeAction(deletePersonSchema, async (in
     await logChange("delete", "people", deleted.id, deleted, null);
   }
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return { success: true };
 });
 export const claimPersonAction = createSafeAction(claimPersonSchema, async (input) => {
@@ -124,6 +128,7 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
 
   await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return updated;
 });
 
@@ -150,5 +155,6 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
 
   await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
+  revalidatePath("/");
   return updated;
 });

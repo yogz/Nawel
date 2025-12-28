@@ -9,10 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
 import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export function LoginForm() {
   const t = useTranslations("Login");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
@@ -207,7 +208,7 @@ export function LoginForm() {
                 try {
                   await signIn.social({
                     provider: "google",
-                    callbackURL: isUserMode ? "/" : "/admin",
+                    callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,
                   });
                 } catch (err) {
                   console.error(err);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { ShoppingCart, ExternalLink, Check, UserX, ChevronDown, Users } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";

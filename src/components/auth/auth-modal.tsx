@@ -25,14 +25,14 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
         await authClient.signIn.email({
           email,
           password,
-          callbackURL: "/",
+          callbackURL: window.location.href,
         });
       } else {
         await authClient.signUp.email({
           email,
           password,
           name: email.split("@")[0], // Simple default name
-          callbackURL: "/",
+          callbackURL: window.location.href,
         });
       }
       onClose();
@@ -53,7 +53,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: window.location.href,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Une erreur est survenue";

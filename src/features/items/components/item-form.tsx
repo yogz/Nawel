@@ -76,6 +76,7 @@ export function ItemForm({
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
   const [note, setNote] = useState(defaultItem?.note || defaultNote);
   const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
+  const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -120,7 +121,18 @@ export function ItemForm({
       quantity: quantity || undefined,
       note: note || undefined,
       price: price ? parseFloat(price) : undefined,
-    });
+      personId: !isEditMode ? selectedPersonId : undefined,
+    } as any);
+  };
+
+  const currentPersonId = isEditMode ? defaultItem.personId : selectedPersonId;
+
+  const handlePersonClick = (personId: number | null) => {
+    if (isEditMode) {
+      onAssign(personId);
+    } else {
+      setSelectedPersonId(personId);
+    }
   };
 
   return (
@@ -173,10 +185,10 @@ export function ItemForm({
         </Label>
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
-            onClick={() => onAssign(null)}
+            onClick={() => handlePersonClick(null)}
             className={clsx(
               "flex shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
-              !defaultItem?.personId
+              !currentPersonId
                 ? "bg-amber-50 ring-2 ring-amber-200"
                 : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200"
             )}
@@ -184,7 +196,7 @@ export function ItemForm({
             <div
               className={clsx(
                 "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
-                !defaultItem?.personId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
+                !currentPersonId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
               )}
             >
               <CircleHelp size={18} />
@@ -192,18 +204,18 @@ export function ItemForm({
             <span
               className={clsx(
                 "whitespace-nowrap text-[9px] font-black uppercase tracking-widest",
-                !defaultItem?.personId ? "text-amber-900" : "text-gray-400"
+                !currentPersonId ? "text-amber-900" : "text-gray-400"
               )}
             >
               {t("unassigned")}
             </span>
           </button>
           {people.map((person) => {
-            const isSelected = defaultItem?.personId === person.id;
+            const isSelected = currentPersonId === person.id;
             return (
               <button
                 key={person.id}
-                onClick={() => onAssign(person.id)}
+                onClick={() => handlePersonClick(person.id)}
                 className={clsx(
                   "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
                   isSelected

@@ -19,7 +19,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
 

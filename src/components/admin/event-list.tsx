@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import {
   type EventWithStats,
   updateEventAdminAction,
@@ -35,9 +35,7 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
 
   const getEditUrl = (event: EventWithStats) => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-    return event.adminKey
-      ? `${baseUrl}/event/${event.slug}?key=${event.adminKey}`
-      : `${baseUrl}/event/${event.slug}`;
+    return event.adminKey ? `/event/${event.slug}?key=${event.adminKey}` : `/event/${event.slug}`;
   };
 
   const copyToClipboard = async (event: EventWithStats) => {

@@ -62,6 +62,7 @@ export type ItemData = {
   quantity?: string;
   note?: string;
   price?: number;
+  personId?: number | null;
   serviceId?: number; // Optional for updates, required for creation implies different types but we can keep it loose or split
 };
 

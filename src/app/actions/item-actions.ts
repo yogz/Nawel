@@ -36,6 +36,7 @@ export const createItemAction = createSafeAction(createItemSchema, async (input)
       quantity: input.quantity ?? null,
       note: input.note ?? null,
       price: input.price ?? null,
+      personId: input.personId ?? null,
       order,
     })
     .returning();

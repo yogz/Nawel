@@ -2,10 +2,11 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Sparkles, Share2, Users, Calendar } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "./language-switcher";
 
 export function Landing() {
   const t = useTranslations("Landing");
@@ -52,6 +53,9 @@ export function Landing() {
         style={{ opacity: heroOpacity, scale: heroScale }}
         className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
       >
+        <div className="absolute right-6 top-6 z-50">
+          <LanguageSwitcher />
+        </div>
         <div className="absolute inset-0 -z-10">
           <Image
             src="/aura-hero.png"

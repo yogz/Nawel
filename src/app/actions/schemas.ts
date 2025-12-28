@@ -111,6 +111,7 @@ export const createItemSchema = baseInput.extend({
   quantity: safeText(50).optional(),
   note: safeText(500).optional(),
   price: z.number().min(0).max(100000).optional(),
+  personId: z.number().int().positive().optional().nullable(),
 });
 
 export const updateItemSchema = baseInput.extend({
