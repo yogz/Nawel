@@ -211,6 +211,12 @@
         "generateIngredients": "Générer les ingrédients",
         "aiAnalyzing": "L'IA analyse votre plat...",
         "forPeople": "Pour {count} personne{count, plural, one {} other {s}}",
+        "assignLabel": "Qui s'en occupe ?",
+        "unassigned": "À prévoir",
+        "defaultNote": "Pour {count} personne{count, plural, one {} other {s}}",
+        "note": "Note",
+        "movePlaceholder": "Autre service",
+        "addButton": "Ajouter l'article",
         "Ingredients": {
           "generating": "Génération en cours...",
           "generateButton": "Générer les ingrédients (IA)",
@@ -246,7 +252,9 @@
         "back": "Retour",
         "optional": "optionnel",
         "delete": "Supprimer",
-        "deleteAll": "Tout supprimer"
+        "deleteAll": "Tout supprimer",
+        "showMore": "Plus d'options",
+        "showLess": "Moins d'options"
       },
       "Meal": {
         "serviceTypes": {

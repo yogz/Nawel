@@ -211,6 +211,12 @@
         "generateIngredients": "Δημιουργία συστατικών",
         "aiAnalyzing": "Η ΤΝ αναλύει το πιάτο σας...",
         "forPeople": "Για {count} {count, plural, one {άτομο} other {άτομα}}",
+        "assignLabel": "Ποιος το αναλαμβάνει;",
+        "unassigned": "Προς ανάθεση",
+        "defaultNote": "Για {count} {count, plural, one {άτομο} other {άτομα}}",
+        "note": "Σημείωση",
+        "movePlaceholder": "Άλλη υπηρεσία",
+        "addButton": "Προσθήκη προϊόντος",
         "Ingredients": {
           "generating": "Δημιουργία...",
           "generateButton": "Δημιουργία συστατικών (ΤΝ)",
@@ -246,7 +252,9 @@
         "back": "Πίσω",
         "optional": "προαιρετικό",
         "delete": "Διαγραφή",
-        "deleteAll": "Διαγραφή όλων"
+        "deleteAll": "Διαγραφή όλων",
+        "showMore": "Περισσότερες επιλογές",
+        "showLess": "Λιγότερες επιλογές"
       },
       "Meal": {
         "serviceTypes": {

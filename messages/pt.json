@@ -211,6 +211,12 @@
         "generateIngredients": "Gerar ingredientes",
         "aiAnalyzing": "A IA está a analisar o seu prato...",
         "forPeople": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
+        "assignLabel": "Quem trata disto?",
+        "unassigned": "A atribuir",
+        "defaultNote": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
+        "note": "Nota",
+        "movePlaceholder": "Outro serviço",
+        "addButton": "Adicionar artigo",
         "Ingredients": {
           "generating": "Gerando...",
           "generateButton": "Gerar ingredientes (IA)",
@@ -246,7 +252,9 @@
         "back": "Voltar",
         "optional": "opcional",
         "delete": "Eliminar",
-        "deleteAll": "Eliminar tudo"
+        "deleteAll": "Eliminar tudo",
+        "showMore": "Mais opções",
+        "showLess": "Menos opções"
       },
       "Meal": {
         "serviceTypes": {

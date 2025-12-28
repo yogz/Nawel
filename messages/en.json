@@ -211,6 +211,12 @@
         "generateIngredients": "Generate ingredients",
         "aiAnalyzing": "AI is analyzing your dish...",
         "forPeople": "For {count} {count, plural, one {person} other {people}}",
+        "assignLabel": "Who handles it?",
+        "unassigned": "To assign",
+        "defaultNote": "For {count} {count, plural, one {person} other {people}}",
+        "note": "Note",
+        "movePlaceholder": "Other service",
+        "addButton": "Add item",
         "Ingredients": {
           "generating": "Generating...",
           "generateButton": "Generate ingredients (AI)",
@@ -246,7 +252,9 @@
         "back": "Back",
         "optional": "optional",
         "delete": "Delete",
-        "deleteAll": "Delete all"
+        "deleteAll": "Delete all",
+        "showMore": "More options",
+        "showLess": "Less options"
       },
       "Meal": {
         "serviceTypes": {

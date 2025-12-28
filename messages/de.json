@@ -211,6 +211,12 @@
         "generateIngredients": "Zutaten generieren",
         "aiAnalyzing": "KI analysiert Ihr Gericht...",
         "forPeople": "Für {count} {count, plural, one {Person} other {Personen}}",
+        "assignLabel": "Wer kümmert sich darum?",
+        "unassigned": "Zuzuweisen",
+        "defaultNote": "Für {count} {count, plural, one {Person} other {Personen}}",
+        "note": "Notiz",
+        "movePlaceholder": "Anderer Service",
+        "addButton": "Artikel hinzufügen",
         "Ingredients": {
           "generating": "Wird generiert...",
           "generateButton": "Zutaten generieren (KI)",
@@ -246,7 +252,9 @@
         "back": "Zurück",
         "optional": "optional",
         "delete": "Löschen",
-        "deleteAll": "Alle löschen"
+        "deleteAll": "Alle löschen",
+        "showMore": "Mehr Optionen",
+        "showLess": "Weniger Optionen"
       },
       "Meal": {
         "serviceTypes": {
