@@ -28,10 +28,10 @@
     height: 200%;
     z-index: -1;
     background:
-      radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 70% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
-      radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 20% 80%, rgba(34, 211, 238, 0.1) 0%, transparent 40%);
+      radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 70% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.18) 0%, transparent 45%),
+      radial-gradient(circle at 20% 80%, rgba(34, 211, 238, 0.12) 0%, transparent 45%);
     filter: blur(80px);
     animation: aurora-mesh 20s ease-in-out infinite alternate;
     pointer-events: none;
@@ -47,8 +47,8 @@
     height: 100%;
     z-index: -1;
     background-image:
-      radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.2), transparent 25%),
-      radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.2), transparent 25%);
+      radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.25), transparent 30%),
+      radial-gradient(circle at 15% 85%, rgba(236, 72, 153, 0.25), transparent 30%);
     animation: aurora-floats 15s ease-in-out infinite alternate;
     pointer-events: none;
   }
@@ -89,7 +89,7 @@
   }
 
   .theme-aurora .premium-card {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(168, 85, 247, 0.2);
     box-shadow:
@@ -107,7 +107,11 @@
   }
 
   .theme-aurora .glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 240, 255, 0.5) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(248, 240, 255, 0.6) 100%
+    );
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(168, 85, 247, 0.2);
@@ -116,7 +120,7 @@
 
   /* Accent highlights for buttons and interactive elements in Aurora */
   .theme-aurora .btn-aurora {
-    background: linear-gradient(135deg, hsl(280 85% 45%), hsl(260 85% 40%));
+    background: linear-gradient(135deg, hsl(280 85% 55%), hsl(260 85% 50%));
     color: white;
     box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
     border: none;
@@ -134,15 +138,15 @@
     /* Base Colors Overrides */
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
-    --card: 0 0% 5%;
+    --card: 0 0% 0%;
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 5%;
+    --popover: 0 0% 0%;
     --popover-foreground: 0 0% 100%;
     --primary: 45 100% 50%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 20%;
+    --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 20%;
+    --muted: 0 0% 15%;
     --muted-foreground: 0 0% 100%;
     --accent: 45 100% 50%;
     --accent-foreground: 0 0% 0%;
@@ -151,24 +155,24 @@
     --border: 0 0% 100%;
     --input: 0 0% 100%;
     --ring: 45 100% 50%;
-    --radius: 0.25rem;
+    --radius: 0.125rem;
 
     /* Theme-specific tokens */
     --surface: #000000;
     --text: #ffffff;
     --accent-glow: 45 100% 70%;
-    --accent-soft: #1a1a1a;
-    --shine-color: rgba(255, 255, 255, 0.4);
+    --accent-soft: #0a0a0a;
+    --shine-color: rgba(255, 255, 255, 0.5);
 
     background: #000000 !important;
     color: #ffffff !important;
 
     /* Typography Overrides */
-    font-size: 1.25rem !important;
-    /* 20px base */
+    font-size: 1.125rem !important;
+    /* 18px base instead of 20px for better layout consistency */
     line-height: 1.6 !important;
-    letter-spacing: 0.03em !important;
-    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    font-weight: 500 !important;
   }
 
   /* Force borders and visibility on components */
@@ -181,18 +185,42 @@
     margin-bottom: 1.5rem !important;
   }
 
-  /* Global color overrides for theme-readable to prevent black-on-black */
+  /* Global color overrides for theme-readable to prevent black-on-black or white cards */
   .theme-readable
     *:not(button):not([class*="btn-"]):not([class*="bg-primary"]):not([class*="bg-accent"]) {
     color: #ffffff !important;
   }
 
+  /* Specific background overrides for common background classes */
+  .theme-readable [class*="bg-white"],
+  .theme-readable [class*="bg-gray-"],
+  .theme-readable [class*="bg-slate-"],
+  .theme-readable [class*="bg-zinc-"],
+  .theme-readable [class*="bg-neutral-"],
+  .theme-readable [class*="bg-stone-"],
+  .theme-readable [class*="bg-background"],
+  .theme-readable [class*="bg-surface"],
+  .theme-readable [class*="bg-card"],
+  .theme-readable [class*="bg-muted"] {
+    background-color: #000000 !important;
+    background-image: none !important;
+  }
+
+  /* Force borders on all containers in Readable mode */
+  .theme-readable .premium-card,
+  .theme-readable [class*="card"],
+  .theme-readable [class*="rounded-"],
+  .theme-readable section,
+  .theme-readable article {
+    border: 2px solid white !important;
+  }
+
   /* Specific override for common dark text classes in Tailwind */
-  .theme-readable [class*="text-gray-9"],
-  .theme-readable [class*="text-slate-9"],
-  .theme-readable [class*="text-zinc-9"],
+  .theme-readable [class*="text-gray-"],
+  .theme-readable [class*="text-slate-"],
+  .theme-readable [class*="text-zinc-"],
   .theme-readable [class*="text-black"],
-  .theme-readable [class*="text-neutral-9"] {
+  .theme-readable [class*="text-neutral-"] {
     color: #ffffff !important;
   }
 
