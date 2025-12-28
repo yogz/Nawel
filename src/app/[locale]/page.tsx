@@ -3,15 +3,18 @@ import { EventList } from "@/components/event-list";
 import { Landing } from "@/components/landing";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { useTranslations } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 // ISR: revalidate every 60 seconds
 export const revalidate = 60;
 
 export default async function Home(props: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const t = useTranslations("Dashboard");
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -20,6 +23,7 @@ export default async function Home(props: {
     return <Landing />;
   }
 
+  const t = await getTranslations("Dashboard");
   const events = await getMyEventsAction();
   const searchParams = await props.searchParams;
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;

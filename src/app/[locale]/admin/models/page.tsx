@@ -4,9 +4,14 @@ import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { ModelComparison } from "@/components/admin/model-comparison";
 
+import { setRequestLocale } from "next-intl/server";
+
 export const dynamic = "force-dynamic";
 
-export default async function AdminModelsPage() {
+export default async function AdminModelsPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });

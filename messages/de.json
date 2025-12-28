@@ -289,6 +289,20 @@
       "adults": "{count, plural, =0 {keine Erwachsenen} one {1 Erwachsener} other {# Erwachsene}}",
       "children": "{count, plural, =0 {keine Kinder} one {1 Kind} other {# Kinder}}",
       "and": " und "
+    },
+    "Error": {
+      "title": "Hoppla!",
+      "dbTitle": "Hoppla! Verbindung fehlgeschlagen",
+      "defaultTitle": "Etwas ist schiefgelaufen",
+      "dbDescription": "Entschuldigung, wir können unsere Datenbank nicht erreichen. Dies kann an einer Internetverbindung oder an vorübergehenden Wartungsarbeiten liegen.",
+      "defaultDescription": "Ein unerwarteter Fehler ist aufgetreten. Unsere Elfen arbeiten bereits an der Lösung des Problems!",
+      "suggestedActions": "Vorgeschlagene Aktionen:",
+      "actionInternet": "Überprüfen Sie Ihre Internetverbindung.",
+      "actionDatabase": "Überprüfen Sie, ob die Datenbankadresse erreichbar ist.",
+      "actionRetry": "Versuchen Sie es in wenigen Augenblicken erneut.",
+      "retryButton": "Erneut versuchen",
+      "homeButton": "Zurück zur Startseite",
+      "errorId": "Fehler-ID"
     }
   }
 }

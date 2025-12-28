@@ -5,9 +5,14 @@ import { getAllEventsAction } from "@/app/actions/admin-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { EventList } from "@/components/admin/event-list";
 
+import { setRequestLocale } from "next-intl/server";
+
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });

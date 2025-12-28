@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars } from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
@@ -151,6 +153,8 @@ function PlanningFilters({
   writeKey,
   readOnly,
 }: PlanningFiltersProps) {
+  const t = useTranslations("EventDashboard.Header.filter");
+
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
@@ -165,9 +169,7 @@ function PlanningFilters({
               className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
             >
               <Stars size={14} className="shrink-0" />
-              <span className="truncate">
-                {useTranslations("EventDashboard.Header.filter")("all")}
-              </span>
+              <span className="truncate">{t("all")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
@@ -175,7 +177,7 @@ function PlanningFilters({
             >
               <CircleHelp size={14} className="shrink-0" />
               <span className="truncate">
-                {useTranslations("EventDashboard.Header.filter")("unassigned", {
+                {t("unassigned", {
                   count: unassignedItemsCount,
                 })}
               </span>

@@ -289,6 +289,20 @@
       "adults": "{count, plural, =0 {aucun adulte} one {1 adulte} other {# adultes}}",
       "children": "{count, plural, =0 {aucun enfant} one {1 enfant} other {# enfants}}",
       "and": " et "
+    },
+    "Error": {
+      "title": "Oups !",
+      "dbTitle": "Oups ! Connexion impossible",
+      "defaultTitle": "Quelque chose s'est mal passé",
+      "dbDescription": "Désolé, nous ne parvenons pas à contacter notre base de données. Cela peut être dû à un problème de connexion internet ou à une maintenance temporaire.",
+      "defaultDescription": "Une erreur inattendue est survenue. Nos lutins travaillent déjà à la résolution du problème !",
+      "suggestedActions": "Actions suggérées :",
+      "actionInternet": "Vérifiez votre connexion internet.",
+      "actionDatabase": "Vérifiez si l'adresse de la base de données est accessible.",
+      "actionRetry": "Réessayez dans quelques instants.",
+      "retryButton": "Réessayer",
+      "homeButton": "Retour à l'accueil",
+      "errorId": "Error ID"
     }
   }
 }

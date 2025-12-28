@@ -289,6 +289,20 @@
       "adults": "{count, plural, =0 {ningún adulto} one {1 adulto} other {# adultos}}",
       "children": "{count, plural, =0 {ningún niño} one {1 niño} other {# niños}}",
       "and": " y "
+    },
+    "Error": {
+      "title": "¡Ups!",
+      "dbTitle": "¡Ups! Conexión imposible",
+      "defaultTitle": "Algo salió mal",
+      "dbDescription": "Lo sentimos, no podemos contactar con nuestra base de datos. Esto puede deberse a un problema de conexión a Internet o a un mantenimiento temporal.",
+      "defaultDescription": "Ha ocurrido un error inesperado. ¡Nuestros elfos ya están trabajando para solucionar el problema!",
+      "suggestedActions": "Acciones sugeridas:",
+      "actionInternet": "Comprueba tu conexión a Internet.",
+      "actionDatabase": "Comprueba si la dirección de la base de datos es accesible.",
+      "actionRetry": "Vuelve a intentarlo en unos momentos.",
+      "retryButton": "Reintentar",
+      "homeButton": "Volver al inicio",
+      "errorId": "ID de error"
     }
   }
 }

@@ -6,9 +6,14 @@ import { AdminHeader } from "@/components/admin/admin-header";
 import { AuditLogList } from "@/components/admin/audit-log-list";
 import { Shield } from "lucide-react";
 
+import { setRequestLocale } from "next-intl/server";
+
 export const dynamic = "force-dynamic";
 
-export default async function AdminLogsPage() {
+export default async function AdminLogsPage(props: { params: Promise<{ locale: string }> }) {
+  const { locale } = await props.params;
+  setRequestLocale(locale);
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
