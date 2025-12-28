@@ -240,19 +240,26 @@ export function ServiceForm({
           >
             Adultes
           </Label>
-          <Input
-            id="adults"
-            type="number"
-            min="0"
-            value={adults}
-            onChange={(e) => {
-              const val = parseInt(e.target.value) || 0;
-              setAdults(val);
-              setPeopleCount(val + children);
+          <Select
+            value={String(adults)}
+            onValueChange={(val) => {
+              const v = parseInt(val);
+              setAdults(v);
+              setPeopleCount(v + children);
             }}
             disabled={readOnly}
-            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-          />
+          >
+            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+              <SelectValue placeholder="Adultes" />
+            </SelectTrigger>
+            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+              {Array.from({ length: 51 }, (_, i) => (
+                <SelectItem key={i} value={String(i)} className="rounded-xl">
+                  {i} {i === 1 ? "adulte" : "adultes"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="space-y-2">
           <Label
@@ -261,19 +268,26 @@ export function ServiceForm({
           >
             Enfants
           </Label>
-          <Input
-            id="children"
-            type="number"
-            min="0"
-            value={children}
-            onChange={(e) => {
-              const val = parseInt(e.target.value) || 0;
-              setChildren(val);
-              setPeopleCount(adults + val);
+          <Select
+            value={String(children)}
+            onValueChange={(val) => {
+              const v = parseInt(val);
+              setChildren(v);
+              setPeopleCount(adults + v);
             }}
             disabled={readOnly}
-            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-          />
+          >
+            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+              <SelectValue placeholder="Enfants" />
+            </SelectTrigger>
+            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+              {Array.from({ length: 51 }, (_, i) => (
+                <SelectItem key={i} value={String(i)} className="rounded-xl">
+                  {i} {i === 1 ? "enfant" : "enfants"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

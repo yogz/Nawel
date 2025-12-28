@@ -26,6 +26,13 @@ import {
   Clock,
   MapPin,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
@@ -254,14 +261,18 @@ export function MealForm({
               >
                 Adultes
               </Label>
-              <Input
-                id="adults"
-                type="number"
-                min="0"
-                value={adults}
-                onChange={(e) => setAdults(Math.max(0, parseInt(e.target.value) || 0))}
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-              />
+              <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
+                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectValue placeholder="Adultes" />
+                </SelectTrigger>
+                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                  {Array.from({ length: 51 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)} className="rounded-xl">
+                      {i} {i === 1 ? "adulte" : "adultes"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label
@@ -270,14 +281,18 @@ export function MealForm({
               >
                 Enfants
               </Label>
-              <Input
-                id="children"
-                type="number"
-                min="0"
-                value={children}
-                onChange={(e) => setChildren(Math.max(0, parseInt(e.target.value) || 0))}
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white"
-              />
+              <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
+                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectValue placeholder="Enfants" />
+                </SelectTrigger>
+                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                  {Array.from({ length: 51 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)} className="rounded-xl">
+                      {i} {i === 1 ? "enfant" : "enfants"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
