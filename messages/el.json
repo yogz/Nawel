@@ -1,7 +1,15 @@
 {
   "common": {
     "title": "Nawel",
-    "loading": "Φόρτωση..."
+    "loading": "Φόρτωση...",
+    "languages": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español",
+      "pt": "Português",
+      "de": "Deutsch",
+      "el": "Ελληνικά"
+    }
   },
   "Landing": {
     "badge": "Ο νέος τρόπος γιορτής",
@@ -162,6 +170,7 @@
     },
     "Settings": {
       "ambiance": "Ατμόσφαιρα",
+      "language": "Γλώσσα",
       "history": "Ιστορικό αλλαγών",
       "noChanges": "Δεν υπάρχουν πρόσφατες αλλαγές",
       "dangerZone": "Επικίνδυνη ζώνη",

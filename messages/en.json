@@ -1,7 +1,15 @@
 {
   "common": {
     "title": "Nawel",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "languages": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español",
+      "pt": "Português",
+      "de": "Deutsch",
+      "el": "Ελληνικά"
+    }
   },
   "Landing": {
     "badge": "A new way to celebrate",
@@ -162,6 +170,7 @@
     },
     "Settings": {
       "ambiance": "Ambiance",
+      "language": "Language",
       "history": "Change history",
       "noChanges": "No recent changes",
       "dangerZone": "Danger Zone",

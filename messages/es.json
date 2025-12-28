@@ -1,7 +1,15 @@
 {
   "common": {
     "title": "Nawel",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "languages": {
+      "fr": "Français",
+      "en": "English",
+      "es": "Español",
+      "pt": "Português",
+      "de": "Deutsch",
+      "el": "Ελληνικά"
+    }
   },
   "Landing": {
     "badge": "La nueva forma de celebrar",
@@ -162,6 +170,7 @@
     },
     "Settings": {
       "ambiance": "Ambiente",
+      "language": "Idioma",
       "history": "Historial de cambios",
       "noChanges": "Sin cambios recientes",
       "dangerZone": "Zona de peligro",
