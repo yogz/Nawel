@@ -6,6 +6,7 @@ import { createEventAction } from "@/app/actions";
 import { Calendar, Plus, Clock, History } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
+import { useTranslations } from "next-intl";
 
 type Event = {
   id: number;
@@ -33,6 +34,7 @@ export function EventList({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { data: session } = useSession();
+  const t = useTranslations("Dashboard.EventList");
 
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +63,7 @@ export function EventList({
         });
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : "Une erreur est survenue";
+        const message = e instanceof Error ? e.message : t("errorOccurred");
         setError(message);
       }
     });
@@ -130,7 +132,7 @@ export function EventList({
                   </div>
                   {isOwner && (
                     <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/20">
-                      Mon Événement
+                      {t("myEvent")}
                     </span>
                   )}
                 </div>
@@ -148,7 +150,7 @@ export function EventList({
   return (
     <div className="space-y-10">
       <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-        <h2 className="text-xl font-black">Événements</h2>
+        <h2 className="text-xl font-black">{t("title")}</h2>
         {writeEnabled && (
           <Button
             variant="premium"
@@ -158,8 +160,8 @@ export function EventList({
             shine
           >
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
-              <span className="hidden sm:inline">Nouvel événement</span>
-              <span className="sm:hidden">Nouveau</span>
+              <span className="hidden sm:inline">{t("newEvent")}</span>
+              <span className="sm:hidden">{t("new")}</span>
             </span>
           </Button>
         )}
@@ -171,9 +173,9 @@ export function EventList({
             <Calendar size={40} />
           </div>
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-text">Aucun événement</h3>
+            <h3 className="text-xl font-black text-text">{t("noEvents")}</h3>
             <p className="mx-auto max-w-[240px] text-xs font-medium leading-relaxed text-gray-400">
-              Créez votre premier événement pour commencer à organiser vos fêtes ! 🎁
+              {t("noEventsDescription")}
             </p>
           </div>
           {writeEnabled && (
@@ -186,7 +188,7 @@ export function EventList({
                 shine
               >
                 <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                  Créer mon premier événement
+                  {t("createFirst")}
                 </span>
               </Button>
             </div>
@@ -194,8 +196,8 @@ export function EventList({
         </div>
       ) : (
         <div className="space-y-10">
-          {renderSection("À venir", categorized.upcoming, <Clock size={16} />)}
-          {renderSection("Passés", categorized.past, <History size={16} />)}
+          {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />)}
+          {renderSection(t("past"), categorized.past, <History size={16} />)}
         </div>
       )}
 

@@ -32,7 +32,19 @@
   "Dashboard": {
     "badge": "Dashboard 🎄",
     "title": "Meine Events ✨",
-    "description": "Finden Sie alle Ihre Events an einem Ort."
+    "description": "Finden Sie alle Ihre Events an einem Ort.",
+    "EventList": {
+      "title": "Events",
+      "newEvent": "Neues Event",
+      "new": "Neu",
+      "noEvents": "Keine Events",
+      "noEventsDescription": "Erstellen Sie Ihr erstes Event, um Ihre Feste zu organisieren! 🎁",
+      "createFirst": "Mein erstes Event erstellen",
+      "upcoming": "Kommende",
+      "past": "Vergangene",
+      "myEvent": "Mein Event",
+      "errorOccurred": "Ein Fehler ist aufgetreten"
+    }
   },
   "Login": {
     "signinTitle": "Schön, Sie wiederzusehen!",
@@ -179,6 +191,26 @@
     },
     "Forms": {
       "Item": {
+        "label": "Artikel",
+        "placeholder": "Z.B. Käse, Rotwein, Bûche...",
+        "quantityLabel": "Menge",
+        "quantityPlaceholder": "Menge (z.B. 2kg)",
+        "priceLabel": "Preis",
+        "pricePlaceholder": "Preis €",
+        "whoHandles": "Wer kümmert sich darum?",
+        "toAssign": "Zuzuweisen",
+        "moreOptions": "Mehr Optionen",
+        "lessOptions": "Weniger Optionen",
+        "noteLabel": "Notiz",
+        "notePlaceholder": "Marke, Allergien, Details...",
+        "moveLabel": "Verschieben",
+        "otherService": "Anderer Service",
+        "deleteItem": "Artikel löschen",
+        "addItem": "Artikel hinzufügen",
+        "generating": "Generieren...",
+        "generateIngredients": "Zutaten generieren",
+        "aiAnalyzing": "KI analysiert Ihr Gericht...",
+        "forPeople": "Für {count} {count, plural, one {Person} other {Personen}}",
         "Ingredients": {
           "generating": "Wird generiert...",
           "generateButton": "Zutaten generieren (KI)",
@@ -197,7 +229,8 @@
         "placeholder": "Vorspeise, Hauptgericht, Dessert...",
         "deleteButton": "Service löschen",
         "newMealHeader": "Neue Mahlzeit",
-        "newMealPlaceholder": "Mahlzeit Name (z.B. Abendessen)"
+        "newMealPlaceholder": "Mahlzeit Name (z.B. Abendessen)",
+        "addService": "Service hinzufügen"
       },
       "Shared": {
         "adultsLabel": "Erwachsene",
@@ -210,7 +243,10 @@
         "update": "Aktualisieren",
         "save": "Speichern",
         "next": "Weiter",
-        "back": "Zurück"
+        "back": "Zurück",
+        "optional": "optional",
+        "delete": "Löschen",
+        "deleteAll": "Alle löschen"
       },
       "Meal": {
         "serviceTypes": {
@@ -235,7 +271,9 @@
         "deleteButton": "Mahlzeit löschen",
         "organisationLabel": "Mahlzeit Organisation",
         "serviceSelectionLabel": "Services auswählen",
-        "createButton": "Mahlzeit erstellen"
+        "createButton": "Mahlzeit erstellen",
+        "selectMeal": "Mahlzeit wählen",
+        "selectMealPlaceholder": "Mahlzeit auswählen"
       },
       "Person": {
         "label": "Gast Name",

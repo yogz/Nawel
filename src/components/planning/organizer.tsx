@@ -274,12 +274,7 @@ export function Organizer({
         )}
 
         {tab === "settings" && (
-          <SettingsTab
-            logsLoading={logsLoading}
-            logs={logs}
-            onDeleteEvent={handleDeleteEvent}
-            readOnly={readOnly}
-          />
+          <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
         )}
 
         {tab === "shopping" && (

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 import { type Ingredient } from "@/lib/types";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 interface IngredientListProps {
   ingredients: Ingredient[];
@@ -24,6 +25,8 @@ export function IngredientList({
   onDeleteAll,
   readOnly,
 }: IngredientListProps) {
+  const t = useTranslations("EventDashboard.Forms.Item.Ingredients");
+  const tShared = useTranslations("EventDashboard.Forms.Shared");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
@@ -55,7 +58,7 @@ export function IngredientList({
             onClick={onDeleteAll}
             className="text-xs text-red-400 hover:text-red-600"
           >
-            Tout supprimer
+            {tShared("deleteAll") || "Tout supprimer"}
           </button>
         )}
       </div>
@@ -87,7 +90,7 @@ export function IngredientList({
                 type="button"
                 onClick={() => onDelete(ing.id)}
                 className="text-gray-300 transition-colors hover:text-red-500"
-                aria-label="Supprimer"
+                aria-label={tShared("delete") || "Supprimer"}
               >
                 <X size={14} />
               </button>
@@ -101,8 +104,8 @@ export function IngredientList({
           {showAddForm ? (
             <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
               <Input
-                placeholder="Nom de l'ingrédient"
-                aria-label="Nom de l'ingrédient"
+                placeholder={t("namePlaceholder")}
+                aria-label={t("nameLabel")}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 className="h-11 rounded-xl"
@@ -110,8 +113,8 @@ export function IngredientList({
                 autoFocus
               />
               <Input
-                placeholder="Quantité (ex: 200g)"
-                aria-label="Quantité"
+                placeholder={t("quantityPlaceholder")}
+                aria-label={t("quantityLabel")}
                 value={newQuantity}
                 onChange={(e) => setNewQuantity(e.target.value)}
                 className="h-11 rounded-xl"
@@ -124,7 +127,7 @@ export function IngredientList({
                   disabled={!newName.trim()}
                   className="flex-1 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
                 >
-                  Ajouter
+                  {t("add")}
                 </button>
                 <button
                   type="button"
@@ -133,7 +136,7 @@ export function IngredientList({
                     setNewName("");
                     setNewQuantity("");
                   }}
-                  aria-label="Annuler"
+                  aria-label={tShared("cancel")}
                   className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-500 transition-all hover:bg-gray-100 active:scale-95"
                 >
                   <X size={16} />
@@ -147,7 +150,7 @@ export function IngredientList({
               className="mt-2 flex items-center gap-1 text-xs text-accent hover:underline"
             >
               <Plus size={12} />
-              Ajouter un ingredient
+              {t("addManual")}
             </button>
           )}
         </>

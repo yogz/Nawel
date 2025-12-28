@@ -32,7 +32,19 @@
   "Dashboard": {
     "badge": "Dashboard 🎄",
     "title": "My Events ✨",
-    "description": "Find all your events in one place."
+    "description": "Find all your events in one place.",
+    "EventList": {
+      "title": "Events",
+      "newEvent": "New event",
+      "new": "New",
+      "noEvents": "No events",
+      "noEventsDescription": "Create your first event to start organizing your parties! 🎁",
+      "createFirst": "Create my first event",
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "myEvent": "My Event",
+      "errorOccurred": "An error occurred"
+    }
   },
   "Login": {
     "signinTitle": "Nice to see you again!",
@@ -179,6 +191,26 @@
     },
     "Forms": {
       "Item": {
+        "label": "Item",
+        "placeholder": "Ex: Cheese, Red wine, Yule log...",
+        "quantityLabel": "Quantity",
+        "quantityPlaceholder": "Qty (ex: 2kg)",
+        "priceLabel": "Price",
+        "pricePlaceholder": "Price €",
+        "whoHandles": "Who handles it?",
+        "toAssign": "To assign",
+        "moreOptions": "More options",
+        "lessOptions": "Less options",
+        "noteLabel": "Note",
+        "notePlaceholder": "Brand, allergies, details...",
+        "moveLabel": "Move",
+        "otherService": "Other service",
+        "deleteItem": "Delete item",
+        "addItem": "Add item",
+        "generating": "Generating...",
+        "generateIngredients": "Generate ingredients",
+        "aiAnalyzing": "AI is analyzing your dish...",
+        "forPeople": "For {count} {count, plural, one {person} other {people}}",
         "Ingredients": {
           "generating": "Generating...",
           "generateButton": "Generate ingredients (AI)",
@@ -197,7 +229,8 @@
         "placeholder": "Appetizer, Main, Dessert...",
         "deleteButton": "Delete service",
         "newMealHeader": "New meal",
-        "newMealPlaceholder": "Meal name (ex: Dinner)"
+        "newMealPlaceholder": "Meal name (ex: Dinner)",
+        "addService": "Add service"
       },
       "Shared": {
         "adultsLabel": "Adults",
@@ -210,7 +243,10 @@
         "update": "Update",
         "save": "Save",
         "next": "Next",
-        "back": "Back"
+        "back": "Back",
+        "optional": "optional",
+        "delete": "Delete",
+        "deleteAll": "Delete all"
       },
       "Meal": {
         "serviceTypes": {
@@ -235,7 +271,9 @@
         "deleteButton": "Delete meal",
         "organisationLabel": "Meal organization",
         "serviceSelectionLabel": "Select services",
-        "createButton": "Create meal"
+        "createButton": "Create meal",
+        "selectMeal": "Choose meal",
+        "selectMealPlaceholder": "Select a meal"
       },
       "Person": {
         "label": "Guest name",

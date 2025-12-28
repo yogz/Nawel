@@ -32,7 +32,19 @@
   "Dashboard": {
     "badge": "Πίνακας Ελέγχου 🎄",
     "title": "Οι Εκδηλώσεις μου ✨",
-    "description": "Βρείτε όλες τις εκδηλώσεις σας σε ένα μέρος."
+    "description": "Βρείτε όλες τις εκδηλώσεις σας σε ένα μέρος.",
+    "EventList": {
+      "title": "Εκδηλώσεις",
+      "newEvent": "Νέα εκδήλωση",
+      "new": "Νέο",
+      "noEvents": "Δεν υπάρχουν εκδηλώσεις",
+      "noEventsDescription": "Δημιουργήστε την πρώτη σας εκδήλωση για να αρχίσετε να οργανώνετε τις γιορτές σας! 🎁",
+      "createFirst": "Δημιουργία της πρώτης μου εκδήλωσης",
+      "upcoming": "Επερχόμενες",
+      "past": "Παρελθούσες",
+      "myEvent": "Η Εκδήλωσή μου",
+      "errorOccurred": "Παρουσιάστηκε σφάλμα"
+    }
   },
   "Login": {
     "signinTitle": "Χαιρόμαστε που σας ξαναβλέπουμε!",
@@ -179,6 +191,26 @@
     },
     "Forms": {
       "Item": {
+        "label": "Προϊόν",
+        "placeholder": "Π.χ. Τυρί, Κόκκινο κρασί, Κορμός...",
+        "quantityLabel": "Ποσότητα",
+        "quantityPlaceholder": "Ποσ. (π.χ. 2κγ)",
+        "priceLabel": "Τιμή",
+        "pricePlaceholder": "Τιμή €",
+        "whoHandles": "Ποιος το αναλαμβάνει;",
+        "toAssign": "Προς ανάθεση",
+        "moreOptions": "Περισσότερες επιλογές",
+        "lessOptions": "Λιγότερες επιλογές",
+        "noteLabel": "Σημείωση",
+        "notePlaceholder": "Μάρκα, αλλεργίες, λεπτομέρειες...",
+        "moveLabel": "Μετακίνηση",
+        "otherService": "Άλλη υπηρεσία",
+        "deleteItem": "Διαγραφή προϊόντος",
+        "addItem": "Προσθήκη προϊόντος",
+        "generating": "Δημιουργία...",
+        "generateIngredients": "Δημιουργία συστατικών",
+        "aiAnalyzing": "Η ΤΝ αναλύει το πιάτο σας...",
+        "forPeople": "Για {count} {count, plural, one {άτομο} other {άτομα}}",
         "Ingredients": {
           "generating": "Δημιουργία...",
           "generateButton": "Δημιουργία συστατικών (ΤΝ)",
@@ -197,7 +229,8 @@
         "placeholder": "Ορεκτικό, Κυρίως, Επιδόρπιο...",
         "deleteButton": "Διαγραφή υπηρεσίας",
         "newMealHeader": "Νέο γεύμα",
-        "newMealPlaceholder": "Όνομα γεύματος (π.χ. Δείπνο)"
+        "newMealPlaceholder": "Όνομα γεύματος (π.χ. Δείπνο)",
+        "addService": "Προσθήκη υπηρεσίας"
       },
       "Shared": {
         "adultsLabel": "Ενήλικες",
@@ -210,7 +243,10 @@
         "update": "Ενημέρωση",
         "save": "Αποθήκευση",
         "next": "Επόμενο",
-        "back": "Πίσω"
+        "back": "Πίσω",
+        "optional": "προαιρετικό",
+        "delete": "Διαγραφή",
+        "deleteAll": "Διαγραφή όλων"
       },
       "Meal": {
         "serviceTypes": {
@@ -235,7 +271,9 @@
         "deleteButton": "Διαγραφή γεύματος",
         "organisationLabel": "Οργάνωση γεύματος",
         "serviceSelectionLabel": "Επιλογή υπηρεσιών",
-        "createButton": "Δημιουργία γεύματος"
+        "createButton": "Δημιουργία γεύματος",
+        "selectMeal": "Επιλογή γεύματος",
+        "selectMealPlaceholder": "Επιλέξτε γεύμα"
       },
       "Person": {
         "label": "Όνομα καλεσμένου",

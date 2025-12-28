@@ -1,20 +1,17 @@
 "use client";
 
-import { MessageSquare, Trash2, Sparkles, Check, Globe } from "lucide-react";
+import { Trash2, Sparkles, Check, Globe } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
-import type { ChangeLog } from "@/hooks/use-event-state";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
 interface SettingsTabProps {
-  logsLoading: boolean;
-  logs: ChangeLog[];
   onDeleteEvent: () => void;
   readOnly: boolean;
 }
 
-export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: SettingsTabProps) {
+export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
   const tCommon = useTranslations("common");
   const { theme, setTheme, themes } = useThemeMode();
@@ -98,46 +95,6 @@ export function SettingsTab({ logsLoading, logs, onDeleteEvent, readOnly }: Sett
             </button>
           ))}
         </div>
-      </div>
-
-      <div className="premium-card space-y-4 p-6">
-        <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
-          <MessageSquare size={14} /> {t("history")}
-        </h3>
-        {logsLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 w-full animate-pulse rounded-xl bg-gray-100" />
-            ))}
-          </div>
-        ) : (
-          <div className="no-scrollbar max-h-[400px] space-y-3 overflow-y-auto pr-2">
-            {logs.map((log) => (
-              <div
-                key={log.id}
-                className="rounded-xl border border-gray-100 bg-gray-50/50 p-3 text-[11px] transition-colors hover:border-accent/10"
-              >
-                <div className="mb-1 flex items-start justify-between">
-                  <span className="font-black uppercase italic tracking-tighter text-accent/60">
-                    {log.action} {log.tableName}
-                  </span>
-                  <span className="text-[9px] font-medium text-gray-400">
-                    {new Date(log.createdAt).toLocaleTimeString()}
-                  </span>
-                </div>
-                <p className="text-text/70 truncate leading-relaxed">
-                  {log.tableName === "items" && (log.newData?.name || log.oldData?.name)}
-                  {log.tableName === "people" && (log.newData?.name || log.oldData?.name)}
-                  {log.tableName === "services" && (log.newData?.title || log.oldData?.title)}
-                  {log.tableName === "meals" && (log.newData?.title || log.oldData?.title)}
-                </p>
-              </div>
-            ))}
-            {logs.length === 0 && (
-              <p className="py-4 text-center text-xs text-gray-400">{t("noChanges")}</p>
-            )}
-          </div>
-        )}
       </div>
 
       {!readOnly && (

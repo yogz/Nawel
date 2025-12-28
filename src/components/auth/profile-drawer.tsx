@@ -17,11 +17,14 @@ import {
   Check,
   LogOut,
   ChevronDown,
+  Globe,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
+import { useLocale, useTranslations } from "next-intl";
+import { routing, type Locale } from "@/i18n/routing";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -34,8 +37,11 @@ interface ProfileDrawerProps {
  */
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending: sessionPending } = useSession();
   const { theme, setTheme, themes } = useThemeMode();
+  const locale = useLocale() as Locale;
+  const tCommon = useTranslations("common");
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -237,64 +243,111 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   })}
                 </div>
               </div>
+
+              {/* Language Selection */}
+              <div className="space-y-3">
+                <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                  <Globe size={12} />
+                  {tCommon("languages.fr") ? "Langue" : "Language"}
+                </Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {routing.locales.map((l) => {
+                    const isSelected = locale === l;
+                    const languageIcons: Record<string, string> = {
+                      fr: "🇫🇷",
+                      en: "🇬🇧",
+                      es: "🇪🇸",
+                      pt: "🇵🇹",
+                      de: "🇩🇪",
+                      el: "🇬🇷",
+                    };
+                    return (
+                      <button
+                        key={l}
+                        type="button"
+                        onClick={() => router.replace(pathname, { locale: l as Locale })}
+                        className={clsx(
+                          "flex items-center justify-between rounded-xl border-2 p-3 transition-all active:scale-[0.98]",
+                          isSelected
+                            ? "border-accent bg-accent/5 ring-1 ring-accent/20"
+                            : "border-gray-50 bg-white hover:border-gray-200"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{languageIcons[l] || "🌐"}</span>
+                          <span
+                            className={clsx(
+                              "text-xs font-bold",
+                              isSelected ? "text-accent" : "text-gray-600"
+                            )}
+                          >
+                            {tCommon(`languages.${l}`)}
+                          </span>
+                        </div>
+                        {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-accent" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Status Messages */}
-          {error && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-2">
-              <p>{error}</p>
-            </div>
-          )}
+            {/* Status Messages */}
+            {error && (
+              <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-2">
+                <p>{error}</p>
+              </div>
+            )}
 
-          <div className="space-y-3 pt-2">
-            <Button
-              variant="premium"
-              className="w-full border-gray-100 bg-gray-50/50"
-              icon={<LogOut size={16} />}
-              iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
-              onClick={async () => {
-                await signOut();
-                onClose();
-                router.refresh();
-              }}
-            >
-              <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                Se déconnecter
-              </span>
-            </Button>
-
-            {/* Advanced Options Section */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="group flex w-full items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+            <div className="space-y-3 pt-2">
+              <Button
+                variant="premium"
+                className="w-full border-gray-100 bg-gray-50/50"
+                icon={<LogOut size={16} />}
+                iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
+                onClick={async () => {
+                  await signOut();
+                  onClose();
+                  router.refresh();
+                }}
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
-                  <ChevronDown
-                    size={10}
-                    className={clsx("transition-transform", showAdvanced && "rotate-180")}
-                  />
-                </div>
-                Options avancées
-              </button>
+                <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                  Se déconnecter
+                </span>
+              </Button>
 
-              {showAdvanced && (
-                <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-                  <Button
-                    variant="premium"
-                    className="w-full border-red-100 bg-red-50/30"
-                    icon={<Trash2 size={14} />}
-                    iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                    onClick={() => setShowDeleteConfirm(true)}
-                  >
-                    <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
-                      Supprimer mon compte
-                    </span>
-                  </Button>
-                </div>
-              )}
+              {/* Advanced Options Section */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="group flex w-full items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+                >
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+                    <ChevronDown
+                      size={10}
+                      className={clsx("transition-transform", showAdvanced && "rotate-180")}
+                    />
+                  </div>
+                  Options avancées
+                </button>
+
+                {showAdvanced && (
+                  <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                    <Button
+                      variant="premium"
+                      className="w-full border-red-100 bg-red-50/30"
+                      icon={<Trash2 size={14} />}
+                      iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
+                        Supprimer mon compte
+                      </span>
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

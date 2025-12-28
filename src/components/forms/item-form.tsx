@@ -16,6 +16,7 @@ import {
 import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 export function ItemForm({
   people,
@@ -56,10 +57,9 @@ export function ItemForm({
   onDeleteAllIngredients?: () => void;
   isGenerating?: boolean;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Item");
   const defaultNote =
-    !defaultItem && servicePeopleCount
-      ? `Pour ${servicePeopleCount} personne${servicePeopleCount > 1 ? "s" : ""}`
-      : "";
+    !defaultItem && servicePeopleCount ? t("forPeople", { count: servicePeopleCount }) : "";
   const [name, setName] = useState(defaultItem?.name || "");
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
   const [note, setNote] = useState(defaultItem?.note || defaultNote);
@@ -115,10 +115,10 @@ export function ItemForm({
     <div className="space-y-4">
       {/* Name - always visible */}
       <div className="space-y-2">
-        <Label htmlFor="item-name">Article</Label>
+        <Label htmlFor="item-name">{t("label")}</Label>
         <Input
           id="item-name"
-          placeholder="Ex: Fromage, Vin rouge, Bûche..."
+          placeholder={t("placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={readOnly}
@@ -127,15 +127,14 @@ export function ItemForm({
         />
       </div>
 
-      {/* Quick details row */}
       <div className="flex gap-2">
         <div className="flex-1">
           <Label htmlFor="item-quantity" className="sr-only">
-            Quantité
+            {t("quantityLabel")}
           </Label>
           <Input
             id="item-quantity"
-            placeholder="Qté (ex: 2kg)"
+            placeholder={t("quantityPlaceholder")}
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             disabled={readOnly}
@@ -144,13 +143,13 @@ export function ItemForm({
         </div>
         <div className="w-24">
           <Label htmlFor="item-price" className="sr-only">
-            Prix
+            {t("priceLabel")}
           </Label>
           <Input
             id="item-price"
             type="number"
             inputMode="decimal"
-            placeholder="Prix €"
+            placeholder={t("pricePlaceholder")}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             disabled={readOnly}
@@ -162,7 +161,7 @@ export function ItemForm({
       {/* Assign to person - refined cards */}
       <div className="space-y-2">
         <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
-          Qui s&apos;en occupe ?
+          {t("whoHandles")}
         </Label>
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
@@ -189,7 +188,7 @@ export function ItemForm({
                 !defaultItem?.personId ? "text-amber-900" : "text-gray-400"
               )}
             >
-              À prévoir
+              {t("toAssign")}
             </span>
           </button>
           {people.map((person) => {
@@ -245,7 +244,7 @@ export function ItemForm({
             className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
           />
         </div>
-        {showDetails ? "Moins d'options" : "Plus d'options"}
+        {showDetails ? t("lessOptions") : t("moreOptions")}
       </button>
 
       {showDetails && (
@@ -256,11 +255,11 @@ export function ItemForm({
               htmlFor="item-note"
               className="text-xs font-black uppercase tracking-wider text-gray-400"
             >
-              Note
+              {t("noteLabel")}
             </Label>
             <Input
               id="item-note"
-              placeholder="Marque, allergies, détails..."
+              placeholder={t("notePlaceholder")}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={readOnly}
@@ -268,11 +267,10 @@ export function ItemForm({
             />
           </div>
 
-          {/* Move to another service */}
           {isEditMode && allServices && allServices.length > 1 && (
             <div className="space-y-2">
               <Label className="text-xs font-black uppercase tracking-wider text-gray-400">
-                Déplacer
+                {t("moveLabel")}
               </Label>
               <Select
                 value={currentServiceId?.toString()}
@@ -280,7 +278,7 @@ export function ItemForm({
                 disabled={readOnly}
               >
                 <SelectTrigger className="h-11 rounded-xl">
-                  <SelectValue placeholder="Autre service" />
+                  <SelectValue placeholder={t("otherService")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
                   {allServices.map((s) => (
@@ -305,7 +303,7 @@ export function ItemForm({
                 disabled={readOnly}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-red-600">
-                  Supprimer l&apos;article
+                  {t("deleteItem")}
                 </span>
               </Button>
             </div>
@@ -327,12 +325,12 @@ export function ItemForm({
               {isGenerating ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Generation...
+                  {t("generating")}
                 </>
               ) : (
                 <>
                   <Sparkles size={16} />
-                  Générer les ingrédients
+                  {t("generateIngredients")}
                 </>
               )}
             </button>
@@ -342,7 +340,7 @@ export function ItemForm({
           {isGenerating && (
             <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-400">
               <Loader2 size={18} className="animate-spin text-purple-500" />
-              <span>L&apos;IA analyse votre plat...</span>
+              <span>{t("aiAnalyzing")}</span>
             </div>
           )}
 
@@ -377,7 +375,7 @@ export function ItemForm({
             shine
           >
             <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              Ajouter l&apos;article
+              {t("addItem")}
             </span>
           </Button>
         </div>

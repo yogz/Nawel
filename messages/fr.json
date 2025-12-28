@@ -32,7 +32,19 @@
   "Dashboard": {
     "badge": "Tableau de bord 🎄",
     "title": "Mes Événements ✨",
-    "description": "Retrouvez tous vos événements en un seul endroit."
+    "description": "Retrouvez tous vos événements en un seul endroit.",
+    "EventList": {
+      "title": "Événements",
+      "newEvent": "Nouvel événement",
+      "new": "Nouveau",
+      "noEvents": "Aucun événement",
+      "noEventsDescription": "Créez votre premier événement pour commencer à organiser vos fêtes ! 🎁",
+      "createFirst": "Créer mon premier événement",
+      "upcoming": "À venir",
+      "past": "Passés",
+      "myEvent": "Mon Événement",
+      "errorOccurred": "Une erreur est survenue"
+    }
   },
   "Login": {
     "signinTitle": "Ravi de vous revoir !",
@@ -179,6 +191,26 @@
     },
     "Forms": {
       "Item": {
+        "label": "Article",
+        "placeholder": "Ex: Fromage, Vin rouge, Bûche...",
+        "quantityLabel": "Quantité",
+        "quantityPlaceholder": "Qté (ex: 2kg)",
+        "priceLabel": "Prix",
+        "pricePlaceholder": "Prix €",
+        "whoHandles": "Qui s'en occupe ?",
+        "toAssign": "À prévoir",
+        "moreOptions": "Plus d'options",
+        "lessOptions": "Moins d'options",
+        "noteLabel": "Note",
+        "notePlaceholder": "Marque, allergies, détails...",
+        "moveLabel": "Déplacer",
+        "otherService": "Autre service",
+        "deleteItem": "Supprimer l'article",
+        "addItem": "Ajouter l'article",
+        "generating": "Génération...",
+        "generateIngredients": "Générer les ingrédients",
+        "aiAnalyzing": "L'IA analyse votre plat...",
+        "forPeople": "Pour {count} personne{count, plural, one {} other {s}}",
         "Ingredients": {
           "generating": "Génération en cours...",
           "generateButton": "Générer les ingrédients (IA)",
@@ -197,7 +229,8 @@
         "placeholder": "Entrée, Plat, Dessert...",
         "deleteButton": "Supprimer le service",
         "newMealHeader": "Nouveau repas",
-        "newMealPlaceholder": "Nom du repas (ex: Dîner)"
+        "newMealPlaceholder": "Nom du repas (ex: Dîner)",
+        "addService": "Ajouter le service"
       },
       "Shared": {
         "adultsLabel": "Adultes",
@@ -210,7 +243,10 @@
         "update": "Mettre à jour",
         "save": "Enregistrer",
         "next": "Suivant",
-        "back": "Retour"
+        "back": "Retour",
+        "optional": "optionnel",
+        "delete": "Supprimer",
+        "deleteAll": "Tout supprimer"
       },
       "Meal": {
         "serviceTypes": {
@@ -235,7 +271,9 @@
         "deleteButton": "Supprimer le repas",
         "organisationLabel": "Organisation du repas",
         "serviceSelectionLabel": "Sélectionnez les services",
-        "createButton": "Créer le repas"
+        "createButton": "Créer le repas",
+        "selectMeal": "Choisir le repas",
+        "selectMealPlaceholder": "Sélectionner un repas"
       },
       "Person": {
         "label": "Nom du convive",

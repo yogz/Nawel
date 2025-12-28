@@ -32,7 +32,19 @@
   "Dashboard": {
     "badge": "Tablero 🎄",
     "title": "Mis Eventos ✨",
-    "description": "Encuentra todos tus eventos en un solo lugar."
+    "description": "Encuentra todos tus eventos en un solo lugar.",
+    "EventList": {
+      "title": "Eventos",
+      "newEvent": "Nuevo evento",
+      "new": "Nuevo",
+      "noEvents": "Sin eventos",
+      "noEventsDescription": "¡Crea tu primer evento para empezar a organizar tus fiestas! 🎁",
+      "createFirst": "Crear mi primer evento",
+      "upcoming": "Próximos",
+      "past": "Pasados",
+      "myEvent": "Mi Evento",
+      "errorOccurred": "Ha ocurrido un error"
+    }
   },
   "Login": {
     "signinTitle": "¡Qué bueno verte de nuevo!",
@@ -179,6 +191,26 @@
     },
     "Forms": {
       "Item": {
+        "label": "Artículo",
+        "placeholder": "Ej: Queso, Vino tinto, Tronco de navidad...",
+        "quantityLabel": "Cantidad",
+        "quantityPlaceholder": "Cant. (ej: 2kg)",
+        "priceLabel": "Precio",
+        "pricePlaceholder": "Precio €",
+        "whoHandles": "¿Quién se encarga?",
+        "toAssign": "Por asignar",
+        "moreOptions": "Más opciones",
+        "lessOptions": "Menos opciones",
+        "noteLabel": "Nota",
+        "notePlaceholder": "Marca, alergias, detalles...",
+        "moveLabel": "Mover",
+        "otherService": "Otro servicio",
+        "deleteItem": "Eliminar artículo",
+        "addItem": "Añadir artículo",
+        "generating": "Generando...",
+        "generateIngredients": "Generar ingredientes",
+        "aiAnalyzing": "La IA está analizando tu plato...",
+        "forPeople": "Para {count} {count, plural, one {persona} other {personas}}",
         "Ingredients": {
           "generating": "Generando...",
           "generateButton": "Generar ingredientes (IA)",
@@ -197,7 +229,8 @@
         "placeholder": "Entrada, Plato principal, Postre...",
         "deleteButton": "Eliminar servicio",
         "newMealHeader": "Nueva comida",
-        "newMealPlaceholder": "Nombre de la comida (ej: Cena)"
+        "newMealPlaceholder": "Nombre de la comida (ej: Cena)",
+        "addService": "Añadir servicio"
       },
       "Shared": {
         "adultsLabel": "Adultos",
@@ -210,7 +243,10 @@
         "update": "Actualizar",
         "save": "Guardar",
         "next": "Siguiente",
-        "back": "Volver"
+        "back": "Volver",
+        "optional": "opcional",
+        "delete": "Eliminar",
+        "deleteAll": "Eliminar todo"
       },
       "Meal": {
         "serviceTypes": {
@@ -235,7 +271,9 @@
         "deleteButton": "Eliminar comida",
         "organisationLabel": "Organización de la comida",
         "serviceSelectionLabel": "Seleccionar servicios",
-        "createButton": "Crear comida"
+        "createButton": "Crear comida",
+        "selectMeal": "Elegir comida",
+        "selectMealPlaceholder": "Seleccionar comida"
       },
       "Person": {
         "label": "Nombre del invitado",
