@@ -32,8 +32,8 @@ export function ServiceEditForm({
   onDelete: (service: Service) => void;
   onClose: () => void;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Service");
-  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const t = useTranslations("EventDashboard.ServiceForm");
+  const tCommon = useTranslations("EventDashboard.Shared");
   const [title, setTitle] = useState(service?.title || "");
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);

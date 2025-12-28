@@ -65,8 +65,8 @@ export function ItemForm({
   isAuthenticated?: boolean;
   onRequestAuth?: () => void;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Item");
-  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const t = useTranslations("EventDashboard.ItemForm");
+  const tCommon = useTranslations("EventDashboard.Shared");
   const params = useParams();
   const locale = params.locale as string;
 

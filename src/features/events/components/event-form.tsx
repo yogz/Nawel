@@ -307,7 +307,7 @@ export function EventForm({
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Convives</span>
+              <span className="text-xs text-gray-500">{t("summaryGuestsLabel")}</span>
               <span className="text-sm font-medium text-gray-700">
                 {t("summaryGuests", { adults, children })}
               </span>

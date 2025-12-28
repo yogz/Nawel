@@ -25,8 +25,8 @@ export function IngredientList({
   onDeleteAll,
   readOnly,
 }: IngredientListProps) {
-  const t = useTranslations("EventDashboard.Forms.Item.Ingredients");
-  const tShared = useTranslations("EventDashboard.Forms.Shared");
+  const t = useTranslations("EventDashboard.ItemForm.Ingredients");
+  const tShared = useTranslations("EventDashboard.Shared");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");

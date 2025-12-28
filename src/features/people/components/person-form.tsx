@@ -19,7 +19,7 @@ export function PersonForm({
   currentUserId?: string;
   currentUserImage?: string | null;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Person");
+  const t = useTranslations("EventDashboard.PersonForm");
   const [name, setName] = useState("");
   const [isMe, setIsMe] = useState(false);
 

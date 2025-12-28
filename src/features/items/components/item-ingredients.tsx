@@ -36,7 +36,7 @@ export function ItemIngredients({
   onDeleteAllIngredients,
   onRequestAuth,
 }: ItemIngredientsProps) {
-  const t = useTranslations("EventDashboard.Forms.Item.Ingredients");
+  const t = useTranslations("EventDashboard.ItemForm.Ingredients");
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");

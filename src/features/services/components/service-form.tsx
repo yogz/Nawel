@@ -59,9 +59,9 @@ export function ServiceForm({
   ) => Promise<void>;
   readOnly?: boolean;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Service");
-  const tCommon = useTranslations("EventDashboard.Forms.Shared");
-  const tMeal = useTranslations("EventDashboard.Forms.Meal");
+  const t = useTranslations("EventDashboard.ServiceForm");
+  const tCommon = useTranslations("EventDashboard.Shared");
+  const tMeal = useTranslations("EventDashboard.Meal");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
   const dateLocale = dateLocales[currentLocale] || fr;

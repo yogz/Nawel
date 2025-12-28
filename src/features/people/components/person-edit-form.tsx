@@ -24,8 +24,8 @@ export function PersonEditForm({
   onDelete: () => void;
   readOnly?: boolean;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Person");
-  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const t = useTranslations("EventDashboard.PersonForm");
+  const tCommon = useTranslations("EventDashboard.Shared");
   const [name, setName] = useState(person.name);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
 

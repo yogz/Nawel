@@ -112,8 +112,8 @@ export function MealForm({
   onDelete?: (meal: Meal) => void;
   onClose: () => void;
 }) {
-  const t = useTranslations("EventDashboard.Forms.Meal");
-  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const t = useTranslations("EventDashboard.Meal");
+  const tCommon = useTranslations("EventDashboard.Shared");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
   const dateLocale = dateLocales[currentLocale] || fr;
