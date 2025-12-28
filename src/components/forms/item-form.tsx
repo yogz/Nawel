@@ -322,7 +322,7 @@ export function ItemForm({
               type="button"
               onClick={() => onGenerateIngredients(name, note)}
               disabled={isGenerating || !name.trim()}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-500 to-accent px-4 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 px-4 py-3.5 text-sm font-black uppercase tracking-widest text-white shadow-lg transition-all active:scale-95 disabled:opacity-50"
             >
               {isGenerating ? (
                 <>
