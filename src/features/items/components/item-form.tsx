@@ -293,7 +293,7 @@ export function ItemForm({
           {isEditMode && allServices && allServices.length > 1 && (
             <div className="space-y-2">
               <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Déplacer
+                {t("moveLabel")}
               </Label>
               <Select
                 value={currentServiceId?.toString()}

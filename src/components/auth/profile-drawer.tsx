@@ -42,6 +42,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const { theme, setTheme, themes } = useThemeMode();
   const locale = useLocale() as Locale;
   const tCommon = useTranslations("common");
+  const tProfile = useTranslations("Profile");
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -114,7 +115,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     <BottomSheet
       open={open}
       onClose={onClose}
-      title={showDeleteConfirm ? "Supprimer mon compte" : "Paramètres du profil"}
+      title={showDeleteConfirm ? tProfile("deleteAccount") : tProfile("settings")}
     >
       {!showDeleteConfirm ? (
         <div className="space-y-6 px-1 pb-12">
@@ -342,7 +343,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       onClick={() => setShowDeleteConfirm(true)}
                     >
                       <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
-                        Supprimer mon compte
+                        {tProfile("deleteAccount")}
                       </span>
                     </Button>
                   </div>
@@ -358,11 +359,10 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               <AlertTriangle size={32} />
             </div>
             <div className="space-y-2">
-              <h4 className="text-lg font-black leading-tight text-gray-900">Zone de danger</h4>
-              <p className="px-4 text-xs font-medium text-gray-500">
-                Cette action est irréversible. Toutes vos données, ainsi que les événements que vous
-                avez créés, seront définitivement supprimés.
-              </p>
+              <h4 className="text-lg font-black leading-tight text-gray-900">
+                {tProfile("dangerZone")}
+              </h4>
+              <p className="px-4 text-xs font-medium text-gray-500">{tProfile("deleteWarning")}</p>
             </div>
           </div>
 
@@ -385,7 +385,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               shine
             >
               <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
-                Confirmer la suppression
+                {tProfile("confirmDelete")}
               </span>
             </Button>
 
@@ -397,7 +397,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               disabled={isDeleting}
             >
               <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                Retour
+                {tProfile("back")}
               </span>
             </Button>
           </div>

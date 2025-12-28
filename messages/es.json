@@ -70,6 +70,14 @@
     "haveAccount": "¿Ya tienes una cuenta?",
     "guestLink": "Continuar como invitado"
   },
+  "Profile": {
+    "settings": "Ajustes del perfil",
+    "deleteAccount": "Eliminar mi cuenta",
+    "dangerZone": "Zona de peligro",
+    "deleteWarning": "Esta acción es irreversible. Todos tus datos y los eventos que creaste serán eliminados permanentemente.",
+    "confirmDelete": "Confirmar eliminación",
+    "back": "Volver"
+  },
   "CreateEvent": {
     "backToLogin": "Volver al inicio de sesión",
     "title": "Crear un evento",
@@ -149,6 +157,12 @@
       "editMeal": "Editar comida",
       "editService": "Editar servicio"
     },
+    "Service": {
+      "editService": "Editar servicio {name}",
+      "add": "Añadir",
+      "dropHere": "Suelta aquí para mover el artículo",
+      "noItems": "Aún no hay ingredientes."
+    },
     "People": {
       "all": "Todos",
       "addMember": "Añadir miembro",
@@ -159,7 +173,8 @@
       "shoppingList": "Lista de la compra",
       "articlesCount": "{count, plural, =0 {ningún artículo} one {1 artículo} other {# artículos}}",
       "confirmUnlink": "¿Estás seguro de que quieres dejar de estar asociado a este perfil?",
-      "me": "Yo"
+      "me": "Yo",
+      "editItem": "Editar artículo {name}"
     },
     "Shopping": {
       "notAssociated": "Perfil no asociado",

@@ -233,7 +233,7 @@ export function PeopleTab({
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSheet({ type: "item", serviceId: service.id, item })}
                       disabled={readOnly}
-                      aria-label={`Modifier l'article ${item.name}`}
+                      aria-label={t("editItem", { name: item.name })}
                       className="group w-full cursor-pointer rounded-2xl border border-black/[0.03] bg-white p-4 text-left shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-200 hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] disabled:cursor-default"
                     >
                       <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-accent/60">

@@ -6,6 +6,7 @@ import { Plus, Pencil } from "lucide-react";
 import { type Item, type Service, type Person, type PlanningFilter } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 import { Button } from "../ui/button";
 
@@ -40,6 +41,8 @@ export function ServiceSection({
     return service.items;
   }, [service.items, filter]);
 
+  const t = useTranslations("EventDashboard.Service");
+
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
   });
@@ -67,7 +70,7 @@ export function ServiceSection({
             <button
               onClick={onEdit}
               className="group flex items-center gap-2 text-left transition-colors hover:text-accent"
-              aria-label={`Modifier le service ${service.title}`}
+              aria-label={t("editService", { name: service.title })}
             >
               <h3 className="text-lg font-semibold tracking-tight text-text group-hover:text-accent">
                 {service.title}
@@ -84,7 +87,7 @@ export function ServiceSection({
         </div>
         {!readOnly && filter.type === "all" && (
           <Button variant="premium" size="premium" onClick={onCreate} icon={<Plus size={16} />}>
-            <span className="text-xs font-bold text-gray-700">Ajouter</span>
+            <span className="text-xs font-bold text-gray-700">{t("add")}</span>
           </Button>
         )}
       </div>
@@ -106,9 +109,7 @@ export function ServiceSection({
             isOver && isDraggingFromOtherService && "font-semibold text-accent"
           )}
         >
-          {isOver && isDraggingFromOtherService
-            ? "Déposez ici pour déplacer l'article"
-            : "Aucun ingrédient pour l'instant."}
+          {isOver && isDraggingFromOtherService ? t("dropHere") : t("noItems")}
         </p>
       )}
     </section>
