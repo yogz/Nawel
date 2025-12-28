@@ -36,6 +36,29 @@ export function OrganizerHeader({
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+    const url = `${baseUrl}/event/${slug}${writeKey ? `?key=${writeKey}` : ""}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Événement - ${plan.event?.name || slug}`,
+          text: `Rejoins l'événement "${plan.event?.name || slug}" sur Nawel !`,
+          url,
+        });
+      } catch {
+        // User cancelled or error
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   return (
     <>
       {christmas && (
@@ -67,6 +90,21 @@ export function OrganizerHeader({
                 <ShieldAlert size={10} className="sm:h-3 sm:w-3" />
                 <span className="xs:inline hidden">Miroir</span>
               </span>
+            )}
+            {!readOnly && (
+              <Button
+                variant="premium"
+                size="premium"
+                shine
+                onClick={handleShare}
+                icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
+                iconClassName={cn("h-7 w-7", copied && "bg-green-500 text-white")}
+                title="Partager l'accès"
+              >
+                <span className="truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:text-xs">
+                  {copied ? "Copié !" : "Partager"}
+                </span>
+              </Button>
             )}
             <UserNav />
           </div>
@@ -113,29 +151,6 @@ function PlanningFilters({
   writeKey,
   readOnly,
 }: PlanningFiltersProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleShare = async () => {
-    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-    const url = `${baseUrl}/event/${slug}${writeKey ? `?key=${writeKey}` : ""}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Événement - ${plan.event?.name || slug}`,
-          text: `Rejoins l'événement "${plan.event?.name || slug}" sur Nawel !`,
-          url,
-        });
-      } catch {
-        // User cancelled or error
-      }
-    } else {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
@@ -162,22 +177,6 @@ function PlanningFilters({
           </TabsList>
         </Tabs>
       </div>
-
-      {!readOnly && (
-        <Button
-          variant="premium"
-          size="premium"
-          shine
-          onClick={handleShare}
-          icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
-          iconClassName={cn("h-7 w-7", copied && "bg-green-500 text-white")}
-          title="Partager l'accès"
-        >
-          <span className="truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:text-xs">
-            {copied ? "Copié !" : "Partager"}
-          </span>
-        </Button>
-      )}
     </div>
   );
 }
