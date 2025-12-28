@@ -34,6 +34,9 @@ export function ServiceSection({
     if (filter.type === "unassigned") {
       return service.items.filter((i) => !i.personId);
     }
+    if (filter.type === "person") {
+      return service.items.filter((i) => i.personId === filter.personId);
+    }
     return service.items;
   }, [service.items, filter]);
 

@@ -38,7 +38,10 @@ export type PlanData = {
   people: Person[];
 };
 
-export type PlanningFilter = { type: "all" } | { type: "unassigned" };
+export type PlanningFilter =
+  | { type: "all" }
+  | { type: "unassigned" }
+  | { type: "person"; personId: number };
 
 export type Sheet =
   | { type: "item"; item?: Item; serviceId?: number }

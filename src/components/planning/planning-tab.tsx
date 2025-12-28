@@ -86,6 +86,9 @@ export function PlanningTab({
               if (planningFilter.type === "unassigned") {
                 return !i.personId;
               }
+              if (planningFilter.type === "person") {
+                return i.personId === planningFilter.personId;
+              }
               return false;
             })
           );
