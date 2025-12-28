@@ -4,8 +4,21 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
-import { PlusIcon, Pencil, CalendarPlus, Clock, MapPin } from "lucide-react";
-import { generateGoogleCalendarUrl } from "@/lib/utils";
+import {
+  PlusIcon,
+  Pencil,
+  CalendarPlus,
+  Clock,
+  MapPin,
+  ExternalLink,
+  Download,
+} from "lucide-react";
+import {
+  generateGoogleCalendarUrl,
+  generateOutlookCalendarUrl,
+  downloadIcsFile,
+} from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 import {
   type DragEndEvent,
@@ -106,14 +119,44 @@ export function PlanningTab({
                       </h2>
                     )}
                     <div className="flex items-center gap-1.5 transition-opacity">
-                      <Button
-                        variant="premium"
-                        className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
-                        icon={<CalendarPlus className="h-3.5 w-3.5" />}
-                        iconClassName="h-6 w-6"
-                        aria-label="Ajouter au calendrier Google"
-                        onClick={() => window.open(calendarUrl, "_blank")}
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="premium"
+                            className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
+                            icon={<CalendarPlus className="h-3.5 w-3.5" />}
+                            iconClassName="h-6 w-6"
+                            aria-label="Options de calendrier"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-56 p-1" align="start">
+                          <div className="flex flex-col gap-1">
+                            <button
+                              onClick={() => window.open(calendarUrl, "_blank")}
+                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              Google Agenda
+                            </button>
+                            <button
+                              onClick={() =>
+                                window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
+                              }
+                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              Outlook / Office 365
+                            </button>
+                            <button
+                              onClick={() => downloadIcsFile(meal, eventName)}
+                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                            >
+                              <Download className="h-4 w-4" />
+                              Télécharger (.ics)
+                            </button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
