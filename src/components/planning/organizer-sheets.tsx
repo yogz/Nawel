@@ -341,9 +341,13 @@ export function OrganizerSheets({
           open={true}
           unclaimed={sheet.unclaimed}
           onClose={() => setSheet(null)}
-          onClaim={(id) => {
-            handlers.handleClaimPerson(id);
-            setSheet(null);
+          onClaim={async (id) => {
+            try {
+              await handlers.handleClaimPerson(id);
+              setSheet(null);
+            } catch (error) {
+              // Error is handled in the handler (toast/console)
+            }
           }}
           onJoinNew={onJoinNew}
         />

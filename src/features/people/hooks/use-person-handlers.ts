@@ -105,22 +105,26 @@ export function usePersonHandlers({
 
   const handleClaimPerson = (personId: number) => {
     if (readOnly) {
-      return;
+      return Promise.reject(new Error("Read only"));
     }
-    startTransition(async () => {
-      try {
-        const updated = await claimPersonAction({ personId, slug, key: writeKey });
-        setPlan((prev: PlanData) => ({
-          ...prev,
-          people: prev.people.map((p) =>
-            p.id === personId ? { ...p, userId: updated.userId } : p
-          ),
-        }));
-        setSuccessMessage({ text: "Compte associé ! ✨", type: "success" });
-      } catch (error) {
-        console.error("Failed to claim person:", error);
-        setSuccessMessage({ text: "Erreur lors de l'association ❌", type: "error" });
-      }
+    return new Promise<any>((resolve, reject) => {
+      startTransition(async () => {
+        try {
+          const updated = await claimPersonAction({ personId, slug, key: writeKey });
+          setPlan((prev: PlanData) => ({
+            ...prev,
+            people: prev.people.map((p) =>
+              p.id === personId ? { ...p, userId: updated.userId } : p
+            ),
+          }));
+          setSuccessMessage({ text: "Compte associé ! ✨", type: "success" });
+          resolve(updated);
+        } catch (error) {
+          console.error("Failed to claim person:", error);
+          setSuccessMessage({ text: "Erreur lors de l'association ❌", type: "error" });
+          reject(error);
+        }
+      });
     });
   };
 
