@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
-import { PlusIcon, Pencil } from "lucide-react";
+import { PlusIcon, Pencil, CalendarPlus } from "lucide-react";
+import { generateGoogleCalendarUrl } from "@/lib/utils";
 
 import {
   type DragEndEvent,
@@ -53,6 +54,8 @@ export function PlanningTab({
     return null;
   }
 
+  const eventName = plan.event?.name || "Événement";
+
   return (
     <DndContext
       sensors={sensors}
@@ -77,6 +80,8 @@ export function PlanningTab({
             return null;
           }
 
+          const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
+
           return (
             <div key={meal.id} className="space-y-6">
               <div className="flex items-center gap-3 px-2">
@@ -88,15 +93,25 @@ export function PlanningTab({
                     <h2 className="truncate text-xl font-black tracking-tight text-text">
                       {meal.title || meal.date}
                     </h2>
-                    {!readOnly && (
+                    <div className="flex items-center gap-1.5 transition-opacity">
                       <Button
                         variant="premium"
                         className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
-                        icon={<Pencil className="h-3 w-3" />}
+                        icon={<CalendarPlus className="h-3.5 w-3.5" />}
                         iconClassName="h-6 w-6"
-                        onClick={() => setSheet({ type: "meal-edit", meal })}
+                        title="Ajouter au calendrier Google"
+                        onClick={() => window.open(calendarUrl, "_blank")}
                       />
-                    )}
+                      {!readOnly && (
+                        <Button
+                          variant="premium"
+                          className="h-7 w-7 p-0 pr-0 text-gray-400 ring-0 hover:text-accent hover:ring-1"
+                          icon={<Pencil className="h-3 w-3" />}
+                          iconClassName="h-6 w-6 bg-accent/5 group-hover:bg-accent/10"
+                          onClick={() => setSheet({ type: "meal-edit", meal })}
+                        />
+                      )}
+                    </div>
                   </div>
                   <CitationDisplay />
                 </div>

@@ -7,13 +7,7 @@ import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -145,28 +139,28 @@ function PlanningFilters({
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
       <div className="flex items-center gap-2">
-        <Select
+        <Tabs
           value={planningFilter.type}
           onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
+          className="w-full sm:w-auto"
         >
-          <SelectTrigger className="h-10 w-auto gap-2 rounded-full border-none bg-white py-1 pl-3 pr-8 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 focus:ring-accent/20">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent align="start">
-            <SelectItem value="all" textValue="Tout le monde">
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-accent">
-                <Stars size={14} className="h-4 w-4" />
-                <span>Tout le monde</span>
-              </div>
-            </SelectItem>
-            <SelectItem value="unassigned" textValue={`À prévoir (${unassignedItemsCount})`}>
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-accent">
-                <CircleHelp size={14} className="h-4 w-4" />
-                <span>À prévoir ({unassignedItemsCount})</span>
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+          <TabsList className="h-10 w-full rounded-full bg-zinc-100/80 p-1 sm:w-auto">
+            <TabsTrigger
+              value="all"
+              className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
+            >
+              <Stars size={14} className="shrink-0" />
+              <span className="truncate">Tout le monde</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="unassigned"
+              className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
+            >
+              <CircleHelp size={14} className="shrink-0" />
+              <span className="truncate">À prévoir ({unassignedItemsCount})</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {!readOnly && (

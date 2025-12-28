@@ -77,3 +77,24 @@ export function getPersonEmoji(
   const index = Math.abs(hash) % PERSON_EMOJIS.length;
   return PERSON_EMOJIS[index];
 }
+
+export function generateGoogleCalendarUrl(
+  meal: { date: string; title?: string | null },
+  eventName: string
+) {
+  const title = meal.title ? `${eventName} - ${meal.title}` : eventName;
+  const dateStr = meal.date.replace(/-/g, ""); // "YYYYMMDD"
+
+  // Create a 2-hour window by default (Noon UTC for simplicity, or we could improve this)
+  const start = `${dateStr}T120000Z`;
+  const end = `${dateStr}T140000Z`;
+
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: title,
+    dates: `${start}/${end}`,
+    details: `Rejoins-nous pour "${title}" sur Nawel !`,
+  });
+
+  return `https://www.google.com/calendar/render?${params.toString()}`;
+}
