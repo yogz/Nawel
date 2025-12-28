@@ -150,14 +150,14 @@ function PlanningFilters({
               className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
             >
               <Stars size={14} className="shrink-0" />
-              <span className="truncate">Tout le monde</span>
+              <span className="truncate">Tout afficher</span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
               className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
             >
               <CircleHelp size={14} className="shrink-0" />
-              <span className="truncate">À prévoir ({unassignedItemsCount})</span>
+              <span className="truncate">À prendre ({unassignedItemsCount})</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
