@@ -5,6 +5,7 @@ import { Loader2, Sparkles, Lock, Plus, X } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
 import { Input } from "@/components/ui/input";
 import { type Ingredient } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 interface ItemIngredientsProps {
   ingredients?: Ingredient[];
@@ -35,6 +36,7 @@ export function ItemIngredients({
   onDeleteAllIngredients,
   onRequestAuth,
 }: ItemIngredientsProps) {
+  const t = useTranslations("EventDashboard.Forms.Item.Ingredients");
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
@@ -70,12 +72,12 @@ export function ItemIngredients({
               {isGenerating ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Generation en cours...
+                  {t("generating")}
                 </>
               ) : (
                 <>
                   <Sparkles size={16} />
-                  Generer les ingredients
+                  {t("generateButton")}
                 </>
               )}
             </button>
@@ -86,7 +88,7 @@ export function ItemIngredients({
               className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-200 bg-purple-50 px-4 py-3 text-sm font-medium text-purple-600 transition-all hover:border-purple-300 hover:bg-purple-100"
             >
               <Lock size={16} />
-              Connectez-vous pour générer les ingrédients
+              {t("authRequired")}
             </button>
           )}
 
@@ -97,7 +99,7 @@ export function ItemIngredients({
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
           >
             <Plus size={16} />
-            Ajouter manuellement
+            {t("addManual")}
           </button>
         </div>
       )}
@@ -106,8 +108,8 @@ export function ItemIngredients({
       {!readOnly && hasNoIngredients && showManualAdd && (
         <div className="space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
           <Input
-            placeholder="Nom de l'ingrédient"
-            aria-label="Nom de l'ingrédient"
+            placeholder={t("namePlaceholder")}
+            aria-label={t("nameLabel")}
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             className="h-12 rounded-xl"
@@ -115,8 +117,8 @@ export function ItemIngredients({
             autoFocus
           />
           <Input
-            placeholder="Quantité (ex: 200g, 2 cuillères)"
-            aria-label="Quantité"
+            placeholder={t("quantityPlaceholder")}
+            aria-label={t("quantityLabel")}
             value={newQuantity}
             onChange={(e) => setNewQuantity(e.target.value)}
             className="h-12 rounded-xl"
@@ -129,7 +131,7 @@ export function ItemIngredients({
               disabled={!newName.trim()}
               className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-accent/90 active:scale-95 disabled:opacity-50"
             >
-              Ajouter
+              {t("add")}
             </button>
             <button
               type="button"
@@ -151,7 +153,7 @@ export function ItemIngredients({
       {isGenerating && (
         <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
           <Loader2 size={18} className="animate-spin text-purple-500" />
-          <span>L&apos;IA analyse votre plat...</span>
+          <span>{t("analyzing")}</span>
         </div>
       )}
 

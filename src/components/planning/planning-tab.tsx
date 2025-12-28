@@ -28,6 +28,7 @@ import {
 } from "@dnd-kit/core";
 import { type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
 import { Button } from "../ui/button";
+import { useTranslations } from "next-intl";
 
 interface PlanningTabProps {
   plan: PlanData;
@@ -58,6 +59,7 @@ export function PlanningTab({
   onCreateService,
   setSheet,
 }: PlanningTabProps) {
+  const t = useTranslations("EventDashboard.Planning");
   const [hasMounted, setHasMounted] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -110,7 +112,7 @@ export function PlanningTab({
                       <button
                         onClick={() => setSheet({ type: "meal-edit", meal })}
                         className="group flex min-w-0 items-center gap-2 text-left transition-colors hover:text-accent"
-                        aria-label={`Modifier le repas ${meal.title || meal.date}`}
+                        aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
                       >
                         <h2 className="truncate text-xl font-black tracking-tight text-text group-hover:text-accent">
                           {meal.title || meal.date}
@@ -129,7 +131,7 @@ export function PlanningTab({
                             className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
                             icon={<CalendarPlus className="h-3.5 w-3.5" />}
                             iconClassName="h-6 w-6"
-                            aria-label="Options de calendrier"
+                            aria-label={t("calendar.options")}
                           />
                         </PopoverTrigger>
                         <PopoverContent className="w-56 p-1" align="start">
@@ -139,7 +141,7 @@ export function PlanningTab({
                               className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
                             >
                               <ExternalLink className="h-4 w-4" />
-                              Google Agenda
+                              {t("calendar.google")}
                             </button>
                             <button
                               onClick={() =>
@@ -148,14 +150,14 @@ export function PlanningTab({
                               className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
                             >
                               <ExternalLink className="h-4 w-4" />
-                              Outlook / Office 365
+                              {t("calendar.outlook")}
                             </button>
                             <button
                               onClick={() => downloadIcsFile(meal, eventName)}
                               className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
                             >
                               <Download className="h-4 w-4" />
-                              Télécharger (.ics)
+                              {t("calendar.download")}
                             </button>
                           </div>
                         </PopoverContent>
@@ -201,7 +203,7 @@ export function PlanningTab({
       </div>
       {plan.meals.length === 0 && planningFilter.type === "all" && (
         <div className="px-4 py-8 text-center">
-          <p className="mb-4 text-gray-500">Aucun repas pour l&apos;instant.</p>
+          <p className="mb-4 text-gray-500">{t("noMeals")}</p>
           {!readOnly && (
             <Button
               variant="premium"
@@ -209,7 +211,7 @@ export function PlanningTab({
               icon={<PlusIcon />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
-              <span className="font-semibold text-accent">Ajouter un repas</span>
+              <span className="font-semibold text-accent">{t("addMeal")}</span>
             </Button>
           )}
         </div>
@@ -223,7 +225,7 @@ export function PlanningTab({
             iconClassName="bg-gray-100 text-gray-400 group-hover:bg-gray-900"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
           >
-            <span className="font-semibold text-gray-600">Ajouter un service</span>
+            <span className="font-semibold text-gray-600">{t("addService")}</span>
           </Button>
           <Button
             variant="premium"
@@ -231,7 +233,7 @@ export function PlanningTab({
             icon={<PlusIcon />}
             onClick={() => setSheet({ type: "meal-create" })}
           >
-            <span className="font-semibold text-accent">Ajouter un repas</span>
+            <span className="font-semibold text-accent">{t("addMeal")}</span>
           </Button>
         </div>
       )}

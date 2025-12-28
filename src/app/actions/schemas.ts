@@ -176,6 +176,7 @@ export const generateIngredientsSchema = baseInput.extend({
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),
+  locale: z.string().optional(),
 });
 
 export const createIngredientSchema = baseInput.extend({

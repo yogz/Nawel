@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { type Meal } from "@/lib/types";
 import {
   Sparkles,
@@ -36,6 +35,18 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { fr, enUS, el, de, es, pt } from "date-fns/locale";
+
+const dateLocales: Record<string, any> = {
+  fr,
+  en: enUS,
+  el,
+  de,
+  es,
+  pt,
+};
 
 const DEFAULT_SERVICE_TYPES = [
   { id: "apero", label: "Apéro", icon: <GlassWater size={20} /> },
@@ -101,6 +112,73 @@ export function MealForm({
   onDelete?: (meal: Meal) => void;
   onClose: () => void;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Meal");
+  const tCommon = useTranslations("EventDashboard.Forms.Shared");
+  const params = useParams();
+  const currentLocale = (params.locale as string) || "fr";
+  const dateLocale = dateLocales[currentLocale] || fr;
+
+  const DEFAULT_SERVICE_TYPES = [
+    { id: "apero", label: t("serviceTypes.apero"), icon: <GlassWater size={20} /> },
+    { id: "entree", label: t("serviceTypes.entree"), icon: <Salad size={20} /> },
+    { id: "plat", label: t("serviceTypes.plat"), icon: <UtensilsCrossed size={20} /> },
+    { id: "fromage", label: t("serviceTypes.fromage"), icon: <CircleDot size={20} /> },
+    { id: "dessert", label: t("serviceTypes.dessert"), icon: <Cake size={20} /> },
+    { id: "boisson", label: t("serviceTypes.boisson"), icon: <Wine size={20} /> },
+    { id: "autre", label: t("serviceTypes.autre"), icon: <Package size={20} /> },
+  ];
+
+  const QUICK_OPTIONS = [
+    {
+      id: "apero",
+      label: t("serviceTypes.apero"),
+      icon: <GlassWater size={20} />,
+      services: [t("serviceTypes.boissons"), t("serviceTypes.apero")],
+    },
+    {
+      id: "entree",
+      label: t("serviceTypes.entree"),
+      icon: <Salad size={20} />,
+      services: [t("serviceTypes.entree")],
+    },
+    {
+      id: "plat",
+      label: t("serviceTypes.plat"),
+      icon: <UtensilsCrossed size={20} />,
+      services: [t("serviceTypes.plat")],
+    },
+    {
+      id: "dessert",
+      label: t("serviceTypes.dessert"),
+      icon: <Cake size={20} />,
+      services: [t("serviceTypes.dessert")],
+    },
+    {
+      id: "fromage",
+      label: t("serviceTypes.fromage"),
+      icon: <CircleDot size={20} />,
+      services: [t("serviceTypes.fromage")],
+    },
+    {
+      id: "boissons",
+      label: t("serviceTypes.boissons"),
+      icon: <Wine size={20} />,
+      services: [t("serviceTypes.boissons")],
+    },
+    {
+      id: "autre",
+      label: t("serviceTypes.autre"),
+      icon: <Package size={20} />,
+      services: [t("serviceTypes.divers")],
+    },
+    {
+      id: "custom",
+      label: t("serviceTypes.custom"),
+      icon: <Plus size={20} />,
+      services: [],
+    },
+  ] as const;
+
   const [step, setStep] = useState(1);
   const [date, setDate] = useState<Date | undefined>(meal?.date ? new Date(meal.date) : undefined);
   const [title, setTitle] = useState(meal?.title || "");
@@ -108,7 +186,7 @@ export function MealForm({
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [time, setTime] = useState(meal?.time || "");
   const [address, setAddress] = useState(meal?.address || "");
-  const [quickOption, setQuickOption] = useState<string>("simple");
+  const [quickOption, setQuickOption] = useState<string>("plat");
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
 
   const isEditMode = !!meal;
@@ -126,7 +204,8 @@ export function MealForm({
           (id) => DEFAULT_SERVICE_TYPES.find((m) => m.id === id)?.label || id
         );
       } else {
-        servicesToCreate = QUICK_OPTIONS.find((o) => o.id === quickOption)?.services || ["Service"];
+        const option = QUICK_OPTIONS.find((o) => o.id === quickOption);
+        servicesToCreate = option ? [...option.services] : ["Service"];
       }
       onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
     }
@@ -166,7 +245,7 @@ export function MealForm({
               htmlFor="date"
               className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
             >
-              Date
+              {t("dateLabel")}
             </Label>
             <Popover modal={true}>
               <PopoverTrigger asChild>
@@ -178,7 +257,11 @@ export function MealForm({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: fr }) : <span>Choisir une date</span>}
+                  {date ? (
+                    format(date, "PPP", { locale: dateLocale })
+                  ) : (
+                    <span>{t("datePlaceholder")}</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent
@@ -192,7 +275,7 @@ export function MealForm({
                     setDate(newDate);
                   }}
                   initialFocus
-                  locale={fr}
+                  locale={dateLocale}
                 />
               </PopoverContent>
             </Popover>
@@ -204,7 +287,7 @@ export function MealForm({
                 htmlFor="time"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                Heure
+                {t("timeLabel")}
               </Label>
               <div className="relative">
                 <Input
@@ -222,13 +305,13 @@ export function MealForm({
                 htmlFor="title"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                Nom du repas
+                {t("titleLabel")}
               </Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex: Réveillon..."
+                placeholder={t("titlePlaceholder")}
                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
               />
             </div>
@@ -239,14 +322,14 @@ export function MealForm({
               htmlFor="address"
               className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
             >
-              Adresse
+              {t("addressLabel")}
             </Label>
             <div className="relative">
               <Input
                 id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Ex: 123 Rue de la Fête, Paris"
+                placeholder={t("addressPlaceholder")}
                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
               />
               <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -259,16 +342,16 @@ export function MealForm({
                 htmlFor="adults"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                Adultes
+                {tCommon("adultsLabel")}
               </Label>
               <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
                 <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder="Adultes" />
+                  <SelectValue placeholder={tCommon("adultsLabel")} />
                 </SelectTrigger>
                 <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
                   {Array.from({ length: 51 }, (_, i) => (
                     <SelectItem key={i} value={String(i)} className="rounded-xl">
-                      {i} {i === 1 ? "adulte" : "adultes"}
+                      {i} {tCommon("adultsCount", { count: i })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -279,16 +362,16 @@ export function MealForm({
                 htmlFor="children"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                Enfants
+                {tCommon("childrenLabel")}
               </Label>
               <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
                 <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder="Enfants" />
+                  <SelectValue placeholder={tCommon("childrenLabel")} />
                 </SelectTrigger>
                 <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
                   {Array.from({ length: 51 }, (_, i) => (
                     <SelectItem key={i} value={String(i)} className="rounded-xl">
-                      {i} {i === 1 ? "enfant" : "enfants"}
+                      {i} {tCommon("childrenCount", { count: i })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -305,7 +388,7 @@ export function MealForm({
                 className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
               >
                 <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                  Annuler
+                  {tCommon("cancel")}
                 </span>
               </Button>
               {isEditMode ? (
@@ -319,7 +402,7 @@ export function MealForm({
                   shine
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    Mettre à jour
+                    {tCommon("update")}
                   </span>
                 </Button>
               ) : (
@@ -333,7 +416,7 @@ export function MealForm({
                   shine
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    Suivant
+                    {tCommon("next")}
                   </span>
                 </Button>
               )}
@@ -349,7 +432,7 @@ export function MealForm({
                 onClick={() => onDelete(meal)}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-red-600">
-                  Supprimer le repas
+                  {t("deleteButton")}
                 </span>
               </Button>
             )}
@@ -360,7 +443,7 @@ export function MealForm({
       {step === 2 && !isEditMode && (
         <div className="space-y-4">
           <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            Organisation du repas
+            {t("organisationLabel")}
           </Label>
 
           <div className="space-y-3">
@@ -417,7 +500,7 @@ export function MealForm({
           {quickOption === "custom" && (
             <div className="space-y-3 pt-2 animate-in fade-in slide-in-from-top-2">
               <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Sélectionnez les services
+                {t("serviceSelectionLabel")}
               </Label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {DEFAULT_SERVICE_TYPES.map((type) => {
@@ -463,7 +546,7 @@ export function MealForm({
               icon={<ArrowLeft size={16} />}
             >
               <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                Retour
+                {tCommon("back")}
               </span>
             </Button>
             <Button
@@ -476,7 +559,7 @@ export function MealForm({
               shine
             >
               <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                Créer le repas
+                {t("createButton")}
               </span>
             </Button>
           </div>

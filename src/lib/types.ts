@@ -124,7 +124,8 @@ export interface OrganizerHandlers {
     name: string,
     adults?: number,
     children?: number,
-    peopleCount?: number
+    peopleCount?: number,
+    locale?: string
   ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;

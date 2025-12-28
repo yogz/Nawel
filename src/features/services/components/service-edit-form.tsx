@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Trash2, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -31,6 +32,8 @@ export function ServiceEditForm({
   onDelete: (service: Service) => void;
   onClose: () => void;
 }) {
+  const t = useTranslations("EventDashboard.Forms.Service");
+  const tCommon = useTranslations("EventDashboard.Forms.Shared");
   const [title, setTitle] = useState(service?.title || "");
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
@@ -48,13 +51,13 @@ export function ServiceEditForm({
           htmlFor="service-title"
           className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
         >
-          Nom du service
+          {t("label")}
         </Label>
         <Input
           id="service-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Entrée, Plat, Dessert..."
+          placeholder={t("placeholder")}
           required
           autoFocus
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
@@ -67,7 +70,7 @@ export function ServiceEditForm({
             htmlFor="edit-adults"
             className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
           >
-            Adultes
+            {tCommon("adultsLabel")}
           </Label>
           <Select
             value={String(adults)}
@@ -78,12 +81,12 @@ export function ServiceEditForm({
             }}
           >
             <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder="Adultes" />
+              <SelectValue placeholder={tCommon("adultsLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
               {Array.from({ length: 51 }, (_, i) => (
                 <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {i === 1 ? "adulte" : "adultes"}
+                  {i} {tCommon("adultsCount", { count: i })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -94,7 +97,7 @@ export function ServiceEditForm({
             htmlFor="edit-children"
             className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
           >
-            Enfants
+            {tCommon("childrenLabel")}
           </Label>
           <Select
             value={String(children)}
@@ -105,12 +108,12 @@ export function ServiceEditForm({
             }}
           >
             <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder="Enfants" />
+              <SelectValue placeholder={tCommon("childrenLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
               {Array.from({ length: 51 }, (_, i) => (
                 <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {i === 1 ? "enfant" : "enfants"}
+                  {i} {tCommon("childrenCount", { count: i })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -127,7 +130,7 @@ export function ServiceEditForm({
             className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
           >
             <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-              Annuler
+              {tCommon("cancel")}
             </span>
           </Button>
           <Button
@@ -138,7 +141,7 @@ export function ServiceEditForm({
             shine
           >
             <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              Mettre à jour
+              {tCommon("update")}
             </span>
           </Button>
         </div>
@@ -153,7 +156,7 @@ export function ServiceEditForm({
             onClick={() => onDelete(service)}
           >
             <span className="text-xs font-black uppercase tracking-widest text-red-600">
-              Supprimer le service
+              {t("deleteButton")}
             </span>
           </Button>
         )}

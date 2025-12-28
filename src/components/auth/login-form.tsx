@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth-client";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
-import { ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 export function LoginForm() {
+  const t = useTranslations("Login");
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
@@ -36,7 +37,7 @@ export function LoginForm() {
           callbackURL: isUserMode ? "/" : "/admin",
         });
         if (error) {
-          setError(error.message || "Erreur de connexion");
+          setError(error.message || t("errorSignin"));
           setLoading(false);
           return;
         }
@@ -48,7 +49,7 @@ export function LoginForm() {
           callbackURL: "/",
         });
         if (error) {
-          setError(error.message || "Erreur d'inscription");
+          setError(error.message || t("errorSignup"));
           setLoading(false);
           return;
         }
@@ -57,7 +58,7 @@ export function LoginForm() {
       router.push(isUserMode ? "/" : "/admin");
       router.refresh();
     } catch {
-      setError("Une erreur est survenue");
+      setError(t("errorDefault"));
       setLoading(false);
     }
   };
@@ -115,16 +116,16 @@ export function LoginForm() {
             <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
               {isUserMode
                 ? authMode === "signin"
-                  ? "Ravi de vous revoir !"
-                  : "Bienvenue à bord !"
-                : "Administration"}
+                  ? t("signinTitle")
+                  : t("signupTitle")
+                : t("adminTitle")}
             </h1>
             <p className="mb-8 text-center text-sm font-medium text-gray-500">
               {isUserMode
                 ? authMode === "signin"
-                  ? "Connectez-vous pour continuer"
-                  : "Créez votre compte en un instant"
-                : "Espace réservé aux administrateurs"}
+                  ? t("signinDescription")
+                  : t("signupDescription")
+                : t("adminDescription")}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -133,14 +134,14 @@ export function LoginForm() {
                   htmlFor="email"
                   className="text-[10px] font-black uppercase tracking-widest text-gray-400"
                 >
-                  Email
+                  {t("emailLabel")}
                 </Label>
                 <Input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="votre@email.com"
+                  placeholder={t("emailPlaceholder")}
                   required
                   disabled={loading}
                   className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
@@ -152,14 +153,14 @@ export function LoginForm() {
                   htmlFor="password"
                   className="text-[10px] font-black uppercase tracking-widest text-gray-400"
                 >
-                  Mot de passe
+                  {t("passwordLabel")}
                 </Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder={t("passwordPlaceholder")}
                   required
                   disabled={loading}
                   className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
@@ -183,11 +184,11 @@ export function LoginForm() {
               >
                 {loading
                   ? authMode === "signin"
-                    ? "Connexion..."
-                    : "Création..."
+                    ? t("signingIn")
+                    : t("signingUp")
                   : authMode === "signin"
-                    ? "Se connecter"
-                    : "S'inscrire"}
+                    ? t("signinButton")
+                    : t("signupButton")}
               </Button>
             </form>
 
@@ -196,7 +197,7 @@ export function LoginForm() {
                 <span className="w-full border-t border-gray-100" />
               </div>
               <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-                <span className="bg-transparent px-3 text-gray-400">Ou continuer avec</span>
+                <span className="bg-transparent px-3 text-gray-400">{t("orContinueWith")}</span>
               </div>
             </div>
 
@@ -217,29 +218,29 @@ export function LoginForm() {
               className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
             >
               <GoogleIcon className="h-5 w-5" />
-              S&apos;identifier avec Google
+              {t("googleButton")}
             </button>
 
             {isUserMode && (
               <p className="mt-8 text-center text-xs font-semibold text-gray-500">
                 {authMode === "signin" ? (
                   <>
-                    Pas encore de compte ?{" "}
+                    {t("noAccount")}{" "}
                     <button
                       onClick={() => setAuthMode("signup")}
                       className="font-bold text-accent hover:underline"
                     >
-                      S&apos;inscrire
+                      {t("signupButton")}
                     </button>
                   </>
                 ) : (
                   <>
-                    Déjà un compte ?{" "}
+                    {t("haveAccount")}{" "}
                     <button
                       onClick={() => setAuthMode("signin")}
                       className="font-bold text-accent hover:underline"
                     >
-                      Se connecter
+                      {t("signinButton")}
                     </button>
                   </>
                 )}
@@ -255,7 +256,7 @@ export function LoginForm() {
             href="/create-event"
             className="rounded-full bg-white/40 px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 backdrop-blur-sm transition-all hover:bg-white/60 hover:text-gray-700"
           >
-            Continuer sans s&apos;identifier
+            {t("guestLink")}
           </Link>
         </div>
       )}

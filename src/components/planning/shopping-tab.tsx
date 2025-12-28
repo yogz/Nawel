@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 interface ShoppingTabProps {
   plan: PlanData;
@@ -29,6 +30,7 @@ interface ShoppingTabProps {
 }
 
 export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTabProps) {
+  const t = useTranslations("EventDashboard.Shopping");
   const [isPending, startTransition] = useTransition();
 
   // Check if current user is the event owner
@@ -143,11 +145,8 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <UserX className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">Profil non associé</h3>
-        <p className="text-sm text-muted-foreground">
-          Allez dans l&apos;onglet &quot;Convives&quot; et cliquez sur &quot;C&apos;est moi !&quot;
-          pour vous associer à un profil.
-        </p>
+        <h3 className="mb-2 text-lg font-bold text-text">{t("notAssociated")}</h3>
+        <p className="text-sm text-muted-foreground">{t("notAssociatedDesc")}</p>
       </div>
     );
   }
@@ -157,11 +156,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <ShoppingCart className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">Aucune course</h3>
+        <h3 className="mb-2 text-lg font-bold text-text">{t("noShopping")}</h3>
         <p className="text-sm text-muted-foreground">
-          {isOwner
-            ? "Aucun article n'est assigné pour le moment."
-            : "Aucun article ne vous est assigné pour le moment."}
+          {isOwner ? t("noShoppingOwnerDesc") : t("noShoppingUserDesc")}
         </p>
       </div>
     );
@@ -231,7 +228,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         {/* Owner dropdown selector */}
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
           <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium">
-            <SelectValue placeholder="Sélectionner un convive" />
+            <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">
@@ -261,10 +258,10 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         <div className="premium-card p-5">
           <div className="mb-3 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Progression totale</p>
+              <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
               <p className="text-2xl font-bold text-text">
                 {checkedAll}/{totalAll}
-                <span className="ml-2 text-sm font-normal text-muted-foreground">articles</span>
+                <span className="ml-2 text-sm font-normal text-muted-foreground">{t("items")}</span>
               </p>
             </div>
             <div className="text-3xl font-black text-accent">{progressAll}%</div>
@@ -308,7 +305,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                       {isComplete && (
                         <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
                           <Check size={10} />
-                          Terminé
+                          {t("completed")}
                         </span>
                       )}
                     </div>
@@ -346,7 +343,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       {isOwner && (
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
           <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium">
-            <SelectValue placeholder="Sélectionner un convive" />
+            <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">
@@ -386,11 +383,10 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
             </div>
           )}
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-text">{displayPerson?.name || "Ma liste"}</h2>
+            <h2 className="text-lg font-bold text-text">{displayPerson?.name || t("myList")}</h2>
             <p className="text-sm text-muted-foreground">
-              {checkedCount}/{shoppingList.length} article{shoppingList.length > 1 ? "s" : ""}{" "}
-              acheté
-              {checkedCount > 1 ? "s" : ""}
+              {checkedCount}/{shoppingList.length} {t("items")}{" "}
+              {t("bought", { count: checkedCount })}
             </p>
           </div>
           <div className="text-3xl font-black text-accent">{progressPercent}%</div>
@@ -412,7 +408,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
         >
           <ExternalLink size={16} />
-          Ouvrir en plein écran
+          {t("openFullScreen")}
         </Link>
       )}
 
@@ -430,7 +426,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               transition={{ delay: idx * 0.02 }}
               onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
-              aria-label={`${isChecked ? "Décocher" : "Cocher"} ${itemName}`}
+              aria-label={`${t(isChecked ? "uncheck" : "check")} ${itemName}`}
               aria-pressed={isChecked}
               className={clsx(
                 "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
@@ -469,7 +465,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {aggregatedItem.sources.length > 1 ? (
                     <span className="font-medium text-accent">
-                      {aggregatedItem.sources.length} sources
+                      {t("sources", { count: aggregatedItem.sources.length })}
                     </span>
                   ) : (
                     <>

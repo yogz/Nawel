@@ -2,17 +2,18 @@
 
 import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 
 const authenticatedTabs = [
-  { key: "planning", label: "Menu", icon: CalendarRange },
-  { key: "people", label: "Convives", icon: Users },
-  { key: "shopping", label: "Courses", icon: ShoppingCart },
+  { key: "planning", icon: CalendarRange },
+  { key: "people", icon: Users },
+  { key: "shopping", icon: ShoppingCart },
 ] as const;
 
 const guestTabs = [
-  { key: "planning", label: "Menu", icon: CalendarRange },
-  { key: "people", label: "Convives", icon: Users },
-  { key: "settings", label: "Prefs", icon: Settings },
+  { key: "planning", icon: CalendarRange },
+  { key: "people", icon: Users },
+  { key: "settings", icon: Settings },
 ] as const;
 
 export type TabKey = "planning" | "people" | "shopping" | "settings";
@@ -24,6 +25,7 @@ interface TabBarProps {
 }
 
 export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
+  const t = useTranslations("EventDashboard.TabBar");
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
 
   return (
@@ -60,7 +62,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
                   selected ? "opacity-100" : "opacity-60"
                 )}
               >
-                {tab.label}
+                {t(tab.key)}
               </span>
             </button>
           );

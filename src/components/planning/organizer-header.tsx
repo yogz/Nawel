@@ -1,13 +1,12 @@
 import { useState } from "react";
-import Link from "next/link";
-import { ShieldAlert, Share, ChevronDown, CheckCircle, CircleHelp, Stars } from "lucide-react";
-import clsx from "clsx";
-import { getPersonEmoji } from "@/lib/utils";
+import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars } from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 interface OrganizerHeaderProps {
   christmas: boolean;
@@ -36,6 +35,7 @@ export function OrganizerHeader({
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
+  const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -45,8 +45,8 @@ export function OrganizerHeader({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Événement - ${plan.event?.name || slug}`,
-          text: `Rejoins l'événement "${plan.event?.name || slug}" sur Nawel !`,
+          title: t("shareNavigatorTitle", { name: plan.event?.name || slug }),
+          text: t("shareNavigatorText", { name: plan.event?.name || slug }),
           url,
         });
       } catch {
@@ -72,7 +72,7 @@ export function OrganizerHeader({
       {readOnly && (
         <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
           <ShieldAlert size={16} />
-          🔒Mode lecture uniquement
+          {t("readOnlyWarning")}
         </div>
       )}
 
@@ -88,7 +88,7 @@ export function OrganizerHeader({
             {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
                 <ShieldAlert size={10} className="sm:h-3 sm:w-3" />
-                <span className="xs:inline hidden">Miroir</span>
+                <span className="xs:inline hidden">{t("mirrorBadge")}</span>
               </span>
             )}
             {!readOnly && (
@@ -99,10 +99,10 @@ export function OrganizerHeader({
                 onClick={handleShare}
                 icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
                 iconClassName={cn("h-7 w-7", copied && "bg-green-500 text-white")}
-                title="Partager l'accès"
+                title={t("shareTitle")}
               >
                 <span className="truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:text-xs">
-                  {copied ? "Copié !" : "Partager"}
+                  {copied ? t("copyButton") : t("shareButton")}
                 </span>
               </Button>
             )}
@@ -165,14 +165,20 @@ function PlanningFilters({
               className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
             >
               <Stars size={14} className="shrink-0" />
-              <span className="truncate">Tout afficher</span>
+              <span className="truncate">
+                {useTranslations("EventDashboard.Header.filter")("all")}
+              </span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
               className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
             >
               <CircleHelp size={14} className="shrink-0" />
-              <span className="truncate">À prendre ({unassignedItemsCount})</span>
+              <span className="truncate">
+                {useTranslations("EventDashboard.Header.filter")("unassigned", {
+                  count: unassignedItemsCount,
+                })}
+              </span>
             </TabsTrigger>
           </TabsList>
         </Tabs>

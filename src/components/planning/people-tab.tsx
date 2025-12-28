@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 interface PeopleTabProps {
   plan: PlanData;
@@ -35,6 +36,7 @@ export function PeopleTab({
   onClaim,
   onUnclaim,
 }: PeopleTabProps) {
+  const t = useTranslations("EventDashboard.People");
   const itemsByPerson = useMemo(() => {
     const byPerson: Record<number, PersonItem[]> = {};
     plan.people.forEach((person: Person) => {
@@ -64,7 +66,7 @@ export function PeopleTab({
               : "bg-white text-gray-700 ring-1 ring-gray-200"
           )}
         >
-          Tout le monde
+          {t("all")}
         </button>
         {plan.people.map((person) => (
           <div
@@ -117,7 +119,7 @@ export function PeopleTab({
             )}
             {person.userId === currentUserId && (
               <span className="mr-3 text-[10px] font-black uppercase tracking-widest text-accent/60">
-                Moi
+                {t("me")}
               </span>
             )}
           </div>
@@ -127,7 +129,7 @@ export function PeopleTab({
             onClick={() => setSheet({ type: "person" })}
             className="rounded-full border-2 border-dashed border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
           >
-            + Ajouter un membre
+            + {t("addMember")}
           </button>
         )}
       </div>
@@ -168,18 +170,18 @@ export function PeopleTab({
                         {person.userId === currentUserId ? (
                           <div className="flex items-center gap-2">
                             <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/30">
-                              C'est vous ! 👋
+                              {t("itsYou")}
                             </span>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (confirm("Voulez-vous ne plus être associé à ce profil ?")) {
+                                if (confirm(t("confirmUnlink"))) {
                                   onUnclaim?.(person.id);
                                 }
                               }}
                               className="text-[10px] font-bold text-gray-400 underline underline-offset-2 hover:text-red-500"
                             >
-                              Délier
+                              {t("unlink")}
                             </button>
                           </div>
                         ) : (
@@ -193,7 +195,7 @@ export function PeopleTab({
                               }}
                               className="rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent transition-all hover:bg-accent hover:text-white active:scale-95"
                             >
-                              C'est moi !
+                              {t("itsMe")}
                             </button>
                           )
                         )}
@@ -209,17 +211,17 @@ export function PeopleTab({
                         )}
                       </div>
                       <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-                        {personItems.length} article{personItems.length > 1 ? "s" : ""}
+                        {t("articlesCount", { count: personItems.length })}
                       </p>
                     </div>
                     {personItems.length > 0 && (
                       <button
                         onClick={() => setSheet({ type: "shopping-list", person })}
-                        aria-label={`Afficher la liste de courses de ${person.name}`}
+                        aria-label={t("shoppingList")}
                         className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
                       >
                         <ShoppingCart size={14} />
-                        <span className="hidden sm:inline">Liste de courses</span>
+                        <span className="hidden sm:inline">{t("shoppingList")}</span>
                       </button>
                     )}
                   </div>
@@ -276,7 +278,7 @@ export function PeopleTab({
                   ))}
                   {personItems.length === 0 && (
                     <div className="rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/50 py-8 text-center">
-                      <p className="text-sm font-medium text-gray-400">Aucun article assigné</p>
+                      <p className="text-sm font-medium text-gray-400">{t("noItems")}</p>
                     </div>
                   )}
                 </div>

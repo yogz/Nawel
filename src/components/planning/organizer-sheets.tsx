@@ -9,7 +9,7 @@ import { ServiceEditForm } from "@/features/services/components/service-edit-for
 import { PersonForm } from "@/features/people/components/person-form";
 import { PersonEditForm } from "@/features/people/components/person-edit-form";
 import { ShoppingListSheet } from "./shopping-list-sheet";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
 
@@ -19,6 +19,7 @@ import {
   type Sheet,
   type PlanningFilter,
 } from "@/lib/types";
+import { useTranslations } from "next-intl";
 
 interface OrganizerSheetsProps {
   sheet: Sheet | null;
@@ -59,7 +60,10 @@ export function OrganizerSheets({
   onDismissGuestPrompt,
   onJoinNew,
 }: OrganizerSheetsProps) {
+  const t = useTranslations("EventDashboard.Sheets");
   const searchParams = useSearchParams();
+  const params = useParams();
+  const locale = params.locale as string;
 
   // Helper to find item needed for ItemForm
   const findItem = handlers.findItem;
@@ -90,31 +94,34 @@ export function OrganizerSheets({
 
   const getTitle = () => {
     if (sheet?.type === "item") {
-      return sheet.item ? "Modifier l'article" : "Ajouter un article";
+      return sheet.item ? t("editItem") : t("addItem");
     }
     if (sheet?.type === "service") {
-      return "Ajouter un service";
+      return t("addService");
     }
     if (sheet?.type === "service-edit") {
-      return "Modifier le service";
+      return t("editService");
     }
     if (sheet?.type === "meal-edit") {
-      return "Modifier le repas";
+      return t("editMeal");
     }
     if (sheet?.type === "person") {
-      return "Ajouter un convive";
+      return t("addGuest");
     }
     if (sheet?.type === "person-edit") {
-      return "Modifier le convive";
+      return t("editGuest");
     }
     if (sheet?.type === "share") {
-      return "Partager l'accès";
+      return t("shareAccess");
     }
     if (sheet?.type === "shopping-list") {
-      return `Liste de courses`;
+      return t("shoppingList");
     }
     if (sheet?.type === "guest-access") {
-      return "Accès invité";
+      return t("guestAccess");
+    }
+    if (sheet?.type === "claim-person") {
+      return t("claimPerson");
     }
     return "";
   };
@@ -197,12 +204,13 @@ export function OrganizerSheets({
                           const sId = sheet.serviceId || sheet.item?.serviceId;
                           const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
                           return s?.peopleCount;
-                        })()
+                        })(),
+                      locale
                     );
-                    setSuccessMessage({ text: "Ingrédients générés ! ✨", type: "success" });
+                    setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
                   } catch (error) {
                     console.error("Failed to generate ingredients:", error);
-                    setSuccessMessage({ text: "Erreur de génération ❌", type: "error" });
+                    setSuccessMessage({ text: t("generationError"), type: "error" });
                   } finally {
                     setIsGenerating(false);
                   }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo, useTransition } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import { Check, ShoppingBag, ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   aggregateShoppingList,
   formatAggregatedQuantity,
@@ -31,6 +32,7 @@ export function ShoppingListSheet({
   onToggleIngredient,
   onToggleItemChecked,
 }: ShoppingListSheetProps) {
+  const t = useTranslations("EventDashboard.Shopping");
   const fullPageUrl = writeKey
     ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
     : `/event/${slug}/shopping/${person.id}`;
@@ -97,7 +99,7 @@ export function ShoppingListSheet({
     return (
       <div className="py-8 text-center">
         <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-        <p className="text-sm text-muted-foreground">Aucun article à acheter pour {person.name}</p>
+        <p className="text-sm text-muted-foreground">{t("noItemsFor", { name: person.name })}</p>
       </div>
     );
   }
@@ -108,7 +110,7 @@ export function ShoppingListSheet({
       <Button asChild variant="outline" size="sm" className="w-full">
         <Link href={fullPageUrl}>
           <ExternalLink size={14} className="mr-2" />
-          Ouvrir en plein écran
+          {t("openFullScreen")}
         </Link>
       </Button>
 
@@ -125,7 +127,7 @@ export function ShoppingListSheet({
           <div>
             <p className="font-semibold text-text">{person.name}</p>
             <p className="text-xs text-muted-foreground">
-              {checkedCount}/{shoppingList.length} acheté{checkedCount > 1 ? "s" : ""}
+              {checkedCount}/{shoppingList.length} {t("bought", { count: checkedCount })}
             </p>
           </div>
         </div>
@@ -150,13 +152,13 @@ export function ShoppingListSheet({
               transition={{ delay: idx * 0.03 }}
               onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
-              aria-label={`${isChecked ? "Décocher" : "Cocher"} ${itemName}`}
+              aria-label={`${t(isChecked ? "uncheck" : "check")} ${itemName}`}
               aria-pressed={isChecked}
               className={clsx(
                 "flex w-full items-start gap-3 rounded-xl border p-3 text-left transition-all",
                 isChecked
                   ? "border-green-200 bg-green-50"
-                  : "border-gray-100 bg-white hover:border-accent/20 hover:bg-accent/5"
+                  : "border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:bg-accent/5"
               )}
             >
               {/* Checkbox */}
@@ -189,7 +191,7 @@ export function ShoppingListSheet({
                 <p className="text-xs text-muted-foreground">
                   {aggregatedItem.sources.length > 1 ? (
                     <span className="font-medium text-accent">
-                      {aggregatedItem.sources.length} sources
+                      {t("sources", { count: aggregatedItem.sources.length })}
                     </span>
                   ) : (
                     <>
