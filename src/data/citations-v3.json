@@ -1,0 +1,3136 @@
+{
+  "version": 4,
+  "purpose": "Sous-titres courts pour repas (joli, joyeux, convivial).",
+  "languages": ["fr", "en", "el", "es", "pt", "de"],
+  "constraints": {
+    "total_items": 120,
+    "original_language_split": {
+      "fr": 60,
+      "other": 60
+    },
+    "lgbtq_items": 18,
+    "notes": ["Textes courts, adaptés en sous-titre.", "Pas de point médian (·) dans les textes."]
+  },
+  "items": [
+    {
+      "id": "fr_001",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "togetherness",
+      "tags": ["fr", "togetherness", "community"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Être ensemble"
+      },
+      "localized": {
+        "fr": "Être ensemble",
+        "en": "Being together",
+        "el": "Να είμαστε μαζί",
+        "es": "Estar juntos",
+        "pt": "Estar juntos",
+        "de": "Zusammen sein"
+      }
+    },
+    {
+      "id": "fr_002",
+      "type": "title_like",
+      "tone": "soft",
+      "category": "memory",
+      "tags": ["fr", "memory", "time"],
+      "attribution": {
+        "author": "Yves Bonnefoy",
+        "work": "Titre (référence littéraire)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ce qui demeure"
+      },
+      "localized": {
+        "fr": "Ce qui demeure",
+        "en": "What remains",
+        "el": "Αυτό που μένει",
+        "es": "Lo que permanece",
+        "pt": "O que permanece",
+        "de": "Was bleibt"
+      }
+    },
+    {
+      "id": "fr_003",
+      "type": "expression",
+      "tone": "soft",
+      "category": "home",
+      "tags": ["fr", "home", "hosting"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Sous le même toit"
+      },
+      "localized": {
+        "fr": "Sous le même toit",
+        "en": "Under the same roof",
+        "el": "Κάτω από την ίδια στέγη",
+        "es": "Bajo el mismo techo",
+        "pt": "Sob o mesmo teto",
+        "de": "Unter demselben Dach"
+      }
+    },
+    {
+      "id": "fr_004",
+      "type": "expression",
+      "tone": "festive",
+      "category": "tradition",
+      "tags": ["fr", "tradition", "ritual"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Comme chaque année"
+      },
+      "localized": {
+        "fr": "Comme chaque année",
+        "en": "Like every year",
+        "el": "Όπως κάθε χρόνο",
+        "es": "Como cada año",
+        "pt": "Como todos os anos",
+        "de": "Wie jedes Jahr"
+      }
+    },
+    {
+      "id": "fr_005",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "meal", "start"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "À table !"
+      },
+      "localized": {
+        "fr": "À table !",
+        "en": "To the table!",
+        "el": "Στο τραπέζι!",
+        "es": "¡A la mesa!",
+        "pt": "À mesa!",
+        "de": "Zu Tisch!"
+      }
+    },
+    {
+      "id": "fr_006",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "meal", "classic"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Bon appétit !"
+      },
+      "localized": {
+        "fr": "Bon appétit !",
+        "en": "Enjoy your meal!",
+        "el": "Καλή όρεξη!",
+        "es": "¡Buen provecho!",
+        "pt": "Bom apetite!",
+        "de": "Guten Appetit!"
+      }
+    },
+    {
+      "id": "fr_007",
+      "type": "expression",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["fr", "toast", "cheers"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "À notre santé !"
+      },
+      "localized": {
+        "fr": "À notre santé !",
+        "en": "Cheers!",
+        "el": "Στην υγειά μας!",
+        "es": "¡Salud!",
+        "pt": "Saúde!",
+        "de": "Zum Wohl!"
+      }
+    },
+    {
+      "id": "fr_008",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "sharing",
+      "tags": ["fr", "sharing", "table"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On partage ?"
+      },
+      "localized": {
+        "fr": "On partage ?",
+        "en": "Shall we share?",
+        "el": "Να μοιραστούμε;",
+        "es": "¿Compartimos?",
+        "pt": "Partilhamos?",
+        "de": "Teilen wir?"
+      }
+    },
+    {
+      "id": "fr_009",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["fr", "food", "classic"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût",
+        "year": 1825,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le plaisir de la table est de tous les jours."
+      },
+      "localized": {
+        "fr": "Le plaisir de la table est de tous les jours.",
+        "en": "The pleasures of the table are for every day.",
+        "el": "Η χαρά του τραπεζιού είναι για κάθε μέρα.",
+        "es": "El placer de la mesa es de todos los días.",
+        "pt": "O prazer da mesa é de todos os dias.",
+        "de": "Die Freude am Tisch ist für jeden Tag."
+      }
+    },
+    {
+      "id": "fr_010",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hosting",
+      "tags": ["fr", "hosting", "care"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût",
+        "year": 1825,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Convier quelqu’un, c’est se charger de son bonheur."
+      },
+      "localized": {
+        "fr": "Convier quelqu’un, c’est se charger de son bonheur.",
+        "en": "To invite someone is to take charge of their happiness.",
+        "el": "Να προσκαλείς κάποιον σημαίνει να αναλαμβάνεις την ευτυχία του.",
+        "es": "Invitar a alguien es encargarse de su felicidad.",
+        "pt": "Convidar alguém é encarregar-se da sua felicidade.",
+        "de": "Jemanden einzuladen heißt, für sein Glück zu sorgen."
+      }
+    },
+    {
+      "id": "fr_011",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["fr", "food", "classic"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût",
+        "year": 1825,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Dis-moi ce que tu manges, je te dirai ce que tu es."
+      },
+      "localized": {
+        "fr": "Dis-moi ce que tu manges, je te dirai ce que tu es.",
+        "en": "Tell me what you eat, and I'll tell you what you are.",
+        "el": "Πες μου τι τρως και θα σου πω ποιος είσαι.",
+        "es": "Dime qué comes y te diré quién eres.",
+        "pt": "Diz-me o que comes e dir-te-ei quem és.",
+        "de": "Sag mir, was du isst, und ich sage dir, wer du bist."
+      }
+    },
+    {
+      "id": "fr_012",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["fr", "classic", "heart"],
+      "attribution": {
+        "author": "Antoine de Saint-Exupéry",
+        "work": "Le Petit Prince",
+        "year": 1943,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "L’essentiel est invisible pour les yeux."
+      },
+      "localized": {
+        "fr": "L’essentiel est invisible pour les yeux.",
+        "en": "What is essential is invisible to the eye.",
+        "el": "Το ουσιώδες είναι αόρατο στα μάτια.",
+        "es": "Lo esencial es invisible a los ojos.",
+        "pt": "O essencial é invisível aos olhos.",
+        "de": "Das Wesentliche ist für die Augen unsichtbar."
+      }
+    },
+    {
+      "id": "fr_013",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["fr", "meaning", "life"],
+      "attribution": {
+        "author": "Albert Camus",
+        "work": "Le Mythe de Sisyphe",
+        "year": 1942,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Il faut imaginer Sisyphe heureux."
+      },
+      "localized": {
+        "fr": "Il faut imaginer Sisyphe heureux.",
+        "en": "One must imagine Sisyphus happy.",
+        "el": "Πρέπει να φανταστούμε τον Σίσυφο ευτυχισμένο.",
+        "es": "Hay que imaginar a Sísifo feliz.",
+        "pt": "É preciso imaginar Sísifo feliz.",
+        "de": "Man muss sich Sisyphos als glücklich vorstellen."
+      }
+    },
+    {
+      "id": "fr_014",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["fr", "classic"],
+      "attribution": {
+        "author": "René Descartes",
+        "work": "Discours de la méthode",
+        "year": 1637,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Je pense, donc je suis."
+      },
+      "localized": {
+        "fr": "Je pense, donc je suis.",
+        "en": "I think, therefore I am.",
+        "el": "Σκέφτομαι, άρα υπάρχω.",
+        "es": "Pienso, luego existo.",
+        "pt": "Penso, logo existo.",
+        "de": "Ich denke, also bin ich."
+      }
+    },
+    {
+      "id": "fr_015",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "science",
+      "tags": ["fr", "classic"],
+      "attribution": {
+        "author": "Antoine Lavoisier",
+        "work": "Principe de conservation de la matière",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Rien ne se perd, rien ne se crée, tout se transforme."
+      },
+      "localized": {
+        "fr": "Rien ne se perd, rien ne se crée, tout se transforme.",
+        "en": "Nothing is lost, nothing is created, everything is transformed.",
+        "el": "Τίποτα δεν χάνεται, τίποτα δεν δημιουργείται, όλα μεταμορφώνονται.",
+        "es": "Nada se pierde, nada se crea, todo se transforma.",
+        "pt": "Nada se perde, nada se cria, tudo se transforma.",
+        "de": "Nichts geht verloren, nichts entsteht, alles wandelt sich."
+      }
+    },
+    {
+      "id": "fr_016",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "literature",
+      "tags": ["fr", "classic"],
+      "attribution": {
+        "author": "Jean-Paul Sartre",
+        "work": "Huis clos",
+        "year": 1944,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "L’enfer, c’est les autres."
+      },
+      "localized": {
+        "fr": "L’enfer, c’est les autres.",
+        "en": "Hell is other people.",
+        "el": "Η κόλαση είναι οι άλλοι.",
+        "es": "El infierno son los otros.",
+        "pt": "O inferno são os outros.",
+        "de": "Die Hölle, das sind die Anderen."
+      }
+    },
+    {
+      "id": "fr_017",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On n’est jamais mieux servi que par soi-même."
+      },
+      "localized": {
+        "fr": "On n’est jamais mieux servi que par soi-même.",
+        "en": "If you want it done right, do it yourself.",
+        "el": "Κανείς δεν σε εξυπηρετεί καλύτερα από τον εαυτό σου.",
+        "es": "Nadie te sirve mejor que tú mismo.",
+        "pt": "Ninguém te serve melhor do que tu mesmo.",
+        "de": "Am besten bedient man sich selbst."
+      }
+    },
+    {
+      "id": "fr_018",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Petit à petit, l’oiseau fait son nid."
+      },
+      "localized": {
+        "fr": "Petit à petit, l’oiseau fait son nid.",
+        "en": "Little by little, the bird builds its nest.",
+        "el": "Σιγά σιγά, το πουλί φτιάχνει τη φωλιά του.",
+        "es": "Poco a poco, el pájaro hace su nido.",
+        "pt": "Pouco a pouco, o pássaro faz o ninho.",
+        "de": "Nach und nach baut der Vogel sein Nest."
+      }
+    },
+    {
+      "id": "fr_019",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "hope",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Après la pluie, le beau temps."
+      },
+      "localized": {
+        "fr": "Après la pluie, le beau temps.",
+        "en": "After the rain comes sunshine.",
+        "el": "Μετά τη βροχή, λιακάδα.",
+        "es": "Después de la lluvia, sale el sol.",
+        "pt": "Depois da chuva vem o sol.",
+        "de": "Nach dem Regen kommt Sonnenschein."
+      }
+    },
+    {
+      "id": "fr_020",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "classic", "proverbial"],
+      "attribution": {
+        "author": "Jean de La Fontaine",
+        "work": "Le Lièvre et la Tortue",
+        "year": 1668,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Rien ne sert de courir, il faut partir à point."
+      },
+      "localized": {
+        "fr": "Rien ne sert de courir, il faut partir à point.",
+        "en": "There’s no use running; you must start on time.",
+        "el": "Δεν ωφελεί να τρέχεις, πρέπει να ξεκινάς στην ώρα σου.",
+        "es": "De nada sirve correr; hay que salir a tiempo.",
+        "pt": "Não adianta correr; é preciso partir a tempo.",
+        "de": "Es nützt nichts zu rennen; man muss rechtzeitig aufbrechen."
+      }
+    },
+    {
+      "id": "fr_021",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["fr", "heart", "classic"],
+      "attribution": {
+        "author": "Antoine de Saint-Exupéry",
+        "work": "Le Petit Prince",
+        "year": 1943,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On ne voit bien qu’avec le cœur."
+      },
+      "localized": {
+        "fr": "On ne voit bien qu’avec le cœur.",
+        "en": "It is only with the heart that one can see rightly.",
+        "el": "Μόνο με την καρδιά βλέπει κανείς σωστά.",
+        "es": "Solo se ve bien con el corazón.",
+        "pt": "Só se vê bem com o coração.",
+        "de": "Man sieht nur mit dem Herzen gut."
+      }
+    },
+    {
+      "id": "fr_022",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["fr", "rights", "classic"],
+      "attribution": {
+        "author": "Déclaration des droits de l’homme et du citoyen",
+        "work": "Article 4",
+        "year": 1789,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "La liberté consiste à pouvoir faire tout ce qui ne nuit pas à autrui."
+      },
+      "localized": {
+        "fr": "La liberté consiste à pouvoir faire tout ce qui ne nuit pas à autrui.",
+        "en": "Freedom is the right to do anything that does not harm others.",
+        "el": "Η ελευθερία είναι να μπορείς να κάνεις ό,τι δεν βλάπτει τους άλλους.",
+        "es": "La libertad es poder hacer todo lo que no perjudique a los demás.",
+        "pt": "A liberdade é poder fazer tudo o que não prejudica os outros.",
+        "de": "Freiheit ist, alles tun zu können, was anderen nicht schadet."
+      }
+    },
+    {
+      "id": "fr_023",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "poetry",
+      "tags": ["fr", "freedom", "classic"],
+      "attribution": {
+        "author": "Paul Éluard",
+        "work": "Liberté",
+        "year": 1942,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Liberté, j’écris ton nom."
+      },
+      "localized": {
+        "fr": "Liberté, j’écris ton nom.",
+        "en": "Freedom, I write your name.",
+        "el": "Ελευθερία, γράφω το όνομά σου.",
+        "es": "Libertad, escribo tu nombre.",
+        "pt": "Liberdade, escrevo o teu nome.",
+        "de": "Freiheit, ich schreibe deinen Namen."
+      }
+    },
+    {
+      "id": "fr_024",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "poetry",
+      "tags": ["fr", "identity", "classic"],
+      "attribution": {
+        "author": "Arthur Rimbaud",
+        "work": "Lettre du voyant",
+        "year": 1871,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Je est un autre."
+      },
+      "localized": {
+        "fr": "Je est un autre.",
+        "en": "I is another.",
+        "el": "Το εγώ είναι ένας άλλος.",
+        "es": "Yo es otro.",
+        "pt": "Eu é um outro.",
+        "de": "Ich ist ein Anderer."
+      }
+    },
+    {
+      "id": "fr_025",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "agency"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On a toujours le choix."
+      },
+      "localized": {
+        "fr": "On a toujours le choix.",
+        "en": "We always have a choice.",
+        "el": "Πάντα έχουμε επιλογή.",
+        "es": "Siempre tenemos elección.",
+        "pt": "Temos sempre escolha.",
+        "de": "Wir haben immer die Wahl."
+      }
+    },
+    {
+      "id": "fr_026",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["fr", "joy", "home"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "De la joie, ici."
+      },
+      "localized": {
+        "fr": "De la joie, ici.",
+        "en": "Joy lives here.",
+        "el": "Εδώ έχει χαρά.",
+        "es": "Aquí hay alegría.",
+        "pt": "Aqui há alegria.",
+        "de": "Hier ist Freude."
+      }
+    },
+    {
+      "id": "fr_027",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "food", "laughter"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On mange, on rit."
+      },
+      "localized": {
+        "fr": "On mange, on rit.",
+        "en": "We eat, we laugh.",
+        "el": "Τρώμε, γελάμε.",
+        "es": "Comemos, reímos.",
+        "pt": "Comemos, rimos.",
+        "de": "Wir essen, wir lachen."
+      }
+    },
+    {
+      "id": "fr_028",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "laughter", "table"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Des rires à la table."
+      },
+      "localized": {
+        "fr": "Des rires à la table.",
+        "en": "Laughter at the table.",
+        "el": "Γέλια στο τραπέζι.",
+        "es": "Risas en la mesa.",
+        "pt": "Risos à mesa.",
+        "de": "Lachen am Tisch."
+      }
+    },
+    {
+      "id": "fr_029",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "friends",
+      "tags": ["fr", "friends", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "De bons vivants."
+      },
+      "localized": {
+        "fr": "De bons vivants.",
+        "en": "Good-living souls.",
+        "el": "Καλοζωιστές.",
+        "es": "Buenos vividores.",
+        "pt": "Bons vivants.",
+        "de": "Genießer."
+      }
+    },
+    {
+      "id": "fr_030",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "memory",
+      "tags": ["fr", "memory"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Une soirée qui compte."
+      },
+      "localized": {
+        "fr": "Une soirée qui compte.",
+        "en": "A night that matters.",
+        "el": "Μια βραδιά που μετράει.",
+        "es": "Una noche que cuenta.",
+        "pt": "Uma noite que conta.",
+        "de": "Ein Abend, der zählt."
+      }
+    },
+    {
+      "id": "fr_031",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["fr", "heart", "classic"],
+      "attribution": {
+        "author": "Blaise Pascal",
+        "work": "Pensées",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le cœur a ses raisons que la raison ne connaît point."
+      },
+      "localized": {
+        "fr": "Le cœur a ses raisons que la raison ne connaît point.",
+        "en": "The heart has its reasons which reason does not know.",
+        "el": "Η καρδιά έχει τους λόγους της που η λογική δεν γνωρίζει.",
+        "es": "El corazón tiene razones que la razón no entiende.",
+        "pt": "O coração tem razões que a razão desconhece.",
+        "de": "Das Herz hat seine Gründe, die der Verstand nicht kennt."
+      }
+    },
+    {
+      "id": "fr_032",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "poetry",
+      "tags": ["fr", "love", "classic"],
+      "attribution": {
+        "author": "Alphonse de Lamartine",
+        "work": "Méditations poétiques",
+        "year": 1820,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Un seul être vous manque, et tout est dépeuplé."
+      },
+      "localized": {
+        "fr": "Un seul être vous manque, et tout est dépeuplé.",
+        "en": "One being is missing, and everything feels deserted.",
+        "el": "Ένα μόνο πρόσωπο λείπει, και όλα ερημώνουν.",
+        "es": "Te falta un solo ser, y todo queda desierto.",
+        "pt": "Falta-te um só ser, e tudo fica deserto.",
+        "de": "Ein einziger Mensch fehlt, und alles ist verödet."
+      }
+    },
+    {
+      "id": "fr_033",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "science",
+      "tags": ["fr", "science", "classic"],
+      "attribution": {
+        "author": "Louis Pasteur",
+        "work": "Aphorisme attribué",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le hasard ne favorise que les esprits préparés."
+      },
+      "localized": {
+        "fr": "Le hasard ne favorise que les esprits préparés.",
+        "en": "Chance favors only the prepared mind.",
+        "el": "Η τύχη ευνοεί μόνο τα προετοιμασμένα μυαλά.",
+        "es": "La suerte favorece solo a las mentes preparadas.",
+        "pt": "A sorte favorece apenas as mentes preparadas.",
+        "de": "Der Zufall begünstigt nur den vorbereiteten Geist."
+      }
+    },
+    {
+      "id": "fr_034",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "poetry",
+      "tags": ["fr", "youth", "classic"],
+      "attribution": {
+        "author": "Arthur Rimbaud",
+        "work": "Roman",
+        "year": 1870,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On n’est pas sérieux, quand on a dix-sept ans."
+      },
+      "localized": {
+        "fr": "On n’est pas sérieux, quand on a dix-sept ans.",
+        "en": "One is not serious when one is seventeen.",
+        "el": "Δεν είσαι σοβαρός όταν είσαι δεκαεπτά.",
+        "es": "No se es serio cuando se tienen diecisiete años.",
+        "pt": "Não se é sério quando se tem dezessete anos.",
+        "de": "Mit siebzehn ist man nicht ernst."
+      }
+    },
+    {
+      "id": "fr_035",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["fr", "people", "classic"],
+      "attribution": {
+        "author": "Antoine de Saint-Exupéry",
+        "work": "Terre des hommes",
+        "year": 1939,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Il n’y a qu’un luxe : les relations humaines."
+      },
+      "localized": {
+        "fr": "Il n’y a qu’un luxe : les relations humaines.",
+        "en": "There is only one luxury: human relationships.",
+        "el": "Υπάρχει μόνο μία πολυτέλεια: οι ανθρώπινες σχέσεις.",
+        "es": "Solo hay un lujo: las relaciones humanas.",
+        "pt": "Só há um luxo: as relações humanas.",
+        "de": "Es gibt nur einen Luxus: menschliche Beziehungen."
+      }
+    },
+    {
+      "id": "fr_036",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["fr", "perspective"],
+      "attribution": {
+        "author": "Marcel Proust",
+        "work": "Aphorisme attribué",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le vrai voyage, c’est changer de regard."
+      },
+      "localized": {
+        "fr": "Le vrai voyage, c’est changer de regard.",
+        "en": "The true journey is to change your perspective.",
+        "el": "Το αληθινό ταξίδι είναι να αλλάξεις ματιά.",
+        "es": "El verdadero viaje es cambiar la mirada.",
+        "pt": "A verdadeira viagem é mudar o olhar.",
+        "de": "Die wahre Reise ist, den Blick zu ändern."
+      }
+    },
+    {
+      "id": "fr_037",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "team",
+      "tags": ["fr", "expression", "team"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On ne change pas une équipe qui gagne."
+      },
+      "localized": {
+        "fr": "On ne change pas une équipe qui gagne.",
+        "en": "Don’t change a winning team.",
+        "el": "Δεν αλλάζεις μια ομάδα που κερδίζει.",
+        "es": "No se cambia un equipo ganador.",
+        "pt": "Não se muda uma equipa que ganha.",
+        "de": "Ein Siegerteam wechselt man nicht."
+      }
+    },
+    {
+      "id": "fr_038",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Qui vivra verra."
+      },
+      "localized": {
+        "fr": "Qui vivra verra.",
+        "en": "Time will tell.",
+        "el": "Ο χρόνος θα δείξει.",
+        "es": "El tiempo dirá.",
+        "pt": "O tempo dirá.",
+        "de": "Die Zeit wird es zeigen."
+      }
+    },
+    {
+      "id": "fr_039",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Tout vient à point à qui sait attendre."
+      },
+      "localized": {
+        "fr": "Tout vient à point à qui sait attendre.",
+        "en": "All comes in time to those who wait.",
+        "el": "Όλα έρχονται σε όποιον ξέρει να περιμένει.",
+        "es": "Todo llega a quien sabe esperar.",
+        "pt": "Tudo chega a quem sabe esperar.",
+        "de": "Alles kommt zu dem, der warten kann."
+      }
+    },
+    {
+      "id": "fr_040",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["fr", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Mieux vaut tard que jamais."
+      },
+      "localized": {
+        "fr": "Mieux vaut tard que jamais.",
+        "en": "Better late than never.",
+        "el": "Κάλλιο αργά παρά ποτέ.",
+        "es": "Más vale tarde que nunca.",
+        "pt": "Antes tarde do que nunca.",
+        "de": "Besser spät als nie."
+      }
+    },
+    {
+      "id": "fr_041",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "togetherness",
+      "tags": ["fr", "proverb", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Qui se ressemble s’assemble."
+      },
+      "localized": {
+        "fr": "Qui se ressemble s’assemble.",
+        "en": "Birds of a feather flock together.",
+        "el": "Όμοιος τον όμοιο βρίσκει.",
+        "es": "Dios los cría y ellos se juntan.",
+        "pt": "Diz-me com quem andas e dir-te-ei quem és.",
+        "de": "Gleich und gleich gesellt sich gern."
+      }
+    },
+    {
+      "id": "fr_042",
+      "type": "proverb",
+      "tone": "soft",
+      "category": "team",
+      "tags": ["fr", "proverb", "team"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Chacun apporte sa pierre à l’édifice."
+      },
+      "localized": {
+        "fr": "Chacun apporte sa pierre à l’édifice.",
+        "en": "Everyone adds their stone to the building.",
+        "el": "Ο καθένας βάζει το λιθαράκι του.",
+        "es": "Cada uno aporta su granito de arena.",
+        "pt": "Cada um dá a sua contribuição.",
+        "de": "Jeder trägt seinen Teil bei."
+      }
+    },
+    {
+      "id": "fr_043",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "humor",
+      "tags": ["fr", "expression", "fun"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ce n’est pas la mer à boire."
+      },
+      "localized": {
+        "fr": "Ce n’est pas la mer à boire.",
+        "en": "It’s not the end of the world.",
+        "el": "Δεν είναι και το τέλος του κόσμου.",
+        "es": "No es para tanto.",
+        "pt": "Não é o fim do mundo.",
+        "de": "Das ist kein Weltuntergang."
+      }
+    },
+    {
+      "id": "fr_044",
+      "type": "proverb",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "proverb", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverbe",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "L’appétit vient en mangeant."
+      },
+      "localized": {
+        "fr": "L’appétit vient en mangeant.",
+        "en": "Appetite comes with eating.",
+        "el": "Η όρεξη έρχεται τρώγοντας.",
+        "es": "El apetito viene comiendo.",
+        "pt": "O apetite vem comendo.",
+        "de": "Der Appetit kommt beim Essen."
+      }
+    },
+    {
+      "id": "fr_045",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "friends",
+      "tags": ["fr", "friends", "night"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ce soir, c’est nous."
+      },
+      "localized": {
+        "fr": "Ce soir, c’est nous.",
+        "en": "Tonight, it’s us.",
+        "el": "Απόψε είμαστε εμείς.",
+        "es": "Esta noche, somos nosotros.",
+        "pt": "Hoje à noite, somos nós.",
+        "de": "Heute Abend sind wir dran."
+      }
+    },
+    {
+      "id": "fr_046",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "stories",
+      "tags": ["fr", "stories", "table"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Une table, mille histoires."
+      },
+      "localized": {
+        "fr": "Une table, mille histoires.",
+        "en": "One table, a thousand stories.",
+        "el": "Ένα τραπέζι, χίλιες ιστορίες.",
+        "es": "Una mesa, mil historias.",
+        "pt": "Uma mesa, mil histórias.",
+        "de": "Ein Tisch, tausend Geschichten."
+      }
+    },
+    {
+      "id": "fr_047",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "friends",
+      "tags": ["fr", "friends", "trust"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On se dit tout."
+      },
+      "localized": {
+        "fr": "On se dit tout.",
+        "en": "We tell each other everything.",
+        "el": "Τα λέμε όλα.",
+        "es": "Nos lo contamos todo.",
+        "pt": "Contamos tudo.",
+        "de": "Wir sagen uns alles."
+      }
+    },
+    {
+      "id": "fr_048",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "mood",
+      "tags": ["fr", "goodvibes"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Que du bon."
+      },
+      "localized": {
+        "fr": "Que du bon.",
+        "en": "Only good things.",
+        "el": "Μόνο καλά.",
+        "es": "Solo cosas buenas.",
+        "pt": "Só coisas boas.",
+        "de": "Nur Gutes."
+      }
+    },
+    {
+      "id": "fr_049",
+      "type": "slogan",
+      "tone": "soft",
+      "category": "solidarity",
+      "tags": ["fr", "solidarity"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Slogan",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Du pain et des roses."
+      },
+      "localized": {
+        "fr": "Du pain et des roses.",
+        "en": "Bread and roses.",
+        "el": "Ψωμί και τριαντάφυλλα.",
+        "es": "Pan y rosas.",
+        "pt": "Pão e rosas.",
+        "de": "Brot und Rosen."
+      }
+    },
+    {
+      "id": "fr_050",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["fr", "food", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ici, on se régale."
+      },
+      "localized": {
+        "fr": "Ici, on se régale.",
+        "en": "Here, we feast.",
+        "el": "Εδώ απολαμβάνουμε.",
+        "es": "Aquí nos damos un festín.",
+        "pt": "Aqui a gente se delicia.",
+        "de": "Hier lassen wir es uns schmecken."
+      }
+    },
+    {
+      "id": "fr_051",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["fr", "family", "hosting", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Famille choisie, table ouverte."
+      },
+      "localized": {
+        "fr": "Famille choisie, table ouverte.",
+        "en": "Chosen family, open table.",
+        "el": "Επιλεγμένη οικογένεια, ανοιχτό τραπέζι.",
+        "es": "Familia elegida, mesa abierta.",
+        "pt": "Família escolhida, mesa aberta.",
+        "de": "Gewählte Familie, offener Tisch."
+      }
+    },
+    {
+      "id": "fr_052",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["fr", "love", "inclusion", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Slogan",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ici, l’amour n’a pas de genre."
+      },
+      "localized": {
+        "fr": "Ici, l’amour n’a pas de genre.",
+        "en": "Here, love has no gender.",
+        "el": "Εδώ, η αγάπη δεν έχει φύλο.",
+        "es": "Aquí, el amor no tiene género.",
+        "pt": "Aqui, o amor não tem gênero.",
+        "de": "Hier hat Liebe kein Geschlecht."
+      }
+    },
+    {
+      "id": "fr_053",
+      "type": "micro_phrase",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["fr", "pride", "home", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Fierté à la maison."
+      },
+      "localized": {
+        "fr": "Fierté à la maison.",
+        "en": "Pride at home.",
+        "el": "Υπερηφάνεια στο σπίτι.",
+        "es": "Orgullo en casa.",
+        "pt": "Orgulho em casa.",
+        "de": "Stolz zu Hause."
+      }
+    },
+    {
+      "id": "fr_054",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "lgbtq",
+      "tags": ["fr", "joy", "rainbow", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Micro",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Plus de couleurs, plus de joie."
+      },
+      "localized": {
+        "fr": "Plus de couleurs, plus de joie.",
+        "en": "More colors, more joy.",
+        "el": "Περισσότερα χρώματα, περισσότερη χαρά.",
+        "es": "Más colores, más alegría.",
+        "pt": "Mais cores, mais alegria.",
+        "de": "Mehr Farben, mehr Freude."
+      }
+    },
+    {
+      "id": "fr_055",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "lgbtq",
+      "tags": ["fr", "table", "rainbow", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Micro",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Arc-en-ciel sur la table."
+      },
+      "localized": {
+        "fr": "Arc-en-ciel sur la table.",
+        "en": "Rainbow on the table.",
+        "el": "Ουράνιο τόξο στο τραπέζι.",
+        "es": "Arcoíris en la mesa.",
+        "pt": "Arco-íris à mesa.",
+        "de": "Regenbogen auf dem Tisch."
+      }
+    },
+    {
+      "id": "fr_056",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["fr", "love", "authenticity", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Micro",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On s’aime comme on est."
+      },
+      "localized": {
+        "fr": "On s’aime comme on est.",
+        "en": "We love ourselves as we are.",
+        "el": "Αγαπιόμαστε όπως είμαστε.",
+        "es": "Nos amamos tal como somos.",
+        "pt": "Amamo-nos como somos.",
+        "de": "Wir lieben uns, wie wir sind."
+      }
+    },
+    {
+      "id": "fr_057",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["fr", "identity", "gender", "lgbtq"],
+      "attribution": {
+        "author": "Simone de Beauvoir",
+        "work": "Le Deuxième Sexe",
+        "year": 1949,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On ne naît pas femme : on le devient."
+      },
+      "localized": {
+        "fr": "On ne naît pas femme : on le devient.",
+        "en": "One is not born, but rather becomes, a woman.",
+        "el": "Δεν γεννιέσαι γυναίκα, γίνεσαι.",
+        "es": "No se nace mujer: se llega a serlo.",
+        "pt": "Não se nasce mulher: torna-se.",
+        "de": "Man wird nicht als Frau geboren: man wird es."
+      }
+    },
+    {
+      "id": "fr_058",
+      "type": "slogan",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["fr", "history", "activism", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": "ACT UP (slogan) ",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le silence tue."
+      },
+      "localized": {
+        "fr": "Le silence tue.",
+        "en": "Silence kills.",
+        "el": "Η σιωπή σκοτώνει.",
+        "es": "El silencio mata.",
+        "pt": "O silêncio mata.",
+        "de": "Schweigen tötet."
+      }
+    },
+    {
+      "id": "fr_059",
+      "type": "micro_phrase",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["fr", "love", "freedom", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Micro",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ici, chacun aime qui il veut."
+      },
+      "localized": {
+        "fr": "Ici, chacun aime qui il veut.",
+        "en": "Here, everyone loves who they want.",
+        "el": "Εδώ, ο καθένας αγαπά όποιον θέλει.",
+        "es": "Aquí, cada uno ama a quien quiere.",
+        "pt": "Aqui, cada um ama quem quiser.",
+        "de": "Hier liebt jeder, wen er will."
+      }
+    },
+    {
+      "id": "fr_060",
+      "type": "micro_phrase",
+      "tone": "joyful",
+      "category": "lgbtq",
+      "tags": ["fr", "joy", "queer", "lgbtq"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Joie queer."
+      },
+      "localized": {
+        "fr": "Joie queer.",
+        "en": "Queer joy.",
+        "el": "Queer χαρά.",
+        "es": "Alegría queer.",
+        "pt": "Alegria queer.",
+        "de": "Queere Freude."
+      }
+    },
+    {
+      "id": "en_001",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "literature",
+      "tags": ["en", "music", "love", "classic"],
+      "attribution": {
+        "author": "William Shakespeare",
+        "work": "Twelfth Night",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "If music be the food of love, play on."
+      },
+      "localized": {
+        "fr": "Si la musique est la nourriture de l’amour, jouez encore.",
+        "en": "If music be the food of love, play on.",
+        "el": "Αν η μουσική είναι τροφή της αγάπης, παίξτε κι άλλο.",
+        "es": "Si la música es el alimento del amor, tocad.",
+        "pt": "Se a música é o alimento do amor, continuem a tocar.",
+        "de": "Wenn Musik die Nahrung der Liebe ist, spielt weiter."
+      }
+    },
+    {
+      "id": "en_002",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["en", "food", "classic"],
+      "attribution": {
+        "author": "George Bernard Shaw",
+        "work": "Man and Superman",
+        "year": 1903,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "There is no love sincerer than the love of food."
+      },
+      "localized": {
+        "fr": "Il n’y a pas d’amour plus sincère que l’amour de la nourriture.",
+        "en": "There is no love sincerer than the love of food.",
+        "el": "Δεν υπάρχει πιο ειλικρινής αγάπη από την αγάπη για το φαγητό.",
+        "es": "No hay amor más sincero que el amor por la comida.",
+        "pt": "Não há amor mais sincero do que o amor pela comida.",
+        "de": "Es gibt keine aufrichtigere Liebe als die Liebe zum Essen."
+      }
+    },
+    {
+      "id": "en_003",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "togetherness",
+      "tags": ["en", "togetherness", "team"],
+      "attribution": {
+        "author": "Helen Keller",
+        "work": "Citation attribuée",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Alone we can do so little; together we can do so much."
+      },
+      "localized": {
+        "fr": "Seuls, nous pouvons faire si peu ; ensemble, nous pouvons faire tant.",
+        "en": "Alone we can do so little; together we can do so much.",
+        "el": "Μόνοι μας μπορούμε να κάνουμε τόσο λίγα, μαζί μπορούμε να κάνουμε τόσα πολλά.",
+        "es": "Solos podemos hacer muy poco; juntos podemos hacer mucho.",
+        "pt": "Sozinhos podemos fazer tão pouco; juntos podemos fazer tanto.",
+        "de": "Allein können wir so wenig tun; gemeinsam können wir so viel erreichen."
+      }
+    },
+    {
+      "id": "en_004",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "sharing",
+      "tags": ["en", "sharing", "togetherness"],
+      "attribution": {
+        "author": "Into the Wild (film)",
+        "work": "Screenplay line",
+        "year": 2007,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Happiness is only real when shared."
+      },
+      "localized": {
+        "fr": "Le bonheur n’est réel que lorsqu’il est partagé.",
+        "en": "Happiness is only real when shared.",
+        "el": "Η ευτυχία είναι αληθινή μόνο όταν μοιράζεται.",
+        "es": "La felicidad solo es real cuando se comparte.",
+        "pt": "A felicidade só é real quando é partilhada.",
+        "de": "Glück ist nur echt, wenn man es teilt."
+      }
+    },
+    {
+      "id": "en_005",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["en", "wisdom", "classic"],
+      "attribution": {
+        "author": "Benjamin Franklin",
+        "work": "Proverb",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Well done is better than well said."
+      },
+      "localized": {
+        "fr": "Bien faire vaut mieux que bien dire.",
+        "en": "Well done is better than well said.",
+        "el": "Το καλά πράττειν είναι καλύτερο από το καλά λέγειν.",
+        "es": "Más vale hacer bien que decir bien.",
+        "pt": "Fazer bem vale mais do que falar bem.",
+        "de": "Gut getan ist besser als gut gesagt."
+      }
+    },
+    {
+      "id": "en_006",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["en", "food", "mind"],
+      "attribution": {
+        "author": "Virginia Woolf",
+        "work": "A Room of One's Own (attrib.)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "en",
+        "text": "One cannot think well, love well, sleep well, if one has not dined well."
+      },
+      "localized": {
+        "fr": "On ne peut ni bien penser, ni bien aimer, ni bien dormir si l’on n’a pas bien dîné.",
+        "en": "One cannot think well, love well, sleep well, if one has not dined well.",
+        "el": "Δεν μπορείς να σκέφτεσαι, να αγαπάς, να κοιμάσαι καλά, αν δεν έχεις δειπνήσει καλά.",
+        "es": "No se puede pensar bien, amar bien, dormir bien, si no se ha cenado bien.",
+        "pt": "Não se pode pensar bem, amar bem, dormir bem, se não se jantou bem.",
+        "de": "Man kann nicht gut denken, lieben, schlafen, wenn man nicht gut gegessen hat."
+      }
+    },
+    {
+      "id": "en_007",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "togetherness",
+      "tags": ["en", "proverb", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "The more, the merrier."
+      },
+      "localized": {
+        "fr": "Plus on est de fous, plus on rit.",
+        "en": "The more, the merrier.",
+        "el": "Όσο περισσότεροι, τόσο καλύτερα.",
+        "es": "Cuantos más, mejor.",
+        "pt": "Quanto mais, melhor.",
+        "de": "Je mehr, desto besser."
+      }
+    },
+    {
+      "id": "en_008",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hosting",
+      "tags": ["en", "hosting", "welcome"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Make yourself at home."
+      },
+      "localized": {
+        "fr": "Fais comme chez toi.",
+        "en": "Make yourself at home.",
+        "el": "Νιώσε σαν στο σπίτι σου.",
+        "es": "Siéntete como en casa.",
+        "pt": "Sinta-se em casa.",
+        "de": "Fühl dich wie zu Hause."
+      }
+    },
+    {
+      "id": "en_011",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "love"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Slogan",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Love is love."
+      },
+      "localized": {
+        "fr": "L’amour est l’amour.",
+        "en": "Love is love.",
+        "el": "Η αγάπη είναι αγάπη.",
+        "es": "El amor es amor.",
+        "pt": "Amor é amor.",
+        "de": "Liebe ist Liebe."
+      }
+    },
+    {
+      "id": "en_012",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "pride"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Chant",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "We’re here. We’re queer."
+      },
+      "localized": {
+        "fr": "On est là. On est queer.",
+        "en": "We’re here. We’re queer.",
+        "el": "Είμαστε εδώ. Είμαστε queer.",
+        "es": "Estamos aquí. Somos queer.",
+        "pt": "Estamos aqui. Somos queer.",
+        "de": "Wir sind hier. Wir sind queer."
+      }
+    },
+    {
+      "id": "en_013",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "hope"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Campaign slogan",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "It gets better."
+      },
+      "localized": {
+        "fr": "Ça va aller mieux.",
+        "en": "It gets better.",
+        "el": "Θα γίνει καλύτερα.",
+        "es": "Mejora con el tiempo.",
+        "pt": "Vai melhorar.",
+        "de": "Es wird besser."
+      }
+    },
+    {
+      "id": "en_014",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "hope"],
+      "attribution": {
+        "author": "Harvey Milk",
+        "work": "Quote (commonly cited)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Hope will never be silent."
+      },
+      "localized": {
+        "fr": "L’espoir ne sera jamais silencieux.",
+        "en": "Hope will never be silent.",
+        "el": "Η ελπίδα δεν θα είναι ποτέ σιωπηλή.",
+        "es": "La esperanza nunca será silenciosa.",
+        "pt": "A esperança nunca será silenciosa.",
+        "de": "Hoffnung wird niemals schweigen."
+      }
+    },
+    {
+      "id": "en_015",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "history"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "ACT UP slogan",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Silence = Death."
+      },
+      "localized": {
+        "fr": "Le silence = la mort.",
+        "en": "Silence = Death.",
+        "el": "Σιωπή = Θάνατος.",
+        "es": "Silencio = Muerte.",
+        "pt": "Silêncio = Morte.",
+        "de": "Schweigen = Tod."
+      }
+    },
+    {
+      "id": "en_016",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "selflove"],
+      "attribution": {
+        "author": "RuPaul",
+        "work": "Catchphrase",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "If you can't love yourself, how in the hell you gonna love somebody else?"
+      },
+      "localized": {
+        "fr": "Si tu ne peux pas t’aimer, comment aimer quelqu’un d’autre ?",
+        "en": "If you can't love yourself, how in the hell you gonna love somebody else?",
+        "el": "Αν δεν μπορείς να αγαπήσεις τον εαυτό σου, πώς θα αγαπήσεις κάποιον άλλον;",
+        "es": "Si no puedes amarte, ¿cómo vas a amar a alguien más?",
+        "pt": "Se não consegues amar-te, como vais amar outra pessoa?",
+        "de": "Wenn du dich nicht lieben kannst, wie willst du jemand anderen lieben?"
+      }
+    },
+    {
+      "id": "en_017",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "care"],
+      "attribution": {
+        "author": "Audre Lorde",
+        "work": "A Burst of Light",
+        "year": 1988,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Caring for myself is not self-indulgence, it is self-preservation."
+      },
+      "localized": {
+        "fr": "Prendre soin de moi n’est pas de l’indulgence : c’est de la préservation.",
+        "en": "Caring for myself is not self-indulgence, it is self-preservation.",
+        "el": "Το να φροντίζω τον εαυτό μου δεν είναι καλοπέραση, είναι αυτοσυντήρηση.",
+        "es": "Cuidarme no es indulgencia: es supervivencia.",
+        "pt": "Cuidar de mim não é indulgência: é autopreservação.",
+        "de": "Für mich zu sorgen ist keine Verwöhnung, sondern Selbstschutz."
+      }
+    },
+    {
+      "id": "en_018",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "lgbtq",
+      "tags": ["en", "lgbtq", "love"],
+      "attribution": {
+        "author": "James Baldwin",
+        "work": "The Fire Next Time",
+        "year": 1963,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Love takes off the masks we fear we cannot live without."
+      },
+      "localized": {
+        "fr": "L’amour ôte les masques dont on croit ne pas pouvoir se passer.",
+        "en": "Love takes off the masks we fear we cannot live without.",
+        "el": "Η αγάπη βγάζει τις μάσκες που φοβόμαστε πως δεν ζούμε χωρίς αυτές.",
+        "es": "El amor se quita las máscaras que tememos no poder dejar.",
+        "pt": "O amor tira as máscaras que tememos não poder dispensar.",
+        "de": "Liebe nimmt die Masken ab, ohne die wir zu leben fürchten."
+      }
+    },
+    {
+      "id": "en_019",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "friends",
+      "tags": ["en", "friends", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Good friends, good food, good times."
+      },
+      "localized": {
+        "fr": "Bons amis, bon repas, bons moments.",
+        "en": "Good friends, good food, good times.",
+        "el": "Καλοί φίλοι, καλό φαγητό, καλές στιγμές.",
+        "es": "Buenos amigos, buena comida, buenos momentos.",
+        "pt": "Bons amigos, boa comida, bons momentos.",
+        "de": "Gute Freunde, gutes Essen, gute Zeiten."
+      }
+    },
+    {
+      "id": "en_020",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "friends",
+      "tags": ["en", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "en",
+        "text": "The feast is in the company."
+      },
+      "localized": {
+        "fr": "Le festin, c’est la compagnie.",
+        "en": "The feast is in the company.",
+        "el": "Το γλέντι είναι στην παρέα.",
+        "es": "El banquete está en la compañía.",
+        "pt": "O banquete está na companhia.",
+        "de": "Das Fest steckt in der Gesellschaft."
+      }
+    },
+    {
+      "id": "en_009",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["en", "hope", "classic"],
+      "attribution": {
+        "author": "Oscar Wilde",
+        "work": "Lady Windermere's Fan (attrib.)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "en",
+        "text": "We are all in the gutter, but some of us are looking at the stars."
+      },
+      "localized": {
+        "fr": "Nous sommes tous dans le caniveau, mais certains regardent les étoiles.",
+        "en": "We are all in the gutter, but some of us are looking at the stars.",
+        "el": "Είμαστε όλοι στο χαντάκι, αλλά κάποιοι κοιτάμε τα αστέρια.",
+        "es": "Todos estamos en la cuneta, pero algunos miramos las estrellas.",
+        "pt": "Estamos todos na sarjeta, mas alguns olhamos as estrelas.",
+        "de": "Wir sind alle in der Gosse, aber einige von uns blicken zu den Sternen."
+      }
+    },
+    {
+      "id": "en_010",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "togetherness",
+      "tags": ["en", "togetherness", "classic"],
+      "attribution": {
+        "author": "John Donne",
+        "work": "Devotions upon Emergent Occasions",
+        "year": 1624,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "No man is an island."
+      },
+      "localized": {
+        "fr": "Nul homme n’est une île.",
+        "en": "No man is an island.",
+        "el": "Κανείς δεν είναι νησί.",
+        "es": "Ningún hombre es una isla.",
+        "pt": "Nenhum homem é uma ilha.",
+        "de": "Kein Mensch ist eine Insel."
+      }
+    },
+    {
+      "id": "es_001",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["es", "meal", "classic"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Buen provecho."
+      },
+      "localized": {
+        "fr": "Bon appétit.",
+        "en": "Enjoy your meal.",
+        "el": "Καλή όρεξη.",
+        "es": "Buen provecho.",
+        "pt": "Bom apetite.",
+        "de": "Guten Appetit."
+      }
+    },
+    {
+      "id": "es_002",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hosting",
+      "tags": ["es", "hosting", "welcome"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Mi casa es tu casa."
+      },
+      "localized": {
+        "fr": "Ma maison est ta maison.",
+        "en": "My home is your home.",
+        "el": "Το σπίτι μου είναι σπίτι σου.",
+        "es": "Mi casa es tu casa.",
+        "pt": "A minha casa é a tua casa.",
+        "de": "Mein Haus ist dein Haus."
+      }
+    },
+    {
+      "id": "es_003",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["es", "proverb", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Barriga llena, corazón contento."
+      },
+      "localized": {
+        "fr": "Ventre plein, cœur content.",
+        "en": "Full belly, happy heart.",
+        "el": "Χορτάτη κοιλιά, χαρούμενη καρδιά.",
+        "es": "Barriga llena, corazón contento.",
+        "pt": "Barriga cheia, coração contente.",
+        "de": "Voller Bauch, frohes Herz."
+      }
+    },
+    {
+      "id": "es_004",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "hosting",
+      "tags": ["es", "proverb", "generosity"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Donde comen dos, comen tres."
+      },
+      "localized": {
+        "fr": "Là où deux mangent, trois mangent.",
+        "en": "Where two can eat, three can eat.",
+        "el": "Όπου τρώνε δύο, τρώνε τρεις.",
+        "es": "Donde comen dos, comen tres.",
+        "pt": "Onde comem dois, comem três.",
+        "de": "Wo zwei essen, essen drei."
+      }
+    },
+    {
+      "id": "es_005",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "meal",
+      "tags": ["es", "proverb", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "A buen hambre no hay pan duro."
+      },
+      "localized": {
+        "fr": "Quand on a faim, aucun pain n’est dur.",
+        "en": "When you’re hungry, no bread is too hard.",
+        "el": "Όταν πεινάς, κανένα ψωμί δεν είναι σκληρό.",
+        "es": "A buen hambre no hay pan duro.",
+        "pt": "Com fome, não há pão duro.",
+        "de": "Mit Hunger ist kein Brot zu hart."
+      }
+    },
+    {
+      "id": "es_006",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hope",
+      "tags": ["es", "proverb", "optimism"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Al mal tiempo, buena cara."
+      },
+      "localized": {
+        "fr": "Au mauvais temps, bonne mine.",
+        "en": "Put on a brave face in bad times.",
+        "el": "Στον κακό καιρό, καλό πρόσωπο.",
+        "es": "Al mal tiempo, buena cara.",
+        "pt": "Ao mau tempo, boa cara.",
+        "de": "Bei schlechtem Wetter: gutes Gesicht."
+      }
+    },
+    {
+      "id": "es_007",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "poetry",
+      "tags": ["es", "classic", "journey"],
+      "attribution": {
+        "author": "Antonio Machado",
+        "work": "Proverbios y Cantares",
+        "year": 1912,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Caminante, no hay camino, se hace camino al andar."
+      },
+      "localized": {
+        "fr": "Voyageur, il n’y a pas de chemin : le chemin se fait en marchant.",
+        "en": "Traveler, there is no path; the path is made by walking.",
+        "el": "Οδοιπόρε, δεν υπάρχει δρόμος, ο δρόμος γίνεται περπατώντας.",
+        "es": "Caminante, no hay camino, se hace camino al andar.",
+        "pt": "Caminhante, não há caminho; o caminho faz-se ao andar.",
+        "de": "Wanderer, es gibt keinen Weg; der Weg entsteht beim Gehen."
+      }
+    },
+    {
+      "id": "es_008",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["es", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "En boca cerrada no entran moscas."
+      },
+      "localized": {
+        "fr": "Bouche close, pas de mouches.",
+        "en": "Flies don’t enter a closed mouth.",
+        "el": "Σε κλειστό στόμα δεν μπαίνουν μύγες.",
+        "es": "En boca cerrada no entran moscas.",
+        "pt": "Em boca fechada não entram moscas.",
+        "de": "In einen geschlossenen Mund fliegen keine Fliegen."
+      }
+    },
+    {
+      "id": "es_009",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["es", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "La alegría es contagiosa."
+      },
+      "localized": {
+        "fr": "La joie est contagieuse.",
+        "en": "Joy is contagious.",
+        "el": "Η χαρά είναι μεταδοτική.",
+        "es": "La alegría es contagiosa.",
+        "pt": "A alegria é contagiosa.",
+        "de": "Freude ist ansteckend."
+      }
+    },
+    {
+      "id": "es_010",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["es", "toast"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Hoy se brinda."
+      },
+      "localized": {
+        "fr": "Aujourd’hui, on trinque.",
+        "en": "Today we toast.",
+        "el": "Σήμερα τσουγκρίζουμε.",
+        "es": "Hoy se brinda.",
+        "pt": "Hoje brindamos.",
+        "de": "Heute stoßen wir an."
+      }
+    },
+    {
+      "id": "es_011",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "sharing",
+      "tags": ["es", "sharing"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Quien comparte, multiplica."
+      },
+      "localized": {
+        "fr": "Qui partage, multiplie.",
+        "en": "Who shares, multiplies.",
+        "el": "Όποιος μοιράζεται, πολλαπλασιάζει.",
+        "es": "Quien comparte, multiplica.",
+        "pt": "Quem partilha, multiplica.",
+        "de": "Wer teilt, vermehrt."
+      }
+    },
+    {
+      "id": "es_012",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "mood",
+      "tags": ["es", "life"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Que aproveche la vida."
+      },
+      "localized": {
+        "fr": "Que la vie nous fasse du bien.",
+        "en": "May life treat us well.",
+        "el": "Να μας πάει καλά η ζωή.",
+        "es": "Que aproveche la vida.",
+        "pt": "Que a vida faça bem.",
+        "de": "Möge das Leben gut tun."
+      }
+    },
+    {
+      "id": "pt_001",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "poetry",
+      "tags": ["pt", "classic", "spirit"],
+      "attribution": {
+        "author": "Fernando Pessoa",
+        "work": "Mar Português",
+        "year": 1934,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Tudo vale a pena se a alma não é pequena."
+      },
+      "localized": {
+        "fr": "Tout vaut la peine si l’âme n’est pas petite.",
+        "en": "Everything is worth it if the soul is not small.",
+        "el": "Όλα αξίζουν, αν η ψυχή δεν είναι μικρή.",
+        "es": "Todo vale la pena si el alma no es pequeña.",
+        "pt": "Tudo vale a pena se a alma não é pequena.",
+        "de": "Alles lohnt sich, wenn die Seele nicht klein ist."
+      }
+    },
+    {
+      "id": "pt_002",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["pt", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Devagar se vai ao longe."
+      },
+      "localized": {
+        "fr": "Lentement, on va loin.",
+        "en": "Slowly you go far.",
+        "el": "Σιγά σιγά πας μακριά.",
+        "es": "Despacio se llega lejos.",
+        "pt": "Devagar se vai ao longe.",
+        "de": "Langsam kommt man weit."
+      }
+    },
+    {
+      "id": "pt_003",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["pt", "proverb", "music"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Quem canta seus males espanta."
+      },
+      "localized": {
+        "fr": "Qui chante chasse ses peines.",
+        "en": "Those who sing scare away their troubles.",
+        "el": "Όποιος τραγουδά διώχνει τα βάσανά του.",
+        "es": "Quien canta espanta sus males.",
+        "pt": "Quem canta seus males espanta.",
+        "de": "Wer singt, vertreibt seine Sorgen."
+      }
+    },
+    {
+      "id": "pt_004",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "hosting",
+      "tags": ["pt", "proverb", "home"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Casa cheia, coração contente."
+      },
+      "localized": {
+        "fr": "Maison pleine, cœur content.",
+        "en": "Full house, happy heart.",
+        "el": "Γεμάτο σπίτι, χαρούμενη καρδιά.",
+        "es": "Casa llena, corazón contento.",
+        "pt": "Casa cheia, coração contente.",
+        "de": "Volles Haus, frohes Herz."
+      }
+    },
+    {
+      "id": "pt_005",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["pt", "toast"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Saúde!"
+      },
+      "localized": {
+        "fr": "Santé !",
+        "en": "Cheers!",
+        "el": "Στην υγειά μας!",
+        "es": "¡Salud!",
+        "pt": "Saúde!",
+        "de": "Zum Wohl!"
+      }
+    },
+    {
+      "id": "pt_006",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["pt", "meal"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Bom apetite."
+      },
+      "localized": {
+        "fr": "Bon appétit.",
+        "en": "Enjoy your meal.",
+        "el": "Καλή όρεξη.",
+        "es": "Buen provecho.",
+        "pt": "Bom apetite.",
+        "de": "Guten Appetit."
+      }
+    },
+    {
+      "id": "pt_007",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "wisdom",
+      "tags": ["pt", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Quem não arrisca, não petisca."
+      },
+      "localized": {
+        "fr": "Qui ne tente rien n’a rien.",
+        "en": "Nothing ventured, nothing gained.",
+        "el": "Όποιος δεν ρισκάρει, δεν κερδίζει.",
+        "es": "Quien no arriesga, no gana.",
+        "pt": "Quem não arrisca, não petisca.",
+        "de": "Wer nicht wagt, der nicht gewinnt."
+      }
+    },
+    {
+      "id": "pt_008",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["pt", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Mais vale um pássaro na mão do que dois voando."
+      },
+      "localized": {
+        "fr": "Mieux vaut un tiens que deux tu l’auras.",
+        "en": "A bird in the hand is worth two in the bush.",
+        "el": "Καλύτερα ένα πουλί στο χέρι παρά δύο που πετούν.",
+        "es": "Más vale pájaro en mano que ciento volando.",
+        "pt": "Mais vale um pássaro na mão do que dois voando.",
+        "de": "Lieber den Spatz in der Hand als die Taube auf dem Dach."
+      }
+    },
+    {
+      "id": "pt_009",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["pt", "bread", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Onde há pão, há alegria."
+      },
+      "localized": {
+        "fr": "Là où il y a du pain, il y a de la joie.",
+        "en": "Where there is bread, there is joy.",
+        "el": "Όπου υπάρχει ψωμί, υπάρχει χαρά.",
+        "es": "Donde hay pan, hay alegría.",
+        "pt": "Onde há pão, há alegria.",
+        "de": "Wo es Brot gibt, gibt es Freude."
+      }
+    },
+    {
+      "id": "pt_010",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "friends",
+      "tags": ["pt", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "A amizade é a melhor sobremesa."
+      },
+      "localized": {
+        "fr": "L’amitié est le meilleur dessert.",
+        "en": "Friendship is the best dessert.",
+        "el": "Η φιλία είναι το καλύτερο γλυκό.",
+        "es": "La amistad es el mejor postre.",
+        "pt": "A amizade é a melhor sobremesa.",
+        "de": "Freundschaft ist das beste Dessert."
+      }
+    },
+    {
+      "id": "de_001",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["de", "meal"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Guten Appetit!"
+      },
+      "localized": {
+        "fr": "Bon appétit !",
+        "en": "Enjoy your meal!",
+        "el": "Καλή όρεξη!",
+        "es": "¡Buen provecho!",
+        "pt": "Bom apetite!",
+        "de": "Guten Appetit!"
+      }
+    },
+    {
+      "id": "de_002",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["de", "toast"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Zum Wohl!"
+      },
+      "localized": {
+        "fr": "À notre santé !",
+        "en": "Cheers!",
+        "el": "Στην υγειά μας!",
+        "es": "¡Salud!",
+        "pt": "Saúde!",
+        "de": "Zum Wohl!"
+      }
+    },
+    {
+      "id": "de_003",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["de", "proverb", "food"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Liebe geht durch den Magen."
+      },
+      "localized": {
+        "fr": "L’amour passe par l’estomac.",
+        "en": "Love goes through the stomach.",
+        "el": "Η αγάπη περνά από το στομάχι.",
+        "es": "El amor entra por el estómago.",
+        "pt": "O amor entra pelo estômago.",
+        "de": "Liebe geht durch den Magen."
+      }
+    },
+    {
+      "id": "de_004",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "togetherness",
+      "tags": ["de", "food", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Gemeinsam schmeckt’s besser."
+      },
+      "localized": {
+        "fr": "Ensemble, c’est meilleur.",
+        "en": "Together it tastes better.",
+        "el": "Μαζί είναι πιο νόστιμα.",
+        "es": "Juntos sabe mejor.",
+        "pt": "Juntos sabe melhor.",
+        "de": "Gemeinsam schmeckt’s besser."
+      }
+    },
+    {
+      "id": "de_005",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "literature",
+      "tags": ["de", "classic", "belonging"],
+      "attribution": {
+        "author": "Johann Wolfgang von Goethe",
+        "work": "Faust I",
+        "year": 1808,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Hier bin ich Mensch, hier darf ich’s sein."
+      },
+      "localized": {
+        "fr": "Ici, je suis humain, ici j’ai le droit de l’être.",
+        "en": "Here I am human; here I may be so.",
+        "el": "Εδώ είμαι άνθρωπος, εδώ μου επιτρέπεται να είμαι.",
+        "es": "Aquí soy humano, aquí puedo serlo.",
+        "pt": "Aqui sou humano, aqui posso sê-lo.",
+        "de": "Hier bin ich Mensch, hier darf ich’s sein."
+      }
+    },
+    {
+      "id": "de_006",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["de", "music", "classic"],
+      "attribution": {
+        "author": "Friedrich Nietzsche",
+        "work": "Götzen-Dämmerung",
+        "year": 1889,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Ohne Musik wäre das Leben ein Irrtum."
+      },
+      "localized": {
+        "fr": "Sans musique, la vie serait une erreur.",
+        "en": "Without music, life would be a mistake.",
+        "el": "Χωρίς μουσική, η ζωή θα ήταν λάθος.",
+        "es": "Sin música, la vida sería un error.",
+        "pt": "Sem música, a vida seria um erro.",
+        "de": "Ohne Musik wäre das Leben ein Irrtum."
+      }
+    },
+    {
+      "id": "de_007",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "hope",
+      "tags": ["de", "proverb"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Ende gut, alles gut."
+      },
+      "localized": {
+        "fr": "Tout est bien qui finit bien.",
+        "en": "All's well that ends well.",
+        "el": "Τέλος καλό, όλα καλά.",
+        "es": "Bien está lo que bien acaba.",
+        "pt": "Tudo acaba bem quando acaba bem.",
+        "de": "Ende gut, alles gut."
+      }
+    },
+    {
+      "id": "de_008",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "sharing",
+      "tags": ["de", "sharing"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Wer teilt, hat mehr."
+      },
+      "localized": {
+        "fr": "Qui partage a plus.",
+        "en": "Who shares has more.",
+        "el": "Όποιος μοιράζεται, έχει περισσότερα.",
+        "es": "Quien comparte, tiene más.",
+        "pt": "Quem partilha, tem mais.",
+        "de": "Wer teilt, hat mehr."
+      }
+    },
+    {
+      "id": "de_009",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hosting",
+      "tags": ["de", "welcome"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Ein Platz am Tisch für alle."
+      },
+      "localized": {
+        "fr": "Une place à table pour tous.",
+        "en": "A place at the table for everyone.",
+        "el": "Μια θέση στο τραπέζι για όλους.",
+        "es": "Un lugar en la mesa para todos.",
+        "pt": "Um lugar à mesa para todos.",
+        "de": "Ein Platz am Tisch für alle."
+      }
+    },
+    {
+      "id": "de_010",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["de", "proverb", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Proverb",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Geteilte Freude ist doppelte Freude."
+      },
+      "localized": {
+        "fr": "Joie partagée est double joie.",
+        "en": "Shared joy is double joy.",
+        "el": "Η μοιρασμένη χαρά είναι διπλή χαρά.",
+        "es": "La alegría compartida es doble alegría.",
+        "pt": "Alegria partilhada é alegria dobrada.",
+        "de": "Geteilte Freude ist doppelte Freude."
+      }
+    },
+    {
+      "id": "el_001",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["el", "meal"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Καλή όρεξη!"
+      },
+      "localized": {
+        "fr": "Bon appétit !",
+        "en": "Enjoy your meal!",
+        "el": "Καλή όρεξη!",
+        "es": "¡Buen provecho!",
+        "pt": "Bom apetite!",
+        "de": "Guten Appetit!"
+      }
+    },
+    {
+      "id": "el_002",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["el", "toast"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Στην υγειά μας!"
+      },
+      "localized": {
+        "fr": "À notre santé !",
+        "en": "Cheers!",
+        "el": "Στην υγειά μας!",
+        "es": "¡Salud!",
+        "pt": "Saúde!",
+        "de": "Zum Wohl!"
+      }
+    },
+    {
+      "id": "el_003",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "hosting",
+      "tags": ["el", "welcome"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Καλώς ήρθατε στο τραπέζι."
+      },
+      "localized": {
+        "fr": "Bienvenue à table.",
+        "en": "Welcome to the table.",
+        "el": "Καλώς ήρθατε στο τραπέζι.",
+        "es": "Bienvenidos a la mesa.",
+        "pt": "Bem-vindos à mesa.",
+        "de": "Willkommen am Tisch."
+      }
+    },
+    {
+      "id": "el_004",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "friends",
+      "tags": ["el", "friends"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Expression",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Καλή παρέα."
+      },
+      "localized": {
+        "fr": "Bonne compagnie.",
+        "en": "Good company.",
+        "el": "Καλή παρέα.",
+        "es": "Buena compañía.",
+        "pt": "Boa companhia.",
+        "de": "Gute Gesellschaft."
+      }
+    },
+    {
+      "id": "el_005",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["el", "classic", "wisdom"],
+      "attribution": {
+        "author": "Maxime delphique",
+        "work": "Inscription (attrib.)",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Μηδὲν ἄγαν."
+      },
+      "localized": {
+        "fr": "Rien de trop.",
+        "en": "Nothing in excess.",
+        "el": "Μηδὲν ἄγαν.",
+        "es": "Nada en exceso.",
+        "pt": "Nada em excesso.",
+        "de": "Nichts im Übermaß."
+      }
+    },
+    {
+      "id": "el_006",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "wisdom",
+      "tags": ["el", "classic", "wisdom"],
+      "attribution": {
+        "author": "Maxime delphique",
+        "work": "Inscription (attrib.)",
+        "year": null,
+        "origin": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Γνῶθι σεαυτόν."
+      },
+      "localized": {
+        "fr": "Connais-toi toi-même.",
+        "en": "Know thyself.",
+        "el": "Γνῶθι σεαυτόν.",
+        "es": "Conócete a ti mismo.",
+        "pt": "Conhece-te a ti mesmo.",
+        "de": "Erkenne dich selbst."
+      }
+    },
+    {
+      "id": "el_007",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["el", "classic", "flow"],
+      "attribution": {
+        "author": "Héraclite (attrib.)",
+        "work": "Fragment",
+        "year": null,
+        "origin": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Πάντα ῥεῖ."
+      },
+      "localized": {
+        "fr": "Tout s’écoule.",
+        "en": "Everything flows.",
+        "el": "Πάντα ῥεῖ.",
+        "es": "Todo fluye.",
+        "pt": "Tudo flui.",
+        "de": "Alles fließt."
+      }
+    },
+    {
+      "id": "el_008",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "friends",
+      "tags": ["el", "friends", "party"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": "Saying",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Η παρέα κάνει το γλέντι."
+      },
+      "localized": {
+        "fr": "C’est la compagnie qui fait la fête.",
+        "en": "The company makes the feast.",
+        "el": "Η παρέα κάνει το γλέντι.",
+        "es": "La compañía hace la fiesta.",
+        "pt": "A companhia faz a festa.",
+        "de": "Die Gesellschaft macht das Fest."
+      }
+    }
+  ]
+}
