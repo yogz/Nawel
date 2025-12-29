@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
+import { motion } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
 import {
@@ -101,44 +102,54 @@ export function PlanningTab({
           const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
 
           return (
-            <div key={meal.id} className="space-y-6">
-              <div className="flex items-center gap-3 px-2">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-accent text-white shadow-lg ring-4 ring-accent/10">
-                  <span className="text-lg font-bold">🎄</span>
+            <motion.div
+              key={meal.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <div className="flex items-start gap-4 px-2">
+                <div className="relative shrink-0">
+                  <div className="absolute inset-0 rotate-6 rounded-2xl bg-accent/20 blur-xl transition-transform group-hover:rotate-12" />
+                  <div className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-gradient-to-br from-accent to-accent/80 text-white shadow-xl ring-4 ring-accent/5 backdrop-blur-sm">
+                    <span className="text-2xl drop-shadow-sm">🎄</span>
+                  </div>
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col">
+
+                <div className="flex min-w-0 flex-1 flex-col pt-0.5">
                   <div className="flex items-center gap-2">
                     {!readOnly ? (
                       <button
                         onClick={() => setSheet({ type: "meal-edit", meal })}
-                        className="group flex min-w-0 items-center gap-2 text-left transition-colors hover:text-accent"
+                        className="group flex min-w-0 items-center gap-2 text-left transition-colors"
                         aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
                       >
-                        <h2 className="truncate text-xl font-black tracking-tight text-text group-hover:text-accent">
+                        <h2 className="truncate text-2xl font-black tracking-tight text-text decoration-accent/30 decoration-2 underline-offset-4 transition-all group-hover:text-accent group-hover:underline">
                           {meal.title || meal.date}
                         </h2>
                       </button>
                     ) : (
-                      <h2 className="truncate text-xl font-black tracking-tight text-text">
+                      <h2 className="truncate text-2xl font-black tracking-tight text-text">
                         {meal.title || meal.date}
                       </h2>
                     )}
-                    <div className="flex items-center gap-1.5 transition-opacity">
+
+                    <div className="flex items-center">
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="premium"
-                            className="h-7 w-7 p-0 pr-0 ring-0 hover:ring-1"
-                            icon={<CalendarPlus className="h-3.5 w-3.5" />}
-                            iconClassName="h-6 w-6"
+                            className="h-8 w-8 rounded-full border border-black/[0.03] bg-white/50 p-0 shadow-sm transition-all hover:bg-white hover:shadow-md"
+                            icon={<CalendarPlus className="h-4 w-4 text-accent" />}
+                            iconClassName="h-7 w-7 bg-transparent shadow-none ring-0"
                             aria-label={t("calendar.options")}
                           />
                         </PopoverTrigger>
-                        <PopoverContent className="w-56 p-1" align="start">
+                        <PopoverContent className="glass w-56 p-2" align="start">
                           <div className="flex flex-col gap-1">
                             <button
                               onClick={() => window.open(calendarUrl, "_blank")}
-                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
                             >
                               <ExternalLink className="h-4 w-4" />
                               {t("calendar.google")}
@@ -147,14 +158,15 @@ export function PlanningTab({
                               onClick={() =>
                                 window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
                               }
-                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
                             >
                               <ExternalLink className="h-4 w-4" />
                               {t("calendar.outlook")}
                             </button>
+                            <div className="my-1 border-t border-black/[0.05]" />
                             <button
                               onClick={() => downloadIcsFile(meal, eventName)}
-                              className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-white"
+                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
                             >
                               <Download className="h-4 w-4" />
                               {t("calendar.download")}
@@ -164,21 +176,25 @@ export function PlanningTab({
                       </Popover>
                     </div>
                   </div>
-                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
+
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
                     {meal.time && (
-                      <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-500">
+                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
                         <Clock className="h-3 w-3" />
                         {meal.time}
                       </div>
                     )}
                     {meal.address && (
-                      <div className="flex items-center gap-1.5 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-500">
+                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
                         <MapPin className="h-3 w-3" />
                         <span className="max-w-[200px] truncate">{meal.address}</span>
                       </div>
                     )}
                   </div>
-                  <CitationDisplay />
+
+                  <div className="mt-2 pl-0.5">
+                    <CitationDisplay />
+                  </div>
                 </div>
               </div>
               <div className="space-y-6">
@@ -197,7 +213,7 @@ export function PlanningTab({
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
