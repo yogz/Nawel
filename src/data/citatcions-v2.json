@@ -1,0 +1,463 @@
+{
+  "version": 2,
+  "purpose": "Sous-titres courts pour écran de repas (joli, joyeux, convivial).",
+  "languages": ["fr", "en", "el", "es", "pt", "de"],
+  "items": [
+    {
+      "id": "together_etre_ensemble",
+      "type": "micro_phrase",
+      "category": "togetherness",
+      "tags": ["togetherness", "community", "warm"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Être ensemble"
+      },
+      "translations": {
+        "en": "Being together",
+        "el": "Να είμαστε μαζί",
+        "es": "Estar juntos",
+        "pt": "Estar juntos",
+        "de": "Zusammen sein"
+      }
+    },
+    {
+      "id": "memory_ce_qui_demeure",
+      "type": "title_like",
+      "category": "memory",
+      "tags": ["memory", "time", "soft"],
+      "attribution": {
+        "author": "Yves Bonnefoy",
+        "work": "« Ce qui demeure » (titre)",
+        "year": null,
+        "source": null,
+        "confidence": "medium"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Ce qui demeure"
+      },
+      "translations": {
+        "en": "What remains",
+        "el": "Αυτό που μένει",
+        "es": "Lo que permanece",
+        "pt": "O que permanece",
+        "de": "Was bleibt"
+      }
+    },
+    {
+      "id": "home_sous_le_meme_toit",
+      "type": "expression",
+      "category": "home",
+      "tags": ["home", "family", "cozy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Sous le même toit"
+      },
+      "translations": {
+        "en": "Under the same roof",
+        "el": "Κάτω από την ίδια στέγη",
+        "es": "Bajo el mismo techo",
+        "pt": "Sob o mesmo teto",
+        "de": "Unter demselben Dach"
+      }
+    },
+    {
+      "id": "tradition_comme_chaque_annee",
+      "type": "expression",
+      "category": "tradition",
+      "tags": ["tradition", "ritual", "warm"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Comme chaque année"
+      },
+      "translations": {
+        "en": "Like every year",
+        "el": "Όπως κάθε χρόνο",
+        "es": "Como cada año",
+        "pt": "Como todos os anos",
+        "de": "Wie jedes Jahr"
+      }
+    },
+    {
+      "id": "meal_a_table",
+      "type": "micro_phrase",
+      "category": "meal",
+      "tags": ["meal", "start", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "À table"
+      },
+      "translations": {
+        "en": "To the table",
+        "el": "Στο τραπέζι",
+        "es": "A la mesa",
+        "pt": "À mesa",
+        "de": "Zu Tisch"
+      }
+    },
+    {
+      "id": "bible_break_bread",
+      "type": "quote_fragment",
+      "category": "sharing",
+      "tags": ["bread", "sharing", "table"],
+      "attribution": {
+        "author": "Bible",
+        "work": "Actes 2:42 (fraction du pain)",
+        "year": null,
+        "source": "saintebible.com",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Rompre le pain"
+      },
+      "translations": {
+        "en": "To break bread",
+        "el": "Να μοιράζεσαι το ψωμί",
+        "es": "Partir el pan",
+        "pt": "Partir o pão",
+        "de": "Brot brechen"
+      }
+    },
+    {
+      "id": "bible_daily_bread",
+      "type": "quote_fragment",
+      "category": "classic",
+      "tags": ["bread", "daily", "simple"],
+      "attribution": {
+        "author": "Bible",
+        "work": "Matthieu 6:11",
+        "year": null,
+        "source": "biblegateway.com",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Notre pain quotidien"
+      },
+      "translations": {
+        "en": "Our daily bread",
+        "el": "Το καθημερινό μας ψωμί",
+        "es": "Nuestro pan de cada día",
+        "pt": "O nosso pão de cada dia",
+        "de": "Unser tägliches Brot"
+      }
+    },
+    {
+      "id": "brillat_dis_moi_ce_que_tu_manges",
+      "type": "quote",
+      "category": "gastronomy",
+      "tags": ["food", "identity", "classic"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût (Aphorismes)",
+        "year": 1825,
+        "source": "Wikisource",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Dis-moi ce que tu manges, je te dirai ce que tu es."
+      },
+      "translations": {
+        "en": "Tell me what you eat, and I'll tell you what you are.",
+        "el": "Πες μου τι τρως και θα σου πω ποιος είσαι.",
+        "es": "Dime qué comes y te diré quién eres.",
+        "pt": "Diz-me o que comes e dir-te-ei quem és.",
+        "de": "Sag mir, was du isst, und ich sage dir, wer du bist."
+      }
+    },
+    {
+      "id": "brillat_plaisir_de_la_table_tous_les_ages",
+      "type": "quote",
+      "category": "gastronomy",
+      "tags": ["table", "pleasure", "conviviality"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût (Aphorismes)",
+        "year": 1825,
+        "source": "Wikisource",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le plaisir de la table est de tous les âges, de toutes les conditions, de tous les pays et de tous les jours."
+      },
+      "translations": {
+        "en": "The pleasures of the table belong to every age, every condition, every country, and every day.",
+        "el": "Η χαρά του τραπεζιού ανήκει σε κάθε ηλικία, κάθε τάξη, κάθε χώρα και κάθε μέρα.",
+        "es": "El placer de la mesa es de todas las edades, de todas las condiciones, de todos los países y de todos los días.",
+        "pt": "O prazer da mesa é de todas as idades, de todas as condições, de todos os países e de todos os dias.",
+        "de": "Die Freude am Tisch ist für jedes Alter, jeden Stand, jedes Land und jeden Tag."
+      }
+    },
+    {
+      "id": "brillat_table_pas_ennui_premiere_heure",
+      "type": "quote",
+      "category": "gastronomy",
+      "tags": ["table", "fun", "light"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût (Aphorismes)",
+        "year": 1825,
+        "source": "Wikisource",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "La table est le seul endroit où l’on ne s’ennuie jamais pendant la première heure."
+      },
+      "translations": {
+        "en": "The table is the only place where you never get bored during the first hour.",
+        "el": "Το τραπέζι είναι το μόνο μέρος όπου δεν βαριέσαι ποτέ την πρώτη ώρα.",
+        "es": "La mesa es el único lugar donde uno nunca se aburre durante la primera hora.",
+        "pt": "A mesa é o único lugar onde nunca se aborrece durante a primeira hora.",
+        "de": "Der Tisch ist der einzige Ort, an dem man sich in der ersten Stunde nie langweilt."
+      }
+    },
+    {
+      "id": "brillat_convier_charge_de_bonheur",
+      "type": "quote",
+      "category": "hosting",
+      "tags": ["hosting", "care", "warm"],
+      "attribution": {
+        "author": "Jean Anthelme Brillat-Savarin",
+        "work": "Physiologie du goût (Aphorismes)",
+        "year": 1825,
+        "source": "Wikisource",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Convier quelqu’un, c’est se charger de son bonheur pendant tout le temps qu’il est sous notre toit."
+      },
+      "translations": {
+        "en": "To invite someone is to take charge of their happiness for as long as they are under our roof.",
+        "el": "Να προσκαλείς κάποιον σημαίνει να αναλαμβάνεις την ευτυχία του όσο βρίσκεται κάτω από τη στέγη σου.",
+        "es": "Invitar a alguien es encargarse de su felicidad mientras esté bajo nuestro techo.",
+        "pt": "Convidar alguém é encarregar-se da sua felicidade enquanto estiver sob o nosso teto.",
+        "de": "Jemanden einzuladen heißt, für sein Glück zu sorgen, solange er unter unserem Dach ist."
+      }
+    },
+    {
+      "id": "shaw_love_of_food",
+      "type": "quote",
+      "category": "gastronomy",
+      "tags": ["food", "love", "classic"],
+      "attribution": {
+        "author": "George Bernard Shaw",
+        "work": "Man and Superman (1903)",
+        "year": 1903,
+        "source": "Project Gutenberg",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "There is no love sincerer than the love of food."
+      },
+      "translations": {
+        "fr": "Il n’y a pas d’amour plus sincère que l’amour de la nourriture.",
+        "el": "Δεν υπάρχει πιο ειλικρινής αγάπη από την αγάπη για το φαγητό.",
+        "es": "No hay amor más sincero que el amor por la comida.",
+        "pt": "Não há amor mais sincero do que o amor pela comida.",
+        "de": "Es gibt keine aufrichtigere Liebe als die Liebe zum Essen."
+      }
+    },
+    {
+      "id": "keller_together_so_much",
+      "type": "quote",
+      "category": "sharing",
+      "tags": ["togetherness", "team", "uplifting"],
+      "attribution": {
+        "author": "Helen Keller",
+        "work": "attribution traced by Quote Investigator",
+        "year": null,
+        "source": "quoteinvestigator.com",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Alone we can do so little; together we can do so much."
+      },
+      "translations": {
+        "fr": "Seuls, nous pouvons faire si peu ; ensemble, nous pouvons faire tant.",
+        "el": "Μόνοι μας μπορούμε να κάνουμε τόσο λίγα· μαζί μπορούμε να κάνουμε τόσα πολλά.",
+        "es": "Solos podemos hacer muy poco; juntos podemos hacer mucho.",
+        "pt": "Sozinhos podemos fazer tão pouco; juntos podemos fazer tanto.",
+        "de": "Allein können wir so wenig tun; gemeinsam können wir so viel erreichen."
+      }
+    },
+    {
+      "id": "into_the_wild_happiness_shared",
+      "type": "quote",
+      "category": "sharing",
+      "tags": ["happiness", "sharing", "togetherness"],
+      "attribution": {
+        "author": "Into the Wild (film, 2007)",
+        "work": "screenplay by Sean Penn (popularized line)",
+        "year": 2007,
+        "source": "Wikiquote",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Happiness is only real when shared."
+      },
+      "translations": {
+        "fr": "Le bonheur n’est réel que lorsqu’il est partagé.",
+        "el": "Η ευτυχία είναι αληθινή μόνο όταν μοιράζεται.",
+        "es": "La felicidad solo es real cuando se comparte.",
+        "pt": "A felicidade só é real quando é partilhada.",
+        "de": "Glück ist nur echt, wenn man es teilt."
+      }
+    },
+    {
+      "id": "stex_essentiel_invisible",
+      "type": "quote",
+      "category": "literature",
+      "tags": ["heart", "essential", "soft"],
+      "attribution": {
+        "author": "Antoine de Saint-Exupéry",
+        "work": "Le Petit Prince",
+        "year": 1943,
+        "source": "Reuters/Guardian reporting on manuscript",
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "On ne voit bien qu’avec le cœur. L’essentiel est invisible pour les yeux."
+      },
+      "translations": {
+        "en": "It is only with the heart that one can see rightly; what is essential is invisible to the eye.",
+        "el": "Μόνο με την καρδιά βλέπει κανείς σωστά· ό,τι είναι ουσιώδες είναι αόρατο στα μάτια.",
+        "es": "Solo se ve bien con el corazón; lo esencial es invisible a los ojos.",
+        "pt": "Só se vê bem com o coração; o essencial é invisível aos olhos.",
+        "de": "Man sieht nur mit dem Herzen gut; das Wesentliche ist für die Augen unsichtbar."
+      }
+    },
+    {
+      "id": "es_buen_provecho",
+      "type": "expression",
+      "category": "meal",
+      "tags": ["meal", "joy", "short"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Buen provecho."
+      },
+      "translations": {
+        "fr": "Bon appétit.",
+        "en": "Enjoy your meal.",
+        "el": "Καλή όρεξη.",
+        "pt": "Bom apetite.",
+        "de": "Guten Appetit."
+      }
+    },
+    {
+      "id": "el_stin_ygeia_mas",
+      "type": "expression",
+      "category": "cheers",
+      "tags": ["cheers", "toast", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Στην υγειά μας!"
+      },
+      "translations": {
+        "fr": "À notre santé !",
+        "en": "Cheers!",
+        "es": "¡Salud!",
+        "pt": "Saúde!",
+        "de": "Zum Wohl!"
+      }
+    },
+    {
+      "id": "de_gemeinsam_schmeckts_besser",
+      "type": "expression",
+      "category": "togetherness",
+      "tags": ["togetherness", "food", "joy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Gemeinsam schmeckt’s besser."
+      },
+      "translations": {
+        "fr": "Ensemble, c’est meilleur.",
+        "en": "Together it tastes better.",
+        "el": "Μαζί είναι πιο νόστιμα.",
+        "es": "Juntos sabe mejor.",
+        "pt": "Juntos sabe melhor."
+      }
+    },
+    {
+      "id": "pt_onde_comem_dois_comem_tres",
+      "type": "proverb",
+      "category": "hosting",
+      "tags": ["hosting", "generosity", "warm"],
+      "attribution": {
+        "author": null,
+        "work": "proverbe",
+        "year": null,
+        "source": null,
+        "confidence": "high"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Onde comem dois, comem três."
+      },
+      "translations": {
+        "fr": "Là où deux mangent, trois mangent.",
+        "en": "Where two can eat, three can eat.",
+        "el": "Όπου τρώνε δύο, τρώνε τρεις.",
+        "es": "Donde comen dos, comen tres.",
+        "de": "Wo zwei essen, essen drei."
+      }
+    }
+  ]
+}
