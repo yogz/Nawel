@@ -10,6 +10,7 @@ This document serves as the "Source of Truth" for any code changes in the Nawel 
 - **Server Actions**: All mutations must live in `src/app/actions/`.
 - **UI Components**: Generic primitives go in `src/components/ui/`.
 - **Logic Separation**: Keep client logic in client components and data fetching in server components.
+- **Next.js 16 Middleware**: Use `src/proxy.ts` instead of `middleware.ts` for request interception and routing (standard in Next.js 16).
 
 ## 2. Server Actions & Security
 

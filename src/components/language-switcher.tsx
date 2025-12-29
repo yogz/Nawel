@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Languages, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
+import { updateUserAction } from "@/app/actions/user-actions";
 
 const localeNames: Record<Locale, string> = {
   fr: "Français",
@@ -26,8 +28,26 @@ export function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleLocaleChange = (newLocale: Locale) => {
+  const { data: session } = useSession();
+
+  const handleLocaleChange = async (newLocale: Locale) => {
     setIsOpen(false);
+
+    // Set cookie for next-intl middleware
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+
+    // Save to user profile if logged in
+    if (session?.user) {
+      try {
+        await updateUserAction({
+          name: session.user.name,
+          language: newLocale,
+        });
+      } catch (err) {
+        console.error("Failed to save language preference:", err);
+      }
+    }
+
     const searchString = searchParams?.toString();
     const localePrefix = newLocale === "fr" ? "" : `/${newLocale}`;
     const fullPath = `${localePrefix}${pathname}${searchString ? `?${searchString}` : ""}`;

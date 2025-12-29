@@ -58,6 +58,12 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
     },
+    additionalFields: {
+      language: {
+        type: "string",
+        defaultValue: "fr",
+      },
+    },
   },
 });
 

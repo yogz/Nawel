@@ -268,7 +268,22 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       <button
                         key={l}
                         type="button"
-                        onClick={() => {
+                        onClick={async () => {
+                          // Set cookie for next-intl middleware
+                          document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
+
+                          // Save to user profile if logged in
+                          if (session?.user) {
+                            try {
+                              await updateUserAction({
+                                name: name,
+                                language: l,
+                              });
+                            } catch (err) {
+                              console.error("Failed to save language preference:", err);
+                            }
+                          }
+
                           const searchString = searchParams?.toString();
                           const localePrefix = l === "fr" ? "" : `/${l}`;
                           const fullPath = `${localePrefix}${pathname}${searchString ? `?${searchString}` : ""}`;

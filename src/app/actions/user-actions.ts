@@ -29,6 +29,7 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
       headers: currentHeaders,
       body: {
         name: data.name,
+        language: data.language,
       },
     });
 

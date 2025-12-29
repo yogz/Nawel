@@ -217,6 +217,7 @@ export const deleteEventAdminSchema = z.object({
 
 export const updateUserSchema = z.object({
   name: safeStrictText(100),
+  language: z.string().optional(),
 });
 
 export const deleteUserSchema = z.object({

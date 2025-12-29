@@ -5,6 +5,8 @@ import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { useSession } from "@/lib/auth-client";
+import { updateUserAction } from "@/app/actions/user-actions";
 
 interface SettingsTabProps {
   onDeleteEvent: () => void;
@@ -18,8 +20,25 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const locale = useLocale() as Locale;
   const pathname = usePathname();
 
-  const handleLanguageChange = (newLocale: Locale) => {
+  const { data: session } = useSession();
+
+  const handleLanguageChange = async (newLocale: Locale) => {
     if (typeof window === "undefined") return;
+
+    // Set cookie for next-intl middleware
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+
+    // Save to user profile if logged in
+    if (session?.user) {
+      try {
+        await updateUserAction({
+          name: session.user.name,
+          language: newLocale,
+        });
+      } catch (err) {
+        console.error("Failed to save language preference:", err);
+      }
+    }
 
     const searchString = window.location.search;
     const localePrefix = newLocale === "fr" ? "" : `/${newLocale}`;
