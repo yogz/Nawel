@@ -179,13 +179,13 @@ export function PlanningTab({
 
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {meal.time && (
-                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
+                      <div className="flex items-center gap-1.5 px-0.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400">
                         <Clock className="h-3 w-3" />
                         {meal.time}
                       </div>
                     )}
                     {meal.address && (
-                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
+                      <div className="flex items-center gap-1.5 px-0.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400 transition-colors hover:text-accent">
                         <MapPin className="h-3 w-3" />
                         <span className="max-w-[200px] truncate">{meal.address}</span>
                       </div>
