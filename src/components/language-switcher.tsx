@@ -26,9 +26,11 @@ export function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Build href with search params to preserve the edit key
-  const searchString = searchParams.toString();
-  const href = searchString ? `${pathname}?${searchString}` : pathname;
+  // Convert searchParams to object for next-intl Link query prop
+  const query: Record<string, string> = {};
+  searchParams.forEach((value, key) => {
+    query[key] = value;
+  });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
