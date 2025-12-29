@@ -217,7 +217,7 @@ export function LoginForm() {
               }}
               disabled={loading}
               variant="outline"
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 hover:text-[#1f1f1f] active:scale-95"
               shine
             >
               <GoogleIcon className="h-5 w-5" />
