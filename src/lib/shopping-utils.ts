@@ -71,7 +71,7 @@ export function aggregateShoppingList(
       groups[key] = {
         id: key,
         name: rawName, // Keep original casing of the first item
-        quantity: 0,
+        quantity: null,
         unit: unit,
         checked: false, // Will be calculated after
         sources: [],
@@ -80,11 +80,12 @@ export function aggregateShoppingList(
 
     const group = groups[key];
 
-    // If we have a numeric value, add it. If not, mark group as non-summable.
-    if (value !== null && group.quantity !== null) {
-      group.quantity += value;
-    } else if (value === null && rawQuantity) {
-      // If there's a quantity string but no number was parsed, we can't sum
+    // If we have a numeric value, add it.
+    if (value !== null) {
+      group.quantity = (group.quantity || 0) + value;
+    } else if (rawQuantity) {
+      // If there's a non-empty quantity string but no number was parsed (like "quelques"),
+      // we mark as non-summable for the numeric part (it's already in the unit)
       group.quantity = null;
     }
 
@@ -108,7 +109,7 @@ export function aggregateShoppingList(
  */
 export function formatAggregatedQuantity(quantity: number | null, unit: string): string {
   if (quantity === null) return unit;
-  if (!unit) return quantity.toString();
+  if (!unit) return quantity === 0 ? "" : quantity.toString();
 
   // Try to avoid showing ".0" for integers
   const formattedValue = Number.isInteger(quantity)
