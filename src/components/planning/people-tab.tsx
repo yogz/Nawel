@@ -259,7 +259,7 @@ export function PeopleTab({
                               {item.price.toFixed(2)} €
                             </div>
                           )}
-                          {item.note && (
+                          {item.note && !item.note.startsWith("EventDashboard.Forms") && (
                             <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-500">
                               <MessageSquare size={12} className="text-gray-400" />
                               <span className="max-w-[150px] truncate">{item.note}</span>
