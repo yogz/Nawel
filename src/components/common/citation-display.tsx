@@ -3,8 +3,10 @@
 import { useMemo, useState } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocale } from "next-intl";
 
 export function CitationDisplay() {
+  const locale = useLocale();
   const [step, setStep] = useState(0);
 
   const citationItem = useMemo(() => {
@@ -20,31 +22,35 @@ export function CitationDisplay() {
     return list[index];
   }, []);
 
-  const translations = useMemo(() => {
-    return Object.entries(citationItem.localized).filter(
-      ([lang]) => lang !== citationItem.original.lang
-    );
-  }, [citationItem]);
+  const preferredTranslation = useMemo(() => {
+    // Only show translation if it's different from the original language
+    if (citationItem.original.lang === locale) return null;
+    return (citationItem.localized as Record<string, string>)[locale] || null;
+  }, [citationItem, locale]);
 
   const author = citationItem.attribution.author || citationItem.attribution.origin;
 
-  // Steps: 0 = Original, 1..N = Translations, N+1 = Author (if exists)
-  const totalSteps = 1 + translations.length + (author ? 1 : 0);
-
-  const currentContent = useMemo(() => {
-    if (step === 0) return { type: "text", value: citationItem.original.text };
-    if (step <= translations.length) {
-      return { type: "text", value: translations[step - 1][1] };
+  // Steps: 0 = Original, 1 = Preferred Translation (if exists), 2 = Author (if exists)
+  // We handle the steps dynamically
+  const availableSteps = useMemo(() => {
+    const steps = [{ type: "text", value: citationItem.original.text }];
+    if (preferredTranslation) {
+      steps.push({ type: "text", value: preferredTranslation });
     }
-    return { type: "author", value: author };
-  }, [step, citationItem, translations, author]);
+    if (author) {
+      steps.push({ type: "author", value: author });
+    }
+    return steps;
+  }, [citationItem, preferredTranslation, author]);
+
+  const currentContent = availableSteps[step % availableSteps.length];
 
   return (
     <div
       className="mt-1 cursor-pointer select-none"
       onClick={(e) => {
         e.stopPropagation();
-        setStep((s) => (s + 1) % totalSteps);
+        setStep((s) => (s + 1) % availableSteps.length);
       }}
     >
       <AnimatePresence mode="wait">
