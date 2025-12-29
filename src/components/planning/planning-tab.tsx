@@ -177,7 +177,7 @@ export function PlanningTab({
                     </div>
                   </div>
 
-                  <div className="mt-1 pl-0.5">
+                  <div className="mt-2 pl-[52px]">
                     <CitationDisplay />
                   </div>
 
