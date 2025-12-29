@@ -12,6 +12,7 @@ export interface AggregatedShoppingItem {
     item: Item;
     mealTitle: string;
     serviceTitle: string;
+    servicePeopleCount?: number;
     originalQuantity: string | null;
   }[];
 }
@@ -51,6 +52,7 @@ export function aggregateShoppingList(
     item: Item;
     mealTitle: string;
     serviceTitle: string;
+    servicePeopleCount?: number;
   }[]
 ): AggregatedShoppingItem[] {
   const groups: Record<string, AggregatedShoppingItem> = {};
@@ -60,7 +62,13 @@ export function aggregateShoppingList(
     const rawQuantity =
       entry.type === "ingredient" ? entry.ingredient!.quantity : entry.item.quantity;
 
-    const { value, unit } = parseQuantity(rawQuantity);
+    // Use service people count if item quantity is missing
+    const quantityToParse =
+      !rawQuantity?.trim() && entry.servicePeopleCount
+        ? `${entry.servicePeopleCount} pers.`
+        : rawQuantity;
+
+    const { value, unit } = parseQuantity(quantityToParse);
     const normalizedName = rawName.trim().toLowerCase();
 
     // Key for grouping: name + unit

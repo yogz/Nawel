@@ -52,6 +52,7 @@ export function ShoppingPage({
       item: Item;
       mealTitle: string;
       serviceTitle: string;
+      servicePeopleCount?: number;
     }[] = [];
 
     plan.meals.forEach((meal) => {
@@ -67,6 +68,7 @@ export function ShoppingPage({
                 item,
                 mealTitle: meal.title || meal.date,
                 serviceTitle: service.title,
+                servicePeopleCount: service.peopleCount,
               });
             });
           } else {
@@ -75,6 +77,7 @@ export function ShoppingPage({
               item,
               mealTitle: meal.title || meal.date,
               serviceTitle: service.title,
+              servicePeopleCount: service.peopleCount,
             });
           }
         });
