@@ -4,11 +4,13 @@ import { useState } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, AlertTriangle, Info } from "lucide-react";
-import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { SuccessToast } from "@/components/common/success-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function CitationManager() {
   const [index, setIndex] = useState(0);
+  const { message: toastMessage, setMessage: setToastMessage } = useToast();
   const citations = citationsDataV3.items;
   const citation = citations[index];
 
@@ -22,13 +24,17 @@ export function CitationManager() {
 
   const handleReport = () => {
     console.log("Reported citation:", citation.id);
-    toast.success("Citation signalée comme inappropriée");
+    setToastMessage({ text: "Citation signalée comme inappropriée", type: "success" });
   };
 
   if (!citation) return <div>Aucune citation trouvée.</div>;
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
+      <SuccessToast
+        message={toastMessage?.text || null}
+        type={toastMessage?.type || "success"}
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
