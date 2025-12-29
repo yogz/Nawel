@@ -178,7 +178,7 @@ export function PlanningTab({
                   </div>
 
                   <div className="mt-2 pl-[52px]">
-                    <CitationDisplay />
+                    <CitationDisplay seed={meal.title || meal.date} />
                   </div>
 
                   <div className="mt-2 flex flex-wrap items-center gap-2">

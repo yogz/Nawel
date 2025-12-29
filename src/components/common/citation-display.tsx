@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocale } from "next-intl";
 import { Quote } from "lucide-react";
 
-export function CitationDisplay() {
+export function CitationDisplay({ seed }: { seed?: string }) {
   const locale = useLocale();
   const [step, setStep] = useState(0);
 
   const citationItem = useMemo(() => {
     const list = citationsDataV3.items;
     const today = new Date();
-    const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+    const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}-${seed || ""}`;
     let hash = 0;
     for (let i = 0; i < dateString.length; i++) {
       hash = dateString.charCodeAt(i) + ((hash << 5) - hash);
