@@ -21,18 +21,27 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  /*
+   * DEBUG LOGS
+   */
+  console.log("[DEBUG] SettingsTab Render", { pathname, searchParams: searchParams?.toString() });
+
   const handleLanguageChange = (newLocale: Locale) => {
-    // Convert searchParams to object for next-intl router query prop
-    const query: Record<string, string> = {};
-    searchParams.forEach((value, key) => {
-      query[key] = value;
-    });
-    console.log("[DEBUG] Language change:", {
-      pathname,
-      query,
-      searchParams: searchParams.toString(),
-    });
-    router.replace({ pathname, query }, { locale: newLocale });
+    // Robustly get search params
+    let searchString = searchParams?.toString() || "";
+
+    // Fallback to window.location if hook fails (just in case)
+    if (!searchString && typeof window !== "undefined") {
+      const currentSearch = window.location.search;
+      if (currentSearch) searchString = currentSearch.substring(1);
+    }
+
+    // Construct the href manually to ensure params are included
+    const href = searchString ? `${pathname}?${searchString}` : pathname;
+
+    console.log("[DEBUG] Language Switch:", { from: locale, to: newLocale, href, searchString });
+
+    router.replace(href, { locale: newLocale });
   };
 
   const languageIcons: Record<string, string> = {

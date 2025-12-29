@@ -26,11 +26,9 @@ export function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Convert searchParams to object for next-intl Link query prop
-  const query: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    query[key] = value;
-  });
+  // Robustly get search params
+  const searchString = searchParams?.toString();
+  const href = searchString ? `${pathname}?${searchString}` : pathname;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -72,7 +70,7 @@ export function LanguageSwitcher() {
               {routing.locales.map((cur) => (
                 <Link
                   key={cur}
-                  href={{ pathname, query }}
+                  href={href}
                   locale={cur}
                   onClick={() => setIsOpen(false)}
                   className={cn(
