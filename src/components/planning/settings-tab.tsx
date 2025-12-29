@@ -54,8 +54,7 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   };
 
   return (
-    <div className="relative space-y-8 border-2 border-red-500 duration-500 animate-in fade-in slide-in-from-bottom-4">
-      <div className="absolute right-0 top-0 bg-red-500 px-1 text-xs text-white">DEBUG MODE</div>
+    <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
       <div className="premium-card space-y-4 p-6">
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Sparkles size={14} /> {t("ambiance")}
