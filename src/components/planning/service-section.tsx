@@ -86,8 +86,15 @@ export function ServiceSection({
           )}
         </div>
         {!readOnly && filter.type === "all" && (
-          <Button variant="premium" size="premium" onClick={onCreate} icon={<Plus size={16} />}>
-            <span className="text-xs font-bold text-gray-700">{t("add")}</span>
+          <Button
+            variant="premium"
+            size="premium"
+            onClick={onCreate}
+            icon={<Plus size={16} />}
+            className="btn-prominent"
+            iconClassName="bg-white/20 text-white group-hover:bg-white/40"
+          >
+            <span className="text-xs font-bold">{t("add")}</span>
           </Button>
         )}
       </div>
@@ -103,6 +110,20 @@ export function ServiceSection({
           peopleCount={service.peopleCount}
         />
       ))}
+      {!readOnly && filter.type === "all" && filteredItems.length > 3 && (
+        <div className="mt-4 flex justify-center border-t border-dashed border-gray-200 pt-4">
+          <Button
+            variant="premium"
+            size="premium"
+            onClick={onCreate}
+            icon={<Plus size={16} />}
+            className="btn-prominent w-full sm:w-auto"
+            iconClassName="bg-white/20 text-white group-hover:bg-white/40"
+          >
+            <span className="text-xs font-bold">{t("add")}</span>
+          </Button>
+        </div>
+      )}
       {service.items.length === 0 && (
         <p
           className={clsx(

@@ -2,6 +2,7 @@
   "common": {
     "title": "Nawel",
     "loading": "Chargement...",
+    "save": "Enregistrer",
     "languages": {
       "fr": "Français",
       "en": "English",

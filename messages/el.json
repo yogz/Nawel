@@ -2,6 +2,7 @@
   "common": {
     "title": "Nawel",
     "loading": "Φόρτωση...",
+    "save": "Αποθήκευση",
     "languages": {
       "fr": "Français",
       "en": "English",
