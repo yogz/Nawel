@@ -1,4 +1,5 @@
 import { getMyEventsAction } from "@/app/actions";
+import { UserNav } from "@/components/auth/user-nav";
 import { EventList } from "@/components/event-list";
 import { Landing } from "@/components/landing";
 import { auth } from "@/lib/auth-config";
@@ -30,7 +31,9 @@ export default async function Home(props: {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-6 pb-24">
-      <div className="mb-4 flex justify-end"></div>
+      <div className="mb-4 flex justify-end">
+        <UserNav />
+      </div>
       <div className="mb-8 pt-8 text-center">
         <p className="text-sm uppercase tracking-[0.2em] text-gray-500">{t("badge")}</p>
         <h1 className="mt-2 text-3xl font-bold">{t("title")}</h1>

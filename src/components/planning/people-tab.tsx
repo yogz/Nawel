@@ -37,6 +37,7 @@ export function PeopleTab({
   onUnclaim,
 }: PeopleTabProps) {
   const t = useTranslations("EventDashboard.People");
+  const tForm = useTranslations("EventDashboard.ItemForm");
   const itemsByPerson = useMemo(() => {
     const byPerson: Record<number, PersonItem[]> = {};
     plan.people.forEach((person: Person) => {
@@ -259,10 +260,19 @@ export function PeopleTab({
                               {item.price.toFixed(2)} €
                             </div>
                           )}
-                          {item.note && !item.note.startsWith("EventDashboard.Forms") && (
+                          {item.note && (
                             <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-500">
                               <MessageSquare size={12} className="text-gray-400" />
-                              <span className="max-w-[150px] truncate">{item.note}</span>
+                              <span className="max-w-[150px] truncate">
+                                {item.note.startsWith("EventDashboard.")
+                                  ? tForm("defaultNote", {
+                                      count:
+                                        service.peopleCount ||
+                                        service.adults + service.children ||
+                                        0,
+                                    })
+                                  : item.note}
+                              </span>
                             </div>
                           )}
                           {item.ingredients && item.ingredients.length > 0 && (

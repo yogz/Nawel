@@ -7,6 +7,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "../ui/button";
 
@@ -17,6 +18,7 @@ interface ItemRowProps {
   onDelete: () => void;
   readOnly?: boolean;
   allPeopleNames?: string[];
+  peopleCount?: number;
 }
 
 function ItemRowComponent({
@@ -26,7 +28,9 @@ function ItemRowComponent({
   onDelete: _onDelete,
   readOnly,
   allPeopleNames,
+  peopleCount,
 }: ItemRowProps) {
+  const t = useTranslations("EventDashboard.ItemForm");
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.id,
     disabled: readOnly,
@@ -83,7 +87,7 @@ function ItemRowComponent({
               }
             >
               <span className="inline-block max-w-[80px] truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:max-w-none">
-                {person ? person.name : "À prévoir"}
+                {person ? person.name : t("unassigned")}
               </span>
             </Button>
           </div>
@@ -106,10 +110,14 @@ function ItemRowComponent({
                 {item.price.toFixed(2)} €
               </div>
             )}
-            {item.note && !item.note.startsWith("EventDashboard.Forms") && (
+            {item.note && (
               <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-500">
                 <MessageSquare size={12} className="text-gray-400" />
-                <span className="max-w-[150px] truncate">{item.note}</span>
+                <span className="max-w-[150px] truncate">
+                  {item.note.startsWith("EventDashboard.")
+                    ? t("defaultNote", { count: peopleCount || 0 })
+                    : item.note}
+                </span>
               </div>
             )}
             {item.ingredients && item.ingredients.length > 0 && (
@@ -138,6 +146,7 @@ export const ItemRow = memo(ItemRowComponent, (prev, next) => {
     prev.item.ingredients?.length === next.item.ingredients?.length &&
     prev.person?.id === next.person?.id &&
     prev.person?.name === next.person?.name &&
-    prev.readOnly === next.readOnly
+    prev.readOnly === next.readOnly &&
+    prev.peopleCount === next.peopleCount
   );
 });

@@ -100,6 +100,7 @@ export function ServiceSection({
           onDelete={() => onDelete(item)}
           readOnly={readOnly}
           allPeopleNames={people.map((p) => p.name)}
+          peopleCount={service.peopleCount}
         />
       ))}
       {service.items.length === 0 && (

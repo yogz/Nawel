@@ -74,10 +74,7 @@ export function ItemForm({
     !defaultItem && servicePeopleCount ? t("defaultNote", { count: servicePeopleCount }) : "";
   const [name, setName] = useState(defaultItem?.name || "");
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
-  const [note, setNote] = useState(() => {
-    const noteVal = defaultItem?.note || defaultNote;
-    return noteVal?.startsWith("EventDashboard.Forms") ? "" : noteVal;
-  });
+  const [note, setNote] = useState(defaultItem?.note || defaultNote);
   const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
   const [showDetails, setShowDetails] = useState(false);
