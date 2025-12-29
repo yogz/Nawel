@@ -98,7 +98,7 @@ function ItemRowComponent({
           item.price ||
           (item.ingredients && item.ingredients.length > 0)) && (
           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-            {item.quantity && (
+            {item.quantity?.trim() && (
               <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-gray-500">
                 <Scale size={12} className="text-gray-400" />
                 {item.quantity}

@@ -118,7 +118,6 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
               variant="premium"
               className="w-full py-7 pr-8 shadow-md"
               disabled={isPending}
-              shine
             >
               <span className="text-sm font-black uppercase tracking-widest text-gray-700">
                 {isPending ? (
@@ -142,14 +141,16 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
           </div>
         </div>
 
-        <button
+        <Button
           onClick={handleGoogleAuth}
           disabled={isPending}
+          variant="outline"
           className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
+          shine
         >
           <GoogleIcon className="h-5 w-5" />
           {mode === "signin" ? "S'identifier avec Google" : "S'inscrire avec Google"}
-        </button>
+        </Button>
 
         <p className="text-center text-sm text-gray-500">
           {mode === "signin" ? (

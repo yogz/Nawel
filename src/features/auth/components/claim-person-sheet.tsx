@@ -88,7 +88,6 @@ export function ClaimPersonSheet({
               className="w-full py-7 pr-8 shadow-md"
               disabled={selectedId === null || isPending}
               onClick={handleConfirm}
-              shine
               icon={isPending ? <Loader2 className="animate-spin" /> : <Check />}
             >
               <span className="text-sm font-black uppercase tracking-widest text-gray-700">
