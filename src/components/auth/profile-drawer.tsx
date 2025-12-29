@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, usePathname } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
@@ -38,6 +39,7 @@ interface ProfileDrawerProps {
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session, isPending: sessionPending } = useSession();
   const { theme, setTheme, themes } = useThemeMode();
   const locale = useLocale() as Locale;
@@ -266,7 +268,12 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       <button
                         key={l}
                         type="button"
-                        onClick={() => router.replace(pathname, { locale: l as Locale })}
+                        onClick={() => {
+                          const searchString = searchParams?.toString();
+                          const localePrefix = l === "fr" ? "" : `/${l}`;
+                          const fullPath = `${localePrefix}${pathname}${searchString ? `?${searchString}` : ""}`;
+                          window.location.href = fullPath;
+                        }}
                         className={clsx(
                           "flex items-center justify-between rounded-xl border-2 p-3 transition-all active:scale-[0.98]",
                           isSelected

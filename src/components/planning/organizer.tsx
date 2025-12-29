@@ -278,11 +278,7 @@ export function Organizer({
         )}
 
         {tab === "settings" && (
-          <SettingsTab
-            onDeleteEvent={handleDeleteEvent}
-            readOnly={readOnly}
-            writeKey={effectiveWriteKey}
-          />
+          <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
         )}
 
         {tab === "shopping" && (
