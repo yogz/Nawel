@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import Image from "next/image";
@@ -72,15 +72,31 @@ export function ItemForm({
 
   const defaultNote =
     !defaultItem && servicePeopleCount ? t("defaultNote", { count: servicePeopleCount }) : "";
+
+  // Detect if stored note is a translation key and re-translate it
+  const getDisplayNote = (storedNote: string | null | undefined) => {
+    if (!storedNote) return defaultNote;
+    if (storedNote.startsWith("EventDashboard.")) {
+      return t("defaultNote", { count: servicePeopleCount || 0 });
+    }
+    return storedNote;
+  };
+
   const [name, setName] = useState(defaultItem?.name || "");
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
-  const [note, setNote] = useState(defaultItem?.note || defaultNote);
+  const [note, setNote] = useState(getDisplayNote(defaultItem?.note));
   const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
   const [showDetails, setShowDetails] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isEditMode = !!defaultItem;
+
+  // Ref to store latest onSubmit to avoid triggering effect on callback changes
+  const onSubmitRef = useRef(onSubmit);
+  useEffect(() => {
+    onSubmitRef.current = onSubmit;
+  }, [onSubmit]);
 
   // Auto-save logic for existing items
   useEffect(() => {
@@ -99,7 +115,7 @@ export function ItemForm({
         clearTimeout(timerRef.current);
       }
       timerRef.current = setTimeout(() => {
-        onSubmit({
+        onSubmitRef.current({
           name,
           quantity: quantity || undefined,
           note: note || undefined,
@@ -113,7 +129,7 @@ export function ItemForm({
         clearTimeout(timerRef.current);
       }
     };
-  }, [name, quantity, note, price, defaultItem, readOnly, onSubmit]);
+  }, [name, quantity, note, price, defaultItem, readOnly]);
 
   const handleSubmit = () => {
     onSubmit({
