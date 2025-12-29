@@ -10,9 +10,10 @@ import { routing, type Locale } from "@/i18n/routing";
 interface SettingsTabProps {
   onDeleteEvent: () => void;
   readOnly: boolean;
+  writeKey?: string;
 }
 
-export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
+export function SettingsTab({ onDeleteEvent, readOnly, writeKey }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
   const tCommon = useTranslations("common");
   const { theme, setTheme, themes } = useThemeMode();
@@ -24,20 +25,35 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   /*
    * DEBUG LOGS
    */
-  console.log("[DEBUG] SettingsTab Render", { pathname, searchParams: searchParams?.toString() });
+  console.log("[DEBUG] SettingsTab Render", {
+    pathname,
+    searchParams: searchParams?.toString(),
+    writeKey,
+  });
 
   const handleLanguageChange = (newLocale: Locale) => {
     // Native navigation to bypass router issues and guarantee param preservation
     if (typeof window !== "undefined") {
       const origin = window.location.origin;
-      const search = window.location.search;
+
+      // Get current search params
+      let searchString = window.location.search;
+
+      // If we have a writeKey but it's not in the URL, force it in
+      if (writeKey) {
+        const params = new URLSearchParams(searchString);
+        if (params.get("key") !== writeKey) {
+          params.set("key", writeKey);
+          searchString = `?${params.toString()}`;
+        }
+      }
 
       // Construct target path (next-intl usePathname already strips current locale)
       // Note: routing.defaultLocale is "fr"
       const targetPath = newLocale === "fr" ? pathname : `/${newLocale}${pathname}`;
 
       const cleanPath = targetPath.replace("//", "/");
-      const targetUrl = `${origin}${cleanPath}${search}`;
+      const targetUrl = `${origin}${cleanPath}${searchString}`;
 
       console.log("[DEBUG] Native redirect to:", targetUrl);
       window.location.href = targetUrl;

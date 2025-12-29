@@ -197,6 +197,10 @@ export function Organizer({
     }
   }, [tab, slug, setLogs, setLogsLoading]);
 
+  const isOwner = session?.user?.id === plan.event?.ownerId;
+  const effectiveWriteKey =
+    writeKey || (isOwner && plan.event?.adminKey ? plan.event.adminKey : undefined);
+
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
       <OrganizerHeader
@@ -210,7 +214,7 @@ export function Organizer({
         sheet={sheet}
         unassignedItemsCount={unassignedItemsCount}
         slug={slug}
-        writeKey={writeKey}
+        writeKey={effectiveWriteKey}
       />
 
       <SuccessToast
@@ -274,14 +278,18 @@ export function Organizer({
         )}
 
         {tab === "settings" && (
-          <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
+          <SettingsTab
+            onDeleteEvent={handleDeleteEvent}
+            readOnly={readOnly}
+            writeKey={effectiveWriteKey}
+          />
         )}
 
         {tab === "shopping" && (
           <ShoppingTab
             plan={plan}
             slug={slug}
-            writeKey={writeKey}
+            writeKey={effectiveWriteKey}
             currentUserId={session?.user?.id}
           />
         )}
@@ -294,7 +302,7 @@ export function Organizer({
         setSheet={setSheet}
         plan={plan}
         slug={slug}
-        writeKey={writeKey}
+        writeKey={effectiveWriteKey}
         readOnly={readOnly}
         handlers={handlers}
         isGenerating={isGenerating}
