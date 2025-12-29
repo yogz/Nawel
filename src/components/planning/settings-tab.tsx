@@ -4,6 +4,7 @@ import { Trash2, Sparkles, Check, Globe } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 
 interface SettingsTabProps {
@@ -18,9 +19,13 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleLanguageChange = (newLocale: Locale) => {
-    router.replace(pathname, { locale: newLocale });
+    // Preserve query params (like edit key) when changing language
+    const searchString = searchParams.toString();
+    const href = searchString ? `${pathname}?${searchString}` : pathname;
+    router.replace(href, { locale: newLocale });
   };
 
   const languageIcons: Record<string, string> = {
