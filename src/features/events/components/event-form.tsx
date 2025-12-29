@@ -4,6 +4,14 @@ import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export function EventForm({
   onSubmit,
@@ -30,6 +38,7 @@ export function EventForm({
   showWarnings?: boolean;
 }) {
   const t = useTranslations("CreateEvent");
+  const tShared = useTranslations("EventDashboard.Shared");
   const locale = useLocale();
   const [step, setStep] = useState(1);
   const [slug, setSlug] = useState("");
@@ -187,26 +196,46 @@ export function EventForm({
           </label>
 
           <div className="grid grid-cols-2 gap-4">
-            <label className="block space-y-2">
-              <span className="text-sm font-bold text-gray-900">{t("adultsLabel")}</span>
-              <input
-                type="number"
-                min="0"
-                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
-                value={adults}
-                onChange={(e) => setAdults(Math.max(0, parseInt(e.target.value) || 0))}
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-bold text-gray-900">{t("childrenLabel")}</span>
-              <input
-                type="number"
-                min="0"
-                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
-                value={children}
-                onChange={(e) => setChildren(Math.max(0, parseInt(e.target.value) || 0))}
-              />
-            </label>
+            <div className="space-y-2">
+              <Label
+                htmlFor="adults"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                {tShared("adultsLabel")}
+              </Label>
+              <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
+                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectValue placeholder={tShared("adultsLabel")} />
+                </SelectTrigger>
+                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                  {Array.from({ length: 51 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)} className="rounded-xl">
+                      {i} {tShared("adultsCount", { count: i })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="children"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                {tShared("childrenLabel")}
+              </Label>
+              <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
+                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectValue placeholder={tShared("childrenLabel")} />
+                </SelectTrigger>
+                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                  {Array.from({ length: 51 }, (_, i) => (
+                    <SelectItem key={i} value={String(i)} className="rounded-xl">
+                      {i} {tShared("childrenCount", { count: i })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

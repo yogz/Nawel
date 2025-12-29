@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Trash2, Check } from "lucide-react";
 import Image from "next/image";
 import { type Person } from "@/lib/types";
@@ -28,6 +28,25 @@ export function PersonEditForm({
   const tCommon = useTranslations("EventDashboard.Shared");
   const [name, setName] = useState(person.name);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
+  const skipSaveRef = useRef(false);
+  const stateRef = useRef({ name, selectedEmoji });
+
+  useEffect(() => {
+    stateRef.current = { name, selectedEmoji };
+  }, [name, selectedEmoji]);
+
+  useEffect(() => {
+    return () => {
+      if (!skipSaveRef.current && !readOnly) {
+        const { name: currName, selectedEmoji: currEmoji } = stateRef.current;
+        const hasChanged = currName !== person.name || currEmoji !== person.emoji;
+
+        if (hasChanged && currName.trim()) {
+          onSubmit(currName, currEmoji);
+        }
+      }
+    };
+  }, [person, readOnly, onSubmit]);
 
   return (
     <div className="space-y-6">
@@ -108,22 +127,13 @@ export function PersonEditForm({
       <div className="space-y-3 border-t border-gray-100 pt-6">
         <Button
           variant="premium"
-          className="w-full py-6 pr-8 shadow-md"
-          icon={<Check />}
-          onClick={() => onSubmit(name, selectedEmoji)}
-          disabled={readOnly || !name.trim()}
-          shine
-        >
-          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            {tCommon("save")}
-          </span>
-        </Button>
-        <Button
-          variant="premium"
           className="w-full border-red-100 bg-red-50/30"
           icon={<Trash2 size={16} />}
           iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-          onClick={onDelete}
+          onClick={() => {
+            skipSaveRef.current = true;
+            onDelete();
+          }}
           disabled={readOnly}
         >
           <span className="text-xs font-black uppercase tracking-widest text-red-600">

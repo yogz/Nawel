@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp } from "lucide-react";
+import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp, Check } from "lucide-react";
 import clsx from "clsx";
 import { ItemIngredients } from "./item-ingredients";
 import { useTranslations } from "next-intl";
@@ -98,38 +98,49 @@ export function ItemForm({
     onSubmitRef.current = onSubmit;
   }, [onSubmit]);
 
-  // Auto-save logic for existing items
+  const stateRef = useRef({ name, quantity, note, price });
+  const skipSaveRef = useRef(false);
+
+  // Keep stateRef in sync for the unmount cleanup
   useEffect(() => {
-    if (!defaultItem || readOnly) {
-      return;
-    }
+    stateRef.current = { name, quantity, note, price };
+  }, [name, quantity, note, price]);
 
-    const hasChanged =
-      name !== defaultItem.name ||
-      quantity !== (defaultItem.quantity || "") ||
-      note !== (defaultItem.note || "") ||
-      price !== (defaultItem.price?.toString() || "");
-
-    if (hasChanged) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      timerRef.current = setTimeout(() => {
-        onSubmitRef.current({
-          name,
-          quantity: quantity || undefined,
-          note: note || undefined,
-          price: price ? parseFloat(price) : undefined,
-        });
-      }, 1000);
-    }
-
+  // Handle save on unmount (drawer close)
+  useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
+      if (isEditMode && !skipSaveRef.current && !readOnly) {
+        const {
+          name: currName,
+          quantity: currQty,
+          note: currNote,
+          price: currPrice,
+        } = stateRef.current;
+
+        const hasChanges =
+          currName !== (defaultItem?.name || "") ||
+          currQty !== (defaultItem?.quantity || "") ||
+          currNote !== getDisplayNote(defaultItem?.note) ||
+          currPrice !== (defaultItem?.price?.toString() || "");
+
+        if (hasChanges && currName.trim()) {
+          onSubmitRef.current({
+            name: currName,
+            quantity: currQty || undefined,
+            note: currNote || undefined,
+            price: currPrice ? parseFloat(currPrice) : undefined,
+          });
+        }
       }
     };
-  }, [name, quantity, note, price, defaultItem, readOnly]);
+  }, [isEditMode, readOnly, defaultItem]); // defaultItem is stable, readOnly/isEditMode too usually
+
+  const hasChanged =
+    isEditMode &&
+    (name !== (defaultItem?.name || "") ||
+      quantity !== (defaultItem?.quantity || "") ||
+      note !== getDisplayNote(defaultItem?.note) ||
+      price !== (defaultItem?.price?.toString() || ""));
 
   const handleSubmit = () => {
     onSubmit({
@@ -337,7 +348,10 @@ export function ItemForm({
                 className="w-full border-red-100 bg-red-50/30"
                 icon={<Trash2 size={14} />}
                 iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                onClick={onDelete}
+                onClick={() => {
+                  skipSaveRef.current = true;
+                  onDelete();
+                }}
                 disabled={readOnly}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-red-600">
@@ -368,7 +382,7 @@ export function ItemForm({
         />
       )}
 
-      {/* Add button for new items */}
+      {/* Action buttons - only for creation */}
       {!isEditMode && (
         <div className="pt-4">
           <Button

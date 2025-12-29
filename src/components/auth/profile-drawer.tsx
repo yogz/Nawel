@@ -64,32 +64,26 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     }
   }, [session, open]);
 
-  // Auto-save logic for name
-  useEffect(() => {
-    if (!open || !session?.user || name === (session.user.name || "")) {
+  const handleSaveName = async () => {
+    if (!session?.user || name === (session.user.name || "") || !name.trim()) {
       return;
     }
 
-    const saveChanges = async () => {
-      setIsSubmitting(true);
-      setError(null);
-      setSuccess(false);
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(false);
 
-      try {
-        await updateUserAction({ name });
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 2000);
-      } catch (err) {
-        const error = err as Error;
-        setError(error.message || "Une erreur est survenue lors de la mise à jour.");
-      } finally {
-        setIsSubmitting(false);
-      }
-    };
-
-    const timeoutId = setTimeout(saveChanges, 1000);
-    return () => clearTimeout(timeoutId);
-  }, [name, open, session?.user]);
+    try {
+      await updateUserAction({ name });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || "Une erreur est survenue lors de la mise à jour.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
@@ -178,11 +172,32 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     id="profile-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSaveName();
+                      }
+                    }}
                     placeholder="Ex: Jean Dupont"
                     className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
                     required
                   />
                 </div>
+                {name !== (session.user.name || "") && (
+                  <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+                    <Button
+                      variant="premium"
+                      className="h-10 w-full"
+                      onClick={handleSaveName}
+                      disabled={isSubmitting || !name.trim()}
+                      icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
+                      shine
+                    >
+                      <span className="text-xs font-black uppercase tracking-widest text-gray-700">
+                        {tCommon("save") || "Enregistrer"}
+                      </span>
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* Theme Selection */}
@@ -269,14 +284,10 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                         key={l}
                         type="button"
                         onClick={async () => {
-                          // Set cookie for next-intl middleware
-                          document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`;
-
                           // Save to user profile if logged in
                           if (session?.user) {
                             try {
                               await updateUserAction({
-                                name: name,
                                 language: l,
                               });
                             } catch (err) {
@@ -284,10 +295,12 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                             }
                           }
 
-                          const searchString = searchParams?.toString();
-                          const localePrefix = l === "fr" ? "" : `/${l}`;
-                          const fullPath = `${localePrefix}${pathname}${searchString ? `?${searchString}` : ""}`;
-                          window.location.href = fullPath;
+                          // Use next-intl router for robust locale switching
+                          // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
+                          router.replace(
+                            { pathname, query: Object.fromEntries(searchParams.entries()) },
+                            { locale: l }
+                          );
                         }}
                         className={clsx(
                           "flex items-center justify-between rounded-xl border-2 p-3 transition-all active:scale-[0.98]",

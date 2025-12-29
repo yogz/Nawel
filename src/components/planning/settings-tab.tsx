@@ -3,7 +3,8 @@
 import { Trash2, Sparkles, Check, Globe } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations, useLocale } from "next-intl";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { useSession } from "@/lib/auth-client";
 import { updateUserAction } from "@/app/actions/user-actions";
@@ -18,21 +19,19 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const tCommon = useTranslations("common");
   const { theme, setTheme, themes } = useThemeMode();
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { data: session } = useSession();
 
   const handleLanguageChange = async (newLocale: Locale) => {
     if (typeof window === "undefined") return;
 
-    // Set cookie for next-intl middleware
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-
     // Save to user profile if logged in
     if (session?.user) {
       try {
         await updateUserAction({
-          name: session.user.name,
           language: newLocale,
         });
       } catch (err) {
@@ -40,10 +39,12 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
       }
     }
 
-    const searchString = window.location.search;
-    const localePrefix = newLocale === "fr" ? "" : `/${newLocale}`;
-    const fullPath = `${localePrefix}${pathname}${searchString}`;
-    window.location.href = fullPath;
+    // Use next-intl router for robust locale switching
+    // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
+    router.replace(
+      { pathname, query: Object.fromEntries(searchParams.entries()) },
+      { locale: newLocale }
+    );
   };
 
   const languageIcons: Record<string, string> = {

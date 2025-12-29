@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Languages, ChevronDown } from "lucide-react";
@@ -23,6 +23,7 @@ const localeNames: Record<Locale, string> = {
 export function LanguageSwitcher() {
   const t = useTranslations("Landing");
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -33,14 +34,10 @@ export function LanguageSwitcher() {
   const handleLocaleChange = async (newLocale: Locale) => {
     setIsOpen(false);
 
-    // Set cookie for next-intl middleware
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-
     // Save to user profile if logged in
     if (session?.user) {
       try {
         await updateUserAction({
-          name: session.user.name,
           language: newLocale,
         });
       } catch (err) {
@@ -48,10 +45,12 @@ export function LanguageSwitcher() {
       }
     }
 
-    const searchString = searchParams?.toString();
-    const localePrefix = newLocale === "fr" ? "" : `/${newLocale}`;
-    const fullPath = `${localePrefix}${pathname}${searchString ? `?${searchString}` : ""}`;
-    window.location.href = fullPath;
+    // Use next-intl router for robust locale switching
+    // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
+    router.replace(
+      { pathname, query: Object.fromEntries(searchParams.entries()) },
+      { locale: newLocale }
+    );
   };
 
   useEffect(() => {

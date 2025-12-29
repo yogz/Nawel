@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { type Service } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,10 +38,38 @@ export function ServiceEditForm({
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
+  const skipSaveRef = useRef(false);
+  const stateRef = useRef({ title, adults, children, peopleCount });
+
+  useEffect(() => {
+    stateRef.current = { title, adults, children, peopleCount };
+  }, [title, adults, children, peopleCount]);
+
+  useEffect(() => {
+    return () => {
+      if (!skipSaveRef.current) {
+        const {
+          title: currTitle,
+          adults: currAdults,
+          children: currChildren,
+          peopleCount: currCount,
+        } = stateRef.current;
+        const hasChanged =
+          currTitle !== (service?.title || "") ||
+          currAdults !== (service?.adults || 0) ||
+          currChildren !== (service?.children || 0) ||
+          currCount !== (service?.peopleCount || 0);
+
+        if (hasChanged && currTitle.trim()) {
+          onSubmit(service.id, currTitle, currAdults, currChildren, currCount);
+        }
+      }
+    };
+  }, [service, onSubmit]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(service.id, title, adults, children, peopleCount);
+    // No longer needed since we save on close, but we keep the form element for layout
   };
 
   return (
@@ -122,29 +150,16 @@ export function ServiceEditForm({
       </div>
 
       <div className="flex flex-col gap-3 pt-2">
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="premium"
-            onClick={onClose}
-            className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-          >
-            <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-              {tCommon("cancel")}
-            </span>
-          </Button>
-          <Button
-            type="submit"
-            variant="premium"
-            className="flex-[2] py-6 pr-8 shadow-md"
-            icon={<Check />}
-            shine
-          >
-            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              {tCommon("update")}
-            </span>
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="premium"
+          onClick={onClose}
+          className="w-full py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+        >
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+            {tCommon("close") || "Fermer"}
+          </span>
+        </Button>
 
         {onDelete && (
           <Button
@@ -153,7 +168,10 @@ export function ServiceEditForm({
             className="w-full border-red-100 bg-red-50/30"
             icon={<Trash2 size={16} />}
             iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-            onClick={() => onDelete(service)}
+            onClick={() => {
+              skipSaveRef.current = true;
+              onDelete(service);
+            }}
           >
             <span className="text-xs font-black uppercase tracking-widest text-red-600">
               {t("deleteButton")}

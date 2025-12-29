@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -190,6 +190,49 @@ export function MealForm({
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
 
   const isEditMode = !!meal;
+  const skipSaveRef = useRef(false);
+  const stateRef = useRef({ date, title, adults, children, time, address });
+
+  useEffect(() => {
+    stateRef.current = { date, title, adults, children, time, address };
+  }, [date, title, adults, children, time, address]);
+
+  useEffect(() => {
+    return () => {
+      if (isEditMode && !skipSaveRef.current) {
+        const {
+          date: currDate,
+          title: currTitle,
+          adults: currAdults,
+          children: currChildren,
+          time: currTime,
+          address: currAddress,
+        } = stateRef.current;
+        if (!currDate) return;
+
+        const formattedDate = format(currDate, "yyyy-MM-dd");
+        const hasChanged =
+          formattedDate !== (meal?.date || "") ||
+          currTitle !== (meal?.title || "") ||
+          currAdults !== (meal?.adults ?? defaultAdults) ||
+          currChildren !== (meal?.children ?? defaultChildren) ||
+          currTime !== (meal?.time || "") ||
+          currAddress !== (meal?.address || "");
+
+        if (hasChanged) {
+          onSubmit(
+            formattedDate,
+            currTitle,
+            undefined,
+            currAdults,
+            currChildren,
+            currTime,
+            currAddress
+          );
+        }
+      }
+    };
+  }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
 
   const handleSubmit = () => {
     if (!date) return;
@@ -395,14 +438,11 @@ export function MealForm({
                 <Button
                   type="button"
                   variant="premium"
-                  onClick={handleSubmit}
-                  disabled={!date}
-                  className="flex-[2] py-6 pr-8 shadow-md"
-                  icon={<Check />}
-                  shine
+                  onClick={onClose}
+                  className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
                 >
-                  <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    {tCommon("update")}
+                  <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+                    {tCommon("close") || "Fermer"}
                   </span>
                 </Button>
               ) : (
@@ -429,7 +469,10 @@ export function MealForm({
                 className="w-full border-red-100 bg-red-50/30"
                 icon={<Trash2 size={16} />}
                 iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                onClick={() => onDelete(meal)}
+                onClick={() => {
+                  skipSaveRef.current = true;
+                  onDelete(meal);
+                }}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-red-600">
                   {t("deleteButton")}
