@@ -36,6 +36,8 @@ export default async function Page(props: Props) {
   const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);
 
   return (
-    <Organizer initialPlan={plan} slug={params.slug} writeKey={key} writeEnabled={writeEnabled} />
+    <Suspense fallback={<div className="min-h-screen w-full animate-pulse bg-gray-50/50" />}>
+      <Organizer initialPlan={plan} slug={params.slug} writeKey={key} writeEnabled={writeEnabled} />
+    </Suspense>
   );
 }
