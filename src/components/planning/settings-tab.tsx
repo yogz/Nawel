@@ -27,21 +27,21 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   console.log("[DEBUG] SettingsTab Render", { pathname, searchParams: searchParams?.toString() });
 
   const handleLanguageChange = (newLocale: Locale) => {
-    // Robustly get search params
-    let searchString = searchParams?.toString() || "";
+    // Native navigation to bypass router issues and guarantee param preservation
+    if (typeof window !== "undefined") {
+      const origin = window.location.origin;
+      const search = window.location.search;
 
-    // Fallback to window.location if hook fails (just in case)
-    if (!searchString && typeof window !== "undefined") {
-      const currentSearch = window.location.search;
-      if (currentSearch) searchString = currentSearch.substring(1);
+      // Construct target path (next-intl usePathname already strips current locale)
+      // Note: routing.defaultLocale is "fr"
+      const targetPath = newLocale === "fr" ? pathname : `/${newLocale}${pathname}`;
+
+      const cleanPath = targetPath.replace("//", "/");
+      const targetUrl = `${origin}${cleanPath}${search}`;
+
+      console.log("[DEBUG] Native redirect to:", targetUrl);
+      window.location.href = targetUrl;
     }
-
-    // Construct the href manually to ensure params are included
-    const href = searchString ? `${pathname}?${searchString}` : pathname;
-
-    console.log("[DEBUG] Language Switch:", { from: locale, to: newLocale, href, searchString });
-
-    router.replace(href, { locale: newLocale });
   };
 
   const languageIcons: Record<string, string> = {
@@ -54,7 +54,8 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   };
 
   return (
-    <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
+    <div className="relative space-y-8 border-2 border-red-500 duration-500 animate-in fade-in slide-in-from-bottom-4">
+      <div className="absolute right-0 top-0 bg-red-500 px-1 text-xs text-white">DEBUG MODE</div>
       <div className="premium-card space-y-4 p-6">
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Sparkles size={14} /> {t("ambiance")}
