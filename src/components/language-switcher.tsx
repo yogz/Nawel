@@ -72,7 +72,7 @@ export function LanguageSwitcher() {
               {routing.locales.map((cur) => (
                 <Link
                   key={cur}
-                  href={href}
+                  href={{ pathname, query }}
                   locale={cur}
                   onClick={() => setIsOpen(false)}
                   className={cn(

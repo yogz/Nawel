@@ -22,10 +22,12 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const searchParams = useSearchParams();
 
   const handleLanguageChange = (newLocale: Locale) => {
-    // Preserve query params (like edit key) when changing language
-    const searchString = searchParams.toString();
-    const href = searchString ? `${pathname}?${searchString}` : pathname;
-    router.replace(href, { locale: newLocale });
+    // Convert searchParams to object for next-intl router query prop
+    const query: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      query[key] = value;
+    });
+    router.replace({ pathname, query }, { locale: newLocale });
   };
 
   const languageIcons: Record<string, string> = {
