@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -18,19 +18,37 @@ import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 
-// Extracted Components
+// Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
 import { SuccessToast } from "../common/success-toast";
-import { OrganizerSheets } from "./organizer-sheets";
-import { PlanningTab } from "./planning-tab";
-import { PeopleTab } from "./people-tab";
-import { SettingsTab } from "./settings-tab";
-import { ShoppingTab } from "./shopping-tab";
-import { AuthModal } from "../auth/auth-modal";
+
+// Heavy components loaded lazily (code-splitting)
+const OrganizerSheets = lazy(() =>
+  import("./organizer-sheets").then((m) => ({ default: m.OrganizerSheets }))
+);
+const PlanningTab = lazy(() => import("./planning-tab").then((m) => ({ default: m.PlanningTab })));
+const PeopleTab = lazy(() => import("./people-tab").then((m) => ({ default: m.PeopleTab })));
+const SettingsTab = lazy(() => import("./settings-tab").then((m) => ({ default: m.SettingsTab })));
+const ShoppingTab = lazy(() => import("./shopping-tab").then((m) => ({ default: m.ShoppingTab })));
+const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default: m.AuthModal })));
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
+
+// Loading skeleton for tabs
+function TabSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="h-8 w-48 animate-pulse rounded-lg bg-gray-100" />
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-24 animate-pulse rounded-2xl bg-gray-50" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function Organizer({
   initialPlan,
@@ -224,109 +242,117 @@ export function Organizer({
       />
 
       <main className="flex-1 space-y-4 px-4 py-8">
-        {tab === "planning" && (
-          <PlanningTab
-            plan={plan}
-            planningFilter={planningFilter}
-            activeItemId={activeItemId}
-            readOnly={readOnly}
-            sensors={sensors}
-            onDragStart={(e: DragStartEvent) => setActiveItemId(Number(e.active.id))}
-            onDragEnd={(e: DragEndEvent) => {
-              setActiveItemId(null);
-              const { active, over } = e;
-              if (!over || !active.id) {
-                return;
-              }
-              const itemId = Number(active.id);
-              const found = findItem(itemId);
-              if (!found) {
-                return;
-              }
-
-              if (typeof over.id === "string" && over.id.startsWith("service-")) {
-                handleMoveItem(itemId, Number(over.id.replace("service-", "")));
-              } else if (typeof over.id === "number") {
-                const targetItem = findItem(over.id);
-                if (targetItem && targetItem.service.id !== found.service.id) {
-                  const targetIndex = targetItem.service.items.findIndex((i) => i.id === over.id);
-                  handleMoveItem(itemId, targetItem.service.id, targetIndex);
+        <Suspense fallback={<TabSkeleton />}>
+          {tab === "planning" && (
+            <PlanningTab
+              plan={plan}
+              planningFilter={planningFilter}
+              activeItemId={activeItemId}
+              readOnly={readOnly}
+              sensors={sensors}
+              onDragStart={(e: DragStartEvent) => setActiveItemId(Number(e.active.id))}
+              onDragEnd={(e: DragEndEvent) => {
+                setActiveItemId(null);
+                const { active, over } = e;
+                if (!over || !active.id) {
+                  return;
                 }
+                const itemId = Number(active.id);
+                const found = findItem(itemId);
+                if (!found) {
+                  return;
+                }
+
+                if (typeof over.id === "string" && over.id.startsWith("service-")) {
+                  handleMoveItem(itemId, Number(over.id.replace("service-", "")));
+                } else if (typeof over.id === "number") {
+                  const targetItem = findItem(over.id);
+                  if (targetItem && targetItem.service.id !== found.service.id) {
+                    const targetIndex = targetItem.service.items.findIndex((i) => i.id === over.id);
+                    handleMoveItem(itemId, targetItem.service.id, targetIndex);
+                  }
+                }
+              }}
+              onAssign={(item: Item, serviceId?: number) =>
+                setSheet({ type: "item", serviceId, item })
               }
-            }}
-            onAssign={(item: Item, serviceId?: number) =>
-              setSheet({ type: "item", serviceId, item })
-            }
-            onDelete={handleDelete}
-            onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
-            onCreateService={() => setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })}
-            setSheet={setSheet}
-          />
-        )}
+              onDelete={handleDelete}
+              onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
+              onCreateService={() => setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })}
+              setSheet={setSheet}
+            />
+          )}
 
-        {tab === "people" && (
-          <PeopleTab
-            plan={plan}
-            selectedPerson={selectedPerson}
-            setSelectedPerson={setSelectedPerson}
-            setSheet={setSheet}
-            readOnly={readOnly}
-            currentUserId={session?.user?.id}
-            onClaim={handleClaimPerson}
-            onUnclaim={handleUnclaimPerson}
-          />
-        )}
+          {tab === "people" && (
+            <PeopleTab
+              plan={plan}
+              selectedPerson={selectedPerson}
+              setSelectedPerson={setSelectedPerson}
+              setSheet={setSheet}
+              readOnly={readOnly}
+              currentUserId={session?.user?.id}
+              onClaim={handleClaimPerson}
+              onUnclaim={handleUnclaimPerson}
+            />
+          )}
 
-        {tab === "settings" && (
-          <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
-        )}
+          {tab === "settings" && (
+            <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
+          )}
 
-        {tab === "shopping" && (
-          <ShoppingTab
-            plan={plan}
-            slug={slug}
-            writeKey={effectiveWriteKey}
-            currentUserId={session?.user?.id}
-          />
-        )}
+          {tab === "shopping" && (
+            <ShoppingTab
+              plan={plan}
+              slug={slug}
+              writeKey={effectiveWriteKey}
+              currentUserId={session?.user?.id}
+            />
+          )}
+        </Suspense>
       </main>
 
       <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
 
-      <OrganizerSheets
-        sheet={sheet}
-        setSheet={setSheet}
-        plan={plan}
-        slug={slug}
-        writeKey={effectiveWriteKey}
-        readOnly={readOnly}
-        handlers={handlers}
-        isGenerating={isGenerating}
-        setIsGenerating={setIsGenerating}
-        setSuccessMessage={setSuccessMessage}
-        planningFilter={planningFilter}
-        setPlanningFilter={setPlanningFilter}
-        currentUserId={session?.user?.id}
-        currentUserImage={session?.user?.image}
-        onAuth={() => {
-          setSheet(null); // Close guest-access sheet first
-          setIsAuthModalOpen(true);
-        }}
-        onDismissGuestPrompt={dismissGuestPrompt}
-        onJoinNew={() => {
-          joinEventAction({ slug, key: writeKey }).then((result) => {
-            if (result && !plan.people.some((p) => p.id === result.id)) {
-              setPlan((prev) => ({
-                ...prev,
-                people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
-              }));
-            }
-            setSheet(null);
-          });
-        }}
-      />
+      {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
+      <Suspense fallback={null}>
+        <OrganizerSheets
+          sheet={sheet}
+          setSheet={setSheet}
+          plan={plan}
+          slug={slug}
+          writeKey={effectiveWriteKey}
+          readOnly={readOnly}
+          handlers={handlers}
+          isGenerating={isGenerating}
+          setIsGenerating={setIsGenerating}
+          setSuccessMessage={setSuccessMessage}
+          planningFilter={planningFilter}
+          setPlanningFilter={setPlanningFilter}
+          currentUserId={session?.user?.id}
+          currentUserImage={session?.user?.image}
+          onAuth={() => {
+            setSheet(null); // Close guest-access sheet first
+            setIsAuthModalOpen(true);
+          }}
+          onDismissGuestPrompt={dismissGuestPrompt}
+          onJoinNew={() => {
+            joinEventAction({ slug, key: writeKey }).then((result) => {
+              if (result && !plan.people.some((p) => p.id === result.id)) {
+                setPlan((prev) => ({
+                  ...prev,
+                  people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
+                }));
+              }
+              setSheet(null);
+            });
+          }}
+        />
+      </Suspense>
 
-      <AuthModal open={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      {/* Lazy-loaded auth modal */}
+      <Suspense fallback={null}>
+        <AuthModal open={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      </Suspense>
     </div>
   );
 }
