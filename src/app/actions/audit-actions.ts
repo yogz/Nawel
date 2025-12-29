@@ -2,16 +2,12 @@
 
 import { db } from "@/lib/db";
 import { changeLogs, user } from "@drizzle/schema";
-import { desc, eq, SQL, and, sql } from "drizzle-orm";
+import { desc, eq, and, sql } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { createSafeAction } from "@/lib/action-utils";
-import {
-  getAuditLogsSchema,
-  deleteAuditLogsSchema,
-  auditTableNames,
-  auditActions,
-} from "./schemas";
+import { getAuditLogsSchema, deleteAuditLogsSchema } from "./schemas";
 
 export type AuditLogEntry = typeof changeLogs.$inferSelect & {
   userName?: string | null;

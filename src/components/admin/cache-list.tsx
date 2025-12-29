@@ -67,7 +67,9 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
   };
 
   const handleDelete = async () => {
-    if (!deletingEntry) return;
+    if (!deletingEntry) {
+      return;
+    }
 
     startTransition(async () => {
       await deleteCacheEntryAction({ id: deletingEntry.id });
@@ -78,7 +80,9 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!editingEntry) return;
+    if (!editingEntry) {
+      return;
+    }
 
     const formData = new FormData(e.currentTarget);
     const ingredients = formData.get("ingredients") as string;

@@ -34,7 +34,6 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   const getEditUrl = (event: EventWithStats) => {
-    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     return event.adminKey ? `/event/${event.slug}?key=${event.adminKey}` : `/event/${event.slug}`;
   };
 

@@ -4,20 +4,43 @@ import { useState, useTransition } from "react";
 import { type AuditLogEntry, deleteAuditLogsAction } from "@/app/actions/audit-actions";
 import { Button } from "@/components/ui/button";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import {
-  Search,
-  Eye,
-  History,
-  User,
-  Globe,
-  Link,
-  Settings,
-  Trash2,
-  AlertCircle,
-} from "lucide-react";
+import { Eye, History, User, Globe, Link, Settings, Trash2, AlertCircle } from "lucide-react";
+
+function JsonViewer({ data, label }: { data: string | null; label: string }) {
+  if (!data) {
+    return null;
+  }
+
+  let parsed: unknown = null;
+  let parseError = false;
+
+  try {
+    parsed = JSON.parse(data);
+  } catch {
+    parseError = true;
+  }
+
+  if (parseError) {
+    return (
+      <div className="space-y-1">
+        <span className="text-xs font-semibold uppercase text-muted-foreground">{label}</span>
+        <p className="rounded bg-red-50 p-2 text-xs text-red-600">Erreur de lecture JSON</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      <span className="text-xs font-semibold uppercase text-muted-foreground">{label}</span>
+      <pre className="overflow-x-auto rounded-lg bg-black/5 p-3 font-mono text-xs">
+        {JSON.stringify(parsed, null, 2)}
+      </pre>
+    </div>
+  );
+}
 
 export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) {
-  const [logs, setLogs] = useState(initialLogs);
+  const [logs, _setLogs] = useState(initialLogs);
   const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
   const [showManageModal, setShowManageModal] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -27,14 +50,16 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
       ? `Supprimer tous les logs de plus de ${days} jours ?`
       : "Supprimer TOUS les logs d'audit ? Cette action est irréversible.";
 
-    if (!confirm(confirmMsg)) return;
+    if (!confirm(confirmMsg)) {
+      return;
+    }
 
     startTransition(async () => {
       try {
         await deleteAuditLogsAction(days ? { olderThanDays: days } : { deleteAll: true });
         // Refresh to show empty state
         window.location.reload();
-      } catch (error) {
+      } catch {
         alert("Erreur lors de la suppression");
       }
     });
@@ -81,15 +106,19 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
   };
 
   const renderChangeSummary = (log: AuditLogEntry) => {
-    if (log.action === "create")
+    if (log.action === "create") {
       return <span className="text-xs font-medium text-green-600">Nouveau record crée</span>;
-    if (log.action === "delete")
+    }
+    if (log.action === "delete") {
       return <span className="text-xs font-medium text-red-600">Record supprimé</span>;
-    if (!log.oldData || !log.newData) return null;
+    }
+    if (!log.oldData || !log.newData) {
+      return null;
+    }
 
     try {
-      const oldObj = JSON.parse(log.oldData);
-      const newObj = JSON.parse(log.newData);
+      const oldObj = JSON.parse(log.oldData) as Record<string, unknown>;
+      const newObj = JSON.parse(log.newData) as Record<string, unknown>;
       const changes: string[] = [];
 
       const skipKeys = [
@@ -103,23 +132,30 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
         "adminKey",
       ];
 
-      const formatVal = (v: any) => {
-        if (v === null || v === undefined) return "vide";
-        if (typeof v === "object") return "...";
+      const formatVal = (v: unknown): string => {
+        if (v === null || v === undefined) {
+          return "vide";
+        }
+        if (typeof v === "object") {
+          return "...";
+        }
         return String(v);
       };
 
       Object.keys(newObj).forEach((key) => {
-        if (skipKeys.includes(key)) return;
+        if (skipKeys.includes(key)) {
+          return;
+        }
         if (JSON.stringify(oldObj[key]) !== JSON.stringify(newObj[key])) {
           changes.push(`${key}: ${formatVal(oldObj[key])} → ${formatVal(newObj[key])}`);
         }
       });
 
-      if (changes.length === 0)
+      if (changes.length === 0) {
         return (
           <span className="text-[10px] italic text-muted-foreground">Aucun changement visible</span>
         );
+      }
 
       return (
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -144,47 +180,35 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
   };
 
   const getRecordDisplayName = (log: AuditLogEntry) => {
+    let data: Record<string, unknown> | null = null;
+
     try {
-      const data = log.newData
-        ? JSON.parse(log.newData)
+      data = log.newData
+        ? (JSON.parse(log.newData) as Record<string, unknown>)
         : log.oldData
-          ? JSON.parse(log.oldData)
+          ? (JSON.parse(log.oldData) as Record<string, unknown>)
           : null;
-      if (!data) return `#${log.recordId}`;
-      const name = data.name || data.title || data.dishName || data.email;
-      return name ? (
-        <>
-          <span className="font-bold text-primary">{name}</span>
-          <span className="ml-1 text-[10px] text-muted-foreground">#{log.recordId}</span>
-        </>
-      ) : (
-        `#${log.recordId}`
-      );
     } catch {
       return `#${log.recordId}`;
     }
-  };
 
-  const JsonViewer = ({ data, label }: { data: string | null; label: string }) => {
-    if (!data) return null;
-    try {
-      const parsed = JSON.parse(data);
-      return (
-        <div className="space-y-1">
-          <span className="text-xs font-semibold uppercase text-muted-foreground">{label}</span>
-          <pre className="overflow-x-auto rounded-lg bg-black/5 p-3 font-mono text-xs">
-            {JSON.stringify(parsed, null, 2)}
-          </pre>
-        </div>
-      );
-    } catch {
-      return (
-        <div className="space-y-1">
-          <span className="text-xs font-semibold uppercase text-muted-foreground">{label}</span>
-          <p className="rounded bg-red-50 p-2 text-xs text-red-600">Erreur de lecture JSON</p>
-        </div>
-      );
+    if (!data) {
+      return `#${log.recordId}`;
     }
+
+    const rawName = data.name || data.title || data.dishName || data.email;
+    const name = typeof rawName === "string" ? rawName : null;
+
+    if (!name) {
+      return `#${log.recordId}`;
+    }
+
+    return (
+      <>
+        <span className="font-bold text-primary">{name}</span>
+        <span className="ml-1 text-[10px] text-muted-foreground">#{log.recordId}</span>
+      </>
+    );
   };
 
   return (

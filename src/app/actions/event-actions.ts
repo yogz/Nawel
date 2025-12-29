@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { type z } from "zod";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";

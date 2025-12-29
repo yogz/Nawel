@@ -25,11 +25,17 @@ export function ModelComparison() {
   const [isPending, startTransition] = useTransition();
   const [isClient, setIsClient] = useState(false);
 
-  // Initialiser les modèles côté client pour éviter les erreurs d'hydratation
+  // Initialiser côté client pour éviter les erreurs d'hydratation
   useEffect(() => {
-    setSelectedModels([...AVAILABLE_FREE_MODELS]);
     setIsClient(true);
   }, []);
+
+  // Initialiser les modèles après le premier render
+  useEffect(() => {
+    if (isClient && selectedModels.length === 0) {
+      setSelectedModels([...AVAILABLE_FREE_MODELS]);
+    }
+  }, [isClient, selectedModels.length]);
 
   const handleDishNameChange = (value: string) => {
     setDishName(value);
@@ -51,13 +57,17 @@ export function ModelComparison() {
   const deselectAllModels = () => setSelectedModels([]);
 
   const runComparison = () => {
-    if (selectedModels.length === 0) return;
+    if (selectedModels.length === 0) {
+      return;
+    }
 
-    console.group("🧪 Model Comparison Test");
-    console.log("📋 Selected models:", selectedModels);
-    console.log("📝 System Prompt:\n", systemPrompt);
-    console.log("💬 User Prompt:", userPrompt);
-    console.groupEnd();
+    if (process.env.NODE_ENV === "development") {
+      console.group("🧪 Model Comparison Test");
+      console.log("📋 Selected models:", selectedModels);
+      console.log("📝 System Prompt:\n", systemPrompt);
+      console.log("💬 User Prompt:", userPrompt);
+      console.groupEnd();
+    }
 
     startTransition(async () => {
       try {
@@ -67,19 +77,21 @@ export function ModelComparison() {
         setResults(sortedResults);
 
         // Log results
-        console.group("📊 Model Comparison Results");
-        sortedResults.forEach((result, index) => {
-          const status = result.success ? "✅" : "❌";
-          console.group(`${status} #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
-          if (result.success) {
-            console.log("Ingredients:", result.ingredients);
-            console.log("Raw response:", result.rawResponse);
-          } else {
-            console.error("Error:", result.error);
-          }
+        if (process.env.NODE_ENV === "development") {
+          console.group("📊 Model Comparison Results");
+          sortedResults.forEach((result, index) => {
+            const status = result.success ? "✅" : "❌";
+            console.group(`${status} #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
+            if (result.success) {
+              console.log("Ingredients:", result.ingredients);
+              console.log("Raw response:", result.rawResponse);
+            } else {
+              console.error("Error:", result.error);
+            }
+            console.groupEnd();
+          });
           console.groupEnd();
-        });
-        console.groupEnd();
+        }
       } catch (error) {
         console.error("Test failed:", error);
       }

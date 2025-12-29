@@ -34,7 +34,7 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
 
     revalidatePath("/");
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw error;
   }
 });
@@ -68,7 +68,7 @@ export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) 
     });
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Delete user error:", error);
     throw new Error("Une erreur est survenue lors de la suppression de votre compte.");
   }

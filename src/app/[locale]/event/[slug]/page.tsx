@@ -4,7 +4,6 @@ import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
 import { Organizer } from "@/components/planning/organizer";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Locale } from "@/i18n/routing";
 
 // ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
 export const revalidate = 30;

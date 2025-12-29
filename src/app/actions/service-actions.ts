@@ -56,9 +56,12 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
       where: eq(services.id, input.id),
     });
 
-    if (!current) throw new Error("Service non trouvé");
+    if (!current) {
+      throw new Error("Service non trouvé");
+    }
 
-    const oldPeopleCount = current.peopleCount;
+    // Reserved for future cascade logic
+    const _oldPeopleCount = current.peopleCount;
 
     const newAdults = input.adults !== undefined ? input.adults : current.adults;
     const newChildren = input.children !== undefined ? input.children : current.children;

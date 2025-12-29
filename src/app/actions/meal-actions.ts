@@ -94,14 +94,17 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
     const current = await tx.query.meals.findFirst({
       where: eq(meals.id, input.id),
     });
-    if (!current) throw new Error("Repas non trouvé");
+    if (!current) {
+      throw new Error("Repas non trouvé");
+    }
 
     const oldAdults = current.adults;
     const oldChildren = current.children;
     const newAdults = input.adults ?? oldAdults;
     const newChildren = input.children ?? oldChildren;
 
-    const guestsChanged = newAdults !== oldAdults || newChildren !== oldChildren;
+    // Reserved for future cascade logic
+    const _guestsChanged = newAdults !== oldAdults || newChildren !== oldChildren;
 
     // 2. Update meal
     const [updatedMeal] = await tx

@@ -313,13 +313,15 @@ export const testModelsAction = withErrorThrower(
   ): Promise<ModelTestResult[]> => {
     await requireAdmin();
 
-    console.log("\n========== MODEL COMPARISON TEST ==========");
-    console.log("Models:", models);
-    console.log("\n--- System Prompt ---");
-    console.log(systemPrompt);
-    console.log("\n--- User Prompt ---");
-    console.log(userPrompt);
-    console.log("============================================\n");
+    if (process.env.NODE_ENV === "development") {
+      console.log("\n========== MODEL COMPARISON TEST ==========");
+      console.log("Models:", models);
+      console.log("\n--- System Prompt ---");
+      console.log(systemPrompt);
+      console.log("\n--- User Prompt ---");
+      console.log(userPrompt);
+      console.log("============================================\n");
+    }
 
     // Test tous les modèles en parallèle
     const results = await Promise.all(
@@ -327,22 +329,24 @@ export const testModelsAction = withErrorThrower(
     );
 
     // Log des résultats
-    console.log("\n========== RESULTS ==========");
-    results
-      .sort((a, b) => a.responseTimeMs - b.responseTimeMs)
-      .forEach((result, index) => {
-        const status = result.success ? "✓" : "✗";
-        console.log(`\n[${status}] #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
-        if (result.success) {
-          console.log("Ingredients:", JSON.stringify(result.ingredients, null, 2));
-        } else {
-          console.log("Error:", result.error);
-        }
-        if (result.rawResponse) {
-          console.log("Raw:", result.rawResponse);
-        }
-      });
-    console.log("\n==============================\n");
+    if (process.env.NODE_ENV === "development") {
+      console.log("\n========== RESULTS ==========");
+      results
+        .sort((a, b) => a.responseTimeMs - b.responseTimeMs)
+        .forEach((result, index) => {
+          const status = result.success ? "✓" : "✗";
+          console.log(`\n[${status}] #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
+          if (result.success) {
+            console.log("Ingredients:", JSON.stringify(result.ingredients, null, 2));
+          } else {
+            console.log("Error:", result.error);
+          }
+          if (result.rawResponse) {
+            console.log("Raw:", result.rawResponse);
+          }
+        });
+      console.log("\n==============================\n");
+    }
 
     return results;
   }

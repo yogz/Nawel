@@ -60,9 +60,3 @@ export async function fetchPlan(slug: string): Promise<PlanData> {
     people: peopleList as Person[],
   };
 }
-
-export async function fetchAllEvents() {
-  return await db.query.events.findMany({
-    orderBy: asc(events.createdAt),
-  });
-}

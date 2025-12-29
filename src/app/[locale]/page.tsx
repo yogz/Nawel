@@ -40,7 +40,7 @@ export default async function Home(props: {
         <p className="mt-2 text-gray-600">{t("description")}</p>
       </div>
 
-      <EventList events={events} writeEnabled={true} writeKey={key} />
+      <EventList events={events} writeEnabled writeKey={key} />
     </main>
   );
 }

@@ -19,7 +19,7 @@ export default function Loading() {
           }}
           className="relative h-12 w-12"
         >
-          <div className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-20"></div>
+          <div className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-20" />
           <div className="flex h-full w-full items-center justify-center rounded-full bg-white shadow-lg">
             <span className="text-2xl">🎄</span>
           </div>

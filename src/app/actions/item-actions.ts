@@ -93,7 +93,7 @@ export const assignItemAction = createSafeAction(assignItemSchema, async (input)
     .set({ personId: input.personId })
     .where(eq(items.id, input.id))
     .returning();
-  await logChange("update", "items", updated.id, null, updated);
+  await logChange("update", "items", updated.id, oldItem, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
