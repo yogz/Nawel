@@ -140,8 +140,8 @@ export function PlanningTab({
                           <Button
                             variant="premium"
                             className="h-8 w-8 rounded-full border border-black/[0.03] bg-white/50 p-0 shadow-sm transition-all hover:bg-white hover:shadow-md"
-                            icon={<CalendarPlus className="h-4 w-4 text-accent" />}
-                            iconClassName="h-7 w-7 bg-transparent shadow-none ring-0"
+                            icon={<CalendarPlus className="h-4 w-4" />}
+                            iconClassName="h-7 w-7 shadow-none ring-0"
                             aria-label={t("calendar.options")}
                           />
                         </PopoverTrigger>
