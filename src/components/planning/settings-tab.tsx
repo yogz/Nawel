@@ -27,6 +27,11 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
     searchParams.forEach((value, key) => {
       query[key] = value;
     });
+    console.log("[DEBUG] Language change:", {
+      pathname,
+      query,
+      searchParams: searchParams.toString(),
+    });
     router.replace({ pathname, query }, { locale: newLocale });
   };
 
