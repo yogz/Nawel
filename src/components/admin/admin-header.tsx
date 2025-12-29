@@ -3,7 +3,7 @@
 import { useRouter, usePathname, Link } from "@/i18n/navigation";
 import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield, Calendar, Database, Users, FlaskConical } from "lucide-react";
+import { LogOut, Shield, Calendar, Database, Users, FlaskConical, Quote } from "lucide-react";
 import clsx from "clsx";
 
 type User = {
@@ -15,6 +15,7 @@ type User = {
 
 const navItems = [
   { href: "/admin", label: "Événements", icon: Calendar },
+  { href: "/admin/citations", label: "Citations", icon: Quote },
   { href: "/admin/cache", label: "Cache IA", icon: Database },
   { href: "/admin/models", label: "Modèles", icon: FlaskConical },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
