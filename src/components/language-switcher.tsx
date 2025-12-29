@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Languages, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
@@ -21,8 +22,13 @@ export function LanguageSwitcher() {
   const t = useTranslations("Landing");
   const locale = useLocale() as Locale;
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Build href with search params to preserve the edit key
+  const searchString = searchParams.toString();
+  const href = searchString ? `${pathname}?${searchString}` : pathname;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,7 +70,7 @@ export function LanguageSwitcher() {
               {routing.locales.map((cur) => (
                 <Link
                   key={cur}
-                  href={pathname}
+                  href={href}
                   locale={cur}
                   onClick={() => setIsOpen(false)}
                   className={cn(
