@@ -99,6 +99,7 @@ export function useItemHandlers({
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
+      setSuccessMessage({ text: "Modifications enregistrées ✓", type: "success" });
       if (closeSheet) {
         setSheet(null);
       }
