@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createEventAction, updateEventAction, deleteEventAction } from "@/app/actions";
-import { Calendar, Plus, Clock, History, Pencil, Trash2, X, AlertTriangle } from "lucide-react";
+import { Calendar, Plus, Clock, History, Pencil, Trash2 } from "lucide-react";
+import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
 import { useTranslations } from "next-intl";
@@ -37,12 +38,10 @@ export function EventList({
   const router = useRouter();
   const { data: session } = useSession();
   const t = useTranslations("Dashboard.EventList");
-  const tShared = useTranslations("EventDashboard.Shared");
 
   const [error, setError] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
-  const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   const handleCreateEvent = async (
     slug: string,
@@ -115,7 +114,6 @@ export function EventList({
           key: writeKey || deletingEvent.adminKey || undefined,
         });
         setDeletingEvent(null);
-        setDeleteConfirmText("");
         router.refresh();
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : t("errorOccurred");
@@ -314,65 +312,13 @@ export function EventList({
         />
       )}
 
-      {deletingEvent && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center sm:p-4">
-          <div className="w-full duration-300 animate-in fade-in slide-in-from-bottom-4 sm:max-w-md">
-            <div className="mx-auto mb-2 flex h-1.5 w-12 rounded-full bg-white/20 sm:hidden" />
-            <div className="rounded-t-[32px] border-x border-t border-white/20 bg-white p-8 shadow-2xl sm:rounded-[32px] sm:border">
-              <div className="mb-6 flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">
-                  <AlertTriangle size={24} />
-                </div>
-                <button
-                  onClick={() => setDeletingEvent(null)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-xl font-black text-gray-900">{t("deleteConfirmTitle")}</h3>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  {t("deleteConfirmDescription")}
-                </p>
-              </div>
-
-              <div className="mt-8 space-y-4">
-                <div className="space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-                    {t("deleteConfirmInstruction", { name: deletingEvent.name })}
-                  </p>
-                  <input
-                    type="text"
-                    value={deleteConfirmText}
-                    onChange={(e) => setDeleteConfirmText(e.target.value)}
-                    placeholder={t("deleteConfirmPlaceholder")}
-                    className="w-full rounded-2xl border-2 border-gray-100 bg-gray-50/50 px-4 py-3.5 text-sm font-medium outline-none transition-all focus:border-red-500/50 focus:bg-white"
-                    autoFocus
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setDeletingEvent(null)}
-                    className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-500 transition-all active:scale-95"
-                  >
-                    {t("deleteCancelButton")}
-                  </button>
-                  <button
-                    disabled={deleteConfirmText !== deletingEvent.name || isPending}
-                    onClick={handleDeleteEvent}
-                    className="flex-[2] rounded-2xl bg-red-500 px-4 py-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-500/20 transition-all active:scale-95 disabled:scale-100 disabled:opacity-30"
-                  >
-                    {isPending ? tShared("deleting") : t("deleteConfirmButton")}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteEventDialog
+        open={!!deletingEvent}
+        onOpenChange={(open) => !open && setDeletingEvent(null)}
+        eventName={deletingEvent?.name || ""}
+        onConfirm={handleDeleteEvent}
+        isPending={isPending}
+      />
     </div>
   );
 }

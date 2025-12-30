@@ -18,18 +18,8 @@ import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
+import { DeleteEventDialog } from "../common/delete-event-dialog";
 import { Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -107,7 +97,7 @@ export function Organizer({
     }
     return false;
   });
-  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Persist guest prompt dismissal to localStorage
   const dismissGuestPrompt = () => {
@@ -329,57 +319,21 @@ export function Organizer({
 
       {isOwner && (
         <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500">
-                <Trash2 size={12} /> {useTranslations("EventDashboard.Organizer")("deleteEvent")}
-              </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {useTranslations("EventDashboard.Organizer")("deleteConfirmTitle")}
-                </DialogTitle>
-                <DialogDescription>
-                  {useTranslations("EventDashboard.Organizer")("deleteConfirmDescription")}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-3 py-4">
-                <p className="text-text/60 text-xs font-semibold">
-                  {useTranslations("EventDashboard.Organizer")("deleteConfirmInstruction", {
-                    name: plan.event?.name || slug,
-                  })}
-                </p>
-                <Input
-                  value={deleteConfirmationText}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setDeleteConfirmationText(e.target.value)
-                  }
-                  placeholder={useTranslations("EventDashboard.Organizer")(
-                    "deleteConfirmPlaceholder"
-                  )}
-                  className="rounded-xl border-red-100 bg-red-50/20 focus:border-red-300 focus:ring-red-200"
-                />
-              </div>
-              <DialogFooter className="gap-2">
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto">
-                    {useTranslations("EventDashboard.Organizer")("deleteCancelButton")}
-                  </Button>
-                </DialogTrigger>
-                <Button
-                  variant="destructive"
-                  className="w-full sm:w-auto"
-                  onClick={handleDeleteEvent}
-                  disabled={deleteConfirmationText !== (plan.event?.name || slug)}
-                >
-                  {useTranslations("EventDashboard.Organizer")("deleteConfirmButton")}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <button
+            onClick={() => setDeleteDialogOpen(true)}
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
+          >
+            <Trash2 size={12} /> {useTranslations("EventDashboard.Organizer")("deleteEvent")}
+          </button>
         </div>
       )}
+
+      <DeleteEventDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        eventName={plan.event?.name || slug}
+        onConfirm={handleDeleteEvent}
+      />
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
       <Suspense fallback={null}>
