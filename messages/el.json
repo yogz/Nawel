@@ -390,6 +390,7 @@
       "slogan": "Σλόγκαν",
       "chant": "Ύμνος",
       "film_quote": "Ατάκα ταινίας",
+      "aphorism": "Αφορισμός",
       "language": "Γλώσσα",
       "format": "Μορφή"
     },
@@ -397,7 +398,8 @@
       "popular": "Λαϊκό",
       "micro": "Μικρό",
       "campaign": "Καμπάνια",
-      "act_up": "Act Up"
+      "act_up": "Act Up",
+      "attributed": "Αποδιδόμενο"
     }
   }
 }

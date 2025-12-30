@@ -910,7 +910,9 @@
       "tags": ["fr", "perspective"],
       "attribution": {
         "author": "Marcel Proust",
-        "work": "Aphorisme attribué",
+        "work": null,
+        "origin_type": "aphorism",
+        "origin_qualifier": "attributed",
         "year": null,
         "origin": null,
         "confidence": "medium",
@@ -1693,7 +1695,9 @@
       "tags": ["en", "togetherness", "team"],
       "attribution": {
         "author": "Helen Keller",
-        "work": "Citation attribuée",
+        "work": null,
+        "origin_type": "quote_short",
+        "origin_qualifier": "attributed",
         "year": null,
         "origin": null,
         "confidence": "high",

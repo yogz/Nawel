@@ -390,6 +390,7 @@
       "slogan": "Slogan",
       "chant": "Gesang",
       "film_quote": "Filmzitat",
+      "aphorism": "Aphorismus",
       "language": "Sprache",
       "format": "Format"
     },
@@ -397,7 +398,8 @@
       "popular": "Volkstümlich",
       "micro": "Mikro",
       "campaign": "Kampagne",
-      "act_up": "Act Up"
+      "act_up": "Act Up",
+      "attributed": "Zugeschrieben"
     }
   }
 }

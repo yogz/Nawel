@@ -1,5 +1,5 @@
-import { db } from "./src/lib/db";
-import { events } from "./drizzle/schema";
+import { db } from "../src/lib/db";
+import { events } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 async function checkTestEvent() {

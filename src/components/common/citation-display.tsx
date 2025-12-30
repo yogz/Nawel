@@ -30,25 +30,44 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
 
   const attributionLabel = useMemo(() => {
     const attr = citationItem.attribution;
+    const parts: string[] = [];
 
-    // 1. Author & Work (Priority 1 & formats)
+    // 1. Author & Work (Priority 1)
     if (attr.author && attr.work) {
-      return `${attr.author}, ${attr.work}`;
+      if (attr.work === "Aphorisme attribué" || attr.work === "Citation attribuée") {
+        // Skip hardcoded legacy work strings
+      } else {
+        parts.push(`${attr.author}, ${attr.work}`);
+      }
+    } else if (attr.author) {
+      parts.push(attr.author);
+    } else if (attr.work) {
+      parts.push(attr.work);
     }
 
-    // 2. Author only
-    if (attr.author) return attr.author;
-
-    // 3. Work only
-    if (attr.work) return attr.work;
-
-    // 4. Origin Type (with optional qualifier)
+    // 2. Origin Type (with optional qualifier)
     if (attr.origin_type) {
       const type = t(`types.${attr.origin_type}`);
       let qualifier = "";
 
+      const flagMap: Record<string, string> = {
+        fr: "🇫🇷",
+        en: "🇬🇧",
+        es: "🇪🇸",
+        pt: "🇵🇹",
+        de: "🇩🇪",
+        el: "🇬🇷",
+        it: "🇮🇹",
+        ja: "🇯🇵",
+        la: "📜",
+        sv: "🇸🇪",
+      };
+
+      const flag =
+        flagMap[attr.origin_qualifier || ""] || flagMap[citationItem.original.lang] || "";
+
       if (attr.origin_qualifier) {
-        const languages = ["fr", "en", "el", "es", "pt", "de", "it", "ja", "la", "sv"];
+        const languages = Object.keys(flagMap);
         if (languages.includes(attr.origin_qualifier)) {
           qualifier = tLang(attr.origin_qualifier);
         } else {
@@ -60,10 +79,18 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
         }
       }
 
-      return qualifier ? `${type} (${qualifier})` : type;
+      const typeLabel = qualifier ? `${type} (${qualifier})` : type;
+      const finalLabel = flag ? `${flag} ${typeLabel}` : typeLabel;
+
+      // If we already have an author, combine them (e.g. "Marcel Proust, Aphorisme (Attribué)")
+      if (parts.length > 0) {
+        return `${parts[0]}, ${finalLabel}`;
+      }
+      return finalLabel;
     }
 
-    // 5. Fallback or Anonymous
+    // 3. Fallback or Anonymous
+    if (parts.length > 0) return parts[0];
     return attr.origin || t("anonymous");
   }, [citationItem, t, tLang]);
 

@@ -390,6 +390,7 @@
       "slogan": "Slogan",
       "chant": "Canto",
       "film_quote": "Citação de filme",
+      "aphorism": "Aforismo",
       "language": "Idioma",
       "format": "Formato"
     },
@@ -397,7 +398,8 @@
       "popular": "Popular",
       "micro": "Micro",
       "campaign": "Campanha",
-      "act_up": "Act Up"
+      "act_up": "Act Up",
+      "attributed": "Atribuído"
     }
   }
 }
