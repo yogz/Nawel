@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -134,10 +134,45 @@ export function Organizer({
   const { christmas } = useThemeMode();
   const searchParams = useSearchParams();
 
+  // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor),
     useSensor(KeyboardSensor)
+  );
+
+  // Memoized drag handlers to prevent unnecessary re-renders
+  const handleDragStart = useCallback(
+    (e: DragStartEvent) => {
+      setActiveItemId(Number(e.active.id));
+    },
+    [setActiveItemId]
+  );
+
+  const handleDragEnd = useCallback(
+    (e: DragEndEvent) => {
+      setActiveItemId(null);
+      const { active, over } = e;
+      if (!over || !active.id) {
+        return;
+      }
+      const itemId = Number(active.id);
+      const found = findItem(itemId);
+      if (!found) {
+        return;
+      }
+
+      if (typeof over.id === "string" && over.id.startsWith("service-")) {
+        handleMoveItem(itemId, Number(over.id.replace("service-", "")));
+      } else if (typeof over.id === "number") {
+        const targetItem = findItem(over.id);
+        if (targetItem && targetItem.service.id !== found.service.id) {
+          const targetIndex = targetItem.service.items.findIndex((i) => i.id === over.id);
+          handleMoveItem(itemId, targetItem.service.id, targetIndex);
+        }
+      }
+    },
+    [setActiveItemId, findItem, handleMoveItem]
   );
 
   useEffect(() => {
@@ -254,29 +289,8 @@ export function Organizer({
               activeItemId={activeItemId}
               readOnly={readOnly}
               sensors={sensors}
-              onDragStart={(e: DragStartEvent) => setActiveItemId(Number(e.active.id))}
-              onDragEnd={(e: DragEndEvent) => {
-                setActiveItemId(null);
-                const { active, over } = e;
-                if (!over || !active.id) {
-                  return;
-                }
-                const itemId = Number(active.id);
-                const found = findItem(itemId);
-                if (!found) {
-                  return;
-                }
-
-                if (typeof over.id === "string" && over.id.startsWith("service-")) {
-                  handleMoveItem(itemId, Number(over.id.replace("service-", "")));
-                } else if (typeof over.id === "number") {
-                  const targetItem = findItem(over.id);
-                  if (targetItem && targetItem.service.id !== found.service.id) {
-                    const targetIndex = targetItem.service.items.findIndex((i) => i.id === over.id);
-                    handleMoveItem(itemId, targetItem.service.id, targetIndex);
-                  }
-                }
-              }}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
               onAssign={(item: Item, serviceId?: number) =>
                 setSheet({ type: "item", serviceId, item })
               }

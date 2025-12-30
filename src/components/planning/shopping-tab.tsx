@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { motion } from "framer-motion";
-import { ShoppingCart, ExternalLink, Check, UserX, ChevronDown, Users } from "lucide-react";
+import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
 import { getPersonEmoji } from "@/lib/utils";
 import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
@@ -32,6 +31,9 @@ interface ShoppingTabProps {
 export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTabProps) {
   const t = useTranslations("EventDashboard.Shopping");
   const [isPending, startTransition] = useTransition();
+
+  // Optimistic state: track items being toggled for instant UI feedback
+  const [optimisticToggles, setOptimisticToggles] = useState<Set<string>>(new Set());
 
   // Check if current user is the event owner
   const isOwner = currentUserId && plan.event?.ownerId === currentUserId;
@@ -109,36 +111,84 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     return aggregateShoppingList(flatList);
   }, [plan.meals, selectedPersonId, displayPerson, peopleWithItems]);
 
-  const checkedCount = shoppingList.filter((item) => item.checked).length;
+  // Calculate checked count with optimistic state
+  const checkedCount = useMemo(() => {
+    return shoppingList.filter((item) => {
+      const isOptimisticallyToggled = optimisticToggles.has(item.id);
+      return isOptimisticallyToggled ? !item.checked : item.checked;
+    }).length;
+  }, [shoppingList, optimisticToggles]);
 
   const progressPercent =
     shoppingList.length > 0 ? Math.round((checkedCount / shoppingList.length) * 100) : 0;
 
-  const handleToggle = (aggregatedItem: AggregatedShoppingItem) => {
-    startTransition(async () => {
-      const newChecked = !aggregatedItem.checked;
+  // Optimistic toggle: update UI instantly, sync with server in background
+  const handleToggle = useCallback(
+    (aggregatedItem: AggregatedShoppingItem) => {
+      const itemId = aggregatedItem.id;
 
-      const promises = aggregatedItem.sources.map((source) => {
-        if (source.type === "ingredient") {
-          return updateIngredientAction({
-            id: source.ingredient!.id,
-            checked: newChecked,
-            slug,
-            key: writeKey,
-          });
+      // 1. Optimistic update - toggle immediately in UI
+      setOptimisticToggles((prev) => {
+        const next = new Set(prev);
+        if (next.has(itemId)) {
+          next.delete(itemId);
         } else {
-          return toggleItemCheckedAction({
-            id: source.item.id,
-            checked: newChecked,
-            slug,
-            key: writeKey,
+          next.add(itemId);
+        }
+        return next;
+      });
+
+      // 2. Sync with server in background
+      startTransition(async () => {
+        const newChecked = !aggregatedItem.checked;
+
+        const promises = aggregatedItem.sources.map((source) => {
+          if (source.type === "ingredient") {
+            return updateIngredientAction({
+              id: source.ingredient!.id,
+              checked: newChecked,
+              slug,
+              key: writeKey,
+            });
+          } else {
+            return toggleItemCheckedAction({
+              id: source.item.id,
+              checked: newChecked,
+              slug,
+              key: writeKey,
+            });
+          }
+        });
+
+        try {
+          await Promise.all(promises);
+          // Server sync successful - clear optimistic state (server state will take over)
+          setOptimisticToggles((prev) => {
+            const next = new Set(prev);
+            next.delete(itemId);
+            return next;
+          });
+        } catch {
+          // Rollback on error - remove from optimistic toggles
+          setOptimisticToggles((prev) => {
+            const next = new Set(prev);
+            next.delete(itemId);
+            return next;
           });
         }
       });
+    },
+    [slug, writeKey]
+  );
 
-      await Promise.all(promises);
-    });
-  };
+  // Helper to get effective checked state (considering optimistic toggles)
+  const getEffectiveChecked = useCallback(
+    (item: AggregatedShoppingItem) => {
+      const isOptimisticallyToggled = optimisticToggles.has(item.id);
+      return isOptimisticallyToggled ? !item.checked : item.checked;
+    },
+    [optimisticToggles]
+  );
 
   // Non-owner user not linked to any person
   if (!isOwner && !currentPerson) {
@@ -267,11 +317,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
             <div className="text-3xl font-black text-accent">{progressAll}%</div>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-accent to-primary"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressAll}%` }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+            <div
+              className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
+              style={{ transform: `scaleX(${progressAll / 100})` }}
             />
           </div>
         </div>
@@ -311,11 +359,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                     </div>
                     <div className="mt-1 flex items-center gap-3">
                       <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
-                        <motion.div
-                          className={`h-full rounded-full ${isComplete ? "bg-green-500" : "bg-accent"}`}
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          transition={{ duration: 0.3 }}
+                        <div
+                          className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${isComplete ? "bg-green-500" : "bg-accent"}`}
+                          style={{ transform: `scaleX(${progress / 100})` }}
                         />
                       </div>
                       <span className="text-xs font-semibold text-muted-foreground">
@@ -392,11 +438,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           <div className="text-3xl font-black text-accent">{progressPercent}%</div>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-accent to-primary"
-            initial={{ width: 0 }}
-            animate={{ width: `${progressPercent}%` }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+          <div
+            className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
+            style={{ transform: `scaleX(${progressPercent / 100})` }}
           />
         </div>
       </div>
@@ -414,22 +458,20 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
 
       {/* Shopping list */}
       <div className="space-y-2">
-        {shoppingList.map((aggregatedItem, idx) => {
-          const isChecked = aggregatedItem.checked;
+        {shoppingList.map((aggregatedItem) => {
+          // Use optimistic state for instant feedback
+          const isChecked = getEffectiveChecked(aggregatedItem);
           const itemName = aggregatedItem.name;
 
           return (
-            <motion.button
+            <button
               key={aggregatedItem.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.02 }}
               onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
               aria-label={`${t(isChecked ? "uncheck" : "check")} ${itemName}`}
               aria-pressed={isChecked}
               className={clsx(
-                "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
+                "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all active:scale-[0.98]",
                 isChecked
                   ? "border-green-200 bg-green-50"
                   : "border-white/20 bg-white shadow-sm hover:border-accent/20 hover:bg-accent/5"
@@ -450,7 +492,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                 <div className="flex items-baseline gap-2">
                   <span
                     className={clsx(
-                      "text-base font-semibold",
+                      "text-base font-semibold transition-all",
                       isChecked ? "text-green-700 line-through" : "text-text"
                     )}
                   >
@@ -481,7 +523,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                   )}
                 </p>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>
