@@ -123,7 +123,8 @@ function ItemRowComponent({
       leftLabel={tShared("delete")}
       rightLabel={tShared("edit")}
       confirmLeft
-      confirmLeftMessage="OK?"
+      confirmLeftTitle={tShared("delete")}
+      confirmLeftMessage={`${tShared("delete")} "${item.name}" ?`}
       disabled={readOnly}
     >
       {content}

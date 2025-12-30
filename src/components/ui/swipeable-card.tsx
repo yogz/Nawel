@@ -3,6 +3,15 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, useAnimation, PanInfo } from "framer-motion";
 import { Pencil, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./dialog";
+import { Button } from "./button";
 
 interface SwipeableCardProps {
   children: React.ReactNode;
@@ -11,6 +20,7 @@ interface SwipeableCardProps {
   leftLabel?: string;
   rightLabel?: string;
   confirmLeft?: boolean;
+  confirmLeftTitle?: string;
   confirmLeftMessage?: string;
   disabled?: boolean;
   className?: string;
@@ -26,13 +36,14 @@ export function SwipeableCard({
   leftLabel = "Delete",
   rightLabel = "Edit",
   confirmLeft = false,
-  confirmLeftMessage = "Delete?",
+  confirmLeftTitle = "Confirm",
+  confirmLeftMessage = "Are you sure?",
   disabled = false,
   className = "",
 }: SwipeableCardProps) {
   const controls = useAnimation();
   const [activeAction, setActiveAction] = useState<"left" | "right" | null>(null);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [cardHeight, setCardHeight] = useState<number | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +60,11 @@ export function SwipeableCard({
     }
   }, []);
 
+  const resetSwipe = () => {
+    controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
+    setActiveAction(null);
+  };
+
   const handleDragEnd = async (_: unknown, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
@@ -63,13 +79,10 @@ export function SwipeableCard({
       });
 
       if (confirmLeft) {
-        setShowConfirm(true);
+        setShowConfirmDialog(true);
       } else {
         onSwipeLeft();
-        setTimeout(() => {
-          controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-          setActiveAction(null);
-        }, 150);
+        setTimeout(resetSwipe, 150);
       }
     } else if (shouldTriggerRight && onSwipeRight) {
       await controls.start({
@@ -77,27 +90,21 @@ export function SwipeableCard({
         transition: { type: "spring", damping: 25, stiffness: 300 },
       });
       onSwipeRight();
-      setTimeout(() => {
-        controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-        setActiveAction(null);
-      }, 150);
+      setTimeout(resetSwipe, 150);
     } else {
-      controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-      setActiveAction(null);
+      resetSwipe();
     }
   };
 
   const handleConfirmDelete = () => {
     onSwipeLeft?.();
-    setShowConfirm(false);
-    controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-    setActiveAction(null);
+    setShowConfirmDialog(false);
+    resetSwipe();
   };
 
   const handleCancelDelete = () => {
-    setShowConfirm(false);
-    controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-    setActiveAction(null);
+    setShowConfirmDialog(false);
+    resetSwipe();
   };
 
   const handleDrag = (_: unknown, info: PanInfo) => {
@@ -117,75 +124,82 @@ export function SwipeableCard({
   const actionStyle = cardHeight ? { height: cardHeight } : {};
 
   return (
-    <div className="relative overflow-hidden rounded-2xl">
-      {/* Left action (Delete) - shown when swiping left */}
-      {onSwipeLeft && (
-        <div
-          style={actionStyle}
-          className={`absolute inset-y-0 right-0 flex w-20 items-center justify-center transition-all duration-200 ${
-            activeAction === "left"
-              ? "bg-gradient-to-l from-red-500 to-red-600 text-white"
-              : "bg-red-100 text-red-500"
-          }`}
-        >
-          {showConfirm ? (
+    <>
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Left action (Delete) - shown when swiping left */}
+        {onSwipeLeft && (
+          <div
+            style={actionStyle}
+            className={`absolute inset-y-0 right-0 flex w-20 items-center justify-center transition-all duration-200 ${
+              activeAction === "left"
+                ? "bg-gradient-to-l from-red-500 to-red-600 text-white"
+                : "bg-red-100 text-red-500"
+            }`}
+          >
             <div className="flex flex-col items-center gap-1">
-              <button
-                onClick={handleConfirmDelete}
-                className="rounded-lg bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-red-600 shadow-sm"
-              >
-                {confirmLeftMessage}
-              </button>
-              <button
-                onClick={handleCancelDelete}
-                className="text-[9px] font-medium text-white/80 underline"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-1">
-              <Trash2 size={20} />
+              <Trash2 size={20} aria-hidden="true" />
               <span className="text-[10px] font-bold uppercase tracking-wider">{leftLabel}</span>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Right action (Edit) - shown when swiping right */}
-      {onSwipeRight && (
-        <div
-          style={actionStyle}
-          className={`absolute inset-y-0 left-0 flex w-20 items-center justify-center transition-all duration-200 ${
-            activeAction === "right"
-              ? "bg-gradient-to-r from-accent to-accent/80 text-white"
-              : "bg-accent/10 text-accent"
-          }`}
-        >
-          <div className="flex flex-col items-center gap-1">
-            <Pencil size={20} />
-            <span className="text-[10px] font-bold uppercase tracking-wider">{rightLabel}</span>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Main content - draggable */}
-      <motion.div
-        ref={contentRef}
-        drag="x"
-        dragConstraints={{
-          left: onSwipeLeft ? -ACTION_WIDTH : 0,
-          right: onSwipeRight ? ACTION_WIDTH : 0,
-        }}
-        dragElastic={0.1}
-        onDrag={handleDrag}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        className={`relative z-10 cursor-grab active:cursor-grabbing ${className}`}
-        style={{ touchAction: "pan-y" }}
-      >
-        {children}
-      </motion.div>
-    </div>
+        {/* Right action (Edit) - shown when swiping right */}
+        {onSwipeRight && (
+          <div
+            style={actionStyle}
+            className={`absolute inset-y-0 left-0 flex w-20 items-center justify-center transition-all duration-200 ${
+              activeAction === "right"
+                ? "bg-gradient-to-r from-accent to-accent/80 text-white"
+                : "bg-accent/10 text-accent"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-1">
+              <Pencil size={20} aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">{rightLabel}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Main content - draggable */}
+        <motion.div
+          ref={contentRef}
+          drag="x"
+          dragConstraints={{
+            left: onSwipeLeft ? -ACTION_WIDTH : 0,
+            right: onSwipeRight ? ACTION_WIDTH : 0,
+          }}
+          dragElastic={0.1}
+          onDrag={handleDrag}
+          onDragEnd={handleDragEnd}
+          animate={controls}
+          className={`relative z-10 cursor-grab active:cursor-grabbing ${className}`}
+          style={{ touchAction: "pan-y" }}
+        >
+          {children}
+        </motion.div>
+      </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="max-w-[320px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>{confirmLeftTitle}</DialogTitle>
+            <DialogDescription>{confirmLeftMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-row gap-2">
+            <Button variant="outline" onClick={handleCancelDelete} className="flex-1">
+              Annuler
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              className="flex-1 bg-red-500 hover:bg-red-600"
+            >
+              Supprimer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
