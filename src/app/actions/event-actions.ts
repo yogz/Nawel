@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { sanitizeStrictText } from "@/lib/sanitize";
+import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people } from "@drizzle/schema";
 import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
@@ -13,13 +13,26 @@ import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
-  // Check for slug uniqueness
-  const existing = await db.query.events.findFirst({
-    where: eq(events.slug, input.slug),
-  });
+  // Find a unique slug automatically
+  let slug = input.slug;
+  const baseSlug = slug;
+  let isUnique = false;
+  let counter = 1;
 
-  if (existing) {
-    throw new Error("Ce slug est déjà utilisé par un autre événement.");
+  while (!isUnique) {
+    const existing = await db.query.events.findFirst({
+      where: eq(events.slug, slug),
+    });
+
+    if (existing) {
+      // Append number to base slug (limit base length to accommodate suffix within DB limits)
+      const suffix = `-${counter}`;
+      const maxBaseLength = 100 - suffix.length;
+      slug = sanitizeSlug(baseSlug.slice(0, maxBaseLength) + suffix, 100);
+      counter++;
+    } else {
+      isUnique = true;
+    }
   }
 
   // Get current session to set ownerId
@@ -34,7 +47,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   const [created] = await db
     .insert(events)
     .values({
-      slug: input.slug,
+      slug: slug,
       name: input.name,
       description: input.description ?? null,
       adminKey: adminKey,

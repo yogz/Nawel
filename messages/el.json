@@ -129,6 +129,8 @@
       "deleteEvent": "Διαγραφή εκδήλωσης",
       "deleteConfirmTitle": "Διαγραφή εκδήλωσης;",
       "deleteConfirmDescription": "Όλα τα δεδομένα (γεύματα, καλεσμένοι, προϊόντα) θα διαγραφούν οριστικά. Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "deleteConfirmInstruction": "Παρακαλώ πληκτρολογήστε το όνομα της εκδήλωσης \"{name}\" για επιβεβαίωση της διαγραφής:",
+      "deleteConfirmPlaceholder": "Όνομα εκδήλωσης",
       "deleteConfirmButton": "Οριστική διαγραφή",
       "deleteCancelButton": "Ακύρωση"
     },

@@ -129,6 +129,8 @@
       "deleteEvent": "Event löschen",
       "deleteConfirmTitle": "Event löschen?",
       "deleteConfirmDescription": "Alle Daten (Mahlzeiten, Gäste, Artikel) werden dauerhaft gelöscht. Diese Aktion ist unwiderruflich.",
+      "deleteConfirmInstruction": "Bitte geben Sie den Namen des Events \"{name}\" ein, um die Löschung zu bestätigen:",
+      "deleteConfirmPlaceholder": "Eventname",
       "deleteConfirmButton": "Dauerhaft löschen",
       "deleteCancelButton": "Abbrechen"
     },

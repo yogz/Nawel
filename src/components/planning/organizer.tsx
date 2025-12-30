@@ -29,6 +29,7 @@ import {
 } from "../ui/dialog";
 import { Trash2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -106,6 +107,7 @@ export function Organizer({
     }
     return false;
   });
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
 
   // Persist guest prompt dismissal to localStorage
   const dismissGuestPrompt = () => {
@@ -342,7 +344,24 @@ export function Organizer({
                   {useTranslations("EventDashboard.Organizer")("deleteConfirmDescription")}
                 </DialogDescription>
               </DialogHeader>
-              <DialogFooter className="mt-4 gap-2">
+              <div className="space-y-3 py-4">
+                <p className="text-text/60 text-xs font-semibold">
+                  {useTranslations("EventDashboard.Organizer")("deleteConfirmInstruction", {
+                    name: plan.event?.name || slug,
+                  })}
+                </p>
+                <Input
+                  value={deleteConfirmationText}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setDeleteConfirmationText(e.target.value)
+                  }
+                  placeholder={useTranslations("EventDashboard.Organizer")(
+                    "deleteConfirmPlaceholder"
+                  )}
+                  className="rounded-xl border-red-100 bg-red-50/20 focus:border-red-300 focus:ring-red-200"
+                />
+              </div>
+              <DialogFooter className="gap-2">
                 <DialogTrigger asChild>
                   <Button variant="outline" className="w-full sm:w-auto">
                     {useTranslations("EventDashboard.Organizer")("deleteCancelButton")}
@@ -352,6 +371,7 @@ export function Organizer({
                   variant="destructive"
                   className="w-full sm:w-auto"
                   onClick={handleDeleteEvent}
+                  disabled={deleteConfirmationText !== (plan.event?.name || slug)}
                 >
                   {useTranslations("EventDashboard.Organizer")("deleteConfirmButton")}
                 </Button>

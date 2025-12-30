@@ -129,6 +129,8 @@
       "deleteEvent": "Eliminar evento",
       "deleteConfirmTitle": "¿Eliminar evento?",
       "deleteConfirmDescription": "Todos los datos (comidas, invitados, artículos) se eliminarán permanentemente. Esta acción es irreversible.",
+      "deleteConfirmInstruction": "Por favor, escriba el nombre del evento \"{name}\" para confirmar la eliminación:",
+      "deleteConfirmPlaceholder": "Nombre del evento",
       "deleteConfirmButton": "Eliminar permanentemente",
       "deleteCancelButton": "Cancelar"
     },
