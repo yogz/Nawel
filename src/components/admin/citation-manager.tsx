@@ -255,86 +255,78 @@ export function CitationManager() {
                         exit={{ opacity: 0, height: 0 }}
                       >
                         <td colSpan={5} className="bg-accent/[0.02] px-6 py-8">
-                          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-                            {/* Left: App Rendering Preview */}
+                          <div className="space-y-8">
+                            {/* App Rendering Simulator Grid */}
                             <div className="space-y-4">
-                              <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
-                                <Layout className="h-4 w-4" /> App Performance Preview
-                              </h3>
-                              <div className="space-y-3 rounded-2xl border border-accent/20 bg-white/50 p-6 shadow-inner">
-                                <div className="space-y-1">
-                                  <p className="text-[14px] font-medium italic text-accent/70">
-                                    — {item.localized.fr || item.original.text}
-                                  </p>
-                                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-accent/50">
-                                    — {getAttributionLabel(item, "fr")}
-                                  </p>
-                                </div>
-                                <div className="border-t border-accent/10 pt-2">
-                                  <p className="mb-2 text-[10px] italic text-muted-foreground">
-                                    Exemple de rendu dynamique basé sur les métadonnées (Type:{" "}
-                                    {item.attribution.origin_type || "N/A"})
-                                  </p>
+                              <div className="flex items-center justify-between">
+                                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
+                                  <Layout className="h-4 w-4" /> Simulateur de Rendu (Interactif -
+                                  Cliquez sur les cartes)
+                                </h3>
+                                <div className="text-[10px] font-medium text-muted-foreground">
+                                  Cliquez pour voir le cycle : Texte → Traduction → Attribution
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <p className="text-[10px] font-bold uppercase text-muted-foreground">
-                                    Ton
-                                  </p>
-                                  <p className="text-sm capitalize">{item.tone || "N/A"}</p>
-                                </div>
-                                <div>
-                                  <p className="text-[10px] font-bold uppercase text-muted-foreground">
-                                    Confiance Source
-                                  </p>
-                                  <p className="text-sm capitalize">
-                                    {item.attribution.confidence || "medium"}
-                                  </p>
-                                </div>
+                              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                {["fr", "en", "de", "el", "es", "pt"].map((simLocale) => (
+                                  <SimulationCard
+                                    key={simLocale}
+                                    item={item}
+                                    simLocale={simLocale}
+                                    currentLocale={locale}
+                                    t={t}
+                                    tLang={tLang}
+                                  />
+                                ))}
                               </div>
                             </div>
 
-                            {/* Right: Technical Data */}
-                            <div className="space-y-4">
-                              <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                                <Palette className="h-4 w-4" /> Détails Techniques
-                              </h3>
-
-                              <div className="space-y-3">
-                                <div>
-                                  <p className="text-[10px] font-bold uppercase text-muted-foreground">
-                                    Tags
-                                  </p>
-                                  <div className="mt-1 flex flex-wrap gap-1">
-                                    {item.tags.map((tag) => (
-                                      <span
-                                        key={tag}
-                                        className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] text-muted-foreground"
-                                      >
-                                        #{tag}
-                                      </span>
-                                    ))}
+                            {/* Technical Details & Tags */}
+                            <div className="grid grid-cols-1 gap-10 border-t border-black/5 pt-4 lg:grid-cols-2">
+                              <div className="space-y-4">
+                                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                  <Palette className="h-4 w-4" /> Détails Techniques
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-[10px] font-bold uppercase text-muted-foreground">
+                                      Ton
+                                    </p>
+                                    <p className="text-sm capitalize">{item.tone || "N/A"}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-[10px] font-bold uppercase text-muted-foreground">
+                                      Confiance Source
+                                    </p>
+                                    <p className="text-sm capitalize">
+                                      {item.attribution.confidence || "medium"}
+                                    </p>
+                                  </div>
+                                  <div className="col-span-2">
+                                    <p className="text-[10px] font-bold uppercase text-muted-foreground">
+                                      Tags
+                                    </p>
+                                    <div className="mt-1 flex flex-wrap gap-1">
+                                      {item.tags.map((tag) => (
+                                        <span
+                                          key={tag}
+                                          className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] text-muted-foreground"
+                                        >
+                                          #{tag}
+                                        </span>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
+                              </div>
 
-                                <div>
-                                  <p className="text-[10px] font-bold uppercase text-muted-foreground">
-                                    Full Localizations
-                                  </p>
-                                  <div className="mt-2 grid grid-cols-2 gap-2">
-                                    {Object.entries(item.localized).map(([lang, text]) => (
-                                      <div key={lang} className="rounded-xl bg-black/5 p-3">
-                                        <span className="text-[10px] font-black uppercase text-accent/40">
-                                          {lang}
-                                        </span>
-                                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-text">
-                                          {text}
-                                        </p>
-                                      </div>
-                                    ))}
-                                  </div>
+                              <div className="space-y-4">
+                                <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                  <Info className="h-4 w-4" /> Données Brutes
+                                </h3>
+                                <div className="max-h-40 overflow-auto rounded-xl bg-black/5 p-4 font-mono text-[10px] text-muted-foreground">
+                                  {JSON.stringify(item.attribution, null, 2)}
                                 </div>
                               </div>
                             </div>
@@ -355,6 +347,99 @@ export function CitationManager() {
             <p className="mt-4 font-medium">Aucune citation ne correspond à vos critères.</p>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function SimulationCard({ item, simLocale, currentLocale, t, tLang }: any) {
+  const [step, setStep] = useState(0);
+
+  const preferredTranslation = useMemo(() => {
+    if (item.original.lang === simLocale) return null;
+    return (item.localized as Record<string, string>)[simLocale] || null;
+  }, [item, simLocale]);
+
+  const attributionLabel = useMemo(() => {
+    const attr = item.attribution;
+    if (attr.author) return attr.author;
+
+    if (attr.origin_type) {
+      // NOTE: We are using labels from the CURRENT admin locale (e.g. French labels)
+      // to verify the logic, but the data itself is neutral.
+      const typeLabel = t(`types.${attr.origin_type}`);
+      let qualifierLabel = "";
+      if (attr.origin_qualifier) {
+        const languages = ["fr", "en", "el", "es", "pt", "de", "it", "ja", "la", "sv"];
+        if (languages.includes(attr.origin_qualifier)) {
+          qualifierLabel = tLang(attr.origin_qualifier);
+        } else {
+          try {
+            qualifierLabel = t(`qualifiers.${attr.origin_qualifier}`);
+          } catch {
+            qualifierLabel = attr.origin_qualifier;
+          }
+        }
+      }
+      return qualifierLabel ? `${typeLabel} (${qualifierLabel})` : typeLabel;
+    }
+    return attr.work || attr.origin || t("anonymous");
+  }, [item, t, tLang]);
+
+  const availableSteps = useMemo(() => {
+    const steps = [{ type: "text", value: item.original.text }];
+    if (preferredTranslation) {
+      steps.push({ type: "text", value: preferredTranslation });
+    }
+    if (attributionLabel) {
+      steps.push({ type: "author", value: attributionLabel });
+    }
+    return steps;
+  }, [item, preferredTranslation, attributionLabel]);
+
+  const currentContent = availableSteps[step % availableSteps.length];
+
+  return (
+    <div
+      onClick={() => setStep((s) => (s + 1) % availableSteps.length)}
+      className="group relative flex min-h-[100px] cursor-pointer select-none flex-col justify-between rounded-xl border border-accent/10 bg-white p-4 shadow-sm transition-all hover:border-accent/40 hover:shadow-md"
+    >
+      <div className="absolute right-2 top-2 flex items-center gap-1.5">
+        <span className="text-[9px] font-black uppercase text-accent/30">{simLocale}</span>
+        <div className="flex h-1.5 w-1.5 rounded-full bg-accent/20 group-hover:bg-accent/40" />
+      </div>
+
+      <div className="flex flex-1 flex-col justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: -2 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 2 }}
+            transition={{ duration: 0.15 }}
+          >
+            {currentContent.type === "text" ? (
+              <p className="text-text/80 text-[13px] font-medium italic leading-snug">
+                {currentContent.value}
+              </p>
+            ) : (
+              <p className="text-[10px] font-bold uppercase tracking-wider text-accent/60">
+                — {currentContent.value}
+              </p>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <div className="mt-3 flex justify-center gap-1">
+        {availableSteps.map((_, i) => (
+          <div
+            key={i}
+            className={`h-0.5 w-3 rounded-full transition-colors ${
+              i === step % availableSteps.length ? "bg-accent" : "bg-black/5"
+            }`}
+          />
+        ))}
       </div>
     </div>
   );
