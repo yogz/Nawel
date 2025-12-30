@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
+import { CitationDisplay } from "@/components/common/citation-display";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -254,15 +255,12 @@ export function CitationManager() {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <p className="text-3xl font-black italic leading-tight text-text">
-                      « {activeItem.localized.fr || activeItem.original.text} »
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-[2px] w-8 bg-accent/20" />
-                      <p className="text-sm font-bold uppercase tracking-[0.2em] text-accent">
-                        {getAttributionLabel(activeItem, "fr")}
+                  <div className="space-y-6">
+                    <div className="rounded-2xl border border-black/[0.03] bg-white/50 p-6 shadow-sm ring-1 ring-black/[0.05] transition-all hover:bg-white hover:shadow-md">
+                      <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-accent/30">
+                        Aperçu Interactif (Cliquable)
                       </p>
+                      <CitationDisplay item={activeItem} />
                     </div>
                   </div>
 

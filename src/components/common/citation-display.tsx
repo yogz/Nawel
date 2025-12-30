@@ -4,13 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
 
-export function CitationDisplay({ seed }: { seed?: string }) {
+export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
   const locale = useLocale();
   const t = useTranslations("Citations");
   const tLang = useTranslations("common.languages");
   const [step, setStep] = useState(0);
 
   const citationItem = useMemo(() => {
+    if (item) return item;
     const list = citationsDataV3.items;
     const today = new Date();
     const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}-${seed || ""}`;
@@ -20,7 +21,7 @@ export function CitationDisplay({ seed }: { seed?: string }) {
     }
     const index = Math.abs(hash) % list.length;
     return list[index];
-  }, [seed]);
+  }, [seed, item]);
 
   const preferredTranslation = useMemo(() => {
     if (citationItem.original.lang === locale) return null;
