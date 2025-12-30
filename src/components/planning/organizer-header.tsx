@@ -9,6 +9,7 @@ import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useThemeMode } from "../theme-provider";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
