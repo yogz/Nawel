@@ -42,7 +42,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               key={tab.key}
               onClick={() => onChange(tab.key)}
               className={clsx(
-                "group flex flex-col items-center gap-1.5 transition-all active:scale-90",
+                "group flex flex-col items-center gap-1.5 transition-all active:scale-[0.97]",
                 selected ? "text-accent" : "text-gray-400"
               )}
             >

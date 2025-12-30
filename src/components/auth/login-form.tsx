@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 export function LoginForm() {
@@ -183,13 +184,16 @@ export function LoginForm() {
                 className="h-12 w-full rounded-2xl bg-gray-900 font-bold text-white shadow-xl shadow-gray-900/10 transition-all hover:bg-gray-800 active:scale-95 disabled:opacity-50"
                 disabled={loading}
               >
-                {loading
-                  ? authMode === "signin"
-                    ? t("signingIn")
-                    : t("signingUp")
-                  : authMode === "signin"
-                    ? t("signinButton")
-                    : t("signupButton")}
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    {authMode === "signin" ? t("signingIn") : t("signingUp")}
+                  </span>
+                ) : authMode === "signin" ? (
+                  t("signinButton")
+                ) : (
+                  t("signupButton")
+                )}
               </Button>
             </form>
 
@@ -220,7 +224,11 @@ export function LoginForm() {
               className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 hover:text-[#1f1f1f] active:scale-95"
               shine
             >
-              <GoogleIcon className="h-5 w-5" />
+              {loading ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <GoogleIcon className="h-5 w-5" />
+              )}
               {t("googleButton")}
             </Button>
 

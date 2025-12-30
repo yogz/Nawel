@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { ShareModal } from "@/features/events/components/share-modal";
 import { ItemForm } from "@/features/items/components/item-form";
@@ -92,6 +93,39 @@ export function OrganizerSheets({
     handleDeleteAllIngredients,
   } = handlers;
 
+  // Memoized computed values to avoid recalculating on every render
+  const defaultItem = useMemo(() => {
+    if (sheet?.type !== "item" || !sheet.item) return undefined;
+    const found = findItem(sheet.item.id);
+    return found?.item || sheet.item;
+  }, [sheet, findItem]);
+
+  const allServices = useMemo(() => {
+    return plan.meals.flatMap((m) =>
+      m.services.map((s) => ({ ...s, mealTitle: m.title || m.date }))
+    );
+  }, [plan.meals]);
+
+  const currentServiceId = useMemo(() => {
+    if (sheet?.type !== "item") return undefined;
+    return sheet.serviceId || sheet.item?.serviceId;
+  }, [sheet]);
+
+  const servicePeopleCount = useMemo(() => {
+    if (!currentServiceId) return undefined;
+    for (const meal of plan.meals) {
+      const service = meal.services.find((s) => s.id === currentServiceId);
+      if (service) return service.peopleCount;
+    }
+    return undefined;
+  }, [currentServiceId, plan.meals]);
+
+  const itemIngredients = useMemo(() => {
+    if (sheet?.type !== "item" || !sheet.item) return undefined;
+    const found = findItem(sheet.item.id);
+    return found?.item.ingredients || sheet.item.ingredients;
+  }, [sheet, findItem]);
+
   const getTitle = () => {
     if (sheet?.type === "item") {
       return sheet.item ? t("editItem") : t("addItem");
@@ -131,30 +165,10 @@ export function OrganizerSheets({
       {sheet?.type === "item" && (
         <ItemForm
           people={plan.people}
-          defaultItem={(() => {
-            if (sheet.item) {
-              const found = findItem(sheet.item.id);
-              return found?.item || sheet.item;
-            }
-            return undefined;
-          })()}
-          allServices={plan.meals.flatMap((m) =>
-            m.services.map((s) => ({ ...s, mealTitle: m.title || m.date }))
-          )}
-          currentServiceId={sheet.serviceId || sheet.item?.serviceId}
-          servicePeopleCount={(() => {
-            const serviceId = sheet.serviceId || sheet.item?.serviceId;
-            if (!serviceId) {
-              return undefined;
-            }
-            for (const meal of plan.meals) {
-              const service = meal.services.find((s) => s.id === serviceId);
-              if (service) {
-                return service.peopleCount;
-              }
-            }
-            return undefined;
-          })()}
+          defaultItem={defaultItem}
+          allServices={allServices}
+          currentServiceId={currentServiceId}
+          servicePeopleCount={servicePeopleCount}
           onSubmit={(vals) =>
             sheet.item
               ? handleUpdateItem(sheet.item.id, vals)
@@ -165,13 +179,7 @@ export function OrganizerSheets({
           onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
           readOnly={readOnly}
           // Ingredient props
-          ingredients={(() => {
-            if (sheet.item) {
-              const found = findItem(sheet.item.id);
-              return found?.item.ingredients || sheet.item.ingredients;
-            }
-            return undefined;
-          })()}
+          ingredients={itemIngredients}
           onGenerateIngredients={
             sheet.item
               ? async (currentName: string, currentNote?: string) => {

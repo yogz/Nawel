@@ -149,11 +149,32 @@ export function ItemIngredients({
         </div>
       )}
 
-      {/* Loading state with message */}
+      {/* Loading state with skeleton */}
       {isGenerating && (
-        <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
-          <Loader2 size={18} className="animate-spin text-purple-500" />
-          <span>{t("analyzing")}</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 py-2 text-sm text-purple-600">
+            <Loader2 size={16} className="animate-spin" />
+            <span className="font-medium">{t("analyzing")}</span>
+          </div>
+          {/* Skeleton ingredients - varying widths for natural look */}
+          {[75, 60, 85, 50, 70].map((width, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/50 p-3"
+            >
+              <div className="h-5 w-5 animate-pulse rounded bg-gray-200" />
+              <div className="flex-1 space-y-1.5">
+                <div
+                  className="h-3.5 animate-pulse rounded bg-gray-200"
+                  style={{ width: `${width}%` }}
+                />
+                <div
+                  className="h-2.5 animate-pulse rounded bg-gray-100"
+                  style={{ width: `${width * 0.5}%` }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus } from "lucide-react";
+import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus, Loader2 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {
   Select,
@@ -265,7 +265,16 @@ export function EventForm({
               disabled={!canGoNext() || isPending}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
             >
-              {initialData ? (isPending ? tShared("saving") : tShared("save")) : t("nextButton")}
+              {isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  {tShared("saving")}
+                </span>
+              ) : initialData ? (
+                tShared("save")
+              ) : (
+                t("nextButton")
+              )}
             </button>
           </div>
         </div>
@@ -432,7 +441,14 @@ export function EventForm({
               disabled={isPending || !slug.trim() || !name.trim()}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
             >
-              {isPending ? t("creatingButton") : t("createButton")}
+              {isPending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  {t("creatingButton")}
+                </span>
+              ) : (
+                t("createButton")
+              )}
             </button>
           </div>
         </div>
