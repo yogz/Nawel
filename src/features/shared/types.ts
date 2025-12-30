@@ -8,6 +8,8 @@ export interface BaseHandlerParams {
   readOnly: boolean;
   setSheet: (sheet: Sheet | null) => void;
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
+  session?: any;
+  refetch?: () => Promise<any>;
 }
 
 export type ItemHandlerParams = BaseHandlerParams;

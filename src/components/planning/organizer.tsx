@@ -88,7 +88,7 @@ export function Organizer({
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
-  const { data: session, isPending: isSessionLoading } = useSession();
+  const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(() => {
     // Initialize from localStorage (only on client)
@@ -107,15 +107,21 @@ export function Organizer({
     }
   };
 
+  const isOwner = session?.user?.id === plan.event?.ownerId;
+  const effectiveWriteKey =
+    writeKey || (isOwner && plan.event?.adminKey ? plan.event.adminKey : undefined);
+
   const handlers = useEventHandlers({
     plan,
     setPlan,
     slug,
-    writeKey,
+    writeKey: effectiveWriteKey,
     readOnly,
     setSheet,
     setSelectedPerson,
     setSuccessMessage,
+    session,
+    refetch,
   });
 
   const {
@@ -256,10 +262,6 @@ export function Organizer({
         .finally(() => setLogsLoading(false));
     }
   }, [tab, slug, setLogs, setLogsLoading]);
-
-  const isOwner = session?.user?.id === plan.event?.ownerId;
-  const effectiveWriteKey =
-    writeKey || (isOwner && plan.event?.adminKey ? plan.event.adminKey : undefined);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">

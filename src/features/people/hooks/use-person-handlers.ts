@@ -20,6 +20,8 @@ export function usePersonHandlers({
   setSheet,
   setSuccessMessage,
   setSelectedPerson,
+  session,
+  refetch,
 }: PersonHandlerParams) {
   const [, startTransition] = useTransition();
 
@@ -61,6 +63,18 @@ export function usePersonHandlers({
           ...prev,
           people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji: emoji ?? null } : p)),
         }));
+
+        // Trigger session refetch if the person is linked to the current user
+        const updatedPerson = plan.people.find((p) => p.id === id);
+        if (
+          updatedPerson?.userId &&
+          session?.user &&
+          updatedPerson.userId === session.user.id &&
+          refetch
+        ) {
+          await refetch();
+        }
+
         setSheet(null);
         setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });
       } catch (error) {

@@ -41,7 +41,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { data: session, isPending: sessionPending } = useSession();
+  const { data: session, isPending: sessionPending, refetch } = useSession();
   const { theme, setTheme, themes } = useThemeMode();
   const locale = useLocale() as Locale;
   const tCommon = useTranslations("common");
@@ -91,6 +91,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         name: finalName,
         emoji: finalEmoji,
       });
+      await refetch();
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
     } catch (err) {

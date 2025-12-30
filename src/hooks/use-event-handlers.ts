@@ -22,6 +22,8 @@ interface UseEventHandlersParams {
   setSheet: (sheet: Sheet | null) => void; /* Sheet type */
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
   setSelectedPerson?: (id: number | null) => void;
+  session?: any;
+  refetch?: () => Promise<any>;
 }
 
 /**
