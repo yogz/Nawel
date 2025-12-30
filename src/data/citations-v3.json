@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "purpose": "Sous-titres courts pour repas (joli, joyeux, convivial).",
   "languages": ["fr", "en", "el", "es", "pt", "de"],
   "items": [
@@ -319,35 +319,6 @@
         "es": "Hay que imaginar a Sísifo feliz.",
         "pt": "É preciso imaginar Sísifo feliz.",
         "de": "Man muss sich Sisyphos als glücklich vorstellen."
-      },
-      "rating": 2
-    },
-    {
-      "id": "fr_014",
-      "type": "quote_short",
-      "tone": "soft",
-      "category": "philosophy",
-      "tags": ["fr", "classic"],
-      "attribution": {
-        "author": "René Descartes",
-        "work": "Discours de la méthode",
-        "year": 1637,
-        "origin": null,
-        "confidence": "high",
-        "origin_type": null,
-        "origin_qualifier": null
-      },
-      "original": {
-        "lang": "fr",
-        "text": "Je pense, donc je suis."
-      },
-      "localized": {
-        "fr": "Je pense, donc je suis.",
-        "en": "I think, therefore I am.",
-        "el": "Σκέφτομαι, άρα υπάρχω.",
-        "es": "Pienso, luego existo.",
-        "pt": "Penso, logo existo.",
-        "de": "Ich denke, also bin ich."
       },
       "rating": 2
     },
@@ -8232,8 +8203,19 @@
     }
   ],
   "attribution_display_rules": {
-    "fallback_order": ["author", "origin_type", "anonymous"],
-    "notes": "Afficher l'auteur s'il existe. Sinon afficher un libellé basé sur origin_type (+ origin_qualifier si présent). Sinon afficher 'Anonyme' (localisé). Conserver 'origin' pour un fallback legacy/texte libre.",
+    "display_logic": {
+      "priority_1": "author_and_work",
+      "priority_2": "author_only",
+      "priority_3": "work_only",
+      "priority_4": "origin_type_label",
+      "priority_5": "anonymous_label"
+    },
+    "formats": {
+      "author_and_work": "%author%, %work%",
+      "author_only": "%author%",
+      "work_only": "%work%"
+    },
+    "notes": "Si author ET work sont présents (ex: films), utiliser le format 'Karadoc, Kaamelott'. Si seul author est présent, afficher l'auteur. Si aucun, utiliser le label du origin_type.",
     "anonymous_labels": {
       "fr": "Anonyme",
       "en": "Anonymous",
@@ -8290,6 +8272,14 @@
         "es": "Canto",
         "pt": "Canto",
         "de": "Gesang"
+      },
+      "film_quote": {
+        "fr": "Réplique de film",
+        "en": "Movie quote",
+        "el": "Ατάκα ταινίας",
+        "es": "Cita de película",
+        "pt": "Citação de filme",
+        "de": "Filmzitat"
       },
       "language": {
         "fr": "En langue originale",

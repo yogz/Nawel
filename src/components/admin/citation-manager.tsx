@@ -81,8 +81,19 @@ export function CitationManager() {
 
   const getAttributionLabel = (citation: any, targetLocale: string) => {
     const attr = citation.attribution;
+
+    // 1. Author & Work
+    if (attr.author && attr.work) {
+      return `${attr.author}, ${attr.work}`;
+    }
+
+    // 2. Author only
     if (attr.author) return attr.author;
 
+    // 3. Work only
+    if (attr.work) return attr.work;
+
+    // 4. Origin Type
     if (attr.origin_type) {
       const typeLabel = t(`types.${attr.origin_type}`);
       let qualifierLabel = "";
@@ -100,7 +111,9 @@ export function CitationManager() {
       }
       return qualifierLabel ? `${typeLabel} (${qualifierLabel})` : typeLabel;
     }
-    return attr.work || attr.origin || t("anonymous");
+
+    // 5. Fallback or Anonymous
+    return attr.origin || t("anonymous");
   };
 
   const handleDelete = async (id: string) => {

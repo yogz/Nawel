@@ -29,14 +29,24 @@ export function CitationDisplay({ seed }: { seed?: string }) {
 
   const attributionLabel = useMemo(() => {
     const attr = citationItem.attribution;
+
+    // 1. Author & Work (Priority 1 & formats)
+    if (attr.author && attr.work) {
+      return `${attr.author}, ${attr.work}`;
+    }
+
+    // 2. Author only
     if (attr.author) return attr.author;
 
+    // 3. Work only
+    if (attr.work) return attr.work;
+
+    // 4. Origin Type (with optional qualifier)
     if (attr.origin_type) {
       const type = t(`types.${attr.origin_type}`);
       let qualifier = "";
 
       if (attr.origin_qualifier) {
-        // Check if it's a language code
         const languages = ["fr", "en", "el", "es", "pt", "de", "it", "ja", "la", "sv"];
         if (languages.includes(attr.origin_qualifier)) {
           qualifier = tLang(attr.origin_qualifier);
@@ -52,7 +62,8 @@ export function CitationDisplay({ seed }: { seed?: string }) {
       return qualifier ? `${type} (${qualifier})` : type;
     }
 
-    return attr.work || attr.origin || t("anonymous");
+    // 5. Fallback or Anonymous
+    return attr.origin || t("anonymous");
   }, [citationItem, t, tLang]);
 
   const availableSteps = useMemo(() => {
