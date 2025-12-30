@@ -119,7 +119,12 @@ export interface OrganizerHandlers {
     time?: string,
     address?: string
   ) => void;
-  handleUpdatePerson: (id: number, name: string, emoji?: string | null) => void;
+  handleUpdatePerson: (
+    id: number,
+    name: string,
+    emoji?: string | null,
+    image?: string | null
+  ) => void;
   handleDeletePerson: (id: number) => void;
   handleGenerateIngredients: (
     itemId: number,

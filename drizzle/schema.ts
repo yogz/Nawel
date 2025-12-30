@@ -166,6 +166,7 @@ export const people = pgTable(
       .references(() => events.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     emoji: text("emoji"),
+    image: text("image"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
   },
   (table) => ({

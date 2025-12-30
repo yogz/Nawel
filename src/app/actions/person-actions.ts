@@ -45,6 +45,8 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
     .values({
       eventId: event.id,
       name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
+      emoji: (session.user as any).emoji ?? null,
+      image: session.user.image ?? null,
       userId: session.user.id,
     })
     .returning();
@@ -57,12 +59,30 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
+
+  let name = input.name;
+  let emoji = input.emoji ?? null;
+  let image = input.image ?? null;
+
+  // If linked to a user, initialize from their profile if possible
+  if (input.userId) {
+    const linkedUser = await db.query.user.findFirst({
+      where: eq(user.id, input.userId),
+    });
+    if (linkedUser) {
+      name = sanitizeStrictText(linkedUser.name, 50);
+      emoji = (linkedUser as any).emoji ?? null;
+      image = linkedUser.image ?? null;
+    }
+  }
+
   const [created] = await db
     .insert(people)
     .values({
       eventId: event.id,
-      name: input.name,
-      emoji: input.emoji ?? null,
+      name,
+      emoji,
+      image,
       userId: input.userId ?? null,
     })
     .returning();
@@ -81,30 +101,15 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
 
   const [updated] = await db
     .update(people)
-    .set({ name: input.name, emoji: input.emoji })
+    .set({
+      name: input.name,
+      emoji: input.emoji,
+      image: input.image,
+    })
     .where(eq(people.id, input.id))
     .returning();
 
-  // If this person is linked to a user, synchronize with the user's global profile
-  if (updated.userId) {
-    const currentHeaders = await headers();
-    const session = await auth.api.getSession({
-      headers: currentHeaders,
-    });
-
-    if (session?.user && session.user.id === updated.userId) {
-      // Use auth helper to update user profile
-      await auth.api.updateUser({
-        headers: currentHeaders,
-        body: {
-          name: updated.name,
-        },
-      });
-
-      // Update emoji via DB as API doesn't support null
-      await db.update(user).set({ emoji: updated.emoji }).where(eq(user.id, updated.userId));
-    }
-  }
+  // Decoupled: Removed synchronization back to user profile
 
   await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
@@ -143,7 +148,13 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
 
   const [updated] = await db
     .update(people)
-    .set({ userId: session.user.id })
+    .set({
+      userId: session.user.id,
+      // Initialize Guest data from User profile upon claim (Last Choice logic: User data wins here as it's the new source)
+      name: sanitizeStrictText(session.user.name ?? oldPerson?.name ?? "Utilisateur", 50),
+      emoji: (session.user as any).emoji ?? null,
+      image: session.user.image ?? null,
+    })
     .where(eq(people.id, input.personId))
     .returning();
 

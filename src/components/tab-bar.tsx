@@ -43,23 +43,23 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               onClick={() => onChange(tab.key)}
               className={clsx(
                 "group flex flex-col items-center gap-1.5 transition-all active:scale-[0.97]",
-                selected ? "text-accent" : "text-muted-foreground"
+                selected ? "text-accent" : "text-foreground/50 transition-colors"
               )}
             >
               <div
                 className={clsx(
-                  "flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300",
+                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
                   selected
-                    ? "bg-accent/15 shadow-[0_0_25px_-5px_rgba(var(--accent),0.4)]"
+                    ? "bg-accent/10 shadow-[0_0_20px_-5px_rgba(var(--accent),0.3)]"
                     : "bg-transparent group-hover:bg-accent/5"
                 )}
               >
-                <Icon size={selected ? 26 : 24} strokeWidth={selected ? 3 : 2.5} />
+                <Icon size={selected ? 23 : 21} strokeWidth={selected ? 2.8 : 2.2} />
               </div>
               <span
                 className={clsx(
-                  "text-[10px] font-black uppercase tracking-widest",
-                  selected ? "opacity-100" : "opacity-80"
+                  "text-[10px] font-black uppercase tracking-widest transition-opacity",
+                  selected ? "opacity-100" : "opacity-60"
                 )}
               >
                 {t(tab.key)}

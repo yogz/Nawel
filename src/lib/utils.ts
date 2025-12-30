@@ -81,7 +81,8 @@ export function getDisplayName(
     user?: { name?: string | null } | null;
   }
 ): string {
-  return person.user?.name || person.name;
+  // Now decoupled: person.name is the source of truth for guests
+  return person.name;
 }
 
 /**
@@ -90,27 +91,23 @@ export function getDisplayName(
  */
 export function renderAvatar(
   person: Pick<Person, "name" | "emoji"> & {
+    image?: string | null;
     user?: { image?: string | null; emoji?: string | null } | null;
   },
   allPeopleNames: string[] = [],
   theme: string = "aurora"
 ): { type: "image"; src: string } | { type: "emoji"; value: string } {
-  // 1. User Emoji (Global Profile) - Explicit choice
-  if (person.user?.emoji) {
-    return { type: "emoji", value: person.user.emoji };
-  }
-
-  // 2. User Image (External) - Social fallback
-  if (person.user?.image) {
-    return { type: "image", src: person.user.image };
-  }
-
-  // 3. Guest Emoji (Event Specific)
+  // 1. Guest Emoji (Explicit choice)
   if (person.emoji) {
     return { type: "emoji", value: person.emoji };
   }
 
-  // 4. Dynamic Fallback
+  // 2. Guest Image (Explicit photo choice)
+  if (person.image) {
+    return { type: "image", src: person.image };
+  }
+
+  // 3. Dynamic Fallback
   return { type: "emoji", value: getPersonEmoji(person.name, allPeopleNames, null, theme) };
 }
 

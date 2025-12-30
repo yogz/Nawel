@@ -21,7 +21,7 @@ export function PersonEditForm({
 }: {
   person: Person;
   allPeople: Person[];
-  onSubmit: (name: string, emoji: string | null) => void;
+  onSubmit: (name: string, emoji: string | null, image: string | null) => void;
   onDelete: () => void;
   readOnly?: boolean;
 }) {
@@ -30,21 +30,27 @@ export function PersonEditForm({
   const tCommon = useTranslations("EventDashboard.Shared");
   const [name, setName] = useState(person.name);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
+  const [selectedImage, setSelectedImage] = useState<string | null>(person.image);
   const skipSaveRef = useRef(false);
-  const stateRef = useRef({ name, selectedEmoji });
+  const stateRef = useRef({ name, selectedEmoji, selectedImage });
 
   useEffect(() => {
-    stateRef.current = { name, selectedEmoji };
-  }, [name, selectedEmoji]);
+    stateRef.current = { name, selectedEmoji, selectedImage };
+  }, [name, selectedEmoji, selectedImage]);
 
   useEffect(() => {
     return () => {
       if (!skipSaveRef.current && !readOnly) {
-        const { name: currName, selectedEmoji: currEmoji } = stateRef.current;
-        const hasChanged = currName !== person.name || currEmoji !== person.emoji;
+        const {
+          name: currName,
+          selectedEmoji: currEmoji,
+          selectedImage: currImage,
+        } = stateRef.current;
+        const hasChanged =
+          currName !== person.name || currEmoji !== person.emoji || currImage !== person.image;
 
         if (hasChanged && currName.trim()) {
-          onSubmit(currName, currEmoji);
+          onSubmit(currName, currEmoji, currImage);
         }
       }
     };
@@ -59,7 +65,7 @@ export function PersonEditForm({
               ...person,
               name,
               emoji: selectedEmoji,
-              user: person.user ? { ...person.user, emoji: selectedEmoji } : null,
+              image: selectedImage,
             },
             allPeople.map((p) => p.name),
             theme
@@ -112,7 +118,16 @@ export function PersonEditForm({
           </Label>
           <div className="no-scrollbar grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
             <button
-              onClick={() => setSelectedEmoji(null)}
+              onClick={() => {
+                const userPhoto = person.user?.image;
+                if (userPhoto) {
+                  setSelectedImage(userPhoto);
+                  setSelectedEmoji(null);
+                } else {
+                  setSelectedImage(null);
+                  setSelectedEmoji(null);
+                }
+              }}
               className={clsx(
                 "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                 selectedEmoji === null
@@ -139,7 +154,10 @@ export function PersonEditForm({
             {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
               <button
                 key={emoji}
-                onClick={() => setSelectedEmoji(emoji)}
+                onClick={() => {
+                  setSelectedEmoji(emoji);
+                  setSelectedImage(null);
+                }}
                 className={clsx(
                   "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
                   selectedEmoji === emoji

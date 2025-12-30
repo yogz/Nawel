@@ -52,16 +52,23 @@ export function usePersonHandlers({
     });
   };
 
-  const handleUpdatePerson = (id: number, name: string, emoji?: string | null) => {
+  const handleUpdatePerson = (
+    id: number,
+    name: string,
+    emoji?: string | null,
+    image?: string | null
+  ) => {
     if (readOnly) {
       return;
     }
     startTransition(async () => {
       try {
-        await updatePersonAction({ id, name, emoji, slug, key: writeKey });
+        await updatePersonAction({ id, name, emoji, image, slug, key: writeKey });
         setPlan((prev: PlanData) => ({
           ...prev,
-          people: prev.people.map((p) => (p.id === id ? { ...p, name, emoji: emoji ?? null } : p)),
+          people: prev.people.map((p) =>
+            p.id === id ? { ...p, name, emoji: emoji ?? null, image: image ?? null } : p
+          ),
         }));
 
         // Trigger session refetch if the person is linked to the current user
@@ -128,7 +135,15 @@ export function usePersonHandlers({
           setPlan((prev: PlanData) => ({
             ...prev,
             people: prev.people.map((p) =>
-              p.id === personId ? { ...p, userId: updated.userId } : p
+              p.id === personId
+                ? {
+                    ...p,
+                    userId: updated.userId,
+                    name: updated.name,
+                    emoji: updated.emoji,
+                    image: updated.image,
+                  }
+                : p
             ),
           }));
           setSuccessMessage({ text: "Compte associé ! ✨", type: "success" });
