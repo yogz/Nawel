@@ -69,6 +69,7 @@ export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) 
       body: {},
     });
 
+    revalidatePath("/");
     return { success: true };
   } catch (error: unknown) {
     console.error("Delete user error:", error);

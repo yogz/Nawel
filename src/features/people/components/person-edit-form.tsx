@@ -59,6 +59,7 @@ export function PersonEditForm({
               ...person,
               name,
               emoji: selectedEmoji,
+              user: person.user ? { ...person.user, emoji: selectedEmoji } : null,
             },
             allPeople.map((p) => p.name),
             theme

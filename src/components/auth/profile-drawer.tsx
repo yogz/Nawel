@@ -181,7 +181,9 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     <span>
                       {selectedEmoji
                         ? "Personnalisé avec votre emoji."
-                        : "Connectez-vous avec Google pour récupérer votre photo de profil."}
+                        : session.user.image
+                          ? "Utilisation de votre photo Google."
+                          : "Connectez-vous avec Google pour récupérer votre photo de profil."}
                     </span>
                   </p>
                 )}
@@ -286,7 +288,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   </div>
                   {session.user.image && (
                     <p className="px-1 text-[9px] italic text-gray-400">
-                      Note: Votre photo de profil Google reste prioritaire pour l'affichage.
+                      Note: L'emoji sélectionné remplace votre photo Google.
                     </p>
                   )}
                 </div>

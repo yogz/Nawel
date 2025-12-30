@@ -83,14 +83,14 @@ export function renderAvatar(
   allPeopleNames: string[] = [],
   theme: string = "aurora"
 ): { type: "image"; src: string } | { type: "emoji"; value: string } {
-  // 1. User Image (External)
-  if (person.user?.image) {
-    return { type: "image", src: person.user.image };
-  }
-
-  // 2. User Emoji (Global Profile)
+  // 1. User Emoji (Global Profile) - Explicit choice
   if (person.user?.emoji) {
     return { type: "emoji", value: person.user.emoji };
+  }
+
+  // 2. User Image (External) - Social fallback
+  if (person.user?.image) {
+    return { type: "image", src: person.user.image };
   }
 
   // 3. Guest Emoji (Event Specific)
