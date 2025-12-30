@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { type Person } from "@/lib/types";
-import { PERSON_EMOJIS, getPersonEmoji } from "@/lib/utils";
+import { THEME_EMOJIS, getPersonEmoji } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useThemeMode } from "@/components/theme-provider";
 import clsx from "clsx";
 
 export function PersonEditForm({
@@ -22,6 +23,7 @@ export function PersonEditForm({
   onDelete: () => void;
   readOnly?: boolean;
 }) {
+  const { theme } = useThemeMode();
   const [name, setName] = useState(person.name);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(person.emoji);
 
@@ -54,7 +56,7 @@ export function PersonEditForm({
             >
               Auto
             </button>
-            {PERSON_EMOJIS.map((emoji) => {
+            {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => {
               const isSelected = selectedEmoji === emoji;
               return (
                 <button
@@ -76,7 +78,9 @@ export function PersonEditForm({
             Par défaut :{" "}
             {getPersonEmoji(
               name,
-              allPeople.map((p) => p.name)
+              allPeople.map((p) => p.name),
+              null,
+              theme
             )}
           </p>
         </div>
