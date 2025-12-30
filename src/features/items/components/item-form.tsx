@@ -42,6 +42,8 @@ export function ItemForm({
   // Auth props for AI features
   isAuthenticated,
   onRequestAuth,
+  // Current user for default person selection
+  currentUserId,
 }: {
   people: Person[];
   defaultItem?: Item;
@@ -64,6 +66,8 @@ export function ItemForm({
   // Auth props for AI features
   isAuthenticated?: boolean;
   onRequestAuth?: () => void;
+  // Current user for default person selection
+  currentUserId?: string;
 }) {
   const t = useTranslations("EventDashboard.ItemForm");
   const tCommon = useTranslations("EventDashboard.Shared");
@@ -86,7 +90,9 @@ export function ItemForm({
   const [quantity, setQuantity] = useState(defaultItem?.quantity || "");
   const [note, setNote] = useState(getDisplayNote(defaultItem?.note));
   const [price, setPrice] = useState(defaultItem?.price?.toString() || "");
-  const [selectedPersonId, setSelectedPersonId] = useState<number | null>(null);
+  // Find person associated with current user for default selection
+  const userPerson = currentUserId ? people.find((p) => p.userId === currentUserId) : undefined;
+  const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 

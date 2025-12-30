@@ -237,6 +237,7 @@ export function OrganizerSheets({
           isGenerating={isGenerating}
           isAuthenticated={!!currentUserId}
           onRequestAuth={onAuth}
+          currentUserId={currentUserId}
         />
       )}
 
