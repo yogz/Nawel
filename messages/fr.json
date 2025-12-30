@@ -52,7 +52,12 @@
       "deleteConfirmPlaceholder": "Nom de l'événement",
       "deleteConfirmButton": "Supprimer",
       "deleteCancelButton": "Annuler",
-      "errorOccurred": "Une erreur est survenue"
+      "errorOccurred": "Une erreur est survenue",
+      "editTitle": "Modifier l'événement",
+      "nameLabel": "Nom de l'événement",
+      "namePlaceholder": "Noël en famille...",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Une petite description..."
     }
   },
   "Login": {
@@ -281,6 +286,7 @@
       "create": "Créer",
       "update": "Modifier",
       "save": "Enregistrer",
+      "saving": "Enregistrement...",
       "close": "Fermer",
       "next": "Suivant",
       "back": "Retour",

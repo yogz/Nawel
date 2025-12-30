@@ -177,6 +177,19 @@ export const updateEventSchema = baseInput.extend({
   children: z.number().int().min(0).max(1000).optional(),
 });
 
+// Combined schema for updating event + first meal in one action
+export const updateEventWithMealSchema = baseInput.extend({
+  name: safeText(100).optional(),
+  description: safeText(500).optional().nullable(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
+  // Meal fields
+  mealId: z.number().int().positive().optional(),
+  date: dateSchema.optional(),
+  time: z.string().optional().nullable(),
+  address: safeText(500).optional().nullable(),
+});
+
 // Ingredient schemas
 export const generateIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),

@@ -2,12 +2,20 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
-import { createEventAction, updateEventAction, deleteEventAction } from "@/app/actions";
+import { createEventAction, updateEventWithMealAction, deleteEventAction } from "@/app/actions";
 import { Calendar, Plus, Clock, History, Pencil, Trash2 } from "lucide-react";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
+import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { useTranslations } from "next-intl";
+
+type Meal = {
+  id: number;
+  date: string;
+  time?: string | null;
+  address?: string | null;
+};
 
 type Event = {
   id: number;
@@ -19,7 +27,7 @@ type Event = {
   ownerId: string | null;
   adults: number;
   children: number;
-  meals?: { date: string }[];
+  meals?: Meal[];
 };
 
 import { Button } from "./ui/button";
@@ -74,26 +82,31 @@ export function EventList({
     });
   };
 
-  const handleUpdateEvent = async (
-    slug: string,
-    name: string,
-    description?: string,
-    _creationMode?: string,
-    date?: string,
-    _key?: string,
-    adults?: number,
-    children?: number
-  ) => {
+  const handleUpdateEvent = async (data: {
+    name: string;
+    description?: string;
+    adults: number;
+    children: number;
+    mealId?: number;
+    date?: string;
+    time?: string;
+    address?: string;
+  }) => {
+    if (!editingEvent) return;
     setError(null);
     startTransition(async () => {
       try {
-        await updateEventAction({
-          slug,
-          name,
-          description,
-          key: writeKey || editingEvent?.adminKey || undefined,
-          adults: adults ?? 0,
-          children: children ?? 0,
+        await updateEventWithMealAction({
+          slug: editingEvent.slug,
+          key: writeKey || editingEvent.adminKey || undefined,
+          name: data.name,
+          description: data.description,
+          adults: data.adults,
+          children: data.children,
+          mealId: data.mealId,
+          date: data.date,
+          time: data.time,
+          address: data.address,
         });
         setEditingEvent(null);
         router.refresh();
@@ -293,22 +306,25 @@ export function EventList({
         />
       )}
       {editingEvent && (
-        <EventForm
+        <EditEventSheet
+          open={!!editingEvent}
+          onClose={() => {
+            setEditingEvent(null);
+            setError(null);
+          }}
           initialData={{
             name: editingEvent.name,
             description: editingEvent.description,
             adults: editingEvent.adults,
             children: editingEvent.children,
-            date: todayStr, // Default if not found
-            slug: editingEvent.slug,
+            // Get first meal data if available
+            date: editingEvent.meals?.[0]?.date,
+            time: editingEvent.meals?.[0]?.time,
+            address: editingEvent.meals?.[0]?.address,
+            mealId: editingEvent.meals?.[0]?.id,
           }}
           onSubmit={handleUpdateEvent}
-          onClose={() => {
-            setEditingEvent(null);
-            setError(null);
-          }}
           isPending={isPending}
-          error={error}
         />
       )}
 

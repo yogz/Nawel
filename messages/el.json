@@ -52,7 +52,12 @@
       "deleteConfirmPlaceholder": "Όνομα εκδήλωσης",
       "deleteConfirmButton": "Διαγραφή",
       "deleteCancelButton": "Ακύρωση",
-      "errorOccurred": "Προέκυψε σφάλμα"
+      "errorOccurred": "Προέκυψε σφάλμα",
+      "editTitle": "Επεξεργασία Εκδήλωσης",
+      "nameLabel": "Όνομα εκδήλωσης",
+      "namePlaceholder": "Οικογενειακά Χριστούγεννα...",
+      "descriptionLabel": "Περιγραφή",
+      "descriptionPlaceholder": "Μια μικρή περιγραφή..."
     }
   },
   "Login": {
@@ -281,6 +286,7 @@
       "create": "Δημιουργία",
       "update": "Ενημέρωση",
       "save": "Αποθήκευση",
+      "saving": "Αποθήκευση...",
       "close": "Κλείσιμο",
       "next": "Επόμενο",
       "back": "Επιστροφή",

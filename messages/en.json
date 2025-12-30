@@ -52,7 +52,12 @@
       "deleteConfirmPlaceholder": "Event name",
       "deleteConfirmButton": "Delete",
       "deleteCancelButton": "Cancel",
-      "errorOccurred": "An error occurred"
+      "errorOccurred": "An error occurred",
+      "editTitle": "Edit Event",
+      "nameLabel": "Event Name",
+      "namePlaceholder": "Family Christmas...",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "A short description..."
     }
   },
   "Login": {
@@ -281,6 +286,7 @@
       "create": "Create",
       "update": "Update",
       "save": "Save",
+      "saving": "Saving...",
       "close": "Close",
       "next": "Next",
       "back": "Back",

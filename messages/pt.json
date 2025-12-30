@@ -52,7 +52,12 @@
       "deleteConfirmPlaceholder": "Nome do evento",
       "deleteConfirmButton": "Excluir",
       "deleteCancelButton": "Cancelar",
-      "errorOccurred": "Ocorreu um erro"
+      "errorOccurred": "Ocorreu um erro",
+      "editTitle": "Editar Evento",
+      "nameLabel": "Nome do evento",
+      "namePlaceholder": "Natal em família...",
+      "descriptionLabel": "Descrição",
+      "descriptionPlaceholder": "Uma pequena descrição..."
     }
   },
   "Login": {
@@ -281,6 +286,7 @@
       "create": "Criar",
       "update": "Atualizar",
       "save": "Salvar",
+      "saving": "Salvando...",
       "close": "Fechar",
       "next": "Próximo",
       "back": "Voltar",

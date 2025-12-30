@@ -4,11 +4,16 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
-import { events, people } from "@drizzle/schema";
+import { events, people, meals } from "@drizzle/schema";
 import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
-import { createEventSchema, deleteEventSchema, updateEventSchema } from "./schemas";
+import {
+  createEventSchema,
+  deleteEventSchema,
+  updateEventSchema,
+  updateEventWithMealSchema,
+} from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 
@@ -175,3 +180,59 @@ export const deleteEventAction = createSafeAction(deleteEventSchema, async (inpu
   revalidatePath("/");
   return { success: true };
 });
+
+// Combined action to update event + associated meal in one operation
+export const updateEventWithMealAction = createSafeAction(
+  updateEventWithMealSchema,
+  async (input) => {
+    const event = await verifyEventAccess(input.slug, input.key);
+
+    // 1. Update event fields
+    await db
+      .update(events)
+      .set({
+        ...(input.name && { name: input.name }),
+        ...(input.description !== undefined && { description: input.description }),
+        ...(input.adults !== undefined && { adults: input.adults }),
+        ...(input.children !== undefined && { children: input.children }),
+      })
+      .where(eq(events.id, event.id));
+
+    await logChange("update", "events", event.id, event, {
+      ...event,
+      ...(input.name && { name: input.name }),
+      ...(input.description !== undefined && { description: input.description }),
+      ...(input.adults !== undefined && { adults: input.adults }),
+      ...(input.children !== undefined && { children: input.children }),
+    });
+
+    // 2. Update meal if mealId is provided
+    if (input.mealId) {
+      const currentMeal = await db.query.meals.findFirst({
+        where: eq(meals.id, input.mealId),
+      });
+
+      if (currentMeal) {
+        await db
+          .update(meals)
+          .set({
+            ...(input.date && { date: input.date }),
+            ...(input.time !== undefined && { time: input.time }),
+            ...(input.address !== undefined && { address: input.address }),
+          })
+          .where(eq(meals.id, input.mealId));
+
+        await logChange("update", "meals", input.mealId, currentMeal, {
+          ...currentMeal,
+          ...(input.date && { date: input.date }),
+          ...(input.time !== undefined && { time: input.time }),
+          ...(input.address !== undefined && { address: input.address }),
+        });
+      }
+    }
+
+    revalidatePath("/");
+    revalidatePath(`/event/${event.slug}`);
+    return { success: true };
+  }
+);

@@ -52,7 +52,12 @@
       "deleteConfirmPlaceholder": "Event-Name",
       "deleteConfirmButton": "Löschen",
       "deleteCancelButton": "Abbrechen",
-      "errorOccurred": "Ein Fehler ist aufgetreten"
+      "errorOccurred": "Ein Fehler ist aufgetreten",
+      "editTitle": "Event bearbeiten",
+      "nameLabel": "Name des Events",
+      "namePlaceholder": "Familienweihnachten...",
+      "descriptionLabel": "Beschreibung",
+      "descriptionPlaceholder": "Eine kleine Beschreibung..."
     }
   },
   "Login": {
@@ -281,6 +286,7 @@
       "create": "Erstellen",
       "update": "Aktualisieren",
       "save": "Speichern",
+      "saving": "Speichern...",
       "close": "Schließen",
       "next": "Weiter",
       "back": "Zurück",
