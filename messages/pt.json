@@ -125,7 +125,12 @@
   "EventDashboard": {
     "Organizer": {
       "success": "Sucesso",
-      "error": "Erro"
+      "error": "Erro",
+      "deleteEvent": "Eliminar evento",
+      "deleteConfirmTitle": "Eliminar evento?",
+      "deleteConfirmDescription": "Todos os dados (refeições, convidados, artigos) serão eliminados permanentemente. Esta ação é irreversível.",
+      "deleteConfirmButton": "Eliminar permanentemente",
+      "deleteCancelButton": "Cancelar"
     },
     "Header": {
       "readOnlyWarning": "🔒 Modo apenas leitura",

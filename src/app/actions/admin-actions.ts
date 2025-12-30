@@ -147,6 +147,15 @@ export const updateEventAdminAction = createSafeAction(updateEventAdminSchema, a
 export const deleteEventAdminAction = createSafeAction(deleteEventAdminSchema, async (input) => {
   await requireAdmin();
 
+  // Log deletion before removing the record
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, input.id),
+  });
+  if (event) {
+    const { logChange } = await import("@/lib/logger");
+    await logChange("delete", "events", event.id, event);
+  }
+
   await db.delete(events).where(eq(events.id, input.id));
 
   revalidatePath("/admin");

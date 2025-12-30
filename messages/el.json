@@ -125,7 +125,12 @@
   "EventDashboard": {
     "Organizer": {
       "success": "Επιτυχία",
-      "error": "Σφάλμα"
+      "error": "Σφάλμα",
+      "deleteEvent": "Διαγραφή εκδήλωσης",
+      "deleteConfirmTitle": "Διαγραφή εκδήλωσης;",
+      "deleteConfirmDescription": "Όλα τα δεδομένα (γεύματα, καλεσμένοι, προϊόντα) θα διαγραφούν οριστικά. Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "deleteConfirmButton": "Οριστική διαγραφή",
+      "deleteCancelButton": "Ακύρωση"
     },
     "Header": {
       "readOnlyWarning": "🔒 Λειτουργία μόνο για ανάγνωση",

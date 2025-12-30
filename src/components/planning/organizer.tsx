@@ -17,6 +17,18 @@ import { TabBar } from "../tab-bar";
 import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Trash2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -312,6 +324,42 @@ export function Organizer({
       </main>
 
       <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+
+      {isOwner && (
+        <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500">
+                <Trash2 size={12} /> {useTranslations("EventDashboard.Organizer")("deleteEvent")}
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {useTranslations("EventDashboard.Organizer")("deleteConfirmTitle")}
+                </DialogTitle>
+                <DialogDescription>
+                  {useTranslations("EventDashboard.Organizer")("deleteConfirmDescription")}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="mt-4 gap-2">
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    {useTranslations("EventDashboard.Organizer")("deleteCancelButton")}
+                  </Button>
+                </DialogTrigger>
+                <Button
+                  variant="destructive"
+                  className="w-full sm:w-auto"
+                  onClick={handleDeleteEvent}
+                >
+                  {useTranslations("EventDashboard.Organizer")("deleteConfirmButton")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
       <Suspense fallback={null}>
