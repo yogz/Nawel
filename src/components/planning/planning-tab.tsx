@@ -181,7 +181,7 @@ export function PlanningTab({
                     </div>
                   </div>
 
-                  <div className="mt-2 pl-[52px]">
+                  <div className="mt-2 sm:pl-[52px]">
                     <CitationDisplay seed={meal.title || meal.date} />
                   </div>
 
