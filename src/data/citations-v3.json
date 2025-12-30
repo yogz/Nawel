@@ -1436,10 +1436,10 @@
         "author": null,
         "work": null,
         "year": null,
-        "origin": "Micro",
+        "origin": null,
         "confidence": "high",
-        "origin_type": "format",
-        "origin_qualifier": "micro"
+        "origin_type": "aphorism",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1465,10 +1465,10 @@
         "author": null,
         "work": null,
         "year": null,
-        "origin": "Micro",
+        "origin": null,
         "confidence": "high",
-        "origin_type": "format",
-        "origin_qualifier": "micro"
+        "origin_type": "aphorism",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1494,10 +1494,10 @@
         "author": null,
         "work": null,
         "year": null,
-        "origin": "Micro",
+        "origin": null,
         "confidence": "high",
-        "origin_type": "format",
-        "origin_qualifier": "micro"
+        "origin_type": "aphorism",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1581,10 +1581,10 @@
         "author": null,
         "work": null,
         "year": null,
-        "origin": "Micro",
+        "origin": null,
         "confidence": "high",
-        "origin_type": "format",
-        "origin_qualifier": "micro"
+        "origin_type": "aphorism",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1599,35 +1599,6 @@
         "de": "Hier liebt jeder, wen er will."
       },
       "rating": 3
-    },
-    {
-      "id": "fr_060",
-      "type": "micro_phrase",
-      "tone": "joyful",
-      "category": "lgbtq",
-      "tags": ["fr", "joy", "queer", "lgbtq"],
-      "attribution": {
-        "author": null,
-        "work": null,
-        "year": null,
-        "origin": "Expression",
-        "confidence": "high",
-        "origin_type": "expression",
-        "origin_qualifier": null
-      },
-      "original": {
-        "lang": "fr",
-        "text": "Joie queer."
-      },
-      "localized": {
-        "fr": "Joie queer.",
-        "en": "Queer joy.",
-        "el": "Queer χαρά.",
-        "es": "Alegría queer.",
-        "pt": "Alegria queer.",
-        "de": "Queere Freude."
-      },
-      "rating": 1
     },
     {
       "id": "en_001",

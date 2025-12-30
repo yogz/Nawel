@@ -32,7 +32,24 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
     const attr = citationItem.attribution;
     const parts: string[] = [];
 
-    // 1. Author & Work (Priority 1)
+    // 1. Determine the Flag
+    const flagMap: Record<string, string> = {
+      fr: "🇫🇷",
+      en: "🇬🇧",
+      es: "🇪🇸",
+      pt: "🇵🇹",
+      de: "🇩🇪",
+      el: "🇬🇷",
+      it: "🇮🇹",
+      ja: "🇯🇵",
+      la: "📜",
+      sv: "🇸🇪",
+      da: "🇩🇰",
+    };
+
+    const flag = flagMap[attr.origin_qualifier || ""] || flagMap[citationItem.original.lang] || "";
+
+    // 2. Author & Work (Priority 1)
     if (attr.author && attr.work) {
       if (attr.work === "Aphorisme attribué" || attr.work === "Citation attribuée") {
         // Skip hardcoded legacy work strings
@@ -45,26 +62,12 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
       parts.push(attr.work);
     }
 
-    // 2. Origin Type (with optional qualifier)
+    // 3. Building the final label
+    let baseLabel = "";
+
     if (attr.origin_type) {
       const type = t(`types.${attr.origin_type}`);
       let qualifier = "";
-
-      const flagMap: Record<string, string> = {
-        fr: "🇫🇷",
-        en: "🇬🇧",
-        es: "🇪🇸",
-        pt: "🇵🇹",
-        de: "🇩🇪",
-        el: "🇬🇷",
-        it: "🇮🇹",
-        ja: "🇯🇵",
-        la: "📜",
-        sv: "🇸🇪",
-      };
-
-      const flag =
-        flagMap[attr.origin_qualifier || ""] || flagMap[citationItem.original.lang] || "";
 
       if (attr.origin_qualifier) {
         const languages = Object.keys(flagMap);
@@ -80,18 +83,23 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
       }
 
       const typeLabel = qualifier ? `${type} (${qualifier})` : type;
-      const finalLabel = flag ? `${flag} ${typeLabel}` : typeLabel;
 
       // If we already have an author, combine them (e.g. "Marcel Proust, Aphorisme (Attribué)")
       if (parts.length > 0) {
-        return `${parts[0]}, ${finalLabel}`;
+        baseLabel = `${parts[0]}, ${typeLabel}`;
+      } else {
+        baseLabel = typeLabel;
       }
-      return finalLabel;
+    } else {
+      // Fallback or Anonymous
+      if (parts.length > 0) {
+        baseLabel = parts[0];
+      } else {
+        baseLabel = attr.origin || t("anonymous");
+      }
     }
 
-    // 3. Fallback or Anonymous
-    if (parts.length > 0) return parts[0];
-    return attr.origin || t("anonymous");
+    return flag ? `${flag} ${baseLabel}` : baseLabel;
   }, [citationItem, t, tLang]);
 
   const availableSteps = useMemo(() => {
