@@ -121,7 +121,9 @@ function ItemRowComponent({
       onSwipeLeft={onDelete}
       onSwipeRight={onAssign}
       leftLabel={tShared("delete")}
-      rightLabel={t("label")}
+      rightLabel={tShared("edit")}
+      confirmLeft
+      confirmLeftMessage="OK?"
       disabled={readOnly}
     >
       {content}

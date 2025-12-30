@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useAnimation, PanInfo } from "framer-motion";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -10,6 +10,8 @@ interface SwipeableCardProps {
   onSwipeRight?: () => void;
   leftLabel?: string;
   rightLabel?: string;
+  confirmLeft?: boolean;
+  confirmLeftMessage?: string;
   disabled?: boolean;
   className?: string;
 }
@@ -23,49 +25,79 @@ export function SwipeableCard({
   onSwipeRight,
   leftLabel = "Delete",
   rightLabel = "Edit",
+  confirmLeft = false,
+  confirmLeftMessage = "Delete?",
   disabled = false,
   className = "",
 }: SwipeableCardProps) {
   const controls = useAnimation();
   const [activeAction, setActiveAction] = useState<"left" | "right" | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [cardHeight, setCardHeight] = useState<number | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Measure actual card height
+  useEffect(() => {
+    if (contentRef.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          setCardHeight(entry.contentRect.height);
+        }
+      });
+      resizeObserver.observe(contentRef.current);
+      return () => resizeObserver.disconnect();
+    }
+  }, []);
 
   const handleDragEnd = async (_: unknown, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
-    // Determine if swipe is significant enough
     const shouldTriggerLeft = offset < -SWIPE_THRESHOLD || velocity < -500;
     const shouldTriggerRight = offset > SWIPE_THRESHOLD || velocity > 500;
 
     if (shouldTriggerLeft && onSwipeLeft) {
-      // Animate to reveal left action, then execute
       await controls.start({
         x: -ACTION_WIDTH,
         transition: { type: "spring", damping: 25, stiffness: 300 },
       });
-      onSwipeLeft();
-      // Snap back after action
-      setTimeout(() => {
-        controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
-        setActiveAction(null);
-      }, 150);
+
+      if (confirmLeft) {
+        setShowConfirm(true);
+      } else {
+        onSwipeLeft();
+        setTimeout(() => {
+          controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
+          setActiveAction(null);
+        }, 150);
+      }
     } else if (shouldTriggerRight && onSwipeRight) {
-      // Animate to reveal right action, then execute
       await controls.start({
         x: ACTION_WIDTH,
         transition: { type: "spring", damping: 25, stiffness: 300 },
       });
       onSwipeRight();
-      // Snap back after action
       setTimeout(() => {
         controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
         setActiveAction(null);
       }, 150);
     } else {
-      // Snap back to center
       controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
       setActiveAction(null);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    onSwipeLeft?.();
+    setShowConfirm(false);
+    controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
+    setActiveAction(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false);
+    controls.start({ x: 0, transition: { type: "spring", damping: 25, stiffness: 300 } });
+    setActiveAction(null);
   };
 
   const handleDrag = (_: unknown, info: PanInfo) => {
@@ -82,27 +114,48 @@ export function SwipeableCard({
     return <div className={className}>{children}</div>;
   }
 
+  const actionStyle = cardHeight ? { height: cardHeight } : {};
+
   return (
     <div className="relative overflow-hidden rounded-2xl">
       {/* Left action (Delete) - shown when swiping left */}
       {onSwipeLeft && (
         <div
+          style={actionStyle}
           className={`absolute inset-y-0 right-0 flex w-20 items-center justify-center transition-all duration-200 ${
             activeAction === "left"
               ? "bg-gradient-to-l from-red-500 to-red-600 text-white"
               : "bg-red-100 text-red-500"
           }`}
         >
-          <div className="flex flex-col items-center gap-1">
-            <Trash2 size={20} />
-            <span className="text-[10px] font-bold uppercase tracking-wider">{leftLabel}</span>
-          </div>
+          {showConfirm ? (
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onClick={handleConfirmDelete}
+                className="rounded-lg bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-red-600 shadow-sm"
+              >
+                {confirmLeftMessage}
+              </button>
+              <button
+                onClick={handleCancelDelete}
+                className="text-[9px] font-medium text-white/80 underline"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1">
+              <Trash2 size={20} />
+              <span className="text-[10px] font-bold uppercase tracking-wider">{leftLabel}</span>
+            </div>
+          )}
         </div>
       )}
 
       {/* Right action (Edit) - shown when swiping right */}
       {onSwipeRight && (
         <div
+          style={actionStyle}
           className={`absolute inset-y-0 left-0 flex w-20 items-center justify-center transition-all duration-200 ${
             activeAction === "right"
               ? "bg-gradient-to-r from-accent to-accent/80 text-white"
@@ -118,6 +171,7 @@ export function SwipeableCard({
 
       {/* Main content - draggable */}
       <motion.div
+        ref={contentRef}
         drag="x"
         dragConstraints={{
           left: onSwipeLeft ? -ACTION_WIDTH : 0,
