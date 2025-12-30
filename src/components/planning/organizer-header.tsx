@@ -11,7 +11,6 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 interface OrganizerHeaderProps {
-  christmas: boolean;
   readOnly: boolean;
   tab: string;
   plan: PlanData;
@@ -25,7 +24,6 @@ interface OrganizerHeaderProps {
 }
 
 export function OrganizerHeader({
-  christmas,
   readOnly,
   tab,
   plan,
@@ -37,6 +35,7 @@ export function OrganizerHeader({
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
+  const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
 
@@ -63,7 +62,7 @@ export function OrganizerHeader({
 
   return (
     <>
-      {christmas && (
+      {theme === "christmas" && (
         <div className="christmas-garland">
           {Array.from({ length: 14 }).map((_, i) => (
             <div key={i} className="christmas-light" />

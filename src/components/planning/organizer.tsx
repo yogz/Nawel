@@ -131,7 +131,7 @@ export function Organizer({
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const { christmas } = useThemeMode();
+  const { theme } = useThemeMode();
   const searchParams = useSearchParams();
 
   // Memoize sensors to avoid re-creating on every render
@@ -261,7 +261,6 @@ export function Organizer({
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
       <OrganizerHeader
-        christmas={christmas}
         readOnly={readOnly}
         tab={tab}
         plan={plan}
@@ -277,7 +276,6 @@ export function Organizer({
       <SuccessToast
         message={successMessage?.text || null}
         type={successMessage?.type || "success"}
-        christmas={christmas}
       />
 
       <main className="flex-1 space-y-4 px-4 py-8">

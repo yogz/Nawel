@@ -4,15 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, X } from "lucide-react";
 import clsx from "clsx";
 
+import { useThemeMode } from "../theme-provider";
+
 export function SuccessToast({
   message,
-  christmas,
   type = "success",
 }: {
   message: string | null;
-  christmas?: boolean;
   type?: "success" | "error";
 }) {
+  const { theme } = useThemeMode();
   return (
     <AnimatePresence>
       {message && (
@@ -33,9 +34,11 @@ export function SuccessToast({
             )}
           >
             <div className="flex items-center gap-2.5 text-white">
-              {christmas ? (
+              {theme === "christmas" || theme === "aurora" ? (
                 <>
-                  <span className="text-base">{type === "error" ? "❌" : "🎄"}</span>
+                  <span className="text-base">
+                    {type === "error" ? "❌" : theme === "christmas" ? "🎄" : "✨"}
+                  </span>
                   <span className="text-sm font-semibold">{message}</span>
                   <span className="text-base">{type === "error" ? "" : "✨"}</span>
                 </>

@@ -112,7 +112,9 @@ export function PlanningTab({
                 <div className="relative shrink-0">
                   <div className="absolute inset-0 rotate-6 rounded-2xl bg-accent/20 blur-xl transition-transform group-hover:rotate-12" />
                   <div className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-gradient-to-br from-accent to-accent/80 text-white shadow-xl ring-4 ring-accent/5 backdrop-blur-sm">
-                    <span className="text-2xl drop-shadow-sm">🎄</span>
+                    <span className="text-2xl drop-shadow-sm">
+                      {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
+                    </span>
                   </div>
                 </div>
 
