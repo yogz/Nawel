@@ -378,5 +378,24 @@
     "retryButton": "Réessayer",
     "homeButton": "Retour à l'accueil",
     "errorId": "Error ID"
+  },
+  "Citations": {
+    "anonymous": "Anonyme",
+    "types": {
+      "proverb": "Proverbe",
+      "expression": "Expression",
+      "wisdom": "Sagesse",
+      "saying": "Dicton",
+      "slogan": "Slogan",
+      "chant": "Chant",
+      "language": "Langue",
+      "format": "Format"
+    },
+    "qualifiers": {
+      "popular": "Populaire",
+      "micro": "Micro",
+      "campaign": "Campagne",
+      "act_up": "Act Up"
+    }
   }
 }

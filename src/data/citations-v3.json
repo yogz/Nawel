@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "purpose": "Sous-titres courts pour repas (joli, joyeux, convivial).",
   "languages": ["fr", "en", "el", "es", "pt", "de"],
   "items": [
@@ -14,7 +14,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -41,7 +43,9 @@
         "work": "Titre (référence littéraire)",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -68,7 +72,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -95,7 +101,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -122,7 +130,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -149,7 +159,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -176,7 +188,9 @@
         "work": "Physiologie du goût",
         "year": 1825,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -203,7 +217,9 @@
         "work": "Physiologie du goût",
         "year": 1825,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -230,7 +246,9 @@
         "work": "Physiologie du goût",
         "year": 1825,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -257,7 +275,9 @@
         "work": "Le Petit Prince",
         "year": 1943,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -284,7 +304,9 @@
         "work": "Le Mythe de Sisyphe",
         "year": 1942,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -311,7 +333,9 @@
         "work": "Discours de la méthode",
         "year": 1637,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -338,7 +362,9 @@
         "work": "Principe de conservation de la matière",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -365,7 +391,9 @@
         "work": "Huis clos",
         "year": 1944,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -392,7 +420,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -419,7 +449,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -446,7 +478,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -473,7 +507,9 @@
         "work": "Le Lièvre et la Tortue",
         "year": 1668,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -500,7 +536,9 @@
         "work": "Le Petit Prince",
         "year": 1943,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -527,7 +565,9 @@
         "work": "Article 4",
         "year": 1789,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -554,7 +594,9 @@
         "work": "Liberté",
         "year": 1942,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -581,7 +623,9 @@
         "work": "Lettre du voyant",
         "year": 1871,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -608,7 +652,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -635,7 +681,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -662,7 +710,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -689,7 +739,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -716,7 +768,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -743,7 +797,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -770,7 +826,9 @@
         "work": "Pensées",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -797,7 +855,9 @@
         "work": "Aphorisme attribué",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -824,7 +884,9 @@
         "work": "Roman",
         "year": 1870,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -851,7 +913,9 @@
         "work": "Terre des hommes",
         "year": 1939,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -878,7 +942,9 @@
         "work": "Aphorisme attribué",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -905,7 +971,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -932,7 +1000,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -959,7 +1029,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -986,7 +1058,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1013,7 +1087,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1040,7 +1116,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1067,7 +1145,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1094,7 +1174,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1121,7 +1203,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1148,7 +1232,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1175,7 +1261,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1202,7 +1290,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1229,7 +1319,9 @@
         "work": null,
         "year": null,
         "origin": "Slogan",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "slogan",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1256,7 +1348,9 @@
         "work": null,
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1283,7 +1377,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1310,7 +1406,9 @@
         "work": null,
         "year": null,
         "origin": "Slogan",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "slogan",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1337,7 +1435,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1364,7 +1464,9 @@
         "work": null,
         "year": null,
         "origin": "Micro",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "format",
+        "origin_qualifier": "micro"
       },
       "original": {
         "lang": "fr",
@@ -1391,7 +1493,9 @@
         "work": null,
         "year": null,
         "origin": "Micro",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "format",
+        "origin_qualifier": "micro"
       },
       "original": {
         "lang": "fr",
@@ -1418,7 +1522,9 @@
         "work": null,
         "year": null,
         "origin": "Micro",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "format",
+        "origin_qualifier": "micro"
       },
       "original": {
         "lang": "fr",
@@ -1445,7 +1551,9 @@
         "work": "Le Deuxième Sexe",
         "year": 1949,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1472,7 +1580,9 @@
         "work": "ACT UP (slogan) ",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1499,7 +1609,9 @@
         "work": null,
         "year": null,
         "origin": "Micro",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "format",
+        "origin_qualifier": "micro"
       },
       "original": {
         "lang": "fr",
@@ -1526,7 +1638,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "fr",
@@ -1553,7 +1667,9 @@
         "work": "Twelfth Night",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1580,7 +1696,9 @@
         "work": "Man and Superman",
         "year": 1903,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1607,7 +1725,9 @@
         "work": "Citation attribuée",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1634,7 +1754,9 @@
         "work": "Screenplay line",
         "year": 2007,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1661,7 +1783,9 @@
         "work": "Proverb",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1688,7 +1812,9 @@
         "work": "A Room of One's Own (attrib.)",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1715,7 +1841,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1742,7 +1870,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1769,7 +1899,9 @@
         "work": null,
         "year": null,
         "origin": "Slogan",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "slogan",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1796,7 +1928,9 @@
         "work": null,
         "year": null,
         "origin": "Chant",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "chant",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1823,7 +1957,9 @@
         "work": null,
         "year": null,
         "origin": "Campaign slogan",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "slogan",
+        "origin_qualifier": "campaign"
       },
       "original": {
         "lang": "en",
@@ -1850,7 +1986,9 @@
         "work": "Quote (commonly cited)",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1877,7 +2015,9 @@
         "work": null,
         "year": null,
         "origin": "ACT UP slogan",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "slogan",
+        "origin_qualifier": "act_up"
       },
       "original": {
         "lang": "en",
@@ -1904,7 +2044,9 @@
         "work": "Catchphrase",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1931,7 +2073,9 @@
         "work": "A Burst of Light",
         "year": 1988,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1958,7 +2102,9 @@
         "work": "The Fire Next Time",
         "year": 1963,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -1985,7 +2131,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -2012,7 +2160,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -2039,7 +2189,9 @@
         "work": "Lady Windermere's Fan (attrib.)",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -2066,7 +2218,9 @@
         "work": "Devotions upon Emergent Occasions",
         "year": 1624,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
@@ -2093,7 +2247,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2120,7 +2276,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2147,7 +2305,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2174,7 +2334,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2201,7 +2363,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2228,7 +2392,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2255,7 +2421,9 @@
         "work": "Proverbios y Cantares",
         "year": 1912,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2282,7 +2450,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2309,7 +2479,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2336,7 +2508,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2363,7 +2537,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2390,7 +2566,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "es",
@@ -2417,7 +2595,9 @@
         "work": "Mar Português",
         "year": 1934,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2444,7 +2624,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2471,7 +2653,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2498,7 +2682,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2525,7 +2711,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2552,7 +2740,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2579,7 +2769,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2606,7 +2798,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2633,7 +2827,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "pt",
@@ -2660,7 +2856,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2687,7 +2885,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2714,7 +2914,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2741,7 +2943,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2768,7 +2972,9 @@
         "work": "Faust I",
         "year": 1808,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2795,7 +3001,9 @@
         "work": "Götzen-Dämmerung",
         "year": 1889,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2822,7 +3030,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2849,7 +3059,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2876,7 +3088,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2903,7 +3117,9 @@
         "work": null,
         "year": null,
         "origin": "Proverb",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "de",
@@ -2930,7 +3146,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -2957,7 +3175,9 @@
         "work": null,
         "year": null,
         "origin": "Expression",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -2984,7 +3204,9 @@
         "work": "Inscription (attrib.)",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -3011,7 +3233,9 @@
         "work": "Inscription (attrib.)",
         "year": null,
         "origin": null,
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -3038,7 +3262,9 @@
         "work": "Fragment",
         "year": null,
         "origin": null,
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": null,
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -3065,7 +3291,9 @@
         "work": null,
         "year": null,
         "origin": "Saying",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "saying",
+        "origin_qualifier": null
       },
       "original": {
         "lang": "el",
@@ -3092,7 +3320,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3119,7 +3349,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3146,7 +3378,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3173,7 +3407,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3200,7 +3436,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3227,7 +3465,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3254,7 +3494,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3281,7 +3523,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3308,7 +3552,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3335,7 +3581,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3362,7 +3610,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3389,7 +3639,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3416,7 +3668,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3443,7 +3697,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3470,7 +3726,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3497,7 +3755,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3524,7 +3784,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3551,7 +3813,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3578,7 +3842,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3605,7 +3871,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3632,7 +3900,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3659,7 +3929,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3686,7 +3958,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3713,7 +3987,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3740,7 +4016,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3767,7 +4045,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3794,7 +4074,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3821,7 +4103,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3848,7 +4132,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3875,7 +4161,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3902,7 +4190,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3929,7 +4219,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3956,7 +4248,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -3983,7 +4277,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4010,7 +4306,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4037,7 +4335,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4064,7 +4364,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4091,7 +4393,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4118,7 +4422,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4145,7 +4451,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4172,7 +4480,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4199,7 +4509,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4226,7 +4538,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4253,7 +4567,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4280,7 +4596,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4307,7 +4625,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4334,7 +4654,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4361,7 +4683,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4388,7 +4712,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4415,7 +4741,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4442,7 +4770,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4469,7 +4799,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe français",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "fr"
       },
       "original": {
         "lang": "fr",
@@ -4496,7 +4828,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4523,7 +4857,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4550,7 +4886,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4577,7 +4915,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4604,7 +4944,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4631,7 +4973,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4658,7 +5002,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4685,7 +5031,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4712,7 +5060,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4739,7 +5089,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -4766,7 +5118,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4793,7 +5147,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4820,7 +5176,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4847,7 +5205,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4874,7 +5234,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4901,7 +5263,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -4928,7 +5292,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -4955,7 +5321,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -4982,7 +5350,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5009,7 +5379,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5036,7 +5408,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5063,7 +5437,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5090,7 +5466,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5117,7 +5495,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5144,7 +5524,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5171,7 +5553,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5198,7 +5582,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5225,7 +5611,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5252,7 +5640,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5279,7 +5669,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5306,7 +5698,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5333,7 +5727,9 @@
         "work": null,
         "year": null,
         "origin": "Latin (adapté)",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "la"
       },
       "original": {
         "lang": "fr",
@@ -5360,7 +5756,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5387,7 +5785,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5414,7 +5814,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5441,7 +5843,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5468,7 +5872,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5495,7 +5901,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5522,7 +5930,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse populaire",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "popular"
       },
       "original": {
         "lang": "fr",
@@ -5549,7 +5959,9 @@
         "work": "Odes",
         "year": -23,
         "origin": "Latin",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "la"
       },
       "original": {
         "lang": "en",
@@ -5576,7 +5988,9 @@
         "work": null,
         "year": null,
         "origin": "Latin",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "la"
       },
       "original": {
         "lang": "en",
@@ -5603,7 +6017,9 @@
         "work": null,
         "year": null,
         "origin": "Latin",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "la"
       },
       "original": {
         "lang": "en",
@@ -5630,7 +6046,9 @@
         "work": null,
         "year": null,
         "origin": "Expression grecque",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -5657,7 +6075,9 @@
         "work": null,
         "year": null,
         "origin": "Philosophie grecque",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "wisdom",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -5684,7 +6104,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse grecque",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -5711,7 +6133,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse grecque",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -5738,7 +6162,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse grecque",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -5765,7 +6191,9 @@
         "work": null,
         "year": null,
         "origin": "Expression espagnole",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5792,7 +6220,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse espagnole",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5819,7 +6249,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -5846,7 +6278,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse portugaise",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5873,7 +6307,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse portugaise",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -5900,7 +6336,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse allemande",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -5927,7 +6365,9 @@
         "work": null,
         "year": null,
         "origin": "Sagesse allemande",
-        "confidence": "medium"
+        "confidence": "medium",
+        "origin_type": "wisdom",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -5954,7 +6394,9 @@
         "work": null,
         "year": null,
         "origin": "Expression allemande",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -5981,7 +6423,9 @@
         "work": null,
         "year": null,
         "origin": "Proverbe allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "proverb",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -6008,7 +6452,9 @@
         "work": null,
         "year": null,
         "origin": "Italien",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "it"
       },
       "original": {
         "lang": "en",
@@ -6035,7 +6481,9 @@
         "work": null,
         "year": null,
         "origin": "Italien",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "it"
       },
       "original": {
         "lang": "en",
@@ -6062,7 +6510,9 @@
         "work": null,
         "year": null,
         "origin": "Italien",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "it"
       },
       "original": {
         "lang": "en",
@@ -6089,7 +6539,9 @@
         "work": null,
         "year": null,
         "origin": "Japonais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "ja"
       },
       "original": {
         "lang": "en",
@@ -6116,7 +6568,9 @@
         "work": null,
         "year": null,
         "origin": "Japonais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "ja"
       },
       "original": {
         "lang": "en",
@@ -6143,7 +6597,9 @@
         "work": null,
         "year": null,
         "origin": "Japonais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "ja"
       },
       "original": {
         "lang": "en",
@@ -6170,7 +6626,9 @@
         "work": null,
         "year": null,
         "origin": "Japonais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "ja"
       },
       "original": {
         "lang": "en",
@@ -6197,7 +6655,9 @@
         "work": null,
         "year": null,
         "origin": "Danois",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "da"
       },
       "original": {
         "lang": "en",
@@ -6224,7 +6684,9 @@
         "work": null,
         "year": null,
         "origin": "Danois",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "da"
       },
       "original": {
         "lang": "en",
@@ -6251,7 +6713,9 @@
         "work": null,
         "year": null,
         "origin": "Suédois",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "sv"
       },
       "original": {
         "lang": "en",
@@ -6278,7 +6742,9 @@
         "work": null,
         "year": null,
         "origin": "Suédois",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "sv"
       },
       "original": {
         "lang": "en",
@@ -6305,7 +6771,9 @@
         "work": null,
         "year": null,
         "origin": "Allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -6332,7 +6800,9 @@
         "work": null,
         "year": null,
         "origin": "Allemand",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "de"
       },
       "original": {
         "lang": "de",
@@ -6359,7 +6829,9 @@
         "work": null,
         "year": null,
         "origin": "Portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -6386,7 +6858,9 @@
         "work": null,
         "year": null,
         "origin": "Portugais",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "pt"
       },
       "original": {
         "lang": "pt",
@@ -6413,7 +6887,9 @@
         "work": null,
         "year": null,
         "origin": "Grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -6440,7 +6916,9 @@
         "work": null,
         "year": null,
         "origin": "Grec",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "el"
       },
       "original": {
         "lang": "el",
@@ -6467,7 +6945,9 @@
         "work": null,
         "year": null,
         "origin": "Espagnol",
-        "confidence": "high"
+        "confidence": "high",
+        "origin_type": "language",
+        "origin_qualifier": "es"
       },
       "original": {
         "lang": "es",
@@ -6482,6 +6962,1360 @@
         "de": "Magie des Moments"
       },
       "rating": 3
+    },
+    {
+      "id": "fr_126",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": ["fr", "movie", "quote", "philosophy", "philosophie-de-vie", "kaamelott"],
+      "attribution": {
+        "author": "Karadoc",
+        "work": "Kaamelott",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Le gras, c'est la vie."
+      },
+      "localized": {
+        "fr": "Le gras, c'est la vie.",
+        "en": "Le gras, c'est la vie.",
+        "el": "Le gras, c'est la vie.",
+        "es": "Le gras, c'est la vie.",
+        "pt": "Le gras, c'est la vie.",
+        "de": "Le gras, c'est la vie."
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_127",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["fr", "movie", "quote", "humor", "legerete", "la-grande-vadrouille"],
+      "attribution": {
+        "author": "Stanislas Lefort",
+        "work": "La Grande Vadrouille",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "C'est fin, c'est très fin, ça se mange sans faim."
+      },
+      "localized": {
+        "fr": "C'est fin, c'est très fin, ça se mange sans faim.",
+        "en": "C'est fin, c'est très fin, ça se mange sans faim.",
+        "el": "C'est fin, c'est très fin, ça se mange sans faim.",
+        "es": "C'est fin, c'est très fin, ça se mange sans faim.",
+        "pt": "C'est fin, c'est très fin, ça se mange sans faim.",
+        "de": "C'est fin, c'est très fin, ça se mange sans faim."
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_128",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "togetherness",
+      "tags": [
+        "fr",
+        "movie",
+        "quote",
+        "togetherness",
+        "convivialite",
+        "oss-117-le-caire-nid-d-espions"
+      ],
+      "attribution": {
+        "author": "Hubert Bonisseur de La Bath",
+        "work": "OSS 117 : Le Caire, nid d'espions",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Comment est votre blanquette ?"
+      },
+      "localized": {
+        "fr": "Comment est votre blanquette ?",
+        "en": "Comment est votre blanquette ?",
+        "el": "Comment est votre blanquette ?",
+        "es": "Comment est votre blanquette ?",
+        "pt": "Comment est votre blanquette ?",
+        "de": "Comment est votre blanquette ?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_129",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["fr", "movie", "quote", "gastronomy", "gourmandise", "les-bronzes-font-du-ski"],
+      "attribution": {
+        "author": "Gilbert",
+        "work": "Les Bronzés font du ski",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Vous avez de la pâte ? Vous avez du sucre ?"
+      },
+      "localized": {
+        "fr": "Vous avez de la pâte ? Vous avez du sucre ?",
+        "en": "Vous avez de la pâte ? Vous avez du sucre ?",
+        "el": "Vous avez de la pâte ? Vous avez du sucre ?",
+        "es": "Vous avez de la pâte ? Vous avez du sucre ?",
+        "pt": "Vous avez de la pâte ? Vous avez du sucre ?",
+        "de": "Vous avez de la pâte ? Vous avez du sucre ?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_130",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": [
+        "fr",
+        "movie",
+        "quote",
+        "meal",
+        "routine-repas",
+        "la-vie-est-un-long-fleuve-tranquille"
+      ],
+      "attribution": {
+        "author": "Enfants Groseille",
+        "work": "La vie est un long fleuve tranquille",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "C'est lundi, c'est ravioli !"
+      },
+      "localized": {
+        "fr": "C'est lundi, c'est ravioli !",
+        "en": "C'est lundi, c'est ravioli !",
+        "el": "C'est lundi, c'est ravioli !",
+        "es": "C'est lundi, c'est ravioli !",
+        "pt": "C'est lundi, c'est ravioli !",
+        "de": "C'est lundi, c'est ravioli !"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_131",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["fr", "movie", "quote", "gastronomy", "appreciation", "les-visiteurs"],
+      "attribution": {
+        "author": "Godefroy de Montmirail",
+        "work": "Les Visiteurs",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Elle est fort goûtue !"
+      },
+      "localized": {
+        "fr": "Elle est fort goûtue !",
+        "en": "Elle est fort goûtue !",
+        "el": "Elle est fort goûtue !",
+        "es": "Elle est fort goûtue !",
+        "pt": "Elle est fort goûtue !",
+        "de": "Elle est fort goûtue !"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_132",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "wine",
+      "tags": ["fr", "movie", "quote", "wine", "terroir", "les-tontons-flingueurs"],
+      "attribution": {
+        "author": "Raoul Volfoni",
+        "work": "Les Tontons Flingueurs",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Y’a de la pomme."
+      },
+      "localized": {
+        "fr": "Y’a de la pomme.",
+        "en": "Y’a de la pomme.",
+        "el": "Y’a de la pomme.",
+        "es": "Y’a de la pomme.",
+        "pt": "Y’a de la pomme.",
+        "de": "Y’a de la pomme."
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_133",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["fr", "movie", "quote", "joy", "petit-plaisir", "oss-117-le-caire-nid-d-espions"],
+      "attribution": {
+        "author": "Hubert Bonisseur de La Bath",
+        "work": "OSS 117 : Le Caire, nid d'espions",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "J'aime me beurrer la biscotte."
+      },
+      "localized": {
+        "fr": "J'aime me beurrer la biscotte.",
+        "en": "J'aime me beurrer la biscotte.",
+        "el": "J'aime me beurrer la biscotte.",
+        "es": "J'aime me beurrer la biscotte.",
+        "pt": "J'aime me beurrer la biscotte.",
+        "de": "J'aime me beurrer la biscotte."
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_134",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["fr", "movie", "quote", "cooking", "passion-cuisine", "ratatouille"],
+      "attribution": {
+        "author": "Chef Gusteau",
+        "work": "Ratatouille",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Tout le monde peut cuisiner !"
+      },
+      "localized": {
+        "fr": "Tout le monde peut cuisiner !",
+        "en": "Tout le monde peut cuisiner !",
+        "el": "Tout le monde peut cuisiner !",
+        "es": "Tout le monde peut cuisiner !",
+        "pt": "Tout le monde peut cuisiner !",
+        "de": "Tout le monde peut cuisiner !"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_135",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["fr", "movie", "quote", "humor", "fraicheur", "asterix-et-obelix-mission-cleopatre"],
+      "attribution": {
+        "author": "Ordralphabétix",
+        "work": "Astérix et Obélix : Mission Cléopâtre",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Il est pas frais mon poisson ?"
+      },
+      "localized": {
+        "fr": "Il est pas frais mon poisson ?",
+        "en": "Il est pas frais mon poisson ?",
+        "el": "Il est pas frais mon poisson ?",
+        "es": "Il est pas frais mon poisson ?",
+        "pt": "Il est pas frais mon poisson ?",
+        "de": "Il est pas frais mon poisson ?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_136",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["fr", "movie", "quote", "cooking", "assaisonnement", "le-grand-restaurant"],
+      "attribution": {
+        "author": "Monsieur Septime",
+        "work": "Le Grand Restaurant",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Un peu de sel ? Un peu de poivre ?"
+      },
+      "localized": {
+        "fr": "Un peu de sel ? Un peu de poivre ?",
+        "en": "Un peu de sel ? Un peu de poivre ?",
+        "el": "Un peu de sel ? Un peu de poivre ?",
+        "es": "Un peu de sel ? Un peu de poivre ?",
+        "pt": "Un peu de sel ? Un peu de poivre ?",
+        "de": "Un peu de sel ? Un peu de poivre ?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_137",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": [
+        "fr",
+        "movie",
+        "quote",
+        "joy",
+        "plaisir-simple",
+        "le-fabuleux-destin-d-amelie-poulain"
+      ],
+      "attribution": {
+        "author": "Narrateur",
+        "work": "Le Fabuleux Destin d'Amélie Poulain",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Casser la croûte des crèmes brûlées."
+      },
+      "localized": {
+        "fr": "Casser la croûte des crèmes brûlées.",
+        "en": "Casser la croûte des crèmes brûlées.",
+        "el": "Casser la croûte des crèmes brûlées.",
+        "es": "Casser la croûte des crèmes brûlées.",
+        "pt": "Casser la croûte des crèmes brûlées.",
+        "de": "Casser la croûte des crèmes brûlées."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_035",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "life",
+      "tags": ["en", "movie", "quote", "life", "surprise", "forrest-gump"],
+      "attribution": {
+        "author": "Forrest Gump",
+        "work": "Forrest Gump",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Life is like a box of chocolates."
+      },
+      "localized": {
+        "fr": "La vie, c'est comme une boîte de chocolats.",
+        "en": "Life is like a box of chocolates.",
+        "el": "Life is like a box of chocolates.",
+        "es": "Life is like a box of chocolates.",
+        "pt": "Life is like a box of chocolates.",
+        "de": "Life is like a box of chocolates."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_036",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["en", "movie", "quote", "meal", "appetit", "the-lord-of-the-rings"],
+      "attribution": {
+        "author": "Pippin",
+        "work": "The Lord of the Rings",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "What about second breakfast?"
+      },
+      "localized": {
+        "fr": "Et le second petit-déjeuner ?",
+        "en": "What about second breakfast?",
+        "el": "What about second breakfast?",
+        "es": "What about second breakfast?",
+        "pt": "What about second breakfast?",
+        "de": "What about second breakfast?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_037",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["en", "movie", "quote", "humor", "envie", "when-harry-met-sally"],
+      "attribution": {
+        "author": "Cliente au restaurant",
+        "work": "When Harry Met Sally",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "I’ll have what she’s having."
+      },
+      "localized": {
+        "fr": "Je prendrai la même chose qu'elle.",
+        "en": "I’ll have what she’s having.",
+        "el": "I’ll have what she’s having.",
+        "es": "I’ll have what she’s having.",
+        "pt": "I’ll have what she’s having.",
+        "de": "I’ll have what she’s having."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_038",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["en", "movie", "quote", "humor", "priorites", "the-godfather"],
+      "attribution": {
+        "author": "Clemenza",
+        "work": "The Godfather",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Leave the gun. Take the cannoli."
+      },
+      "localized": {
+        "fr": "Laisse le flingue. Prends les cannolis.",
+        "en": "Leave the gun. Take the cannoli.",
+        "el": "Leave the gun. Take the cannoli.",
+        "es": "Leave the gun. Take the cannoli.",
+        "pt": "Leave the gun. Take the cannoli.",
+        "de": "Leave the gun. Take the cannoli."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_039",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["en", "movie", "quote", "meal", "matin", "shrek"],
+      "attribution": {
+        "author": "L'Âne",
+        "work": "Shrek",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "And in the morning, I'm making waffles!"
+      },
+      "localized": {
+        "fr": "Et demain matin, je fais des gaufres !",
+        "en": "And in the morning, I'm making waffles!",
+        "el": "And in the morning, I'm making waffles!",
+        "es": "And in the morning, I'm making waffles!",
+        "pt": "And in the morning, I'm making waffles!",
+        "de": "And in the morning, I'm making waffles!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_040",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["en", "movie", "quote", "humor", "humour", "mean-girls"],
+      "attribution": {
+        "author": "Regina George",
+        "work": "Mean Girls",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Is butter a carb?"
+      },
+      "localized": {
+        "fr": "Est-ce que le beurre c'est des glucides ?",
+        "en": "Is butter a carb?",
+        "el": "Is butter a carb?",
+        "es": "Is butter a carb?",
+        "pt": "Is butter a carb?",
+        "de": "Is butter a carb?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_041",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["en", "movie", "quote", "gastronomy", "degustation", "beauty-and-the-beast"],
+      "attribution": {
+        "author": "Lumière",
+        "work": "Beauty and the Beast",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Try the grey stuff, it's delicious!"
+      },
+      "localized": {
+        "fr": "Goûtez ça, c'est délicieux !",
+        "en": "Try the grey stuff, it's delicious!",
+        "el": "Try the grey stuff, it's delicious!",
+        "es": "Try the grey stuff, it's delicious!",
+        "pt": "Try the grey stuff, it's delicious!",
+        "de": "Try the grey stuff, it's delicious!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_042",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["en", "movie", "quote", "cooking", "cuisine", "julie-julia"],
+      "attribution": {
+        "author": "Julia Child",
+        "work": "Julie & Julia",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "You can never have too much butter."
+      },
+      "localized": {
+        "fr": "On n'a jamais trop de beurre.",
+        "en": "You can never have too much butter.",
+        "el": "You can never have too much butter.",
+        "es": "You can never have too much butter.",
+        "pt": "You can never have too much butter.",
+        "de": "You can never have too much butter."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_043",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["en", "movie", "quote", "cooking", "inspiration", "ratatouille"],
+      "attribution": {
+        "author": "Chef Gusteau",
+        "work": "Ratatouille",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Anyone can cook."
+      },
+      "localized": {
+        "fr": "Tout le monde peut cuisiner.",
+        "en": "Anyone can cook.",
+        "el": "Anyone can cook.",
+        "es": "Anyone can cook.",
+        "pt": "Anyone can cook.",
+        "de": "Anyone can cook."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_044",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["en", "movie", "quote", "humor", "vegetarien-drole", "finding-nemo"],
+      "attribution": {
+        "author": "Bruce",
+        "work": "Finding Nemo",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Fish are friends, not food."
+      },
+      "localized": {
+        "fr": "Les poissons sont des amis, pas de la nourriture.",
+        "en": "Fish are friends, not food.",
+        "el": "Fish are friends, not food.",
+        "es": "Fish are friends, not food.",
+        "pt": "Fish are friends, not food.",
+        "de": "Fish are friends, not food."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_045",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "gastronomy",
+      "tags": ["en", "movie", "quote", "gastronomy", "gourmandise-sucree", "elf"],
+      "attribution": {
+        "author": "Buddy",
+        "work": "Elf",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Candy, candy canes, candy corns, and syrup."
+      },
+      "localized": {
+        "fr": "Bonbons, sucres d'orge, maïs soufflé et sirop.",
+        "en": "Candy, candy canes, candy corns, and syrup.",
+        "el": "Candy, candy canes, candy corns, and syrup.",
+        "es": "Candy, candy canes, candy corns, and syrup.",
+        "pt": "Candy, candy canes, candy corns, and syrup.",
+        "de": "Candy, candy canes, candy corns, and syrup."
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_046",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": [
+        "en",
+        "movie",
+        "quote",
+        "humor",
+        "plaisir-coupable",
+        "cloudy-with-a-chance-of-meatballs"
+      ],
+      "attribution": {
+        "author": "Mayor Shelbourne",
+        "work": "Cloudy with a Chance of Meatballs",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "en",
+        "text": "Cheeseburger!"
+      },
+      "localized": {
+        "fr": "Cheeseburger !",
+        "en": "Cheeseburger!",
+        "el": "Cheeseburger!",
+        "es": "Cheeseburger!",
+        "pt": "Cheeseburger!",
+        "de": "Cheeseburger!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_026",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": [
+        "el",
+        "movie",
+        "quote",
+        "philosophy",
+        "philosophie-culinaire",
+        "politiki-kouzina-a-touch-of-spice"
+      ],
+      "attribution": {
+        "author": "Grand-père Vassilis",
+        "work": "Politiki Kouzina (A Touch of Spice)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Το πιπέρι... καίει."
+      },
+      "localized": {
+        "fr": "Le poivre... ça brûle.",
+        "en": "Το πιπέρι... καίει.",
+        "el": "Το πιπέρι... καίει.",
+        "es": "Το πιπέρι... καίει.",
+        "pt": "Το πιπέρι... καίει.",
+        "de": "Το πιπέρι... καίει."
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_027",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "philosophy",
+      "tags": [
+        "el",
+        "movie",
+        "quote",
+        "philosophy",
+        "lien-cosmique",
+        "politiki-kouzina-a-touch-of-spice"
+      ],
+      "attribution": {
+        "author": "Grand-père Vassilis",
+        "work": "Politiki Kouzina (A Touch of Spice)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Ο γαστρονόμος... αστρονόμος."
+      },
+      "localized": {
+        "fr": "Le gastronome... l'astronome.",
+        "en": "Ο γαστρονόμος... αστρονόμος.",
+        "el": "Ο γαστρονόμος... αστρονόμος.",
+        "es": "Ο γαστρονόμος... αστρονόμος.",
+        "pt": "Ο γαστρονόμος... αστρονόμος.",
+        "de": "Ο γαστρονόμος... αστρονόμος."
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_028",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["el", "movie", "quote", "joy", "joie-de-vivre", "zorba-the-greek"],
+      "attribution": {
+        "author": "Zorba",
+        "work": "Zorba the Greek",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Η ζωή είναι γλέντι!"
+      },
+      "localized": {
+        "fr": "La vie est une fête !",
+        "en": "Η ζωή είναι γλέντι!",
+        "el": "Η ζωή είναι γλέντι!",
+        "es": "Η ζωή είναι γλέντι!",
+        "pt": "Η ζωή είναι γλέντι!",
+        "de": "Η ζωή είναι γλέντι!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_029",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "hosting",
+      "tags": [
+        "el",
+        "movie",
+        "quote",
+        "hosting",
+        "invitation",
+        "la-tante-de-chicago-i-theia-apo-to-chica"
+      ],
+      "attribution": {
+        "author": "Calliope",
+        "work": "La Tante de Chicago (I Theia apo to Chicago)",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Ελάτε να φάμε!"
+      },
+      "localized": {
+        "fr": "Venez manger !",
+        "en": "Ελάτε να φάμε!",
+        "el": "Ελάτε να φάμε!",
+        "es": "Ελάτε να φάμε!",
+        "pt": "Ελάτε να φάμε!",
+        "de": "Ελάτε να φάμε!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_030",
+      "type": "quote_short",
+      "tone": "festive",
+      "category": "toast",
+      "tags": ["el", "movie", "quote", "toast", "rembetiko"],
+      "attribution": {
+        "author": "Marika",
+        "work": "Rembetiko",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "el",
+        "text": "Στην υγειά μας, ρε παιδιά!"
+      },
+      "localized": {
+        "fr": "À notre santé, les gars !",
+        "en": "Στην υγειά μας, ρε παιδιά!",
+        "el": "Στην υγειά μας, ρε παιδιά!",
+        "es": "Στην υγειά μας, ρε παιδιά!",
+        "pt": "Στην υγειά μας, ρε παιδιά!",
+        "de": "Στην υγειά μας, ρε παιδιά!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_024",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["es", "movie", "quote", "cooking", "passion", "como-agua-para-chocolate"],
+      "attribution": {
+        "author": "Tita",
+        "work": "Como agua para chocolate",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Los secretos de la vida están en la cocina."
+      },
+      "localized": {
+        "fr": "Les secrets de la vie sont dans la cuisine.",
+        "en": "Los secretos de la vida están en la cocina.",
+        "el": "Los secretos de la vida están en la cocina.",
+        "es": "Los secretos de la vida están en la cocina.",
+        "pt": "Los secretos de la vida están en la cocina.",
+        "de": "Los secretos de la vida están en la cocina."
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_025",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "tradition",
+      "tags": ["es", "movie", "quote", "tradition", "mujeres-al-borde-de-un-ataque-de-nervios"],
+      "attribution": {
+        "author": "Pepa",
+        "work": "Mujeres al borde de un ataque de nervios",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "es",
+        "text": "A todo el mundo le gusta el gazpacho."
+      },
+      "localized": {
+        "fr": "Tout le monde aime le gaspacho.",
+        "en": "A todo el mundo le gusta el gazpacho.",
+        "el": "A todo el mundo le gusta el gazpacho.",
+        "es": "A todo el mundo le gusta el gazpacho.",
+        "pt": "A todo el mundo le gusta el gazpacho.",
+        "de": "A todo el mundo le gusta el gazpacho."
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_026",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["es", "movie", "quote", "cooking", "magie-de-la-nourriture", "encanto"],
+      "attribution": {
+        "author": "Mirabel",
+        "work": "Encanto",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "es",
+        "text": "¿Sanaste mi mano con una arepa con queso?"
+      },
+      "localized": {
+        "fr": "Tu as soigné ma main avec une arepa au fromage ?",
+        "en": "¿Sanaste mi mano con una arepa con queso?",
+        "el": "¿Sanaste mi mano con una arepa con queso?",
+        "es": "¿Sanaste mi mano con una arepa con queso?",
+        "pt": "¿Sanaste mi mano con una arepa con queso?",
+        "de": "¿Sanaste mi mano con una arepa con queso?"
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_027",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "family",
+      "tags": ["es", "movie", "quote", "family", "abondance", "coco"],
+      "attribution": {
+        "author": "Abuelita",
+        "work": "Coco",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "es",
+        "text": "¡Más tamales! ¡Coman, mijos!"
+      },
+      "localized": {
+        "fr": "Plus de tamales ! Mangez, mes enfants !",
+        "en": "¡Más tamales! ¡Coman, mijos!",
+        "el": "¡Más tamales! ¡Coman, mijos!",
+        "es": "¡Más tamales! ¡Coman, mijos!",
+        "pt": "¡Más tamales! ¡Coman, mijos!",
+        "de": "¡Más tamales! ¡Coman, mijos!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_028",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "friends",
+      "tags": ["es", "movie", "quote", "friends", "attention", "volver"],
+      "attribution": {
+        "author": "Sole",
+        "work": "Volver",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "es",
+        "text": "Te he traído rosquillas."
+      },
+      "localized": {
+        "fr": "Je t'ai apporté des rosquillas (beignets).",
+        "en": "Te he traído rosquillas.",
+        "el": "Te he traído rosquillas.",
+        "es": "Te he traído rosquillas.",
+        "pt": "Te he traído rosquillas.",
+        "de": "Te he traído rosquillas."
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_022",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["pt", "movie", "quote", "cooking", "saveur", "estomago"],
+      "attribution": {
+        "author": "Raimundo Nonato",
+        "work": "Estômago",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "O alecrim dá o gosto."
+      },
+      "localized": {
+        "fr": "C'est le romarin qui donne le goût.",
+        "en": "O alecrim dá o gosto.",
+        "el": "O alecrim dá o gosto.",
+        "es": "O alecrim dá o gosto.",
+        "pt": "O alecrim dá o gosto.",
+        "de": "O alecrim dá o gosto."
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_023",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "sharing",
+      "tags": ["pt", "movie", "quote", "sharing", "don-de-soi", "estomago"],
+      "attribution": {
+        "author": "Raimundo Nonato",
+        "work": "Estômago",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Cozinhar é um modo de amar os outros."
+      },
+      "localized": {
+        "fr": "Cuisiner est une façon d'aimer les autres.",
+        "en": "Cozinhar é um modo de amar os outros.",
+        "el": "Cozinhar é um modo de amar os outros.",
+        "es": "Cozinhar é um modo de amar os outros.",
+        "pt": "Cozinhar é um modo de amar os outros.",
+        "de": "Cozinhar é um modo de amar os outros."
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_024",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "culture",
+      "tags": ["pt", "movie", "quote", "culture", "sensualite", "gabriela-cravo-e-canela"],
+      "attribution": {
+        "author": "Narrateur/Chanson",
+        "work": "Gabriela, Cravo e Canela",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Cheiro de cravo, cor de canela."
+      },
+      "localized": {
+        "fr": "Parfum de clou de girofle, couleur de cannelle.",
+        "en": "Cheiro de cravo, cor de canela.",
+        "el": "Cheiro de cravo, cor de canela.",
+        "es": "Cheiro de cravo, cor de canela.",
+        "pt": "Cheiro de cravo, cor de canela.",
+        "de": "Cheiro de cravo, cor de canela."
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_025",
+      "type": "quote_short",
+      "tone": "bold",
+      "category": "humor",
+      "tags": ["pt", "movie", "quote", "humor", "action-en-cuisine", "cidade-de-deus"],
+      "attribution": {
+        "author": "Zé Pequeno",
+        "work": "Cidade de Deus",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Pega a galinha!"
+      },
+      "localized": {
+        "fr": "Attrape la poule !",
+        "en": "Pega a galinha!",
+        "el": "Pega a galinha!",
+        "es": "Pega a galinha!",
+        "pt": "Pega a galinha!",
+        "de": "Pega a galinha!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "de_024",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "memory",
+      "tags": ["de", "movie", "quote", "memory", "nostalgie", "good-bye-lenin"],
+      "attribution": {
+        "author": "Alex Kerner",
+        "work": "Good Bye, Lenin!",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Die guten Spreewaldgurken."
+      },
+      "localized": {
+        "fr": "Les bons cornichons du Spreewald.",
+        "en": "Die guten Spreewaldgurken.",
+        "el": "Die guten Spreewaldgurken.",
+        "es": "Die guten Spreewaldgurken.",
+        "pt": "Die guten Spreewaldgurken.",
+        "de": "Die guten Spreewaldgurken."
+      },
+      "rating": 2
+    },
+    {
+      "id": "de_025",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["de", "movie", "quote", "cooking", "fierte-du-chef", "bella-martha"],
+      "attribution": {
+        "author": "Martha Klein",
+        "work": "Bella Martha",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Ich mache die besten Gnocchi."
+      },
+      "localized": {
+        "fr": "Je fais les meilleurs gnocchis.",
+        "en": "Ich mache die besten Gnocchi.",
+        "el": "Ich mache die besten Gnocchi.",
+        "es": "Ich mache die besten Gnocchi.",
+        "pt": "Ich mache die besten Gnocchi.",
+        "de": "Ich mache die besten Gnocchi."
+      },
+      "rating": 2
+    },
+    {
+      "id": "de_026",
+      "type": "quote_short",
+      "tone": "soft",
+      "category": "home",
+      "tags": ["de", "movie", "quote", "home", "reconfort", "soul-kitchen"],
+      "attribution": {
+        "author": "Zinos Kazantsakis",
+        "work": "Soul Kitchen",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Essen für die Seele."
+      },
+      "localized": {
+        "fr": "De la nourriture pour l'âme.",
+        "en": "Essen für die Seele.",
+        "el": "Essen für die Seele.",
+        "es": "Essen für die Seele.",
+        "pt": "Essen für die Seele.",
+        "de": "Essen für die Seele."
+      },
+      "rating": 2
+    },
+    {
+      "id": "de_027",
+      "type": "quote_short",
+      "tone": "joyful",
+      "category": "joy",
+      "tags": ["de", "movie", "quote", "joy", "plaisir-simple", "heidi"],
+      "attribution": {
+        "author": "Heidi",
+        "work": "Heidi",
+        "year": null,
+        "origin": null,
+        "confidence": "medium",
+        "origin_type": "film_quote",
+        "origin_qualifier": "character"
+      },
+      "original": {
+        "lang": "de",
+        "text": "Das Brot und der Käse schmecken wunderbar!"
+      },
+      "localized": {
+        "fr": "Le pain et le fromage sont merveilleux !",
+        "en": "Das Brot und der Käse schmecken wunderbar!",
+        "el": "Das Brot und der Käse schmecken wunderbar!",
+        "es": "Das Brot und der Käse schmecken wunderbar!",
+        "pt": "Das Brot und der Käse schmecken wunderbar!",
+        "de": "Das Brot und der Käse schmecken wunderbar!"
+      },
+      "rating": 2
     }
-  ]
+  ],
+  "attribution_display_rules": {
+    "fallback_order": ["author", "origin_type", "anonymous"],
+    "notes": "Afficher l'auteur s'il existe. Sinon afficher un libellé basé sur origin_type (+ origin_qualifier si présent). Sinon afficher 'Anonyme' (localisé). Conserver 'origin' pour un fallback legacy/texte libre.",
+    "anonymous_labels": {
+      "fr": "Anonyme",
+      "en": "Anonymous",
+      "el": "Ανώνυμο",
+      "es": "Anónimo",
+      "pt": "Anónimo",
+      "de": "Unbekannt"
+    },
+    "origin_type_labels": {
+      "proverb": {
+        "fr": "Proverbe",
+        "en": "Proverb",
+        "el": "Παροιμία",
+        "es": "Proverbio",
+        "pt": "Provérbio",
+        "de": "Sprichwort"
+      },
+      "saying": {
+        "fr": "Dicton",
+        "en": "Saying",
+        "el": "Ρητό",
+        "es": "Dicho",
+        "pt": "Dito",
+        "de": "Spruch"
+      },
+      "expression": {
+        "fr": "Expression",
+        "en": "Expression",
+        "el": "Έκφραση",
+        "es": "Expresión",
+        "pt": "Expressão",
+        "de": "Redewendung"
+      },
+      "wisdom": {
+        "fr": "Sagesse",
+        "en": "Wisdom",
+        "el": "Σοφία",
+        "es": "Sabiduría",
+        "pt": "Sabedoria",
+        "de": "Weisheit"
+      },
+      "slogan": {
+        "fr": "Slogan",
+        "en": "Slogan",
+        "el": "Σύνθημα",
+        "es": "Eslogan",
+        "pt": "Slogan",
+        "de": "Slogan"
+      },
+      "chant": {
+        "fr": "Chant",
+        "en": "Chant",
+        "el": "Άσμα",
+        "es": "Canto",
+        "pt": "Canto",
+        "de": "Gesang"
+      },
+      "language": {
+        "fr": "En langue originale",
+        "en": "In original language",
+        "el": "Στην πρωτότυπη γλώσσα",
+        "es": "En lengua original",
+        "pt": "Na língua original",
+        "de": "In Originalsprache"
+      },
+      "format": {
+        "fr": "Format",
+        "en": "Format",
+        "el": "Μορφή",
+        "es": "Formato",
+        "pt": "Formato",
+        "de": "Format"
+      },
+      "unknown": {
+        "fr": "Source inconnue",
+        "en": "Unknown source",
+        "el": "Άγνωστη πηγή",
+        "es": "Fuente desconocida",
+        "pt": "Fonte desconhecida",
+        "de": "Unbekannte Quelle"
+      }
+    },
+    "origin_qualifier_convention": "ISO 639-1 codes for languages (de, el, es, fr, pt, it, ja, da, sv, la). Other values: 'popular', 'campaign', 'act_up', 'micro'."
+  }
 }

@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
 
 export function CitationDisplay({ seed }: { seed?: string }) {
   const locale = useLocale();
+  const t = useTranslations("Citations");
+  const tLang = useTranslations("common.languages");
   const [step, setStep] = useState(0);
 
   const citationItem = useMemo(() => {
@@ -18,25 +20,51 @@ export function CitationDisplay({ seed }: { seed?: string }) {
     }
     const index = Math.abs(hash) % list.length;
     return list[index];
-  }, []);
+  }, [seed]);
 
   const preferredTranslation = useMemo(() => {
     if (citationItem.original.lang === locale) return null;
     return (citationItem.localized as Record<string, string>)[locale] || null;
   }, [citationItem, locale]);
 
-  const author = citationItem.attribution.author || citationItem.attribution.origin;
+  const attributionLabel = useMemo(() => {
+    const attr = citationItem.attribution;
+    if (attr.author) return attr.author;
+
+    if (attr.origin_type) {
+      const type = t(`types.${attr.origin_type}`);
+      let qualifier = "";
+
+      if (attr.origin_qualifier) {
+        // Check if it's a language code
+        const languages = ["fr", "en", "el", "es", "pt", "de", "it", "ja", "la", "sv"];
+        if (languages.includes(attr.origin_qualifier)) {
+          qualifier = tLang(attr.origin_qualifier);
+        } else {
+          try {
+            qualifier = t(`qualifiers.${attr.origin_qualifier}`);
+          } catch {
+            qualifier = attr.origin_qualifier;
+          }
+        }
+      }
+
+      return qualifier ? `${type} (${qualifier})` : type;
+    }
+
+    return attr.work || attr.origin || t("anonymous");
+  }, [citationItem, t, tLang]);
 
   const availableSteps = useMemo(() => {
     const steps = [{ type: "text", value: citationItem.original.text }];
     if (preferredTranslation) {
       steps.push({ type: "text", value: preferredTranslation });
     }
-    if (author) {
-      steps.push({ type: "author", value: author });
+    if (attributionLabel) {
+      steps.push({ type: "author", value: attributionLabel });
     }
     return steps;
-  }, [citationItem, preferredTranslation, author]);
+  }, [citationItem, preferredTranslation, attributionLabel]);
 
   const currentContent = availableSteps[step % availableSteps.length];
 
@@ -45,7 +73,7 @@ export function CitationDisplay({ seed }: { seed?: string }) {
       className="group relative cursor-pointer select-none"
       onClick={(e) => {
         e.stopPropagation();
-        setStep((s) => (s + 1) % availableSteps.length);
+        setStep((s: number) => (s + 1) % availableSteps.length);
       }}
     >
       <div className="flex items-start gap-2.5">

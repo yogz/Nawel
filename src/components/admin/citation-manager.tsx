@@ -31,10 +31,7 @@ export function CitationManager() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
-      <SuccessToast
-        message={toastMessage?.text || null}
-        type={toastMessage?.type || "success"}
-      />
+      <SuccessToast message={toastMessage?.text || null} type={toastMessage?.type || "success"} />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
@@ -96,7 +93,18 @@ export function CitationManager() {
               </div>
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                  Source / Origine
+                  Type / Qualificatif
+                </p>
+                <p className="text-sm text-text">
+                  {citation.attribution.origin_type || "N/A"}
+                  {citation.attribution.origin_qualifier
+                    ? ` (${citation.attribution.origin_qualifier})`
+                    : ""}
+                </p>
+              </div>
+              <div className="sm:col-span-2">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  Source / Origine brute
                 </p>
                 <p className="text-sm text-text">
                   {citation.attribution.work || citation.attribution.origin || "N/A"}

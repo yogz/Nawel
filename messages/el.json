@@ -378,5 +378,24 @@
     "retryButton": "Δοκιμάστε ξανά",
     "homeButton": "Επιστροφή στην αρχική",
     "errorId": "Error ID"
+  },
+  "Citations": {
+    "anonymous": "Ανώνυμο",
+    "types": {
+      "proverb": "Παροιμία",
+      "expression": "Έκφραση",
+      "wisdom": "Σοφία",
+      "saying": "Ρητό",
+      "slogan": "Σλόγκαν",
+      "chant": "Ύμνος",
+      "language": "Γλώσσα",
+      "format": "Μορφή"
+    },
+    "qualifiers": {
+      "popular": "Λαϊκό",
+      "micro": "Μικρό",
+      "campaign": "Καμπάνια",
+      "act_up": "Act Up"
+    }
   }
 }

@@ -378,5 +378,24 @@
     "retryButton": "Erneut versuchen",
     "homeButton": "Zurück zur Startseite",
     "errorId": "Fehler-ID"
+  },
+  "Citations": {
+    "anonymous": "Anonym",
+    "types": {
+      "proverb": "Sprichwort",
+      "expression": "Ausdruck",
+      "wisdom": "Weisheit",
+      "saying": "Redensart",
+      "slogan": "Slogan",
+      "chant": "Gesang",
+      "language": "Sprache",
+      "format": "Format"
+    },
+    "qualifiers": {
+      "popular": "Volkstümlich",
+      "micro": "Mikro",
+      "campaign": "Kampagne",
+      "act_up": "Act Up"
+    }
   }
 }
