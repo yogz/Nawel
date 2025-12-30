@@ -43,7 +43,15 @@
       "createFirst": "Criar o meu primeiro evento",
       "upcoming": "Próximos",
       "past": "Passados",
-      "myEvent": "Meu Evento",
+      "myEvent": "Meu evento",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "deleteConfirmTitle": "Excluir evento",
+      "deleteConfirmDescription": "Todos os dados serão excluídos permanentemente.",
+      "deleteConfirmInstruction": "Digite \"{name}\" para confirmar:",
+      "deleteConfirmPlaceholder": "Nome do evento",
+      "deleteConfirmButton": "Excluir",
+      "deleteCancelButton": "Cancelar",
       "errorOccurred": "Ocorreu um erro"
     }
   },

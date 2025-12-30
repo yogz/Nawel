@@ -44,6 +44,14 @@
       "upcoming": "Upcoming",
       "past": "Past",
       "myEvent": "My Event",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete Event",
+      "deleteConfirmDescription": "All data will be permanently deleted.",
+      "deleteConfirmInstruction": "Enter \"{name}\" to confirm:",
+      "deleteConfirmPlaceholder": "Event name",
+      "deleteConfirmButton": "Delete",
+      "deleteCancelButton": "Cancel",
       "errorOccurred": "An error occurred"
     }
   },

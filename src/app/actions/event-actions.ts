@@ -8,7 +8,7 @@ import { events, people } from "@drizzle/schema";
 import { eq, desc, or, exists, and } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
-import { createEventSchema, deleteEventSchema } from "./schemas";
+import { createEventSchema, deleteEventSchema, updateEventSchema } from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 
@@ -136,6 +136,32 @@ export const getMyEventsAction = withErrorThrower(async () => {
     },
     orderBy: desc(events.createdAt),
   });
+});
+
+export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {
+  const event = await verifyEventAccess(input.slug, input.key);
+
+  await db
+    .update(events)
+    .set({
+      ...(input.name && { name: input.name }),
+      ...(input.description !== undefined && { description: input.description }),
+      ...(input.adults !== undefined && { adults: input.adults }),
+      ...(input.children !== undefined && { children: input.children }),
+    })
+    .where(eq(events.id, event.id));
+
+  await logChange("update", "events", event.id, event, {
+    ...event,
+    ...(input.name && { name: input.name }),
+    ...(input.description !== undefined && { description: input.description }),
+    ...(input.adults !== undefined && { adults: input.adults }),
+    ...(input.children !== undefined && { children: input.children }),
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/event/${event.slug}`);
+  return { success: true };
 });
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {

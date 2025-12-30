@@ -44,6 +44,14 @@
       "upcoming": "Προσεχείς",
       "past": "Παρελθούσες",
       "myEvent": "Η Εκδήλωσή μου",
+      "edit": "Επεξεργασία",
+      "delete": "Διαγραφή",
+      "deleteConfirmTitle": "Διαγραφή εκδήλωσης",
+      "deleteConfirmDescription": "Όλα τα δεδομένα θα διαγραφούν οριστικά.",
+      "deleteConfirmInstruction": "Πληκτρολογήστε \"{name}\" για επιβεβαίωση:",
+      "deleteConfirmPlaceholder": "Όνομα εκδήλωσης",
+      "deleteConfirmButton": "Διαγραφή",
+      "deleteCancelButton": "Ακύρωση",
       "errorOccurred": "Προέκυψε σφάλμα"
     }
   },

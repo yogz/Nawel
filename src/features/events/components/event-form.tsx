@@ -20,6 +20,7 @@ export function EventForm({
   error,
   inline = false,
   showWarnings = false,
+  initialData,
 }: {
   onSubmit: (
     slug: string,
@@ -36,23 +37,31 @@ export function EventForm({
   error: string | null;
   inline?: boolean;
   showWarnings?: boolean;
+  initialData?: {
+    name: string;
+    description: string | null;
+    adults: number;
+    children: number;
+    date: string;
+    slug: string;
+  };
 }) {
   const t = useTranslations("CreateEvent");
   const tShared = useTranslations("EventDashboard.Shared");
   const locale = useLocale();
   const [step, setStep] = useState(1);
-  const [slug, setSlug] = useState("");
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [slug, setSlug] = useState(initialData?.slug ?? "");
+  const [name, setName] = useState(initialData?.name ?? "");
+  const [description, setDescription] = useState(initialData?.description ?? "");
   const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">(
     "total"
   );
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
   const [customPassword, setCustomPassword] = useState("");
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [adults, setAdults] = useState(0);
-  const [children, setChildren] = useState(0);
+  const [showAdvanced, setShowAdvanced] = useState(initialData ? true : false);
+  const [adults, setAdults] = useState(initialData?.adults ?? 0);
+  const [children, setChildren] = useState(initialData?.children ?? 0);
 
   const CREATION_MODES = [
     {
@@ -137,16 +146,18 @@ export function EventForm({
   const content = (
     <>
       {/* Progress indicator */}
-      <div className="mb-6 flex gap-1.5">
-        {[1, 2, 3].map((s) => (
-          <div
-            key={s}
-            className={`h-1 flex-1 rounded-full transition-all ${
-              s <= step ? "bg-accent" : "bg-gray-200"
-            }`}
-          />
-        ))}
-      </div>
+      {!initialData && (
+        <div className="mb-6 flex gap-1.5">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`h-1 flex-1 rounded-full transition-all ${
+                s <= step ? "bg-accent" : "bg-gray-200"
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
       {showWarnings && step === 1 && (
         <div className="mb-6 space-y-3">
@@ -185,15 +196,17 @@ export function EventForm({
             />
           </label>
 
-          <label className="block space-y-2">
-            <span className="text-sm font-bold text-gray-900">{t("dateLabel")}</span>
-            <input
-              type="date"
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </label>
+          {!initialData && (
+            <label className="block space-y-2">
+              <span className="text-sm font-bold text-gray-900">{t("dateLabel")}</span>
+              <input
+                type="date"
+                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </label>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -248,11 +261,11 @@ export function EventForm({
             </button>
             <button
               type="button"
-              onClick={goNext}
-              disabled={!canGoNext()}
+              onClick={initialData ? handleSubmit : goNext}
+              disabled={!canGoNext() || isPending}
               className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
             >
-              {t("nextButton")}
+              {initialData ? (isPending ? tShared("saving") : tShared("save")) : t("nextButton")}
             </button>
           </div>
         </div>

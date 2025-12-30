@@ -170,6 +170,13 @@ export const createEventSchema = z.object({
 
 export const deleteEventSchema = baseInput;
 
+export const updateEventSchema = baseInput.extend({
+  name: safeText(100).optional(),
+  description: safeText(500).optional().nullable(),
+  adults: z.number().int().min(0).max(1000).optional(),
+  children: z.number().int().min(0).max(1000).optional(),
+});
+
 // Ingredient schemas
 export const generateIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),

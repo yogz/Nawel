@@ -44,6 +44,14 @@
       "upcoming": "Anstehend",
       "past": "Vergangen",
       "myEvent": "Mein Event",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteConfirmTitle": "Event löschen",
+      "deleteConfirmDescription": "Alle Daten werden unwiderruflich gelöscht.",
+      "deleteConfirmInstruction": "Geben Sie \"{name}\" zur Bestätigung ein:",
+      "deleteConfirmPlaceholder": "Event-Name",
+      "deleteConfirmButton": "Löschen",
+      "deleteCancelButton": "Abbrechen",
       "errorOccurred": "Ein Fehler ist aufgetreten"
     }
   },
