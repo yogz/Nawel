@@ -5,6 +5,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { CitationDisplay } from "../common/citation-display";
+import { useThemeMode } from "../theme-provider";
 import {
   PlusIcon,
   Pencil,
@@ -61,6 +62,7 @@ export function PlanningTab({
   setSheet,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
+  const { theme } = useThemeMode();
   const [hasMounted, setHasMounted] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
