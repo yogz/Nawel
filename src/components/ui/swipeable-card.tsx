@@ -45,6 +45,8 @@ export function SwipeableCard({
   const [activeAction, setActiveAction] = useState<"left" | "right" | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [cardHeight, setCardHeight] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [hasSwiped, setHasSwiped] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Measure actual card height
@@ -65,7 +67,12 @@ export function SwipeableCard({
     setActiveAction(null);
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
   const handleDragEnd = async (_: unknown, info: PanInfo) => {
+    setIsDragging(false);
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
@@ -73,6 +80,7 @@ export function SwipeableCard({
     const shouldTriggerRight = offset > SWIPE_THRESHOLD || velocity > 500;
 
     if (shouldTriggerLeft && onSwipeLeft) {
+      setHasSwiped(true);
       await controls.start({
         x: -ACTION_WIDTH,
         transition: { type: "spring", damping: 25, stiffness: 300 },
@@ -82,17 +90,26 @@ export function SwipeableCard({
         setShowConfirmDialog(true);
       } else {
         onSwipeLeft();
-        setTimeout(resetSwipe, 150);
+        setTimeout(() => {
+          resetSwipe();
+          setHasSwiped(false);
+        }, 150);
       }
     } else if (shouldTriggerRight && onSwipeRight) {
+      setHasSwiped(true);
       await controls.start({
         x: ACTION_WIDTH,
         transition: { type: "spring", damping: 25, stiffness: 300 },
       });
       onSwipeRight();
-      setTimeout(resetSwipe, 150);
+      setTimeout(() => {
+        resetSwipe();
+        setHasSwiped(false);
+      }, 150);
     } else {
       resetSwipe();
+      // Reset hasSwiped after a small delay
+      setTimeout(() => setHasSwiped(false), 100);
     }
   };
 
@@ -100,20 +117,35 @@ export function SwipeableCard({
     onSwipeLeft?.();
     setShowConfirmDialog(false);
     resetSwipe();
+    setHasSwiped(false);
   };
 
   const handleCancelDelete = () => {
     setShowConfirmDialog(false);
     resetSwipe();
+    setHasSwiped(false);
   };
 
   const handleDrag = (_: unknown, info: PanInfo) => {
+    // Mark as swiped if moved significantly
+    if (Math.abs(info.offset.x) > 10) {
+      setHasSwiped(true);
+    }
+
     if (info.offset.x < -20) {
       setActiveAction("left");
     } else if (info.offset.x > 20) {
       setActiveAction("right");
     } else {
       setActiveAction(null);
+    }
+  };
+
+  // Prevent click events on children when swiping
+  const handleClickCapture = (e: React.MouseEvent) => {
+    if (isDragging || hasSwiped) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   };
 
@@ -169,11 +201,13 @@ export function SwipeableCard({
             right: onSwipeRight ? ACTION_WIDTH : 0,
           }}
           dragElastic={0.1}
+          onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
           animate={controls}
-          className={`relative z-10 cursor-grab active:cursor-grabbing ${className}`}
+          className={`relative z-10 ${className}`}
           style={{ touchAction: "pan-y" }}
+          onClickCapture={handleClickCapture}
         >
           {children}
         </motion.div>
