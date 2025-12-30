@@ -26,6 +26,9 @@ const THEMES: { id: ThemeName; label: string; description: string; emoji: string
   },
 ];
 
+const DEFAULT_THEME: ThemeName = "aurora";
+const THEME_MAX_AGE = 90 * 24 * 60 * 60 * 1000; // 90 days
+
 const ThemeContext = createContext<{
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
@@ -34,24 +37,42 @@ const ThemeContext = createContext<{
   christmas: boolean;
   toggle: () => void;
 }>({
-  theme: "christmas",
+  theme: DEFAULT_THEME,
   setTheme: () => {},
   themes: THEMES,
-  christmas: true,
+  christmas: (DEFAULT_THEME as ThemeName) === "christmas",
   toggle: () => {},
 });
 
 const STORAGE_KEY = "nawel-theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>("christmas");
+  const [theme, setThemeState] = useState<ThemeName>(DEFAULT_THEME);
 
   // Synchronous hydration to avoid theme flash - localStorage is client-only
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as ThemeName | null;
-    if (stored && THEMES.some((t) => t.id === stored)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setThemeState((current) => (current !== stored ? stored : current));
+    const storedStr = localStorage.getItem(STORAGE_KEY);
+    if (storedStr) {
+      try {
+        const stored = JSON.parse(storedStr) as { id: ThemeName; timestamp: number };
+        if (stored && THEMES.some((t) => t.id === stored.id)) {
+          const isExpired = Date.now() - stored.timestamp > THEME_MAX_AGE;
+          if (!isExpired) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setThemeState(stored.id);
+          } else {
+            // Optionnel: nettoyer l'entrée expirée
+            localStorage.removeItem(STORAGE_KEY);
+          }
+        }
+      } catch (e) {
+        // Fallback pour l'ancien format (simple string)
+        if (THEMES.some((t) => t.id === (storedStr as ThemeName))) {
+          // Si c'est l'ancien format, on le considère comme expiré ou on le migre
+          // Içi on choisit de laisser le défaut (Aurora) pour tout le monde au début
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
     }
   }, []);
 
@@ -62,10 +83,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (theme !== "none") {
       document.body.classList.add(`theme-${theme}`);
     }
-    localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 
-  const setTheme = (newTheme: ThemeName) => setThemeState(newTheme);
+  const setTheme = (newTheme: ThemeName) => {
+    setThemeState(newTheme);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: newTheme, timestamp: Date.now() }));
+  };
 
   return (
     <ThemeContext.Provider
@@ -75,7 +98,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         themes: THEMES,
         // Rétrocompatibilité
         christmas: theme === "christmas",
-        toggle: () => setThemeState((t) => (t === "christmas" ? "none" : "christmas")),
+        toggle: () => {
+          const newTheme = theme === "christmas" ? "none" : "christmas";
+          setTheme(newTheme);
+        },
       }}
     >
       {children}
