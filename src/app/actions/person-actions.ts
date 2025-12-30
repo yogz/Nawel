@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { people, items } from "@drizzle/schema";
+import { people, items, user } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -98,9 +98,11 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
         headers: currentHeaders,
         body: {
           name: updated.name,
-          emoji: updated.emoji ?? undefined,
         },
       });
+
+      // Update emoji via DB as API doesn't support null
+      await db.update(user).set({ emoji: updated.emoji }).where(eq(user.id, updated.userId));
     }
   }
 

@@ -6,7 +6,7 @@ import { createSafeAction } from "@/lib/action-utils";
 import { updateUserSchema, deleteUserSchema } from "./schemas";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { events } from "@drizzle/schema";
+import { events, user } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -24,15 +24,20 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
   }
 
   try {
-    // Update basic info (name)
+    // Update the user profile.
+    // Note: BetterAuth API updateUser body.emoji doesn't like null (types say string | undefined).
+    // So we update the name/language via API and the emoji via DB to allow resetting to null.
     await auth.api.updateUser({
       headers: currentHeaders,
       body: {
         name: data.name,
         language: data.language,
-        emoji: data.emoji ?? undefined,
       },
     });
+
+    if (data.emoji !== undefined) {
+      await db.update(user).set({ emoji: data.emoji }).where(eq(user.id, session.user.id));
+    }
 
     revalidatePath("/");
     return { success: true };

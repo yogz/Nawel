@@ -339,8 +339,8 @@ export function OrganizerSheets({
           person={sheet.person}
           allPeople={plan.people}
           readOnly={readOnly}
-          onSubmit={(name: string, emoji?: string | null) =>
-            handleUpdatePerson(sheet.person.id, name, emoji ?? undefined)
+          onSubmit={(name: string, emoji: string | null) =>
+            handleUpdatePerson(sheet.person.id, name, emoji)
           }
           onDelete={() => handleDeletePerson(sheet.person.id)}
         />
