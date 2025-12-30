@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
-import { getPersonEmoji } from "@/lib/utils";
+import { renderAvatar } from "@/lib/utils";
 import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
@@ -291,11 +291,24 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               <SelectItem key={person.id} value={person.id.toString()}>
                 <div className="flex items-center gap-2">
                   <span>
-                    {getPersonEmoji(
-                      person.name,
-                      plan.people.map((p) => p.name),
-                      person.emoji
-                    )}
+                    {(() => {
+                      const avatar = renderAvatar(
+                        person,
+                        plan.people.map((p) => p.name)
+                      );
+                      if (avatar.type === "image") {
+                        return (
+                          <div className="h-4 w-4 overflow-hidden rounded-full">
+                            <img
+                              src={avatar.src}
+                              alt={person.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        );
+                      }
+                      return avatar.value;
+                    })()}
                   </span>
                   <span>{person.name}</span>
                 </div>
@@ -340,12 +353,23 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                 className="group block rounded-2xl border border-black/[0.03] bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-md"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-2xl">
-                    {getPersonEmoji(
-                      person.name,
-                      plan.people.map((p) => p.name),
-                      person.emoji
-                    )}
+                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10 text-2xl">
+                    {(() => {
+                      const avatar = renderAvatar(
+                        person,
+                        plan.people.map((p) => p.name)
+                      );
+                      if (avatar.type === "image") {
+                        return (
+                          <img
+                            src={avatar.src}
+                            alt={person.name}
+                            className="h-full w-full object-cover"
+                          />
+                        );
+                      }
+                      return avatar.value;
+                    })()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
@@ -402,11 +426,24 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               <SelectItem key={person.id} value={person.id.toString()}>
                 <div className="flex items-center gap-2">
                   <span>
-                    {getPersonEmoji(
-                      person.name,
-                      plan.people.map((p) => p.name),
-                      person.emoji
-                    )}
+                    {(() => {
+                      const avatar = renderAvatar(
+                        person,
+                        plan.people.map((p) => p.name)
+                      );
+                      if (avatar.type === "image") {
+                        return (
+                          <div className="h-4 w-4 overflow-hidden rounded-full">
+                            <img
+                              src={avatar.src}
+                              alt={person.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        );
+                      }
+                      return avatar.value;
+                    })()}
                   </span>
                   <span>{person.name}</span>
                 </div>
@@ -420,12 +457,23 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       <div className="premium-card p-5">
         <div className="mb-3 flex items-center gap-4">
           {displayPerson && (
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/10 text-3xl">
-              {getPersonEmoji(
-                displayPerson.name,
-                plan.people.map((p) => p.name),
-                displayPerson.emoji
-              )}
+            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-3xl">
+              {(() => {
+                const avatar = renderAvatar(
+                  displayPerson,
+                  plan.people.map((p) => p.name)
+                );
+                if (avatar.type === "image") {
+                  return (
+                    <img
+                      src={avatar.src}
+                      alt={displayPerson.name}
+                      className="h-full w-full object-cover"
+                    />
+                  );
+                }
+                return avatar.value;
+              })()}
             </div>
           )}
           <div className="flex-1">

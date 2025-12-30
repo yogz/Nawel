@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { type Person } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -70,6 +71,36 @@ export const THEME_EMOJIS: Record<string, string[]> = {
     "🥰",
   ],
 };
+
+/**
+ * Renders the avatar (image or emoji) for a person.
+ * Priority: User Image > User Emoji > Manually Set Guest Emoji > Dynamic Theme Fallback
+ */
+export function renderAvatar(
+  person: Pick<Person, "name" | "emoji"> & {
+    user?: { image?: string | null; emoji?: string | null } | null;
+  },
+  allPeopleNames: string[] = [],
+  theme: string = "aurora"
+): { type: "image"; src: string } | { type: "emoji"; value: string } {
+  // 1. User Image (External)
+  if (person.user?.image) {
+    return { type: "image", src: person.user.image };
+  }
+
+  // 2. User Emoji (Global Profile)
+  if (person.user?.emoji) {
+    return { type: "emoji", value: person.user.emoji };
+  }
+
+  // 3. Guest Emoji (Event Specific)
+  if (person.emoji) {
+    return { type: "emoji", value: person.emoji };
+  }
+
+  // 4. Dynamic Fallback
+  return { type: "emoji", value: getPersonEmoji(person.name, allPeopleNames, null, theme) };
+}
 
 export function getPersonEmoji(
   name: string,

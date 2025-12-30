@@ -85,6 +85,25 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
     .where(eq(people.id, input.id))
     .returning();
 
+  // If this person is linked to a user, synchronize with the user's global profile
+  if (updated.userId) {
+    const currentHeaders = await headers();
+    const session = await auth.api.getSession({
+      headers: currentHeaders,
+    });
+
+    if (session?.user && session.user.id === updated.userId) {
+      // Use auth helper to update user profile
+      await auth.api.updateUser({
+        headers: currentHeaders,
+        body: {
+          name: updated.name,
+          emoji: updated.emoji ?? undefined,
+        },
+      });
+    }
+  }
+
   await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");

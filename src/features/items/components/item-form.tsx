@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
-import { getPersonEmoji } from "@/lib/utils";
+import { renderAvatar } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -262,23 +262,24 @@ export function ItemForm({
                     isSelected ? "bg-accent text-white" : "bg-accent/10 text-accent"
                   )}
                 >
-                  {person.user?.image ? (
-                    <Image
-                      src={person.user.image}
-                      alt={person.name}
-                      width={36}
-                      height={36}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-lg">
-                      {getPersonEmoji(
-                        person.name,
-                        people.map((p) => p.name),
-                        person.emoji
-                      )}
-                    </span>
-                  )}
+                  {(() => {
+                    const avatar = renderAvatar(
+                      person,
+                      people.map((p) => p.name)
+                    );
+                    if (avatar.type === "image") {
+                      return (
+                        <Image
+                          src={avatar.src}
+                          alt={person.name}
+                          width={36}
+                          height={36}
+                          className="h-full w-full object-cover"
+                        />
+                      );
+                    }
+                    return <span className="text-lg">{avatar.value}</span>;
+                  })()}
                 </div>
                 <span
                   className={clsx(

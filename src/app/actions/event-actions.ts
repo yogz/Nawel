@@ -70,7 +70,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       .values({
         eventId: created.id,
         name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
-        emoji: "👑", // Set a crown for the creator
+        emoji: (session.user as any).emoji ?? null, // Use profile emoji if exists, otherwise fallback to theme
         userId: session.user.id,
       })
       .returning();

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { User, Plus, Loader2, Check } from "lucide-react";
 import { type Person } from "@/lib/types";
-import { getPersonEmoji, cn } from "@/lib/utils";
+import { renderAvatar, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
@@ -59,11 +59,14 @@ export function ClaimPersonSheet({
                   )}
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-50 text-2xl shadow-sm">
-                    {getPersonEmoji(
-                      p.name,
-                      unclaimed.map((up) => up.name),
-                      p.emoji
-                    )}
+                    {(() => {
+                      const avatar = renderAvatar(
+                        p,
+                        unclaimed.map((up) => up.name)
+                      );
+                      // Claim sheet always shows emojis for unclaimed people as they can't have verified users yet
+                      return avatar.type === "emoji" ? avatar.value : "👤";
+                    })()}
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-base font-bold text-gray-900">{p.name}</div>

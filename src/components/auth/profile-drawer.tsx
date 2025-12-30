@@ -26,7 +26,7 @@ import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
-import { getPersonEmoji } from "@/lib/utils";
+import { getPersonEmoji, THEME_EMOJIS, renderAvatar } from "@/lib/utils";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -47,6 +47,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("Profile");
   const [name, setName] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -58,6 +59,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   useEffect(() => {
     if (session?.user && open) {
       setName(session.user.name || "");
+      setSelectedEmoji((session.user as any).emoji || null);
       setError(null);
       setSuccess(false);
       setShowDeleteConfirm(false);
@@ -65,17 +67,30 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     }
   }, [session, open]);
 
-  const handleSaveName = async () => {
-    if (!session?.user || name === (session.user.name || "") || !name.trim()) {
-      return;
-    }
+  const handleSaveProfile = async (newName?: string, newEmoji?: string | null) => {
+    if (!session?.user) return;
+
+    const finalName = newName ?? name;
+    const finalEmoji = newEmoji !== undefined ? newEmoji : selectedEmoji;
+
+    if (!finalName.trim()) return;
+
+    // Check if anything actually changed
+    const hasChanged =
+      finalName !== (session.user.name || "") ||
+      finalEmoji !== ((session.user as any).emoji || null);
+
+    if (!hasChanged) return;
 
     setIsSubmitting(true);
     setError(null);
     setSuccess(false);
 
     try {
-      await updateUserAction({ name });
+      await updateUserAction({
+        name: finalName,
+        emoji: finalEmoji,
+      });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
     } catch (err) {
@@ -119,23 +134,40 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           <div className="space-y-6">
             {/* Avatar Display (Read Only) */}
             <div className="flex flex-col items-center gap-2">
-              <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
-                {session.user.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt={name}
-                    width={96}
-                    height={96}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-accent/10 text-5xl">
-                    {getPersonEmoji(
-                      session.user.name || "User",
+              <div className="relative h-24 w-24">
+                <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
+                  {(() => {
+                    const avatar = renderAvatar(
+                      {
+                        name: name || session.user.name || "User",
+                        emoji: null, // We want the user-level emoji/image
+                        user: { ...session.user, emoji: selectedEmoji },
+                      },
                       [],
-                      (session.user as any).emoji,
                       theme
-                    )}
+                    );
+
+                    if (avatar.type === "image") {
+                      return (
+                        <Image
+                          src={avatar.src}
+                          alt={name}
+                          width={96}
+                          height={96}
+                          className="h-full w-full object-cover"
+                        />
+                      );
+                    }
+                    return (
+                      <div className="flex h-full w-full items-center justify-center bg-accent/10 text-5xl">
+                        {avatar.value}
+                      </div>
+                    );
+                  })()}
+                </div>
+                {session.user.image && (
+                  <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-500 text-[10px] shadow-sm">
+                    📸
                   </div>
                 )}
               </div>
@@ -147,8 +179,9 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   <p className="mt-2 flex items-center justify-center gap-1.5 px-4 text-center text-[9px] font-medium leading-relaxed text-gray-500">
                     <Sparkles size={10} className="shrink-0 text-accent" />
                     <span>
-                      Connectez-vous avec Google pour récupérer automatiquement votre photo de
-                      profil.
+                      {selectedEmoji
+                        ? "Personnalisé avec votre emoji."
+                        : "Connectez-vous avec Google pour récupérer votre photo de profil."}
                     </span>
                   </p>
                 )}
@@ -189,7 +222,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     onChange={(e) => setName(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        handleSaveName();
+                        handleSaveProfile();
                       }
                     }}
                     placeholder="Ex: Jean Dupont"
@@ -202,7 +235,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     <Button
                       variant="premium"
                       className="h-10 w-full"
-                      onClick={handleSaveName}
+                      onClick={() => handleSaveProfile()}
                       disabled={isSubmitting || !name.trim()}
                       icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
                       shine
@@ -213,6 +246,50 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     </Button>
                   </div>
                 )}
+                {/* Emoji Selection */}
+                <div className="space-y-3">
+                  <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    Votre Emoji
+                  </Label>
+                  <div className="no-scrollbar grid max-h-40 grid-cols-6 gap-2 overflow-y-auto rounded-2xl border border-gray-100/50 bg-gray-50/50 p-2">
+                    <button
+                      onClick={() => {
+                        setSelectedEmoji(null);
+                        handleSaveProfile(name, null);
+                      }}
+                      className={clsx(
+                        "flex aspect-square items-center justify-center rounded-xl text-[9px] font-black uppercase tracking-tight transition-all",
+                        selectedEmoji === null
+                          ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                          : "bg-white text-gray-400 hover:bg-gray-100"
+                      )}
+                    >
+                      Auto
+                    </button>
+                    {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
+                      <button
+                        key={emoji}
+                        onClick={() => {
+                          setSelectedEmoji(emoji);
+                          handleSaveProfile(name, emoji);
+                        }}
+                        className={clsx(
+                          "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
+                          selectedEmoji === emoji
+                            ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                            : "bg-white shadow-sm hover:bg-gray-100"
+                        )}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                  {session.user.image && (
+                    <p className="px-1 text-[9px] italic text-gray-400">
+                      Note: Votre photo de profil Google reste prioritaire pour l'affichage.
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Theme Selection */}

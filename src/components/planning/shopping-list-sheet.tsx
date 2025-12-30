@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Check, ShoppingBag, ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
-import { getPersonEmoji } from "@/lib/utils";
+import { renderAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
@@ -117,12 +117,19 @@ export function ShoppingListSheet({
       {/* Header with progress */}
       <div className="flex items-center justify-between rounded-xl bg-accent/5 p-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-xl">
-            {getPersonEmoji(
-              person.name,
-              plan.people.map((p) => p.name),
-              person.emoji
-            )}
+          <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-accent/10 text-xl">
+            {(() => {
+              const avatar = renderAvatar(
+                person,
+                plan.people.map((p) => p.name)
+              );
+              if (avatar.type === "image") {
+                return (
+                  <img src={avatar.src} alt={person.name} className="h-full w-full object-cover" />
+                );
+              }
+              return avatar.value;
+            })()}
           </div>
           <div>
             <p className="font-semibold text-text">{person.name}</p>

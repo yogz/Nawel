@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Sparkles, Pencil, ShoppingCart, Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
-import { getPersonEmoji } from "@/lib/utils";
+import { renderAvatar } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
@@ -86,22 +86,25 @@ export function PeopleTab({
               className="flex items-center px-4 py-2 text-sm font-semibold"
             >
               <span className="mr-1.5 flex h-5 w-5 items-center justify-center overflow-hidden rounded-full transition-all">
-                {person.user?.image ? (
-                  <Image
-                    src={person.user.image}
-                    alt={person.name}
-                    width={20}
-                    height={20}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  getPersonEmoji(
-                    person.name,
+                {(() => {
+                  const avatar = renderAvatar(
+                    person,
                     plan.people.map((p) => p.name),
-                    person.emoji,
                     theme
-                  )
-                )}
+                  );
+                  if (avatar.type === "image") {
+                    return (
+                      <Image
+                        src={avatar.src}
+                        alt={person.name}
+                        width={20}
+                        height={20}
+                        className="h-full w-full object-cover"
+                      />
+                    );
+                  }
+                  return avatar.value;
+                })()}
               </span>
               {person.name}
             </button>
@@ -150,22 +153,25 @@ export function PeopleTab({
                 <div className="sticky top-[72px] z-20 -mx-4 border-y border-accent/20 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 px-4 py-3 backdrop-blur-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-2xl shadow-sm ring-2 ring-accent/20">
-                      {person.user?.image ? (
-                        <Image
-                          src={person.user.image}
-                          alt={person.name}
-                          width={48}
-                          height={48}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        getPersonEmoji(
-                          person.name,
+                      {(() => {
+                        const avatar = renderAvatar(
+                          person,
                           plan.people.map((p) => p.name),
-                          person.emoji,
                           theme
-                        )
-                      )}
+                        );
+                        if (avatar.type === "image") {
+                          return (
+                            <Image
+                              src={avatar.src}
+                              alt={person.name}
+                              width={48}
+                              height={48}
+                              className="h-full w-full object-cover"
+                            />
+                          );
+                        }
+                        return avatar.value;
+                      })()}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">

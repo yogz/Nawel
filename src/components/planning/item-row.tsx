@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { type Item, type Person } from "@/lib/types";
-import { getPersonEmoji } from "@/lib/utils";
+import { getPersonEmoji, renderAvatar } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -51,15 +51,22 @@ function ItemRowComponent({
                 onAssign();
               }}
               disabled={readOnly}
-              icon={
-                person ? (
-                  <span className="text-sm">
-                    {getPersonEmoji(person.name, allPeopleNames, person.emoji)}
-                  </span>
-                ) : (
-                  <CircleHelp size={14} />
-                )
-              }
+              icon={(() => {
+                if (!person) return <CircleHelp size={14} />;
+                const avatar = renderAvatar(person, allPeopleNames);
+                if (avatar.type === "image") {
+                  return (
+                    <div className="h-5 w-5 overflow-hidden rounded-full border border-white/20">
+                      <img
+                        src={avatar.src}
+                        alt={person.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  );
+                }
+                return <span className="text-sm">{avatar.value}</span>;
+              })()}
               iconClassName={
                 !person
                   ? "bg-amber-100 text-amber-600 group-hover:bg-amber-500 group-hover:text-white"

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
-import { getPersonEmoji } from "@/lib/utils";
+import { renderAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
@@ -194,12 +194,23 @@ export function ShoppingPage({
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 text-lg">
-              {getPersonEmoji(
-                person.name,
-                plan.people.map((p) => p.name),
-                person.emoji
-              )}
+            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-accent/10 text-lg">
+              {(() => {
+                const avatar = renderAvatar(
+                  person,
+                  plan.people.map((p) => p.name)
+                );
+                if (avatar.type === "image") {
+                  return (
+                    <img
+                      src={avatar.src}
+                      alt={person.name}
+                      className="h-full w-full object-cover"
+                    />
+                  );
+                }
+                return avatar.value;
+              })()}
             </div>
             <div>
               <h1 className="text-sm font-semibold text-text">{person.name}</h1>

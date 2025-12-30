@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Trash2, Check } from "lucide-react";
 import Image from "next/image";
 import { type Person } from "@/lib/types";
-import { THEME_EMOJIS, getPersonEmoji } from "@/lib/utils";
+import { THEME_EMOJIS, getPersonEmoji, renderAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,22 +53,42 @@ export function PersonEditForm({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        {person.user?.image && (
-          <div className="flex flex-col items-center gap-2 pb-2">
-            <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-accent/20 bg-accent/5 shadow-sm">
-              <Image
-                src={person.user.image}
-                alt={person.name}
-                width={80}
-                height={80}
-                className="h-full w-full object-cover"
-              />
+        {(() => {
+          const avatar = renderAvatar(
+            {
+              ...person,
+              name,
+              emoji: selectedEmoji,
+            },
+            allPeople.map((p) => p.name),
+            theme
+          );
+          if (avatar.type === "image") {
+            return (
+              <div className="flex flex-col items-center gap-2 pb-2">
+                <div className="h-20 w-20 overflow-hidden rounded-2xl border-2 border-accent/20 bg-accent/5 shadow-sm">
+                  <Image
+                    src={avatar.src}
+                    alt={person.name}
+                    width={80}
+                    height={80}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-accent">
+                  {t("googlePhotoNotice")}
+                </p>
+              </div>
+            );
+          }
+          return (
+            <div className="flex flex-col items-center gap-2 pb-2">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-accent/20 bg-accent/5 text-4xl shadow-sm">
+                {avatar.value}
+              </div>
             </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-accent">
-              {t("googlePhotoNotice")}
-            </p>
-          </div>
-        )}
+          );
+        })()}
         <div className="space-y-2">
           <Label
             htmlFor="edit-person-name"
