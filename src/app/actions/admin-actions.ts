@@ -14,7 +14,10 @@ import {
   updateCacheEntrySchema,
   deleteUserAdminSchema,
   toggleUserBanAdminSchema,
+  deleteCitationAdminSchema,
 } from "./schemas";
+import fs from "fs";
+import path from "path";
 
 async function requireAdmin() {
   const session = await auth.api.getSession({
@@ -349,5 +352,40 @@ export const testModelsAction = withErrorThrower(
     }
 
     return results;
+  }
+);
+
+// ==========================================
+// Citation Admin Actions
+// ==========================================
+
+export const deleteCitationAdminAction = createSafeAction(
+  deleteCitationAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    const filePath = path.join(process.cwd(), "src/data/citations-v3.json");
+
+    if (!fs.existsSync(filePath)) {
+      throw new Error("Fichier de citations introuvable.");
+    }
+
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    const citationsData = JSON.parse(fileContent);
+
+    const initialLength = citationsData.items.length;
+    citationsData.items = citationsData.items.filter((item: any) => item.id !== input.id);
+
+    if (citationsData.items.length === initialLength) {
+      throw new Error("Citation introuvable.");
+    }
+
+    // Mise à jour de la version pour forcer le rafraîchissement côté client si nécessaire
+    citationsData.version = (citationsData.version || 0) + 1;
+
+    fs.writeFileSync(filePath, JSON.stringify(citationsData, null, 2), "utf8");
+
+    revalidatePath("/admin/citations");
+    return { success: true };
   }
 );

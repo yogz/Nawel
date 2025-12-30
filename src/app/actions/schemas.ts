@@ -269,3 +269,7 @@ export const deleteAuditLogsSchema = z
   .refine((data) => data.olderThanDays !== undefined || data.deleteAll === true, {
     message: "Either olderThanDays or deleteAll must be provided",
   });
+
+export const deleteCitationAdminSchema = z.object({
+  id: z.string(),
+});
