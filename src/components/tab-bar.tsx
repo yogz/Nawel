@@ -30,7 +30,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.03] bg-white/80 backdrop-blur-xl"
+      className="bg-surface/80 fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.03] backdrop-blur-md"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <div className="mx-auto flex max-w-xl items-center justify-around py-3">
