@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useThemeMode } from "../theme-provider";
 
 interface PeopleTabProps {
   plan: PlanData;
@@ -36,6 +37,7 @@ export function PeopleTab({
   onClaim,
   onUnclaim,
 }: PeopleTabProps) {
+  const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.People");
   const tForm = useTranslations("EventDashboard.ItemForm");
   const itemsByPerson = useMemo(() => {
@@ -96,7 +98,8 @@ export function PeopleTab({
                   getPersonEmoji(
                     person.name,
                     plan.people.map((p) => p.name),
-                    person.emoji
+                    person.emoji,
+                    theme
                   )
                 )}
               </span>
@@ -159,7 +162,8 @@ export function PeopleTab({
                         getPersonEmoji(
                           person.name,
                           plan.people.map((p) => p.name),
-                          person.emoji
+                          person.emoji,
+                          theme
                         )
                       )}
                     </div>

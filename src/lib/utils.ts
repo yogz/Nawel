@@ -5,68 +5,95 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const PERSON_EMOJIS = [
-  // Noël & Hiver
-  "🎅",
-  "🤶",
-  "🧑‍🎄",
-  "🧝",
-  "🦌",
-  "⛄",
-  "🏂",
-  "⛸️",
-  "🧣",
-  "🧤",
-  "🧥",
-  "🎻",
-  // Fête & Joie
-  "🥳",
-  "🤩",
-  "✨",
-  "🎉",
-  "🎊",
-  "🎈",
-  "🎁",
-  "🌟",
-  "🎆",
-  "🎇",
-  "😄",
-  "🥰",
-  // Repas & Boissons
-  "🥘",
-  "🍴",
-  "🍽️",
-  "🍖",
-  "🍗",
-  "🥧",
-  "🍬",
-  "🍭",
-  "🍪",
-  "🍰",
-  "🧁",
-  "🍩",
-  "🍦",
-  "🍷",
-  "🥂",
-  "🍾",
-  "🍹",
-  "🥤",
-];
+export const THEME_EMOJIS: Record<string, string[]> = {
+  christmas: [
+    "🎅",
+    "🤶",
+    "🧑‍🎄",
+    "🧝",
+    "🦌",
+    "⛄",
+    "🏂",
+    "⛸️",
+    "🧣",
+    "🧤",
+    "🧥",
+    "🎻",
+    "🏔️",
+    "⛷️",
+    "🥨",
+    "🍬",
+    "🍭",
+    "🍪",
+    "🍫",
+  ],
+  aurora: [
+    "✨",
+    "🌟",
+    "🎆",
+    "🎇",
+    "⭐",
+    "🌙",
+    "🌈",
+    "🔮",
+    "🧿",
+    "🕯️",
+    "🌌",
+    "🛸",
+    "👾",
+    "🤩",
+    "🦄",
+    "🦋",
+    "🧪",
+    "🧪",
+    "🧬",
+  ],
+  classic: [
+    "🥘",
+    "🍴",
+    "🍽️",
+    "🍖",
+    "🍗",
+    "🥧",
+    "🍷",
+    "🥂",
+    "🍾",
+    "🍹",
+    "🥤",
+    "🥳",
+    "🤩",
+    "🎉",
+    "🎊",
+    "🎈",
+    "🎁",
+    "😄",
+    "🥰",
+  ],
+};
 
 export function getPersonEmoji(
   name: string,
   allPeopleNames?: string[],
-  existingEmoji?: string | null
+  existingEmoji?: string | null,
+  theme: string = "aurora"
 ): string {
   if (existingEmoji) {
     return existingEmoji;
   }
 
+  // Determine which emoji set to use
+  let emojiSet = THEME_EMOJIS.classic;
+  if (theme === "christmas") {
+    emojiSet = THEME_EMOJIS.christmas;
+  } else if (theme === "aurora") {
+    emojiSet = THEME_EMOJIS.aurora;
+  }
+
   if (allPeopleNames && allPeopleNames.length > 0) {
     const uniqueNames = Array.from(new Set(allPeopleNames)).sort();
     const index = uniqueNames.indexOf(name);
-    if (index >= 0 && index < PERSON_EMOJIS.length) {
-      return PERSON_EMOJIS[index % PERSON_EMOJIS.length];
+    if (index >= 0 && index < emojiSet.length) {
+      return emojiSet[index % emojiSet.length];
     }
   }
 
@@ -74,8 +101,8 @@ export function getPersonEmoji(
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const index = Math.abs(hash) % PERSON_EMOJIS.length;
-  return PERSON_EMOJIS[index];
+  const index = Math.abs(hash) % emojiSet.length;
+  return emojiSet[index];
 }
 
 export function generateGoogleCalendarUrl(
@@ -185,23 +212,4 @@ export function downloadIcsFile(
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-export function getAvatarUrl(user: {
-  name?: string | null;
-  image?: string | null;
-  email?: string | null;
-}): string {
-  if (user.image) return user.image;
-
-  // Fallback to UI Avatars if no image
-  const name = user.name || user.email?.split("@")[0] || "User";
-  const params = new URLSearchParams({
-    name: name,
-    background: "random",
-    color: "fff",
-    bold: "true",
-  });
-
-  return `https://ui-avatars.com/api/?${params.toString()}`;
 }

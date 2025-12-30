@@ -26,7 +26,7 @@ import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
-import { getAvatarUrl } from "@/lib/utils";
+import { getPersonEmoji } from "@/lib/utils";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -120,13 +120,24 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             {/* Avatar Display (Read Only) */}
             <div className="flex flex-col items-center gap-2">
               <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
-                <Image
-                  src={getAvatarUrl(session.user)}
-                  alt={name}
-                  width={96}
-                  height={96}
-                  className="h-full w-full object-cover"
-                />
+                {session.user.image ? (
+                  <Image
+                    src={session.user.image}
+                    alt={name}
+                    width={96}
+                    height={96}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-accent/10 text-5xl">
+                    {getPersonEmoji(
+                      session.user.name || "User",
+                      [],
+                      (session.user as any).emoji,
+                      theme
+                    )}
+                  </div>
+                )}
               </div>
               <div className="text-center">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">

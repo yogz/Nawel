@@ -238,6 +238,7 @@ export const deleteEventAdminSchema = z.object({
 export const updateUserSchema = z.object({
   name: safeStrictText(100).optional(),
   language: z.string().optional(),
+  emoji: safeEmoji.optional().nullable(),
 });
 
 export const deleteUserSchema = z.object({

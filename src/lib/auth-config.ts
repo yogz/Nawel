@@ -43,7 +43,12 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      mapProfileToImage: true,
     },
+  },
+  accountLinking: {
+    enabled: true,
+    trustedProviders: ["google"],
   },
   plugins: [
     admin({
@@ -62,6 +67,9 @@ export const auth = betterAuth({
       language: {
         type: "string",
         defaultValue: "fr",
+      },
+      emoji: {
+        type: "string",
       },
     },
   },

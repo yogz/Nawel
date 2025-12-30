@@ -30,6 +30,7 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
       body: {
         name: data.name,
         language: data.language,
+        emoji: data.emoji ?? undefined,
       },
     });
 
