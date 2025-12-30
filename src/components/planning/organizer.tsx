@@ -131,8 +131,11 @@ export function Organizer({
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
 
+  const tHeader = useTranslations("EventDashboard.Header");
+  const tOrganizer = useTranslations("EventDashboard.Organizer");
   const { theme } = useThemeMode();
   const searchParams = useSearchParams();
+  const [copied, setCopied] = useState(false);
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -335,7 +338,7 @@ export function Organizer({
             onClick={() => setDeleteDialogOpen(true)}
             className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
           >
-            <Trash2 size={12} /> {useTranslations("EventDashboard.Organizer")("deleteEvent")}
+            <Trash2 size={12} /> {tOrganizer("deleteEvent")}
           </button>
         </div>
       )}
