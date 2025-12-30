@@ -261,13 +261,30 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                         handleSaveProfile(name, null);
                       }}
                       className={clsx(
-                        "flex aspect-square items-center justify-center rounded-xl text-[9px] font-black uppercase tracking-tight transition-all",
+                        "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[9px] font-black uppercase tracking-tight transition-all",
                         selectedEmoji === null
                           ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
                           : "bg-white text-gray-400 hover:bg-gray-100"
                       )}
                     >
-                      Auto
+                      {session.user.image ? (
+                        <Image
+                          src={session.user.image}
+                          alt="Profile"
+                          fill
+                          className={clsx(
+                            "object-cover",
+                            selectedEmoji !== null && "opacity-40 grayscale"
+                          )}
+                        />
+                      ) : (
+                        "Auto"
+                      )}
+                      {selectedEmoji === null && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-accent/20">
+                          <Check size={16} className="text-white drop-shadow-md" />
+                        </div>
+                      )}
                     </button>
                     {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
                       <button
@@ -289,7 +306,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   </div>
                   {session.user.image && (
                     <p className="px-1 text-[9px] italic text-gray-400">
-                      Note: L'emoji sélectionné remplace votre photo Google.
+                      Note: Sélectionnez votre photo ou un emoji pour votre profil.
                     </p>
                   )}
                 </div>

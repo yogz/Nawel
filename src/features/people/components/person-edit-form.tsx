@@ -114,13 +114,27 @@ export function PersonEditForm({
             <button
               onClick={() => setSelectedEmoji(null)}
               className={clsx(
-                "flex aspect-square items-center justify-center rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                 selectedEmoji === null
                   ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
                   : "bg-gray-50 text-gray-400 hover:bg-gray-100"
               )}
             >
-              {t("autoEmoji")}
+              {person.user?.image ? (
+                <Image
+                  src={person.user.image}
+                  alt="Profile"
+                  fill
+                  className={clsx("object-cover", selectedEmoji !== null && "opacity-40 grayscale")}
+                />
+              ) : (
+                t("autoEmoji")
+              )}
+              {selectedEmoji === null && (
+                <div className="absolute inset-0 flex items-center justify-center bg-accent/20">
+                  <Check size={16} className="text-white drop-shadow-md" />
+                </div>
+              )}
             </button>
             {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
               <button
