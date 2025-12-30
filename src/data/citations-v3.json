@@ -3169,35 +3169,6 @@
       "rating": 2
     },
     {
-      "id": "el_006",
-      "type": "quote_short",
-      "tone": "soft",
-      "category": "wisdom",
-      "tags": ["el", "classic", "wisdom"],
-      "attribution": {
-        "author": "Maxime delphique",
-        "work": "Inscription",
-        "year": null,
-        "origin": null,
-        "confidence": "high",
-        "origin_type": null,
-        "origin_qualifier": null
-      },
-      "original": {
-        "lang": "el",
-        "text": "Γνῶθι σεαυτόν."
-      },
-      "localized": {
-        "fr": "Connais-toi toi-même.",
-        "en": "Know thyself.",
-        "el": "Γνῶθι σεαυτόν.",
-        "es": "Conócete a ti mismo.",
-        "pt": "Conhece-te a ti mesmo.",
-        "de": "Erkenne dich selbst."
-      },
-      "rating": 2
-    },
-    {
       "id": "el_007",
       "type": "quote_short",
       "tone": "soft",
@@ -6007,35 +5978,6 @@
         "es": "El buen momento",
         "pt": "O bom momento",
         "de": "Der gute Moment"
-      },
-      "rating": 2
-    },
-    {
-      "id": "el_020",
-      "type": "quote_short",
-      "tone": "soft",
-      "category": "philosophy",
-      "tags": ["el", "wisdom", "balance"],
-      "attribution": {
-        "author": null,
-        "work": null,
-        "year": null,
-        "origin": "Philosophie grecque",
-        "confidence": "high",
-        "origin_type": "wisdom",
-        "origin_qualifier": "el"
-      },
-      "original": {
-        "lang": "el",
-        "text": "Πάντα ρεῖ"
-      },
-      "localized": {
-        "fr": "Tout coule",
-        "en": "Everything flows",
-        "el": "Πάντα ρεῖ",
-        "es": "Todo fluye",
-        "pt": "Tudo flui",
-        "de": "Alles fließt"
       },
       "rating": 2
     },

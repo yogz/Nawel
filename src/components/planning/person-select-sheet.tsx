@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import clsx from "clsx";
-import { getPersonEmoji, renderAvatar } from "@/lib/utils";
+import { getPersonEmoji, renderAvatar, getDisplayName } from "@/lib/utils";
 import { type Person, type PlanningFilter } from "@/lib/types";
 
 interface PersonSelectSheetProps {
@@ -57,13 +57,17 @@ export function PersonSelectSheet({
               );
               if (avatar.type === "image") {
                 return (
-                  <img src={avatar.src} alt={person.name} className="h-full w-full object-cover" />
+                  <img
+                    src={avatar.src}
+                    alt={getDisplayName(person)}
+                    className="h-full w-full object-cover"
+                  />
                 );
               }
               return <span>{avatar.value}</span>;
             })()}
           </div>
-          <span className="truncate">{person.name}</span>
+          <span className="truncate">{getDisplayName(person)}</span>
           {planningFilter.type === "person" && planningFilter.personId === person.id && (
             <Check size={16} className="ml-auto" />
           )}

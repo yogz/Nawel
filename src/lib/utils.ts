@@ -73,6 +73,18 @@ export const THEME_EMOJIS: Record<string, string[]> = {
 };
 
 /**
+ * Returns the display name for a person.
+ * Priority: User Name (Google profile) > Person Name (manual)
+ */
+export function getDisplayName(
+  person: Pick<Person, "name"> & {
+    user?: { name?: string | null } | null;
+  }
+): string {
+  return person.user?.name || person.name;
+}
+
+/**
  * Renders the avatar (image or emoji) for a person.
  * Priority: User Image > User Emoji > Manually Set Guest Emoji > Dynamic Theme Fallback
  */

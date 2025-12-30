@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
-import { renderAvatar } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -271,7 +271,7 @@ export function ItemForm({
                       return (
                         <Image
                           src={avatar.src}
-                          alt={person.name}
+                          alt={getDisplayName(person)}
                           width={36}
                           height={36}
                           className="h-full w-full object-cover"
@@ -287,7 +287,7 @@ export function ItemForm({
                     isSelected ? "text-accent" : "text-gray-400"
                   )}
                 >
-                  {person.name}
+                  {getDisplayName(person)}
                 </span>
               </button>
             );

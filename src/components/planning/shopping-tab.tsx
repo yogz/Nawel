@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
-import { renderAvatar } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
@@ -301,7 +301,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                           <div className="h-4 w-4 overflow-hidden rounded-full">
                             <img
                               src={avatar.src}
-                              alt={person.name}
+                              alt={getDisplayName(person)}
                               className="h-full w-full object-cover"
                             />
                           </div>
@@ -310,7 +310,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                       return avatar.value;
                     })()}
                   </span>
-                  <span>{person.name}</span>
+                  <span>{getDisplayName(person)}</span>
                 </div>
               </SelectItem>
             ))}
@@ -363,7 +363,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                         return (
                           <img
                             src={avatar.src}
-                            alt={person.name}
+                            alt={getDisplayName(person)}
                             className="h-full w-full object-cover"
                           />
                         );
@@ -373,7 +373,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-text">{person.name}</h3>
+                      <h3 className="font-bold text-text">{getDisplayName(person)}</h3>
                       {isComplete && (
                         <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
                           <Check size={10} />
@@ -436,7 +436,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                           <div className="h-4 w-4 overflow-hidden rounded-full">
                             <img
                               src={avatar.src}
-                              alt={person.name}
+                              alt={getDisplayName(person)}
                               className="h-full w-full object-cover"
                             />
                           </div>
@@ -445,7 +445,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                       return avatar.value;
                     })()}
                   </span>
-                  <span>{person.name}</span>
+                  <span>{getDisplayName(person)}</span>
                 </div>
               </SelectItem>
             ))}
@@ -467,7 +467,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                   return (
                     <img
                       src={avatar.src}
-                      alt={displayPerson.name}
+                      alt={displayPerson ? getDisplayName(displayPerson) : ""}
                       className="h-full w-full object-cover"
                     />
                   );
@@ -477,7 +477,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
             </div>
           )}
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-text">{displayPerson?.name || t("myList")}</h2>
+            <h2 className="text-lg font-bold text-text">
+              {displayPerson ? getDisplayName(displayPerson) : t("myList")}
+            </h2>
             <p className="text-sm text-muted-foreground">
               {checkedCount}/{shoppingList.length} {t("items")}{" "}
               {t("bought", { count: checkedCount })}

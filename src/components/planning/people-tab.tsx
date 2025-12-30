@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Sparkles, Pencil, ShoppingCart, Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
-import { renderAvatar } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
@@ -96,7 +96,7 @@ export function PeopleTab({
                     return (
                       <Image
                         src={avatar.src}
-                        alt={person.name}
+                        alt={getDisplayName(person)}
                         width={20}
                         height={20}
                         className="h-full w-full object-cover"
@@ -106,7 +106,7 @@ export function PeopleTab({
                   return avatar.value;
                 })()}
               </span>
-              {person.name}
+              {getDisplayName(person)}
             </button>
             {!readOnly && (
               <button
@@ -163,7 +163,7 @@ export function PeopleTab({
                           return (
                             <Image
                               src={avatar.src}
-                              alt={person.name}
+                              alt={getDisplayName(person)}
                               width={48}
                               height={48}
                               className="h-full w-full object-cover"
@@ -176,7 +176,7 @@ export function PeopleTab({
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-xl font-black tracking-tight text-text">
-                          {person.name}
+                          {getDisplayName(person)}
                         </h3>
                         {person.userId === currentUserId ? (
                           <div className="flex items-center gap-2">

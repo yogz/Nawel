@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
-import { renderAvatar } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
@@ -164,8 +164,8 @@ export function ShoppingPage({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Liste de courses - ${person.name}`,
-          text: `Liste de courses de ${person.name} pour ${plan.event?.name || slug}`,
+          title: `Liste de courses - ${getDisplayName(person)}`,
+          text: `Liste de courses de ${getDisplayName(person)} pour ${plan.event?.name || slug}`,
           url,
         });
       } catch {
@@ -204,7 +204,7 @@ export function ShoppingPage({
                   return (
                     <img
                       src={avatar.src}
-                      alt={person.name}
+                      alt={getDisplayName(person)}
                       className="h-full w-full object-cover"
                     />
                   );
@@ -213,7 +213,7 @@ export function ShoppingPage({
               })()}
             </div>
             <div>
-              <h1 className="text-sm font-semibold text-text">{person.name}</h1>
+              <h1 className="text-sm font-semibold text-text">{getDisplayName(person)}</h1>
               <p className="text-xs text-muted-foreground">Liste de courses</p>
             </div>
           </div>

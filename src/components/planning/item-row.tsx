@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { type Item, type Person } from "@/lib/types";
-import { getPersonEmoji, renderAvatar } from "@/lib/utils";
+import { getPersonEmoji, renderAvatar, getDisplayName } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -59,7 +59,7 @@ function ItemRowComponent({
                     <div className="h-5 w-5 overflow-hidden rounded-full border border-white/20">
                       <img
                         src={avatar.src}
-                        alt={person.name}
+                        alt={getDisplayName(person)}
                         className="h-full w-full object-cover"
                       />
                     </div>
@@ -74,7 +74,7 @@ function ItemRowComponent({
               }
             >
               <span className="inline-block max-w-[80px] truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:max-w-none">
-                {person ? person.name : t("unassigned")}
+                {person ? getDisplayName(person) : t("unassigned")}
               </span>
             </Button>
           </div>

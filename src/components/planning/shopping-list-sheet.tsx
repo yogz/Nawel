@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Check, ShoppingBag, ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
-import { renderAvatar } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
@@ -99,7 +99,9 @@ export function ShoppingListSheet({
     return (
       <div className="py-8 text-center">
         <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-        <p className="text-sm text-muted-foreground">{t("noItemsFor", { name: person.name })}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("noItemsFor", { name: getDisplayName(person) })}
+        </p>
       </div>
     );
   }
@@ -125,14 +127,18 @@ export function ShoppingListSheet({
               );
               if (avatar.type === "image") {
                 return (
-                  <img src={avatar.src} alt={person.name} className="h-full w-full object-cover" />
+                  <img
+                    src={avatar.src}
+                    alt={getDisplayName(person)}
+                    className="h-full w-full object-cover"
+                  />
                 );
               }
               return avatar.value;
             })()}
           </div>
           <div>
-            <p className="font-semibold text-text">{person.name}</p>
+            <p className="font-semibold text-text">{getDisplayName(person)}</p>
             <p className="text-xs text-muted-foreground">
               {checkedCount}/{shoppingList.length} {t("bought", { count: checkedCount })}
             </p>
