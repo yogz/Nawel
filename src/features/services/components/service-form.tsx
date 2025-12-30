@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { type Meal } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, Plus, Clock, MapPin } from "lucide-react";
+import { CalendarIcon, Plus, Clock, MapPin, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -88,27 +88,31 @@ export function ServiceForm({
   const [newMealTitle, setNewMealTitle] = useState("");
   const [newMealTime, setNewMealTime] = useState("");
   const [newMealAddress, setNewMealAddress] = useState("");
+  const [isPending, startTransition] = useTransition();
 
-  const handleSubmit = async () => {
-    if (mealId === "new") {
-      if (!newMealDate) {
-        return;
+  const handleSubmit = () => {
+    if (isPending) return;
+    startTransition(async () => {
+      if (mealId === "new") {
+        if (!newMealDate) {
+          return;
+        }
+        const formattedDate = format(newMealDate, "yyyy-MM-dd");
+        await onSubmit(
+          -1,
+          title,
+          adults,
+          children,
+          peopleCount,
+          formattedDate,
+          newMealTitle,
+          newMealTime,
+          newMealAddress
+        );
+      } else {
+        await onSubmit(Number(mealId), title, adults, children, peopleCount);
       }
-      const formattedDate = format(newMealDate, "yyyy-MM-dd");
-      await onSubmit(
-        -1,
-        title,
-        adults,
-        children,
-        peopleCount,
-        formattedDate,
-        newMealTitle,
-        newMealTime,
-        newMealAddress
-      );
-    } else {
-      await onSubmit(Number(mealId), title, adults, children, peopleCount);
-    }
+    });
   };
 
   return (
@@ -317,15 +321,18 @@ export function ServiceForm({
         <Button
           variant="premium"
           className="w-full py-7 pr-8 shadow-md"
-          icon={<Plus />}
+          icon={isPending ? <Loader2 className="animate-spin" /> : <Plus />}
           onClick={handleSubmit}
           disabled={
-            readOnly || !title.trim() || ((mealId === "new" || forceNewMeal) && !newMealDate)
+            readOnly ||
+            !title.trim() ||
+            ((mealId === "new" || forceNewMeal) && !newMealDate) ||
+            isPending
           }
-          shine
+          shine={!isPending}
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-            {t("addButton")}
+            {isPending ? t("adding") : t("addButton")}
           </span>
         </Button>
       </div>

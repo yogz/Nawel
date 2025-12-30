@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import { type Item, type Person, type Service, type Ingredient } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import Image from "next/image";
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Sparkles, Loader2, Plus, CircleHelp, Check } from "lucide-react";
+import { Trash2, ChevronDown, Loader2, Plus, CircleHelp } from "lucide-react";
 import clsx from "clsx";
 import { ItemIngredients } from "./item-ingredients";
 import { useTranslations } from "next-intl";
@@ -95,6 +95,7 @@ export function ItemForm({
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const isEditMode = !!defaultItem;
 
@@ -149,13 +150,16 @@ export function ItemForm({
       price !== (defaultItem?.price?.toString() || ""));
 
   const handleSubmit = () => {
-    onSubmit({
-      name,
-      quantity: quantity || undefined,
-      note: note || undefined,
-      price: price ? parseFloat(price) : undefined,
-      personId: !isEditMode ? selectedPersonId : undefined,
-    } as any);
+    if (isPending) return;
+    startTransition(() => {
+      onSubmit({
+        name,
+        quantity: quantity || undefined,
+        note: note || undefined,
+        price: price ? parseFloat(price) : undefined,
+        personId: !isEditMode ? selectedPersonId : undefined,
+      } as any);
+    });
   };
 
   const currentPersonId = isEditMode ? defaultItem.personId : selectedPersonId;
@@ -395,13 +399,13 @@ export function ItemForm({
           <Button
             variant="premium"
             className="w-full py-7 pr-8 shadow-md"
-            icon={<Plus />}
+            icon={isPending ? <Loader2 className="animate-spin" /> : <Plus />}
             onClick={handleSubmit}
-            disabled={readOnly || !name.trim()}
-            shine
+            disabled={readOnly || !name.trim() || isPending}
+            shine={!isPending}
           >
             <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              {t("addButton")}
+              {isPending ? t("adding") : t("addButton")}
             </span>
           </Button>
         </div>

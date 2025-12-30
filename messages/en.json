@@ -253,6 +253,7 @@
       "note": "Note",
       "movePlaceholder": "Other service",
       "addButton": "Add item",
+      "adding": "Adding...",
       "Ingredients": {
         "generating": "Generating...",
         "generateButton": "Generate ingredients (AI)",
@@ -273,8 +274,13 @@
       "newMealHeader": "New meal",
       "newMealPlaceholder": "Meal name (ex: Dinner)",
       "addService": "Add service",
+      "addButton": "Add service",
+      "adding": "Adding...",
       "selectMeal": "Select meal",
-      "selectMealPlaceholder": "Choose meal..."
+      "selectMealLabel": "Select meal",
+      "selectMealPlaceholder": "Choose meal...",
+      "newMealOption": "+ New meal",
+      "newMealSection": "New meal"
     },
     "Shared": {
       "adultsLabel": "Adults",
@@ -321,6 +327,7 @@
       "organisationLabel": "Meal organization",
       "serviceSelectionLabel": "Select services",
       "createButton": "Create meal",
+      "creating": "Creating...",
       "selectMeal": "Choose meal",
       "selectMealPlaceholder": "Select a meal"
     },

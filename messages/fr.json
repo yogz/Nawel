@@ -253,6 +253,7 @@
       "note": "Note",
       "movePlaceholder": "Autre service",
       "addButton": "Ajouter l'article",
+      "adding": "Ajout en cours...",
       "Ingredients": {
         "generating": "Génération en cours...",
         "generateButton": "Générer les ingrédients (IA)",
@@ -273,8 +274,13 @@
       "newMealHeader": "Nouveau repas",
       "newMealPlaceholder": "Nom du repas (ex: Dîner)",
       "addService": "Ajouter le service",
+      "addButton": "Ajouter le service",
+      "adding": "Ajout en cours...",
       "selectMeal": "Sélectionner le repas",
-      "selectMealPlaceholder": "Choisir le repas..."
+      "selectMealLabel": "Sélectionner le repas",
+      "selectMealPlaceholder": "Choisir le repas...",
+      "newMealOption": "+ Nouveau repas",
+      "newMealSection": "Nouveau repas"
     },
     "Shared": {
       "adultsLabel": "Adultes",
@@ -321,6 +327,7 @@
       "organisationLabel": "Organisation du repas",
       "serviceSelectionLabel": "Sélectionnez les services",
       "createButton": "Créer le repas",
+      "creating": "Création en cours...",
       "selectMeal": "Choisir le repas",
       "selectMealPlaceholder": "Sélectionner un repas"
     },

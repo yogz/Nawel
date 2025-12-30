@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -188,6 +188,7 @@ export function MealForm({
   const [address, setAddress] = useState(meal?.address || "");
   const [quickOption, setQuickOption] = useState<string>("plat");
   const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
+  const [isPending, startTransition] = useTransition();
 
   const isEditMode = !!meal;
   const skipSaveRef = useRef(false);
@@ -235,23 +236,25 @@ export function MealForm({
   }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
 
   const handleSubmit = () => {
-    if (!date) return;
+    if (!date || isPending) return;
     const formattedDate = format(date, "yyyy-MM-dd");
 
-    if (isEditMode) {
-      onSubmit(formattedDate, title, undefined, adults, children, time, address);
-    } else {
-      let servicesToCreate: string[];
-      if (quickOption === "custom") {
-        servicesToCreate = selectedServices.map(
-          (id) => DEFAULT_SERVICE_TYPES.find((m) => m.id === id)?.label || id
-        );
+    startTransition(() => {
+      if (isEditMode) {
+        onSubmit(formattedDate, title, undefined, adults, children, time, address);
       } else {
-        const option = QUICK_OPTIONS.find((o) => o.id === quickOption);
-        servicesToCreate = option ? [...option.services] : ["Service"];
+        let servicesToCreate: string[];
+        if (quickOption === "custom") {
+          servicesToCreate = selectedServices.map(
+            (id) => DEFAULT_SERVICE_TYPES.find((m) => m.id === id)?.label || id
+          );
+        } else {
+          const option = QUICK_OPTIONS.find((o) => o.id === quickOption);
+          servicesToCreate = option ? [...option.services] : ["Service"];
+        }
+        onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
       }
-      onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
-    }
+    });
   };
 
   const toggleService = (id: string) => {
@@ -596,13 +599,13 @@ export function MealForm({
               type="button"
               variant="premium"
               onClick={handleSubmit}
-              disabled={quickOption === "custom" && selectedServices.length === 0}
+              disabled={(quickOption === "custom" && selectedServices.length === 0) || isPending}
               className="flex-[2] py-6 pr-8 shadow-md"
-              icon={<Sparkles />}
-              shine
+              icon={isPending ? <Loader2 className="animate-spin" /> : <Sparkles />}
+              shine={!isPending}
             >
               <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                {t("createButton")}
+                {isPending ? t("creating") : t("createButton")}
               </span>
             </Button>
           </div>
