@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AuthModal } from "./auth-modal";
 import { ProfileDrawer } from "./profile-drawer";
 import { User as UserIcon, LogIn, Settings } from "lucide-react";
+import { getAvatarUrl } from "@/lib/utils";
 
 export function UserNav() {
   const { data: session, isPending } = useSession();
@@ -41,19 +42,13 @@ export function UserNav() {
         onClick={() => setShowProfileDrawer(true)}
         className="group flex items-center gap-2 rounded-full border border-transparent bg-white p-1 pr-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
       >
-        {user.image ? (
-          <Image
-            src={user.image}
-            alt={user.name || "User avatar"}
-            width={32}
-            height={32}
-            className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-accent"
-          />
-        ) : (
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
-            <UserIcon size={16} />
-          </div>
-        )}
+        <Image
+          src={getAvatarUrl(user)}
+          alt={user.name || "User avatar"}
+          width={32}
+          height={32}
+          className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-accent"
+        />
         <div className="flex flex-col items-start">
           <span className="max-w-[100px] truncate text-xs font-bold leading-tight text-gray-700">
             {user.name}

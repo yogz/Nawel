@@ -26,6 +26,7 @@ import { useThemeMode } from "../theme-provider";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
+import { getAvatarUrl } from "@/lib/utils";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -119,24 +120,27 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             {/* Avatar Display (Read Only) */}
             <div className="flex flex-col items-center gap-2">
               <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
-                {session.user.image ? (
-                  <Image
-                    src={session.user.image}
-                    alt={name}
-                    width={96}
-                    height={96}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gray-50 text-gray-300">
-                    <User size={48} />
-                  </div>
-                )}
+                <Image
+                  src={getAvatarUrl(session.user)}
+                  alt={name}
+                  width={96}
+                  height={96}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div className="text-center">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                   {session.user.email}
                 </p>
+                {!session.user.image && (
+                  <p className="mt-2 flex items-center justify-center gap-1.5 px-4 text-center text-[9px] font-medium leading-relaxed text-gray-500">
+                    <Sparkles size={10} className="shrink-0 text-accent" />
+                    <span>
+                      Connectez-vous avec Google pour récupérer automatiquement votre photo de
+                      profil.
+                    </span>
+                  </p>
+                )}
                 {/* Auto-save status indicator */}
                 <div className="mt-1 h-4">
                   {isSubmitting && (

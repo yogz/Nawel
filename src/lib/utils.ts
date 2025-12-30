@@ -186,3 +186,22 @@ export function downloadIcsFile(
   link.click();
   document.body.removeChild(link);
 }
+
+export function getAvatarUrl(user: {
+  name?: string | null;
+  image?: string | null;
+  email?: string | null;
+}): string {
+  if (user.image) return user.image;
+
+  // Fallback to UI Avatars if no image
+  const name = user.name || user.email?.split("@")[0] || "User";
+  const params = new URLSearchParams({
+    name: name,
+    background: "random",
+    color: "fff",
+    bold: "true",
+  });
+
+  return `https://ui-avatars.com/api/?${params.toString()}`;
+}
