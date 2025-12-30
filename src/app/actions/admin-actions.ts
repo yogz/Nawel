@@ -371,10 +371,13 @@ export const deleteCitationAdminAction = createSafeAction(
     }
 
     const fileContent = fs.readFileSync(filePath, "utf8");
-    const citationsData = JSON.parse(fileContent);
+    const citationsData = JSON.parse(fileContent) as {
+      version?: number;
+      items: Array<{ id: string; text: string; author: string }>;
+    };
 
     const initialLength = citationsData.items.length;
-    citationsData.items = citationsData.items.filter((item: any) => item.id !== input.id);
+    citationsData.items = citationsData.items.filter((item) => item.id !== input.id);
 
     if (citationsData.items.length === initialLength) {
       throw new Error("Citation introuvable.");
