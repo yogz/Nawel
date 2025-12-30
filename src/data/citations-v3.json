@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "purpose": "Sous-titres courts pour repas (joli, joyeux, convivial).",
   "languages": ["fr", "en", "el", "es", "pt", "de"],
   "items": [
@@ -8173,6 +8173,296 @@
         "es": "Das Brot und der Käse schmecken wunderbar!",
         "pt": "Das Brot und der Käse schmecken wunderbar!",
         "de": "Das Brot und der Käse schmecken wunderbar!"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_expr_01",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "mood",
+      "tags": ["fr", "fruit", "energy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Avoir la pêche !"
+      },
+      "localized": {
+        "fr": "Avoir la pêche !",
+        "en": "Feeling peachy! (Full of energy)",
+        "el": "Έχω κέφια!",
+        "es": "¡Tener mucha energía!",
+        "pt": "Estar com a corda toda!",
+        "de": "Fit wie ein Turnschuh sein"
+      },
+      "rating": 2
+    },
+    {
+      "id": "fr_expr_02",
+      "type": "expression",
+      "tone": "humorous",
+      "category": "stories",
+      "tags": ["fr", "vegetable", "humor"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "fr",
+        "text": "Raconter des salades"
+      },
+      "localized": {
+        "fr": "Raconter des salades",
+        "en": "Telling tall tales",
+        "el": "Λέω παραμύθια",
+        "es": "Contar cuentos chinos",
+        "pt": "Contar histórias da carochinha",
+        "de": "Märchen erzählen"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_expr_01",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "mood",
+      "tags": ["en", "vegetable", "cool"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "en",
+        "text": "Cool as a cucumber"
+      },
+      "localized": {
+        "fr": "Frais comme un gardon (Relax)",
+        "en": "Cool as a cucumber",
+        "el": "Άνετος και ωραίος",
+        "es": "Fresco como una lechuga",
+        "pt": "Fresco como uma alface",
+        "de": "Die Ruhe selbst sein"
+      },
+      "rating": 2
+    },
+    {
+      "id": "en_expr_02",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "success",
+      "tags": ["en", "cake", "easy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "en",
+        "text": "Piece of cake"
+      },
+      "localized": {
+        "fr": "C'est du gâteau (Facile)",
+        "en": "Piece of cake",
+        "el": "Είναι παιχνιδάκι",
+        "es": "Es pan comido",
+        "pt": "É canja",
+        "de": "Das ist kinderleicht"
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_expr_01",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "success",
+      "tags": ["es", "bread", "easy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "es",
+        "text": "Ser pan comido"
+      },
+      "localized": {
+        "fr": "C'est du pain mangé (C'est facile)",
+        "en": "It's a piece of cake",
+        "el": "Είναι ψωμοτύρι",
+        "es": "Ser pan comido",
+        "pt": "É pão pão, queijo queijo",
+        "de": "Das ist gebongt"
+      },
+      "rating": 2
+    },
+    {
+      "id": "es_expr_02",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "meal",
+      "tags": ["es", "food", "abundance"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "es",
+        "text": "Ponerse las botas"
+      },
+      "localized": {
+        "fr": "S'en mettre plein la panse",
+        "en": "To stuff oneself",
+        "el": "Σκάσαμε στο φαγητό",
+        "es": "Ponerse las botas",
+        "pt": "Encher a barriga",
+        "de": "Sich den Bauch vollschlagen"
+      },
+      "rating": 2
+    },
+    {
+      "id": "el_expr_01",
+      "type": "expression",
+      "tone": "humorous",
+      "category": "mood",
+      "tags": ["el", "vegetable", "relax"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "el",
+        "text": "Σιγά τα λάχανα"
+      },
+      "localized": {
+        "fr": "Doucement les choux (C'est pas grave)",
+        "en": "Slowly the cabbages (No big deal)",
+        "el": "Σιγά τα λάχανα",
+        "es": "No es para tanto",
+        "pt": "Grande coisa",
+        "de": "Das ist doch Pillepalle"
+      },
+      "rating": 2
+    },
+    {
+      "id": "de_expr_01",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "mood",
+      "tags": ["de", "butter", "comfort"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "de",
+        "text": "Alles in Butter"
+      },
+      "localized": {
+        "fr": "Tout baigne dans le beurre (Tout va bien)",
+        "en": "Everything in butter (All good)",
+        "el": "Όλα ρολόι",
+        "es": "Todo va sobre ruedas",
+        "pt": "Está tudo joia",
+        "de": "Alles in Butter"
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_expr_01",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "success",
+      "tags": ["pt", "soup", "easy"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "pt",
+        "text": "É canja"
+      },
+      "localized": {
+        "fr": "C'est de la soupe de poule (C'est facile)",
+        "en": "It's chicken soup (Piece of cake)",
+        "el": "Είναι νεράκι",
+        "es": "Es pan comido",
+        "pt": "É canja",
+        "de": "Das ist ein Klacks"
+      },
+      "rating": 2
+    },
+    {
+      "id": "pt_expr_02",
+      "type": "expression",
+      "tone": "joyful",
+      "category": "cooking",
+      "tags": ["pt", "dough", "work"],
+      "attribution": {
+        "author": null,
+        "work": null,
+        "year": null,
+        "origin": null,
+        "confidence": "high",
+        "origin_type": "expression",
+        "origin_qualifier": null
+      },
+      "original": {
+        "lang": "pt",
+        "text": "Com a mão na massa"
+      },
+      "localized": {
+        "fr": "La main à la pâte",
+        "en": "Hands in the dough (Hard at work)",
+        "el": "Με τα χέρια στη ζύμη",
+        "es": "Con las manos en la masa",
+        "pt": "Com a mão na massa",
+        "de": "Mitten bei der Arbeit"
       },
       "rating": 2
     }
