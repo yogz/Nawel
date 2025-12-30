@@ -1,15 +1,13 @@
 "use client";
 
 import { memo } from "react";
-import { motion } from "framer-motion";
-import { useDraggable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 import { type Item, type Person } from "@/lib/types";
 import { getPersonEmoji } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "../ui/button";
+import { SwipeableCard } from "../ui/swipeable-card";
 
 interface ItemRowProps {
   item: Item;
@@ -25,35 +23,17 @@ function ItemRowComponent({
   item,
   person,
   onAssign,
-  onDelete: _onDelete,
+  onDelete,
   readOnly,
   allPeopleNames,
   peopleCount,
 }: ItemRowProps) {
   const t = useTranslations("EventDashboard.ItemForm");
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: item.id,
-    disabled: readOnly,
-  });
+  const tShared = useTranslations("EventDashboard.Shared");
 
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : 0,
-  } as React.CSSProperties;
-
-  return (
-    <motion.div
-      ref={setNodeRef}
-      style={style}
-      whileTap={{ scale: 0.98 }}
-      onTap={() => {
-        if (!readOnly && !isDragging) {
-          onAssign();
-        }
-      }}
-      {...listeners}
-      {...attributes}
+  const content = (
+    <div
+      onClick={() => !readOnly && onAssign()}
       className="group mb-2 flex cursor-pointer items-center gap-2 rounded-2xl border border-black/[0.03] bg-white p-3 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-200 hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] sm:mb-3 sm:gap-3 sm:p-4"
     >
       <div className="min-w-0 flex-1">
@@ -129,7 +109,23 @@ function ItemRowComponent({
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
+  );
+
+  if (readOnly) {
+    return content;
+  }
+
+  return (
+    <SwipeableCard
+      onSwipeLeft={onDelete}
+      onSwipeRight={onAssign}
+      leftLabel={tShared("delete")}
+      rightLabel={t("label")}
+      disabled={readOnly}
+    >
+      {content}
+    </SwipeableCard>
   );
 }
 

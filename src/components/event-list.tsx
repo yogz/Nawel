@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createEventAction, updateEventWithMealAction, deleteEventAction } from "@/app/actions";
 import { Calendar, Plus, Clock, History, Pencil, Trash2 } from "lucide-react";
+import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
@@ -180,9 +181,8 @@ export function EventList({
             // Always include the adminKey if available, so clicking from dashboard opens in edit mode
             const url = `/event/${event.slug}${event.adminKey ? `?key=${event.adminKey}` : ""}`;
 
-            return (
+            const cardContent = (
               <Link
-                key={event.id}
                 href={url}
                 className="group relative block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-accent/30 hover:shadow-md active:scale-[0.98]"
               >
@@ -205,34 +205,24 @@ export function EventList({
                 {event.description && (
                   <p className="mt-3 line-clamp-2 text-sm text-gray-600">{event.description}</p>
                 )}
-
-                {isOwner && (
-                  <div className="mt-4 flex items-center justify-end gap-2 border-t border-gray-50 pt-3">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setEditingEvent(event);
-                      }}
-                      className="flex h-8 items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 transition-colors hover:bg-accent/10 hover:text-accent"
-                    >
-                      <Pencil size={12} />
-                      {t("edit")}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDeletingEvent(event);
-                      }}
-                      className="flex h-8 items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                    >
-                      <Trash2 size={12} />
-                      {t("delete")}
-                    </button>
-                  </div>
-                )}
               </Link>
+            );
+
+            return (
+              <div key={event.id}>
+                {isOwner ? (
+                  <SwipeableCard
+                    onSwipeLeft={() => setDeletingEvent(event)}
+                    onSwipeRight={() => setEditingEvent(event)}
+                    leftLabel={t("delete")}
+                    rightLabel={t("edit")}
+                  >
+                    {cardContent}
+                  </SwipeableCard>
+                ) : (
+                  cardContent
+                )}
+              </div>
             );
           })}
         </div>
