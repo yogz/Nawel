@@ -40,7 +40,7 @@
       "tags": ["fr", "memory", "time"],
       "attribution": {
         "author": "Yves Bonnefoy",
-        "work": "Titre (référence littéraire)",
+        "work": "Titre",
         "year": null,
         "origin": null,
         "confidence": "medium",
@@ -823,7 +823,7 @@
       "tags": ["fr", "science", "classic"],
       "attribution": {
         "author": "Louis Pasteur",
-        "work": "Aphorisme attribué",
+        "work": null,
         "year": null,
         "origin": null,
         "confidence": "medium",
@@ -1547,8 +1547,8 @@
       "category": "lgbtq",
       "tags": ["fr", "history", "activism", "lgbtq"],
       "attribution": {
-        "author": null,
-        "work": "ACT UP (slogan) ",
+        "author": "ACT UP",
+        "work": "Slogan Politique",
         "year": null,
         "origin": null,
         "confidence": "high",
@@ -1780,7 +1780,7 @@
       "tags": ["en", "food", "mind"],
       "attribution": {
         "author": "Virginia Woolf",
-        "work": "A Room of One's Own (attrib.)",
+        "work": "A Room of One's Own",
         "year": null,
         "origin": null,
         "confidence": "medium",
@@ -2157,7 +2157,7 @@
       "tags": ["en", "hope", "classic"],
       "attribution": {
         "author": "Oscar Wilde",
-        "work": "Lady Windermere's Fan (attrib.)",
+        "work": "Lady Windermere's Fan",
         "year": null,
         "origin": null,
         "confidence": "medium",
@@ -3172,7 +3172,7 @@
       "tags": ["el", "classic", "wisdom"],
       "attribution": {
         "author": "Maxime delphique",
-        "work": "Inscription (attrib.)",
+        "work": "Inscription",
         "year": null,
         "origin": null,
         "confidence": "high",
@@ -3201,7 +3201,7 @@
       "tags": ["el", "classic", "wisdom"],
       "attribution": {
         "author": "Maxime delphique",
-        "work": "Inscription (attrib.)",
+        "work": "Inscription",
         "year": null,
         "origin": null,
         "confidence": "high",
@@ -3229,7 +3229,7 @@
       "category": "philosophy",
       "tags": ["el", "classic", "flow"],
       "attribution": {
-        "author": "Héraclite (attrib.)",
+        "author": "Héraclite",
         "work": "Fragment",
         "year": null,
         "origin": null,
