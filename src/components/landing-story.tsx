@@ -6,8 +6,10 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
 import { LanguageSwitcher } from "./language-switcher";
+import { useTranslations } from "next-intl";
 
 export function LandingStory() {
+  const t = useTranslations("LandingStory");
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -19,37 +21,33 @@ export function LandingStory() {
 
   const timelineSteps = [
     {
-      day: "J-7",
-      title: "L'Inspiration",
-      description:
-        "Tout commence par une envie. Vous lancez une invitation qui a de l'allure. Élégante et claire, elle donne instantanément envie de répondre présent.",
+      day: t("timeline.day1"),
+      title: t("timeline.title1"),
+      description: t("timeline.description1"),
       icon: <Sparkles className="h-5 w-5" />,
       image: "/story_inspiration.png",
       color: "bg-purple-100 text-purple-600",
     },
     {
-      day: "J-5",
-      title: "L'Engouement",
-      description:
-        "L'invitation circule. Vos proches rejoignent l'aventure sans inscription. En un clic, ils choisissent leur contribution : champagne, salade, dessert. L'organisation devient fluide et naturelle.",
+      day: t("timeline.day2"),
+      title: t("timeline.title2"),
+      description: t("timeline.description2"),
       icon: <Send className="h-5 w-5" />,
       image: "/story_guests.png",
       color: "bg-blue-100 text-blue-600",
     },
     {
-      day: "J-1",
-      title: "La Sérénité",
-      description:
-        "Chacun sa mission. Nawel génère automatiquement une liste de courses personnalisée pour chaque invité. Plus de stress, chacun sait exactement quoi faire.",
+      day: t("timeline.day3"),
+      title: t("timeline.title3"),
+      description: t("timeline.description3"),
       icon: <CheckCircle2 className="h-5 w-5" />,
       image: "/story_shopping.png",
       color: "bg-green-100 text-green-600",
     },
     {
-      day: "Le Jour J",
-      title: "Le Moment",
-      description:
-        "Vous n'êtes pas en cuisine à stresser. Vous êtes avec eux. C'est ça, la promesse Nawel.",
+      day: t("timeline.day4"),
+      title: t("timeline.title4"),
+      description: t("timeline.description4"),
       icon: <Heart className="h-5 w-5" />,
       image: "/story_hero.png",
       color: "bg-rose-100 text-rose-600",
@@ -80,22 +78,21 @@ export function LandingStory() {
           className="max-w-3xl"
         >
           <p className="mb-6 font-sans text-sm font-medium uppercase tracking-[0.2em] text-stone-500">
-            L'Art de Recevoir
+            {t("heroSubtitle")}
           </p>
           <h1 className="mb-8 text-5xl font-light tracking-tight text-stone-900 sm:text-7xl lg:text-8xl">
-            Recevez avec <br />
-            <span className="font-serif italic text-stone-800">élégance</span>.
+            {t("heroTitle")} <br />
+            <span className="font-serif italic text-stone-800">{t("heroTitleHighlight")}</span>.
           </h1>
           <p className="mx-auto mb-12 max-w-xl font-sans text-xl font-light leading-relaxed text-stone-600">
-            Redécouvrez le plaisir d'inviter. Sans le bruit, sans le stress. Juste vous et vos
-            proches.
+            {t("heroDescription")}
           </p>
 
           <Link
             href="/login?mode=user"
             className="inline-flex items-center justify-center rounded-full bg-stone-900 px-10 py-4 font-sans text-base font-medium text-white transition-all hover:bg-stone-800 hover:shadow-lg"
           >
-            Commencer l'histoire
+            {t("heroButton")}
           </Link>
         </motion.div>
 
@@ -106,7 +103,7 @@ export function LandingStory() {
         >
           <div className="flex flex-col items-center gap-2">
             <span className="font-sans text-xs uppercase tracking-widest text-stone-400">
-              Le voyage
+              {t("scrollText")}
             </span>
             <ChevronDown className="h-4 w-4 text-stone-400" />
           </div>
@@ -176,17 +173,13 @@ export function LandingStory() {
       <section className="relative z-10 bg-[#FAF9F6] px-6 py-32 text-center">
         <div className="mx-auto max-w-2xl">
           <Sparkles className="mx-auto mb-8 h-8 w-8 text-stone-400" />
-          <h2 className="mb-8 font-serif text-4xl text-stone-900 sm:text-5xl">
-            Votre prochain dîner mérite Nawel.
-          </h2>
-          <p className="mb-12 font-sans text-lg font-light text-stone-600">
-            Rejoignez le mouvement du "Slow Hosting".
-          </p>
+          <h2 className="mb-8 font-serif text-4xl text-stone-900 sm:text-5xl">{t("ctaTitle")}</h2>
+          <p className="mb-12 font-sans text-lg font-light text-stone-600">{t("ctaDescription")}</p>
           <Link
             href="/login?mode=user"
             className="inline-flex items-center justify-center rounded-full bg-stone-900 px-12 py-5 font-sans text-lg font-medium text-white transition-all hover:bg-stone-800 hover:shadow-xl"
           >
-            Créer un événement
+            {t("ctaButton")}
           </Link>
         </div>
       </section>

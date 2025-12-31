@@ -14,8 +14,10 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
 import { LanguageSwitcher } from "./language-switcher";
+import { useTranslations } from "next-intl";
 
 export function LandingAlt() {
+  const t = useTranslations("LandingAlt");
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -27,31 +29,27 @@ export function LandingAlt() {
 
   const features = [
     {
-      title: "L'Assistant Culinaire (IA) BETA",
-      description:
-        "Dites juste 'Lasagnes pour 12', Nawel génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
+      title: t("feature1Title"),
+      description: t("feature1Description"),
       icon: <Wand2 className="h-6 w-6" />,
       image: "/alt_ai_chef.png",
-      tag: "Nouveau",
+      tag: t("feature1Tag"),
     },
     {
-      title: "Liste de Courses Magique",
-      description:
-        "L'application additionne tout pour vous et crée la liste des courses pour chaque invité. La liste est triée et prête à être cochée en magasin.",
+      title: t("feature2Title"),
+      description: t("feature2Description"),
       icon: <ShoppingBasket className="h-6 w-6" />,
       image: "/alt_shopping.png",
     },
     {
-      title: "Zéro Friction (Aucun compte)",
-      description:
-        "Oubliez les installations. Vos proches reçoivent un lien et participent d'un clic : 'J'apporte le champagne', 'C'est moi !'. C'est validé instantanément, sans aucune inscription.",
+      title: t("feature3Title"),
+      description: t("feature3Description"),
       icon: <CheckCircle2 className="h-6 w-6" />,
       image: "/alt_guests.png",
     },
     {
-      title: "Design Immersif",
-      description:
-        "Parce qu'on mange aussi avec les yeux, votre invitation est conçue pour être aussi belle que votre futur repas. Pas besoin de passer des heures sur la mise en page.",
+      title: t("feature4Title"),
+      description: t("feature4Description"),
       icon: <Sparkles className="h-6 w-6" />,
       image: "/aura-menu.png",
     },
@@ -86,16 +84,16 @@ export function LandingAlt() {
         >
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-600">
             <Sparkles className="h-4 w-4" />
-            L'organisation de repas, enfin relaxante.
+            {t("badge")}
           </span>
           <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:mb-8 sm:text-7xl">
-            Fini le Chaos des <br />
+            {t("heroTitle")} <br />
             <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-              Dîners Participatifs
+              {t("heroTitleHighlight")}
             </span>
           </h1>
           <p className="mx-auto mb-10 max-w-2xl px-4 text-xl leading-relaxed text-gray-600 sm:mb-12 sm:text-2xl">
-            Rassemblez vos amis. Profitez du moment sans la charge mentale.
+            {t("heroDescription")}
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 px-6 sm:flex-row sm:gap-6">
@@ -103,14 +101,14 @@ export function LandingAlt() {
               href="/login?mode=user"
               className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto"
             >
-              Lancer mon Invitation
+              {t("ctaStart")}
               <Wand2 className="h-5 w-5 transition-transform group-hover:rotate-12" />
             </Link>
             <Link
               href="#discover"
               className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white/80 px-8 py-4 text-lg font-bold text-gray-900 backdrop-blur-sm transition-all hover:border-gray-300 hover:bg-white sm:w-auto"
             >
-              Voir la Démo
+              {t("ctaDemo")}
             </Link>
           </div>
         </motion.div>
@@ -172,16 +170,12 @@ export function LandingAlt() {
       {/* Social Cloud / Trust Section (Optional Addition) */}
       <section className="relative z-10 border-y border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6 text-center">
-          <h3 className="mb-12 text-2xl font-semibold text-gray-900">
-            Ils organisent leurs événements avec Nawel
-          </h3>
+          <h3 className="mb-12 text-2xl font-semibold text-gray-900">{t("socialProofTitle")}</h3>
           {/* Mockup logos or text */}
           <div className="flex-wrapjustify-center flex gap-8 opacity-50 grayscale">
             {/* Add meaningful social proof or leave as clean space */}
           </div>
-          <p className="italic text-gray-500">
-            "Enfin une app qui ne ressemble pas à un tableau Excel." — Julie, utilisatrice
-          </p>
+          <p className="italic text-gray-500">{t("socialProofQuote")}</p>
         </div>
       </section>
 
@@ -190,36 +184,36 @@ export function LandingAlt() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white opacity-70"></div>
         <div className="mx-auto max-w-4xl">
           <h2 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:mb-8 sm:text-6xl">
-            Prêt à structurer le chaos ?
+            {t("ctaFooterTitle")}
           </h2>
           <p className="mx-auto mb-10 max-w-2xl text-xl text-gray-600 sm:mb-12">
-            Rejoignez ceux qui ont décidé de profiter de leurs soirées plutôt que de les organiser.
+            {t("ctaFooterDescription")}
           </p>
           <Link
             href="/login?mode=user"
             className="inline-flex w-full items-center justify-center rounded-full bg-gray-900 px-10 py-5 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-2xl sm:w-auto"
           >
-            Créer mon premier événement
+            {t("ctaFooterButton")}
           </Link>
-          <p className="mt-6 text-sm text-gray-500">
-            Gratuit pour toujours • Sans compte ni application à installer • Pas de carte requise
-          </p>
+          <p className="mt-6 text-sm text-gray-500">{t("ctaFooterNotice")}</p>
         </div>
       </section>
 
       <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
         <div className="mb-8 flex justify-center gap-6">
           <a href="#" className="hover:text-gray-900">
-            Instagram
+            {t("footerLinks.instagram")}
           </a>
           <a href="#" className="hover:text-gray-900">
-            Twitter
+            {t("footerLinks.twitter")}
           </a>
           <a href="#" className="hover:text-gray-900">
-            Contact
+            {t("footerLinks.contact")}
           </a>
         </div>
-        <p>&copy; {new Date().getFullYear()} Nawel. Fait avec ❤️ pour les bons vivants.</p>
+        <p>
+          &copy; {new Date().getFullYear()} Nawel. {t("footerText")}
+        </p>
       </footer>
     </div>
   );
