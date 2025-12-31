@@ -8,6 +8,9 @@ import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "./language-switcher";
 import { trackLandingCTA } from "@/lib/track-landing";
+import { DemoInteractive } from "./demo-interactive";
+import { Faq } from "./faq";
+import { StickyCta } from "./sticky-cta";
 
 export function Landing() {
   const t = useTranslations("Landing");
@@ -145,6 +148,9 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Interactive Demo Section */}
+      <DemoInteractive />
+
       {/* Call to Action Footer */}
       <section className="relative z-10 bg-white px-6 py-20 text-center sm:py-32">
         <div className="mx-auto max-w-4xl">
@@ -163,6 +169,9 @@ export function Landing() {
       <footer className="border-t border-gray-100 py-12 text-center text-sm text-gray-500">
         <p>{t("footer")}</p>
       </footer>
+
+      {/* Mobile Sticky CTA */}
+      <StickyCta />
     </div>
   );
 }

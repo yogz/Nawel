@@ -172,6 +172,9 @@ export function LandingAlt() {
         </div>
       </section>
 
+      {/* Interactive Demo Section */}
+      <DemoInteractive />
+
       {/* Social Cloud / Trust Section (Optional Addition) */}
       <section className="relative z-10 border-y border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6 text-center">
@@ -205,6 +208,9 @@ export function LandingAlt() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <Faq />
+
       <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
         <div className="mb-8 flex justify-center gap-6">
           <a href="#" className="hover:text-gray-900">
@@ -221,6 +227,9 @@ export function LandingAlt() {
           &copy; {new Date().getFullYear()} Nawel. {t("footerText")}
         </p>
       </footer>
+
+      {/* Mobile Sticky CTA */}
+      <StickyCta />
     </div>
   );
 }
