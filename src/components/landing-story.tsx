@@ -24,25 +24,25 @@ export function LandingStory() {
       description:
         "Tout commence par une envie. Vous lancez une invitation qui a de l'allure. Le thème 'Aurora' donne le ton : ce ne sera pas une soirée comme les autres.",
       icon: <Sparkles className="h-5 w-5" />,
-      image: "/aura-menu.png",
+      image: "/story_inspiration.png",
       color: "bg-purple-100 text-purple-600",
     },
     {
       day: "J-5",
       title: "L'Engouement",
       description:
-        "Vos amis reçoivent le lien. Pas d'inscription, pas de friction. Ils voient le menu, cliquent sur 'C'est moi !' pour le vin ou le dessert. L'organisation se fait toute seule.",
+        "Vos amis reçoivent le lien. Pas d'inscription, pas de friction. Ils peuvent dire 'J'apporte le champagne' ou cliquer sur 'C'est moi !'. L'organisation se fait toute seule.",
       icon: <Send className="h-5 w-5" />,
-      image: "/alt_guests.png",
+      image: "/story_guests.png",
       color: "bg-blue-100 text-blue-600",
     },
     {
       day: "J-1",
       title: "La Sérénité",
       description:
-        "Plus de 'qui amène quoi ?'. Votre liste de courses est prête, générée automatiquement. Vous savez exactement ce qu'il vous reste à faire.",
+        "Plus de 'qui amène quoi ?'. L'application crée la liste de courses pour vous, triée et prête pour le magasin. Tout est sous contrôle.",
       icon: <CheckCircle2 className="h-5 w-5" />,
-      image: "/alt_shopping.png",
+      image: "/story_shopping.png",
       color: "bg-green-100 text-green-600",
     },
     {
@@ -51,7 +51,7 @@ export function LandingStory() {
       description:
         "Vous n'êtes pas en cuisine à stresser. Vous êtes avec eux. C'est ça, la promesse Nawel.",
       icon: <Heart className="h-5 w-5" />,
-      image: "/alt_hero.png",
+      image: "/story_hero.png",
       color: "bg-rose-100 text-rose-600",
       fullWidth: true,
     },
