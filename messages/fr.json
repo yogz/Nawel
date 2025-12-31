@@ -46,6 +46,7 @@
       "myEvent": "Mon Événement",
       "edit": "Modifier",
       "delete": "Supprimer",
+      "view": "Consulter",
       "deleteConfirmTitle": "Supprimer l'événement",
       "deleteConfirmDescription": "Toutes les données seront définitivement supprimées.",
       "deleteConfirmInstruction": "Saisissez \"{name}\" pour confirmer :",

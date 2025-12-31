@@ -178,33 +178,39 @@ export function EventList({
         <div className="space-y-3">
           {items.map((event) => {
             const isOwner = session?.user?.id === event.ownerId;
-            // Always include the adminKey if available, so clicking from dashboard opens in edit mode
             const url = `/event/${event.slug}${event.adminKey ? `?key=${event.adminKey}` : ""}`;
 
             const cardContent = (
-              <Link
-                href={url}
-                className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  if (!e.defaultPrevented) {
+                    router.push(url);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(url);
+                  }
+                }}
+                className="group relative block cursor-pointer overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
               >
                 {/* Decorative background gradient */}
                 <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
 
-                <div className="relative flex flex-col p-5">
+                <div className="relative flex flex-col p-4">
                   <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-black tracking-tight text-gray-900 transition-colors group-hover:text-accent">
+                    <div className="space-y-0.5">
+                      <h3 className="text-base font-black tracking-tight text-gray-900 transition-colors group-hover:text-accent">
                         {event.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <span className="h-1 w-1 rounded-full bg-gray-300" />/{event.slug}
-                        </span>
-                      </div>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
                       {isOwner && (
-                        <span className="inline-flex items-center rounded-full bg-accent/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-accent ring-1 ring-accent/20">
+                        <span className="inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-accent ring-1 ring-accent/20">
                           {t("myEvent")}
                         </span>
                       )}
@@ -212,17 +218,17 @@ export function EventList({
                   </div>
 
                   {event.description && (
-                    <p className="mt-4 line-clamp-1 text-xs font-medium leading-relaxed text-gray-500">
+                    <p className="mt-2 line-clamp-1 text-[11px] font-medium leading-tight text-gray-500">
                       {event.description}
                     </p>
                   )}
 
-                  <div className="mt-6 flex items-center justify-between border-t border-gray-50 pt-4">
-                    <div className="flex items-center gap-4">
+                  <div className="mt-4 flex items-center justify-between border-t border-gray-50 pt-3">
+                    <div className="flex items-center gap-3">
                       {/* Date details if available */}
                       {event.meals && event.meals.length > 0 && (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-1 text-[11px] font-bold text-gray-600">
-                          <Calendar size={12} className="text-gray-400" />
+                        <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-0.5 text-[10px] font-bold text-gray-600">
+                          <Calendar size={10} className="text-gray-400" />
                           <span>
                             {new Date(event.meals[0].date).toLocaleDateString(undefined, {
                               day: "numeric",
@@ -233,18 +239,51 @@ export function EventList({
                       )}
 
                       {/* Guests count */}
-                      <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-1 text-[11px] font-bold text-gray-600">
-                        <Users size={12} className="text-gray-400" />
+                      <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-0.5 text-[10px] font-bold text-gray-600">
+                        <Users size={10} className="text-gray-400" />
                         <span>{event.adults + event.children}</span>
                       </div>
                     </div>
 
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all group-hover:bg-accent group-hover:text-white">
-                      <ArrowRight size={14} />
+                    <div className="flex items-center gap-2">
+                      {/* Desktop Actions */}
+                      <div className="hidden items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 lg:flex">
+                        <div className="flex h-7 items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 text-[10px] font-bold text-gray-600 transition-colors hover:bg-accent hover:text-white">
+                          {t("view")}
+                        </div>
+                        {isOwner && (
+                          <>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setEditingEvent(event);
+                              }}
+                              className="flex h-7 items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 text-[10px] font-bold text-gray-600 transition-colors hover:bg-accent hover:text-white"
+                            >
+                              {t("edit")}
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setDeletingEvent(event);
+                              }}
+                              className="flex h-7 items-center gap-1.5 rounded-lg bg-red-50 px-2.5 text-[10px] font-bold text-red-600 transition-colors hover:bg-red-500 hover:text-white"
+                            >
+                              {t("delete")}
+                            </button>
+                          </>
+                        )}
+                      </div>
+
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all group-hover:bg-accent group-hover:text-white lg:group-hover:hidden">
+                        <ArrowRight size={12} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             );
 
             return (
