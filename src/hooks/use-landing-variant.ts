@@ -35,6 +35,13 @@ export function useLandingVariant() {
         $set: { landing_variant: mappedVariant },
       });
     }
+
+    // Sécurité : si PostHog met trop de temps (ex: adblock), on affiche la landing par défaut
+    const timeout = setTimeout(() => {
+      setVariant((prev) => prev || "landing");
+    }, 2000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return variant;
