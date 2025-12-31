@@ -38,12 +38,10 @@ export function EventForm({
   initialData,
 }: {
   onSubmit: (
-    slug: string,
     name: string,
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
-    key?: string,
     adults?: number,
     children?: number,
     time?: string,
@@ -60,7 +58,6 @@ export function EventForm({
     adults: number;
     children: number;
     date: string;
-    slug: string;
     address?: string;
     time?: string;
   };
@@ -113,12 +110,10 @@ export function EventForm({
     }
     // Note: slug is now auto-generated on server, we pass name as base slug hint
     onSubmit(
-      name.trim(), // Server will slugify this
       name.trim(),
       description.trim() || undefined,
       creationMode,
       date,
-      undefined, // Admin key is auto-generated
       adults,
       children,
       time,

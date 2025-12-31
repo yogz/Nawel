@@ -55,12 +55,10 @@ export function EventList({
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
 
   const handleCreateEvent = async (
-    hint: string,
     name: string,
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
-    key?: string,
     adults?: number,
     children?: number,
     time?: string,
@@ -70,7 +68,6 @@ export function EventList({
     startTransition(async () => {
       try {
         const result = await createEventAction({
-          slug: hint, // Server uses this as base for auto-generated slug
           name,
           description,
           creationMode,

@@ -14,25 +14,25 @@ export default function CreateEventClient() {
   const router = useRouter();
 
   const handleCreateEvent = async (
-    slug: string,
     name: string,
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
-    key?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => {
     setError(null);
     startTransition(async () => {
       try {
         const result = await createEventAction({
-          slug,
           name,
           description,
-          key: key,
           creationMode,
           date,
+          time,
+          address,
           adults: adults ?? 0,
           children: children ?? 0,
         });
