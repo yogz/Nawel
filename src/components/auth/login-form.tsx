@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { trackLandingConversion } from "@/lib/track-landing";
+import posthog from "posthog-js";
 
 export function LoginForm() {
   const t = useTranslations("Login");
@@ -44,6 +45,12 @@ export function LoginForm() {
           setLoading(false);
           return;
         }
+        // Identify user and capture sign-in event
+        posthog.identify(email, { email });
+        posthog.capture("user_signed_in", {
+          method: "email",
+          is_admin_mode: !isUserMode,
+        });
       } else {
         const { error } = await signUp.email({
           email,
@@ -58,6 +65,11 @@ export function LoginForm() {
         }
         // Track conversion après inscription réussie
         trackLandingConversion();
+        // Identify user and capture sign-up event
+        posthog.identify(email, { email, name: email.split("@")[0] });
+        posthog.capture("user_signed_up", {
+          method: "email",
+        });
       }
 
       router.push(isUserMode ? "/" : "/admin");
@@ -137,6 +149,11 @@ export function LoginForm() {
               onClick={async () => {
                 setLoading(true);
                 try {
+                  // Track Google sign-in attempt (user will be identified on callback)
+                  posthog.capture("user_signed_in", {
+                    method: "google",
+                    is_admin_mode: !isUserMode,
+                  });
                   await signIn.social({
                     provider: "google",
                     callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,

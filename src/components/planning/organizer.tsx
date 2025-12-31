@@ -20,6 +20,7 @@ import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { DeleteEventDialog } from "../common/delete-event-dialog";
 import { Trash2 } from "lucide-react";
+import posthog from "posthog-js";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -128,11 +129,22 @@ export function Organizer({
     handleMoveItem,
     handleDelete,
     findItem,
-    handleDeleteEvent,
+    handleDeleteEvent: originalHandleDeleteEvent,
     handleClaimPerson,
     handleUnclaimPerson,
     handleCreatePerson,
   } = handlers;
+
+  // Wrap handleDeleteEvent to add PostHog tracking
+  const handleDeleteEvent = () => {
+    posthog.capture("event_deleted", {
+      event_slug: slug,
+      event_name: plan.event?.name,
+      people_count: plan.people.length,
+      meals_count: plan.meals.length,
+    });
+    originalHandleDeleteEvent();
+  };
 
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
@@ -218,6 +230,12 @@ export function Organizer({
             ...prev,
             people: [...prev.people, result].sort((a, b) => a.name.localeCompare(b.name)),
           }));
+          // Track person joining event
+          posthog.capture("person_joined_event", {
+            event_slug: slug,
+            person_name: result.name,
+            is_owner: plan.event?.ownerId === session?.user?.id,
+          });
         }
 
         // After joining, check if there are unclaimed people they might want to claim instead

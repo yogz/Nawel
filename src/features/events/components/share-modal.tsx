@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import posthog from "posthog-js";
 
 export function ShareModal({
   slug,
@@ -30,12 +31,24 @@ export function ShareModal({
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
+    // Track share via copy link
+    posthog.capture("event_shared", {
+      event_slug: slug,
+      share_method: "copy_link",
+      is_new_event: isNew,
+    });
   };
 
   const handleWhatsAppShare = () => {
     const message = t("shareMessage", { name: eventName || "cet événement", url: shareUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
+    // Track share via WhatsApp
+    posthog.capture("event_shared", {
+      event_slug: slug,
+      share_method: "whatsapp",
+      is_new_event: isNew,
+    });
   };
 
   const handleNativeShare = async () => {
@@ -45,6 +58,12 @@ export function ShareModal({
           title: eventName || "Événement Nawel",
           text: t("shareMessage", { name: eventName || "cet événement", url: "" }),
           url: shareUrl,
+        });
+        // Track share via native share
+        posthog.capture("event_shared", {
+          event_slug: slug,
+          share_method: "native",
+          is_new_event: isNew,
         });
       } catch (err) {
         console.log("Error sharing", err);

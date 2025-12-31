@@ -6,6 +6,7 @@ import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
 
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
@@ -35,6 +36,15 @@ export default function CreateEventClient() {
           address,
           adults: adults ?? 0,
           children: children ?? 0,
+        });
+        // Track event creation - key conversion event
+        posthog.capture("event_created", {
+          event_slug: result.slug,
+          creation_mode: creationMode || "zero",
+          has_description: !!description,
+          has_date: !!date,
+          adults_count: adults ?? 0,
+          children_count: children ?? 0,
         });
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: unknown) {

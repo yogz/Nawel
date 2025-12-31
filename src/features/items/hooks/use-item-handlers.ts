@@ -12,6 +12,7 @@ import {
 } from "@/app/actions";
 import type { Item, Service, Person, PlanData, ItemData } from "@/lib/types";
 import type { ItemHandlerParams } from "@/features/shared/types";
+import posthog from "posthog-js";
 
 export function useItemHandlers({
   plan,
@@ -129,6 +130,14 @@ export function useItemHandlers({
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
     setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
+
+    // Track item assignment - core engagement action
+    posthog.capture("item_assigned", {
+      item_name: item.name,
+      person_name: personName,
+      is_unassigning: !personId,
+      service_id: item.serviceId,
+    });
 
     // Easter egg for Cécile
     if (

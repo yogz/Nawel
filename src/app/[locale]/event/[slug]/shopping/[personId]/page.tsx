@@ -3,6 +3,7 @@ import { isWriteKeyValid } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import { ShoppingPage } from "@/components/planning/shopping-page";
 import type { Metadata } from "next";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export const revalidate = 30;
 
@@ -40,6 +41,20 @@ export default async function Page(props: Props) {
 
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
   const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);
+
+  // Track shopping list page view (server-side)
+  const posthog = getPostHogClient();
+  if (posthog) {
+    posthog.capture({
+      distinctId: person.userId || `anonymous_${personId}`,
+      event: "shopping_list_viewed",
+      properties: {
+        event_slug: params.slug,
+        person_name: person.name,
+        event_name: plan.event?.name,
+      },
+    });
+  }
 
   return (
     <ShoppingPage
