@@ -2,7 +2,19 @@
 
 import { useState } from "react";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
-import { Plus, UtensilsCrossed, Utensils, GlassWater, FilePlus, Loader2 } from "lucide-react";
+import {
+  UtensilsCrossed,
+  Utensils,
+  GlassWater,
+  FilePlus,
+  Loader2,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  MessageSquare,
+  Sparkles,
+} from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {
   Select,
@@ -12,6 +24,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function EventForm({
   onSubmit,
@@ -30,7 +45,9 @@ export function EventForm({
     date?: string,
     key?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => void;
   onClose: () => void;
   isPending: boolean;
@@ -44,23 +61,23 @@ export function EventForm({
     children: number;
     date: string;
     slug: string;
+    address?: string;
+    time?: string;
   };
 }) {
   const t = useTranslations("CreateEvent");
   const tShared = useTranslations("EventDashboard.Shared");
   const locale = useLocale();
   const [step, setStep] = useState(1);
-  const [slug, setSlug] = useState(initialData?.slug ?? "");
   const [name, setName] = useState(initialData?.name ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
   const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">(
     "total"
   );
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
-  const [customPassword, setCustomPassword] = useState("");
-  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(initialData ? true : false);
-  const [adults, setAdults] = useState(initialData?.adults ?? 0);
+  const [time, setTime] = useState(initialData?.time ?? "20:00");
+  const [address, setAddress] = useState(initialData?.address ?? "");
+  const [adults, setAdults] = useState(initialData?.adults ?? 2);
   const [children, setChildren] = useState(initialData?.children ?? 0);
 
   const CREATION_MODES = [
@@ -90,39 +107,28 @@ export function EventForm({
     },
   ] as const;
 
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-");
-  };
-
   const handleSubmit = () => {
-    if (!slug.trim() || !name.trim()) {
+    if (!name.trim()) {
       return;
     }
+    // Note: slug is now auto-generated on server, we pass name as base slug hint
     onSubmit(
-      slug.trim().toLowerCase().replace(/\s+/g, "-"),
+      name.trim(), // Server will slugify this
       name.trim(),
       description.trim() || undefined,
       creationMode,
       date,
-      customPassword.trim() || undefined,
+      undefined, // Admin key is auto-generated
       adults,
-      children
+      children,
+      time,
+      address
     );
   };
 
   const canGoNext = () => {
     if (step === 1) {
       return name.trim().length > 0 && date.length > 0;
-    }
-    if (step === 2) {
-      return true;
     }
     return true;
   };
@@ -140,88 +146,103 @@ export function EventForm({
   };
 
   const selectedMode = CREATION_MODES.find((m) => m.id === creationMode);
-
   const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
 
   const content = (
-    <>
+    <div className="flex flex-col gap-6">
       {/* Progress indicator */}
       {!initialData && (
-        <div className="mb-6 flex gap-1.5">
+        <div className="flex gap-2">
           {[1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`h-1 flex-1 rounded-full transition-all ${
-                s <= step ? "bg-accent" : "bg-gray-200"
-              }`}
+              className={cn(
+                "h-1.5 flex-1 rounded-full transition-all duration-500",
+                s <= step ? "bg-accent shadow-[0_0_8px_rgba(var(--accent-rgb),0.4)]" : "bg-gray-100"
+              )}
             />
           ))}
         </div>
       )}
 
       {showWarnings && step === 1 && (
-        <div className="mb-6 space-y-3">
-          <div className="flex gap-3 rounded-xl border border-amber-100 bg-amber-50/50 p-3 text-amber-800">
-            <div className="shrink-0 pt-0.5">⚠️</div>
-            <p className="text-xs leading-relaxed">
-              <strong>{t("summaryEvent")} :</strong> {t("warningLoss")}
-            </p>
-          </div>
-          <div className="flex gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-3 text-blue-800">
-            <div className="shrink-0 pt-0.5">✨</div>
-            <p className="text-xs leading-relaxed">
-              <strong>Note :</strong> {t("warningAccount")}
-            </p>
+        <div className="space-y-3 rounded-[24px] border border-accent/10 bg-accent/5 p-4">
+          <div className="flex gap-3 text-accent">
+            <Sparkles size={18} className="shrink-0" />
+            <p className="text-xs font-medium leading-relaxed">{t("warningAccount")}</p>
           </div>
         </div>
       )}
 
-      {/* Step 1: Name & Date */}
+      {/* Step 1: L'Essentiel */}
       {step === 1 && (
-        <div className="space-y-4">
-          <label className="block space-y-2">
-            <span className="text-sm font-bold text-gray-900">{t("eventNameLabel")}</span>
-            <input
-              className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
-              value={name}
-              onChange={(e) => {
-                const newName = e.target.value;
-                setName(newName);
-                if (!isSlugManuallyEdited) {
-                  setSlug(generateSlug(newName));
-                }
-              }}
-              placeholder={t("eventNamePlaceholder")}
-              autoFocus
-            />
-          </label>
-
-          {!initialData && (
-            <label className="block space-y-2">
-              <span className="text-sm font-bold text-gray-900">{t("dateLabel")}</span>
-              <input
-                type="date"
-                className="w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-base outline-none transition-all focus:border-accent focus:bg-white"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              {t("eventNameLabel")}
+            </Label>
+            <div className="group relative">
+              <Input
+                className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("eventNamePlaceholder")}
+                autoFocus
               />
-            </label>
-          )}
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label
-                htmlFor="adults"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
+              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                {t("dateLabel")}
+              </Label>
+              <div className="relative">
+                <Input
+                  type="date"
+                  className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+                <Calendar
+                  size={18}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                {t("timeLabel")}
+              </Label>
+              <div className="relative">
+                <Input
+                  type="time"
+                  className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                />
+                <Clock
+                  size={18}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
                 {tShared("adultsLabel")}
               </Label>
               <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder={tShared("adultsLabel")} />
+                <SelectTrigger className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <div className="flex items-center gap-2">
+                    <Users size={18} className="text-gray-400" />
+                    <SelectValue />
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-                  {Array.from({ length: 51 }, (_, i) => (
+                <SelectContent className="z-[110] max-h-[300px] rounded-[24px] border-gray-100 shadow-2xl">
+                  {Array.from({ length: 101 }, (_, i) => (
                     <SelectItem key={i} value={String(i)} className="rounded-xl">
                       {i} {tShared("adultsCount", { count: i })}
                     </SelectItem>
@@ -230,18 +251,18 @@ export function EventForm({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label
-                htmlFor="children"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
+              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
                 {tShared("childrenLabel")}
               </Label>
               <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder={tShared("childrenLabel")} />
+                <SelectTrigger className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <div className="flex items-center gap-2">
+                    <Users size={18} className="text-gray-400" />
+                    <SelectValue />
+                  </div>
                 </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-                  {Array.from({ length: 51 }, (_, i) => (
+                <SelectContent className="z-[110] max-h-[300px] rounded-[24px] border-gray-100 shadow-2xl">
+                  {Array.from({ length: 101 }, (_, i) => (
                     <SelectItem key={i} value={String(i)} className="rounded-xl">
                       {i} {tShared("childrenCount", { count: i })}
                     </SelectItem>
@@ -251,67 +272,77 @@ export function EventForm({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
               onClick={onClose}
-              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500 hover:bg-gray-50"
             >
               {t("cancelButton")}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={initialData ? handleSubmit : goNext}
               disabled={!canGoNext() || isPending}
-              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
+              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90"
             >
               {isPending ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  {tShared("saving")}
-                </span>
+                <Loader2 size={18} className="animate-spin" />
               ) : initialData ? (
                 tShared("save")
               ) : (
                 t("nextButton")
               )}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Step 2: Creation Mode */}
+      {/* Step 2: L'Ambiance */}
       {step === 2 && (
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">{t("menuDescription")}</p>
+        <div className="space-y-6">
+          <div className="space-y-2 pb-2 text-center">
+            <h4 className="text-sm font-bold text-gray-900">{t("menuDescription")}</h4>
+          </div>
 
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-3">
             {CREATION_MODES.map((mode) => (
               <button
                 key={mode.id}
                 type="button"
                 onClick={() => setCreationMode(mode.id)}
-                className={`flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition-all ${
+                className={cn(
+                  "group flex items-center gap-4 rounded-[24px] border-2 p-4 text-left transition-all duration-300",
                   creationMode === mode.id
-                    ? "border-accent bg-accent/5"
-                    : "border-gray-100 bg-white"
-                }`}
+                    ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                    : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
+                )}
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent transition-colors group-hover:bg-accent group-hover:text-white">
+                <div
+                  className={cn(
+                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] transition-colors duration-300",
+                    creationMode === mode.id
+                      ? "bg-accent text-white"
+                      : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
+                  )}
+                >
                   {mode.icon}
                 </div>
                 <div className="min-w-0 flex-1">
                   <span
-                    className={`block text-sm font-bold ${creationMode === mode.id ? "text-accent" : "text-gray-700"}`}
+                    className={cn(
+                      "block text-sm font-bold transition-colors",
+                      creationMode === mode.id ? "text-accent" : "text-gray-900"
+                    )}
                   >
                     {mode.label}
                   </span>
                   <span className="block truncate text-xs text-gray-500">{mode.desc}</span>
                 </div>
                 <div
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                    creationMode === mode.id ? "border-accent bg-accent" : "border-gray-300"
-                  }`}
+                  className={cn(
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
+                    creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
+                  )}
                 >
                   {creationMode === mode.id && <div className="h-2 w-2 rounded-full bg-white" />}
                 </div>
@@ -319,141 +350,142 @@ export function EventForm({
             ))}
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
+          <div className="space-y-2 pt-2">
+            <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              {t("addressLabel")}
+            </Label>
+            <div className="relative">
+              <Input
+                className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={t("addressPlaceholder")}
+              />
+              <MapPin
+                size={18}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
               onClick={goBack}
-              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500"
             >
               {t("backButton")}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={goNext}
-              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95"
+              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20"
             >
               {t("nextButton")}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Confirmation */}
+      {/* Step 3: Finalisation */}
       {step === 3 && (
-        <div className="space-y-4">
-          {/* Summary */}
-          <div className="space-y-2 rounded-2xl bg-gray-50 p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{t("summaryEvent")}</span>
-              <span className="text-sm font-bold text-gray-900">{name}</span>
+        <div className="space-y-6">
+          <div className="space-y-3 rounded-[32px] border border-gray-100 bg-gray-50/50 p-5">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2 text-gray-400">
+                <Sparkles size={16} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  {t("summaryEvent")}
+                </span>
+              </div>
+              <span className="text-sm font-black text-gray-900">{name}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{t("summaryDate")}</span>
-              <span className="text-sm font-medium text-gray-700">
-                {new Date(date).toLocaleDateString(locale === "fr" ? "fr-FR" : locale, {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {t("summaryDate")}
+                </span>
+                <span className="text-sm font-bold text-gray-700">
+                  {new Date(date).toLocaleDateString(locale === "fr" ? "fr-FR" : locale, {
+                    day: "numeric",
+                    month: "short",
+                  })}{" "}
+                  à {time}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {t("summaryGuestsLabel")}
+                </span>
+                <span className="text-sm font-bold text-gray-700">
+                  {t("summaryGuests", { adults, children })}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{t("summaryGuestsLabel")}</span>
-              <span className="text-sm font-medium text-gray-700">
-                {t("summaryGuests", { adults, children })}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{t("summaryMenu")}</span>
-              <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <span className="text-accent">{selectedMode?.icon}</span>
-                {selectedMode?.label}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">{t("summaryUrl")}</span>
-              <span className="font-mono text-sm text-accent">/{slug}</span>
+
+            <div className="grid grid-cols-2 gap-4 pt-1">
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {t("summaryMenu")}
+                </span>
+                <div className="flex items-center gap-2">
+                  <div className="text-accent">{selectedMode?.icon}</div>
+                  <span className="text-sm font-bold text-gray-700">{selectedMode?.label}</span>
+                </div>
+              </div>
+              {address && (
+                <div className="space-y-1">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {t("summaryAddress")}
+                  </span>
+                  <span className="block truncate text-sm font-bold text-gray-700">{address}</span>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Advanced options */}
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="text-xs font-semibold text-gray-400 hover:text-gray-600"
-          >
-            {showAdvanced ? t("hideOptions") : t("showOptions")}
-          </button>
-
-          {showAdvanced && (
-            <div className="space-y-3 border-t border-gray-100 pt-2">
-              <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">{t("customUrlLabel")}</span>
-                <input
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlug(generateSlug(e.target.value));
-                    setIsSlugManuallyEdited(true);
-                  }}
-                  placeholder={t("customUrlPlaceholder")}
-                />
-              </label>
-              <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">{t("adminKeyLabel")}</span>
-                <input
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
-                  value={customPassword}
-                  onChange={(e) => setCustomPassword(e.target.value)}
-                  placeholder={t("adminKeyPlaceholder")}
-                />
-              </label>
-              <label className="block space-y-1">
-                <span className="text-xs font-semibold text-gray-600">{t("descriptionLabel")}</span>
-                <textarea
-                  className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-accent"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t("descriptionPlaceholder")}
-                  rows={2}
-                />
-              </label>
+          <div className="space-y-2">
+            <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              {t("descriptionLabel")}
+            </Label>
+            <div className="relative">
+              <textarea
+                className="min-h-[100px] w-full resize-none rounded-[24px] border border-gray-100 bg-gray-50/50 p-4 pl-10 text-sm outline-none transition-all focus:border-accent focus:bg-white"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t("descriptionPlaceholder")}
+              />
+              <MessageSquare size={18} className="absolute left-3.5 top-4 text-gray-400" />
             </div>
-          )}
+          </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 p-2 text-xs font-semibold text-red-500">
-              {error === "Une erreur est survenue" ? t("errorDefault") : error}
-            </p>
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+              <p className="text-center text-xs font-bold text-red-500">
+                {error === "Une erreur est survenue" ? t("errorDefault") : error}
+              </p>
+            </div>
           )}
 
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
               onClick={goBack}
-              className="flex-1 rounded-2xl border-2 border-gray-100 bg-white px-4 py-3.5 text-sm font-bold text-gray-600 active:scale-95"
+              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500"
             >
               {t("backButton")}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
               onClick={handleSubmit}
-              disabled={isPending || !slug.trim() || !name.trim()}
-              className="flex-[2] rounded-2xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-accent/20 active:scale-95 disabled:opacity-50"
+              disabled={isPending || !name.trim()}
+              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20"
             >
-              {isPending ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  {t("creatingButton")}
-                </span>
-              ) : (
-                t("createButton")
-              )}
-            </button>
+              {isPending ? <Loader2 size={18} className="animate-spin" /> : t("createButton")}
+            </Button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 
   if (inline) {

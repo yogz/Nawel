@@ -160,12 +160,12 @@ export const getChangeLogsSchema = z.object({
 });
 
 export const createEventSchema = z.object({
-  slug: safeSlug,
   name: safeText(100),
   description: safeText(500).optional(),
-  key: safeKey.optional(),
   creationMode: z.enum(["total", "classique", "apero", "zero"]).optional(),
   date: z.string().optional(),
+  time: z.string().optional(),
+  address: safeText(500).optional(),
   adults: z.number().int().min(0).max(1000).optional().default(0),
   children: z.number().int().min(0).max(1000).optional().default(0),
 });

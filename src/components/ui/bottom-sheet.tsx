@@ -71,9 +71,9 @@ export function BottomSheet({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             {/* Handle bar for mobile feel */}
-            <div className="mx-auto mb-4 h-1.5 w-12 shrink-0 rounded-full bg-black/10 transition-colors hover:bg-black/20" />
+            <div className="mx-auto mb-2 h-1.5 w-12 shrink-0 rounded-full bg-black/10 transition-colors hover:bg-black/20" />
 
-            <div className="mb-3 flex flex-shrink-0 items-center justify-between sm:mb-4">
+            <div className="mb-2 flex flex-shrink-0 items-center justify-between sm:mb-4">
               <h3
                 id="sheet-title"
                 className="text-base font-black tracking-tight text-text sm:text-lg"

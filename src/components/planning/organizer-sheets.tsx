@@ -162,7 +162,11 @@ export function OrganizerSheets({
   };
 
   return (
-    <BottomSheet open={!!sheet} onClose={() => setSheet(null)} title={getTitle()}>
+    <BottomSheet
+      open={!!sheet}
+      onClose={() => setSheet(null)}
+      title={sheet?.type === "share" ? "" : getTitle()}
+    >
       {sheet?.type === "item" && (
         <ItemForm
           people={plan.people}
@@ -354,6 +358,7 @@ export function OrganizerSheets({
           adminKey={writeKey}
           onClose={() => setSheet(null)}
           isNew={searchParams.get("new") === "true"}
+          eventName={plan.event?.name}
         />
       )}
 

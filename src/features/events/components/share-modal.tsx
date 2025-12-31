@@ -1,96 +1,170 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Share2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function ShareModal({
   slug,
   adminKey,
   onClose,
   isNew,
+  eventName,
 }: {
   slug: string;
   adminKey?: string;
   onClose: () => void;
   isNew?: boolean;
+  eventName?: string;
 }) {
   const t = useTranslations("EventDashboard.Sheets.Share");
   const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedKey, setCopiedKey] = useState(false);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${baseUrl}/event/${slug}${adminKey ? `?key=${adminKey}` : ""}`;
 
-  const copyToClipboard = (text: string, type: "link" | "key") => {
-    navigator.clipboard.writeText(text);
-    if (type === "link") {
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleWhatsAppShare = () => {
+    const message = t("shareMessage", { name: eventName || "cet événement", url: shareUrl });
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: eventName || "Événement Nawel",
+          text: t("shareMessage", { name: eventName || "cet événement", url: "" }),
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log("Error sharing", err);
+      }
     } else {
-      setCopiedKey(true);
-      setTimeout(() => setCopiedKey(false), 2000);
+      copyToClipboard();
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-2 pt-1 transition-all">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-accent/10 text-3xl shadow-inner">
-          ✨
-        </div>
-        <h3 className="text-xl font-black tracking-tight text-text">
-          {isNew ? t("eventCreated") : t("title")}
-        </h3>
-        <p className="mt-2 text-sm text-gray-500">{t("description")}</p>
-      </div>
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", damping: 12, stiffness: 200 }}
+          className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[22px] bg-gradient-to-br from-accent to-accent/80 text-3xl text-white shadow-xl shadow-accent/20"
+        >
+          {isNew ? "✨" : <Share2 size={24} />}
+        </motion.div>
 
-      <div className="space-y-4">
-        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
-          <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            {t("adminLinkLabel")}
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h3 className="text-xl font-black leading-none tracking-tight text-gray-900">
+            {isNew ? t("eventCreated") : t("title")}
+          </h3>
+          <p className="mx-auto mt-2 max-w-[240px] text-xs font-medium leading-relaxed text-gray-500">
+            {t("description")}
           </p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-3 py-2 font-mono text-xs text-gray-600 ring-1 ring-black/[0.05]">
-              {shareUrl}
-            </code>
-            <Button
-              size="icon"
-              variant="outline"
-              className="shrink-0 rounded-xl"
-              onClick={() => copyToClipboard(shareUrl, "link")}
-            >
-              {copiedLink ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-            </Button>
-          </div>
-        </div>
-
-        {adminKey && (
-          <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
-              {t("accessKeyLabel")}
-            </p>
-            <div className="flex items-center gap-2">
-              <code className="flex-1 rounded-lg bg-white px-3 py-2 font-mono text-xs font-bold text-accent ring-1 ring-black/[0.05]">
-                {adminKey}
-              </code>
-              <Button
-                size="icon"
-                variant="outline"
-                className="shrink-0 rounded-xl"
-                onClick={() => copyToClipboard(adminKey, "key")}
-              >
-                {copiedKey ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-              </Button>
-            </div>
-          </div>
-        )}
+        </motion.div>
       </div>
 
-      <Button className="w-full" onClick={onClose}>
-        {t("closeButton")}
-      </Button>
+      <div className="space-y-3">
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Button
+            className="h-14 w-full rounded-2xl bg-[#25D366] text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#22c35e] active:scale-95"
+            onClick={handleWhatsAppShare}
+          >
+            <MessageCircle className="mr-3" size={24} fill="white" />
+            <span className="text-lg font-black">{t("shareWhatsApp")}</span>
+          </Button>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Button
+            variant="outline"
+            className="h-14 w-full rounded-2xl border-gray-100 bg-white text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
+            onClick={handleNativeShare}
+          >
+            <Share2 className="mr-3" size={24} />
+            <span className="text-lg font-black">{t("title")}</span>
+          </Button>
+        </motion.div>
+
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="pt-1"
+        >
+          <Button
+            variant="ghost"
+            className={cn(
+              "h-10 w-full rounded-xl font-bold transition-all",
+              copiedLink ? "bg-green-50 text-green-600" : "text-gray-400 hover:bg-gray-50"
+            )}
+            onClick={copyToClipboard}
+          >
+            <AnimatePresence mode="wait">
+              {copiedLink ? (
+                <motion.div
+                  key="check"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex items-center gap-2"
+                >
+                  <Check size={18} strokeWidth={3} />
+                  <span>{t("copySuccess")}</span>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="copy"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="flex items-center gap-2"
+                >
+                  <Copy size={18} strokeWidth={2} />
+                  <span>Copier le lien</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Button>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="pt-2"
+      >
+        <Button
+          variant="outline"
+          className="h-14 w-full rounded-[20px] border-none bg-gray-100 font-bold text-gray-500 transition-all hover:bg-gray-200"
+          onClick={onClose}
+        >
+          {t("closeButton")}
+        </Button>
+      </motion.div>
     </div>
   );
 }

@@ -9,7 +9,12 @@
       "es": "Español",
       "pt": "Português",
       "de": "Deutsch",
-      "el": "Ελληνικά"
+      "el": "Ελληνικά",
+      "it": "Italien",
+      "ja": "Japonais",
+      "la": "Latin",
+      "sv": "Suédois",
+      "da": "Danois"
     }
   },
   "Landing": {
@@ -97,20 +102,23 @@
     "backToLogin": "Retour à la connexion",
     "title": "Créer un événement",
     "description": "Organisez votre événement rapidement, sans avoir à créer de compte.",
-    "step1Title": "Votre événement",
-    "step2Title": "Type de menu",
-    "step3Title": "Confirmation",
+    "step1Title": "L'Essentiel",
+    "step2Title": "L'Ambiance",
+    "step3Title": "Finalisation",
     "warningLoss": "Gardez précieusement l'URL de votre événement. Sans compte, si vous perdez ce lien, vous ne pourrez plus le modifier.",
     "warningAccount": "La génération par l'IA et d'autres fonctions avancées nécessitent un compte utilisateur.",
     "eventNameLabel": "Nom de l'événement",
     "eventNamePlaceholder": "Noël en Famille 2024",
     "dateLabel": "Date",
+    "timeLabel": "Heure",
+    "addressLabel": "Lieu / Adresse",
+    "addressPlaceholder": "Ex: Chez Mamie, 123 Rue de la Fête...",
     "adultsLabel": "Adultes",
     "childrenLabel": "Enfants",
     "cancelButton": "Annuler",
     "nextButton": "Suivant",
     "backButton": "Retour",
-    "menuDescription": "Choisissez les catégories de départ",
+    "menuDescription": "Choisissez le type de repas",
     "modeTotalLabel": "La totale",
     "modeTotalDesc": "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre",
     "modeClassicLabel": "Le classique",
@@ -124,16 +132,10 @@
     "summaryGuestsLabel": "Convives",
     "summaryGuests": "{adults} adultes, {children} enfants",
     "summaryMenu": "Menu",
-    "summaryUrl": "URL",
-    "showOptions": "↓ Options avancées",
-    "hideOptions": "↑ Masquer les options",
-    "customUrlLabel": "URL personnalisée",
-    "customUrlPlaceholder": "nom-de-levenement",
-    "adminKeyLabel": "Clé admin (optionnel)",
-    "adminKeyPlaceholder": "mon-code-secret",
-    "descriptionLabel": "Description (optionnel)",
-    "descriptionPlaceholder": "Une petite description...",
-    "createButton": "Créer",
+    "summaryAddress": "Lieu",
+    "descriptionLabel": "Message d'accueil",
+    "descriptionPlaceholder": "Un petit mot pour vos invités...",
+    "createButton": "C'est parti !",
     "creatingButton": "Création..."
   },
   "EventDashboard": {
@@ -300,6 +302,7 @@
       "back": "Retour",
       "optional": "optionnel",
       "delete": "Supprimer",
+      "deleting": "Suppression...",
       "deleteAll": "Tout supprimer",
       "showMore": "Plus d'options",
       "showLess": "Moins d'options"
@@ -361,11 +364,14 @@
       "generationError": "Erreur lors de la génération des ingrédients.",
       "Share": {
         "title": "Partager l'accès",
-        "eventCreated": "Événement créé !",
-        "description": "Utilise ce lien pour que d'autres puissent éditer l'événement.",
+        "eventCreated": "C'est prêt ! ✨",
+        "description": "Votre événement est en ligne. Partagez ce lien magique avec vos co-organisateurs.",
         "adminLinkLabel": "Lien d'administration",
-        "accessKeyLabel": "Clé d'accès seule",
-        "closeButton": "J'ai bien noté, fermer"
+        "accessKeyLabel": "Clé secrète",
+        "closeButton": "C'est parti !",
+        "copySuccess": "Copié !",
+        "shareWhatsApp": "Partager sur WhatsApp",
+        "shareMessage": "Rejoins-moi pour organiser {name} sur Nawel ! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continuer comme invité",
@@ -422,14 +428,16 @@
       "film_quote": "Réplique de film",
       "aphorism": "Aphorisme",
       "language": "Langue",
-      "format": "Format"
+      "format": "Format",
+      "quote_short": "Citation"
     },
     "qualifiers": {
       "popular": "Populaire",
       "micro": "Micro",
       "campaign": "Campagne",
       "act_up": "Act Up",
-      "attributed": "Attribué"
+      "attributed": "Attribué",
+      "character": "Personnage"
     }
   }
 }

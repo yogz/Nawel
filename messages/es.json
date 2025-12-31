@@ -9,7 +9,12 @@
       "es": "Español",
       "pt": "Português",
       "de": "Deutsch",
-      "el": "Ελληνικά"
+      "el": "Ελληνικά",
+      "it": "Italiano",
+      "ja": "Japonés",
+      "la": "Latín",
+      "sv": "Sueco",
+      "da": "Danés"
     }
   },
   "Landing": {
@@ -96,20 +101,23 @@
     "backToLogin": "Volver al inicio de sesión",
     "title": "Crear un evento",
     "description": "Organiza tu evento rápidamente, sin tener que crear una cuenta.",
-    "step1Title": "Tu evento",
-    "step2Title": "Tipo de menú",
-    "step3Title": "Confirmación",
+    "step1Title": "Lo Esencial",
+    "step2Title": "El Ambiente",
+    "step3Title": "Finalización",
     "warningLoss": "Guarda bien la URL de tu evento. Sin cuenta, si pierdes este enlace, no podrás volver a editarlo.",
     "warningAccount": "La generación por IA y otras funciones avanzadas requieren una cuenta de usuario.",
     "eventNameLabel": "Nombre del evento",
     "eventNamePlaceholder": "Navidad en Familia 2024",
     "dateLabel": "Fecha",
+    "timeLabel": "Hora",
+    "addressLabel": "Lugar / Dirección",
+    "addressPlaceholder": "Ej: Casa de la abuela, 123 Calle de la Fiesta...",
     "adultsLabel": "Adultos",
     "childrenLabel": "Niños",
     "cancelButton": "Cancelar",
     "nextButton": "Siguiente",
     "backButton": "Volver",
-    "menuDescription": "Elija las categorías iniciales",
+    "menuDescription": "Elija el tipo de comida",
     "modeTotalLabel": "Completo",
     "modeTotalDesc": "Aperitivo, Entrante, Plato Principal, Queso, Postre, Bebidas, Otros",
     "modeClassicLabel": "Clásico",
@@ -123,16 +131,10 @@
     "summaryGuestsLabel": "Invitados",
     "summaryGuests": "{adults} adultos, {children} niños",
     "summaryMenu": "Menú",
-    "summaryUrl": "URL",
-    "showOptions": "↓ Opciones avanzadas",
-    "hideOptions": "↑ Ocultar opciones",
-    "customUrlLabel": "URL personalizada",
-    "customUrlPlaceholder": "nombre-del-evento",
-    "adminKeyLabel": "Clave admin (opcional)",
-    "adminKeyPlaceholder": "mi-codigo-secreto",
-    "descriptionLabel": "Descripción (opcional)",
-    "descriptionPlaceholder": "Una pequeña descripción...",
-    "createButton": "Crear",
+    "summaryAddress": "Lugar",
+    "descriptionLabel": "Mensaje de bienvenida",
+    "descriptionPlaceholder": "Un pequeño mensaje para tus invitados...",
+    "createButton": "¡Vamos allá!",
     "creatingButton": "Creación..."
   },
   "EventDashboard": {
@@ -293,6 +295,7 @@
       "back": "Volver",
       "optional": "opcional",
       "delete": "Eliminar",
+      "deleting": "Eliminando...",
       "deleteAll": "Eliminar todo",
       "showMore": "Más opciones",
       "showLess": "Menos opciones"
@@ -352,12 +355,15 @@
       "ingredientsGenerated": "¡Ingredientes generados con éxito!",
       "generationError": "Error al generar ingredientes.",
       "Share": {
-        "title": "Compartir acceso",
-        "eventCreated": "¡Evento creado!",
-        "description": "Usa este enlace para que otros puedan editar el evento.",
-        "adminLinkLabel": "Enlace de administración",
-        "accessKeyLabel": "Solo clave de acceso",
-        "closeButton": "Entendido, cerrar"
+        "title": "Compartir Acceso",
+        "eventCreated": "¡Todo listo! ✨",
+        "description": "Tu evento está en línea. Comparte este enlace mágico con tus co-organizadores.",
+        "adminLinkLabel": "Enlace de Administración",
+        "accessKeyLabel": "Clave Secreta",
+        "closeButton": "¡Vamos!",
+        "copySuccess": "¡Copiado!",
+        "shareWhatsApp": "Compartir en WhatsApp",
+        "shareMessage": "¡Únete a mí para organizar {name} en Nawel! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continuar como invitado",
@@ -414,14 +420,16 @@
       "film_quote": "Cita de película",
       "aphorism": "Aforismo",
       "language": "Idioma",
-      "format": "Formato"
+      "format": "Formato",
+      "quote_short": "Cita"
     },
     "qualifiers": {
       "popular": "Popular",
       "micro": "Micro",
       "campaign": "Campaña",
       "act_up": "Act Up",
-      "attributed": "Atribuido"
+      "attributed": "Atribuido",
+      "character": "Personaje"
     }
   }
 }

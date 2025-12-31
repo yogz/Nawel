@@ -8,8 +8,9 @@ import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
 import { EventForm } from "@/features/events/components/event-form";
+import { NewEventCard } from "./events/new-event-card";
 import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 
 type Meal = {
   id: number;
@@ -47,31 +48,35 @@ export function EventList({
   const router = useRouter();
   const { data: session } = useSession();
   const t = useTranslations("Dashboard.EventList");
+  const format = useFormatter();
 
   const [error, setError] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
 
   const handleCreateEvent = async (
-    slug: string,
+    hint: string,
     name: string,
     description?: string,
     creationMode?: "total" | "classique" | "apero" | "zero",
     date?: string,
     key?: string,
     adults?: number,
-    children?: number
+    children?: number,
+    time?: string,
+    address?: string
   ) => {
     setError(null);
     startTransition(async () => {
       try {
         const result = await createEventAction({
-          slug,
+          slug: hint, // Server uses this as base for auto-generated slug
           name,
           description,
-          key: key || writeKey,
           creationMode,
           date,
+          time,
+          address,
           adults: adults ?? 0,
           children: children ?? 0,
         });
@@ -230,7 +235,7 @@ export function EventList({
                         <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-0.5 text-[10px] font-bold text-gray-600">
                           <Calendar size={10} className="text-gray-400" />
                           <span>
-                            {new Date(event.meals[0].date).toLocaleDateString(undefined, {
+                            {format.dateTime(new Date(event.meals[0].date), {
                               day: "numeric",
                               month: "short",
                             })}
@@ -310,57 +315,19 @@ export function EventList({
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-        <h2 className="text-xl font-black">{t("title")}</h2>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {writeEnabled && (
-          <Button
-            variant="premium"
-            className="h-10 pr-6"
-            icon={<Plus size={16} />}
-            onClick={() => setShowCreateForm(true)}
-            shine
-          >
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
-              <span className="hidden sm:inline">{t("newEvent")}</span>
-              <span className="sm:hidden">{t("new")}</span>
-            </span>
-          </Button>
+          <div className="sm:col-span-1 lg:col-span-1">
+            <NewEventCard onClick={() => setShowCreateForm(true)} />
+          </div>
+        )}
+        {events.length > 0 && (
+          <div className="col-span-1 space-y-10 sm:col-span-1 lg:col-span-2">
+            {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />)}
+            {renderSection(t("past"), categorized.past, <History size={16} />)}
+          </div>
         )}
       </div>
-
-      {events.length === 0 ? (
-        <div className="space-y-10 rounded-[32px] border border-black/[0.03] bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/10 text-accent">
-            <Calendar size={40} />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-xl font-black text-text">{t("noEvents")}</h3>
-            <p className="mx-auto max-w-[240px] text-xs font-medium leading-relaxed text-gray-400">
-              {t("noEventsDescription")}
-            </p>
-          </div>
-          {writeEnabled && (
-            <div className="flex justify-center">
-              <Button
-                variant="premium"
-                className="py-7 pr-8 shadow-xl shadow-accent/10"
-                icon={<Plus size={18} />}
-                onClick={() => setShowCreateForm(true)}
-                shine
-              >
-                <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                  {t("createFirst")}
-                </span>
-              </Button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="space-y-10">
-          {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />)}
-          {renderSection(t("past"), categorized.past, <History size={16} />)}
-        </div>
-      )}
 
       {showCreateForm && (
         <EventForm

@@ -9,7 +9,12 @@
       "es": "Español",
       "pt": "Português",
       "de": "Deutsch",
-      "el": "Ελληνικά"
+      "el": "Ελληνικά",
+      "it": "Italian",
+      "ja": "Japanese",
+      "la": "Latin",
+      "sv": "Swedish",
+      "da": "Danish"
     }
   },
   "Landing": {
@@ -97,21 +102,24 @@
     "backToLogin": "Back to login",
     "title": "Create an event",
     "description": "Organize your event quickly, without having to create an account.",
-    "step1Title": "Your event",
-    "step2Title": "Menu type",
-    "step3Title": "Confirmation",
-    "warningLoss": "Keep your event URL carefully. Without an account, if you lose this link, you won't be able to edit it again.",
-    "warningAccount": "AI generation and other advanced functions require a user account.",
-    "eventNameLabel": "Event name",
-    "eventNamePlaceholder": "Family Christmas 2024",
+    "step1Title": "Essentials",
+    "step2Title": "Vibe",
+    "step3Title": "Finalize",
+    "warningLoss": "Save your event URL carefully. Without an account, you will need it to edit your event later.",
+    "warningAccount": "AI generation and other advanced features require a user account.",
+    "eventNameLabel": "Event Name",
+    "eventNamePlaceholder": "Family Dinner 2025",
     "dateLabel": "Date",
+    "timeLabel": "Time",
+    "addressLabel": "Location / Address",
+    "addressPlaceholder": "Ex: Grandma's House, 123 Party St...",
     "adultsLabel": "Adults",
     "childrenLabel": "Children",
     "cancelButton": "Cancel",
     "nextButton": "Next",
     "backButton": "Back",
-    "menuDescription": "Choose starting categories",
-    "modeTotalLabel": "Full",
+    "menuDescription": "Choose the type of meal",
+    "modeTotalLabel": "The Full Deal",
     "modeTotalDesc": "Appetizer, Starter, Main, Cheese, Dessert, Drinks, Other",
     "modeClassicLabel": "Classic",
     "modeClassicDesc": "Starter, Main, Dessert",
@@ -124,16 +132,10 @@
     "summaryGuestsLabel": "Guests",
     "summaryGuests": "{adults} adults, {children} children",
     "summaryMenu": "Menu",
-    "summaryUrl": "URL",
-    "showOptions": "↓ Advanced options",
-    "hideOptions": "↑ Hide options",
-    "customUrlLabel": "Custom URL",
-    "customUrlPlaceholder": "event-name",
-    "adminKeyLabel": "Admin key (optional)",
-    "adminKeyPlaceholder": "my-secret-code",
-    "descriptionLabel": "Description (optional)",
-    "descriptionPlaceholder": "A small description...",
-    "createButton": "Create",
+    "summaryAddress": "Location",
+    "descriptionLabel": "Welcome message",
+    "descriptionPlaceholder": "A small message for your guests...",
+    "createButton": "Let's go!",
     "creatingButton": "Creating..."
   },
   "EventDashboard": {
@@ -300,6 +302,7 @@
       "back": "Back",
       "optional": "optional",
       "delete": "Delete",
+      "deleting": "Deleting...",
       "deleteAll": "Delete all",
       "showMore": "More options",
       "showLess": "Less options"
@@ -360,12 +363,15 @@
       "ingredientsGenerated": "Ingredients generated successfully!",
       "generationError": "Error generating ingredients.",
       "Share": {
-        "title": "Share access",
-        "eventCreated": "Event created!",
-        "description": "Use this link so others can edit the event.",
-        "adminLinkLabel": "Admin link",
-        "accessKeyLabel": "Access key only",
-        "closeButton": "Got it, close"
+        "title": "Share Access",
+        "eventCreated": "You're all set! ✨",
+        "description": "Your event is live. Share this magic link with your co-organizers.",
+        "adminLinkLabel": "Admin Link",
+        "accessKeyLabel": "Secret Key",
+        "closeButton": "Let's go!",
+        "copySuccess": "Copied!",
+        "shareWhatsApp": "Share on WhatsApp",
+        "shareMessage": "Join me in organizing {name} on Nawel! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continue as guest",
@@ -422,14 +428,16 @@
       "film_quote": "Movie quote",
       "aphorism": "Aphorism",
       "language": "Language",
-      "format": "Format"
+      "format": "Format",
+      "quote_short": "Quote"
     },
     "qualifiers": {
       "popular": "Popular",
       "micro": "Micro",
       "campaign": "Campaign",
       "act_up": "Act Up",
-      "attributed": "Attributed"
+      "attributed": "Attributed",
+      "character": "Character"
     }
   }
 }

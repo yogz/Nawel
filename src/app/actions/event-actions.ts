@@ -18,8 +18,8 @@ import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
-  // Find a unique slug automatically
-  let slug = input.slug;
+  // Find a unique slug automatically based on name
+  let slug = sanitizeSlug(input.name, 50);
   const baseSlug = slug;
   let isUnique = false;
   let counter = 1;
@@ -32,8 +32,8 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     if (existing) {
       // Append number to base slug (limit base length to accommodate suffix within DB limits)
       const suffix = `-${counter}`;
-      const maxBaseLength = 100 - suffix.length;
-      slug = sanitizeSlug(baseSlug.slice(0, maxBaseLength) + suffix, 100);
+      const maxBaseLength = 50 - suffix.length;
+      slug = sanitizeSlug(baseSlug.slice(0, maxBaseLength) + suffix, 50);
       counter++;
     } else {
       isUnique = true;
@@ -47,8 +47,8 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     headers: await headers(),
   });
 
-  // Public action, uses provided key or generates new adminKey
-  const adminKey = input.key && input.key.trim() !== "" ? input.key : randomUUID();
+  // Always auto-generate adminKey for privacy/security
+  const adminKey = randomUUID();
   const [created] = await db
     .insert(events)
     .values({
@@ -99,6 +99,8 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         slug: created.slug,
         key: adminKey,
         date: defaultDate,
+        time: input.time,
+        address: input.address,
         title: "Repas complet",
         services: services,
         adults: created.adults,

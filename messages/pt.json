@@ -9,7 +9,12 @@
       "es": "Español",
       "pt": "Português",
       "de": "Deutsch",
-      "el": "Ελληνικά"
+      "el": "Ελληνικά",
+      "it": "Italiano",
+      "ja": "Japonês",
+      "la": "Latim",
+      "sv": "Sueco",
+      "da": "Dinamarquês"
     }
   },
   "Landing": {
@@ -293,6 +298,7 @@
       "back": "Voltar",
       "optional": "opcional",
       "delete": "Eliminar",
+      "deleting": "Eliminando...",
       "deleteAll": "Eliminar tudo",
       "showMore": "Mais opções",
       "showLess": "Menos opções"
@@ -352,12 +358,15 @@
       "ingredientsGenerated": "Ingredientes gerados com sucesso!",
       "generationError": "Erro ao gerar ingredientes.",
       "Share": {
-        "title": "Partilhar acesso",
-        "eventCreated": "Evento criado!",
-        "description": "Utilize este link para que outros possam editar o evento.",
-        "adminLinkLabel": "Link de administração",
-        "accessKeyLabel": "Chave de acesso apenas",
-        "closeButton": "Entendido, fechar"
+        "title": "Partilhar Acesso",
+        "eventCreated": "Tudo pronto! ✨",
+        "description": "O seu evento está online. Partilhe este link mágico com os seus co-organizadores.",
+        "adminLinkLabel": "Link de Administração",
+        "accessKeyLabel": "Chave Secreta",
+        "closeButton": "Vamos a isso!",
+        "copySuccess": "Copiado!",
+        "shareWhatsApp": "Partilhar no WhatsApp",
+        "shareMessage": "Junta-te a mim para organizar {name} no Nawel! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continuar como convidado",
@@ -414,14 +423,16 @@
       "film_quote": "Citação de filme",
       "aphorism": "Aforismo",
       "language": "Idioma",
-      "format": "Formato"
+      "format": "Formato",
+      "quote_short": "Citação"
     },
     "qualifiers": {
       "popular": "Popular",
       "micro": "Micro",
       "campaign": "Campanha",
       "act_up": "Act Up",
-      "attributed": "Atribuído"
+      "attributed": "Atribuído",
+      "character": "Personagem"
     }
   }
 }

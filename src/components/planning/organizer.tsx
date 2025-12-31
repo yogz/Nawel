@@ -187,12 +187,15 @@ export function Organizer({
   useEffect(() => {
     if (searchParams.get("new") === "true") {
       setSheet({ type: "share" });
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
-      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
+          zIndex: 200,
+        });
+      }, 300);
 
       // Clear the "new" parameter from the URL without a full page reload
       const url = new URL(window.location.href);

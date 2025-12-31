@@ -9,7 +9,12 @@
       "es": "Español",
       "pt": "Português",
       "de": "Deutsch",
-      "el": "Ελληνικά"
+      "el": "Ελληνικά",
+      "it": "Italienisch",
+      "ja": "Japanisch",
+      "la": "Latein",
+      "sv": "Schwedisch",
+      "da": "Dänisch"
     }
   },
   "Landing": {
@@ -96,20 +101,23 @@
     "backToLogin": "Zurück zum Login",
     "title": "Event erstellen",
     "description": "Organisieren Sie Ihr Event schnell, ohne ein Konto erstellen zu müssen.",
-    "step1Title": "Ihr Event",
-    "step2Title": "Menütyp",
-    "step3Title": "Bestätigung",
+    "step1Title": "Das Wesentliche",
+    "step2Title": "Die Stimmung",
+    "step3Title": "Abschluss",
     "warningLoss": "Bewahren Sie die URL Ihres Events sorgfältig auf. Ohne Konto können Sie diese nicht mehr ändern, wenn Sie den Link verlieren.",
     "warningAccount": "KI-Generierung und andere erweiterte Funktionen erfordern ein Benutzerkonto.",
     "eventNameLabel": "Name des Events",
     "eventNamePlaceholder": "Familienweihnachten 2024",
     "dateLabel": "Datum",
+    "timeLabel": "Uhrzeit",
+    "addressLabel": "Ort / Adresse",
+    "addressPlaceholder": "Z.B. Bei Oma, 123 Festungsstraße...",
     "adultsLabel": "Erwachsene",
     "childrenLabel": "Kinder",
     "cancelButton": "Abbrechen",
     "nextButton": "Weiter",
     "backButton": "Zurück",
-    "menuDescription": "Wählen Sie Startkategorien",
+    "menuDescription": "Wählen Sie die Art des Essens",
     "modeTotalLabel": "Komplett",
     "modeTotalDesc": "Aperitif, Vorspeise, Hauptgericht, Käse, Dessert, Getränke, Sonstiges",
     "modeClassicLabel": "Klassisch",
@@ -123,16 +131,10 @@
     "summaryGuestsLabel": "Gäste",
     "summaryGuests": "{adults} Erwachsene, {children} Kinder",
     "summaryMenu": "Menü",
-    "summaryUrl": "URL",
-    "showOptions": "↓ Erweiterte Optionen",
-    "hideOptions": "↑ Optionen ausblenden",
-    "customUrlLabel": "Personalisierte URL",
-    "customUrlPlaceholder": "name-des-events",
-    "adminKeyLabel": "Admin-Schlüssel (optional)",
-    "adminKeyPlaceholder": "mein-geheimcode",
-    "descriptionLabel": "Beschreibung (optional)",
-    "descriptionPlaceholder": "Eine kleine Beschreibung...",
-    "createButton": "Erstellen",
+    "summaryAddress": "Ort",
+    "descriptionLabel": "Begrüßungsnachricht",
+    "descriptionPlaceholder": "Ein paar Worte für Ihre Gäste...",
+    "createButton": "Los geht's!",
     "creatingButton": "Erstellung..."
   },
   "EventDashboard": {
@@ -293,6 +295,7 @@
       "back": "Zurück",
       "optional": "optional",
       "delete": "Löschen",
+      "deleting": "Löschen...",
       "deleteAll": "Alles löschen",
       "showMore": "Mehr Optionen",
       "showLess": "Weniger Optionen"
@@ -352,12 +355,15 @@
       "ingredientsGenerated": "Zutaten erfolgreich generiert!",
       "generationError": "Fehler bei der Zutaten-Generierung.",
       "Share": {
-        "title": "Zugriff teilen",
-        "eventCreated": "Event erstellt!",
-        "description": "Verwenden Sie diesen Link, damit andere das Event bearbeiten können.",
+        "title": "Zugriff Teilen",
+        "eventCreated": "Alles bereit! ✨",
+        "description": "Dein Event ist online. Teile diesen magischen Link mit deinen Mit-Organisatoren.",
         "adminLinkLabel": "Admin-Link",
-        "accessKeyLabel": "Nur Zugriffsschlüssel",
-        "closeButton": "Verstanden, schließen"
+        "accessKeyLabel": "Geheimschlüssel",
+        "closeButton": "Los geht's!",
+        "copySuccess": "Kopiert!",
+        "shareWhatsApp": "Auf WhatsApp teilen",
+        "shareMessage": "Mach mit bei der Organisation von {name} auf Nawel! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Als Gast fortfahren",
@@ -414,14 +420,16 @@
       "film_quote": "Filmzitat",
       "aphorism": "Aphorismus",
       "language": "Sprache",
-      "format": "Format"
+      "format": "Format",
+      "quote_short": "Zitat"
     },
     "qualifiers": {
       "popular": "Volkstümlich",
       "micro": "Mikro",
       "campaign": "Kampagne",
       "act_up": "Act Up",
-      "attributed": "Zugeschrieben"
+      "attributed": "Zugeschrieben",
+      "character": "Charakter"
     }
   }
 }
