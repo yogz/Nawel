@@ -1,0 +1,225 @@
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  ChevronDown,
+  Sparkles,
+  Share2,
+  Users,
+  ShoppingBasket,
+  Wand2,
+  CheckCircle2,
+} from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import Image from "next/image";
+import { useRef } from "react";
+import { LanguageSwitcher } from "./language-switcher";
+
+export function LandingAlt() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
+
+  const features = [
+    {
+      title: "L'Assistant Culinaire (IA)",
+      description:
+        "Dites juste 'Lasagnes pour 12', Nawel génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
+      icon: <Wand2 className="h-6 w-6" />,
+      image: "/alt_ai_chef.png",
+      tag: "Nouveau",
+    },
+    {
+      title: "Liste de Courses Magique",
+      description:
+        "L'application additionne tout pour vous. 3 invités amènent de la farine ? Nawel calcule le total. La liste est triée et prête à être cochée en magasin.",
+      icon: <ShoppingBasket className="h-6 w-6" />,
+      image: "/alt_shopping.png",
+    },
+    {
+      title: "Zéro Friction pour les invités",
+      description:
+        "Vos amis n'ont rien à installer. Pas de compte à créer. Ils reçoivent un lien, cliquent sur 'C'est moi !' à côté d'un plat, et c'est fini. Simple comme bonjour.",
+      icon: <CheckCircle2 className="h-6 w-6" />,
+      image: "/alt_guests.png",
+    },
+    {
+      title: "Design Immersif & Thèmes",
+      description:
+        "Parce qu'on mange aussi avec les yeux, votre invitation doit être belle. Choisissez parmi nos thèmes (Aurora, Noël...) pour donner le ton de la soirée.",
+      icon: <Sparkles className="h-6 w-6" />,
+      image: "/aura-menu.png",
+    },
+  ];
+
+  return (
+    <div ref={containerRef} className="relative bg-white font-sans text-gray-900">
+      {/* Hero Section */}
+      <motion.section
+        style={{ opacity: heroOpacity, scale: heroScale }}
+        className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
+      >
+        <div className="absolute right-6 top-6 z-50">
+          <LanguageSwitcher />
+        </div>
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/alt_hero.png"
+            alt="Hero Aura"
+            fill
+            className="object-cover opacity-60"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-white/60 to-white" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl"
+        >
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-1.5 text-sm font-medium text-indigo-600">
+            <Sparkles className="h-4 w-4" />
+            L'organisation de repas, enfin relaxante.
+          </span>
+          <h1 className="mb-6 text-5xl font-bold tracking-tight text-gray-900 sm:mb-8 sm:text-7xl">
+            Fini le Chaos des <br />
+            <span className="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              Dîners Participatifs
+            </span>
+          </h1>
+          <p className="mx-auto mb-10 max-w-2xl px-4 text-xl leading-relaxed text-gray-600 sm:mb-12 sm:text-2xl">
+            Rassemblez vos amis. Laissez l'IA gérer le menu. <br className="hidden sm:block" />
+            Profitez du moment sans la charge mentale.
+          </p>
+
+          <div className="flex flex-col items-center justify-center gap-4 px-6 sm:flex-row sm:gap-6">
+            <Link
+              href="/login?mode=user"
+              className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto"
+            >
+              Lancer mon Invitation
+              <Wand2 className="h-5 w-5 transition-transform group-hover:rotate-12" />
+            </Link>
+            <Link
+              href="#discover"
+              className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white/80 px-8 py-4 text-lg font-bold text-gray-900 backdrop-blur-sm transition-all hover:border-gray-300 hover:bg-white sm:w-auto"
+            >
+              Voir la Démo
+            </Link>
+          </div>
+        </motion.div>
+
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-10"
+        >
+          <ChevronDown className="h-6 w-6 text-gray-400" />
+        </motion.div>
+      </motion.section>
+
+      {/* Features Section - Alternating Layout */}
+      <section id="discover" className="relative z-10 bg-white py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-24 sm:gap-40">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                className={`flex flex-col items-center gap-12 lg:gap-24 ${index % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+              >
+                <div className="flex-1 space-y-6 text-center lg:text-left">
+                  <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm ring-1 ring-indigo-100">
+                    {feature.icon}
+                  </div>
+                  <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                    {feature.title}
+                    {feature.tag && (
+                      <span className="ml-4 inline-flex items-center rounded-full bg-purple-100 px-3 py-1 align-middle text-sm font-medium text-purple-800">
+                        {feature.tag}
+                      </span>
+                    )}
+                  </h2>
+                  <p className="mx-auto max-w-lg text-lg leading-relaxed text-gray-600 sm:text-xl lg:mx-0">
+                    {feature.description}
+                  </p>
+                </div>
+
+                <div className="relative aspect-[4/3] w-full flex-1 transform overflow-hidden rounded-3xl bg-gray-100 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5 transition-transform duration-700 hover:scale-[1.02]">
+                  <Image
+                    src={feature.image}
+                    alt={feature.title}
+                    fill
+                    className="object-cover object-top"
+                  />
+                  <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/5" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social Cloud / Trust Section (Optional Addition) */}
+      <section className="relative z-10 border-y border-gray-100 bg-gray-50 py-20">
+        <div className="mx-auto max-w-7xl px-6 text-center">
+          <h3 className="mb-12 text-2xl font-semibold text-gray-900">
+            Ils organisent leurs événements avec Nawel
+          </h3>
+          {/* Mockup logos or text */}
+          <div className="flex-wrapjustify-center flex gap-8 opacity-50 grayscale">
+            {/* Add meaningful social proof or leave as clean space */}
+          </div>
+          <p className="italic text-gray-500">
+            "Enfin une app qui ne ressemble pas à un tableau Excel." — Julie, utilisatrice
+          </p>
+        </div>
+      </section>
+
+      {/* Call to Action Footer */}
+      <section className="relative z-10 overflow-hidden bg-white px-6 py-24 text-center sm:py-32">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white opacity-70"></div>
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:mb-8 sm:text-6xl">
+            Prêt à structurer le chaos ?
+          </h2>
+          <p className="mx-auto mb-10 max-w-2xl text-xl text-gray-600 sm:mb-12">
+            Rejoignez ceux qui ont décidé de profiter de leurs soirées plutôt que de les organiser.
+          </p>
+          <Link
+            href="/login?mode=user"
+            className="inline-flex w-full items-center justify-center rounded-full bg-gray-900 px-10 py-5 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-2xl sm:w-auto"
+          >
+            Créer mon premier événement
+          </Link>
+          <p className="mt-6 text-sm text-gray-500">Gratuit pour toujours • Pas de carte requise</p>
+        </div>
+      </section>
+
+      <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
+        <div className="mb-8 flex justify-center gap-6">
+          <a href="#" className="hover:text-gray-900">
+            Instagram
+          </a>
+          <a href="#" className="hover:text-gray-900">
+            Twitter
+          </a>
+          <a href="#" className="hover:text-gray-900">
+            Contact
+          </a>
+        </div>
+        <p>&copy; {new Date().getFullYear()} Nawel. Fait avec ❤️ pour les bons vivants.</p>
+      </footer>
+    </div>
+  );
+}
