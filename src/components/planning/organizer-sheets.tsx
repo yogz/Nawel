@@ -85,6 +85,7 @@ export function OrganizerSheets({
     handleCreateMealWithServices,
     handleUpdatePerson,
     handleDeletePerson,
+    handleUnclaimPerson,
     // Ingredient handlers
     handleGenerateIngredients,
     handleToggleIngredient,
@@ -343,6 +344,7 @@ export function OrganizerSheets({
             handleUpdatePerson(sheet.person.id, name, emoji, image)
           }
           onDelete={() => handleDeletePerson(sheet.person.id)}
+          currentUserId={currentUserId}
         />
       )}
 

@@ -1,6 +1,7 @@
 import { getMyEventsAction } from "@/app/actions";
 import { UserNav } from "@/components/auth/user-nav";
 import { EventList } from "@/components/event-list";
+import { DashboardHeader } from "@/components/dashboard-header";
 import { Landing } from "@/components/landing";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
@@ -34,11 +35,7 @@ export default async function Home(props: {
       <div className="mb-4 flex justify-end">
         <UserNav />
       </div>
-      <div className="mb-8 pt-8 text-center">
-        <p className="text-sm uppercase tracking-[0.2em] text-gray-500">{t("badge")}</p>
-        <h1 className="mt-2 text-3xl font-bold">{t("title")}</h1>
-        <p className="mt-2 text-gray-600">{t("description")}</p>
-      </div>
+      <DashboardHeader />
 
       <EventList events={events} writeEnabled writeKey={key} />
     </main>

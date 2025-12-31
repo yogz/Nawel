@@ -5,6 +5,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
@@ -79,6 +80,7 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

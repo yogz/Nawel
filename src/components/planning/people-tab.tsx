@@ -15,10 +15,10 @@ interface PeopleTabProps {
   selectedPerson: number | null;
   setSelectedPerson: (id: number | null) => void;
   setSheet: (sheet: Sheet) => void;
+  onClaim?: (personId: number) => void;
+  onUnclaim?: (personId: number) => void; // Keeping prop for now to avoid breaking too many things, but will remove usage
   readOnly?: boolean;
   currentUserId?: string;
-  onClaim?: (personId: number) => void;
-  onUnclaim?: (personId: number) => void;
 }
 
 interface PersonItem {
@@ -183,17 +183,6 @@ export function PeopleTab({
                             <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/30">
                               {t("itsYou")}
                             </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (confirm(t("confirmUnlink"))) {
-                                  onUnclaim?.(person.id);
-                                }
-                              }}
-                              className="text-[10px] font-bold text-gray-400 underline underline-offset-2 hover:text-red-500"
-                            >
-                              {t("unlink")}
-                            </button>
                           </div>
                         ) : (
                           currentUserId &&

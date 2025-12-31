@@ -18,12 +18,14 @@ export function PersonEditForm({
   onSubmit,
   onDelete,
   readOnly,
+  currentUserId,
 }: {
   person: Person;
   allPeople: Person[];
   onSubmit: (name: string, emoji: string | null, image: string | null) => void;
   onDelete: () => void;
   readOnly?: boolean;
+  currentUserId?: string;
 }) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.PersonForm");
