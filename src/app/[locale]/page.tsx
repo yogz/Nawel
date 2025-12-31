@@ -2,7 +2,7 @@ import { getMyEventsAction } from "@/app/actions";
 import { UserNav } from "@/components/auth/user-nav";
 import { EventList } from "@/components/event-list";
 import { DashboardHeader } from "@/components/dashboard-header";
-import { Landing } from "@/components/landing";
+import { LandingRouter } from "@/components/landing-router";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -22,7 +22,7 @@ export default async function Home(props: {
   });
 
   if (!session) {
-    return <Landing />;
+    return <LandingRouter />;
   }
 
   const t = await getTranslations("Dashboard");

@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { LanguageSwitcher } from "./language-switcher";
 import { useTranslations } from "next-intl";
+import { trackLandingCTA } from "@/lib/track-landing";
 
 export function LandingAlt() {
   const t = useTranslations("LandingAlt");
@@ -99,6 +100,7 @@ export function LandingAlt() {
           <div className="flex flex-col items-center justify-center gap-4 px-6 sm:flex-row sm:gap-6">
             <Link
               href="/login?mode=user"
+              onClick={trackLandingCTA}
               className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto"
             >
               {t("ctaStart")}
@@ -191,6 +193,7 @@ export function LandingAlt() {
           </p>
           <Link
             href="/login?mode=user"
+            onClick={trackLandingCTA}
             className="inline-flex w-full items-center justify-center rounded-full bg-gray-900 px-10 py-5 text-xl font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-2xl sm:w-auto"
           >
             {t("ctaFooterButton")}
