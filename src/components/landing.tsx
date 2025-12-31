@@ -22,16 +22,16 @@ export function Landing() {
 
   const features = [
     {
-      title: t("feature1Title"),
-      description: t("feature1Description"),
-      icon: <Calendar className="h-6 w-6" />,
-      image: "/aura-menu.png",
-    },
-    {
       title: t("feature2Title"),
       description: t("feature2Description"),
       icon: <Users className="h-6 w-6" />,
       image: "/aura-collaboration.png",
+    },
+    {
+      title: t("feature4Title"),
+      description: t("feature4Description"),
+      icon: <Share2 className="h-6 w-6" />,
+      image: "/aura-checklist.png",
     },
     {
       title: t("feature3Title"),
@@ -40,10 +40,10 @@ export function Landing() {
       image: "/aura-ai.png",
     },
     {
-      title: t("feature4Title"),
-      description: t("feature4Description"),
-      icon: <Share2 className="h-6 w-6" />,
-      image: "/aura-checklist.png",
+      title: t("feature1Title"),
+      description: t("feature1Description"),
+      icon: <Calendar className="h-6 w-6" />,
+      image: "/aura-menu.png",
     },
   ];
 

@@ -30,11 +30,10 @@ export function LandingAlt() {
 
   const features = [
     {
-      title: t("feature1Title"),
-      description: t("feature1Description"),
-      icon: <Wand2 className="h-6 w-6" />,
-      image: "/alt_ai_chef.png",
-      tag: t("feature1Tag"),
+      title: t("feature3Title"),
+      description: t("feature3Description"),
+      icon: <CheckCircle2 className="h-6 w-6" />,
+      image: "/alt_guests.png",
     },
     {
       title: t("feature2Title"),
@@ -43,10 +42,11 @@ export function LandingAlt() {
       image: "/alt_shopping.png",
     },
     {
-      title: t("feature3Title"),
-      description: t("feature3Description"),
-      icon: <CheckCircle2 className="h-6 w-6" />,
-      image: "/alt_guests.png",
+      title: t("feature1Title"),
+      description: t("feature1Description"),
+      icon: <Wand2 className="h-6 w-6" />,
+      image: "/alt_ai_chef.png",
+      tag: t("feature1Tag"),
     },
     {
       title: t("feature4Title"),
