@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createEventAction, updateEventWithMealAction, deleteEventAction } from "@/app/actions";
-import { Calendar, Plus, Clock, History, Pencil, Trash2 } from "lucide-react";
+import { Calendar, Plus, Clock, History, Pencil, Trash2, Users, ArrowRight } from "lucide-react";
 import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
@@ -184,27 +184,66 @@ export function EventList({
             const cardContent = (
               <Link
                 href={url}
-                className="group relative block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all hover:border-accent/30 hover:shadow-md active:scale-[0.98]"
+                className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-accent">
-                      {event.name}
-                    </h3>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                      <Calendar size={14} />
-                      <span>/{event.slug}</span>
+                {/* Decorative background gradient */}
+                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+
+                <div className="relative flex flex-col p-5">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-black tracking-tight text-gray-900 transition-colors group-hover:text-accent">
+                        {event.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <span className="h-1 w-1 rounded-full bg-gray-300" />/{event.slug}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      {isOwner && (
+                        <span className="inline-flex items-center rounded-full bg-accent/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-accent ring-1 ring-accent/20">
+                          {t("myEvent")}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {isOwner && (
-                    <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/20">
-                      {t("myEvent")}
-                    </span>
+
+                  {event.description && (
+                    <p className="mt-4 line-clamp-1 text-xs font-medium leading-relaxed text-gray-500">
+                      {event.description}
+                    </p>
                   )}
+
+                  <div className="mt-6 flex items-center justify-between border-t border-gray-50 pt-4">
+                    <div className="flex items-center gap-4">
+                      {/* Date details if available */}
+                      {event.meals && event.meals.length > 0 && (
+                        <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-1 text-[11px] font-bold text-gray-600">
+                          <Calendar size={12} className="text-gray-400" />
+                          <span>
+                            {new Date(event.meals[0].date).toLocaleDateString(undefined, {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Guests count */}
+                      <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2 py-1 text-[11px] font-bold text-gray-600">
+                        <Users size={12} className="text-gray-400" />
+                        <span>{event.adults + event.children}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all group-hover:bg-accent group-hover:text-white">
+                      <ArrowRight size={14} />
+                    </div>
+                  </div>
                 </div>
-                {event.description && (
-                  <p className="mt-3 line-clamp-2 text-sm text-gray-600">{event.description}</p>
-                )}
               </Link>
             );
 
