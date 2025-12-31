@@ -37,7 +37,7 @@ export function ClaimPersonSheet({
 
   return (
     <BottomSheet open={open} onClose={onClose} title={t("title")}>
-      <div className="space-y-6 py-6 transition-all duration-300">
+      <div className="space-y-3 py-3 transition-all duration-300">
         <div className="space-y-2 px-4 text-center">
           <p className="text-gray-600">{t("description")}</p>
         </div>
@@ -52,13 +52,13 @@ export function ClaimPersonSheet({
                   onClick={() => setSelectedId(p.id)}
                   disabled={isPending}
                   className={cn(
-                    "relative flex w-full items-center gap-4 rounded-2xl border p-4 transition-all active:scale-95 disabled:opacity-50",
+                    "relative flex w-full items-center gap-3 rounded-2xl border p-3 transition-all active:scale-95 disabled:opacity-50",
                     isSelected
                       ? "border-accent/50 bg-accent/5 ring-1 ring-accent/20"
                       : "border-gray-100 bg-white hover:border-accent/30 hover:bg-accent/5"
                   )}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-50 text-2xl shadow-sm">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-50 text-xl shadow-sm">
                     {(() => {
                       const avatar = renderAvatar(
                         p,
@@ -88,7 +88,7 @@ export function ClaimPersonSheet({
           <div className="pt-2">
             <Button
               variant="premium"
-              className="w-full py-7 pr-8 shadow-md"
+              className="w-full py-6 pr-8 shadow-md"
               disabled={selectedId === null || isPending}
               onClick={handleConfirm}
               icon={isPending ? <Loader2 className="animate-spin" /> : <Check />}
@@ -111,10 +111,10 @@ export function ClaimPersonSheet({
           <button
             onClick={onJoinNew}
             disabled={isPending}
-            className="flex w-full items-center gap-4 rounded-2xl bg-zinc-900 p-4 text-white shadow-lg shadow-zinc-900/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+            className="flex w-full items-center gap-3 rounded-2xl bg-zinc-900 p-3 text-white shadow-lg shadow-zinc-900/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-              <Plus className="h-6 w-6" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+              <Plus className="h-5 w-5" />
             </div>
             <div className="text-left">
               <div className="text-base font-bold">{t("newProfileButton")}</div>

@@ -4,9 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { CalendarIcon, Clock, MapPin, Check, X } from "lucide-react";
+import { MapPin, Check, X, Calendar, Clock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { cn } from "@/lib/utils";
@@ -129,6 +126,14 @@ export function EditEventSheet({
     });
   };
 
+  const format = (date: Date, fmt: string) => {
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    if (fmt === "yyyy-MM-dd") {
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+    return date.toLocaleDateString();
+  };
+
   const hasMeal = !!initialData.mealId;
 
   return (
@@ -161,36 +166,16 @@ export function EditEventSheet({
               >
                 {tMeal("dateLabel")}
               </Label>
-              <Popover modal={true}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "h-12 w-full justify-start rounded-2xl border-gray-100 bg-gray-50/50 text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? (
-                      format(date, "dd/MM/yy", { locale: dateLocale })
-                    ) : (
-                      <span className="text-gray-400">{tMeal("datePlaceholder")}</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="z-[100] w-auto overflow-hidden rounded-2xl p-0 shadow-xl"
-                  align="start"
-                >
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    locale={dateLocale}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="relative">
+                <Input
+                  id="date"
+                  type="date"
+                  value={date ? format(date, "yyyy-MM-dd") : ""}
+                  onChange={(e) => setDate(e.target.value ? new Date(e.target.value) : undefined)}
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                />
+                <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
             </div>
             <div className="space-y-2">
               <Label
@@ -205,7 +190,7 @@ export function EditEventSheet({
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                 />
                 <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
@@ -223,10 +208,10 @@ export function EditEventSheet({
               {tCommon("adultsLabel")}
             </Label>
             <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-              <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+              <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
                 <SelectValue placeholder={tCommon("adultsLabel")} />
               </SelectTrigger>
-              <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+              <SelectContent className="z-[110] max-h-[300px] rounded-xl">
                 {Array.from({ length: 51 }, (_, i) => (
                   <SelectItem key={i} value={String(i)} className="rounded-xl">
                     {i} {tCommon("adultsCount", { count: i })}
@@ -243,10 +228,10 @@ export function EditEventSheet({
               {tCommon("childrenLabel")}
             </Label>
             <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-              <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+              <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
                 <SelectValue placeholder={tCommon("childrenLabel")} />
               </SelectTrigger>
-              <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+              <SelectContent className="z-[110] max-h-[300px] rounded-xl">
                 {Array.from({ length: 51 }, (_, i) => (
                   <SelectItem key={i} value={String(i)} className="rounded-xl">
                     {i} {tCommon("childrenCount", { count: i })}
@@ -272,7 +257,7 @@ export function EditEventSheet({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={tMeal("addressPlaceholder")}
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
               />
               <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             </div>
@@ -292,8 +277,8 @@ export function EditEventSheet({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t("descriptionPlaceholder")}
-            className="min-h-[80px] resize-none rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-            rows={3}
+            className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+            rows={2}
           />
         </div>
 

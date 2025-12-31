@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -144,7 +145,7 @@ export function EventForm({
   const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
 
   const content = (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       {/* Progress indicator */}
       {!initialData && (
         <div className="flex gap-2">
@@ -171,14 +172,14 @@ export function EventForm({
 
       {/* Step 1: L'Essentiel */}
       {step === 1 && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
               {t("eventNameLabel")}
             </Label>
             <div className="group relative">
               <Input
-                className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200"
+                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("eventNamePlaceholder")}
@@ -195,7 +196,7 @@ export function EventForm({
               <div className="relative">
                 <Input
                   type="date"
-                  className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                 />
@@ -212,7 +213,7 @@ export function EventForm({
               <div className="relative">
                 <Input
                   type="time"
-                  className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                 />
@@ -230,7 +231,7 @@ export function EventForm({
                 {tShared("adultsLabel")}
               </Label>
               <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                <SelectTrigger className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
                   <div className="flex items-center gap-2">
                     <Users size={18} className="text-gray-400" />
                     <SelectValue />
@@ -250,7 +251,7 @@ export function EventForm({
                 {tShared("childrenLabel")}
               </Label>
               <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-                <SelectTrigger className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
                   <div className="flex items-center gap-2">
                     <Users size={18} className="text-gray-400" />
                     <SelectValue />
@@ -271,14 +272,14 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={onClose}
-              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500 hover:bg-gray-50"
+              className="h-12 flex-1 rounded-xl border-gray-100 font-bold text-gray-500 hover:bg-gray-50"
             >
               {t("cancelButton")}
             </Button>
             <Button
               onClick={initialData ? handleSubmit : goNext}
               disabled={!canGoNext() || isPending}
-              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90"
+              className="h-12 flex-[2] rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90"
             >
               {isPending ? (
                 <Loader2 size={18} className="animate-spin" />
@@ -294,7 +295,7 @@ export function EventForm({
 
       {/* Step 2: L'Ambiance */}
       {step === 2 && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="space-y-2 pb-2 text-center">
             <h4 className="text-sm font-bold text-gray-900">{t("menuDescription")}</h4>
           </div>
@@ -306,7 +307,7 @@ export function EventForm({
                 type="button"
                 onClick={() => setCreationMode(mode.id)}
                 className={cn(
-                  "group flex items-center gap-4 rounded-[24px] border-2 p-4 text-left transition-all duration-300",
+                  "group flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all duration-300",
                   creationMode === mode.id
                     ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
                     : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
@@ -351,7 +352,7 @@ export function EventForm({
             </Label>
             <div className="relative">
               <Input
-                className="h-14 rounded-[20px] border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={t("addressPlaceholder")}
@@ -367,13 +368,13 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={goBack}
-              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500"
+              className="h-12 flex-1 rounded-xl border-gray-100 font-bold text-gray-500"
             >
               {t("backButton")}
             </Button>
             <Button
               onClick={goNext}
-              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20"
+              className="h-12 flex-[2] rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20"
             >
               {t("nextButton")}
             </Button>
@@ -383,7 +384,7 @@ export function EventForm({
 
       {/* Step 3: Finalisation */}
       {step === 3 && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="space-y-3 rounded-[32px] border border-gray-100 bg-gray-50/50 p-5">
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2 text-gray-400">
@@ -444,8 +445,8 @@ export function EventForm({
               {t("descriptionLabel")}
             </Label>
             <div className="relative">
-              <textarea
-                className="min-h-[100px] w-full resize-none rounded-[24px] border border-gray-100 bg-gray-50/50 p-4 pl-10 text-sm outline-none transition-all focus:border-accent focus:bg-white"
+              <Textarea
+                className="min-h-[80px] w-full resize-none rounded-2xl border border-gray-100 bg-gray-50/50 p-4 pl-10 text-base outline-none transition-all focus:border-accent focus:bg-white"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("descriptionPlaceholder")}
@@ -466,14 +467,14 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={goBack}
-              className="h-14 flex-1 rounded-[20px] border-gray-100 font-bold text-gray-500"
+              className="h-12 flex-1 rounded-xl border-gray-100 font-bold text-gray-500"
             >
               {t("backButton")}
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={isPending || !name.trim()}
-              className="h-14 flex-[2] rounded-[20px] bg-accent font-bold text-white shadow-lg shadow-accent/20"
+              className="h-12 flex-[2] rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20"
             >
               {isPending ? <Loader2 size={18} className="animate-spin" /> : t("createButton")}
             </Button>

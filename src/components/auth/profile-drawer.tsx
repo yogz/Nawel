@@ -131,11 +131,11 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       title={showDeleteConfirm ? tProfile("deleteAccount") : tProfile("settings")}
     >
       {!showDeleteConfirm ? (
-        <div className="space-y-6 px-1 pb-12">
-          <div className="space-y-6">
+        <div className="space-y-4 px-1 pb-8">
+          <div className="space-y-4">
             {/* Avatar Display (Read Only) */}
             <div className="flex flex-col items-center gap-2">
-              <div className="relative h-24 w-24">
+              <div className="relative h-20 w-20">
                 <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
                   {(() => {
                     const avatar = renderAvatar(
@@ -153,14 +153,14 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                         <Image
                           src={avatar.src}
                           alt={name}
-                          width={96}
-                          height={96}
+                          width={80}
+                          height={80}
                           className="h-full w-full object-cover"
                         />
                       );
                     }
                     return (
-                      <div className="flex h-full w-full items-center justify-center bg-accent/10 text-5xl">
+                      <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
                         {avatar.value}
                       </div>
                     );
@@ -254,7 +254,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
                     Votre Emoji
                   </Label>
-                  <div className="no-scrollbar grid max-h-40 grid-cols-6 gap-2 overflow-y-auto rounded-2xl border border-gray-100/50 bg-gray-50/50 p-2">
+                  <div className="no-scrollbar grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-2xl border border-gray-100/50 bg-gray-50/50 p-2">
                     <button
                       onClick={() => {
                         setSelectedEmoji(null);
@@ -327,16 +327,16 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                         type="button"
                         onClick={() => setTheme(t.id)}
                         className={clsx(
-                          "flex items-center justify-between rounded-2xl border-2 p-3.5 transition-all active:scale-[0.98]",
+                          "flex items-center justify-between rounded-xl border-2 p-2.5 transition-all active:scale-[0.98]",
                           isSelected
                             ? "border-accent bg-accent/5 ring-1 ring-accent/20"
                             : "border-gray-50 bg-white hover:border-gray-200"
                         )}
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           <div
                             className={clsx(
-                              "flex h-11 w-11 items-center justify-center rounded-xl text-2xl transition-all duration-300",
+                              "flex h-9 w-9 items-center justify-center rounded-xl text-xl transition-all duration-300",
                               isSelected
                                 ? "bg-accent text-white shadow-lg shadow-accent/20"
                                 : "bg-gray-100"
@@ -415,7 +415,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                           );
                         }}
                         className={clsx(
-                          "flex items-center justify-between rounded-xl border-2 p-3 transition-all active:scale-[0.98]",
+                          "flex items-center justify-between rounded-xl border-2 p-2 transition-all active:scale-[0.98]",
                           isSelected
                             ? "border-accent bg-accent/5 ring-1 ring-accent/20"
                             : "border-gray-50 bg-white hover:border-gray-200"

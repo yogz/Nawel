@@ -71,21 +71,21 @@ export function BottomSheet({
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
             {/* Handle bar for mobile feel */}
-            <div className="mx-auto mb-2 h-1.5 w-12 shrink-0 rounded-full bg-black/10 transition-colors hover:bg-black/20" />
+            <div className="mx-auto mb-1.5 h-1 w-10 shrink-0 rounded-full bg-black/10 transition-colors hover:bg-black/20" />
 
-            <div className="mb-2 flex flex-shrink-0 items-center justify-between sm:mb-4">
+            <div className="mb-1.5 flex flex-shrink-0 items-center justify-between sm:mb-3">
               <h3
                 id="sheet-title"
-                className="text-base font-black tracking-tight text-text sm:text-lg"
+                className="text-sm font-bold tracking-tight text-text sm:text-base"
               >
                 {title}
               </h3>
               <button
                 onClick={onClose}
-                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 sm:p-2"
+                className="rounded-full bg-gray-50 p-1 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 sm:p-1.5"
                 aria-label="Close"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
             <div className="scrollbar-none -mx-4 flex-1 overflow-y-auto px-4 sm:-mx-6 sm:px-6">
