@@ -58,7 +58,9 @@ export function ShoppingPage({
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
-          if (item.personId !== person.id) return;
+          if (item.personId !== person.id) {
+            return;
+          }
 
           if (item.ingredients && item.ingredients.length > 0) {
             item.ingredients.forEach((ing) => {
@@ -95,14 +97,19 @@ export function ShoppingPage({
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };
 
   const handleToggle = (aggregatedItem: AggregatedShoppingItem) => {
-    if (!writeEnabled) return;
+    if (!writeEnabled) {
+      return;
+    }
 
     startTransition(async () => {
       const newChecked = !aggregatedItem.checked;
@@ -116,7 +123,9 @@ export function ShoppingPage({
             ...service,
             items: service.items.map((item) => {
               const matchingSource = aggregatedItem.sources.find((s) => s.item.id === item.id);
-              if (!matchingSource) return item;
+              if (!matchingSource) {
+                return item;
+              }
 
               if (matchingSource.type === "item") {
                 return { ...item, checked: newChecked };

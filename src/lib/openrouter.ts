@@ -318,9 +318,12 @@ export async function testModelWithPrompt(
         code?: string;
         metadata?: { provider_name?: string };
       };
-      if (err.statusCode) errorMessage = `[${err.statusCode}] ${errorMessage}`;
-      if (err.metadata?.provider_name)
+      if (err.statusCode) {
+        errorMessage = `[${err.statusCode}] ${errorMessage}`;
+      }
+      if (err.metadata?.provider_name) {
         errorMessage = `${err.metadata.provider_name}: ${errorMessage}`;
+      }
     }
 
     return {

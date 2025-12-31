@@ -43,7 +43,9 @@ export function BottomSheet({
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return createPortal(
     <AnimatePresence>

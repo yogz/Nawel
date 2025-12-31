@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { events, user } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 /**
  * Updates the current user's profile information.
@@ -64,6 +65,19 @@ export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) 
   }
 
   try {
+    // Track account deletion - churn indicator for retention analysis (before deletion)
+    const posthog = getPostHogClient();
+    if (posthog) {
+      posthog.capture({
+        distinctId: session.user.id,
+        event: "user_deleted_account",
+        properties: {
+          user_email: session.user.email,
+          user_name: session.user.name,
+        },
+      });
+    }
+
     // 1. Delete all events owned by this user
     await db.delete(events).where(eq(events.ownerId, session.user.id));
 

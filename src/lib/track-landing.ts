@@ -9,7 +9,9 @@ import posthog from "posthog-js";
  * Track un clic sur le CTA d'une landing page
  */
 export function trackLandingCTA() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   const variant = localStorage.getItem("landing_variant");
 
@@ -27,7 +29,9 @@ export function trackLandingCTA() {
  * Track une conversion (inscription réussie)
  */
 export function trackLandingConversion() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   const variant = localStorage.getItem("landing_variant");
 

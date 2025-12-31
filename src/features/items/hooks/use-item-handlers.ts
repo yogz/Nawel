@@ -68,6 +68,15 @@ export function useItemHandlers({
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
         setSheet(null);
         setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
+        // Track item creation - engagement metric for event planning
+        posthog.capture("item_created", {
+          item_name: itemData.name,
+          has_quantity: !!itemData.quantity,
+          has_note: !!itemData.note,
+          has_price: !!itemData.price,
+          is_assigned: !!itemData.personId,
+          service_id: itemData.serviceId,
+        });
       } catch (error) {
         console.error("Failed to create item:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
@@ -236,10 +245,14 @@ export function useItemHandlers({
   };
 
   const handleToggleItemChecked = (itemId: number, checked: boolean) => {
-    if (readOnly) return;
+    if (readOnly) {
+      return;
+    }
 
     const found = findItem(itemId);
-    if (!found) return;
+    if (!found) {
+      return;
+    }
 
     // Optimistic update
     setServiceItems(found.service.id, (items) =>

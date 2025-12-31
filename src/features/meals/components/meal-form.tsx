@@ -209,7 +209,9 @@ export function MealForm({
           time: currTime,
           address: currAddress,
         } = stateRef.current;
-        if (!currDate) return;
+        if (!currDate) {
+          return;
+        }
 
         const formattedDate = format(currDate, "yyyy-MM-dd");
         const hasChanged =
@@ -236,7 +238,9 @@ export function MealForm({
   }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
 
   const handleSubmit = () => {
-    if (!date || isPending) return;
+    if (!date || isPending) {
+      return;
+    }
     const formattedDate = format(date, "yyyy-MM-dd");
 
     startTransition(() => {
@@ -264,7 +268,9 @@ export function MealForm({
   };
 
   const canGoNext = () => {
-    if (step === 1) return !!date;
+    if (step === 1) {
+      return !!date;
+    }
     return true;
   };
 
@@ -293,7 +299,7 @@ export function MealForm({
             >
               {t("dateLabel")}
             </Label>
-            <Popover modal={true}>
+            <Popover modal>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}

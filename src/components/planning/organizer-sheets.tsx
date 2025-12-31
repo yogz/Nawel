@@ -96,7 +96,9 @@ export function OrganizerSheets({
 
   // Memoized computed values to avoid recalculating on every render
   const defaultItem = useMemo(() => {
-    if (sheet?.type !== "item" || !sheet.item) return undefined;
+    if (sheet?.type !== "item" || !sheet.item) {
+      return undefined;
+    }
     const found = findItem(sheet.item.id);
     return found?.item || sheet.item;
   }, [sheet, findItem]);
@@ -108,21 +110,29 @@ export function OrganizerSheets({
   }, [plan.meals]);
 
   const currentServiceId = useMemo(() => {
-    if (sheet?.type !== "item") return undefined;
+    if (sheet?.type !== "item") {
+      return undefined;
+    }
     return sheet.serviceId || sheet.item?.serviceId;
   }, [sheet]);
 
   const servicePeopleCount = useMemo(() => {
-    if (!currentServiceId) return undefined;
+    if (!currentServiceId) {
+      return undefined;
+    }
     for (const meal of plan.meals) {
       const service = meal.services.find((s) => s.id === currentServiceId);
-      if (service) return service.peopleCount;
+      if (service) {
+        return service.peopleCount;
+      }
     }
     return undefined;
   }, [currentServiceId, plan.meals]);
 
   const itemIngredients = useMemo(() => {
-    if (sheet?.type !== "item" || !sheet.item) return undefined;
+    if (sheet?.type !== "item" || !sheet.item) {
+      return undefined;
+    }
     const found = findItem(sheet.item.id);
     return found?.item.ingredients || sheet.item.ingredients;
   }, [sheet, findItem]);
@@ -364,7 +374,7 @@ export function OrganizerSheets({
 
       {sheet?.type === "guest-access" && (
         <GuestAccessSheet
-          open={true}
+          open
           onClose={() => {
             setSheet(null);
             onDismissGuestPrompt();
@@ -375,7 +385,7 @@ export function OrganizerSheets({
 
       {sheet?.type === "claim-person" && (
         <ClaimPersonSheet
-          open={true}
+          open
           unclaimed={sheet.unclaimed}
           onClose={() => setSheet(null)}
           onClaim={async (id) => {

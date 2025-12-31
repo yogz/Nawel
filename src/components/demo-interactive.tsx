@@ -128,7 +128,7 @@ export function DemoInteractive() {
                             <span className="text-sm font-medium">Salade de saison</span>
                           </div>
                           <div className="flex -space-x-2">
-                            <div className="h-6 w-6 rounded-full border-2 border-white bg-blue-500"></div>
+                            <div className="h-6 w-6 rounded-full border-2 border-white bg-blue-500" />
                           </div>
                         </div>
                       </div>
@@ -150,7 +150,7 @@ export function DemoInteractive() {
             </div>
 
             {/* Navigation Bar Simulation */}
-            <div className="absolute bottom-1 left-1/2 mb-1 h-1 w-32 -translate-x-1/2 rounded-full bg-gray-300"></div>
+            <div className="absolute bottom-1 left-1/2 mb-1 h-1 w-32 -translate-x-1/2 rounded-full bg-gray-300" />
           </div>
         </div>
       </div>

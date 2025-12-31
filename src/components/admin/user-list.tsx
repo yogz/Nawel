@@ -27,7 +27,9 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [isPending, startTransition] = useTransition();
 
   const handleToggleBan = async () => {
-    if (!banningUser) return;
+    if (!banningUser) {
+      return;
+    }
 
     const newBannedStatus = !banningUser.banned;
 
@@ -49,7 +51,9 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
   };
 
   const handleDelete = async () => {
-    if (!deletingUser) return;
+    if (!deletingUser) {
+      return;
+    }
 
     startTransition(async () => {
       try {

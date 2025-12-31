@@ -11,7 +11,9 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
   const [step, setStep] = useState(0);
 
   const citationItem = useMemo(() => {
-    if (item) return item;
+    if (item) {
+      return item;
+    }
     const list = citationsDataV3.items;
     const today = new Date();
     const dateString = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}-${seed || ""}`;
@@ -24,7 +26,9 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
   }, [seed, item]);
 
   const preferredTranslation = useMemo(() => {
-    if (citationItem.original.lang === locale) return null;
+    if (citationItem.original.lang === locale) {
+      return null;
+    }
     return (citationItem.localized as Record<string, string>)[locale] || null;
   }, [citationItem, locale]);
 

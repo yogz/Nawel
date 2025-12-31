@@ -79,7 +79,9 @@ export function ItemForm({
 
   // Detect if stored note is a translation key and re-translate it
   const getDisplayNote = (storedNote: string | null | undefined) => {
-    if (!storedNote) return defaultNote;
+    if (!storedNote) {
+      return defaultNote;
+    }
     if (storedNote.startsWith("EventDashboard.")) {
       return t("defaultNote", { count: servicePeopleCount || 0 });
     }
@@ -150,7 +152,9 @@ export function ItemForm({
       price !== (defaultItem?.price?.toString() || ""));
 
   const handleSubmit = () => {
-    if (isPending) return;
+    if (isPending) {
+      return;
+    }
     startTransition(() => {
       onSubmit({
         name,

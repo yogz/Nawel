@@ -59,7 +59,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
 
   // Determine which person(s) to show
   const displayPerson = useMemo((): Person | null => {
-    if (selectedPersonId === "all") return null;
+    if (selectedPersonId === "all") {
+      return null;
+    }
     const id = parseInt(selectedPersonId);
     return plan.people.find((p) => p.id === id) || null;
   }, [selectedPersonId, plan.people]);
@@ -84,7 +86,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
-          if (!targetPersonIds.includes(item.personId!)) return;
+          if (!targetPersonIds.includes(item.personId!)) {
+            return;
+          }
 
           if (item.ingredients && item.ingredients.length > 0) {
             item.ingredients.forEach((ing) => {
@@ -228,7 +232,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       plan.meals.forEach((meal) => {
         meal.services.forEach((service) => {
           service.items.forEach((item) => {
-            if (item.personId !== person.id) return;
+            if (item.personId !== person.id) {
+              return;
+            }
 
             if (item.ingredients && item.ingredients.length > 0) {
               item.ingredients.forEach((ing) => {

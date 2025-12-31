@@ -189,7 +189,7 @@ export function LandingAlt() {
 
       {/* Call to Action Footer */}
       <section className="relative z-10 overflow-hidden bg-white px-6 py-24 text-center sm:py-32">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white opacity-70"></div>
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white opacity-70" />
         <div className="mx-auto max-w-4xl">
           <h2 className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:mb-8 sm:text-6xl">
             {t("ctaFooterTitle")}

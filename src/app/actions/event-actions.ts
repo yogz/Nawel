@@ -16,6 +16,7 @@ import {
 } from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
   // Find a unique slug automatically based on name
@@ -174,6 +175,20 @@ export const updateEventAction = createSafeAction(updateEventSchema, async (inpu
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
+
+  // Track event deletion - churn indicator for event engagement (before deletion)
+  const posthog = getPostHogClient();
+  if (posthog) {
+    posthog.capture({
+      distinctId: event.ownerId || `anonymous_event_${event.id}`,
+      event: "event_deleted",
+      properties: {
+        event_slug: event.slug,
+        event_name: event.name,
+        event_id: event.id,
+      },
+    });
+  }
 
   // Log deletion before removing the record
   await logChange("delete", "events", event.id, event);

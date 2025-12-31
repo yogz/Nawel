@@ -125,7 +125,9 @@ export function useMealHandlers({
         setPlan((prev: PlanData) => ({
           ...prev,
           meals: prev.meals.map((m) => {
-            if (m.id !== id) return m;
+            if (m.id !== id) {
+              return m;
+            }
 
             const oldTotal = m.adults + m.children;
             const newAdults = adults ?? m.adults;

@@ -60,21 +60,31 @@ export function CitationManager() {
   const activeItem = filteredItems[currentIndex];
 
   const handleNext = () => {
-    if (filteredItems.length === 0) return;
+    if (filteredItems.length === 0) {
+      return;
+    }
     setCurrentIndex((prev) => (prev + 1) % filteredItems.length);
   };
 
   const handlePrev = () => {
-    if (filteredItems.length === 0) return;
+    if (filteredItems.length === 0) {
+      return;
+    }
     setCurrentIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
   };
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === "ArrowRight" || e.key === "n") handleNext();
-      if (e.key === "ArrowLeft" || e.key === "p") handlePrev();
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.key === "ArrowRight" || e.key === "n") {
+        handleNext();
+      }
+      if (e.key === "ArrowLeft" || e.key === "p") {
+        handlePrev();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -89,10 +99,14 @@ export function CitationManager() {
     }
 
     // 2. Author only
-    if (attr.author) return attr.author;
+    if (attr.author) {
+      return attr.author;
+    }
 
     // 3. Work only
-    if (attr.work) return attr.work;
+    if (attr.work) {
+      return attr.work;
+    }
 
     // 4. Origin Type
     if (attr.origin_type) {
@@ -118,7 +132,9 @@ export function CitationManager() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Supprimer définitivement cette citation ?")) return;
+    if (!confirm("Supprimer définitivement cette citation ?")) {
+      return;
+    }
 
     try {
       const result = await deleteCitationAdminAction({ id });

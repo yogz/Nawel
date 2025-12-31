@@ -24,7 +24,9 @@ export function PersonForm({
   const [isMe, setIsMe] = useState(false);
 
   const handleSubmit = () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      return;
+    }
     onSubmit(name, undefined, isMe ? currentUserId : undefined);
   };
 

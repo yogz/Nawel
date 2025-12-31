@@ -52,7 +52,9 @@ export function ShoppingListSheet({
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
-          if (item.personId !== person.id) return;
+          if (item.personId !== person.id) {
+            return;
+          }
 
           // If item has ingredients, add each ingredient
           if (item.ingredients && item.ingredients.length > 0) {

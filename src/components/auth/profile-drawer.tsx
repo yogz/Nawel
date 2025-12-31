@@ -68,19 +68,25 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   }, [session, open]);
 
   const handleSaveProfile = async (newName?: string, newEmoji?: string | null) => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      return;
+    }
 
     const finalName = newName ?? name;
     const finalEmoji = newEmoji !== undefined ? newEmoji : selectedEmoji;
 
-    if (!finalName.trim()) return;
+    if (!finalName.trim()) {
+      return;
+    }
 
     // Check if anything actually changed
     const hasChanged =
       finalName !== (session.user.name || "") ||
       finalEmoji !== ((session.user as any).emoji || null);
 
-    if (!hasChanged) return;
+    if (!hasChanged) {
+      return;
+    }
 
     setIsSubmitting(true);
     setError(null);

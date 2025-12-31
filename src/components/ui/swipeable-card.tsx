@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useAnimation, PanInfo } from "framer-motion";
+import { motion, useAnimation, type PanInfo } from "framer-motion";
 import { Pencil, Trash2 } from "lucide-react";
 import {
   Dialog,

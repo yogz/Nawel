@@ -19,6 +19,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export const joinEventAction = createSafeAction(baseInput, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
@@ -50,6 +51,20 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
       userId: session.user.id,
     })
     .returning();
+
+  // Track event join - conversion for event collaboration
+  const posthog = getPostHogClient();
+  if (posthog) {
+    posthog.capture({
+      distinctId: session.user.id,
+      event: "event_joined",
+      properties: {
+        event_slug: input.slug,
+        event_name: event.name,
+        user_name: session.user.name,
+      },
+    });
+  }
 
   await logChange("create", "people", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);

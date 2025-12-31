@@ -5,48 +5,51 @@ The wizard has completed a deep integration of PostHog into your Nawel event pla
 - **Client-side initialization** via `instrumentation-client.ts` (Next.js 16+ approach)
 - **Server-side PostHog client** for server components and API routes
 - **User identification** on login/signup with email as the distinct ID
-- **12 custom events** tracking key user actions across the application
+- **13 custom events** tracking key user actions across the application
 - **Automatic exception tracking** via `capture_exceptions: true`
 - **Environment variable configuration** for secure API key management
 
 ## Events Implemented
 
-| Event Name                     | Description                                                                                    | File Path                                                    |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `event_created`                | User creates a new event/party. Core conversion event for the top of the funnel.               | `src/app/[locale]/create-event/create-event-client.tsx`      |
-| `user_signed_up`               | User completes email signup. Key conversion event for user acquisition.                        | `src/components/auth/login-form.tsx`                         |
-| `user_signed_in`               | User signs in via email or Google. Engagement metric for returning users.                      | `src/components/auth/login-form.tsx`                         |
-| `event_shared`                 | User shares event link via WhatsApp, native share, or copy link. Viral growth metric.          | `src/features/events/components/share-modal.tsx`             |
-| `person_joined_event`          | Authenticated user joins an event as a participant. Measures event adoption.                   | `src/components/planning/organizer.tsx`                      |
-| `person_claimed_profile`       | User claims an existing guest profile in an event. Conversion from anonymous to authenticated. | `src/features/auth/components/claim-person-sheet.tsx`        |
-| `item_assigned`                | An item/dish is assigned to a participant. Core engagement action showing active planning.     | `src/features/items/hooks/use-item-handlers.ts`              |
-| `shopping_item_checked`        | User checks off an item in their shopping list. Measures task completion and app utility.      | `src/components/planning/shopping-list-sheet.tsx`            |
-| `shopping_list_viewed`         | User opens the full-screen shopping list page. Measures feature adoption.                      | `src/app/[locale]/event/[slug]/shopping/[personId]/page.tsx` |
-| `guest_continued_without_auth` | User chooses to continue as guest instead of authenticating. Measures anonymous usage.         | `src/features/auth/components/guest-access-sheet.tsx`        |
-| `application_error`            | Application-level error occurred. Track errors for reliability monitoring.                     | `src/app/[locale]/error.tsx`                                 |
-| `event_deleted`                | Owner deletes an event. Churn indicator for event lifecycle tracking.                          | `src/components/planning/organizer.tsx`                      |
+| Event Name                     | Description                                                                             | File Path                                                    |
+| ------------------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `event_created`                | User creates a new event - key conversion event for event organizers                    | `src/app/[locale]/create-event/create-event-client.tsx`      |
+| `event_shared`                 | User shares an event via copy link, WhatsApp, or native share - engagement metric       | `src/features/events/components/share-modal.tsx`             |
+| `user_signed_in`               | User signs in via email or Google - authentication conversion                           | `src/components/auth/login-form.tsx`                         |
+| `user_signed_up`               | User creates a new account via email - key conversion for user acquisition              | `src/components/auth/login-form.tsx`                         |
+| `person_claimed_profile`       | User claims an existing guest profile - conversion from anonymous to authenticated      | `src/features/auth/components/claim-person-sheet.tsx`        |
+| `guest_continued_without_auth` | Guest chooses to continue without signing in - measures auth friction                   | `src/features/auth/components/guest-access-sheet.tsx`        |
+| `item_assigned`                | User assigns an item to a person - core engagement action for event collaboration       | `src/features/items/hooks/use-item-handlers.ts`              |
+| `item_created`                 | User adds a new item to a service - engagement metric for event planning                | `src/features/items/hooks/use-item-handlers.ts`              |
+| `application_error`            | Application error occurred - reliability monitoring                                     | `src/app/[locale]/error.tsx`                                 |
+| `shopping_list_viewed`         | User views their shopping list - engagement metric for shopping feature                 | `src/app/[locale]/event/[slug]/shopping/[personId]/page.tsx` |
+| `event_joined`                 | Authenticated user joins an event as a participant - conversion for event collaboration | `src/app/actions/person-actions.ts`                          |
+| `user_deleted_account`         | User deletes their account - churn indicator for retention analysis                     | `src/app/actions/user-actions.ts`                            |
+| `event_deleted`                | User deletes an event - churn indicator for event engagement                            | `src/app/actions/event-actions.ts`                           |
 
 ## Files Created/Modified
 
-### New Files
+### Modified Files (This Session)
+
+- `.env` - Added PostHog environment variables
+- `src/features/items/hooks/use-item-handlers.ts` - Added `item_created` event tracking
+- `src/app/actions/user-actions.ts` - Added `user_deleted_account` event tracking (server-side)
+- `src/app/actions/event-actions.ts` - Added `event_deleted` event tracking (server-side)
+- `src/app/actions/person-actions.ts` - Added `event_joined` event tracking (server-side)
+
+### Previously Configured Files
 
 - `instrumentation-client.ts` - Client-side PostHog initialization
 - `src/lib/posthog-server.ts` - Server-side PostHog client
-
-### Modified Files
-
-- `.env.local` - Added PostHog environment variables
-- `.env.example` - Added PostHog configuration documentation
+- `.env.local` - PostHog environment variables
+- `.env.example` - PostHog configuration documentation
 - `src/components/auth/login-form.tsx` - User identification and sign-in/sign-up tracking
 - `src/app/[locale]/create-event/create-event-client.tsx` - Event creation tracking
 - `src/features/events/components/share-modal.tsx` - Share event tracking
-- `src/components/planning/organizer.tsx` - Join event and delete event tracking
 - `src/features/auth/components/claim-person-sheet.tsx` - Profile claim tracking
-- `src/features/items/hooks/use-item-handlers.ts` - Item assignment tracking
-- `src/components/planning/shopping-list-sheet.tsx` - Shopping item check tracking
-- `src/app/[locale]/event/[slug]/shopping/[personId]/page.tsx` - Shopping list view tracking (server-side)
 - `src/features/auth/components/guest-access-sheet.tsx` - Guest continuation tracking
 - `src/app/[locale]/error.tsx` - Application error tracking
+- `src/app/[locale]/event/[slug]/shopping/[personId]/page.tsx` - Shopping list view tracking (server-side)
 
 ## Next steps
 
@@ -54,15 +57,15 @@ We've built some insights and a dashboard for you to keep an eye on user behavio
 
 ### Dashboard
 
-- [Analytics basics](https://eu.posthog.com/project/112117/dashboard/472890) - Your main analytics dashboard
+- [Analytics basics](https://eu.posthog.com/project/112117/dashboard/472953) - Your main analytics dashboard with core business metrics
 
 ### Insights
 
-- [Events Created Over Time](https://eu.posthog.com/project/112117/insights/1BwnFCKC) - Track the number of events created daily
-- [User Signup to Event Creation Funnel](https://eu.posthog.com/project/112117/insights/bWWKLRGH) - Conversion funnel from signup to first event
-- [Event Share Rate](https://eu.posthog.com/project/112117/insights/XUuC19je) - Track viral sharing by method (WhatsApp, native, copy link)
-- [User Engagement: Item Assignments](https://eu.posthog.com/project/112117/insights/UwuqYEFc) - Core engagement metric for active planning
-- [Authentication Methods](https://eu.posthog.com/project/112117/insights/a4fEPz7B) - Breakdown of sign-in methods (email vs Google)
+- [Signup to Event Creation Funnel](https://eu.posthog.com/project/112117/insights/34ocfEDt) - Conversion funnel from user signup to event creation to event sharing
+- [Daily Active Events](https://eu.posthog.com/project/112117/insights/WHUWSsO6) - Track key user actions (event creation, item creation, item assignment) over time
+- [Churn Indicators](https://eu.posthog.com/project/112117/insights/2iP6avfv) - Monitor account and event deletions as indicators of user churn
+- [User Authentication Overview](https://eu.posthog.com/project/112117/insights/8OVUjymk) - Track sign-in and sign-up events to monitor user acquisition
+- [Event Collaboration Funnel](https://eu.posthog.com/project/112117/insights/smHtsErZ) - Journey from event sharing to user joining and engaging with items
 
 ## Environment Variables
 

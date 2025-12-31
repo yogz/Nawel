@@ -221,7 +221,9 @@ export function Organizer({
     if (session?.user?.id && !readOnly) {
       // Check if user is already a participant
       const isParticipant = plan.people.some((p) => p.userId === session.user.id);
-      if (isParticipant) return;
+      if (isParticipant) {
+        return;
+      }
 
       // Automatically join to ensure visibility in dashboard
       joinEventAction({ slug, key: writeKey }).then((result) => {

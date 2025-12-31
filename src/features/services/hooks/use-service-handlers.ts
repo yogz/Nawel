@@ -79,7 +79,9 @@ export function useServiceHandlers({
           meals: prev.meals.map((m) => ({
             ...m,
             services: m.services.map((s) => {
-              if (s.id !== id) return s;
+              if (s.id !== id) {
+                return s;
+              }
 
               return {
                 ...s,

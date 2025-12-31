@@ -91,7 +91,9 @@ export function ServiceForm({
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = () => {
-    if (isPending) return;
+    if (isPending) {
+      return;
+    }
     startTransition(async () => {
       if (mealId === "new") {
         if (!newMealDate) {
@@ -164,7 +166,7 @@ export function ServiceForm({
           </p>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Popover modal={true}>
+            <Popover modal>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}

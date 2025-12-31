@@ -25,7 +25,9 @@ export function parseQuantity(quantityStr: string | null | undefined): {
   value: number | null;
   unit: string;
 } {
-  if (!quantityStr) return { value: null, unit: "" };
+  if (!quantityStr) {
+    return { value: null, unit: "" };
+  }
 
   const trimmed = quantityStr.trim();
   // Match number (integer or decimal with . or ,) at the beginning, followed by optional unit
@@ -116,8 +118,12 @@ export function aggregateShoppingList(
  * Formats an aggregated quantity for display.
  */
 export function formatAggregatedQuantity(quantity: number | null, unit: string): string {
-  if (quantity === null) return unit;
-  if (!unit) return quantity === 0 ? "" : quantity.toString();
+  if (quantity === null) {
+    return unit;
+  }
+  if (!unit) {
+    return quantity === 0 ? "" : quantity.toString();
+  }
 
   // Try to avoid showing ".0" for integers
   const formattedValue = Number.isInteger(quantity)

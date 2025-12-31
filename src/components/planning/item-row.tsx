@@ -52,7 +52,9 @@ function ItemRowComponent({
               }}
               disabled={readOnly}
               icon={(() => {
-                if (!person) return <CircleHelp size={14} />;
+                if (!person) {
+                  return <CircleHelp size={14} />;
+                }
                 const avatar = renderAvatar(person, allPeopleNames);
                 if (avatar.type === "image") {
                   return (

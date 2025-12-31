@@ -27,7 +27,9 @@ export function ClaimPersonSheet({
   const [isPending, setIsPending] = useState(false);
 
   const handleConfirm = async () => {
-    if (selectedId === null || isPending) return;
+    if (selectedId === null || isPending) {
+      return;
+    }
     setIsPending(true);
     try {
       await onClaim(selectedId);

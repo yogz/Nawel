@@ -26,7 +26,9 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const { data: session } = useSession();
 
   const handleLanguageChange = async (newLocale: Locale) => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     // Save to user profile if logged in
     if (session?.user) {

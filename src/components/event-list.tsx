@@ -95,7 +95,9 @@ export function EventList({
     time?: string;
     address?: string;
   }) => {
-    if (!editingEvent) return;
+    if (!editingEvent) {
+      return;
+    }
     setError(null);
     startTransition(async () => {
       try {
@@ -121,7 +123,9 @@ export function EventList({
   };
 
   const handleDeleteEvent = async () => {
-    if (!deletingEvent) return;
+    if (!deletingEvent) {
+      return;
+    }
     setError(null);
     startTransition(async () => {
       try {
@@ -167,7 +171,9 @@ export function EventList({
   );
 
   const renderSection = (title: string, items: Event[], icon: React.ReactNode) => {
-    if (items.length === 0) return null;
+    if (items.length === 0) {
+      return null;
+    }
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gray-500">
