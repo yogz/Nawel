@@ -36,12 +36,12 @@
     "footer": "© 2025 Nawel. Fait avec ✨ pour vos plus beaux moments."
   },
   "LandingAlt": {
-    "badge": "L'organisation de repas, enfin relaxante.",
-    "heroTitle": "Fini le Chaos des",
-    "heroTitleHighlight": "Dîners Participatifs",
-    "heroDescription": "Rassemblez vos amis. Profitez du moment sans la charge mentale.",
-    "ctaStart": "Lancer mon Invitation",
-    "ctaDemo": "Voir la Démo",
+    "badge": "L'organisation de repas partagés, simplifiée.",
+    "heroTitle": "Organisez vos repas",
+    "heroTitleHighlight": "sans prise de tête",
+    "heroDescription": "Chacun choisit ce qu'il apporte. Plus de doublons. Plus de messages perdus. Juste un repas réussi entre amis.",
+    "ctaStart": "Créer mon événement",
+    "ctaDemo": "Voir comment ça marche",
     "feature1Title": "L'Assistant Culinaire (IA) BETA",
     "feature1Description": "Dites juste 'Lasagnes pour 12', Nawel génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
     "feature1Tag": "Nouveau",
@@ -66,10 +66,10 @@
   },
   "LandingStory": {
     "heroSubtitle": "L'Art de Recevoir",
-    "heroTitle": "Recevez avec",
-    "heroTitleHighlight": "élégance",
-    "heroDescription": "Redécouvrez le plaisir d'inviter. Sans le bruit, sans le stress. Juste vous et vos proches.",
-    "heroButton": "Commencer l'histoire",
+    "heroTitle": "Invitez, partagez,",
+    "heroTitleHighlight": "profitez",
+    "heroDescription": "Chacun sait ce qu'il amène. Vous savez ce qu'il vous reste à faire. Et tout le monde passe un bon moment.",
+    "heroButton": "Commencer l'aventure",
     "scrollText": "Le voyage",
     "timeline": {
       "day1": "J-7",

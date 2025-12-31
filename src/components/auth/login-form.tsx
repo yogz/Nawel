@@ -11,6 +11,7 @@ import { GoogleIcon } from "./google-icon";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { trackLandingConversion } from "@/lib/track-landing";
 
 export function LoginForm() {
   const t = useTranslations("Login");
@@ -55,6 +56,8 @@ export function LoginForm() {
           setLoading(false);
           return;
         }
+        // Track conversion après inscription réussie
+        trackLandingConversion();
       }
 
       router.push(isUserMode ? "/" : "/admin");

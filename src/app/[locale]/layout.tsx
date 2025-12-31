@@ -9,6 +9,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
+import { UmamiAnalytics } from "@/components/umami-analytics";
+import { GoogleAnalytics } from "@/components/google-analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -79,6 +81,8 @@ export default async function RootLayout({
             <SnowOverlay />
           </ThemeProvider>
         </NextIntlClientProvider>
+        <GoogleAnalytics />
+        <UmamiAnalytics />
         <SpeedInsights />
         <Analytics />
       </body>

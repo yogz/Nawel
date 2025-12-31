@@ -22,11 +22,28 @@ export function useLandingVariant() {
       localStorage.setItem("landing_variant", randomVariant);
       setVariant(randomVariant);
 
-      // Tracker l'assignation si Google Analytics est disponible
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "landing_variant_assigned", {
-          variant: randomVariant,
-        });
+      // Tracker l'assignation de variante
+      if (typeof window !== "undefined") {
+        // Umami Analytics (recommandé - gratuit)
+        if ((window as any).umami) {
+          (window as any).umami.track("variant-assigned", {
+            variant: randomVariant,
+          });
+        }
+
+        // Google Analytics
+        if ((window as any).gtag) {
+          (window as any).gtag("event", "landing_variant_assigned", {
+            variant: randomVariant,
+          });
+        }
+
+        // Plausible Analytics
+        if ((window as any).plausible) {
+          (window as any).plausible("Variant Assigned", {
+            props: { variant: randomVariant },
+          });
+        }
       }
     }
   }, []);
