@@ -97,9 +97,11 @@ export function renderAvatar(
   allPeopleNames: string[] = [],
   theme: string = "aurora"
 ): { type: "image"; src: string } | { type: "emoji"; value: string } {
-  // 1. Guest Emoji (Explicit choice)
-  if (person.emoji) {
-    return { type: "emoji", value: person.emoji };
+  // 1. Guest/User Emoji (Explicit choice)
+  // Check the entity's own emoji or the associated user's emoji (for profile nav)
+  const emoji = person.emoji || person.user?.emoji;
+  if (emoji) {
+    return { type: "emoji", value: emoji };
   }
 
   // 2. Guest Image (Explicit photo choice)
@@ -107,7 +109,12 @@ export function renderAvatar(
     return { type: "image", src: person.image };
   }
 
-  // 3. Dynamic Fallback
+  // 3. User Social Image (Social fallback)
+  if (person.user?.image) {
+    return { type: "image", src: person.user.image };
+  }
+
+  // 4. Dynamic Fallback
   return { type: "emoji", value: getPersonEmoji(person.name, allPeopleNames, null, theme) };
 }
 
