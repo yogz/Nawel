@@ -37,14 +37,14 @@ export function LandingAlt() {
     {
       title: "Liste de Courses Magique",
       description:
-        "L'application additionne tout pour vous. 3 invités amènent de la farine ? Nawel calcule le total. La liste est triée et prête à être cochée en magasin.",
+        "L'application additionne tout pour vous et crée la liste des courses. La liste est triée et prête à être cochée en magasin.",
       icon: <ShoppingBasket className="h-6 w-6" />,
       image: "/alt_shopping.png",
     },
     {
       title: "Zéro Friction pour les invités",
       description:
-        "Vos amis n'ont rien à installer. Pas de compte à créer. Ils reçoivent un lien, cliquent sur 'C'est moi !' à côté d'un plat, et c'est fini. Simple comme bonjour.",
+        "Vos amis n'ont rien à installer. Pas de compte à créer. Ils reçoivent un lien et peuvent commencer à participer : 'J'apporte le champagne', 'J'apporte la salade'... Ils peuvent aussi cliquer sur 'C'est moi !' à côté d'un plat, et c'est fini. Simple comme bonjour.",
       icon: <CheckCircle2 className="h-6 w-6" />,
       image: "/alt_guests.png",
     },
@@ -95,8 +95,7 @@ export function LandingAlt() {
             </span>
           </h1>
           <p className="mx-auto mb-10 max-w-2xl px-4 text-xl leading-relaxed text-gray-600 sm:mb-12 sm:text-2xl">
-            Rassemblez vos amis. Laissez l'IA gérer le menu. <br className="hidden sm:block" />
-            Profitez du moment sans la charge mentale.
+            Rassemblez vos amis. Profitez du moment sans la charge mentale.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 px-6 sm:flex-row sm:gap-6">
