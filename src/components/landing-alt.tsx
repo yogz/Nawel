@@ -27,7 +27,7 @@ export function LandingAlt() {
 
   const features = [
     {
-      title: "L'Assistant Culinaire (IA)",
+      title: "L'Assistant Culinaire (IA) BETA",
       description:
         "Dites juste 'Lasagnes pour 12', Nawel génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
       icon: <Wand2 className="h-6 w-6" />,
@@ -37,21 +37,21 @@ export function LandingAlt() {
     {
       title: "Liste de Courses Magique",
       description:
-        "L'application additionne tout pour vous et crée la liste des courses. La liste est triée et prête à être cochée en magasin.",
+        "L'application additionne tout pour vous et crée la liste des courses pour chaque invité. La liste est triée et prête à être cochée en magasin.",
       icon: <ShoppingBasket className="h-6 w-6" />,
       image: "/alt_shopping.png",
     },
     {
-      title: "Zéro Friction pour les invités",
+      title: "Zéro Friction (Aucun compte)",
       description:
-        "Vos amis n'ont rien à installer. Pas de compte à créer. Ils reçoivent un lien et peuvent commencer à participer : 'J'apporte le champagne', 'J'apporte la salade'... Ils peuvent aussi cliquer sur 'C'est moi !' à côté d'un plat, et c'est fini. Simple comme bonjour.",
+        "Oubliez les installations. Vos proches reçoivent un lien et participent d'un clic : 'J'apporte le champagne', 'C'est moi !'. C'est validé instantanément, sans aucune inscription.",
       icon: <CheckCircle2 className="h-6 w-6" />,
       image: "/alt_guests.png",
     },
     {
-      title: "Design Immersif & Thèmes",
+      title: "Design Immersif",
       description:
-        "Parce qu'on mange aussi avec les yeux, votre invitation doit être belle. Choisissez parmi nos thèmes (Aurora, Noël...) pour donner le ton de la soirée.",
+        "Parce qu'on mange aussi avec les yeux, votre invitation est conçue pour être aussi belle que votre futur repas. Pas besoin de passer des heures sur la mise en page.",
       icon: <Sparkles className="h-6 w-6" />,
       image: "/aura-menu.png",
     },
@@ -201,7 +201,9 @@ export function LandingAlt() {
           >
             Créer mon premier événement
           </Link>
-          <p className="mt-6 text-sm text-gray-500">Gratuit pour toujours • Pas de carte requise</p>
+          <p className="mt-6 text-sm text-gray-500">
+            Gratuit pour toujours • Sans compte ni application à installer • Pas de carte requise
+          </p>
         </div>
       </section>
 

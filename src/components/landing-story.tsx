@@ -22,7 +22,7 @@ export function LandingStory() {
       day: "J-7",
       title: "L'Inspiration",
       description:
-        "Tout commence par une envie. Vous lancez une invitation qui a de l'allure. Le thème 'Aurora' donne le ton : ce ne sera pas une soirée comme les autres.",
+        "Tout commence par une envie. Vous lancez une invitation qui a de l'allure. Élégante et claire, elle donne instantanément envie de répondre présent.",
       icon: <Sparkles className="h-5 w-5" />,
       image: "/story_inspiration.png",
       color: "bg-purple-100 text-purple-600",
@@ -31,7 +31,7 @@ export function LandingStory() {
       day: "J-5",
       title: "L'Engouement",
       description:
-        "Vos amis reçoivent le lien. Pas d'inscription, pas de friction. Ils peuvent dire 'J'apporte le champagne' ou cliquer sur 'C'est moi !'. L'organisation se fait toute seule.",
+        "L'invitation circule. Vos proches rejoignent l'aventure sans inscription. En un clic, ils choisissent leur contribution : champagne, salade, dessert. L'organisation devient fluide et naturelle.",
       icon: <Send className="h-5 w-5" />,
       image: "/story_guests.png",
       color: "bg-blue-100 text-blue-600",
@@ -40,7 +40,7 @@ export function LandingStory() {
       day: "J-1",
       title: "La Sérénité",
       description:
-        "Plus de 'qui amène quoi ?'. L'application crée la liste de courses pour vous, triée et prête pour le magasin. Tout est sous contrôle.",
+        "Chacun sa mission. Nawel génère automatiquement une liste de courses personnalisée pour chaque invité. Plus de stress, chacun sait exactement quoi faire.",
       icon: <CheckCircle2 className="h-5 w-5" />,
       image: "/story_shopping.png",
       color: "bg-green-100 text-green-600",

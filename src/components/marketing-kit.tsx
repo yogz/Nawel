@@ -18,21 +18,21 @@ export function MarketingKit() {
   const strategyA = {
     title: "Stratégie A : L'Efficacité (Tech/Product)",
     description:
-      "Focus sur la résolution du chaos, les fonctionnalités (IA, smart list) et le gain de temps. Ton : Dynamique, Direct, 'Problem Solver'.",
+      "Focus sur la résolution du chaos et les fonctions clés (IA beta, smart list). Ton : Dynamique, Direct, 'Problem Solver'.",
     posts: [
       {
         id: "post1_a",
-        title: "L'Assistant Culinaire",
+        title: "L'Assistant Culinaire (Beta)",
         format: "Reel / Carrousel",
         image: "/alt_ai_chef.png",
-        caption: `🤯 Lasagnes pour 12 personnes ? \n\nJ'ai arrêté de compter sur mes doigts. J'ai juste demandé à Nawel.\n\n🍝 Il a généré la liste exacte de tous les ingrédients. \n✨ Il a ajusté les quantités pour 12.\n🛒 Il a tout mis dans la liste de courses commune.\n\nFini la charge mentale en cuisine. \n\n#MealPlanning #IA #DinnerParty #NawelApp`,
+        caption: `🤯 Lasagnes pour 12 personnes ? \n\nJ'ai arrêté de compter sur mes doigts. J'ai juste demandé à Nawel (notre IA est en beta !).\n\n🍝 Il a généré la liste exacte de tous les ingrédients. \n✨ Il a ajusté les quantités pour 12.\n🛒 Il a tout mis dans la liste de courses de chacun.\n\nFini la charge mentale en cuisine. \n\n#MealPlanning #IA #DinnerParty #NawelApp`,
       },
       {
         id: "post2_a",
-        title: "Zéro Friction",
+        title: "Zéro Friction (Aucun compte)",
         format: "Static Post",
         image: "/alt_guests.png",
-        caption: `⛔️ "Télécharge l'app pour répondre à mon invit..." \n\nNON. \n\nAvec Nawel, vos invités reçoivent un lien. Ils cliquent. C'est tout.\nPas de compte à créer. Pas d'app à installer.\n\nParce qu'organiser un dîner ne devrait pas être une corvée administrative.\n\n#NoFriction #EventPlanner #Simple #TechForGood`,
+        caption: `⛔️ "Télécharge l'app pour répondre à mon invit..." \n\nInstalle rien. Crée rien. \n\nAvec Nawel, vos invités reçoivent un lien et participent d'un clic.\nPas de compte. Pas d'app. Juste du plaisir.\n\nParce qu'organiser un dîner ne devrait pas être une corvée administrative.\n\n#NoFriction #EventPlanner #Simple #HostingMadeEasy`,
       },
       {
         id: "post3_a",
