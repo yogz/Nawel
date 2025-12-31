@@ -110,6 +110,24 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     }
   }
 
+  // Track event creation - core engagement metric
+  const posthog = getPostHogClient();
+  if (posthog) {
+    posthog.capture({
+      distinctId: session?.user.id || `anonymous_${created.id}`,
+      event: "event_created",
+      properties: {
+        event_slug: created.slug,
+        event_name: created.name,
+        has_description: !!created.description,
+        creation_mode: input.creationMode || "zero",
+        adults_count: created.adults,
+        children_count: created.children,
+        is_authenticated: !!session?.user,
+      },
+    });
+  }
+
   revalidatePath("/");
   return created;
 });

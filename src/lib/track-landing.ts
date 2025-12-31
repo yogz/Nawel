@@ -13,16 +13,19 @@ export function trackLandingCTA() {
     return;
   }
 
-  const variant = localStorage.getItem("landing_variant");
+  // Récupérer la variante depuis PostHog
+  const flagVariant = posthog.getFeatureFlag("landing-page-variant");
+  const variant = flagVariant === "test" ? "landing-alt" : "landing";
 
   // PostHog tracking
   posthog.capture("landing_cta_click", {
     variant,
+    feature_flag_variant: flagVariant,
     $set: { landing_variant: variant },
   });
 
   // Console log pour debug
-  console.log("[A/B Test] CTA clicked - Variant:", variant);
+  console.log("[A/B Test] CTA clicked - Variant:", variant, "Flag:", flagVariant);
 }
 
 /**
@@ -33,14 +36,17 @@ export function trackLandingConversion() {
     return;
   }
 
-  const variant = localStorage.getItem("landing_variant");
+  // Récupérer la variante depuis PostHog
+  const flagVariant = posthog.getFeatureFlag("landing-page-variant");
+  const variant = flagVariant === "test" ? "landing-alt" : "landing";
 
   // PostHog tracking
   posthog.capture("landing_conversion", {
     variant,
+    feature_flag_variant: flagVariant,
     $set: { landing_variant: variant },
   });
 
   // Console log pour debug
-  console.log("[A/B Test] Conversion - Variant:", variant);
+  console.log("[A/B Test] Conversion - Variant:", variant, "Flag:", flagVariant);
 }
