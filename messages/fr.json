@@ -144,6 +144,17 @@
     "haveAccount": "Déjà un compte ?",
     "guestLink": "Continuer sans s'identifier"
   },
+  "FAQ": {
+    "title": "Questions Fréquentes",
+    "q1": "Est-ce vraiment gratuit ?",
+    "a1": "Oui, Nawel est 100% gratuit pour le moment. Toutes les fonctionnalités, y compris l'IA et les invitations illimitées, sont accessibles sans frais.",
+    "q2": "Mes invités doivent-ils créer un compte ?",
+    "a2": "Non ! C'est notre point fort. Ils reçoivent votre lien, cliquent, et peuvent indiquer ce qu'ils apportent sans aucune inscription ni installation d'application.",
+    "q3": "Et si quelqu'un n'a pas de smartphone ?",
+    "a3": "Le lien fonctionne sur n'importe quel navigateur (ordinateur, tablette, smartphone). Vous pouvez aussi ajouter manuellement ce que Mamie apporte si elle n'est pas connectée.",
+    "q4": "Comment fonctionne la liste de courses ?",
+    "a4": "L'app compile tout ce qu'il reste à acheter (ce que personne n'a encore pris) dans une liste globale pour l'hôte, et crée une liste personnalisée pour chaque invité avec ses propres contributions."
+  },
   "Profile": {
     "settings": "Paramètres du profil",
     "deleteAccount": "Supprimer mon compte",
