@@ -130,6 +130,41 @@ export function LoginForm() {
                 : t("adminDescription")}
             </p>
 
+            <Button
+              onClick={async () => {
+                setLoading(true);
+                try {
+                  await signIn.social({
+                    provider: "google",
+                    callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,
+                  });
+                } catch (err) {
+                  console.error(err);
+                  setLoading(false);
+                }
+              }}
+              disabled={loading}
+              variant="outline"
+              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 hover:text-[#1f1f1f] active:scale-95"
+              shine
+            >
+              {loading ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <GoogleIcon className="h-5 w-5" />
+              )}
+              {t("googleButton")}
+            </Button>
+
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-100" />
+              </div>
+              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
+                <span className="bg-transparent px-3 text-gray-400">{t("orContinueWith")}</span>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label
@@ -196,41 +231,6 @@ export function LoginForm() {
                 )}
               </Button>
             </form>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-100" />
-              </div>
-              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-                <span className="bg-transparent px-3 text-gray-400">{t("orContinueWith")}</span>
-              </div>
-            </div>
-
-            <Button
-              onClick={async () => {
-                setLoading(true);
-                try {
-                  await signIn.social({
-                    provider: "google",
-                    callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,
-                  });
-                } catch (err) {
-                  console.error(err);
-                  setLoading(false);
-                }
-              }}
-              disabled={loading}
-              variant="outline"
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 hover:text-[#1f1f1f] active:scale-95"
-              shine
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <GoogleIcon className="h-5 w-5" />
-              )}
-              {t("googleButton")}
-            </Button>
 
             {isUserMode && (
               <p className="mt-8 text-center text-xs font-semibold text-gray-500">
