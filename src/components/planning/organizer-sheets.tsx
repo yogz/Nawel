@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BottomSheet } from "../ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 import { ShareModal } from "@/features/events/components/share-modal";
 import { ItemForm } from "@/features/items/components/item-form";
 import { ServiceForm } from "@/features/services/components/service-form";
@@ -172,244 +172,258 @@ export function OrganizerSheets({
   };
 
   return (
-    <BottomSheet
-      open={!!sheet}
-      onClose={() => setSheet(null)}
-      title={sheet?.type === "share" ? "" : getTitle()}
-    >
-      {sheet?.type === "item" && (
-        <ItemForm
-          people={plan.people}
-          defaultItem={defaultItem}
-          allServices={allServices}
-          currentServiceId={currentServiceId}
-          servicePeopleCount={servicePeopleCount}
-          onSubmit={(vals) =>
-            sheet.item
-              ? handleUpdateItem(sheet.item.id, vals)
-              : handleCreateItem({ ...vals, serviceId: sheet.serviceId })
-          }
-          onAssign={(pId) => sheet.item && handleAssign(sheet.item, pId)}
-          onMoveService={(sId) => sheet.item && handleMoveItem(sheet.item.id, sId)}
-          onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
-          readOnly={readOnly}
-          // Ingredient props
-          ingredients={itemIngredients}
-          onGenerateIngredients={
-            sheet.item
-              ? async (currentName: string, currentNote?: string) => {
-                  setIsGenerating(true);
-                  try {
-                    // Try to extract people count from the note (e.g., "Pour 5 personnes")
-                    let peopleCount = undefined;
-                    if (currentNote) {
-                      const match = currentNote.match(/Pour (\d+) personne/i);
-                      if (match) {
-                        peopleCount = parseInt(match[1]);
+    <Drawer open={!!sheet} onOpenChange={(open) => !open && setSheet(null)}>
+      <DrawerContent className="px-4">
+        {sheet?.type !== "share" && (
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>{getTitle()}</DrawerTitle>
+          </DrawerHeader>
+        )}
+        <div className="scrollbar-none overflow-y-auto pb-8">
+          {sheet?.type === "item" && (
+            <ItemForm
+              people={plan.people}
+              defaultItem={defaultItem}
+              allServices={allServices}
+              currentServiceId={currentServiceId}
+              servicePeopleCount={servicePeopleCount}
+              onSubmit={(vals) =>
+                sheet.item
+                  ? handleUpdateItem(sheet.item.id, vals)
+                  : handleCreateItem({ ...vals, serviceId: sheet.serviceId })
+              }
+              onAssign={(pId) => sheet.item && handleAssign(sheet.item, pId)}
+              onMoveService={(sId) => sheet.item && handleMoveItem(sheet.item.id, sId)}
+              onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
+              readOnly={readOnly}
+              // Ingredient props
+              ingredients={itemIngredients}
+              onGenerateIngredients={
+                sheet.item
+                  ? async (currentName: string, currentNote?: string) => {
+                      setIsGenerating(true);
+                      try {
+                        // Try to extract people count from the note (e.g., "Pour 5 personnes")
+                        let peopleCount = undefined;
+                        if (currentNote) {
+                          const match = currentNote.match(/Pour (\d+) personne/i);
+                          if (match) {
+                            peopleCount = parseInt(match[1]);
+                          }
+                        }
+
+                        await handleGenerateIngredients(
+                          sheet.item!.id,
+                          currentName || sheet.item!.name,
+                          (() => {
+                            const sId = sheet.serviceId || sheet.item?.serviceId;
+                            const s = plan.meals
+                              .flatMap((m) => m.services)
+                              .find((s) => s.id === sId);
+                            return s?.adults;
+                          })(),
+                          (() => {
+                            const sId = sheet.serviceId || sheet.item?.serviceId;
+                            const s = plan.meals
+                              .flatMap((m) => m.services)
+                              .find((s) => s.id === sId);
+                            return s?.children;
+                          })(),
+                          peopleCount ||
+                            (() => {
+                              const sId = sheet.serviceId || sheet.item?.serviceId;
+                              const s = plan.meals
+                                .flatMap((m) => m.services)
+                                .find((s) => s.id === sId);
+                              return s?.peopleCount;
+                            })(),
+                          locale
+                        );
+                        setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
+                      } catch (error) {
+                        console.error("Failed to generate ingredients:", error);
+                        setSuccessMessage({ text: t("generationError"), type: "error" });
+                      } finally {
+                        setIsGenerating(false);
                       }
                     }
+                  : undefined
+              }
+              onToggleIngredient={
+                sheet.item
+                  ? (id: number, checked: boolean) =>
+                      handleToggleIngredient(id, sheet.item!.id, checked)
+                  : undefined
+              }
+              onDeleteIngredient={
+                sheet.item ? (id: number) => handleDeleteIngredient(id, sheet.item!.id) : undefined
+              }
+              onCreateIngredient={
+                sheet.item
+                  ? (name: string, qty?: string) =>
+                      handleCreateIngredient(sheet.item!.id, name, qty)
+                  : undefined
+              }
+              onDeleteAllIngredients={
+                sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined
+              }
+              isGenerating={isGenerating}
+              isAuthenticated={!!currentUserId}
+              onRequestAuth={onAuth}
+              currentUserId={currentUserId}
+            />
+          )}
 
-                    await handleGenerateIngredients(
-                      sheet.item!.id,
-                      currentName || sheet.item!.name,
-                      (() => {
-                        const sId = sheet.serviceId || sheet.item?.serviceId;
-                        const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
-                        return s?.adults;
-                      })(),
-                      (() => {
-                        const sId = sheet.serviceId || sheet.item?.serviceId;
-                        const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
-                        return s?.children;
-                      })(),
-                      peopleCount ||
-                        (() => {
-                          const sId = sheet.serviceId || sheet.item?.serviceId;
-                          const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
-                          return s?.peopleCount;
-                        })(),
-                      locale
-                    );
-                    setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
-                  } catch (error) {
-                    console.error("Failed to generate ingredients:", error);
-                    setSuccessMessage({ text: t("generationError"), type: "error" });
-                  } finally {
-                    setIsGenerating(false);
-                  }
+          {sheet?.type === "service" && (
+            <ServiceForm
+              meals={plan.meals}
+              defaultMealId={sheet.mealId}
+              defaultAdults={plan.event?.adults || 0}
+              defaultChildren={plan.event?.children || 0}
+              defaultPeopleCount={(plan.event?.adults || 0) + (plan.event?.children || 0)}
+              forceNewMeal={sheet.mealId === -1}
+              readOnly={readOnly}
+              onSubmit={async (
+                mealId: number,
+                title: string,
+                adults: number,
+                children: number,
+                peopleCount: number,
+                newMealDate?: string,
+                newMealTitle?: string,
+                newMealTime?: string,
+                newMealAddress?: string
+              ) => {
+                let targetMealId = mealId;
+                if (mealId === -1 && newMealDate) {
+                  targetMealId = await handleCreateMeal(
+                    newMealDate,
+                    newMealTitle || undefined,
+                    undefined,
+                    undefined,
+                    newMealTime,
+                    newMealAddress
+                  );
                 }
-              : undefined
-          }
-          onToggleIngredient={
-            sheet.item
-              ? (id: number, checked: boolean) =>
-                  handleToggleIngredient(id, sheet.item!.id, checked)
-              : undefined
-          }
-          onDeleteIngredient={
-            sheet.item ? (id: number) => handleDeleteIngredient(id, sheet.item!.id) : undefined
-          }
-          onCreateIngredient={
-            sheet.item
-              ? (name: string, qty?: string) => handleCreateIngredient(sheet.item!.id, name, qty)
-              : undefined
-          }
-          onDeleteAllIngredients={
-            sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined
-          }
-          isGenerating={isGenerating}
-          isAuthenticated={!!currentUserId}
-          onRequestAuth={onAuth}
-          currentUserId={currentUserId}
-        />
-      )}
+                handleCreateService(targetMealId, title, adults, children, peopleCount);
+              }}
+            />
+          )}
+          {sheet?.type === "service-edit" && (
+            <ServiceEditForm
+              service={sheet.service}
+              onSubmit={handleUpdateService}
+              onDelete={handleDeleteService}
+              onClose={() => setSheet(null)}
+            />
+          )}
+          {sheet?.type === "meal-edit" && (
+            <MealForm
+              meal={sheet.meal}
+              onSubmit={(
+                date: string,
+                title?: string,
+                _servs?: string[],
+                adults?: number,
+                children?: number,
+                time?: string,
+                address?: string
+              ) => handleUpdateMeal(sheet.meal.id, date, title, adults, children, time, address)}
+              onDelete={handleDeleteMeal}
+              onClose={() => setSheet(null)}
+            />
+          )}
+          {sheet?.type === "meal-create" && (
+            <MealForm
+              defaultAdults={plan.event?.adults || 0}
+              defaultChildren={plan.event?.children || 0}
+              onSubmit={(
+                date: string,
+                title?: string,
+                services?: string[],
+                adults?: number,
+                children?: number,
+                time?: string,
+                address?: string
+              ) =>
+                handleCreateMealWithServices(date, title, services, adults, children, time, address)
+              }
+              onClose={() => setSheet(null)}
+            />
+          )}
 
-      {sheet?.type === "service" && (
-        <ServiceForm
-          meals={plan.meals}
-          defaultMealId={sheet.mealId}
-          defaultAdults={plan.event?.adults || 0}
-          defaultChildren={plan.event?.children || 0}
-          defaultPeopleCount={(plan.event?.adults || 0) + (plan.event?.children || 0)}
-          forceNewMeal={sheet.mealId === -1}
-          readOnly={readOnly}
-          onSubmit={async (
-            mealId: number,
-            title: string,
-            adults: number,
-            children: number,
-            peopleCount: number,
-            newMealDate?: string,
-            newMealTitle?: string,
-            newMealTime?: string,
-            newMealAddress?: string
-          ) => {
-            let targetMealId = mealId;
-            if (mealId === -1 && newMealDate) {
-              targetMealId = await handleCreateMeal(
-                newMealDate,
-                newMealTitle || undefined,
-                undefined,
-                undefined,
-                newMealTime,
-                newMealAddress
-              );
-            }
-            handleCreateService(targetMealId, title, adults, children, peopleCount);
-          }}
-        />
-      )}
-      {sheet?.type === "service-edit" && (
-        <ServiceEditForm
-          service={sheet.service}
-          onSubmit={handleUpdateService}
-          onDelete={handleDeleteService}
-          onClose={() => setSheet(null)}
-        />
-      )}
-      {sheet?.type === "meal-edit" && (
-        <MealForm
-          meal={sheet.meal}
-          onSubmit={(
-            date: string,
-            title?: string,
-            _servs?: string[],
-            adults?: number,
-            children?: number,
-            time?: string,
-            address?: string
-          ) => handleUpdateMeal(sheet.meal.id, date, title, adults, children, time, address)}
-          onDelete={handleDeleteMeal}
-          onClose={() => setSheet(null)}
-        />
-      )}
-      {sheet?.type === "meal-create" && (
-        <MealForm
-          defaultAdults={plan.event?.adults || 0}
-          defaultChildren={plan.event?.children || 0}
-          onSubmit={(
-            date: string,
-            title?: string,
-            services?: string[],
-            adults?: number,
-            children?: number,
-            time?: string,
-            address?: string
-          ) => handleCreateMealWithServices(date, title, services, adults, children, time, address)}
-          onClose={() => setSheet(null)}
-        />
-      )}
+          {sheet?.type === "person" && (
+            <PersonForm
+              readOnly={readOnly}
+              onSubmit={handleCreatePerson}
+              currentUserId={currentUserId}
+              currentUserImage={currentUserImage}
+            />
+          )}
 
-      {sheet?.type === "person" && (
-        <PersonForm
-          readOnly={readOnly}
-          onSubmit={handleCreatePerson}
-          currentUserId={currentUserId}
-          currentUserImage={currentUserImage}
-        />
-      )}
+          {sheet?.type === "person-edit" && (
+            <PersonEditForm
+              person={sheet.person}
+              allPeople={plan.people}
+              readOnly={readOnly}
+              onSubmit={(name: string, emoji: string | null, image?: string | null) =>
+                handleUpdatePerson(sheet.person.id, name, emoji, image)
+              }
+              onDelete={() => handleDeletePerson(sheet.person.id)}
+              currentUserId={currentUserId}
+            />
+          )}
 
-      {sheet?.type === "person-edit" && (
-        <PersonEditForm
-          person={sheet.person}
-          allPeople={plan.people}
-          readOnly={readOnly}
-          onSubmit={(name: string, emoji: string | null, image?: string | null) =>
-            handleUpdatePerson(sheet.person.id, name, emoji, image)
-          }
-          onDelete={() => handleDeletePerson(sheet.person.id)}
-          currentUserId={currentUserId}
-        />
-      )}
+          {sheet?.type === "share" && (
+            <ShareModal
+              slug={slug}
+              adminKey={writeKey}
+              onClose={() => setSheet(null)}
+              isNew={searchParams.get("new") === "true"}
+              eventName={plan.event?.name}
+            />
+          )}
 
-      {sheet?.type === "share" && (
-        <ShareModal
-          slug={slug}
-          adminKey={writeKey}
-          onClose={() => setSheet(null)}
-          isNew={searchParams.get("new") === "true"}
-          eventName={plan.event?.name}
-        />
-      )}
+          {sheet?.type === "guest-access" && (
+            <GuestAccessSheet
+              open
+              onClose={() => {
+                setSheet(null);
+                onDismissGuestPrompt();
+              }}
+              onAuth={onAuth}
+            />
+          )}
 
-      {sheet?.type === "guest-access" && (
-        <GuestAccessSheet
-          open
-          onClose={() => {
-            setSheet(null);
-            onDismissGuestPrompt();
-          }}
-          onAuth={onAuth}
-        />
-      )}
+          {sheet?.type === "claim-person" && (
+            <ClaimPersonSheet
+              open
+              unclaimed={sheet.unclaimed}
+              onClose={() => setSheet(null)}
+              onClaim={async (id) => {
+                try {
+                  await handlers.handleClaimPerson(id);
+                  setSheet(null);
+                } catch (error) {
+                  // Error is handled in the handler (toast/console)
+                }
+              }}
+              onJoinNew={onJoinNew}
+            />
+          )}
 
-      {sheet?.type === "claim-person" && (
-        <ClaimPersonSheet
-          open
-          unclaimed={sheet.unclaimed}
-          onClose={() => setSheet(null)}
-          onClaim={async (id) => {
-            try {
-              await handlers.handleClaimPerson(id);
-              setSheet(null);
-            } catch (error) {
-              // Error is handled in the handler (toast/console)
-            }
-          }}
-          onJoinNew={onJoinNew}
-        />
-      )}
-
-      {sheet?.type === "shopping-list" && (
-        <ShoppingListSheet
-          person={sheet.person}
-          plan={plan}
-          slug={slug}
-          writeKey={writeKey}
-          onToggleIngredient={handleToggleIngredient}
-          onToggleItemChecked={handlers.handleToggleItemChecked}
-        />
-      )}
-    </BottomSheet>
+          {sheet?.type === "shopping-list" && (
+            <ShoppingListSheet
+              person={sheet.person}
+              plan={plan}
+              slug={slug}
+              writeKey={writeKey}
+              onToggleIngredient={handleToggleIngredient}
+              onToggleItemChecked={handlers.handleToggleItemChecked}
+            />
+          )}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }

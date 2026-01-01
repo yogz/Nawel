@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
   Calendar,
   Users,
@@ -226,142 +226,146 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
       </div>
 
       {/* Edit Modal */}
-      <BottomSheet
-        open={!!editingEvent}
-        onClose={() => setEditingEvent(null)}
-        title="Modifier l'événement"
-      >
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nom</Label>
-            <Input
-              id="name"
-              name="name"
-              defaultValue={editingEvent?.name}
-              required
-              disabled={isPending}
-            />
-          </div>
+      <Drawer open={!!editingEvent} onOpenChange={(open) => !open && setEditingEvent(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Modifier l'événement</DrawerTitle>
+          </DrawerHeader>
+          <div className="scrollbar-none overflow-y-auto pb-8">
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  defaultValue={editingEvent?.name}
+                  required
+                  disabled={isPending}
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug (URL)</Label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">/event/</span>
-              <Input
-                id="slug"
-                name="slug"
-                defaultValue={editingEvent?.slug}
-                required
-                disabled={isPending}
-                className="flex-1"
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="slug">Slug (URL)</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">/event/</span>
+                  <Input
+                    id="slug"
+                    name="slug"
+                    defaultValue={editingEvent?.slug}
+                    required
+                    disabled={isPending}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              defaultValue={editingEvent?.description || ""}
-              rows={2}
-              disabled={isPending}
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  defaultValue={editingEvent?.description || ""}
+                  rows={2}
+                  disabled={isPending}
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="adults">Adultes</Label>
-              <Input
-                id="adults"
-                name="adults"
-                type="number"
-                min="0"
-                max="1000"
-                defaultValue={editingEvent?.adults ?? 0}
-                disabled={isPending}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="children">Enfants</Label>
-              <Input
-                id="children"
-                name="children"
-                type="number"
-                min="0"
-                max="1000"
-                defaultValue={editingEvent?.children ?? 0}
-                disabled={isPending}
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="adults">Adultes</Label>
+                  <Input
+                    id="adults"
+                    name="adults"
+                    type="number"
+                    min="0"
+                    max="1000"
+                    defaultValue={editingEvent?.adults ?? 0}
+                    disabled={isPending}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="children">Enfants</Label>
+                  <Input
+                    id="children"
+                    name="children"
+                    type="number"
+                    min="0"
+                    max="1000"
+                    defaultValue={editingEvent?.children ?? 0}
+                    disabled={isPending}
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="adminKey">Clé Admin</Label>
-            <Input
-              id="adminKey"
-              name="adminKey"
-              defaultValue={editingEvent?.adminKey || ""}
-              disabled={isPending}
-              placeholder="Laisser vide pour aucune clé"
-            />
-            <p className="text-xs text-muted-foreground">
-              Utilisée pour accéder en mode édition via ?key=...
-            </p>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="adminKey">Clé Admin</Label>
+                <Input
+                  id="adminKey"
+                  name="adminKey"
+                  defaultValue={editingEvent?.adminKey || ""}
+                  disabled={isPending}
+                  placeholder="Laisser vide pour aucune clé"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Utilisée pour accéder en mode édition via ?key=...
+                </p>
+              </div>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setEditingEvent(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button type="submit" className="flex-1" disabled={isPending}>
-              {isPending ? "Enregistrement..." : "Enregistrer"}
-            </Button>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setEditingEvent(null)}
+                  disabled={isPending}
+                >
+                  Annuler
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isPending}>
+                  {isPending ? "Enregistrement..." : "Enregistrer"}
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation Modal */}
-      <BottomSheet
-        open={!!deletingEvent}
-        onClose={() => setDeletingEvent(null)}
-        title="Supprimer l'événement"
-      >
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Êtes-vous sûr de vouloir supprimer{" "}
-            <strong className="text-text">{deletingEvent?.name}</strong> ? Cette action est
-            irréversible et supprimera tous les repas, services, articles et convives associés.
-          </p>
+      <Drawer open={!!deletingEvent} onOpenChange={(open) => !open && setDeletingEvent(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Supprimer l'événement</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            <p className="text-muted-foreground">
+              Êtes-vous sûr de vouloir supprimer{" "}
+              <strong className="text-text">{deletingEvent?.name}</strong> ? Cette action est
+              irréversible et supprimera tous les repas, services, articles et convives associés.
+            </p>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setDeletingEvent(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              className="flex-1"
-              onClick={handleDelete}
-              disabled={isPending}
-            >
-              {isPending ? "Suppression..." : "Supprimer"}
-            </Button>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setDeletingEvent(null)}
+                disabled={isPending}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                {isPending ? "Suppression..." : "Supprimer"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

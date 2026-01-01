@@ -33,7 +33,8 @@ This document serves as the "Source of Truth" for any code changes in the Nawel 
 - **Premium Design**: Maintain the "WOW" factor. Use gradients, glassmorphism, and micro-animations defined in `globals.css`.
 - **Mobile First**: All UI must be perfectly responsive and usable on small touch screens.
 - **Interaction Patterns**:
-  - Use `BottomSheet` (`@/components/ui/bottom-sheet`) for forms and secondary actions on mobile.
+  - Use `Drawer` (`@/components/ui/drawer`) for forms and secondary actions on mobile. It provides a native-like gesture experience (swipe-to-close) powered by **Vaul**.
+  - Use `Sheet` (`@/components/ui/sheet`) for side menus or desktop sideboards.
   - Use `SuccessToast` for user feedback.
   - **Auto-Save**: Prefer auto-save patterns (with debounce) for complex forms over manual "Save" buttons.
 

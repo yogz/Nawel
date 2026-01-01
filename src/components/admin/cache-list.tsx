@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Search, Eye, Pencil, Trash2, Users, CheckCircle, AlertTriangle } from "lucide-react";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
 
@@ -244,162 +244,170 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
       )}
 
       {/* View Details Modal */}
-      <BottomSheet
-        open={!!selectedEntry}
-        onClose={() => setSelectedEntry(null)}
-        title={`Détails : ${selectedEntry?.dishName}`}
-      >
-        {selectedEntry && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-muted-foreground">Personnes</span>
-                <p className="font-medium">{selectedEntry.peopleCount}</p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Confirmations</span>
-                <p className="font-medium">{selectedEntry.confirmations}</p>
-              </div>
-            </div>
+      <Drawer open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Détails : {selectedEntry?.dishName}</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            {selectedEntry && (
+              <>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Personnes</span>
+                    <p className="font-medium">{selectedEntry.peopleCount}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Confirmations</span>
+                    <p className="font-medium">{selectedEntry.confirmations}</p>
+                  </div>
+                </div>
 
-            <div>
-              <h4 className="mb-2 font-medium">Ingrédients</h4>
-              <div className="max-h-60 overflow-y-auto rounded-lg bg-gray-50 p-3">
-                <ul className="space-y-1">
-                  {parseIngredients(selectedEntry.ingredients).map((ing, idx) => (
-                    <li key={idx} className="flex justify-between text-sm">
-                      <span>{ing.name}</span>
-                      {ing.quantity && (
-                        <span className="text-muted-foreground">{ing.quantity}</span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+                <div>
+                  <h4 className="mb-2 font-medium">Ingrédients</h4>
+                  <div className="max-h-60 overflow-y-auto rounded-lg bg-gray-50 p-3">
+                    <ul className="space-y-1">
+                      {parseIngredients(selectedEntry.ingredients).map((ing, idx) => (
+                        <li key={idx} className="flex justify-between text-sm">
+                          <span>{ing.name}</span>
+                          {ing.quantity && (
+                            <span className="text-muted-foreground">{ing.quantity}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-            <div className="text-xs text-muted-foreground">
-              <p>Créé le {formatDate(selectedEntry.createdAt)}</p>
-              <p>Mis à jour le {formatDate(selectedEntry.updatedAt)}</p>
-            </div>
+                <div className="text-xs text-muted-foreground">
+                  <p>Créé le {formatDate(selectedEntry.createdAt)}</p>
+                  <p>Mis à jour le {formatDate(selectedEntry.updatedAt)}</p>
+                </div>
+              </>
+            )}
           </div>
-        )}
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Edit Modal */}
-      <BottomSheet
-        open={!!editingEntry}
-        onClose={() => setEditingEntry(null)}
-        title={`Modifier : ${editingEntry?.dishName}`}
-      >
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="ingredients">Ingrédients (JSON)</Label>
-            <Textarea
-              id="ingredients"
-              name="ingredients"
-              defaultValue={
-                editingEntry
-                  ? JSON.stringify(parseIngredients(editingEntry.ingredients), null, 2)
-                  : ""
-              }
-              rows={10}
-              className="font-mono text-sm"
-              disabled={isPending}
-            />
-            <p className="text-xs text-muted-foreground">
-              Format: [{`{"name": "...", "quantity": "..."}`}, ...]
-            </p>
-          </div>
+      <Drawer open={!!editingEntry} onOpenChange={(open) => !open && setEditingEntry(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Modifier : {editingEntry?.dishName}</DrawerTitle>
+          </DrawerHeader>
+          <div className="scrollbar-none overflow-y-auto pb-8">
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="ingredients">Ingrédients (JSON)</Label>
+                <Textarea
+                  id="ingredients"
+                  name="ingredients"
+                  defaultValue={
+                    editingEntry
+                      ? JSON.stringify(parseIngredients(editingEntry.ingredients), null, 2)
+                      : ""
+                  }
+                  rows={10}
+                  className="font-mono text-sm"
+                  disabled={isPending}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Format: [{`{"name": "...", "quantity": "..."}`}, ...]
+                </p>
+              </div>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setEditingEntry(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button type="submit" className="flex-1" disabled={isPending}>
-              {isPending ? "Enregistrement..." : "Enregistrer"}
-            </Button>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setEditingEntry(null)}
+                  disabled={isPending}
+                >
+                  Annuler
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isPending}>
+                  {isPending ? "Enregistrement..." : "Enregistrer"}
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation Modal */}
-      <BottomSheet
-        open={!!deletingEntry}
-        onClose={() => setDeletingEntry(null)}
-        title="Supprimer l'entrée"
-      >
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Êtes-vous sûr de vouloir supprimer le cache pour{" "}
-            <strong className="capitalize text-text">{deletingEntry?.dishName}</strong> (
-            {deletingEntry?.peopleCount} personnes) ?
-          </p>
+      <Drawer open={!!deletingEntry} onOpenChange={(open) => !open && setDeletingEntry(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Supprimer l'entrée</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            <p className="text-muted-foreground">
+              Êtes-vous sûr de vouloir supprimer le cache pour{" "}
+              <strong className="capitalize text-text">{deletingEntry?.dishName}</strong> (
+              {deletingEntry?.peopleCount} personnes) ?
+            </p>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setDeletingEntry(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              className="flex-1"
-              onClick={handleDelete}
-              disabled={isPending}
-            >
-              {isPending ? "Suppression..." : "Supprimer"}
-            </Button>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setDeletingEntry(null)}
+                disabled={isPending}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                {isPending ? "Suppression..." : "Supprimer"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Clear All Confirmation Modal */}
-      <BottomSheet
-        open={showClearAll}
-        onClose={() => setShowClearAll(false)}
-        title="Vider tout le cache"
-      >
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Êtes-vous sûr de vouloir supprimer{" "}
-            <strong className="text-text">toutes les {entries.length} entrées</strong> du cache ?
-            Cette action est irréversible.
-          </p>
+      <Drawer open={showClearAll} onOpenChange={(open) => !open && setShowClearAll(false)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Vider tout le cache</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            <p className="text-muted-foreground">
+              Êtes-vous sûr de vouloir supprimer{" "}
+              <strong className="text-text">toutes les {entries.length} entrées</strong> du cache ?
+              Cette action est irréversible.
+            </p>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setShowClearAll(false)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              className="flex-1"
-              onClick={handleClearAll}
-              disabled={isPending}
-            >
-              {isPending ? "Suppression..." : "Tout supprimer"}
-            </Button>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowClearAll(false)}
+                disabled={isPending}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={handleClearAll}
+                disabled={isPending}
+              >
+                {isPending ? "Suppression..." : "Tout supprimer"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

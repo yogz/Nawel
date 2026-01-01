@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
   UtensilsCrossed,
   Utensils,
@@ -489,8 +489,13 @@ export function EventForm({
   }
 
   return (
-    <BottomSheet open onClose={onClose} title={stepTitles[step - 1]}>
-      {content}
-    </BottomSheet>
+    <Drawer open onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="px-4">
+        <DrawerHeader className="px-1 text-left">
+          <DrawerTitle>{stepTitles[step - 1]}</DrawerTitle>
+        </DrawerHeader>
+        <div className="scrollbar-none overflow-y-auto pb-8">{content}</div>
+      </DrawerContent>
+    </Drawer>
   );
 }

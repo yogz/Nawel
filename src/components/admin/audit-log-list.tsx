@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { type AuditLogEntry, deleteAuditLogsAction } from "@/app/actions/audit-actions";
 import { Button } from "@/components/ui/button";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Eye, History, User, Globe, Link, Settings, Trash2, AlertCircle } from "lucide-react";
 
 function JsonViewer({ data, label }: { data: string | null; label: string }) {
@@ -277,111 +277,115 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
         )}
       </div>
 
-      <BottomSheet
-        open={!!selectedLog}
-        onClose={() => setSelectedLog(null)}
-        title="Détails du changement"
-      >
-        {selectedLog && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-muted-foreground">ACTEUR</div>
-                <div className="border-l-2 border-primary pl-2 text-sm">
-                  <p className="font-semibold text-text">{selectedLog.userName ?? "Anonyme"}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {selectedLog.userEmail ?? "Pas d'adresse email"}
+      <Drawer open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Détails du changement</DrawerTitle>
+          </DrawerHeader>
+          <div className="scrollbar-none overflow-y-auto pb-8">
+            {selectedLog && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground">ACTEUR</div>
+                    <div className="border-l-2 border-primary pl-2 text-sm">
+                      <p className="font-semibold text-text">{selectedLog.userName ?? "Anonyme"}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {selectedLog.userEmail ?? "Pas d'adresse email"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground">CONTEXTE</div>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex items-center gap-1">
+                        <Globe className="h-3 w-3" /> {selectedLog.userIp ?? "N/A"}
+                      </div>
+                      <div className="flex max-w-[200px] items-start gap-1 truncate">
+                        <Link className="mt-0.5 h-3 w-3 flex-shrink-0" />{" "}
+                        {selectedLog.referer ?? "Direct"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <JsonViewer label="Avant (Old Data)" data={selectedLog.oldData} />
+                  <JsonViewer label="Après (New Data)" data={selectedLog.newData} />
+                </div>
+
+                <div className="border-t pt-4 font-mono text-[10px] text-muted-foreground">
+                  UA: {selectedLog.userAgent}
+                </div>
+              </div>
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer open={showManageModal} onOpenChange={(open) => !open && setShowManageModal(false)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Gestion du journal d'audit</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-6 pb-8">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <div className="flex gap-3">
+                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
+                <div className="text-sm text-amber-800">
+                  <p className="mb-1 font-semibold">Maintenance de la base de données</p>
+                  <p>
+                    La suppression des anciens logs permet de libérer de l&apos;espace et
+                    d&apos;améliorer les performances.
                   </p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-muted-foreground">CONTEXTE</div>
-                <div className="space-y-1 text-xs">
-                  <div className="flex items-center gap-1">
-                    <Globe className="h-3 w-3" /> {selectedLog.userIp ?? "N/A"}
-                  </div>
-                  <div className="flex max-w-[200px] items-start gap-1 truncate">
-                    <Link className="mt-0.5 h-3 w-3 flex-shrink-0" />{" "}
-                    {selectedLog.referer ?? "Direct"}
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <div className="space-y-4">
-              <JsonViewer label="Avant (Old Data)" data={selectedLog.oldData} />
-              <JsonViewer label="Après (New Data)" data={selectedLog.newData} />
-            </div>
-
-            <div className="border-t pt-4 font-mono text-[10px] text-muted-foreground">
-              UA: {selectedLog.userAgent}
-            </div>
-          </div>
-        )}
-      </BottomSheet>
-
-      <BottomSheet
-        open={showManageModal}
-        onClose={() => setShowManageModal(false)}
-        title="Gestion du journal d'audit"
-      >
-        <div className="space-y-6">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-            <div className="flex gap-3">
-              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" />
-              <div className="text-sm text-amber-800">
-                <p className="mb-1 font-semibold">Maintenance de la base de données</p>
-                <p>
-                  La suppression des anciens logs permet de libérer de l&apos;espace et
-                  d&apos;améliorer les performances.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3">
-            <Button
-              variant="outline"
-              className="h-auto justify-start px-4 py-3"
-              onClick={() => handleBatchDelete(30)}
-              disabled={isPending}
-            >
-              <div className="text-left">
-                <p className="font-semibold">Plus de 30 jours</p>
-                <p className="text-xs text-muted-foreground">
-                  Conserver uniquement le dernier mois
-                </p>
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="h-auto justify-start px-4 py-3"
-              onClick={() => handleBatchDelete(7)}
-              disabled={isPending}
-            >
-              <div className="text-left">
-                <p className="font-semibold">Plus de 7 jours</p>
-                <p className="text-xs text-muted-foreground">
-                  Conserver uniquement la dernière semaine
-                </p>
-              </div>
-            </Button>
-
-            <div className="border-t pt-4">
+            <div className="grid grid-cols-1 gap-3">
               <Button
-                variant="destructive"
-                className="w-full"
-                onClick={() => handleBatchDelete()}
+                variant="outline"
+                className="h-auto justify-start px-4 py-3"
+                onClick={() => handleBatchDelete(30)}
                 disabled={isPending}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Tout supprimer
+                <div className="text-left">
+                  <p className="font-semibold">Plus de 30 jours</p>
+                  <p className="text-xs text-muted-foreground">
+                    Conserver uniquement le dernier mois
+                  </p>
+                </div>
               </Button>
+
+              <Button
+                variant="outline"
+                className="h-auto justify-start px-4 py-3"
+                onClick={() => handleBatchDelete(7)}
+                disabled={isPending}
+              >
+                <div className="text-left">
+                  <p className="font-semibold">Plus de 7 jours</p>
+                  <p className="text-xs text-muted-foreground">
+                    Conserver uniquement la dernière semaine
+                  </p>
+                </div>
+              </Button>
+
+              <div className="border-t pt-4">
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => handleBatchDelete()}
+                  disabled={isPending}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Tout supprimer
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }

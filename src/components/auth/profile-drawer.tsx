@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession, signOut } from "@/lib/auth-client";
-import { BottomSheet } from "../ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -18,6 +18,7 @@ import {
   LogOut,
   ChevronDown,
   Globe,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter, usePathname } from "@/i18n/navigation";
@@ -131,431 +132,453 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   }
 
   return (
-    <BottomSheet
-      open={open}
-      onClose={onClose}
-      title={showDeleteConfirm ? tProfile("deleteAccount") : tProfile("settings")}
-    >
-      {!showDeleteConfirm ? (
-        <div className="space-y-4 px-1 pb-8">
-          <div className="space-y-4">
-            {/* Avatar Display (Read Only) */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative h-20 w-20">
-                <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
-                  {(() => {
-                    const avatar = renderAvatar(
-                      {
-                        name: name || session.user.name || "User",
-                        emoji: null, // We want the user-level emoji/image
-                        user: { ...session.user, emoji: selectedEmoji },
-                      },
-                      [],
-                      theme
-                    );
+    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DrawerContent className="px-4">
+        <DrawerHeader className="px-1 text-left">
+          <div className="flex items-center justify-between">
+            <DrawerTitle>
+              {showDeleteConfirm ? tProfile("deleteAccount") : tProfile("settings")}
+            </DrawerTitle>
+            <DrawerClose asChild>
+              <button
+                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </DrawerClose>
+          </div>
+        </DrawerHeader>
 
-                    if (avatar.type === "image") {
-                      return (
-                        <Image
-                          src={avatar.src}
-                          alt={name}
-                          width={80}
-                          height={80}
-                          className="h-full w-full object-cover"
-                        />
-                      );
-                    }
-                    return (
-                      <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
-                        {avatar.value}
+        <div className="scrollbar-none overflow-y-auto">
+          {!showDeleteConfirm ? (
+            <div className="space-y-4 px-1 pb-8">
+              <div className="space-y-4">
+                {/* Avatar Display (Read Only) */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="relative h-20 w-20">
+                    <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100">
+                      {(() => {
+                        const avatar = renderAvatar(
+                          {
+                            name: name || session.user.name || "User",
+                            emoji: null, // We want the user-level emoji/image
+                            user: { ...session.user, emoji: selectedEmoji },
+                          },
+                          [],
+                          theme
+                        );
+
+                        if (avatar.type === "image") {
+                          return (
+                            <Image
+                              src={avatar.src}
+                              alt={name}
+                              width={80}
+                              height={80}
+                              className="h-full w-full object-cover"
+                            />
+                          );
+                        }
+                        return (
+                          <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
+                            {avatar.value}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                    {session.user.image && (
+                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-500 text-[10px] shadow-sm">
+                        📸
                       </div>
-                    );
-                  })()}
-                </div>
-                {session.user.image && (
-                  <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-500 text-[10px] shadow-sm">
-                    📸
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                  {session.user.email}
-                </p>
-                {!session.user.image && (
-                  <p className="mt-2 flex items-center justify-center gap-1.5 px-4 text-center text-[9px] font-medium leading-relaxed text-gray-500">
-                    <Sparkles size={10} className="shrink-0 text-accent" />
-                    <span>
-                      {selectedEmoji
-                        ? "Personnalisé avec votre emoji."
-                        : session.user.image
-                          ? "Utilisation de votre photo Google."
-                          : "Connectez-vous avec Google pour récupérer votre photo de profil."}
-                    </span>
-                  </p>
-                )}
-                {/* Auto-save status indicator */}
-                <div className="mt-1 h-4">
-                  {isSubmitting && (
-                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-accent">
-                      <Loader2 size={10} className="animate-spin" />
-                      <span>Enregistrement...</span>
-                    </div>
-                  )}
-                  {success && (
-                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-green-500">
-                      <Check size={10} />
-                      <span>Synchronisé</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {/* Name Field */}
-              <div className="space-y-2">
-                <Label
-                  htmlFor="profile-name"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-                >
-                  Nom complet
-                </Label>
-                <div className="group relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-black">
-                    <User size={18} />
-                  </div>
-                  <Input
-                    id="profile-name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSaveProfile();
-                      }
-                    }}
-                    placeholder="Ex: Jean Dupont"
-                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
-                    required
-                  />
-                </div>
-                {name !== (session.user.name || "") && (
-                  <div className="pt-2 animate-in fade-in slide-in-from-top-2">
-                    <Button
-                      variant="premium"
-                      className="h-10 w-full"
-                      onClick={() => handleSaveProfile()}
-                      disabled={isSubmitting || !name.trim()}
-                      icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
-                      shine
-                    >
-                      <span className="text-xs font-black uppercase tracking-widest text-gray-700">
-                        {tCommon("save") || "Enregistrer"}
-                      </span>
-                    </Button>
-                  </div>
-                )}
-                {/* Emoji Selection */}
-                <div className="space-y-3">
-                  <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    Votre Emoji
-                  </Label>
-                  <div className="no-scrollbar grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-2xl border border-gray-100/50 bg-gray-50/50 p-2">
-                    <button
-                      onClick={() => {
-                        setSelectedEmoji(null);
-                        handleSaveProfile(name, null);
-                      }}
-                      className={clsx(
-                        "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[9px] font-black uppercase tracking-tight transition-all",
-                        selectedEmoji === null
-                          ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-                          : "bg-white text-gray-400 hover:bg-gray-100"
-                      )}
-                    >
-                      {session.user.image ? (
-                        <Image
-                          src={session.user.image}
-                          alt="Profile"
-                          fill
-                          className={clsx(
-                            "object-cover",
-                            selectedEmoji !== null && "opacity-40 grayscale"
-                          )}
-                        />
-                      ) : (
-                        "Auto"
-                      )}
-                      {selectedEmoji === null && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-accent/20">
-                          <Check size={16} className="text-white drop-shadow-md" />
-                        </div>
-                      )}
-                    </button>
-                    {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
-                      <button
-                        key={emoji}
-                        onClick={() => {
-                          setSelectedEmoji(emoji);
-                          handleSaveProfile(name, emoji);
-                        }}
-                        className={clsx(
-                          "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
-                          selectedEmoji === emoji
-                            ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-                            : "bg-white shadow-sm hover:bg-gray-100"
-                        )}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                  {session.user.image && (
-                    <p className="px-1 text-[9px] italic text-gray-400">
-                      Note: Sélectionnez votre photo ou un emoji pour votre profil.
+                  <div className="text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                      {session.user.email}
                     </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Theme Selection */}
-              <div className="space-y-3">
-                <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  <Sparkles size={12} />
-                  Ambiance
-                </Label>
-                <div className="grid grid-cols-1 gap-2.5">
-                  {themes.map((t) => {
-                    const isSelected = theme === t.id;
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => setTheme(t.id)}
-                        className={clsx(
-                          "flex items-center justify-between rounded-xl border-2 p-2.5 transition-all active:scale-[0.98]",
-                          isSelected
-                            ? "border-accent bg-accent/5 ring-1 ring-accent/20"
-                            : "border-gray-50 bg-white hover:border-gray-200"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={clsx(
-                              "flex h-9 w-9 items-center justify-center rounded-xl text-xl transition-all duration-300",
-                              isSelected
-                                ? "bg-accent text-white shadow-lg shadow-accent/20"
-                                : "bg-gray-100"
-                            )}
-                          >
-                            {t.emoji}
-                          </div>
-                          <div className="text-left">
-                            <p
-                              className={clsx(
-                                "text-xs font-black uppercase tracking-widest",
-                                isSelected ? "text-accent" : "text-gray-700"
-                              )}
-                            >
-                              {t.label}
-                            </p>
-                            <p className="mt-0.5 text-[10px] font-bold text-gray-400">
-                              {t.description}
-                            </p>
-                          </div>
+                    {!session.user.image && (
+                      <p className="mt-2 flex items-center justify-center gap-1.5 px-4 text-center text-[9px] font-medium leading-relaxed text-gray-500">
+                        <Sparkles size={10} className="shrink-0 text-accent" />
+                        <span>
+                          {selectedEmoji
+                            ? "Personnalisé avec votre emoji."
+                            : session.user.image
+                              ? "Utilisation de votre photo Google."
+                              : "Connectez-vous avec Google pour récupérer votre photo de profil."}
+                        </span>
+                      </p>
+                    )}
+                    {/* Auto-save status indicator */}
+                    <div className="mt-1 h-4">
+                      {isSubmitting && (
+                        <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-accent">
+                          <Loader2 size={10} className="animate-spin" />
+                          <span>Enregistrement...</span>
                         </div>
-                        <div
+                      )}
+                      {success && (
+                        <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-green-500">
+                          <Check size={10} />
+                          <span>Synchronisé</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Name Field */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="profile-name"
+                      className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    >
+                      Nom complet
+                    </Label>
+                    <div className="group relative">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-black">
+                        <User size={18} />
+                      </div>
+                      <Input
+                        id="profile-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleSaveProfile();
+                          }
+                        }}
+                        placeholder="Ex: Jean Dupont"
+                        className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
+                        required
+                      />
+                    </div>
+                    {name !== (session.user.name || "") && (
+                      <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+                        <Button
+                          variant="premium"
+                          className="h-10 w-full"
+                          onClick={() => handleSaveProfile()}
+                          disabled={isSubmitting || !name.trim()}
+                          icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
+                          shine
+                        >
+                          <span className="text-xs font-black uppercase tracking-widest text-gray-700">
+                            {tCommon("save") || "Enregistrer"}
+                          </span>
+                        </Button>
+                      </div>
+                    )}
+                    {/* Emoji Selection */}
+                    <div className="space-y-3">
+                      <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        Votre Emoji
+                      </Label>
+                      <div className="no-scrollbar grid max-h-40 grid-cols-6 gap-1.5 overflow-y-auto rounded-2xl border border-gray-100/50 bg-gray-50/50 p-2">
+                        <button
+                          onClick={() => {
+                            setSelectedEmoji(null);
+                            handleSaveProfile(name, null);
+                          }}
                           className={clsx(
-                            "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all",
-                            isSelected ? "border-accent bg-accent" : "border-gray-200 bg-white"
+                            "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[9px] font-black uppercase tracking-tight transition-all",
+                            selectedEmoji === null
+                              ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                              : "bg-white text-gray-400 hover:bg-gray-100"
                           )}
                         >
-                          {isSelected && (
-                            <div className="h-2.5 w-2.5 rounded-full bg-white shadow-sm" />
+                          {session.user.image ? (
+                            <Image
+                              src={session.user.image}
+                              alt="Profile"
+                              fill
+                              className={clsx(
+                                "object-cover",
+                                selectedEmoji !== null && "opacity-40 grayscale"
+                              )}
+                            />
+                          ) : (
+                            "Auto"
                           )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Language Selection */}
-              <div className="space-y-3">
-                <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  <Globe size={12} />
-                  {tCommon("languages.fr") ? "Langue" : "Language"}
-                </Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {routing.locales.map((l) => {
-                    const isSelected = locale === l;
-                    const languageIcons: Record<string, string> = {
-                      fr: "🇫🇷",
-                      en: "🇬🇧",
-                      es: "🇪🇸",
-                      pt: "🇵🇹",
-                      de: "🇩🇪",
-                      el: "🇬🇷",
-                    };
-                    return (
-                      <button
-                        key={l}
-                        type="button"
-                        onClick={async () => {
-                          // Save to user profile if logged in
-                          if (session?.user) {
-                            try {
-                              await updateUserAction({
-                                language: l,
-                              });
-                            } catch (err) {
-                              console.error("Failed to save language preference:", err);
-                            }
-                          }
-
-                          // Use next-intl router for robust locale switching
-                          // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
-                          router.replace(
-                            { pathname, query: Object.fromEntries(searchParams.entries()) },
-                            { locale: l }
-                          );
-                        }}
-                        className={clsx(
-                          "flex items-center justify-between rounded-xl border-2 p-2 transition-all active:scale-[0.98]",
-                          isSelected
-                            ? "border-accent bg-accent/5 ring-1 ring-accent/20"
-                            : "border-gray-50 bg-white hover:border-gray-200"
-                        )}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{languageIcons[l] || "🌐"}</span>
-                          <span
+                          {selectedEmoji === null && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-accent/20">
+                              <Check size={16} className="text-white drop-shadow-md" />
+                            </div>
+                          )}
+                        </button>
+                        {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => {
+                              setSelectedEmoji(emoji);
+                              handleSaveProfile(name, emoji);
+                            }}
                             className={clsx(
-                              "text-xs font-bold",
-                              isSelected ? "text-accent" : "text-gray-600"
+                              "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
+                              selectedEmoji === emoji
+                                ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                                : "bg-white shadow-sm hover:bg-gray-100"
                             )}
                           >
-                            {tCommon(`languages.${l}`)}
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                      {session.user.image && (
+                        <p className="px-1 text-[9px] italic text-gray-400">
+                          Note: Sélectionnez votre photo ou un emoji pour votre profil.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Theme Selection */}
+                  <div className="space-y-3">
+                    <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <Sparkles size={12} />
+                      Ambiance
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {themes.map((t) => {
+                        const isSelected = theme === t.id;
+                        return (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => setTheme(t.id)}
+                            className={clsx(
+                              "flex items-center justify-between rounded-xl border-2 p-2.5 transition-all active:scale-[0.98]",
+                              isSelected
+                                ? "border-accent bg-accent/5 ring-1 ring-accent/20"
+                                : "border-gray-50 bg-white hover:border-gray-200"
+                            )}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={clsx(
+                                  "flex h-9 w-9 items-center justify-center rounded-xl text-xl transition-all duration-300",
+                                  isSelected
+                                    ? "bg-accent text-white shadow-lg shadow-accent/20"
+                                    : "bg-gray-100"
+                                )}
+                              >
+                                {t.emoji}
+                              </div>
+                              <div className="text-left">
+                                <p
+                                  className={clsx(
+                                    "text-xs font-black uppercase tracking-widest",
+                                    isSelected ? "text-accent" : "text-gray-700"
+                                  )}
+                                >
+                                  {t.label}
+                                </p>
+                                <p className="mt-0.5 text-[10px] font-bold text-gray-400">
+                                  {t.description}
+                                </p>
+                              </div>
+                            </div>
+                            <div
+                              className={clsx(
+                                "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all",
+                                isSelected ? "border-accent bg-accent" : "border-gray-200 bg-white"
+                              )}
+                            >
+                              {isSelected && (
+                                <div className="h-2.5 w-2.5 rounded-full bg-white shadow-sm" />
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Language Selection */}
+                  <div className="space-y-3">
+                    <Label className="ml-1 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <Globe size={12} />
+                      {tCommon("languages.fr") ? "Langue" : "Language"}
+                    </Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {routing.locales.map((l) => {
+                        const isSelected = locale === l;
+                        const languageIcons: Record<string, string> = {
+                          fr: "🇫🇷",
+                          en: "🇬🇧",
+                          es: "🇪🇸",
+                          pt: "🇵🇹",
+                          de: "🇩🇪",
+                          el: "🇬🇷",
+                        };
+                        return (
+                          <button
+                            key={l}
+                            type="button"
+                            onClick={async () => {
+                              // Save to user profile if logged in
+                              if (session?.user) {
+                                try {
+                                  await updateUserAction({
+                                    language: l,
+                                  });
+                                } catch (err) {
+                                  console.error("Failed to save language preference:", err);
+                                }
+                              }
+
+                              // Use next-intl router for robust locale switching
+                              // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
+                              router.replace(
+                                { pathname, query: Object.fromEntries(searchParams.entries()) },
+                                { locale: l }
+                              );
+                            }}
+                            className={clsx(
+                              "flex items-center justify-between rounded-xl border-2 p-2 transition-all active:scale-[0.98]",
+                              isSelected
+                                ? "border-accent bg-accent/5 ring-1 ring-accent/20"
+                                : "border-gray-50 bg-white hover:border-gray-200"
+                            )}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{languageIcons[l] || "🌐"}</span>
+                              <span
+                                className={clsx(
+                                  "text-xs font-bold",
+                                  isSelected ? "text-accent" : "text-gray-600"
+                                )}
+                              >
+                                {tCommon(`languages.${l}`)}
+                              </span>
+                            </div>
+                            {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-accent" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Messages */}
+                {error && (
+                  <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-2">
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                <div className="space-y-3 pt-2">
+                  <Button
+                    variant="premium"
+                    className="w-full border-gray-100 bg-gray-50/50"
+                    icon={<LogOut size={16} />}
+                    iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
+                    onClick={async () => {
+                      await signOut();
+                      onClose();
+                      router.refresh();
+                    }}
+                  >
+                    <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                      Se déconnecter
+                    </span>
+                  </Button>
+
+                  {/* Advanced Options Section */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                      className="group flex w-full items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+                    >
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+                        <ChevronDown
+                          size={10}
+                          className={clsx("transition-transform", showAdvanced && "rotate-180")}
+                        />
+                      </div>
+                      Options avancées
+                    </button>
+
+                    {showAdvanced && (
+                      <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                        <Button
+                          variant="premium"
+                          className="w-full border-red-100 bg-red-50/30"
+                          icon={<Trash2 size={14} />}
+                          iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+                          onClick={() => setShowDeleteConfirm(true)}
+                        >
+                          <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
+                            {tProfile("deleteAccount")}
                           </span>
-                        </div>
-                        {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-accent" />}
-                      </button>
-                    );
-                  })}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-
-            {/* Status Messages */}
-            {error && (
-              <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-2">
-                <p>{error}</p>
+          ) : (
+            <div className="space-y-6 px-1 pb-12 animate-in fade-in slide-in-from-right-4">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
+                  <AlertTriangle size={32} />
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-lg font-black leading-tight text-gray-900">
+                    {tProfile("dangerZone")}
+                  </h4>
+                  <p className="px-4 text-xs font-medium text-gray-500">
+                    {tProfile("deleteWarning")}
+                  </p>
+                </div>
               </div>
-            )}
 
-            <div className="space-y-3 pt-2">
-              <Button
-                variant="premium"
-                className="w-full border-gray-100 bg-gray-50/50"
-                icon={<LogOut size={16} />}
-                iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
-                onClick={async () => {
-                  await signOut();
-                  onClose();
-                  router.refresh();
-                }}
-              >
-                <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                  Se déconnecter
-                </span>
-              </Button>
+              {error && (
+                <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500">
+                  <p>{error}</p>
+                </div>
+              )}
 
-              {/* Advanced Options Section */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="group flex w-full items-center justify-center gap-1.5 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+              <div className="space-y-4 pt-2">
+                <Button
+                  variant="premium"
+                  className="w-full border-red-100 bg-red-50/30 py-7 pr-8 shadow-xl shadow-red-500/10"
+                  icon={
+                    isDeleting ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={18} />
+                    )
+                  }
+                  iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  shine
                 >
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
-                    <ChevronDown
-                      size={10}
-                      className={clsx("transition-transform", showAdvanced && "rotate-180")}
-                    />
-                  </div>
-                  Options avancées
-                </button>
+                  <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
+                    {tProfile("confirmDelete")}
+                  </span>
+                </Button>
 
-                {showAdvanced && (
-                  <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-                    <Button
-                      variant="premium"
-                      className="w-full border-red-100 bg-red-50/30"
-                      icon={<Trash2 size={14} />}
-                      iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                      onClick={() => setShowDeleteConfirm(true)}
-                    >
-                      <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
-                        {tProfile("deleteAccount")}
-                      </span>
-                    </Button>
-                  </div>
-                )}
+                <Button
+                  variant="premium"
+                  className="w-full border-gray-100 bg-gray-50/50"
+                  icon={<ArrowLeft size={16} />}
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={isDeleting}
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                    {tProfile("back")}
+                  </span>
+                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-6 px-1 pb-12 animate-in fade-in slide-in-from-right-4">
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
-              <AlertTriangle size={32} />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-lg font-black leading-tight text-gray-900">
-                {tProfile("dangerZone")}
-              </h4>
-              <p className="px-4 text-xs font-medium text-gray-500">{tProfile("deleteWarning")}</p>
-            </div>
-          </div>
-
-          {error && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500">
-              <p>{error}</p>
             </div>
           )}
-
-          <div className="space-y-4 pt-2">
-            <Button
-              variant="premium"
-              className="w-full border-red-100 bg-red-50/30 py-7 pr-8 shadow-xl shadow-red-500/10"
-              icon={
-                isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />
-              }
-              iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-              onClick={handleDeleteAccount}
-              disabled={isDeleting}
-              shine
-            >
-              <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
-                {tProfile("confirmDelete")}
-              </span>
-            </Button>
-
-            <Button
-              variant="premium"
-              className="w-full border-gray-100 bg-gray-50/50"
-              icon={<ArrowLeft size={16} />}
-              onClick={() => setShowDeleteConfirm(false)}
-              disabled={isDeleting}
-            >
-              <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                {tProfile("back")}
-              </span>
-            </Button>
-          </div>
         </div>
-      )}
-    </BottomSheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

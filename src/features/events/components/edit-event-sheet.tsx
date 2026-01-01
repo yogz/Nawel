@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
@@ -137,179 +137,191 @@ export function EditEventSheet({
   const hasMeal = !!initialData.mealId;
 
   return (
-    <BottomSheet open={open} onClose={onClose} title={t("editTitle")}>
-      <div className="space-y-4 pb-4">
-        {/* Event Name */}
-        <div className="space-y-2">
-          <Label
-            htmlFor="name"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {t("nameLabel")}
-          </Label>
-          <Input
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={t("namePlaceholder")}
-            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-          />
-        </div>
-
-        {/* Date & Time - only if event has a meal */}
-        {hasMeal && (
-          <div className="grid grid-cols-2 gap-4">
+    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DrawerContent className="px-4">
+        <DrawerHeader className="px-1 text-left">
+          <DrawerTitle>{t("editTitle")}</DrawerTitle>
+        </DrawerHeader>
+        <div className="scrollbar-none overflow-y-auto pb-8">
+          <div className="space-y-4 pb-4">
+            {/* Event Name */}
             <div className="space-y-2">
               <Label
-                htmlFor="date"
+                htmlFor="name"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                {tMeal("dateLabel")}
+                {t("nameLabel")}
               </Label>
-              <div className="relative">
-                <Input
-                  id="date"
-                  type="date"
-                  value={date ? format(date, "yyyy-MM-dd") : ""}
-                  onChange={(e) => setDate(e.target.value ? new Date(e.target.value) : undefined)}
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
-                />
-                <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="time"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {tMeal("timeLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="time"
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
-                />
-                <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Guests */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label
-              htmlFor="adults"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {tCommon("adultsLabel")}
-            </Label>
-            <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-              <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                <SelectValue placeholder={tCommon("adultsLabel")} />
-              </SelectTrigger>
-              <SelectContent className="z-[110] max-h-[300px] rounded-xl">
-                {Array.from({ length: 51 }, (_, i) => (
-                  <SelectItem key={i} value={String(i)} className="rounded-xl">
-                    {i} {tCommon("adultsCount", { count: i })}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label
-              htmlFor="children"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {tCommon("childrenLabel")}
-            </Label>
-            <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-              <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                <SelectValue placeholder={tCommon("childrenLabel")} />
-              </SelectTrigger>
-              <SelectContent className="z-[110] max-h-[300px] rounded-xl">
-                {Array.from({ length: 51 }, (_, i) => (
-                  <SelectItem key={i} value={String(i)} className="rounded-xl">
-                    {i} {tCommon("childrenCount", { count: i })}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Address - only if event has a meal */}
-        {hasMeal && (
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {tMeal("addressLabel")}
-            </Label>
-            <div className="relative">
               <Input
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder={tMeal("addressPlaceholder")}
-                className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t("namePlaceholder")}
+                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
               />
-              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
+
+            {/* Date & Time - only if event has a meal */}
+            {hasMeal && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="date"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  >
+                    {tMeal("dateLabel")}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="date"
+                      type="date"
+                      value={date ? format(date, "yyyy-MM-dd") : ""}
+                      onChange={(e) =>
+                        setDate(e.target.value ? new Date(e.target.value) : undefined)
+                      }
+                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                    />
+                    <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="time"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  >
+                    {tMeal("timeLabel")}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="time"
+                      type="time"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                    />
+                    <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Guests */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="adults"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  {tCommon("adultsLabel")}
+                </Label>
+                <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
+                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                    <SelectValue placeholder={tCommon("adultsLabel")} />
+                  </SelectTrigger>
+                  <SelectContent className="z-[110] max-h-[300px] rounded-xl">
+                    {Array.from({ length: 51 }, (_, i) => (
+                      <SelectItem key={i} value={String(i)} className="rounded-xl">
+                        {i} {tCommon("adultsCount", { count: i })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="children"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  {tCommon("childrenLabel")}
+                </Label>
+                <Select
+                  value={String(children)}
+                  onValueChange={(val) => setChildren(parseInt(val))}
+                >
+                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                    <SelectValue placeholder={tCommon("childrenLabel")} />
+                  </SelectTrigger>
+                  <SelectContent className="z-[110] max-h-[300px] rounded-xl">
+                    {Array.from({ length: 51 }, (_, i) => (
+                      <SelectItem key={i} value={String(i)} className="rounded-xl">
+                        {i} {tCommon("childrenCount", { count: i })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Address - only if event has a meal */}
+            {hasMeal && (
+              <div className="space-y-2">
+                <Label
+                  htmlFor="address"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  {tMeal("addressLabel")}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder={tMeal("addressPlaceholder")}
+                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                  />
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="description"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                {t("descriptionLabel")}
+              </Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t("descriptionPlaceholder")}
+                className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+                rows={2}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                type="button"
+                variant="premium"
+                onClick={onClose}
+                className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+                icon={<X size={16} />}
+              >
+                <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+                  {tCommon("cancel")}
+                </span>
+              </Button>
+              <Button
+                type="button"
+                variant="premium"
+                onClick={handleSubmit}
+                disabled={!name.trim() || isPending}
+                className="flex-[2] py-6 pr-8 shadow-md"
+                icon={<Check size={16} />}
+                shine
+              >
+                <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                  {isPending ? tCommon("saving") : tCommon("save")}
+                </span>
+              </Button>
             </div>
           </div>
-        )}
-
-        {/* Description */}
-        <div className="space-y-2">
-          <Label
-            htmlFor="description"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {t("descriptionLabel")}
-          </Label>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder={t("descriptionPlaceholder")}
-            className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-            rows={2}
-          />
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-3 pt-2">
-          <Button
-            type="button"
-            variant="premium"
-            onClick={onClose}
-            className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-            icon={<X size={16} />}
-          >
-            <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-              {tCommon("cancel")}
-            </span>
-          </Button>
-          <Button
-            type="button"
-            variant="premium"
-            onClick={handleSubmit}
-            disabled={!name.trim() || isPending}
-            className="flex-[2] py-6 pr-8 shadow-md"
-            icon={<Check size={16} />}
-            shine
-          >
-            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              {isPending ? tCommon("saving") : tCommon("save")}
-            </span>
-          </Button>
-        </div>
-      </div>
-    </BottomSheet>
+      </DrawerContent>
+    </Drawer>
   );
 }

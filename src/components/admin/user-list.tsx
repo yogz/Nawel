@@ -7,7 +7,7 @@ import {
   deleteUserAdminAction,
 } from "@/app/actions/admin-actions";
 import { Button } from "@/components/ui/button";
-import { BottomSheet } from "@/components/ui/bottom-sheet";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
   Users,
   Calendar,
@@ -173,76 +173,84 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
       </div>
 
       {/* Ban Confirmation Modal */}
-      <BottomSheet
-        open={!!banningUser}
-        onClose={() => setBanningUser(null)}
-        title={banningUser?.banned ? "Réactiver l'utilisateur" : "Bannir l'utilisateur"}
-      >
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            {banningUser?.banned
-              ? `Souhaitez-vous vraiment réactiver le compte de ${banningUser?.name} ?`
-              : `Êtes-vous sûr de vouloir bannir ${banningUser?.name} ? Il ne pourra plus se connecter à l'application.`}
-          </p>
+      <Drawer open={!!banningUser} onOpenChange={(open) => !open && setBanningUser(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>
+              {banningUser?.banned ? "Réactiver l'utilisateur" : "Bannir l'utilisateur"}
+            </DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            <p className="text-muted-foreground">
+              {banningUser?.banned
+                ? `Souhaitez-vous vraiment réactiver le compte de ${banningUser?.name} ?`
+                : `Êtes-vous sûr de vouloir bannir ${banningUser?.name} ? Il ne pourra plus se connecter à l'application.`}
+            </p>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setBanningUser(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              className={`flex-1 ${banningUser?.banned ? "bg-green-600 hover:bg-green-700" : "bg-orange-600 hover:bg-orange-700"}`}
-              onClick={handleToggleBan}
-              disabled={isPending}
-            >
-              {isPending ? "Traitement..." : banningUser?.banned ? "Réactiver" : "Bannir"}
-            </Button>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setBanningUser(null)}
+                disabled={isPending}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                className={`flex-1 ${
+                  banningUser?.banned
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-orange-600 hover:bg-orange-700"
+                }`}
+                onClick={handleToggleBan}
+                disabled={isPending}
+              >
+                {isPending ? "Traitement..." : banningUser?.banned ? "Réactiver" : "Bannir"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
 
       {/* Delete Confirmation Modal */}
-      <BottomSheet
-        open={!!deletingUser}
-        onClose={() => setDeletingUser(null)}
-        title="Supprimer l'utilisateur"
-      >
-        <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur{" "}
-            <strong className="text-text">{deletingUser?.name}</strong> ? Cette action est
-            irréversible. Les événements dont il est propriétaire seront conservés mais n'auront
-            plus de propriétaire.
-          </p>
+      <Drawer open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
+        <DrawerContent className="px-4">
+          <DrawerHeader className="px-1 text-left">
+            <DrawerTitle>Supprimer l'utilisateur</DrawerTitle>
+          </DrawerHeader>
+          <div className="space-y-4 pb-8">
+            <p className="text-muted-foreground">
+              Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur{" "}
+              <strong className="text-text">{deletingUser?.name}</strong> ? Cette action est
+              irréversible. Les événements dont il est propriétaire seront conservés mais n'auront
+              plus de propriétaire.
+            </p>
 
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => setDeletingUser(null)}
-              disabled={isPending}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              className="flex-1"
-              onClick={handleDelete}
-              disabled={isPending}
-            >
-              {isPending ? "Suppression..." : "Supprimer"}
-            </Button>
+            <div className="flex gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => setDeletingUser(null)}
+                disabled={isPending}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                {isPending ? "Suppression..." : "Supprimer"}
+              </Button>
+            </div>
           </div>
-        </div>
-      </BottomSheet>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
