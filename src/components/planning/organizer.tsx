@@ -94,7 +94,7 @@ export function Organizer({
   const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(() => {
     // Initialize from localStorage (only on client)
     if (typeof window !== "undefined") {
-      return localStorage.getItem("nawel_guest_prompt_dismissed") === "true";
+      return localStorage.getItem("colist_guest_prompt_dismissed") === "true";
     }
     return false;
   });
@@ -104,7 +104,7 @@ export function Organizer({
   const dismissGuestPrompt = () => {
     setHasDismissedGuestPrompt(true);
     if (typeof window !== "undefined") {
-      localStorage.setItem("nawel_guest_prompt_dismissed", "true");
+      localStorage.setItem("colist_guest_prompt_dismissed", "true");
     }
   };
 

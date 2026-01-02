@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Nawel",
+    "title": "CoList",
     "loading": "Loading...",
     "save": "Save",
     "languages": {
@@ -19,7 +19,7 @@
   },
   "Landing": {
     "badge": "The new way to celebrate",
-    "title": "Nawel",
+    "title": "CoList",
     "heroDescription": "The event organizer that makes preparations as magical as the party itself.",
     "getStarted": "Get started now",
     "discover": "Discover",
@@ -32,8 +32,8 @@
     "feature4Title": "Smart shopping list",
     "feature4Description": "A shared shopping list organized by person. Check off your items as you go, even without a connection.",
     "ctaTitle": "Ready to simplify your parties?",
-    "ctaDescription": "Join thousands of families already using Nawel.",
-    "footer": "© 2025 Nawel. Made with ✨ for your best moments."
+    "ctaDescription": "Join thousands of families already using CoList.",
+    "footer": "© 2025 CoList. Made with ✨ for your best moments."
   },
   "LandingAlt": {
     "badge": "Meal planning, finally relaxing.",
@@ -43,7 +43,7 @@
     "ctaStart": "Start My Invitation",
     "ctaDemo": "See the Demo",
     "feature1Title": "AI Culinary Assistant BETA",
-    "feature1Description": "Just say 'Lasagna for 12', Nawel instantly generates the complete list of ingredients with exact quantities. No more recipe searching or complex calculations.",
+    "feature1Description": "Just say 'Lasagna for 12', CoList instantly generates the complete list of ingredients with exact quantities. No more recipe searching or complex calculations.",
     "feature1Tag": "New",
     "feature2Title": "Magic Shopping List",
     "feature2Description": "The app adds everything up for you and creates the shopping list for each guest. The list is sorted and ready to be checked off at the store.",
@@ -51,7 +51,7 @@
     "feature3Description": "Forget installations. Your loved ones receive a link and participate with one click: 'I'll bring the champagne', 'It's me!'. Instantly validated, without any registration.",
     "feature4Title": "Immersive Design",
     "feature4Description": "Because we eat with our eyes too, your invitation is designed to be as beautiful as your future meal. No need to spend hours on layout.",
-    "socialProofTitle": "They organize their events with Nawel",
+    "socialProofTitle": "They organize their events with CoList",
     "socialProofQuote": "\"Finally an app that doesn't look like an Excel spreadsheet.\" — Julie, user",
     "ctaFooterTitle": "Ready to tame the chaos?",
     "ctaFooterDescription": "Join those who decided to enjoy their evenings rather than organize them.",
@@ -80,12 +80,12 @@
       "description2": "The invitation circulates. Your loved ones join the adventure without registration. With one click, they choose their contribution: champagne, salad, dessert. Organization becomes fluid and natural.",
       "day3": "D-1",
       "title3": "Serenity",
-      "description3": "Everyone has their mission. Nawel automatically generates a personalized shopping list for each guest. No more stress, everyone knows exactly what to do.",
+      "description3": "Everyone has their mission. CoList automatically generates a personalized shopping list for each guest. No more stress, everyone knows exactly what to do.",
       "day4": "The Day",
       "title4": "The Moment",
-      "description4": "You're not in the kitchen stressing. You're with them. That's the Nawel promise."
+      "description4": "You're not in the kitchen stressing. You're with them. That's the CoList promise."
     },
-    "ctaTitle": "Your next dinner deserves Nawel.",
+    "ctaTitle": "Your next dinner deserves CoList.",
     "ctaDescription": "Join the \"Slow Hosting\" movement.",
     "ctaButton": "Create an event"
   },
@@ -211,7 +211,7 @@
       "copyButton": "Copied!",
       "shareTitle": "Share access",
       "shareNavigatorTitle": "Event - {name}",
-      "shareNavigatorText": "Join the event \"{name}\" on Nawel!",
+      "shareNavigatorText": "Join the event \"{name}\" on CoList!",
       "filter": {
         "all": "Show all",
         "unassigned": "To take ({count})"
@@ -425,7 +425,7 @@
         "closeButton": "Let's go!",
         "copySuccess": "Copied!",
         "shareWhatsApp": "Share on WhatsApp",
-        "shareMessage": "Join me in organizing {name} on Nawel! 🎁 {url}"
+        "shareMessage": "Join me in organizing {name} on CoList! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continue as guest",

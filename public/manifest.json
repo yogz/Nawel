@@ -1,6 +1,6 @@
 {
-  "name": "Nawel - Organisateur de fêtes",
-  "short_name": "Nawel",
+  "name": "CoList - Organisateur de fêtes",
+  "short_name": "CoList",
   "description": "Coordonnez vos repas de fêtes simplement.",
   "start_url": "/",
   "display": "standalone",

@@ -68,7 +68,7 @@ export function DemoInteractive() {
                             <strong className="block truncate text-slate-800">
                               Noël les copains
                             </strong>
-                            nawel.app/event/123...
+                            colist.fr/event/123...
                           </div>
                         </div>
                         <div className="mt-2 cursor-pointer text-center text-xs font-medium text-blue-500">

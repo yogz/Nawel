@@ -173,9 +173,9 @@ export function OrganizerSheets({
 
   return (
     <Drawer open={!!sheet} onOpenChange={(open) => !open && setSheet(null)}>
-      <DrawerContent className="px-4">
+      <DrawerContent className="px-6">
         {sheet?.type !== "share" && (
-          <DrawerHeader className="px-1 text-left">
+          <DrawerHeader className="px-0 text-left">
             <DrawerTitle>{getTitle()}</DrawerTitle>
           </DrawerHeader>
         )}

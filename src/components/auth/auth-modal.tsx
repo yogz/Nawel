@@ -66,8 +66,8 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DrawerContent className="px-4">
-        <DrawerHeader className="px-1 text-left">
+      <DrawerContent className="px-6">
+        <DrawerHeader className="px-0 text-left">
           <DrawerTitle>{mode === "signin" ? "Connexion" : "Inscription"}</DrawerTitle>
         </DrawerHeader>
         <div className="scrollbar-none overflow-y-auto pb-8">

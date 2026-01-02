@@ -14,7 +14,7 @@ type User = {
 };
 
 const navItems = [
-  { href: "/admin", label: "Événements", icon: Calendar },
+  { href: "/admin", label: "Événements CoList", icon: Calendar },
   { href: "/admin/citations", label: "Citations", icon: Quote },
   { href: "/admin/cache", label: "Cache IA", icon: Database },
   { href: "/admin/models", label: "Modèles", icon: FlaskConical },
@@ -41,7 +41,7 @@ export function AdminHeader({ user }: { user: User }) {
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h2 className="font-semibold text-text">Admin Nawel</h2>
+              <h2 className="font-semibold text-text">Admin CoList</h2>
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>

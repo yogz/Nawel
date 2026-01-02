@@ -44,7 +44,7 @@ const ThemeContext = createContext<{
   toggle: () => {},
 });
 
-const STORAGE_KEY = "nawel-theme";
+const STORAGE_KEY = "colist-theme";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeName>(DEFAULT_THEME);

@@ -138,8 +138,8 @@ export function EditEventSheet({
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DrawerContent className="px-4">
-        <DrawerHeader className="px-1 text-left">
+      <DrawerContent className="px-6">
+        <DrawerHeader className="px-0 text-left">
           <DrawerTitle>{t("editTitle")}</DrawerTitle>
         </DrawerHeader>
         <div className="scrollbar-none overflow-y-auto pb-8">

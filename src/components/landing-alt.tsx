@@ -224,7 +224,7 @@ export function LandingAlt() {
           </a>
         </div>
         <p>
-          &copy; {new Date().getFullYear()} Nawel. {t("footerText")}
+          &copy; {new Date().getFullYear()} CoList. {t("footerText")}
         </p>
       </footer>
 

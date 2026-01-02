@@ -55,7 +55,7 @@ export function ShareModal({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: eventName || "Événement Nawel",
+          title: eventName || "Événement CoList",
           text: t("shareMessage", { name: eventName || "cet événement", url: "" }),
           url: shareUrl,
         });

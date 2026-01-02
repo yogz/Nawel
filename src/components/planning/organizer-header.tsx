@@ -84,7 +84,7 @@ export function OrganizerHeader({
             href="/"
             className="shrink-0 text-xl font-black italic tracking-tight text-accent transition-opacity hover:opacity-80 sm:text-2xl"
           >
-            NAWEL ✨
+            COLIST ✨
           </Link>
           <div className="flex items-center gap-2">
             {readOnly && (

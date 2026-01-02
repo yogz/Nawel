@@ -1,6 +1,6 @@
-# Nawel Project Standards & Guidelines
+# CoList Project Standards & Guidelines
 
-This document serves as the "Source of Truth" for any code changes in the Nawel project. Follow these strictly to maintain security, performance, and code quality.
+This document serves as the "Source of Truth" for any code changes in the CoList project. Follow these strictly to maintain security, performance, and code quality.
 
 ## 1. Architecture & Folder Structure
 

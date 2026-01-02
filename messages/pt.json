@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Nawel",
+    "title": "CoList",
     "loading": "Carregando...",
     "save": "Guardar",
     "languages": {
@@ -19,7 +19,7 @@
   },
   "Landing": {
     "badge": "A nova forma de festejar",
-    "title": "Nawel",
+    "title": "CoList",
     "heroDescription": "O organizador de eventos que torna os preparativos tão mágicos como a própria festa.",
     "getStarted": "Começar agora",
     "discover": "Descobrir",
@@ -32,8 +32,8 @@
     "feature4Title": "Lista de compras inteligente",
     "feature4Description": "Uma lista de compras partilhada e organizada por pessoa. Marque os seus artigos à medida que avança, mesmo sem ligação.",
     "ctaTitle": "Pronto para simplificar as suas festas?",
-    "ctaDescription": "Junte-se a milhares de famílias que já usam o Nawel.",
-    "footer": "© 2025 Nawel. Feito com ✨ para os seus melhores momentos."
+    "ctaDescription": "Junte-se a milhares de famílias que já usam o CoList.",
+    "footer": "© 2025 CoList. Feito com ✨ para os seus melhores momentos."
   },
   "LandingAlt": {
     "badge": "Organização de refeições, finalmente relaxante.",
@@ -43,7 +43,7 @@
     "ctaStart": "Lançar o meu Convite",
     "ctaDemo": "Ver a Demo",
     "feature1Title": "Assistente Culinário (IA) BETA",
-    "feature1Description": "Basta dizer 'Lasanha para 12', Nawel gera instantaneamente a lista completa de ingredientes com quantidades exatas. Sem procurar receitas ou fazer cálculos complicados.",
+    "feature1Description": "Basta dizer 'Lasanha para 12', CoList gera instantaneamente a lista completa de ingredientes com quantidades exatas. Sem procurar receitas ou fazer cálculos complicados.",
     "feature1Tag": "Novo",
     "feature2Title": "Lista de Compras Mágica",
     "feature2Description": "A aplicação soma tudo por si e cria a lista de compras para cada convidado. A lista está ordenada e pronta para marcar na loja.",
@@ -51,7 +51,7 @@
     "feature3Description": "Esqueça as instalações. Os seus entes queridos recebem um link e participam com um clique: 'Eu trago o champanhe', 'Sou eu!'. Validado instantaneamente, sem qualquer registo.",
     "feature4Title": "Design Imersivo",
     "feature4Description": "Porque também comemos com os olhos, o seu convite foi concebido para ser tão bonito como a sua futura refeição. Não precisa de passar horas no layout.",
-    "socialProofTitle": "Eles organizam os seus eventos com Nawel",
+    "socialProofTitle": "Eles organizam os seus eventos com CoList",
     "socialProofQuote": "\"Finalmente uma app que não parece uma folha Excel.\" — Julie, utilizadora",
     "ctaFooterTitle": "Pronto para estruturar o caos?",
     "ctaFooterDescription": "Junte-se àqueles que decidiram aproveitar as suas noites em vez de as organizar.",
@@ -80,12 +80,12 @@
       "description2": "O convite circula. Os seus entes queridos juntam-se à aventura sem registo. Com um clique, escolhem a sua contribuição: champanhe, salada, sobremesa. A organização torna-se fluida e natural.",
       "day3": "D-1",
       "title3": "A Serenidade",
-      "description3": "Cada um a sua missão. Nawel gera automaticamente uma lista de compras personalizada para cada convidado. Sem stress, todos sabem exatamente o que fazer.",
+      "description3": "Cada um a sua missão. CoList gera automaticamente uma lista de compras personalizada para cada convidado. Sem stress, todos sabem exatamente o que fazer.",
       "day4": "O Dia",
       "title4": "O Momento",
-      "description4": "Você não está na cozinha a stressar. Está com eles. Essa é a promessa Nawel."
+      "description4": "Você não está na cozinha a stressar. Está com eles. Essa é a promessa CoList."
     },
-    "ctaTitle": "O seu próximo jantar merece Nawel.",
+    "ctaTitle": "O seu próximo jantar merece CoList.",
     "ctaDescription": "Junte-se ao movimento do \"Slow Hosting\".",
     "ctaButton": "Criar um evento"
   },
@@ -213,7 +213,7 @@
       "copyButton": "Copiado!",
       "shareTitle": "Partilhar acesso",
       "shareNavigatorTitle": "Evento - {name}",
-      "shareNavigatorText": "Junta-te ao evento \"{name}\" no Nawel!",
+      "shareNavigatorText": "Junta-te ao evento \"{name}\" no CoList!",
       "filter": {
         "all": "Mostrar tudo",
         "unassigned": "A tomar ({count})"
@@ -420,7 +420,7 @@
         "closeButton": "Vamos a isso!",
         "copySuccess": "Copiado!",
         "shareWhatsApp": "Partilhar no WhatsApp",
-        "shareMessage": "Junta-te a mim para organizar {name} no Nawel! 🎁 {url}"
+        "shareMessage": "Junta-te a mim para organizar {name} no CoList! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continuar como convidado",

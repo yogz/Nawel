@@ -133,8 +133,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DrawerContent className="px-4">
-        <DrawerHeader className="px-1 text-left">
+      <DrawerContent className="px-6">
+        <DrawerHeader className="px-0 text-left">
           <div className="flex items-center justify-between">
             <DrawerTitle>
               {showDeleteConfirm ? tProfile("deleteAccount") : tProfile("settings")}
@@ -152,7 +152,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
 
         <div className="scrollbar-none overflow-y-auto">
           {!showDeleteConfirm ? (
-            <div className="space-y-4 px-1 pb-8">
+            <div className="space-y-4 pb-8">
               <div className="space-y-4">
                 {/* Avatar Display (Read Only) */}
                 <div className="flex flex-col items-center gap-2">
@@ -521,7 +521,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               </div>
             </div>
           ) : (
-            <div className="space-y-6 px-1 pb-12 animate-in fade-in slide-in-from-right-4">
+            <div className="space-y-6 pb-12 animate-in fade-in slide-in-from-right-4">
               <div className="flex flex-col items-center gap-4 text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
                   <AlertTriangle size={32} />

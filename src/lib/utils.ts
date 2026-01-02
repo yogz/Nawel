@@ -175,7 +175,7 @@ export function generateGoogleCalendarUrl(
     action: "TEMPLATE",
     text: title,
     dates: `${start}/${end}`,
-    details: `Rejoins-nous pour "${title}" sur Nawel !`,
+    details: `Rejoins-nous pour "${title}" sur CoList !`,
   });
 
   if (meal.address) {
@@ -210,7 +210,7 @@ export function generateOutlookCalendarUrl(
     subject: title,
     startdt,
     enddt,
-    body: `Rejoins-nous pour "${title}" sur Nawel !`,
+    body: `Rejoins-nous pour "${title}" sur CoList !`,
   });
 
   if (meal.address) {
@@ -240,12 +240,12 @@ export function downloadIcsFile(
   const icsLines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Nawel//NONSGML v1.0//EN",
+    "PRODID:-//CoList//NONSGML v1.0//EN",
     "BEGIN:VEVENT",
     `DTSTART:${start}`,
     `DTEND:${end}`,
     `SUMMARY:${title}`,
-    `DESCRIPTION:Rejoins-nous pour "${title}" sur Nawel !`,
+    `DESCRIPTION:Rejoins-nous pour "${title}" sur CoList !`,
     meal.address ? `LOCATION:${meal.address}` : "",
     "END:VEVENT",
     "END:VCALENDAR",
@@ -260,3 +260,37 @@ export function downloadIcsFile(
   link.click();
   document.body.removeChild(link);
 }
+
+const getShareNavigatorText = (title: string) => ({
+  title: "CoList",
+  text: `Rejoins-nous pour "${title}" sur CoList !`,
+});
+
+const getWhatsAppText = (title: string, url: string) =>
+  `Rejoins-nous pour "${title}" sur CoList ! 🎁 ${url}`;
+
+const getEmailContent = (title: string, url: string) => ({
+  subject: `Organisation de ${title} sur CoList`,
+  body: `Rejoins-nous pour "${title}" sur CoList ! 🎁 ${url}`,
+});
+
+export const getICalFile = (title: string, date?: string | Date, url?: string) => {
+  const start = date ? new Date(date) : new Date();
+  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+  const format = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//CoList//NONSGML v1.0//EN",
+    "BEGIN:VEVENT",
+    `SUMMARY:Organisation de ${title}`,
+    `DTSTART:${format(start)}`,
+    `DTEND:${format(end)}`,
+    `DESCRIPTION:Rejoins-nous pour "${title}" sur CoList !`,
+    url ? `URL:${url}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].join("\r\n");
+};

@@ -1,6 +1,6 @@
 {
   "common": {
-    "title": "Nawel",
+    "title": "CoList",
     "loading": "Chargement...",
     "save": "Enregistrer",
     "languages": {
@@ -19,7 +19,7 @@
   },
   "Landing": {
     "badge": "La nouvelle façon de festoyer",
-    "title": "Nawel",
+    "title": "CoList",
     "heroDescription": "Organisez vos repas sans stress. Invitez vos amis, évitez les doublons et générez votre liste de courses en un clic.",
     "getStarted": "Commencer maintenant",
     "discover": "Découvrir",
@@ -32,8 +32,8 @@
     "feature4Title": "Liste de courses intelligente",
     "feature4Description": "Une liste de courses partagée et organisée par personne. Cochez vos articles au fur et à mesure, même sans connexion.",
     "ctaTitle": "Prêt à simplifier vos fêtes ?",
-    "ctaDescription": "Rejoignez des milliers de familles qui utilisent déjà Nawel.",
-    "footer": "© 2025 Nawel. Fait avec ✨ pour vos plus beaux moments."
+    "ctaDescription": "Rejoignez des milliers de familles qui utilisent déjà CoList.",
+    "footer": "© 2025 CoList. Fait avec ✨ pour vos plus beaux moments."
   },
   "LandingAlt": {
     "badge": "L'organisation de repas partagés, simplifiée.",
@@ -43,7 +43,7 @@
     "ctaStart": "Créer mon événement",
     "ctaDemo": "Voir comment ça marche",
     "feature1Title": "L'Assistant Culinaire (IA) BETA",
-    "feature1Description": "Dites juste 'Lasagnes pour 12', Nawel génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
+    "feature1Description": "Dites juste 'Lasagnes pour 12', CoList génère instantanément la liste de tous les ingrédients avec les quantités exactes. Plus besoin de chercher la recette ou de faire des calculs savants.",
     "feature1Tag": "Nouveau",
     "feature2Title": "Liste de Courses Magique",
     "feature2Description": "L'application additionne tout pour vous et crée la liste des courses pour chaque invité. La liste est triée et prête à être cochée en magasin.",
@@ -51,7 +51,7 @@
     "feature3Description": "Oubliez les installations. Vos proches reçoivent un lien et participent d'un clic : 'J'apporte le champagne', 'C'est moi !'. C'est validé instantanément, sans aucune inscription.",
     "feature4Title": "Design Immersif",
     "feature4Description": "Parce qu'on mange aussi avec les yeux, votre invitation est conçue pour être aussi belle que votre futur repas. Pas besoin de passer des heures sur la mise en page.",
-    "socialProofTitle": "Ils organisent leurs événements avec Nawel",
+    "socialProofTitle": "Ils organisent leurs événements avec CoList",
     "socialProofQuote": "\"Enfin une app qui ne ressemble pas à un tableau Excel.\" — Julie, utilisatrice",
     "ctaFooterTitle": "Prêt à structurer le chaos ?",
     "ctaFooterDescription": "Rejoignez ceux qui ont décidé de profiter de leurs soirées plutôt que de les organiser.",
@@ -80,12 +80,12 @@
       "description2": "L'invitation circule. Vos proches rejoignent l'aventure sans inscription. En un clic, ils choisissent leur contribution : champagne, salade, dessert. L'organisation devient fluide et naturelle.",
       "day3": "J-1",
       "title3": "La Sérénité",
-      "description3": "Chacun sa mission. Nawel génère automatiquement une liste de courses personnalisée pour chaque invité. Plus de stress, chacun sait exactement quoi faire.",
+      "description3": "Chacun sa mission. CoList génère automatiquement une liste de courses personnalisée pour chaque invité. Plus de stress, chacun sait exactement quoi faire.",
       "day4": "Le Jour J",
       "title4": "Le Moment",
-      "description4": "Vous n'êtes pas en cuisine à stresser. Vous êtes avec eux. C'est ça, la promesse Nawel."
+      "description4": "Vous n'êtes pas en cuisine à stresser. Vous êtes avec eux. C'est ça, la promesse CoList."
     },
-    "ctaTitle": "Votre prochain dîner mérite Nawel.",
+    "ctaTitle": "Votre prochain dîner mérite CoList.",
     "ctaDescription": "Rejoignez le mouvement du \"Slow Hosting\".",
     "ctaButton": "Créer un événement"
   },
@@ -147,7 +147,7 @@
   "FAQ": {
     "title": "Questions Fréquentes",
     "q1": "Est-ce vraiment gratuit ?",
-    "a1": "Oui, Nawel est 100% gratuit pour le moment. Toutes les fonctionnalités, y compris l'IA et les invitations illimitées, sont accessibles sans frais.",
+    "a1": "Oui, CoList est 100% gratuit pour le moment. Toutes les fonctionnalités, y compris l'IA et les invitations illimitées, sont accessibles sans frais.",
     "q2": "Mes invités doivent-ils créer un compte ?",
     "a2": "Non ! C'est notre point fort. Ils reçoivent votre lien, cliquent, et peuvent indiquer ce qu'ils apportent sans aucune inscription ni installation d'application.",
     "q3": "Et si quelqu'un n'a pas de smartphone ?",
@@ -222,7 +222,7 @@
       "copyButton": "Copié !",
       "shareTitle": "Partager l'accès",
       "shareNavigatorTitle": "Événement - {name}",
-      "shareNavigatorText": "Rejoins l'événement \"{name}\" sur Nawel !",
+      "shareNavigatorText": "Rejoins l'événement \"{name}\" sur CoList !",
       "filter": {
         "all": "Tout afficher",
         "unassigned": "À prendre ({count})"
@@ -436,7 +436,7 @@
         "closeButton": "C'est parti !",
         "copySuccess": "Copié !",
         "shareWhatsApp": "Partager sur WhatsApp",
-        "shareMessage": "Rejoins-moi pour organiser {name} sur Nawel ! 🎁 {url}"
+        "shareMessage": "Rejoins-moi pour organiser {name} sur CoList ! 🎁 {url}"
       },
       "GuestAccess": {
         "title": "Continuer comme invité",

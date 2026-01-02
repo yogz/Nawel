@@ -16,24 +16,28 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+const appTitle = "CoList - Organisateur de fêtes";
+
 export const metadata: Metadata = {
   title: {
-    template: "%s | Nawel",
-    default: "Nawel - Organisateur de fêtes",
+    template: "%s | CoList",
+    default: appTitle,
   },
   description:
     "Coordonnez vos repas de fêtes simplement. Partagez le lien avec votre famille pour que chacun puisse choisir ce qu'il apporte !",
-  metadataBase: new URL("https://nawel.app"),
+  metadataBase: new URL("https://colist.fr"),
   openGraph: {
-    title: "Nawel - Organisateur de fêtes",
+    title: appTitle,
     description: "Coordonnez vos repas de fêtes simplement.",
     type: "website",
     locale: "fr_FR",
+    images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nawel - Organisateur de fêtes",
+    title: appTitle,
     description: "Coordonnez vos repas de fêtes simplement.",
+    images: ["/og-image.png"],
   },
   icons: {
     icon: "/favicon.ico",
@@ -43,7 +47,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Nawel",
+    title: "CoList",
   },
 };
 

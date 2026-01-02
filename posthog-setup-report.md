@@ -1,6 +1,6 @@
 # PostHog post-wizard report
 
-The wizard has completed a deep integration of PostHog into your Nawel event planning application. This integration includes:
+The wizard has completed a deep integration of PostHog into your CoList event planning application. This integration includes:
 
 - **Client-side initialization** via `instrumentation-client.ts` (Next.js 16+ approach)
 - **Server-side PostHog client** for server components and API routes
