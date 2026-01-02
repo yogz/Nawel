@@ -23,8 +23,8 @@
     "heroDescription": "Der Event-Organisator, der die Vorbereitungen so magisch macht wie die Party selbst.",
     "getStarted": "Jetzt loslegen",
     "discover": "Entdecken",
-    "feature1Title": "Menü & Services",
-    "feature1Description": "Erstellen Sie Ihr Party-Menü in Sekundenschnelle. Organisieren Sie Gerichte nach Services (Vorspeise, Hauptgericht, Dessert) und verfolgen Sie den Fortschritt in Echtzeit.",
+    "feature1Title": "Menü & Gänge",
+    "feature1Description": "Erstellen Sie Ihr Party-Menü in Sekundenschnelle. Organisieren Sie Gerichte nach Gängen (Vorspeise, Hauptgericht, Dessert) und verfolgen Sie den Fortschritt in Echtzeit.",
     "feature2Title": "Wer bringt was mit?",
     "feature2Description": "Keine Dopplungen mehr! Ihre Gäste wählen direkt aus, was sie mitbringen möchten. Eine klare Benutzeroberfläche für perfekte Koordination.",
     "feature3Title": "KI zu Ihren Diensten",
@@ -225,7 +225,7 @@
     "Planning": {
       "noMeals": "Noch keine Mahlzeiten.",
       "addMeal": "Mahlzeit hinzufügen",
-      "addService": "Service hinzufügen",
+      "addService": "Gang hinzufügen",
       "calendar": {
         "options": "Kalenderoptionen",
         "google": "Google Kalender",
@@ -233,10 +233,10 @@
         "download": "Herunterladen (.ics)"
       },
       "editMeal": "Mahlzeit bearbeiten",
-      "editService": "Service bearbeiten"
+      "editService": "Gang bearbeiten"
     },
     "Service": {
-      "editService": "Service bearbeiten {name}",
+      "editService": "Gang bearbeiten {name}",
       "add": "Hinzufügen",
       "dropHere": "Hier ablegen, um Artikel zu verschieben",
       "noItems": "Noch keine Zutaten."
@@ -296,7 +296,7 @@
       "noteLabel": "Notiz",
       "notePlaceholder": "Marke, Allergien, Details...",
       "moveLabel": "Verschieben",
-      "otherService": "Anderer Service",
+      "otherService": "Anderer Gang",
       "deleteItem": "Artikel löschen",
       "addItem": "Artikel hinzufügen",
       "generating": "Generierung...",
@@ -307,7 +307,7 @@
       "unassigned": "Zuzuweisen",
       "defaultNote": "Für {count} {count, plural, one {Person} other {Personen}}",
       "note": "Notiz",
-      "movePlaceholder": "Anderer Service",
+      "movePlaceholder": "Anderer Gang",
       "addButton": "Artikel hinzufügen",
       "Ingredients": {
         "generating": "Generierung läuft...",
@@ -323,12 +323,12 @@
       }
     },
     "ServiceForm": {
-      "label": "Servicename",
+      "label": "Name des Gangs",
       "placeholder": "Vorspeise, Hauptgericht, Dessert...",
-      "deleteButton": "Service löschen",
+      "deleteButton": "Gang löschen",
       "newMealHeader": "Neue Mahlzeit",
       "newMealPlaceholder": "Name der Mahlzeit (z.B. Abendessen)",
-      "addService": "Service hinzufügen",
+      "addService": "Gang hinzufügen",
       "selectMeal": "Mahlzeit auswählen",
       "selectMealPlaceholder": "Mahlzeit wählen..."
     },
@@ -376,7 +376,7 @@
       "addressPlaceholder": "Z.B. Feststramme 123, Berlin",
       "deleteButton": "Mahlzeit löschen",
       "organisationLabel": "Mahlzeiten-Organisation",
-      "serviceSelectionLabel": "Services auswählen",
+      "serviceSelectionLabel": "Gänge auswählen",
       "createButton": "Mahlzeit erstellen",
       "selectMeal": "Mahlzeit wählen",
       "selectMealPlaceholder": "Wählen Sie eine Mahlzeit"
@@ -396,8 +396,8 @@
     "Sheets": {
       "addItem": "Artikel hinzufügen",
       "editItem": "Artikel bearbeiten",
-      "addService": "Service hinzufügen",
-      "editService": "Service bearbeiten",
+      "addService": "Gang hinzufügen",
+      "editService": "Gang bearbeiten",
       "editMeal": "Mahlzeit bearbeiten",
       "addMeal": "Mahlzeit hinzufügen",
       "addGuest": "Gast hinzufügen",
