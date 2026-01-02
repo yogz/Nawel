@@ -23,8 +23,8 @@
     "heroDescription": "The event organizer that makes preparations as magical as the party itself.",
     "getStarted": "Get started now",
     "discover": "Discover",
-    "feature1Title": "Menu & Services",
-    "feature1Description": "Create your party menu in seconds. Organize dishes by services (Appetizer, Main, Dessert) and track progress in real-time.",
+    "feature1Title": "Menu & Courses",
+    "feature1Description": "Create your party menu in seconds. Organize dishes by courses (Appetizer, Main, Dessert) and track progress in real-time.",
     "feature2Title": "Who brings what?",
     "feature2Description": "No more duplicates! Your guests choose directly what they want to bring. A clear interface for perfect coordination.",
     "feature3Title": "AI at your service",
@@ -226,7 +226,7 @@
     "Planning": {
       "noMeals": "No meals for now.",
       "addMeal": "Add a meal",
-      "addService": "Add a service",
+      "addService": "Add a course",
       "calendar": {
         "options": "Calendar options",
         "google": "Google Calendar",
@@ -234,10 +234,10 @@
         "download": "Download (.ics)"
       },
       "editMeal": "Edit meal",
-      "editService": "Edit service"
+      "editService": "Edit course"
     },
     "Service": {
-      "editService": "Edit service {name}",
+      "editService": "Edit course {name}",
       "add": "Add",
       "dropHere": "Drop here to move item",
       "noItems": "No ingredients yet."
@@ -297,7 +297,7 @@
       "noteLabel": "Note",
       "notePlaceholder": "Brand, allergies, details...",
       "moveLabel": "Move",
-      "otherService": "Other service",
+      "otherService": "Other course",
       "deleteItem": "Delete item",
       "addItem": "Add item",
       "generating": "Generating...",
@@ -308,7 +308,7 @@
       "unassigned": "To assign",
       "defaultNote": "For {count} {count, plural, one {person} other {people}}",
       "note": "Note",
-      "movePlaceholder": "Other service",
+      "movePlaceholder": "Other course",
       "addButton": "Add item",
       "adding": "Adding...",
       "Ingredients": {
@@ -325,13 +325,13 @@
       }
     },
     "ServiceForm": {
-      "label": "Service name",
+      "label": "Course name",
       "placeholder": "Starter, Main, Dessert...",
-      "deleteButton": "Delete service",
+      "deleteButton": "Delete course",
       "newMealHeader": "New meal",
       "newMealPlaceholder": "Meal name (ex: Dinner)",
-      "addService": "Add service",
-      "addButton": "Add service",
+      "addService": "Add course",
+      "addButton": "Add course",
       "adding": "Adding...",
       "selectMeal": "Select meal",
       "selectMealLabel": "Select meal",
@@ -383,7 +383,7 @@
       "addressPlaceholder": "Ex: 123 Party Lane, London",
       "deleteButton": "Delete meal",
       "organisationLabel": "Meal organization",
-      "serviceSelectionLabel": "Select services",
+      "serviceSelectionLabel": "Select courses",
       "createButton": "Create meal",
       "creating": "Creating...",
       "selectMeal": "Choose meal",
@@ -404,8 +404,8 @@
     "Sheets": {
       "addItem": "Add item",
       "editItem": "Edit item",
-      "addService": "Add service",
-      "editService": "Edit service",
+      "addService": "Add course",
+      "editService": "Edit course",
       "editMeal": "Edit meal",
       "addMeal": "Add meal",
       "addGuest": "Add guest",
