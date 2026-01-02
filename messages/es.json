@@ -23,8 +23,8 @@
     "heroDescription": "El organizador de eventos que hace los preparativos tan mágicos como la propia fiesta.",
     "getStarted": "Empezar ahora",
     "discover": "Descubrir",
-    "feature1Title": "Menú y Servicios",
-    "feature1Description": "Crea tu menú de fiesta en segundos. Organiza los platos por servicios (Entrante, Plato Principal, Postre) y sigue el progreso en tiempo real.",
+    "feature1Title": "Menú y Tiempos",
+    "feature1Description": "Crea tu menú de fiesta en segundos. Organiza los platos por tiempos (Entrante, Plato Principal, Postre) y sigue el progreso en tiempo real.",
     "feature2Title": "¿Quién trae qué?",
     "feature2Description": "¡Sin duplicados! Tus invitados eligen directamente lo que quieren traer. Una interfaz clara para una coordinación perfecta.",
     "feature3Title": "La IA a tu servicio",
@@ -225,7 +225,7 @@
     "Planning": {
       "noShopping": "Sin compras",
       "addMeal": "Añadir comida",
-      "addService": "Añadir servicio",
+      "addService": "Añadir tiempo",
       "calendar": {
         "options": "Opciones de calendario",
         "google": "Google Calendar",
@@ -233,10 +233,10 @@
         "download": "Descargar (.ics)"
       },
       "editMeal": "Editar comida",
-      "editService": "Editar servicio"
+      "editService": "Editar tiempo"
     },
     "Service": {
-      "editService": "Editar servicio {name}",
+      "editService": "Editar tiempo {name}",
       "add": "Añadir",
       "dropHere": "Soltar aquí para mover el artículo",
       "noItems": "Sin ingredientes por ahora."
@@ -296,7 +296,7 @@
       "noteLabel": "Nota",
       "notePlaceholder": "Marca, alergias, detalles...",
       "moveLabel": "Mover",
-      "otherService": "Otro servicio",
+      "otherService": "Otro tiempo",
       "deleteItem": "Eliminar artículo",
       "addItem": "Añadir artículo",
       "generating": "Generando...",
@@ -307,7 +307,7 @@
       "unassigned": "Por asignar",
       "defaultNote": "Para {count} {count, plural, one {persona} other {personas}}",
       "note": "Nota",
-      "movePlaceholder": "Otro servicio",
+      "movePlaceholder": "Otro tiempo",
       "addButton": "Añadir artículo",
       "Ingredients": {
         "generating": "Generando...",
@@ -323,12 +323,12 @@
       }
     },
     "ServiceForm": {
-      "label": "Nombre del servicio",
+      "label": "Nombre del tiempo",
       "placeholder": "Entrante, Plato Principal, Postre...",
-      "deleteButton": "Eliminar servicio",
+      "deleteButton": "Eliminar tiempo",
       "newMealHeader": "Nueva comida",
       "newMealPlaceholder": "Nombre de la comida (ej: Cena)",
-      "addService": "Añadir servicio",
+      "addService": "Añadir tiempo",
       "selectMeal": "Seleccionar comida",
       "selectMealPlaceholder": "Elegir comida..."
     },
@@ -376,7 +376,7 @@
       "addressPlaceholder": "Ej: 123 Calle de la Fiesta, Madrid",
       "deleteButton": "Eliminar comida",
       "organisationLabel": "Organización de la comida",
-      "serviceSelectionLabel": "Seleccione los servicios",
+      "serviceSelectionLabel": "Seleccione los tiempos",
       "createButton": "Crear comida",
       "selectMeal": "Elegir comida",
       "selectMealPlaceholder": "Seleccionar una comida"
@@ -396,8 +396,8 @@
     "Sheets": {
       "addItem": "Añadir un artículo",
       "editItem": "Modificar el artículo",
-      "addService": "Añadir un servicio",
-      "editService": "Modificar el servicio",
+      "addService": "Añadir un tiempo",
+      "editService": "Modificar el tiempo",
       "editMeal": "Modificar la comida",
       "addMeal": "Añadir una comida",
       "addGuest": "Añadir un invitado",
