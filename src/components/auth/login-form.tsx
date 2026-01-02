@@ -11,6 +11,7 @@ import { GoogleIcon } from "./google-icon";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export function LoginForm() {
   const t = useTranslations("Login");
@@ -55,7 +56,10 @@ export function LoginForm() {
           setLoading(false);
           return;
         }
+        sendGAEvent("event", "sign_up", { method: "email" });
       }
+
+      sendGAEvent("event", "login", { method: "email" });
 
       router.push(isUserMode ? "/" : "/admin");
       router.refresh();
@@ -138,6 +142,7 @@ export function LoginForm() {
                     provider: "google",
                     callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,
                   });
+                  sendGAEvent("event", "login", { method: "google" });
                 } catch (err) {
                   console.error(err);
                   setLoading(false);

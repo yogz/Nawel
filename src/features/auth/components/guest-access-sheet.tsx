@@ -3,6 +3,7 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { UserPlus, UserCircle, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export function GuestAccessSheet({
   open,
@@ -45,6 +46,7 @@ export function GuestAccessSheet({
 
               <button
                 onClick={() => {
+                  sendGAEvent("event", "guest_continued_without_auth");
                   onClose();
                 }}
                 className="flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 transition-all hover:bg-gray-50 active:scale-95"

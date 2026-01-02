@@ -6,6 +6,7 @@ import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
@@ -35,6 +36,10 @@ export default function CreateEventClient() {
           address,
           adults: adults ?? 0,
           children: children ?? 0,
+        });
+
+        sendGAEvent("event", "event_created", {
+          creation_mode: creationMode || "zero",
         });
 
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);

@@ -7,6 +7,7 @@ import { type Person } from "@/lib/types";
 import { renderAvatar, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export function ClaimPersonSheet({
   open,
@@ -32,6 +33,7 @@ export function ClaimPersonSheet({
     setIsPending(true);
     try {
       await onClaim(selectedId);
+      sendGAEvent("event", "person_claimed_profile");
     } finally {
       setIsPending(false);
     }
@@ -116,7 +118,10 @@ export function ClaimPersonSheet({
               </div>
 
               <button
-                onClick={onJoinNew}
+                onClick={() => {
+                  sendGAEvent("event", "person_joined_new");
+                  onJoinNew();
+                }}
                 disabled={isPending}
                 className="flex w-full items-center gap-3 rounded-2xl bg-zinc-900 p-3 text-white shadow-lg shadow-zinc-900/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
               >
