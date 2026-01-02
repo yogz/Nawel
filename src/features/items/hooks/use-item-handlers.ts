@@ -12,7 +12,6 @@ import {
 } from "@/app/actions";
 import type { Item, Service, Person, PlanData, ItemData } from "@/lib/types";
 import type { ItemHandlerParams } from "@/features/shared/types";
-import posthog from "posthog-js";
 
 export function useItemHandlers({
   plan,
@@ -68,15 +67,6 @@ export function useItemHandlers({
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
         setSheet(null);
         setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
-        // Track item creation - engagement metric for event planning
-        posthog.capture("item_created", {
-          item_name: itemData.name,
-          has_quantity: !!itemData.quantity,
-          has_note: !!itemData.note,
-          has_price: !!itemData.price,
-          is_assigned: !!itemData.personId,
-          service_id: itemData.serviceId,
-        });
       } catch (error) {
         console.error("Failed to create item:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
@@ -139,14 +129,6 @@ export function useItemHandlers({
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
     setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
-
-    // Track item assignment - core engagement action
-    posthog.capture("item_assigned", {
-      item_name: item.name,
-      person_name: personName,
-      is_unassigning: !personId,
-      service_id: item.serviceId,
-    });
 
     // Easter egg for Cécile
     if (

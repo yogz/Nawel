@@ -9,13 +9,9 @@ export function LandingRouter() {
 
   // Afficher un écran vide pendant le chargement pour éviter le flash
   if (!variant) {
-    // On pourrait ajouter un skeleton ici, mais pour l'instant on évite le flash blanc
-    // en restant sur le fond par défaut ou en attendant PostHog.
-    // Cependant, pour éviter le blocage permanent si PostHog échoue,
-    // l'effet dans useLandingVariant devrait idéalement avoir un timeout.
     return <div className="min-h-screen bg-white" />;
   }
 
-  // A/B test entre Landing et LandingAlt (par défaut 'landing' si PostHog n'est pas prêt après un court délai)
+  // A/B test entre Landing et LandingAlt (par défaut 'landing')
   return variant === "landing-alt" ? <LandingAlt /> : <Landing />;
 }

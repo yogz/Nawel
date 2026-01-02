@@ -7,7 +7,6 @@ import { type Person } from "@/lib/types";
 import { renderAvatar, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import posthog from "posthog-js";
 
 export function ClaimPersonSheet({
   open,
@@ -33,12 +32,6 @@ export function ClaimPersonSheet({
     setIsPending(true);
     try {
       await onClaim(selectedId);
-      // Track profile claim - conversion from anonymous to authenticated
-      const claimedPerson = unclaimed.find((p) => p.id === selectedId);
-      posthog.capture("person_claimed_profile", {
-        person_name: claimedPerson?.name,
-        unclaimed_options_count: unclaimed.length,
-      });
     } finally {
       setIsPending(false);
     }

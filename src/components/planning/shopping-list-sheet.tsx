@@ -14,7 +14,6 @@ import {
   formatAggregatedQuantity,
   type AggregatedShoppingItem,
 } from "@/lib/shopping-utils";
-import posthog from "posthog-js";
 
 interface ShoppingListSheetProps {
   person: Person;
@@ -94,16 +93,6 @@ export function ShoppingListSheet({
         } else {
           onToggleItemChecked(source.item.id, newChecked);
         }
-      });
-      // Track shopping item check/uncheck
-      posthog.capture("shopping_item_checked", {
-        item_name: aggregatedItem.name,
-        is_checked: newChecked,
-        person_name: getDisplayName(person),
-        event_slug: slug,
-        progress_percentage: Math.round(
-          ((newChecked ? checkedCount + 1 : checkedCount - 1) / shoppingList.length) * 100
-        ),
       });
     });
   };

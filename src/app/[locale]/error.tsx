@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ShieldAlert, RefreshCcw, Home } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import posthog from "posthog-js";
 
 export default function Error({
   error,
@@ -19,16 +18,8 @@ export default function Error({
   const isDbError = isDatabaseError(error);
 
   useEffect(() => {
-    // Log the error to an error reporting service if needed
+    // Log the error
     console.error("Application Error:", error);
-    // Track error in PostHog for reliability monitoring
-    posthog.capture("application_error", {
-      error_message: error.message,
-      error_digest: error.digest,
-      is_database_error: isDbError,
-    });
-    // Also use PostHog's exception tracking for better error grouping
-    posthog.captureException(error);
   }, [error, isDbError]);
 
   return (

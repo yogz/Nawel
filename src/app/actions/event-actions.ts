@@ -16,7 +16,6 @@ import {
 } from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
-import { getPostHogClient } from "@/lib/posthog-server";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
   // Find a unique slug automatically based on name
@@ -110,24 +109,6 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     }
   }
 
-  // Track event creation - core engagement metric
-  const posthog = getPostHogClient();
-  if (posthog) {
-    posthog.capture({
-      distinctId: session?.user.id || `anonymous_${created.id}`,
-      event: "event_created",
-      properties: {
-        event_slug: created.slug,
-        event_name: created.name,
-        has_description: !!created.description,
-        creation_mode: input.creationMode || "zero",
-        adults_count: created.adults,
-        children_count: created.children,
-        is_authenticated: !!session?.user,
-      },
-    });
-  }
-
   revalidatePath("/");
   return created;
 });
@@ -193,20 +174,6 @@ export const updateEventAction = createSafeAction(updateEventSchema, async (inpu
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
-
-  // Track event deletion - churn indicator for event engagement (before deletion)
-  const posthog = getPostHogClient();
-  if (posthog) {
-    posthog.capture({
-      distinctId: event.ownerId || `anonymous_event_${event.id}`,
-      event: "event_deleted",
-      properties: {
-        event_slug: event.slug,
-        event_name: event.name,
-        event_id: event.id,
-      },
-    });
-  }
 
   // Log deletion before removing the record
   await logChange("delete", "events", event.id, event);

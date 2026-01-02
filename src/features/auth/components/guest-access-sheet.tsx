@@ -3,7 +3,6 @@
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { UserPlus, UserCircle, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import posthog from "posthog-js";
 
 export function GuestAccessSheet({
   open,
@@ -46,8 +45,6 @@ export function GuestAccessSheet({
 
               <button
                 onClick={() => {
-                  // Track guest continuing without authentication
-                  posthog.capture("guest_continued_without_auth");
                   onClose();
                 }}
                 className="flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 transition-all hover:bg-gray-50 active:scale-95"
