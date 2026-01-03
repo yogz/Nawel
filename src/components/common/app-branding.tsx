@@ -8,7 +8,7 @@ interface AppBrandingProps {
   logoSize?: number;
   textSize?: "sm" | "md" | "lg";
   onClick?: () => void;
-  variant?: "icon-text" | "text-only";
+  variant?: "icon-text" | "text-only" | "icon-text-logos";
 }
 
 const textSizeClasses = {
@@ -32,6 +32,25 @@ export function AppBranding({
         alt="CoList Logo"
         width={logoSize * 3}
         height={logoSize}
+        className="shrink-0"
+        priority
+      />
+    </div>
+  ) : variant === "icon-text-logos" ? (
+    <div className={cn("flex items-center gap-2.5", className)}>
+      <Image
+        src="/LogoIcon.png"
+        alt="CoList Icon"
+        width={logoSize}
+        height={logoSize}
+        className="shrink-0"
+        priority
+      />
+      <Image
+        src="/LogoText.png"
+        alt="CoList Text"
+        width={logoSize * 2.5}
+        height={logoSize * 0.8}
         className="shrink-0"
         priority
       />
