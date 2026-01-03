@@ -1,13 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share2, CheckCircle, CircleHelp, Stars } from "lucide-react";
-import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ShieldAlert, Share2 } from "lucide-react";
+import { type PlanData } from "@/lib/types";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { CitationDisplay } from "../common/citation-display";
@@ -16,11 +12,6 @@ interface OrganizerHeaderProps {
   readOnly: boolean;
   tab: string;
   plan: PlanData;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (sheet: Sheet) => void;
-  sheet: Sheet | null;
-  unassignedItemsCount: number;
   slug: string;
   writeKey?: string;
 }
@@ -29,11 +20,6 @@ export function OrganizerHeader({
   readOnly,
   tab,
   plan,
-  planningFilter,
-  setPlanningFilter,
-  setSheet,
-  sheet,
-  unassignedItemsCount,
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
@@ -79,7 +65,14 @@ export function OrganizerHeader({
         </div>
       )}
 
-      <header className="bg-white/60 sticky top-0 z-30 border-b border-purple-200/30 px-4 py-4 backdrop-blur-md shadow-sm">
+      <header
+        className="glass sticky top-0 z-30 border-b border-purple-200/30 px-4 py-4 shadow-sm"
+        style={{
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(248, 240, 255, 0.75) 100%)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
+      >
         <div className="flex items-center justify-between">
           <AppBranding logoSize={24} className="shrink-0" variant="text-only" />
           <div className="flex items-center gap-2">
@@ -102,91 +95,21 @@ export function OrganizerHeader({
         </div>
 
         {tab === "planning" && (
-          <>
-            <div className="mt-6 mb-4">
-              <h1 className="text-3xl font-black tracking-tight text-text">
-                {plan.event?.name || "Événement"} ✨
-              </h1>
-              <div className="mt-2">
-                <CitationDisplay seed={plan.event?.name || "Événement"} />
-              </div>
-              {plan.event?.description && (
-                <p className="mt-2 text-sm text-text/70">
-                  {plan.event.description}
-                </p>
-              )}
+          <div className="mt-6 mb-4">
+            <h1 className="text-3xl font-black tracking-tight text-text">
+              {plan.event?.name || "Événement"} ✨
+            </h1>
+            <div className="mt-2">
+              <CitationDisplay seed={plan.event?.name || "Événement"} />
             </div>
-            <PlanningFilters
-              plan={plan}
-              planningFilter={planningFilter}
-              setPlanningFilter={setPlanningFilter}
-              setSheet={setSheet}
-              sheet={sheet}
-              unassignedItemsCount={unassignedItemsCount}
-              slug={slug}
-              writeKey={writeKey}
-              readOnly={readOnly}
-            />
-          </>
+            {plan.event?.description && (
+              <p className="mt-2 text-sm text-text/70">
+                {plan.event.description}
+              </p>
+            )}
+          </div>
         )}
       </header>
     </>
-  );
-}
-
-interface PlanningFiltersProps {
-  plan: PlanData;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (sheet: Sheet) => void;
-  sheet: Sheet | null;
-  unassignedItemsCount: number;
-  slug: string;
-  writeKey?: string;
-  readOnly: boolean;
-}
-
-function PlanningFilters({
-  plan,
-  planningFilter,
-  setPlanningFilter,
-  setSheet,
-  sheet,
-  unassignedItemsCount,
-  slug,
-  writeKey,
-  readOnly,
-}: PlanningFiltersProps) {
-  const t = useTranslations("EventDashboard.Header.filter");
-
-  return (
-    <div className="mt-3 flex items-center justify-center">
-      <Tabs
-        value={planningFilter.type}
-        onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
-        className="inline-flex"
-      >
-        <TabsList className="h-auto rounded-xl bg-white/70 p-1 backdrop-blur-sm border border-white/50 shadow-sm">
-          <TabsTrigger
-            value="all"
-            className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
-          >
-            <Stars size={14} className="shrink-0" />
-            <span className="truncate">{t("all")}</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="unassigned"
-            className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
-          >
-            <CircleHelp size={14} className="shrink-0" />
-            <span className="truncate">
-              {t("unassigned", {
-                count: unassignedItemsCount,
-              })}
-            </span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </div>
   );
 }

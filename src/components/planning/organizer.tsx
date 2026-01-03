@@ -279,11 +279,6 @@ export function Organizer({
         readOnly={readOnly}
         tab={tab}
         plan={plan}
-        planningFilter={planningFilter}
-        setPlanningFilter={setPlanningFilter}
-        setSheet={setSheet}
-        sheet={sheet}
-        unassignedItemsCount={unassignedItemsCount}
         slug={slug}
         writeKey={effectiveWriteKey}
       />
@@ -299,6 +294,8 @@ export function Organizer({
             <PlanningTab
               plan={plan}
               planningFilter={planningFilter}
+              setPlanningFilter={setPlanningFilter}
+              unassignedItemsCount={unassignedItemsCount}
               activeItemId={activeItemId}
               readOnly={readOnly}
               sensors={sensors}

@@ -13,6 +13,8 @@ import {
   MapPin,
   ExternalLink,
   Download,
+  CircleHelp,
+  Stars,
 } from "lucide-react";
 import {
   generateGoogleCalendarUrl,
@@ -20,6 +22,7 @@ import {
   downloadIcsFile,
 } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import {
   type DragEndEvent,
@@ -34,6 +37,8 @@ import { useTranslations } from "next-intl";
 interface PlanningTabProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
+  setPlanningFilter: (filter: PlanningFilter) => void;
+  unassignedItemsCount: number;
   activeItemId: number | null;
   readOnly?: boolean;
   sensors: SensorDescriptor<SensorOptions>[];
@@ -49,6 +54,8 @@ interface PlanningTabProps {
 export function PlanningTab({
   plan,
   planningFilter,
+  setPlanningFilter,
+  unassignedItemsCount,
   activeItemId,
   readOnly,
   sensors,
@@ -61,6 +68,7 @@ export function PlanningTab({
   setSheet,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
+  const tFilter = useTranslations("EventDashboard.Header.filter");
   const { theme } = useThemeMode();
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -80,6 +88,36 @@ export function PlanningTab({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
+      {/* Filter Selector */}
+      <div className="mb-6 flex items-center justify-center px-4">
+        <Tabs
+          value={planningFilter.type}
+          onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
+          className="inline-flex"
+        >
+          <TabsList className="h-auto rounded-xl bg-white/70 p-1 backdrop-blur-sm border border-white/50 shadow-sm">
+            <TabsTrigger
+              value="all"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+            >
+              <Stars size={14} className="shrink-0" />
+              <span className="truncate">{tFilter("all")}</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="unassigned"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+            >
+              <CircleHelp size={14} className="shrink-0" />
+              <span className="truncate">
+                {tFilter("unassigned", {
+                  count: unassignedItemsCount,
+                })}
+              </span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
       <div className="space-y-12">
         {plan.meals.map((meal) => {
           const hasMatch = meal.services.some((s) =>
