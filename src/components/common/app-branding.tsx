@@ -26,7 +26,7 @@ export function AppBranding({
   const content = (
     <div className={cn("flex items-center gap-2.5", className)}>
       <Image
-        src="/logo.png"
+        src="/logo.svg"
         alt="CoList Logo"
         width={logoSize}
         height={logoSize}
