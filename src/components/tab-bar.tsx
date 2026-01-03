@@ -30,10 +30,10 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
 
   return (
     <nav
-      className="bg-surface/80 fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.03] backdrop-blur-md"
+      className="bg-white/90 fixed inset-x-0 bottom-0 z-40 border-t border-purple-200/40 backdrop-blur-md shadow-lg"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="mx-auto flex max-w-xl items-center justify-around py-3">
+      <div className="mx-auto flex max-w-xl items-center justify-around py-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
@@ -42,24 +42,24 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               key={tab.key}
               onClick={() => onChange(tab.key)}
               className={clsx(
-                "group flex flex-col items-center gap-1.5 transition-all active:scale-[0.97]",
-                selected ? "text-accent" : "text-foreground/50 transition-colors"
+                "group flex flex-col items-center gap-1.5 transition-all active:scale-[0.95]",
+                selected ? "text-accent" : "text-gray-400 transition-colors"
               )}
             >
               <div
                 className={clsx(
-                  "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
+                  "flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300",
                   selected
-                    ? "bg-accent/10 shadow-[0_0_20px_-5px_rgba(var(--accent),0.3)]"
-                    : "bg-transparent group-hover:bg-accent/5"
+                    ? "bg-accent text-white shadow-lg"
+                    : "bg-transparent group-hover:bg-accent/10"
                 )}
               >
-                <Icon size={selected ? 23 : 21} strokeWidth={selected ? 2.8 : 2.2} />
+                <Icon size={selected ? 24 : 22} strokeWidth={selected ? 2.5 : 2} />
               </div>
               <span
                 className={clsx(
-                  "text-[10px] font-black uppercase tracking-widest transition-opacity",
-                  selected ? "opacity-100" : "opacity-60"
+                  "text-[9px] font-black uppercase tracking-widest transition-all",
+                  selected ? "opacity-100 text-accent" : "opacity-70"
                 )}
               >
                 {t(tab.key)}

@@ -240,20 +240,21 @@ export function PlanningTab({
         <div className="mt-8 flex flex-col gap-3 px-4">
           <Button
             variant="premium"
-            className="w-full border-2 border-dashed border-gray-200 p-4 pr-6"
+            className="w-full border border-dashed border-purple-300/50 bg-purple-50/50 p-4 pr-6 hover:bg-purple-100/50 transition-all"
             icon={<PlusIcon />}
-            iconClassName="bg-gray-100 text-gray-400 group-hover:bg-gray-900"
+            iconClassName="bg-purple-100 text-purple-600 group-hover:bg-purple-200"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
           >
-            <span className="font-semibold text-gray-600">{t("addService")}</span>
+            <span className="font-bold text-purple-600 text-sm">{t("addService")}</span>
           </Button>
           <Button
             variant="premium"
-            className="w-full border-2 border-dashed border-accent/20 bg-accent/5 p-4 pr-6"
+            className="w-full border border-dashed border-purple-400/50 bg-purple-100/50 p-4 pr-6 hover:bg-purple-200/50 transition-all"
             icon={<PlusIcon />}
+            iconClassName="bg-purple-200 text-purple-700"
             onClick={() => setSheet({ type: "meal-create" })}
           >
-            <span className="font-semibold text-accent">{t("addMeal")}</span>
+            <span className="font-bold text-purple-700 text-sm">{t("addMeal")}</span>
           </Button>
         </div>
       )}

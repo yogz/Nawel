@@ -79,7 +79,7 @@ export function OrganizerHeader({
         </div>
       )}
 
-      <header className="bg-surface/80 sticky top-0 z-30 border-b border-black/[0.03] px-4 py-4 backdrop-blur-md">
+      <header className="bg-white/60 sticky top-0 z-30 border-b border-purple-200/30 px-4 py-4 backdrop-blur-md shadow-sm">
         <div className="flex items-center justify-between">
           <AppBranding logoSize={24} className="shrink-0" variant="text-only" />
           <div className="flex items-center gap-2">
@@ -109,17 +109,29 @@ export function OrganizerHeader({
         </div>
 
         {tab === "planning" && (
-          <PlanningFilters
-            plan={plan}
-            planningFilter={planningFilter}
-            setPlanningFilter={setPlanningFilter}
-            setSheet={setSheet}
-            sheet={sheet}
-            unassignedItemsCount={unassignedItemsCount}
-            slug={slug}
-            writeKey={writeKey}
-            readOnly={readOnly}
-          />
+          <>
+            <div className="mt-6 mb-4">
+              <h1 className="text-3xl font-black tracking-tight text-text">
+                {plan.event?.name || "Événement"} ✨
+              </h1>
+              {plan.event?.description && (
+                <p className="mt-2 text-sm text-text/70">
+                  {plan.event.description}
+                </p>
+              )}
+            </div>
+            <PlanningFilters
+              plan={plan}
+              planningFilter={planningFilter}
+              setPlanningFilter={setPlanningFilter}
+              setSheet={setSheet}
+              sheet={sheet}
+              unassignedItemsCount={unassignedItemsCount}
+              slug={slug}
+              writeKey={writeKey}
+              readOnly={readOnly}
+            />
+          </>
         )}
       </header>
     </>
@@ -153,25 +165,25 @@ function PlanningFilters({
 
   return (
     <div className="mt-4 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-full">
         <Tabs
           value={planningFilter.type}
           onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
-          className="w-full sm:w-auto"
+          className="w-full"
         >
-          <TabsList className="h-10 w-full rounded-full bg-zinc-100/80 p-1 sm:w-auto">
+          <TabsList className="h-auto w-full rounded-2xl bg-white/60 p-1.5 backdrop-blur-sm border border-white/40 shadow-sm">
             <TabsTrigger
               value="all"
-              className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
+              className="flex-1 gap-2 rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md transition-all sm:text-xs"
             >
-              <Stars size={14} className="shrink-0" />
+              <Stars size={16} className="shrink-0" />
               <span className="truncate">{t("all")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
-              className="flex-1 gap-1.5 rounded-full px-4 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:flex-none sm:text-xs"
+              className="flex-1 gap-2 rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md transition-all sm:text-xs"
             >
-              <CircleHelp size={14} className="shrink-0" />
+              <CircleHelp size={16} className="shrink-0" />
               <span className="truncate">
                 {t("unassigned", {
                   count: unassignedItemsCount,
