@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
+import { AppBranding } from "@/components/common/app-branding";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -80,12 +81,7 @@ export function OrganizerHeader({
 
       <header className="bg-surface/80 sticky top-0 z-30 border-b border-black/[0.03] px-4 py-4 backdrop-blur-md">
         <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="shrink-0 text-xl font-black italic tracking-tight text-accent transition-opacity hover:opacity-80 sm:text-2xl"
-          >
-            COLIST ✨
-          </Link>
+          <AppBranding logoSize={32} textSize="md" className="shrink-0" />
           <div className="flex items-center gap-2">
             {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">

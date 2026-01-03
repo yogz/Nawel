@@ -7,6 +7,7 @@ import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
+import { AppBranding } from "@/components/common/app-branding";
 
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
@@ -52,6 +53,10 @@ export default function CreateEventClient() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-12">
+      <div className="mb-8">
+        <AppBranding logoSize={36} textSize="md" />
+      </div>
+
       <Link
         href="/login?mode=user"
         className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent"

@@ -2,6 +2,7 @@
 
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations } from "next-intl";
+import { AppBranding } from "@/components/common/app-branding";
 
 export function DashboardHeader() {
   const t = useTranslations("Dashboard");
@@ -15,16 +16,21 @@ export function DashboardHeader() {
   };
 
   return (
-    <div className="mb-8 pt-8 text-center">
-      <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
-        {t("badge")}
-        {getEmoji("badge")}
-      </p>
-      <h1 className="mt-2 text-3xl font-bold">
-        {t("title")}
-        {getEmoji("title")}
-      </h1>
-      <p className="mt-2 text-gray-600">{t("description")}</p>
+    <div className="mb-8 pt-4">
+      <div className="mb-8">
+        <AppBranding logoSize={40} textSize="lg" />
+      </div>
+      <div className="text-center">
+        <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
+          {t("badge")}
+          {getEmoji("badge")}
+        </p>
+        <h1 className="mt-2 text-3xl font-bold">
+          {t("title")}
+          {getEmoji("title")}
+        </h1>
+        <p className="mt-2 text-gray-600">{t("description")}</p>
+      </div>
     </div>
   );
 }
