@@ -26,7 +26,7 @@ export function AppBranding({
   const content = (
     <div className={cn("flex items-center gap-2.5", className)}>
       <Image
-        src="/logo.svg"
+        src="/logo.png"
         alt="CoList Logo"
         width={logoSize}
         height={logoSize}
@@ -40,7 +40,7 @@ export function AppBranding({
         )}
         style={{ fontFamily: "'Poppins', 'Futura', 'Sofia Pro', system-ui, sans-serif" }}
       >
-        <span className="font-extrabold" style={{ color: "#1A1A1B" }}>
+        <span className="font-normal" style={{ color: "#1A1A1B" }}>
           Co
         </span>
         <span className="font-light" style={{ color: "#1A1A1B" }}>
