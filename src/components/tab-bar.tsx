@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
+import { CalendarRange, Settings, Users, ShoppingCart, User } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 
@@ -8,6 +8,7 @@ const authenticatedTabs = [
   { key: "planning", icon: CalendarRange },
   { key: "people", icon: Users },
   { key: "shopping", icon: ShoppingCart },
+  { key: "profile", icon: User },
 ] as const;
 
 const guestTabs = [
@@ -16,7 +17,7 @@ const guestTabs = [
   { key: "settings", icon: Settings },
 ] as const;
 
-export type TabKey = "planning" | "people" | "shopping" | "settings";
+export type TabKey = "planning" | "people" | "shopping" | "settings" | "profile";
 
 interface TabBarProps {
   active: TabKey;

@@ -234,7 +234,8 @@
       "planning": "Menu",
       "people": "Convives",
       "shopping": "Courses",
-      "settings": "Réglages"
+      "settings": "Réglages",
+      "profile": "Profil"
     },
     "Planning": {
       "noMeals": "Aucun repas pour le moment.",

@@ -339,6 +339,10 @@ export function Organizer({
               currentUserId={session?.user?.id}
             />
           )}
+
+          {tab === "profile" && (
+            <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
+          )}
         </Suspense>
       </main>
 

@@ -223,7 +223,8 @@
       "planning": "Menu",
       "people": "Guests",
       "shopping": "Shopping",
-      "settings": "Settings"
+      "settings": "Settings",
+      "profile": "Profile"
     },
     "Planning": {
       "noMeals": "No meals for now.",

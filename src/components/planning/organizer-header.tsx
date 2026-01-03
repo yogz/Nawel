@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars } from "lucide-react";
+import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars, ArrowUpRight } from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
-import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -90,21 +89,14 @@ export function OrganizerHeader({
               </span>
             )}
             {!readOnly && (
-              <Button
-                variant="premium"
-                size="premium"
-                shine
+              <button
                 onClick={handleShare}
-                icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
-                iconClassName={cn("h-7 w-7", copied && "bg-green-500 text-white")}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
                 title={t("shareTitle")}
               >
-                <span className="truncate text-[10px] font-black uppercase tracking-wider text-gray-700 sm:text-xs">
-                  {copied ? t("copyButton") : t("shareButton")}
-                </span>
-              </Button>
+                <ArrowUpRight size={22} className="text-gray-700" strokeWidth={2.5} />
+              </button>
             )}
-            <UserNav />
           </div>
         </div>
 
