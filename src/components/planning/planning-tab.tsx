@@ -95,7 +95,14 @@ export function PlanningTab({
           onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
           className="inline-flex"
         >
-          <TabsList className="h-auto rounded-xl bg-white/70 p-1 backdrop-blur-sm border border-white/50 shadow-sm">
+          <TabsList
+            className="h-auto rounded-xl p-1 border border-white/50 shadow-sm"
+            style={{
+              background: "rgba(255, 255, 255, 0.7)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+            }}
+          >
             <TabsTrigger
               value="all"
               className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"

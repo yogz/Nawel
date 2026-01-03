@@ -66,15 +66,15 @@ export function OrganizerHeader({
       )}
 
       <header
-        className="glass sticky top-0 z-30 border-b border-purple-200/30 px-4 py-4 shadow-sm"
+        className="sticky top-0 z-30 border-b border-purple-200/30 px-4 py-2 shadow-sm"
         style={{
-          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(248, 240, 255, 0.75) 100%)",
+          background: "rgba(255, 255, 255, 0.7)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
         }}
       >
         <div className="flex items-center justify-between">
-          <AppBranding logoSize={24} className="shrink-0" variant="text-only" />
+          <AppBranding logoSize={20} className="shrink-0" variant="text-only" />
           <div className="flex items-center gap-2">
             {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
@@ -85,25 +85,25 @@ export function OrganizerHeader({
             {!readOnly && (
               <button
                 onClick={handleShare}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
                 title={t("shareTitle")}
               >
-                <Share2 size={20} className="text-gray-700" strokeWidth={2.5} />
+                <Share2 size={18} className="text-gray-700" strokeWidth={2.5} />
               </button>
             )}
           </div>
         </div>
 
         {tab === "planning" && (
-          <div className="mt-6 mb-4">
-            <h1 className="text-3xl font-black tracking-tight text-text">
+          <div className="mt-3 mb-2">
+            <h1 className="text-2xl font-black tracking-tight text-text">
               {plan.event?.name || "Événement"} ✨
             </h1>
-            <div className="mt-2">
+            <div className="mt-1">
               <CitationDisplay seed={plan.event?.name || "Événement"} />
             </div>
             {plan.event?.description && (
-              <p className="mt-2 text-sm text-text/70">
+              <p className="mt-1 text-sm text-text/70">
                 {plan.event.description}
               </p>
             )}

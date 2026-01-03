@@ -32,10 +32,12 @@ export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarP
 
   return (
     <nav
-      className="glass fixed inset-x-0 bottom-0 z-40 border-t border-purple-200/30 backdrop-blur-xl shadow-[0_-4px_16px_rgba(120,80,180,0.08)]"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-purple-200/30 shadow-[0_-4px_16px_rgba(120,80,180,0.08)]"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        background: "linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(248, 240, 255, 0.75) 100%)"
+        background: "rgba(255, 255, 255, 0.8)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
       }}
     >
       <div className="mx-auto flex max-w-xl items-center justify-around py-2.5">
@@ -55,11 +57,14 @@ export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarP
             >
               <div
                 className={clsx(
-                  "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 overflow-hidden",
+                  "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300",
                   isProfile && userImage
-                    ? selected
-                      ? "ring-2 ring-accent ring-offset-2 shadow-lg"
-                      : "ring-1 ring-gray-200"
+                    ? clsx(
+                        "overflow-hidden",
+                        selected
+                          ? "ring-2 ring-accent ring-offset-2 shadow-lg"
+                          : "ring-1 ring-gray-200"
+                      )
                     : selected
                     ? "bg-accent text-white shadow-lg"
                     : "bg-transparent group-hover:bg-accent/10"
@@ -69,7 +74,7 @@ export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarP
                   <img
                     src={userImage}
                     alt="Profile"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover rounded-full"
                   />
                 ) : (
                   <Icon size={selected ? 22 : 20} strokeWidth={selected ? 2.5 : 2} />
