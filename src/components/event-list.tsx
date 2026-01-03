@@ -170,7 +170,7 @@ export function EventList({
     { upcoming: [] as Event[], past: [] as Event[] }
   );
 
-  const renderSection = (title: string, items: Event[], icon: React.ReactNode) => {
+  const renderSection = (title: string, items: Event[], icon: React.ReactNode, isPast = false) => {
     if (items.length === 0) {
       return null;
     }
@@ -203,7 +203,7 @@ export function EventList({
                     router.push(url);
                   }
                 }}
-                className="group relative block cursor-pointer overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
+                className={`group relative block cursor-pointer overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99] ${isPast ? "opacity-60 grayscale-[30%]" : ""}`}
               >
                 {/* Decorative background gradient */}
                 <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
@@ -259,7 +259,7 @@ export function EventList({
                         <div className="flex h-7 items-center gap-1.5 rounded-lg bg-gray-50 px-2.5 text-[10px] font-bold text-gray-600 transition-colors hover:bg-accent hover:text-white">
                           {t("view")}
                         </div>
-                        {isOwner && (
+                        {isOwner && !isPast && (
                           <>
                             <button
                               onClick={(e) => {
@@ -296,7 +296,7 @@ export function EventList({
 
             return (
               <div key={event.id}>
-                {isOwner ? (
+                {isOwner && !isPast ? (
                   <SwipeableCard
                     onSwipeLeft={() => setDeletingEvent(event)}
                     onSwipeRight={() => setEditingEvent(event)}
@@ -326,8 +326,8 @@ export function EventList({
         )}
         {events.length > 0 && (
           <div className="col-span-1 space-y-10 sm:col-span-1 lg:col-span-2">
-            {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />)}
-            {renderSection(t("past"), categorized.past, <History size={16} />)}
+            {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />, false)}
+            {renderSection(t("past"), categorized.past, <History size={16} />, true)}
           </div>
         )}
       </div>
