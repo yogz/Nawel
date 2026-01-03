@@ -32,9 +32,6 @@ export default async function Home(props: {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-6 pb-24">
-      <div className="mb-4 flex justify-end">
-        <UserNav />
-      </div>
       <DashboardHeader />
 
       <EventList events={events} writeEnabled writeKey={key} />

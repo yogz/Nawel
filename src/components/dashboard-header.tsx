@@ -3,6 +3,7 @@
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations } from "next-intl";
 import { AppBranding } from "@/components/common/app-branding";
+import { UserNav } from "@/components/auth/user-nav";
 
 export function DashboardHeader() {
   const t = useTranslations("Dashboard");
@@ -17,8 +18,9 @@ export function DashboardHeader() {
 
   return (
     <div className="mb-8 pt-4">
-      <div className="mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <AppBranding logoSize={40} textSize="lg" />
+        <UserNav />
       </div>
       <div className="text-center">
         <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
