@@ -1,13 +1,9 @@
 "use client";
 
-import { Trash2, Sparkles, Check, Globe } from "lucide-react";
+import { Trash2, Sparkles, Globe, Check } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
-import { useTranslations, useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
-import { routing, type Locale } from "@/i18n/routing";
-import { useSession } from "@/lib/auth-client";
-import { updateUserAction } from "@/app/actions/user-actions";
+import { useTranslations } from "next-intl";
+import { LanguageSelector } from "@/components/common/language-selector";
 
 interface SettingsTabProps {
   onDeleteEvent: () => void;
@@ -16,47 +12,7 @@ interface SettingsTabProps {
 
 export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
-  const tCommon = useTranslations("common");
   const { theme, setTheme, themes } = useThemeMode();
-  const locale = useLocale() as Locale;
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const { data: session } = useSession();
-
-  const handleLanguageChange = async (newLocale: Locale) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    // Save to user profile if logged in
-    if (session?.user) {
-      try {
-        await updateUserAction({
-          language: newLocale,
-        });
-      } catch (err) {
-        console.error("Failed to save language preference:", err);
-      }
-    }
-
-    // Use next-intl router for robust locale switching
-    // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
-    router.replace(
-      { pathname, query: Object.fromEntries(searchParams.entries()) },
-      { locale: newLocale }
-    );
-  };
-
-  const languageIcons: Record<string, string> = {
-    fr: "🇫🇷",
-    en: "🇬🇧",
-    es: "🇪🇸",
-    pt: "🇵🇹",
-    de: "🇩🇪",
-    el: "🇬🇷",
-  };
 
   return (
     <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -96,31 +52,7 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Globe size={14} /> {t("language")}
         </h3>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {routing.locales.map((l) => (
-            <button
-              key={l}
-              onClick={() => handleLanguageChange(l as Locale)}
-              className={`flex items-center justify-between rounded-2xl border p-4 transition-all ${
-                locale === l
-                  ? "border-accent/30 bg-accent/10 ring-2 ring-accent/20"
-                  : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{languageIcons[l] || "🌐"}</span>
-                <div className="text-left">
-                  <p className="text-sm font-bold text-text">{tCommon(`languages.${l}`)}</p>
-                </div>
-              </div>
-              {locale === l && (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white">
-                  <Check size={14} />
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
+        <LanguageSelector variant="grid" showSearch={true} />
       </div>
 
       {!readOnly && (

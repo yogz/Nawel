@@ -5,7 +5,7 @@ import { ChevronDown, Sparkles, Send, Users, CheckCircle2, Heart } from "lucide-
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
-import { LanguageSwitcher } from "./language-switcher";
+import { LanguageSelector } from "./common/language-selector";
 import { useTranslations } from "next-intl";
 
 export function LandingStory() {
@@ -63,7 +63,7 @@ export function LandingStory() {
         className="sticky top-0 z-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
       >
         <div className="absolute right-6 top-6 z-50 font-sans">
-          <LanguageSwitcher />
+          <LanguageSelector variant="compact" showSearch={true} />
         </div>
 
         {/* Soft, elegant background */}

@@ -28,6 +28,7 @@ import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
 import { getPersonEmoji, THEME_EMOJIS, renderAvatar } from "@/lib/utils";
+import { LanguageSelector } from "../common/language-selector";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -401,63 +402,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       <Globe size={12} />
                       {tCommon("languages.fr") ? "Langue" : "Language"}
                     </Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {routing.locales.map((l) => {
-                        const isSelected = locale === l;
-                        const languageIcons: Record<string, string> = {
-                          fr: "🇫🇷",
-                          en: "🇬🇧",
-                          es: "🇪🇸",
-                          pt: "🇵🇹",
-                          de: "🇩🇪",
-                          el: "🇬🇷",
-                        };
-                        return (
-                          <button
-                            key={l}
-                            type="button"
-                            onClick={async () => {
-                              // Save to user profile if logged in
-                              if (session?.user) {
-                                try {
-                                  await updateUserAction({
-                                    language: l,
-                                  });
-                                } catch (err) {
-                                  console.error("Failed to save language preference:", err);
-                                }
-                              }
-
-                              // Use next-intl router for robust locale switching
-                              // This automatically sets the NEXT_LOCALE cookie and handles URL prefixing
-                              router.replace(
-                                { pathname, query: Object.fromEntries(searchParams.entries()) },
-                                { locale: l }
-                              );
-                            }}
-                            className={clsx(
-                              "flex items-center justify-between rounded-xl border-2 p-2 transition-all active:scale-[0.98]",
-                              isSelected
-                                ? "border-accent bg-accent/5 ring-1 ring-accent/20"
-                                : "border-gray-50 bg-white hover:border-gray-200"
-                            )}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">{languageIcons[l] || "🌐"}</span>
-                              <span
-                                className={clsx(
-                                  "text-xs font-bold",
-                                  isSelected ? "text-accent" : "text-gray-600"
-                                )}
-                              >
-                                {tCommon(`languages.${l}`)}
-                              </span>
-                            </div>
-                            {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-accent" />}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    <LanguageSelector variant="grid" showSearch={true} />
                   </div>
                 </div>
 

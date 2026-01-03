@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "./language-switcher";
+import { LanguageSelector } from "./common/language-selector";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
@@ -58,7 +58,7 @@ export function Landing() {
         className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
       >
         <div className="absolute right-6 top-6 z-50">
-          <LanguageSwitcher />
+          <LanguageSelector variant="compact" showSearch={true} />
         </div>
         <div className="absolute inset-0 -z-10">
           <Image
