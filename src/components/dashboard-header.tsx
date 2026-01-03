@@ -19,7 +19,7 @@ export function DashboardHeader() {
   return (
     <div className="mb-8 pt-4">
       <div className="mb-8 flex items-center justify-between">
-        <AppBranding logoSize={40} textSize="lg" />
+        <AppBranding logoSize={40} variant="icon-text-logos" />
         <UserNav />
       </div>
       <div className="text-center">
