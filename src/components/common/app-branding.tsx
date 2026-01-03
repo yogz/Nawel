@@ -30,7 +30,7 @@ export function AppBranding({
       <Image
         src="/LogoText.png"
         alt="CoList Logo"
-        width={logoSize * 3}
+        width={logoSize * 3.88}
         height={logoSize}
         className="shrink-0"
         priority
@@ -41,7 +41,7 @@ export function AppBranding({
       <Image
         src="/LogoIcon.png"
         alt="CoList Icon"
-        width={logoSize}
+        width={logoSize * 0.96}
         height={logoSize}
         className="shrink-0"
         priority
@@ -49,7 +49,7 @@ export function AppBranding({
       <Image
         src="/LogoText.png"
         alt="CoList Text"
-        width={logoSize * 2.5}
+        width={logoSize * 3.1}
         height={logoSize * 0.8}
         className="shrink-0"
         priority
