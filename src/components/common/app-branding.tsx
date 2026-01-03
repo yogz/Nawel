@@ -49,8 +49,8 @@ export function AppBranding({
       <Image
         src="/LogoText.png"
         alt="CoList Text"
-        width={logoSize * 3.1}
-        height={logoSize * 0.8}
+        width={logoSize * 2.33}
+        height={logoSize * 0.6}
         className="shrink-0"
         priority
       />
