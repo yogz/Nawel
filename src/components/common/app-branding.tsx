@@ -35,15 +35,15 @@ export function AppBranding({
       />
       <div
         className={cn(
-          "flex items-baseline leading-none tracking-[-0.02em]",
+          "flex items-baseline leading-none tracking-tight text-[#2D3648]",
           textSizeClasses[textSize]
         )}
-        style={{ fontFamily: "'Poppins', 'Futura', 'Sofia Pro', system-ui, sans-serif" }}
+        style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}
       >
-        <span className="font-normal" style={{ color: "#1A1A1B" }}>
+        <span className="font-semibold">
           Co
         </span>
-        <span className="font-light" style={{ color: "#1A1A1B" }}>
+        <span className="font-medium">
           List
         </span>
       </div>
