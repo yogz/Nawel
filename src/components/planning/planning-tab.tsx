@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import { ServiceSection } from "./service-section";
-import { CitationDisplay } from "../common/citation-display";
 import { useThemeMode } from "../theme-provider";
 import {
   PlusIcon,
@@ -179,10 +178,6 @@ export function PlanningTab({
                         </PopoverContent>
                       </Popover>
                     </div>
-                  </div>
-
-                  <div className="mt-2 sm:pl-[52px]">
-                    <CitationDisplay seed={meal.title || meal.date} />
                   </div>
 
                   <div className="mt-2 flex flex-wrap items-center gap-2">

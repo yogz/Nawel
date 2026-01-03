@@ -346,7 +346,7 @@ export function Organizer({
         </Suspense>
       </main>
 
-      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} userImage={session?.user?.image} />
 
       {isOwner && (
         <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">

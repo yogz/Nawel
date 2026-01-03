@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars, ArrowUpRight } from "lucide-react";
+import { ShieldAlert, Share2, CheckCircle, CircleHelp, Stars } from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
+import { CitationDisplay } from "../common/citation-display";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -94,7 +95,7 @@ export function OrganizerHeader({
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
                 title={t("shareTitle")}
               >
-                <ArrowUpRight size={22} className="text-gray-700" strokeWidth={2.5} />
+                <Share2 size={20} className="text-gray-700" strokeWidth={2.5} />
               </button>
             )}
           </div>
@@ -106,6 +107,9 @@ export function OrganizerHeader({
               <h1 className="text-3xl font-black tracking-tight text-text">
                 {plan.event?.name || "Événement"} ✨
               </h1>
+              <div className="mt-2">
+                <CitationDisplay seed={plan.event?.name || "Événement"} />
+              </div>
               {plan.event?.description && (
                 <p className="mt-2 text-sm text-text/70">
                   {plan.event.description}
@@ -156,35 +160,33 @@ function PlanningFilters({
   const t = useTranslations("EventDashboard.Header.filter");
 
   return (
-    <div className="mt-4 flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2 w-full">
-        <Tabs
-          value={planningFilter.type}
-          onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
-          className="w-full"
-        >
-          <TabsList className="h-auto w-full rounded-2xl bg-white/60 p-1.5 backdrop-blur-sm border border-white/40 shadow-sm">
-            <TabsTrigger
-              value="all"
-              className="flex-1 gap-2 rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md transition-all sm:text-xs"
-            >
-              <Stars size={16} className="shrink-0" />
-              <span className="truncate">{t("all")}</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="unassigned"
-              className="flex-1 gap-2 rounded-xl px-4 py-2.5 text-[11px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md transition-all sm:text-xs"
-            >
-              <CircleHelp size={16} className="shrink-0" />
-              <span className="truncate">
-                {t("unassigned", {
-                  count: unassignedItemsCount,
-                })}
-              </span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+    <div className="mt-3 flex items-center justify-center">
+      <Tabs
+        value={planningFilter.type}
+        onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
+        className="inline-flex"
+      >
+        <TabsList className="h-auto rounded-xl bg-white/70 p-1 backdrop-blur-sm border border-white/50 shadow-sm">
+          <TabsTrigger
+            value="all"
+            className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+          >
+            <Stars size={14} className="shrink-0" />
+            <span className="truncate">{t("all")}</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="unassigned"
+            className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+          >
+            <CircleHelp size={14} className="shrink-0" />
+            <span className="truncate">
+              {t("unassigned", {
+                count: unassignedItemsCount,
+              })}
+            </span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
