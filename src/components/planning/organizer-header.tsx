@@ -99,18 +99,16 @@ export function OrganizerHeader({
                 )}
                 {!readOnly && (
                   <Button
-                    variant="premium"
-                    size="premium"
-                    shine
+                    variant="ghost"
                     onClick={handleShare}
                     icon={copied ? <CheckCircle size={15} /> : <Share size={15} />}
                     iconClassName={cn(
-                      "h-3.5 w-3.5 transition-all duration-300",
+                      "transition-all duration-300",
                       copied
                         ? "bg-green-500 text-white rotate-12 scale-110"
                         : "bg-transparent text-gray-700"
                     )}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-white/60 p-0 shadow-lg shadow-accent/10 hover:shadow-accent/20"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-white/60 p-0 shadow-lg shadow-accent/10 transition-all hover:scale-105 hover:bg-white hover:shadow-accent/20"
                     title={t("shareTitle")}
                   ></Button>
                 )}

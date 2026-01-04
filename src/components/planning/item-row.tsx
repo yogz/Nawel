@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
-import { Scale, Euro, MessageSquare, ChefHat, CircleHelp } from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat, CircleHelp, Edit3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "../ui/button";
@@ -42,15 +42,20 @@ function ItemRowComponent({
       {/* Left side: Item Name & Metadata */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-col gap-0.5">
-          <p
-            className={cn(
-              "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
-              "text-gray-900",
-              person && "opacity-100"
+          <div className="flex items-center justify-between gap-2">
+            <p
+              className={cn(
+                "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
+                "text-gray-900",
+                person && "opacity-100"
+              )}
+            >
+              {item.name}
+            </p>
+            {!readOnly && (
+              <Edit3 className="h-3 w-3 shrink-0 text-accent/20 opacity-0 transition-all group-hover:text-accent/60 group-hover:opacity-100" />
             )}
-          >
-            {item.name}
-          </p>
+          </div>
 
           {(item.quantity ||
             item.note ||
