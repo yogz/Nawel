@@ -199,17 +199,11 @@ export function PlanningTab({
               >
                 {/* Meal Info Row - Premium & Compact */}
                 <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-3 shadow-sm backdrop-blur-sm">
-                  <div className="relative shrink-0">
-                    <div className="relative grid h-8 w-8 place-items-center rounded-lg border border-accent/20 bg-accent/5 text-lg shadow-sm">
-                      <span className="text-base">
-                        {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
-                      </span>
-                    </div>
-                  </div>
+                  {/* Removed Meal Icon div */}
 
                   <div className="flex min-w-0 flex-1 flex-col">
                     <div className="flex items-center gap-2">
-                      <h2 className="truncate text-sm font-black tracking-tight text-gray-800">
+                      <h2 className="truncate text-base font-black tracking-tight text-black">
                         {meal.title || meal.date}
                       </h2>
                       {!readOnly && (
