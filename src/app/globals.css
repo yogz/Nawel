@@ -8,11 +8,23 @@
     --surface: #e8dbf5;
     --muted: #d4c5e8;
     --accent: 280 75% 65%;
-    /* Vibrant Purple */
     --accent-glow: 280 100% 75%;
     --accent-soft: #f0e6fa;
     --text: #3a2b52;
     --shine-color: rgba(168, 85, 247, 0.5);
+
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-border: rgba(200, 180, 230, 0.3);
+    --card-shadow: 0 4px 16px rgba(120, 80, 180, 0.12), 0 2px 8px rgba(150, 100, 200, 0.08);
+    --card-shadow-hover: 0 8px 24px rgba(120, 80, 180, 0.18), 0 4px 12px rgba(150, 100, 200, 0.12);
+
+    --glass-bg: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(248, 240, 255, 0.75) 100%
+    );
+    --glass-border: rgba(200, 180, 230, 0.4);
+    --glass-shadow: 0 4px 12px rgba(120, 80, 180, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 
     background: linear-gradient(180deg, #e8dbf5 0%, #d8c9ec 50%, #cdbde5 100%);
     background-attachment: fixed;
@@ -89,40 +101,35 @@
     }
   }
 
-  .theme-aurora .premium-card {
-    background: rgba(255, 255, 255, 0.95);
+  /* Shared Interactive Components Logic */
+  .premium-card {
+    background: var(--card-bg, white);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(200, 180, 230, 0.3);
+    border: 1px solid var(--card-border, rgba(0, 0, 0, 0.04));
     border-radius: 1.5rem;
-    box-shadow:
-      0 4px 16px rgba(120, 80, 180, 0.12),
-      0 2px 8px rgba(150, 100, 200, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.05));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .theme-aurora .premium-card:hover {
+  .premium-card:hover {
     transform: translateY(-2px);
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    box-shadow:
-      0 8px 24px rgba(120, 80, 180, 0.18),
-      0 4px 12px rgba(150, 100, 200, 0.12);
+    border-color: var(--accent, transparent);
+    box-shadow: var(--card-shadow-hover, 0 20px 25px -5px rgba(0, 0, 0, 0.08));
   }
 
-  .theme-aurora .glass {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.85) 0%,
-      rgba(248, 240, 255, 0.75) 100%
-    );
+  .glass {
+    background: var(--glass-bg, rgba(255, 255, 255, 0.7));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(200, 180, 230, 0.4);
-    box-shadow:
-      0 4px 12px rgba(120, 80, 180, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2));
+    box-shadow: var(--glass-shadow, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
   }
 
-  /* Accent highlights for buttons and interactive elements in Aurora */
+  /* Theme-specific Overrides - Keep minimal */
+  .theme-aurora .premium-card {
+    border-color: rgba(200, 180, 230, 0.3);
+  }
+
   .theme-aurora .btn-aurora,
   .theme-aurora .btn-prominent {
     background: linear-gradient(135deg, hsl(280 85% 55%), hsl(260 85% 50%));
@@ -169,6 +176,15 @@
     --accent-soft: #0a0a0a;
     --shine-color: rgba(255, 255, 255, 0.5);
 
+    --card-bg: #0a0a0a;
+    --card-border: white;
+    --card-shadow: none;
+    --card-shadow-hover: none;
+
+    --glass-bg: #000000;
+    --glass-border: white;
+    --glass-shadow: none;
+
     background: #000000 !important;
     color: #ffffff !important;
 
@@ -180,13 +196,10 @@
     font-weight: 500 !important;
   }
 
-  /* Force borders and visibility on components */
-  .theme-readable .premium-card,
-  .theme-readable [class*="card"] {
-    background: #0a0a0a !important;
+  /* Force borders and visibility on components - Readable special handling */
+  .theme-readable .premium-card {
     border: 3px solid white !important;
     border-radius: 4px !important;
-    box-shadow: none !important;
     margin-bottom: 1.5rem !important;
   }
 
@@ -230,10 +243,7 @@
   }
 
   .theme-readable .glass {
-    background: #000000 !important;
     border: 3px solid white !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
 
   .theme-readable button:not(.btn-readable),
@@ -310,6 +320,16 @@
     --gold: #d4af37;
     --green: #15803d;
     --shine-color: rgba(212, 175, 55, 0.6);
+
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(185, 28, 28, 0.1);
+    --card-shadow: 0 4px 24px rgba(185, 28, 28, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    --card-shadow-hover:
+      0 12px 32px rgba(185, 28, 28, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+
+    --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(254, 242, 242, 0.6) 100%);
+    --glass-border: rgba(185, 28, 28, 0.15);
+    --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 16px rgba(185, 28, 28, 0.05);
 
     background: linear-gradient(180deg, #fefcfa 0%, #fff5f5 50%, #f0fdf4 100%);
     background-attachment: fixed;
@@ -399,39 +419,7 @@
     }
   }
 
-  /* Frosted glass cards for Christmas */
-  .theme-christmas .premium-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(185, 28, 28, 0.1);
-    box-shadow:
-      0 4px 24px rgba(185, 28, 28, 0.06),
-      0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-      0 1px 0 rgba(255, 255, 255, 0.8) inset;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .theme-christmas .premium-card:hover {
-    transform: translateY(-2px);
-    border: 1px solid rgba(185, 28, 28, 0.2);
-    box-shadow:
-      0 12px 32px rgba(185, 28, 28, 0.1),
-      0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-      0 1px 0 rgba(255, 255, 255, 0.8) inset;
-  }
-
-  /* Christmas glass effect */
-  .theme-christmas .glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(254, 242, 242, 0.6) 100%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(185, 28, 28, 0.15);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.6),
-      0 4px 16px rgba(185, 28, 28, 0.05);
-  }
-
-  /* Festive button glow */
+  /* Theme Christmas Overrides */
   .theme-christmas .btn-festive,
   .theme-christmas .btn-prominent {
     background: linear-gradient(135deg, hsl(0 74% 42%), hsl(0 74% 35%));
