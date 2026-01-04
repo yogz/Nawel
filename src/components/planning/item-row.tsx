@@ -45,7 +45,7 @@ function ItemRowComponent({
           <p
             className={cn(
               "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
-              person ? "text-gray-500/70 line-through decoration-gray-400/50" : "text-gray-900"
+              person ? "text-gray-500/70 line-through decoration-gray-400/50" : "text-black"
             )}
           >
             {item.name}

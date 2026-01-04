@@ -52,9 +52,10 @@ export const ServiceSection = memo(function ServiceSection({
   return (
     <div
       ref={setNodeRef}
-      className={`relative rounded-2xl border border-white/40 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 ${
-        isOver ? "scale-[1.01] ring-2 ring-accent ring-offset-2" : ""
-      }`}
+      className={cn(
+        "relative rounded-2xl border border-white/40 bg-white/90 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-300",
+        isOver && "scale-[1.01] ring-2 ring-accent ring-offset-2"
+      )}
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
