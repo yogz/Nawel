@@ -7,6 +7,7 @@ import { ItemRow } from "./item-row";
 import { Button } from "../ui/button";
 import { memo } from "react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface ServiceSectionProps {
   service: Service;
