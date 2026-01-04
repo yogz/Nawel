@@ -42,21 +42,6 @@ export function OrganizerHeader({
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
 
-  const totalItems = plan.meals.reduce(
-    (acc, meal) => acc + meal.services.reduce((acc2, service) => acc2 + service.items.length, 0),
-    0
-  );
-  const assignedItems = plan.meals.reduce(
-    (acc, meal) =>
-      acc +
-      meal.services.reduce(
-        (acc2, service) => acc2 + service.items.filter((i) => i.personId).length,
-        0
-      ),
-    0
-  );
-  const progress = totalItems > 0 ? (assignedItems / totalItems) * 100 : 0;
-
   const handleShare = async () => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     const url = `${baseUrl}/event/${slug}${writeKey ? `?key=${writeKey}` : ""}`;
@@ -135,23 +120,13 @@ export function OrganizerHeader({
           </div>
 
           {tab === "planning" && (
-            <div className="mt-1.5 flex flex-col gap-1.5">
-              <div className="px-0.5">
+            <div className="mt-1">
+              <div className="px-0.5 pb-0.5">
                 <CitationDisplay
                   seed={plan.event?.name || slug}
                   className="text-[10px] opacity-70"
                 />
               </div>
-
-              {totalItems > 0 && (
-                <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/5">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    className="h-full bg-gradient-to-r from-purple-500 to-accent shadow-[0_0_8px_rgba(168,85,247,0.4)]"
-                  />
-                </div>
-              )}
             </div>
           )}
         </header>
