@@ -111,13 +111,13 @@ export function OrganizerHeader({
             {isAuthenticated && onOpenSettings && (
               <button
                 onClick={onOpenSettings}
-                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
+                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 transition-opacity active:opacity-70"
                 title="Profil"
               >
                 {userImage ? (
                   <img src={userImage} alt="Profil" className="h-full w-full object-cover" />
                 ) : (
-                  <User size={16} className="text-gray-700" strokeWidth={2.5} />
+                  <User size={18} className="text-gray-600" strokeWidth={2} />
                 )}
               </button>
             )}

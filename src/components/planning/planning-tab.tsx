@@ -96,25 +96,23 @@ export function PlanningTab({
           className="inline-flex"
         >
           <TabsList
-            className="h-auto rounded-xl border border-white/50 p-1 shadow-sm"
+            className="h-auto rounded-xl p-1"
             style={{
-              background: "rgba(255, 255, 255, 0.5)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
+              background: "rgba(0, 0, 0, 0.05)",
             }}
           >
             <TabsTrigger
               value="all"
-              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[11px]"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-semibold tracking-wide text-gray-500 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm sm:text-[11px]"
             >
-              <Stars size={14} className="shrink-0" />
+              <Stars size={13} className="shrink-0" strokeWidth={2} />
               <span className="truncate">{tFilter("all")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
-              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[11px]"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-semibold tracking-wide text-gray-500 transition-all data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm sm:text-[11px]"
             >
-              <CircleHelp size={14} className="shrink-0" />
+              <CircleHelp size={13} className="shrink-0" strokeWidth={2} />
               <span className="truncate">
                 {tFilter("unassigned", {
                   count: unassignedItemsCount,
@@ -155,10 +153,9 @@ export function PlanningTab({
               className="space-y-6 rounded-3xl border border-white/50 bg-white/40 p-6 shadow-sm"
             >
               <div className="flex items-start gap-4">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rotate-6 rounded-2xl bg-accent/20 blur-xl transition-transform group-hover:rotate-12" />
-                  <div className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-gradient-to-br from-accent to-accent/80 text-white shadow-xl ring-4 ring-accent/5 backdrop-blur-sm">
-                    <span className="text-2xl drop-shadow-sm">
+                <div className="shrink-0">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-accent/10">
+                    <span className="text-xl">
                       {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
                     </span>
                   </div>
@@ -277,25 +274,21 @@ export function PlanningTab({
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
-        <div className="mt-8 flex flex-col gap-3 px-4">
-          <Button
-            variant="premium"
-            className="w-full border border-dashed border-purple-300/50 bg-purple-50/50 p-4 pr-6 transition-all hover:bg-purple-100/50"
-            icon={<PlusIcon />}
-            iconClassName="bg-purple-100 text-purple-600 group-hover:bg-purple-200"
+        <div className="mt-8 flex flex-col gap-2 px-4">
+          <button
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-accent transition-colors active:bg-accent/10"
           >
-            <span className="text-sm font-bold text-purple-600">{t("addService")}</span>
-          </Button>
-          <Button
-            variant="premium"
-            className="w-full border border-dashed border-purple-400/50 bg-purple-100/50 p-4 pr-6 transition-all hover:bg-purple-200/50"
-            icon={<PlusIcon />}
-            iconClassName="bg-purple-200 text-purple-700"
+            <PlusIcon size={18} strokeWidth={2.5} />
+            {t("addService")}
+          </button>
+          <button
             onClick={() => setSheet({ type: "meal-create" })}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold text-accent transition-colors active:bg-accent/10"
           >
-            <span className="text-sm font-bold text-purple-700">{t("addMeal")}</span>
-          </Button>
+            <PlusIcon size={18} strokeWidth={2.5} />
+            {t("addMeal")}
+          </button>
         </div>
       )}
     </DndContext>

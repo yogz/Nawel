@@ -30,11 +30,11 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-6">
       <nav
-        className="w-[80%] max-w-3xl rounded-3xl border border-purple-200/40 shadow-[0_8px_32px_rgba(120,80,180,0.12)]"
+        className="w-[80%] max-w-3xl rounded-3xl border border-black/5"
         style={{
-          background: "rgba(255, 255, 255, 0.25)",
-          backdropFilter: "blur(50px)",
-          WebkitBackdropFilter: "blur(50px)",
+          background: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
         }}
       >
         <div className="flex items-center justify-around px-6 py-3">
@@ -46,25 +46,17 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               <button
                 key={tab.key}
                 onClick={() => onChange(tab.key)}
-                className={clsx(
-                  "group flex flex-col items-center gap-1 transition-all active:scale-[0.95]",
-                  selected ? "text-accent" : "text-gray-600 transition-colors"
-                )}
+                className="group flex flex-col items-center gap-0.5 transition-all active:scale-95"
               >
-                <div
-                  className={clsx(
-                    "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300",
-                    selected
-                      ? "bg-accent text-white shadow-lg"
-                      : "bg-transparent group-hover:bg-accent/10"
-                  )}
-                >
-                  <Icon size={selected ? 22 : 20} strokeWidth={selected ? 3 : 2.5} />
-                </div>
+                <Icon
+                  size={24}
+                  strokeWidth={2}
+                  className={clsx("transition-colors", selected ? "text-accent" : "text-gray-400")}
+                />
                 <span
                   className={clsx(
-                    "text-[8.5px] font-black uppercase tracking-widest transition-all",
-                    selected ? "text-accent opacity-100" : "opacity-60"
+                    "text-[10px] font-medium transition-colors",
+                    selected ? "text-gray-900" : "text-gray-500"
                   )}
                 >
                   {t(tab.key)}

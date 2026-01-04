@@ -60,43 +60,47 @@ export function ServiceSection({
     <section
       ref={setNodeRef}
       className={clsx(
-        "premium-card glass overflow-hidden p-5 transition-all sm:p-6",
+        "overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 transition-all sm:p-6",
         isOver && isDraggingFromOtherService && "bg-accent/5 ring-2 ring-accent ring-offset-2"
       )}
     >
       <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-start gap-3 flex-1">
+        <div className="flex flex-1 items-start gap-3">
           <div className="text-3xl">
-            {service.title.toLowerCase().includes("apéritif") || service.title.toLowerCase().includes("aperitif")
+            {service.title.toLowerCase().includes("apéritif") ||
+            service.title.toLowerCase().includes("aperitif")
               ? "🥂"
-              : service.title.toLowerCase().includes("boisson") || service.title.toLowerCase().includes("drink")
-              ? "🍷"
-              : service.title.toLowerCase().includes("entrée") || service.title.toLowerCase().includes("starter")
-              ? "🥗"
-              : service.title.toLowerCase().includes("plat") || service.title.toLowerCase().includes("main")
-              ? "🍽️"
-              : service.title.toLowerCase().includes("dessert")
-              ? "🍰"
-              : "🍴"}
+              : service.title.toLowerCase().includes("boisson") ||
+                  service.title.toLowerCase().includes("drink")
+                ? "🍷"
+                : service.title.toLowerCase().includes("entrée") ||
+                    service.title.toLowerCase().includes("starter")
+                  ? "🥗"
+                  : service.title.toLowerCase().includes("plat") ||
+                      service.title.toLowerCase().includes("main")
+                    ? "🍽️"
+                    : service.title.toLowerCase().includes("dessert")
+                      ? "🍰"
+                      : "🍴"}
           </div>
-          <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               {!readOnly ? (
                 <button
                   onClick={onEdit}
-                  className="group flex items-center gap-2 text-left transition-colors w-full"
+                  className="group flex w-full items-center gap-2 text-left transition-colors"
                   aria-label={t("editService", { name: service.title })}
                 >
-                  <h3 className="text-xl font-bold tracking-tight text-text group-hover:text-accent truncate">
+                  <h3 className="truncate text-xl font-bold tracking-tight text-text group-hover:text-accent">
                     {service.title}
                   </h3>
                 </button>
               ) : (
-                <h3 className="text-xl font-bold text-text truncate">{service.title}</h3>
+                <h3 className="truncate text-xl font-bold text-text">{service.title}</h3>
               )}
             </div>
             {(service.peopleCount || 0) > 1 && (
-              <span className="text-sm font-semibold text-gray-500 shrink-0">
+              <span className="shrink-0 text-sm font-semibold text-gray-500">
                 {service.peopleCount} pers.
               </span>
             )}
@@ -105,20 +109,15 @@ export function ServiceSection({
       </div>
 
       {service.items.length === 0 && !readOnly && filter.type === "all" && (
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <p className="text-sm text-gray-600">
-            Quelqu'un rapporte quelque chose ? 😋
-          </p>
-          <Button
-            variant="premium"
-            size="premium"
+        <div className="flex items-center justify-between border-t border-gray-100 pt-2">
+          <p className="text-sm text-gray-500">Quelqu'un rapporte quelque chose ? 😋</p>
+          <button
             onClick={onCreate}
-            icon={<Plus size={14} />}
-            iconClassName="bg-accent/10 text-accent"
-            className="bg-white hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-accent transition-colors active:bg-accent/10"
           >
-            <span className="text-xs font-bold text-accent">{t("add")}</span>
-          </Button>
+            <Plus size={16} strokeWidth={2.5} />
+            {t("add")}
+          </button>
         </div>
       )}
 
@@ -138,16 +137,13 @@ export function ServiceSection({
           ))}
           {!readOnly && filter.type === "all" && (
             <div className="mt-4 flex justify-center border-t border-dashed border-gray-200 pt-4">
-              <Button
-                variant="premium"
-                size="premium"
+              <button
                 onClick={onCreate}
-                icon={<Plus size={16} />}
-                iconClassName="bg-accent/10 text-accent"
-                className="w-full sm:w-auto bg-white hover:bg-gray-50"
+                className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-accent transition-colors active:bg-accent/10"
               >
-                <span className="text-xs font-bold text-accent">{t("add")}</span>
-              </Button>
+                <Plus size={16} strokeWidth={2.5} />
+                {t("add")}
+              </button>
             </div>
           )}
         </>
