@@ -52,7 +52,7 @@ export const ServiceSection = memo(function ServiceSection({
   return (
     <div
       ref={setNodeRef}
-      className={`relative rounded-2xl border border-white/20 bg-white/30 p-4 transition-all duration-300 ${
+      className={`relative rounded-2xl border border-white/40 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all duration-300 ${
         isOver ? "scale-[1.01] ring-2 ring-accent ring-offset-2" : ""
       }`}
     >
@@ -62,7 +62,7 @@ export const ServiceSection = memo(function ServiceSection({
             {service.icon || "🛒"}
           </div>
           <div>
-            <h3 className="text-xs font-black uppercase tracking-wider text-gray-700">
+            <h3 className="text-[13px] font-black uppercase tracking-[0.1em] text-gray-900">
               {service.title}
             </h3>
           </div>
@@ -83,7 +83,7 @@ export const ServiceSection = memo(function ServiceSection({
         {filteredItems.map((item, index) => (
           <div
             key={item.id}
-            className={index !== filteredItems.length - 1 ? "border-b border-gray-100/50" : ""}
+            className={index !== filteredItems.length - 1 ? "border-b border-gray-100" : ""}
           >
             <ItemRow
               item={item}
