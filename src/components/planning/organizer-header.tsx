@@ -81,7 +81,12 @@ export function OrganizerHeader({
       )}
 
       <div className="sticky top-0 z-30">
-        <header className="w-full bg-gradient-to-b from-white/100 via-white/80 to-transparent px-4 pb-12 pt-4 backdrop-blur-sm transition-all">
+        <header
+          style={{
+            background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 60%, transparent 100%)`,
+          }}
+          className="w-full px-4 pb-12 pt-4 backdrop-blur-sm transition-all"
+        >
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">

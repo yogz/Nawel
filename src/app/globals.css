@@ -12,6 +12,7 @@
     --accent-soft: #f0e6fa;
     --text: #3a2b52;
     --shine-color: rgba(168, 85, 247, 0.5);
+    --header-fade: #e8dbf5;
 
     --card-bg: rgba(255, 255, 255, 0.95);
     --card-border: rgba(200, 180, 230, 0.3);
@@ -175,6 +176,7 @@
     --accent-glow: 45 100% 70%;
     --accent-soft: #0a0a0a;
     --shine-color: rgba(255, 255, 255, 0.5);
+    --header-fade: #000000;
 
     --card-bg: #0a0a0a;
     --card-border: white;
@@ -320,6 +322,7 @@
     --gold: #d4af37;
     --green: #15803d;
     --shine-color: rgba(212, 175, 55, 0.6);
+    --header-fade: #fefcfa;
 
     --card-bg: rgba(255, 255, 255, 0.85);
     --card-border: rgba(185, 28, 28, 0.1);
@@ -757,6 +760,7 @@
     --accent-soft: #f4f4f5;
     --text: #09090b;
     --shine-color: rgba(255, 255, 255, 0.4);
+    --header-fade: #ffffff;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
