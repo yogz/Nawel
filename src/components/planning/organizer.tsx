@@ -293,7 +293,7 @@ export function Organizer({
         type={successMessage?.type || "success"}
       />
 
-      <main className="flex-1 space-y-4 px-4 py-8">
+      <main className="flex-1 space-y-4 py-8">
         <Suspense fallback={<TabSkeleton />}>
           {tab === "planning" && (
             <PlanningTab
