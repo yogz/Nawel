@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share2, Settings, User } from "lucide-react";
+import { ShieldAlert, Share2, User } from "lucide-react";
 import { type PlanData } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { CitationDisplay } from "../common/citation-display";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -32,7 +31,6 @@ export function OrganizerHeader({
 }: OrganizerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
-  const tSettings = useTranslations("EventDashboard.Settings");
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -111,29 +109,17 @@ export function OrganizerHeader({
 
             {/* Profile button */}
             {isAuthenticated && onOpenSettings && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
-                    title="Profil"
-                  >
-                    {userImage ? (
-                      <img src={userImage} alt="Profil" className="h-full w-full object-cover" />
-                    ) : (
-                      <User size={16} className="text-gray-700" strokeWidth={2.5} />
-                    )}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-48 p-2" align="end">
-                  <button
-                    onClick={onOpenSettings}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
-                  >
-                    <Settings size={14} />
-                    {tSettings("title")}
-                  </button>
-                </PopoverContent>
-              </Popover>
+              <button
+                onClick={onOpenSettings}
+                className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
+                title="Profil"
+              >
+                {userImage ? (
+                  <img src={userImage} alt="Profil" className="h-full w-full object-cover" />
+                ) : (
+                  <User size={16} className="text-gray-700" strokeWidth={2.5} />
+                )}
+              </button>
             )}
           </div>
         </div>

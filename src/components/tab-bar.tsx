@@ -48,7 +48,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
                 onClick={() => onChange(tab.key)}
                 className={clsx(
                   "group flex flex-col items-center gap-1 transition-all active:scale-[0.95]",
-                  selected ? "text-accent" : "text-gray-400 transition-colors"
+                  selected ? "text-accent" : "text-gray-600 transition-colors"
                 )}
               >
                 <div
@@ -59,7 +59,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
                       : "bg-transparent group-hover:bg-accent/10"
                   )}
                 >
-                  <Icon size={selected ? 22 : 20} strokeWidth={selected ? 2.5 : 2} />
+                  <Icon size={selected ? 22 : 20} strokeWidth={selected ? 3 : 2.5} />
                 </div>
                 <span
                   className={clsx(
