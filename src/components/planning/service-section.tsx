@@ -47,6 +47,8 @@ export const ServiceSection = memo(function ServiceSection({
     return null;
   }
 
+  const allPeopleNames = people.map((p) => p.name);
+
   return (
     <div
       ref={setNodeRef}
@@ -86,11 +88,12 @@ export const ServiceSection = memo(function ServiceSection({
           <ItemRow
             key={item.id}
             item={item}
-            people={people}
+            person={people.find((p) => p.id === item.personId)}
             readOnly={readOnly}
             onAssign={() => onAssign(item)}
             onDelete={() => onDelete(item)}
-            isDragging={activeItemId === item.id}
+            allPeopleNames={allPeopleNames}
+            peopleCount={service.peopleCount || 0}
           />
         ))}
 
