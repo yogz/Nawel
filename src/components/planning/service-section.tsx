@@ -59,7 +59,7 @@ export const ServiceSection = memo(function ServiceSection({
       )}
     >
       <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-        <div className="flex items-center gap-2">
+        <div className="group flex items-center gap-2">
           <div className="flex items-center gap-3">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
               {service.icon || getServiceIcon(service.title)}
@@ -69,14 +69,12 @@ export const ServiceSection = memo(function ServiceSection({
             </h3>
           </div>
           {!readOnly && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={onEdit}
-              className="h-7 w-7 rounded-full p-0 text-gray-400 hover:bg-accent/10 hover:text-accent"
+              className="text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100"
             >
               <Edit3 size={12} />
-            </Button>
+            </button>
           )}
         </div>
       </div>

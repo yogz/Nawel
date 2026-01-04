@@ -42,7 +42,7 @@ function ItemRowComponent({
       {/* Left side: Item Name & Metadata */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-col gap-0.5">
-          <div className="flex items-center justify-between gap-2">
+          <div className="group flex items-center gap-2">
             <p
               className={cn(
                 "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
@@ -53,7 +53,7 @@ function ItemRowComponent({
               {item.name}
             </p>
             {!readOnly && (
-              <Edit3 className="h-3 w-3 shrink-0 text-accent/20 opacity-0 transition-all group-hover:text-accent/60 group-hover:opacity-100" />
+              <Edit3 className="h-3 w-3 shrink-0 text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100" />
             )}
           </div>
 

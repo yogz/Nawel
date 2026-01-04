@@ -100,17 +100,20 @@ export function OrganizerHeader({
                 {!readOnly && (
                   <Button
                     variant="ghost"
+                    shine
                     onClick={handleShare}
-                    icon={copied ? <CheckCircle size={15} /> : <Share size={15} />}
-                    iconClassName={cn(
-                      "transition-all duration-300",
-                      copied
-                        ? "bg-green-500 text-white rotate-12 scale-110"
-                        : "bg-transparent text-gray-700"
-                    )}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-white/60 p-0 shadow-lg shadow-accent/10 transition-all hover:scale-105 hover:bg-white hover:shadow-accent/20"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border border-white/50 bg-white/60 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:bg-white hover:shadow-accent/20 active:scale-95"
                     title={t("shareTitle")}
-                  ></Button>
+                  >
+                    {copied ? (
+                      <CheckCircle
+                        size={16}
+                        className="text-green-500 duration-300 animate-in zoom-in spin-in-12"
+                      />
+                    ) : (
+                      <Share size={16} className="text-gray-700" />
+                    )}
+                  </Button>
                 )}
                 <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10">
                   <UserNav />
