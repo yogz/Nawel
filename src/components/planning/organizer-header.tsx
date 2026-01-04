@@ -81,7 +81,7 @@ export function OrganizerHeader({
 
       <header className="bg-white/60 sticky top-0 z-30 border-b border-purple-200/30 px-4 py-4 backdrop-blur-md shadow-sm">
         <div className="flex items-center justify-between">
-          <AppBranding logoSize={24} className="shrink-0" variant="text-only" />
+          <AppBranding logoSize={32} className="shrink-0" variant="text-only" />
           <div className="flex items-center gap-2">
             {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
