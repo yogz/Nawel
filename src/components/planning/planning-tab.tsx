@@ -96,7 +96,7 @@ export function PlanningTab({
           className="inline-flex"
         >
           <TabsList
-            className="h-auto rounded-xl p-1 border border-white/50 shadow-sm"
+            className="h-auto rounded-xl border border-white/50 p-1 shadow-sm"
             style={{
               background: "rgba(255, 255, 255, 0.5)",
               backdropFilter: "blur(20px)",
@@ -105,14 +105,14 @@ export function PlanningTab({
           >
             <TabsTrigger
               value="all"
-              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[11px]"
             >
               <Stars size={14} className="shrink-0" />
               <span className="truncate">{tFilter("all")}</span>
             </TabsTrigger>
             <TabsTrigger
               value="unassigned"
-              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm transition-all sm:text-[11px]"
+              className="gap-1.5 rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[11px]"
             >
               <CircleHelp size={14} className="shrink-0" />
               <span className="truncate">
@@ -152,9 +152,9 @@ export function PlanningTab({
               key={meal.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
+              className="space-y-6 rounded-3xl border border-white/50 bg-white/40 p-6 shadow-sm"
             >
-              <div className="flex items-start gap-4 px-2">
+              <div className="flex items-start gap-4">
                 <div className="relative shrink-0">
                   <div className="absolute inset-0 rotate-6 rounded-2xl bg-accent/20 blur-xl transition-transform group-hover:rotate-12" />
                   <div className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-gradient-to-br from-accent to-accent/80 text-white shadow-xl ring-4 ring-accent/5 backdrop-blur-sm">
@@ -280,21 +280,21 @@ export function PlanningTab({
         <div className="mt-8 flex flex-col gap-3 px-4">
           <Button
             variant="premium"
-            className="w-full border border-dashed border-purple-300/50 bg-purple-50/50 p-4 pr-6 hover:bg-purple-100/50 transition-all"
+            className="w-full border border-dashed border-purple-300/50 bg-purple-50/50 p-4 pr-6 transition-all hover:bg-purple-100/50"
             icon={<PlusIcon />}
             iconClassName="bg-purple-100 text-purple-600 group-hover:bg-purple-200"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
           >
-            <span className="font-bold text-purple-600 text-sm">{t("addService")}</span>
+            <span className="text-sm font-bold text-purple-600">{t("addService")}</span>
           </Button>
           <Button
             variant="premium"
-            className="w-full border border-dashed border-purple-400/50 bg-purple-100/50 p-4 pr-6 hover:bg-purple-200/50 transition-all"
+            className="w-full border border-dashed border-purple-400/50 bg-purple-100/50 p-4 pr-6 transition-all hover:bg-purple-200/50"
             icon={<PlusIcon />}
             iconClassName="bg-purple-200 text-purple-700"
             onClick={() => setSheet({ type: "meal-create" })}
           >
-            <span className="font-bold text-purple-700 text-sm">{t("addMeal")}</span>
+            <span className="text-sm font-bold text-purple-700">{t("addMeal")}</span>
           </Button>
         </div>
       )}
