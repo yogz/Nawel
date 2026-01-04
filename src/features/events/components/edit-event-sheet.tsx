@@ -157,6 +157,8 @@ export function EditEventSheet({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("namePlaceholder")}
+                autoCapitalize="sentences"
+                enterKeyHint="next"
                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
               />
             </div>
@@ -179,9 +181,10 @@ export function EditEventSheet({
                       onChange={(e) =>
                         setDate(e.target.value ? new Date(e.target.value) : undefined)
                       }
+                      enterKeyHint="next"
                       className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                     />
-                    <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -197,9 +200,10 @@ export function EditEventSheet({
                       type="time"
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
+                      enterKeyHint="next"
                       className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                     />
-                    <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   </div>
                 </div>
               </div>
@@ -267,9 +271,12 @@ export function EditEventSheet({
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder={tMeal("addressPlaceholder")}
+                    autoComplete="street-address"
+                    autoCapitalize="sentences"
+                    enterKeyHint="next"
                     className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                   />
-                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 </div>
               </div>
             )}
@@ -287,6 +294,7 @@ export function EditEventSheet({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("descriptionPlaceholder")}
+                autoCapitalize="sentences"
                 className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
                 rows={2}
               />

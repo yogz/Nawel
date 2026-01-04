@@ -184,6 +184,8 @@ export function EventForm({
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t("eventNamePlaceholder")}
                 autoFocus
+                autoCapitalize="sentences"
+                enterKeyHint="next"
               />
             </div>
           </div>
@@ -199,10 +201,11 @@ export function EventForm({
                   className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  enterKeyHint="next"
                 />
                 <Calendar
                   size={18}
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                 />
               </div>
             </div>
@@ -216,10 +219,11 @@ export function EventForm({
                   className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
+                  enterKeyHint="next"
                 />
                 <Clock
                   size={18}
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
                 />
               </div>
             </div>
@@ -356,10 +360,13 @@ export function EventForm({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                autoCapitalize="sentences"
+                enterKeyHint="next"
               />
               <MapPin
                 size={18}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
               />
             </div>
           </div>
@@ -450,8 +457,12 @@ export function EventForm({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("descriptionPlaceholder")}
+                autoCapitalize="sentences"
               />
-              <MessageSquare size={18} className="absolute left-3.5 top-4 text-gray-400" />
+              <MessageSquare
+                size={18}
+                className="pointer-events-none absolute left-3.5 top-4 text-gray-400"
+              />
             </div>
           </div>
 

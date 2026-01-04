@@ -193,6 +193,8 @@ export function ItemForm({
           onChange={(e) => setName(e.target.value)}
           disabled={readOnly}
           autoFocus={!defaultItem}
+          autoCapitalize="sentences"
+          enterKeyHint="next"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
         />
       </div>
@@ -204,6 +206,8 @@ export function ItemForm({
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           disabled={readOnly}
+          autoCapitalize="none"
+          enterKeyHint="next"
           className="h-11 flex-1 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
           aria-label={t("quantityLabel")}
         />
@@ -214,6 +218,7 @@ export function ItemForm({
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           disabled={readOnly}
+          enterKeyHint="next"
           className="h-11 w-24 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
           aria-label={t("priceLabel")}
         />
@@ -328,6 +333,8 @@ export function ItemForm({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               disabled={readOnly}
+              autoCapitalize="sentences"
+              enterKeyHint="done"
               className="h-11 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
             />
           </div>

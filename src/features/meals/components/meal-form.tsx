@@ -299,38 +299,19 @@ export function MealForm({
             >
               {t("dateLabel")}
             </Label>
-            <Popover modal>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "h-12 w-full justify-start rounded-2xl border-gray-100 bg-gray-50/50 text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? (
-                    format(date, "PPP", { locale: dateLocale })
-                  ) : (
-                    <span>{t("datePlaceholder")}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="z-[100] w-auto overflow-hidden rounded-2xl p-0 shadow-xl"
-                align="center"
-              >
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(newDate) => {
-                    setDate(newDate);
-                  }}
-                  initialFocus
-                  locale={dateLocale}
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="relative">
+              <Input
+                id="date"
+                type="date"
+                value={date ? format(date, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setDate(val ? new Date(val) : undefined);
+                }}
+                className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+              />
+              <CalendarIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -347,9 +328,10 @@ export function MealForm({
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
+                  enterKeyHint="next"
                   className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                 />
-                <Clock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
             <div className="space-y-2">
@@ -364,6 +346,8 @@ export function MealForm({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={t("titlePlaceholder")}
+                autoCapitalize="sentences"
+                enterKeyHint="next"
                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
               />
             </div>
@@ -382,9 +366,12 @@ export function MealForm({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                autoCapitalize="sentences"
+                enterKeyHint="next"
                 className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
               />
-              <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
 

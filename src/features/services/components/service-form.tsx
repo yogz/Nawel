@@ -166,37 +166,19 @@ export function ServiceForm({
           </p>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Popover modal>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "h-10 w-full justify-start rounded-xl border-gray-100 bg-gray-50/50 text-left font-normal",
-                    !newMealDate && "text-muted-foreground"
-                  )}
-                  disabled={readOnly}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
-                  {newMealDate ? (
-                    format(newMealDate, "PPP", { locale: dateLocale })
-                  ) : (
-                    <span>{tMeal("datePlaceholder")}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="z-[100] w-auto overflow-hidden rounded-2xl p-0 shadow-xl"
-                align="center"
-              >
-                <Calendar
-                  mode="single"
-                  selected={newMealDate}
-                  onSelect={setNewMealDate}
-                  initialFocus
-                  locale={dateLocale}
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="relative">
+              <Input
+                id="date"
+                type="date"
+                value={newMealDate ? format(newMealDate, "yyyy-MM-dd") : ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setNewMealDate(val ? new Date(val) : undefined);
+                }}
+                className="h-10 w-full rounded-xl border-gray-100 bg-gray-50/50 pl-9 text-base focus:bg-white focus:ring-accent/20"
+              />
+              <CalendarIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="meal-title">{tMeal("titleLabel")}</Label>
@@ -206,6 +188,8 @@ export function ServiceForm({
               value={newMealTitle}
               onChange={(e) => setNewMealTitle(e.target.value)}
               disabled={readOnly}
+              autoCapitalize="sentences"
+              enterKeyHint="next"
               className="h-10 rounded-xl"
             />
           </div>
@@ -219,9 +203,10 @@ export function ServiceForm({
                   value={newMealTime}
                   onChange={(e) => setNewMealTime(e.target.value)}
                   disabled={readOnly}
+                  enterKeyHint="next"
                   className="h-10 rounded-xl pl-9"
                 />
-                <Clock className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Clock className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
           </div>
@@ -234,9 +219,12 @@ export function ServiceForm({
                 value={newMealAddress}
                 onChange={(e) => setNewMealAddress(e.target.value)}
                 disabled={readOnly}
+                autoComplete="street-address"
+                autoCapitalize="sentences"
+                enterKeyHint="next"
                 className="h-10 rounded-xl pl-9"
               />
-              <MapPin className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <MapPin className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
         </div>
@@ -256,6 +244,8 @@ export function ServiceForm({
           onChange={(e) => setTitle(e.target.value)}
           disabled={readOnly}
           autoFocus
+          autoCapitalize="sentences"
+          enterKeyHint="done"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
       </div>

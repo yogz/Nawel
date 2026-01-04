@@ -88,6 +88,8 @@ export function ServiceEditForm({
           placeholder={t("placeholder")}
           required
           autoFocus
+          autoCapitalize="sentences"
+          enterKeyHint="done"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
       </div>

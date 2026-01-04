@@ -186,6 +186,8 @@ export function LoginForm() {
                   placeholder={t("emailPlaceholder")}
                   required
                   disabled={loading}
+                  autoComplete="email"
+                  enterKeyHint="next"
                   className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
                 />
               </div>
@@ -205,6 +207,8 @@ export function LoginForm() {
                   placeholder={t("passwordPlaceholder")}
                   required
                   disabled={loading}
+                  autoComplete={authMode === "signin" ? "current-password" : "new-password"}
+                  enterKeyHint="done"
                   className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
                 />
               </div>
