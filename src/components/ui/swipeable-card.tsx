@@ -164,8 +164,8 @@ export function SwipeableCard({
             style={actionStyle}
             className={`absolute inset-y-0 right-0 flex w-20 items-center justify-center transition-all duration-200 ${
               activeAction === "left"
-                ? "bg-gradient-to-l from-red-500 to-red-600 text-white"
-                : "bg-red-100 text-red-500"
+                ? "bg-red-500 text-white opacity-100"
+                : "bg-red-100 text-red-500 opacity-0"
             }`}
           >
             <div className="flex flex-col items-center gap-1">
@@ -181,8 +181,8 @@ export function SwipeableCard({
             style={actionStyle}
             className={`absolute inset-y-0 left-0 flex w-20 items-center justify-center transition-all duration-200 ${
               activeAction === "right"
-                ? "bg-gradient-to-r from-accent to-accent/80 text-white"
-                : "bg-accent/10 text-accent"
+                ? "bg-accent text-white opacity-100"
+                : "bg-accent/10 text-accent opacity-0"
             }`}
           >
             <div className="flex flex-col items-center gap-1">

@@ -36,7 +36,7 @@ function ItemRowComponent({
     <div
       onClick={() => !readOnly && onAssign()}
       className={cn(
-        "group relative flex cursor-pointer items-center gap-3 rounded-xl border border-white/40 bg-white/90 px-2 py-3.5 transition-all active:bg-gray-100/50 sm:gap-4"
+        "group relative flex cursor-pointer items-center gap-4 rounded-xl border border-white/20 bg-white px-3 py-3.5 shadow-sm transition-all active:bg-gray-50"
       )}
     >
       {/* Status Column - Fixed Width */}
