@@ -20,7 +20,9 @@ import {
   generateOutlookCalendarUrl,
   downloadIcsFile,
 } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "@/lib/utils";
 
 import {
   type DragEndEvent,
@@ -89,9 +91,16 @@ export function PlanningTab({
   const t = useTranslations("EventDashboard.Planning");
   const { theme } = useThemeMode();
   const [hasMounted, setHasMounted] = useState(false);
+  const [activeMealId, setActiveMealId] = useState<number | null>(
+    plan.meals.length > 0 ? plan.meals[0].id : null
+  );
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setHasMounted(true), []);
+  useEffect(() => {
+    setHasMounted(true);
+    if (!activeMealId && plan.meals.length > 0) {
+      setActiveMealId(plan.meals[0].id);
+    }
+  }, [plan.meals, activeMealId]);
 
   if (!hasMounted) {
     return null;
@@ -121,158 +130,176 @@ export function PlanningTab({
         animate="show"
         className="space-y-2 pt-0"
       >
-        <div className="px-0 pt-0">
-          <PlanningFilters
-            plan={plan}
-            planningFilter={planningFilter}
-            setPlanningFilter={setPlanningFilter}
-            setSheet={setSheet}
-            sheet={sheet}
-            unassignedItemsCount={unassignedItemsCount}
-            slug={slug}
-            writeKey={writeKey}
-            readOnly={!!readOnly}
-          />
+        <div className="flex flex-col gap-4">
+          <div className="px-2">
+            <PlanningFilters
+              plan={plan}
+              planningFilter={planningFilter}
+              setPlanningFilter={setPlanningFilter}
+              setSheet={setSheet}
+              sheet={sheet}
+              unassignedItemsCount={unassignedItemsCount}
+              slug={slug}
+              writeKey={writeKey}
+              readOnly={!!readOnly}
+            />
+          </div>
+
+          {plan.meals.length > 1 && (
+            <div className="px-2">
+              <Tabs
+                value={activeMealId?.toString()}
+                onValueChange={(val) => setActiveMealId(parseInt(val))}
+                className="w-full"
+              >
+                <TabsList className="no-scrollbar h-10 w-full justify-start gap-2 overflow-x-auto bg-transparent p-0">
+                  {plan.meals.map((meal) => (
+                    <TabsTrigger
+                      key={meal.id}
+                      value={meal.id.toString()}
+                      className="rounded-full border border-black/5 bg-white/50 px-4 py-1.5 text-xs font-bold text-gray-500 shadow-sm transition-all data-[state=active]:border-accent/20 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md"
+                    >
+                      {meal.title || meal.date}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
+          )}
         </div>
 
-        {plan.meals.map((meal) => {
-          const hasMatch = meal.services.some((s) =>
-            s.items.some((i) => {
-              if (planningFilter.type === "all") {
-                return true;
-              }
-              if (planningFilter.type === "unassigned") {
-                return !i.personId;
-              }
-              if (planningFilter.type === "person") {
-                return i.personId === planningFilter.personId;
-              }
-              return false;
-            })
-          );
-          if (planningFilter.type !== "all" && !hasMatch) {
-            return null;
-          }
+        {plan.meals
+          .filter((meal) => (plan.meals.length > 1 ? meal.id === activeMealId : true))
+          .map((meal) => {
+            const hasMatch = meal.services.some((s) =>
+              s.items.some((i) => {
+                if (planningFilter.type === "all") {
+                  return true;
+                }
+                if (planningFilter.type === "unassigned") {
+                  return !i.personId;
+                }
+                if (planningFilter.type === "person") {
+                  return i.personId === planningFilter.personId;
+                }
+                return false;
+              })
+            );
+            if (planningFilter.type !== "all" && !hasMatch) {
+              return null;
+            }
 
-          const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
+            const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
 
-          return (
-            <motion.div
-              key={meal.id}
-              variants={itemVariants}
-              className="relative flex flex-col gap-3 pt-4"
-            >
-              {/* Meal Title Row - Aligned horizontally */}
-              <div className="flex items-center gap-3 px-1">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-full bg-accent/20 blur-lg" />
-                  <div className="relative grid h-10 w-10 place-items-center rounded-xl border border-white/40 bg-white/40 text-xl shadow-sm backdrop-blur-sm">
-                    <span>{theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}</span>
+            return (
+              <motion.div
+                key={meal.id}
+                variants={itemVariants}
+                className="relative flex flex-col gap-3 pt-2"
+              >
+                {/* Meal Info Row - Premium & Compact */}
+                <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-3 shadow-sm backdrop-blur-sm">
+                  <div className="relative shrink-0">
+                    <div className="relative grid h-8 w-8 place-items-center rounded-lg border border-accent/20 bg-accent/5 text-lg shadow-sm">
+                      <span className="text-base">
+                        {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex min-w-0 flex-1 flex-col">
-                  {!readOnly ? (
-                    <button
-                      onClick={() => setSheet({ type: "meal-edit", meal })}
-                      className="group flex min-w-0 items-center justify-between text-left transition-colors"
-                      aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
-                    >
-                      <h2 className="truncate text-xl font-black tracking-tight text-gray-800 transition-colors group-hover:text-accent">
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex items-center gap-2">
+                      <h2 className="truncate text-sm font-black tracking-tight text-gray-800">
                         {meal.title || meal.date}
                       </h2>
-                    </button>
-                  ) : (
-                    <h2 className="truncate text-xl font-black tracking-tight text-gray-800">
-                      {meal.title || meal.date}
-                    </h2>
-                  )}
+                      {!readOnly && (
+                        <button
+                          onClick={() => setSheet({ type: "meal-edit", meal })}
+                          className="text-accent/40 transition-colors hover:text-accent"
+                        >
+                          <CalendarPlus className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
 
-                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-400">
-                    {meal.title && meal.date && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {meal.date}
-                      </div>
-                    )}
-                    {meal.time && (
-                      <div className="flex items-center gap-1 text-accent">
-                        <Clock className="h-3 w-3 text-accent" />
-                        {meal.time}
-                      </div>
-                    )}
-                    {meal.address && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        <span className="max-w-[120px] truncate">{meal.address}</span>
-                      </div>
-                    )}
+                    <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-gray-400">
+                      {(meal.date || meal.time) && (
+                        <div className="flex items-center gap-1 text-accent">
+                          <Clock className="h-3 w-3" />
+                          {meal.date} {meal.time && `• ${meal.time}`}
+                        </div>
+                      )}
+                      {meal.address && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          <span className="max-w-[120px] truncate">{meal.address}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="premium"
+                          className="h-7 w-7 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+                          icon={<ExternalLink className="h-3 w-3" />}
+                          iconClassName="h-full w-full bg-transparent text-accent"
+                        />
+                      </PopoverTrigger>
+                      <PopoverContent className="glass w-56 p-2" align="end">
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={() => window.open(calendarUrl, "_blank")}
+                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            {t("calendar.google")}
+                          </button>
+                          <button
+                            onClick={() =>
+                              window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
+                            }
+                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            {t("calendar.outlook")}
+                          </button>
+                          <div className="my-1 border-t border-black/[0.05]" />
+                          <button
+                            onClick={() => downloadIcsFile(meal, eventName)}
+                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            {t("calendar.download")}
+                          </button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
 
-                <div className="flex shrink-0 items-center">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="premium"
-                        className="h-8 w-8 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-                        icon={<CalendarPlus className="h-4 w-4" />}
-                        iconClassName="h-full w-full bg-transparent text-accent"
-                        aria-label={t("calendar.options")}
-                      />
-                    </PopoverTrigger>
-                    <PopoverContent className="glass w-56 p-2" align="end">
-                      <div className="flex flex-col gap-1">
-                        <button
-                          onClick={() => window.open(calendarUrl, "_blank")}
-                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          {t("calendar.google")}
-                        </button>
-                        <button
-                          onClick={() =>
-                            window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
-                          }
-                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                          {t("calendar.outlook")}
-                        </button>
-                        <div className="my-1 border-t border-black/[0.05]" />
-                        <button
-                          onClick={() => downloadIcsFile(meal, eventName)}
-                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                        >
-                          <Download className="h-4 w-4" />
-                          {t("calendar.download")}
-                        </button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                {/* Service Cards */}
+                <div className="space-y-4 px-2 pb-4">
+                  {meal.services.map((service) => (
+                    <ServiceSection
+                      key={service.id}
+                      service={service}
+                      people={plan.people}
+                      readOnly={readOnly}
+                      onAssign={(item) => onAssign(item, service.id)}
+                      onDelete={onDelete}
+                      onCreate={() => onCreateItem(service.id)}
+                      onEdit={() => setSheet({ type: "service-edit", service })}
+                      filter={planningFilter}
+                      activeItemId={activeItemId}
+                    />
+                  ))}
                 </div>
-              </div>
-
-              {/* Service Cards - Now Full Width matching the header */}
-              <div className="space-y-4">
-                {meal.services.map((service) => (
-                  <ServiceSection
-                    key={service.id}
-                    service={service}
-                    people={plan.people}
-                    readOnly={readOnly}
-                    onAssign={(item) => onAssign(item, service.id)}
-                    onDelete={onDelete}
-                    onCreate={() => onCreateItem(service.id)}
-                    onEdit={() => setSheet({ type: "service-edit", service })}
-                    filter={planningFilter}
-                    activeItemId={activeItemId}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+              </motion.div>
+            );
+          })}
       </motion.div>
       {plan.meals.length === 0 && planningFilter.type === "all" && (
         <div className="px-4 py-8 text-center">

@@ -42,6 +42,21 @@ export function OrganizerHeader({
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
 
+  const totalItems = plan.meals.reduce(
+    (acc, meal) => acc + meal.services.reduce((acc2, service) => acc2 + service.items.length, 0),
+    0
+  );
+  const assignedItems = plan.meals.reduce(
+    (acc, meal) =>
+      acc +
+      meal.services.reduce(
+        (acc2, service) => acc2 + service.items.filter((i) => i.personId).length,
+        0
+      ),
+    0
+  );
+  const progress = totalItems > 0 ? (assignedItems / totalItems) * 100 : 0;
+
   const handleShare = async () => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     const url = `${baseUrl}/event/${slug}${writeKey ? `?key=${writeKey}` : ""}`;
@@ -80,12 +95,12 @@ export function OrganizerHeader({
         </div>
       )}
 
-      <div className="sticky top-2 z-30">
-        <header className="rounded-2xl border border-white/40 bg-white/70 px-4 py-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-xl transition-all">
+      <div className="sticky top-0 z-30 px-2 pt-2">
+        <header className="rounded-2xl border border-white/40 bg-white/80 px-4 py-2.5 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-xl transition-all">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 flex-1 items-center gap-2.5">
-              <AppBranding logoSize={24} className="shrink-0" variant="icon" />
-              <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
+              <AppBranding logoSize={20} className="shrink-0" variant="icon" />
+              <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-lg font-black tracking-tight text-transparent drop-shadow-sm">
                 {plan.event?.name || "Événement"}
               </h1>
             </div>
@@ -120,15 +135,24 @@ export function OrganizerHeader({
           </div>
 
           {tab === "planning" && (
-            <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-1"
-            >
+            <div className="mt-1.5 flex flex-col gap-1.5">
               <div className="px-0.5">
-                <CitationDisplay seed={plan.event?.name || slug} />
+                <CitationDisplay
+                  seed={plan.event?.name || slug}
+                  className="text-[10px] opacity-70"
+                />
               </div>
-            </motion.div>
+
+              {totalItems > 0 && (
+                <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/5">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    className="h-full bg-gradient-to-r from-purple-500 to-accent shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+                  />
+                </div>
+              )}
+            </div>
           )}
         </header>
       </div>

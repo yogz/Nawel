@@ -3,8 +3,17 @@ import citationsDataV3 from "@/data/citations-v3.json";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
+export function CitationDisplay({
+  seed,
+  item,
+  className,
+}: {
+  seed?: string;
+  item?: any;
+  className?: string;
+}) {
   const locale = useLocale();
   const t = useTranslations("Citations");
   const tLang = useTranslations("common.languages");
@@ -121,7 +130,7 @@ export function CitationDisplay({ seed, item }: { seed?: string; item?: any }) {
 
   return (
     <div
-      className="group relative cursor-pointer select-none"
+      className={cn("group relative cursor-pointer select-none", className)}
       onClick={(e) => {
         e.stopPropagation();
         setStep((s: number) => (s + 1) % availableSteps.length);

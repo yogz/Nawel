@@ -52,23 +52,19 @@ export const ServiceSection = memo(function ServiceSection({
   return (
     <div
       ref={setNodeRef}
-      className={`relative rounded-2xl border border-white/40 bg-white/40 p-4 backdrop-blur-md transition-all duration-300 ${
+      className={`relative rounded-2xl border border-white/20 bg-white/30 p-4 transition-all duration-300 ${
         isOver ? "scale-[1.01] ring-2 ring-accent ring-offset-2" : ""
       }`}
     >
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-xl shadow-sm ring-1 ring-black/5">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
             {service.icon || "🛒"}
           </div>
           <div>
-            <h3 className="text-sm font-black uppercase tracking-tight text-gray-800">
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-700">
               {service.title}
             </h3>
-            <p className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-              <Users size={10} />
-              {service.peopleCount || 0} PERS.
-            </p>
           </div>
         </div>
         {!readOnly && (
@@ -83,30 +79,36 @@ export const ServiceSection = memo(function ServiceSection({
         )}
       </div>
 
-      <div className="space-y-1">
-        {filteredItems.map((item) => (
-          <ItemRow
+      <div className="flex flex-col">
+        {filteredItems.map((item, index) => (
+          <div
             key={item.id}
-            item={item}
-            person={people.find((p) => p.id === item.personId)}
-            readOnly={readOnly}
-            onAssign={() => onAssign(item)}
-            onDelete={() => onDelete(item)}
-            allPeopleNames={allPeopleNames}
-            peopleCount={service.peopleCount || 0}
-          />
+            className={index !== filteredItems.length - 1 ? "border-b border-gray-100/50" : ""}
+          >
+            <ItemRow
+              item={item}
+              person={people.find((p) => p.id === item.personId)}
+              readOnly={readOnly}
+              onAssign={() => onAssign(item)}
+              onDelete={() => onDelete(item)}
+              allPeopleNames={allPeopleNames}
+              peopleCount={service.peopleCount || 0}
+            />
+          </div>
         ))}
 
         {!readOnly && (
           <Button
-            variant="premium"
-            className="mt-3 h-10 w-full rounded-xl border border-dashed border-accent/20 bg-accent/5 transition-all hover:bg-accent/10"
-            icon={<PlusIcon size={16} className="text-accent" />}
+            variant="ghost"
+            className="group mt-2 h-9 w-full rounded-xl border border-dashed border-gray-200 bg-gray-50/50 transition-all hover:border-accent/40 hover:bg-white"
             onClick={onCreate}
           >
-            <span className="text-[11px] font-black uppercase tracking-wider text-accent">
-              {t("addItem")}
-            </span>
+            <div className="flex items-center gap-2">
+              <PlusIcon size={14} className="text-gray-400 group-hover:text-accent" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 group-hover:text-accent">
+                {t("addItem")}
+              </span>
+            </div>
           </Button>
         )}
       </div>
