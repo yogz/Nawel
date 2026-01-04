@@ -58,16 +58,11 @@ export const ServiceSection = memo(function ServiceSection({
         isOver && "scale-[1.01] ring-2 ring-accent ring-offset-2"
       )}
     >
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
-            {service.icon || "🛒"}
-          </div>
-          <div>
-            <h3 className="text-[13px] font-black uppercase tracking-[0.1em] text-gray-900">
-              {service.title}
-            </h3>
-          </div>
+          <h3 className="text-sm font-black uppercase tracking-[0.15em] text-black">
+            {service.title}
+          </h3>
         </div>
         {!readOnly && (
           <Button
