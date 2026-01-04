@@ -82,7 +82,14 @@ export function OrganizerHeader({
         }}
       >
         <div className="flex items-center justify-between">
-          <AppBranding logoSize={18} className="shrink-0" variant="text-only" />
+          <div className="flex items-center gap-2">
+            <AppBranding logoSize={18} className="shrink-0" variant="icon-only" />
+            {tab === "planning" && (
+              <h1 className="text-xl font-black tracking-tight text-text">
+                {plan.event?.name || "Événement"} ✨
+              </h1>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             {readOnly && (
               <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 sm:gap-1.5 sm:px-3 sm:text-[11px]">
@@ -131,11 +138,8 @@ export function OrganizerHeader({
           </div>
         </div>
 
-        {tab === "planning" && (
+        {tab === "planning" && (plan.event?.description || plan.event?.name) && (
           <div className="mb-1.5 mt-2">
-            <h1 className="text-xl font-black tracking-tight text-text">
-              {plan.event?.name || "Événement"} ✨
-            </h1>
             <div className="mt-0.5">
               <CitationDisplay seed={plan.event?.name || "Événement"} />
             </div>
