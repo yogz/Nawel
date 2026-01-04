@@ -12,6 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { motion } from "framer-motion";
+import { CitationDisplay } from "../common/citation-display";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -81,15 +82,18 @@ export function OrganizerHeader({
       )}
 
       <header className="sticky top-0 z-30 border-b border-white/20 bg-white/80 px-4 py-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-xl transition-all">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AppBranding logoSize={32} className="shrink-0" variant="text-only" />
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-1 items-center gap-3 min-w-0">
+            <AppBranding logoSize={32} className="shrink-0" variant="icon" />
+            <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm truncate">
+              {plan.event?.name || "Événement"}
+            </h1>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 shrink-0">
             {readOnly && (
-              <span className="flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 shadow-sm">
-                <ShieldAlert size={12} />
-                <span className="hidden xs:inline">{t("mirrorBadge")}</span>
+              <span className="flex items-center justify-center h-10 w-10 rounded-full bg-amber-100 text-amber-700 shadow-sm">
+                <ShieldAlert size={18} />
               </span>
             )}
             {!readOnly && (
@@ -98,23 +102,19 @@ export function OrganizerHeader({
                 size="premium"
                 shine
                 onClick={handleShare}
-                icon={copied ? <CheckCircle size={14} /> : <Share size={14} />}
+                icon={copied ? <CheckCircle size={18} /> : <Share size={18} />}
                 iconClassName={cn(
-                  "h-8 w-8 transition-all duration-300",
-                  copied ? "bg-green-500 text-white rotate-12 scale-110" : "bg-accent text-white"
+                  "h-5 w-5 transition-all duration-300",
+                  copied ? "bg-green-500 text-white rotate-12 scale-110" : "bg-transparent text-gray-700"
                 )}
-                className="shadow-lg shadow-accent/20 hover:shadow-accent/30"
+                className="h-10 w-10 rounded-full p-0 flex items-center justify-center shadow-lg shadow-accent/10 hover:shadow-accent/20 border border-white/40 bg-white/60"
                 title={t("shareTitle")}
               >
-                <span className="hidden sm:inline text-[11px] font-black uppercase tracking-wider text-gray-700">
-                  {copied ? t("copyButton") : t("shareButton")}
-                </span>
-                <span className="sm:hidden text-[11px] font-black uppercase tracking-wider text-gray-700">
-                  {copied ? "Copié" : "Partager"}
-                </span>
               </Button>
             )}
-            <UserNav />
+            <div className="relative h-10 w-10 rounded-full overflow-hidden shadow-lg shadow-accent/10 border border-white/40 flex items-center justify-center bg-white/60">
+              <UserNav />
+            </div>
           </div>
         </div>
 
@@ -122,19 +122,13 @@ export function OrganizerHeader({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 mb-2"
+            className="mt-4"
           >
-            <div className="mb-6">
-              <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent drop-shadow-sm sm:text-5xl">
-                {plan.event?.name || "Événement"}
-                <span className="ml-2 inline-block animate-pulse text-3xl sm:text-4xl">✨</span>
-              </h1>
-              {plan.event?.description && (
-                <p className="mt-2 text-base font-medium text-gray-500 max-w-lg leading-relaxed">
-                  {plan.event.description}
-                </p>
-              )}
+            {/* Citation Area */}
+            <div className="mb-6 px-1">
+              <CitationDisplay seed={plan.event?.name || slug} />
             </div>
+
             <PlanningFilters
               plan={plan}
               planningFilter={planningFilter}

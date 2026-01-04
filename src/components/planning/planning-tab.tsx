@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
-import { CitationDisplay } from "../common/citation-display";
 import { useThemeMode } from "../theme-provider";
 import {
   PlusIcon,
@@ -222,11 +221,9 @@ export function PlanningTab({
                     </div>
                   </div>
 
-                  <div className="mt-4 mb-8">
-                    <CitationDisplay seed={meal.title || meal.date} />
-                  </div>
+                  {/* Removed duplicate CitationDisplay since it is now in OrganizerHeader */}
 
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-8">
                     {meal.services.map((service) => (
                       <ServiceSection
                         key={service.id}
