@@ -44,8 +44,8 @@ function ItemRowComponent({
         <div className="flex flex-col gap-0.5">
           <p
             className={cn(
-              "text-[15px] font-extrabold leading-tight transition-colors sm:text-base",
-              person ? "text-gray-400 line-through decoration-gray-300/50" : "text-gray-800"
+              "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
+              person ? "text-gray-500/70 line-through decoration-gray-400/50" : "text-gray-900"
             )}
           >
             {item.name}
@@ -55,27 +55,29 @@ function ItemRowComponent({
             item.note ||
             item.price ||
             (item.ingredients && item.ingredients.length > 0)) && (
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                  <Scale size={11} className="text-gray-400" />
                   {item.quantity}
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-green-600">
-                  <Euro size={10} className="text-green-500/70" />
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-700">
+                  <Euro size={11} className="text-green-600/70" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-purple-600">
-                  <ChefHat size={10} className="text-purple-400/70" />
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                  <ChefHat size={11} className="text-purple-600/70" />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1 text-[9px] font-medium italic text-blue-500">
-                  <span className="max-w-[120px] truncate">
+                <div className="flex items-center gap-1 text-[10px] font-medium italic text-blue-600">
+                  <MessageSquare size={11} className="text-blue-500/70" />
+                  <span className="max-w-[140px] truncate">
                     {item.note.startsWith("EventDashboard.")
                       ? t("defaultNote", { count: peopleCount || 0 })
                       : item.note}
@@ -132,7 +134,7 @@ function ItemRowComponent({
       </div>
 
       {/* Subtle bottom line for separation */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/10" />
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-black/5" />
     </div>
   );
 
