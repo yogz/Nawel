@@ -276,7 +276,7 @@ export function Organizer({
   }, [tab, slug, setLogs, setLogsLoading]);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
+    <div className="mx-auto flex min-h-screen w-full flex-col pb-24">
       <OrganizerHeader
         readOnly={readOnly}
         tab={tab}

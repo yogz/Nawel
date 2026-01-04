@@ -150,7 +150,7 @@ export function PlanningTab({
               key={meal.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6 rounded-3xl border border-white/30 bg-white/5 p-6"
+              className="mx-auto w-[98%] space-y-6 rounded-3xl border border-white/30 bg-white/5 p-6"
             >
               <div className="flex items-start gap-4">
                 <div className="shrink-0">
@@ -238,20 +238,21 @@ export function PlanningTab({
                   </div>
                 </div>
               </div>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {meal.services.map((service) => (
-                  <ServiceSection
-                    key={service.id}
-                    service={service}
-                    people={plan.people}
-                    readOnly={readOnly}
-                    onAssign={(item) => onAssign(item, service.id)}
-                    onDelete={onDelete}
-                    onCreate={() => onCreateItem(service.id)}
-                    onEdit={() => setSheet({ type: "service-edit", service })}
-                    filter={planningFilter}
-                    activeItemId={activeItemId}
-                  />
+                  <div key={service.id} className="mx-auto w-[98%]">
+                    <ServiceSection
+                      service={service}
+                      people={plan.people}
+                      readOnly={readOnly}
+                      onAssign={(item) => onAssign(item, service.id)}
+                      onDelete={onDelete}
+                      onCreate={() => onCreateItem(service.id)}
+                      onEdit={() => setSheet({ type: "service-edit", service })}
+                      filter={planningFilter}
+                      activeItemId={activeItemId}
+                    />
+                  </div>
                 ))}
               </div>
             </motion.div>
