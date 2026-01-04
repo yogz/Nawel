@@ -36,105 +36,103 @@ function ItemRowComponent({
     <div
       onClick={() => !readOnly && onAssign()}
       className={cn(
-        "group relative flex cursor-pointer items-center gap-4 rounded-xl border border-white/20 bg-white px-3 py-3.5 shadow-sm transition-all active:bg-gray-50"
+        "group relative flex cursor-pointer items-center justify-between gap-3 px-1 py-3 transition-all active:bg-black/5"
       )}
     >
-      {/* Status Column - Fixed Width */}
-      <div className="shrink-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "h-10 w-10 rounded-full border border-white/50 p-0 shadow-sm transition-all duration-500",
-            person
-              ? "rotate-0 scale-100 bg-white"
-              : "rotate-0 border-dashed border-gray-300 bg-gray-100/30"
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            onAssign();
-          }}
-          disabled={readOnly}
-        >
-          {(() => {
-            if (!person) {
-              return <CircleHelp size={18} className="text-gray-300" />;
-            }
-            const avatar = renderAvatar(person, allPeopleNames);
-            if (avatar.type === "image") {
-              return (
-                <div className="h-full w-full overflow-hidden rounded-full ring-2 ring-accent/10">
-                  <img
-                    src={avatar.src}
-                    alt={getDisplayName(person)}
-                    className="h-full w-full object-cover"
-                  />
+      {/* Left side: Item Name & Metadata */}
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-col gap-0.5">
+          <p
+            className={cn(
+              "text-[15px] font-extrabold leading-tight transition-colors sm:text-base",
+              person ? "text-gray-400 line-through decoration-gray-300/50" : "text-gray-800"
+            )}
+          >
+            {item.name}
+          </p>
+
+          {(item.quantity ||
+            item.note ||
+            item.price ||
+            (item.ingredients && item.ingredients.length > 0)) && (
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+              {item.quantity?.trim() && (
+                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-gray-400">
+                  {item.quantity}
                 </div>
-              );
-            }
-            return <span className="text-sm font-black text-accent">{avatar.value}</span>;
-          })()}
-        </Button>
+              )}
+              {item.price && (
+                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-green-600">
+                  <Euro size={10} className="text-green-500/70" />
+                  {item.price.toFixed(2)}
+                </div>
+              )}
+              {item.ingredients && item.ingredients.length > 0 && (
+                <div className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-purple-600">
+                  <ChefHat size={10} className="text-purple-400/70" />
+                  {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
+                </div>
+              )}
+              {item.note && (
+                <div className="flex items-center gap-1 text-[9px] font-medium italic text-blue-500">
+                  <span className="max-w-[120px] truncate">
+                    {item.note.startsWith("EventDashboard.")
+                      ? t("defaultNote", { count: peopleCount || 0 })
+                      : item.note}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <p
-              className={cn(
-                "text-[15px] font-extrabold leading-tight transition-colors sm:text-base",
-                person ? "text-gray-400 line-through decoration-gray-300/50" : "text-gray-800"
-              )}
-            >
-              {item.name}
-            </p>
-            <p
-              className={cn(
-                "mt-0.5 text-[10px] font-black uppercase tracking-widest",
-                person ? "text-accent" : "text-gray-400"
-              )}
-            >
-              {person ? getDisplayName(person) : t("unassigned")}
-            </p>
-          </div>
+      {/* Right side: Person Name & Avatar */}
+      <div className="flex shrink-0 items-center gap-2.5">
+        <div className="flex flex-col items-end">
+          <p
+            className={cn(
+              "text-right text-[10px] font-black uppercase tracking-widest",
+              person ? "text-accent" : "text-gray-300"
+            )}
+          >
+            {person ? getDisplayName(person) : t("unassigned")}
+          </p>
         </div>
 
-        {(item.quantity ||
-          item.note ||
-          item.price ||
-          (item.ingredients && item.ingredients.length > 0)) && (
-          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
-            {item.quantity?.trim() && (
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                <Scale size={11} className="text-gray-400/70" />
-                {item.quantity}
-              </div>
+        <div className="shrink-0">
+          <div
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-500",
+              person
+                ? "border-white/50 bg-white shadow-sm"
+                : "border-dashed border-gray-300 bg-gray-100/30"
             )}
-            {item.price && (
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-green-600">
-                <Euro size={11} className="text-green-500/70" />
-                {item.price.toFixed(2)}
-              </div>
-            )}
-            {item.note && (
-              <div className="flex items-center gap-1.5 text-[10px] font-medium italic text-blue-500">
-                <MessageSquare size={11} className="text-blue-400/70" />
-                <span className="max-w-[150px] truncate">
-                  {item.note.startsWith("EventDashboard.")
-                    ? t("defaultNote", { count: peopleCount || 0 })
-                    : item.note}
-                </span>
-              </div>
-            )}
-            {item.ingredients && item.ingredients.length > 0 && (
-              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-600">
-                <ChefHat size={11} className="text-purple-400/70" />
-                {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
-              </div>
-            )}
+          >
+            {(() => {
+              if (!person) {
+                return <CircleHelp size={14} className="text-gray-300" />;
+              }
+              const avatar = renderAvatar(person, allPeopleNames);
+              if (avatar.type === "image") {
+                return (
+                  <div className="h-full w-full overflow-hidden rounded-full ring-1 ring-accent/10">
+                    <img
+                      src={avatar.src}
+                      alt={getDisplayName(person)}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                );
+              }
+              return <span className="text-[10px] font-black text-accent">{avatar.value}</span>;
+            })()}
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Subtle bottom line for separation */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/10" />
     </div>
   );
 
