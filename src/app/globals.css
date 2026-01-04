@@ -505,6 +505,10 @@
     }
   }
 
+  .text-gradient-header {
+    @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent;
+  }
+
   body {
     @apply min-h-screen overflow-x-hidden bg-surface font-sans text-text antialiased;
   }

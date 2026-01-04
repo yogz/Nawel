@@ -54,7 +54,7 @@ export const ServiceSection = memo(function ServiceSection({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative rounded-2xl border border-white/40 bg-white/90 p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-300",
+        "relative rounded-2xl border border-white/40 bg-white/90 p-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-300",
         isOver && "scale-[1.01] ring-2 ring-accent ring-offset-2"
       )}
     >
@@ -63,7 +63,7 @@ export const ServiceSection = memo(function ServiceSection({
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
             {service.icon || getServiceIcon(service.title)}
           </div>
-          <h3 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-sm font-black uppercase tracking-[0.15em] text-transparent">
+          <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em]">
             {service.title}
           </h3>
         </div>

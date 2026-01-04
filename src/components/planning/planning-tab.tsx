@@ -190,7 +190,7 @@ export function PlanningTab({
                 className="relative flex flex-col gap-3 pt-2"
               >
                 {/* Meal Info Row - Premium & Compact */}
-                <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-3 shadow-sm backdrop-blur-sm">
+                <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-4 shadow-sm backdrop-blur-sm">
                   {/* Removed Meal Icon div */}
 
                   <div className="flex min-w-0 flex-1 flex-col">

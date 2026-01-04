@@ -44,8 +44,8 @@ function ItemRowComponent({
         <div className="flex flex-col gap-0.5">
           <p
             className={cn(
-              "text-[16px] font-black leading-tight transition-colors sm:text-lg",
-              "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent",
+              "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
+              "text-gray-900",
               person && "opacity-100"
             )}
           >
