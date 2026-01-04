@@ -22,7 +22,7 @@ const appTitle = "CoList - Organisateur de fêtes";
 export const metadata: Metadata = {
   title: {
     template: "%s | CoList",
-    default: appTitle,
+    default: "CoList",
   },
   description:
     "Coordonnez vos repas de fêtes simplement. Partagez le lien avec votre famille pour que chacun puisse choisir ce qu'il apporte !",

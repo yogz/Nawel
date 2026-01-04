@@ -18,7 +18,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const t = await getTranslations({ locale: params.locale, namespace: "EventDashboard.Header" });
   const plan = await fetchPlan(params.slug);
   return {
-    title: `CoList - ${plan.event?.name || params.slug}`,
+    title: plan.event?.name || params.slug,
     description:
       plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug }),
   };

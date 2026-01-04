@@ -17,9 +17,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const person = plan.people.find((p) => p.id === parseInt(params.personId));
 
   return {
-    title: person
-      ? `Liste de courses - ${person.name} | ${plan.event?.name || params.slug}`
-      : "Liste de courses",
+    title: person ? `Courses - ${person.name}` : "Courses",
     description: person
       ? `Liste de courses de ${person.name} pour ${plan.event?.name || params.slug}`
       : "Liste de courses",
