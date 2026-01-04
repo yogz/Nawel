@@ -8,7 +8,6 @@ import { CitationDisplay } from "../common/citation-display";
 import { useThemeMode } from "../theme-provider";
 import {
   PlusIcon,
-  Pencil,
   CalendarPlus,
   Clock,
   MapPin,
@@ -47,6 +46,22 @@ interface PlanningTabProps {
   setSheet: (sheet: Sheet) => void;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } },
+};
+
 export function PlanningTab({
   plan,
   planningFilter,
@@ -81,7 +96,12 @@ export function PlanningTab({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
-      <div className="space-y-12">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="space-y-16"
+      >
         {plan.meals.map((meal) => {
           const hasMatch = meal.services.some((s) =>
             s.items.some((i) => {
@@ -106,50 +126,71 @@ export function PlanningTab({
           return (
             <motion.div
               key={meal.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
+              variants={itemVariants}
+              className="relative"
             >
-              <div className="flex items-start gap-4 px-2">
-                <div className="relative shrink-0">
-                  <div className="absolute inset-0 rotate-6 rounded-2xl bg-accent/20 blur-xl transition-transform group-hover:rotate-12" />
-                  <div className="relative grid h-12 w-12 place-items-center rounded-2xl border border-white/20 bg-gradient-to-br from-accent to-accent/80 text-white shadow-xl ring-4 ring-accent/5 backdrop-blur-sm">
-                    <span className="text-2xl drop-shadow-sm">
+              {/* Timeline connector line (visual only) */}
+              {plan.meals.length > 1 && (
+                <div className="absolute left-[29px] top-12 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 to-transparent -z-10" />
+              )}
+
+              <div className="flex items-start gap-5">
+                <div className="relative shrink-0 pt-1">
+                  <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full" />
+                  <div className="relative grid h-14 w-14 place-items-center rounded-2xl border border-white/40 bg-gradient-to-br from-white to-gray-50 text-3xl shadow-lg ring-1 ring-black/5 backdrop-blur-sm">
+                    <span>
                       {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col pt-0.5">
-                  <div className="flex items-center gap-2">
-                    {!readOnly ? (
-                      <button
-                        onClick={() => setSheet({ type: "meal-edit", meal })}
-                        className="group flex min-w-0 items-center gap-2 text-left transition-colors"
-                        aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
-                      >
-                        <h2 className="truncate text-2xl font-black tracking-tight text-text decoration-accent/30 decoration-2 underline-offset-4 transition-all group-hover:text-accent group-hover:underline">
+                <div className="flex min-w-0 flex-1 flex-col pt-1">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      {!readOnly ? (
+                        <button
+                          onClick={() => setSheet({ type: "meal-edit", meal })}
+                          className="group flex min-w-0 items-center gap-2 text-left transition-colors"
+                          aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
+                        >
+                          <h2 className="text-3xl font-black tracking-tighter text-gray-800 transition-colors group-hover:text-accent">
+                            {meal.title || meal.date}
+                          </h2>
+                        </button>
+                      ) : (
+                        <h2 className="text-3xl font-black tracking-tighter text-gray-800">
                           {meal.title || meal.date}
                         </h2>
-                      </button>
-                    ) : (
-                      <h2 className="truncate text-2xl font-black tracking-tight text-text">
-                        {meal.title || meal.date}
-                      </h2>
-                    )}
+                      )}
 
-                    <div className="flex items-center">
+                      <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-gray-500">
+                        {meal.time && (
+                          <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-600">
+                            <Clock className="h-3.5 w-3.5" />
+                            {meal.time}
+                          </div>
+                        )}
+                        {meal.address && (
+                          <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-600">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span className="max-w-[200px] truncate">{meal.address}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center pt-1">
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="premium"
-                            className="h-8 w-8 rounded-full border border-black/[0.03] bg-white/50 p-0 shadow-sm transition-all hover:bg-white hover:shadow-md"
-                            icon={<CalendarPlus className="h-4 w-4" />}
-                            iconClassName="h-7 w-7 shadow-none ring-0"
+                            className="h-10 w-10 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+                            icon={<CalendarPlus className="h-5 w-5" />}
+                            iconClassName="h-full w-full bg-transparent text-accent"
                             aria-label={t("calendar.options")}
                           />
                         </PopoverTrigger>
-                        <PopoverContent className="glass w-56 p-2" align="start">
+                        <PopoverContent className="glass w-56 p-2" align="end">
                           <div className="flex flex-col gap-1">
                             <button
                               onClick={() => window.open(calendarUrl, "_blank")}
@@ -181,46 +222,32 @@ export function PlanningTab({
                     </div>
                   </div>
 
-                  <div className="mt-2 sm:pl-[52px]">
+                  <div className="mt-4 mb-8">
                     <CitationDisplay seed={meal.title || meal.date} />
                   </div>
 
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
-                    {meal.time && (
-                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
-                        <Clock className="h-3 w-3" />
-                        {meal.time}
-                      </div>
-                    )}
-                    {meal.address && (
-                      <div className="flex items-center gap-1.5 rounded-full border border-black/[0.03] bg-zinc-100/80 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-zinc-600 shadow-sm backdrop-blur-sm">
-                        <MapPin className="h-3 w-3" />
-                        <span className="max-w-[200px] truncate">{meal.address}</span>
-                      </div>
-                    )}
+                  <div className="space-y-4">
+                    {meal.services.map((service) => (
+                      <ServiceSection
+                        key={service.id}
+                        service={service}
+                        people={plan.people}
+                        readOnly={readOnly}
+                        onAssign={(item) => onAssign(item, service.id)}
+                        onDelete={onDelete}
+                        onCreate={() => onCreateItem(service.id)}
+                        onEdit={() => setSheet({ type: "service-edit", service })}
+                        filter={planningFilter}
+                        activeItemId={activeItemId}
+                      />
+                    ))}
                   </div>
                 </div>
-              </div>
-              <div className="space-y-6">
-                {meal.services.map((service) => (
-                  <ServiceSection
-                    key={service.id}
-                    service={service}
-                    people={plan.people}
-                    readOnly={readOnly}
-                    onAssign={(item) => onAssign(item, service.id)}
-                    onDelete={onDelete}
-                    onCreate={() => onCreateItem(service.id)}
-                    onEdit={() => setSheet({ type: "service-edit", service })}
-                    filter={planningFilter}
-                    activeItemId={activeItemId}
-                  />
-                ))}
               </div>
             </motion.div>
           );
         })}
-      </div>
+      </motion.div>
       {plan.meals.length === 0 && planningFilter.type === "all" && (
         <div className="px-4 py-8 text-center">
           <p className="mb-4 text-gray-500">{t("noMeals")}</p>
@@ -237,24 +264,15 @@ export function PlanningTab({
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
-        <div className="mt-8 flex flex-col gap-3 px-4">
+        <div className="mt-12 flex flex-col gap-4 px-4">
           <Button
             variant="premium"
-            className="w-full border border-dashed border-purple-300/50 bg-purple-50/50 p-4 pr-6 hover:bg-purple-100/50 transition-all"
-            icon={<PlusIcon />}
-            iconClassName="bg-purple-100 text-purple-600 group-hover:bg-purple-200"
+            className="w-full h-14 rounded-2xl border-none bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.02] hover:shadow-purple-500/40"
+            icon={<PlusIcon className="text-white" />}
+            iconClassName="bg-white/20"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
           >
-            <span className="font-bold text-purple-600 text-sm">{t("addService")}</span>
-          </Button>
-          <Button
-            variant="premium"
-            className="w-full border border-dashed border-purple-400/50 bg-purple-100/50 p-4 pr-6 hover:bg-purple-200/50 transition-all"
-            icon={<PlusIcon />}
-            iconClassName="bg-purple-200 text-purple-700"
-            onClick={() => setSheet({ type: "meal-create" })}
-          >
-            <span className="font-bold text-purple-700 text-sm">{t("addMeal")}</span>
+            <span className="text-sm font-black uppercase tracking-wider">{t("addService")}</span>
           </Button>
         </div>
       )}
