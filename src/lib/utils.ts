@@ -294,3 +294,90 @@ export const getICalFile = (title: string, date?: string | Date, url?: string) =
     "END:VCALENDAR",
   ].join("\r\n");
 };
+
+/**
+ * Returns an appropriate emoji for a service based on its title.
+ */
+export function getServiceIcon(title: string): string {
+  const normalized = title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (
+    normalized.includes("apero") ||
+    normalized.includes("boisson") ||
+    normalized.includes("vin") ||
+    normalized.includes("champagne") ||
+    normalized.includes("biere") ||
+    normalized.includes("cocktail")
+  ) {
+    return "🍷";
+  }
+
+  if (normalized.includes("entree") || normalized.includes("salade")) {
+    return "🥗";
+  }
+
+  if (
+    normalized.includes("plat") ||
+    normalized.includes("principal") ||
+    normalized.includes("viande") ||
+    normalized.includes("poisson")
+  ) {
+    return "🥘";
+  }
+
+  if (normalized.includes("fromage")) {
+    return "🧀";
+  }
+
+  if (
+    normalized.includes("dessert") ||
+    normalized.includes("gateau") ||
+    normalized.includes("buche") ||
+    normalized.includes("sucre")
+  ) {
+    return "🍰";
+  }
+
+  if (
+    normalized.includes("cafe") ||
+    normalized.includes("the") ||
+    normalized.includes("petit dej") ||
+    normalized.includes("morning")
+  ) {
+    return "☕";
+  }
+
+  if (normalized.includes("pain") || normalized.includes("boulangerie")) {
+    return "🥖";
+  }
+
+  if (
+    normalized.includes("musique") ||
+    normalized.includes("dance") ||
+    normalized.includes("son")
+  ) {
+    return "🎵";
+  }
+
+  if (
+    normalized.includes("cadeau") ||
+    normalized.includes("gift") ||
+    normalized.includes("surprise")
+  ) {
+    return "🎁";
+  }
+
+  if (
+    normalized.includes("deco") ||
+    normalized.includes("ambiance") ||
+    normalized.includes("fleurs")
+  ) {
+    return "✨";
+  }
+
+  // Default fallback
+  return "🛒";
+}

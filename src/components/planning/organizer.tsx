@@ -268,7 +268,7 @@ export function Organizer({
   }, [tab, slug, setLogs, setLogsLoading]);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24 text-gray-900">
+    <div className="flex min-h-screen flex-col pb-24 text-gray-900">
       <OrganizerHeader
         readOnly={readOnly}
         tab={tab}
@@ -287,71 +287,75 @@ export function Organizer({
         type={successMessage?.type || "success"}
       />
 
-      <main className="flex-1 space-y-4 px-3 py-4">
-        <Suspense fallback={<TabSkeleton />}>
-          {tab === "planning" && (
-            <PlanningTab
-              plan={plan}
-              planningFilter={planningFilter}
-              setPlanningFilter={setPlanningFilter}
-              activeItemId={activeItemId}
-              readOnly={readOnly}
-              sensors={sensors}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onAssign={(item: Item, serviceId?: number) =>
-                setSheet({ type: "item", serviceId, item })
-              }
-              onDelete={handleDelete}
-              onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
-              onCreateService={() => setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })}
-              setSheet={setSheet}
-              sheet={sheet}
-              slug={slug}
-              writeKey={effectiveWriteKey}
-            />
-          )}
+      <div className="mx-auto w-full max-w-3xl flex-1">
+        <main className="space-y-4 px-3 py-4">
+          <Suspense fallback={<TabSkeleton />}>
+            {tab === "planning" && (
+              <PlanningTab
+                plan={plan}
+                planningFilter={planningFilter}
+                setPlanningFilter={setPlanningFilter}
+                activeItemId={activeItemId}
+                readOnly={readOnly}
+                sensors={sensors}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onAssign={(item: Item, serviceId?: number) =>
+                  setSheet({ type: "item", serviceId, item })
+                }
+                onDelete={handleDelete}
+                onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
+                onCreateService={() =>
+                  setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })
+                }
+                setSheet={setSheet}
+                sheet={sheet}
+                slug={slug}
+                writeKey={effectiveWriteKey}
+              />
+            )}
 
-          {tab === "people" && (
-            <PeopleTab
-              plan={plan}
-              selectedPerson={selectedPerson}
-              setSelectedPerson={setSelectedPerson}
-              setSheet={setSheet}
-              readOnly={readOnly}
-              currentUserId={session?.user?.id}
-              onClaim={handleClaimPerson}
-              onUnclaim={handleUnclaimPerson}
-            />
-          )}
+            {tab === "people" && (
+              <PeopleTab
+                plan={plan}
+                selectedPerson={selectedPerson}
+                setSelectedPerson={setSelectedPerson}
+                setSheet={setSheet}
+                readOnly={readOnly}
+                currentUserId={session?.user?.id}
+                onClaim={handleClaimPerson}
+                onUnclaim={handleUnclaimPerson}
+              />
+            )}
 
-          {tab === "settings" && (
-            <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
-          )}
+            {tab === "settings" && (
+              <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
+            )}
 
-          {tab === "shopping" && (
-            <ShoppingTab
-              plan={plan}
-              slug={slug}
-              writeKey={effectiveWriteKey}
-              currentUserId={session?.user?.id}
-            />
-          )}
-        </Suspense>
-      </main>
+            {tab === "shopping" && (
+              <ShoppingTab
+                plan={plan}
+                slug={slug}
+                writeKey={effectiveWriteKey}
+                currentUserId={session?.user?.id}
+              />
+            )}
+          </Suspense>
+        </main>
 
-      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
 
-      {isOwner && (
-        <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
-          <button
-            onClick={() => setDeleteDialogOpen(true)}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
-          >
-            <Trash2 size={12} /> {tOrganizer("deleteEvent")}
-          </button>
-        </div>
-      )}
+        {isOwner && (
+          <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
+            <button
+              onClick={() => setDeleteDialogOpen(true)}
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
+            >
+              <Trash2 size={12} /> {tOrganizer("deleteEvent")}
+            </button>
+          </div>
+        )}
+      </div>
 
       <DeleteEventDialog
         open={deleteDialogOpen}

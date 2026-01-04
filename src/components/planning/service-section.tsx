@@ -7,7 +7,7 @@ import { ItemRow } from "./item-row";
 import { Button } from "../ui/button";
 import { memo } from "react";
 import { useTranslations } from "next-intl";
-import { cn } from "@/lib/utils";
+import { cn, getServiceIcon } from "@/lib/utils";
 
 interface ServiceSectionProps {
   service: Service;
@@ -61,7 +61,7 @@ export const ServiceSection = memo(function ServiceSection({
       <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
         <div className="flex items-center gap-3">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
-            {service.icon || "🛒"}
+            {service.icon || getServiceIcon(service.title)}
           </div>
           <h3 className="text-sm font-black uppercase tracking-[0.15em] text-[#1a1523]">
             {service.title}
