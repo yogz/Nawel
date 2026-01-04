@@ -6,15 +6,7 @@ import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
-import {
-  PlusIcon,
-  CalendarPlus,
-  Clock,
-  MapPin,
-  ExternalLink,
-  Download,
-  Calendar,
-} from "lucide-react";
+import { PlusIcon, Edit3, Clock, MapPin, ExternalLink, Download, Calendar } from "lucide-react";
 import {
   generateGoogleCalendarUrl,
   generateOutlookCalendarUrl,
@@ -211,7 +203,7 @@ export function PlanningTab({
                           onClick={() => setSheet({ type: "meal-edit", meal })}
                           className="text-accent/40 transition-colors hover:text-accent"
                         >
-                          <CalendarPlus className="h-3 w-3" />
+                          <Edit3 className="h-3 w-3" />
                         </button>
                       )}
                     </div>
@@ -238,7 +230,7 @@ export function PlanningTab({
                         <Button
                           variant="premium"
                           className="h-7 w-7 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-                          icon={<ExternalLink className="h-3 w-3" />}
+                          icon={<Calendar className="h-3 w-3" />}
                           iconClassName="h-full w-full bg-transparent text-accent"
                         />
                       </PopoverTrigger>
