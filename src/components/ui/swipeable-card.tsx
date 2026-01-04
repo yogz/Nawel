@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "./dialog";
 import { Button } from "./button";
+import { cn } from "@/lib/utils";
 
 interface SwipeableCardProps {
   children: React.ReactNode;
