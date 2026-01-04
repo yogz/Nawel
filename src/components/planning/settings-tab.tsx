@@ -1,6 +1,7 @@
 "use client";
 
-import { Trash2, Sparkles, Globe, Check } from "lucide-react";
+import { useState } from "react";
+import { Trash2, Sparkles, Globe, Check, ChevronRight, ChevronDown } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/common/language-selector";
@@ -12,7 +13,9 @@ interface SettingsTabProps {
 
 export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
+  const tShared = useTranslations("EventDashboard.Shared");
   const { theme, setTheme, themes } = useThemeMode();
+  const [showDangerZone, setShowDangerZone] = useState(false);
 
   return (
     <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -56,19 +59,31 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
       </div>
 
       {!readOnly && (
-        <div className="premium-card border-red-100 bg-red-50/10 p-6">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-red-900/40">
-            <Trash2 size={14} /> {t("dangerZone")}
-          </h3>
+        <div className="space-y-3">
           <button
-            onClick={onDeleteEvent}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-black uppercase tracking-widest text-red-600 transition-all hover:bg-red-100"
+            onClick={() => setShowDangerZone(!showDangerZone)}
+            className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white/50 px-6 py-4 text-sm font-bold text-gray-400 transition-all hover:bg-white"
           >
-            <Trash2 size={16} /> {t("deleteEvent")}
+            <div className="flex items-center gap-2">
+              <Trash2 size={14} />
+              {t("dangerZone")}
+            </div>
+            {showDangerZone ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
-          <p className="mt-3 text-center text-[10px] font-medium text-red-900/40">
-            {t("irreversible")}
-          </p>
+
+          {showDangerZone && (
+            <div className="premium-card border-red-100 bg-red-50/10 p-6 duration-300 animate-in fade-in slide-in-from-top-2">
+              <button
+                onClick={onDeleteEvent}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-black uppercase tracking-widest text-red-600 transition-all hover:bg-red-100"
+              >
+                <Trash2 size={16} /> {t("deleteEvent")}
+              </button>
+              <p className="mt-3 text-center text-[10px] font-medium text-red-900/40">
+                {t("irreversible")}
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
