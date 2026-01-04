@@ -288,6 +288,7 @@
       "noItemsFor": "Aucun article à acheter pour {name}"
     },
     "Settings": {
+      "title": "Paramètres",
       "ambiance": "Ambiance",
       "language": "Langue",
       "history": "Historique des modifs",

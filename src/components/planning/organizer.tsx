@@ -349,16 +349,18 @@ export function Organizer({
 
         {/* Zone de danger en bas de page */}
         {!readOnly && isOwner && (
-          <div className="mb-8 mt-12 px-4">
-            <div className="premium-card mx-auto max-w-md border-red-100 bg-red-50/10 p-6">
+          <div className="mb-8 mt-16 px-4">
+            <div className="mx-auto max-w-md">
               <button
                 onClick={() => setShowDangerZone(!showDangerZone)}
-                className="flex w-full items-center justify-between gap-2 text-sm font-black uppercase tracking-widest text-red-900/60 transition-colors hover:text-red-900"
+                className="flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600"
               >
-                <div className="flex items-center gap-2">
-                  <Trash2 size={14} /> {tSettings("dangerZone")}
-                </div>
-                {showDangerZone ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                <span>{tSettings("dangerZone")}</span>
+                {showDangerZone ? (
+                  <ChevronUp size={12} strokeWidth={2} />
+                ) : (
+                  <ChevronDown size={12} strokeWidth={2} />
+                )}
               </button>
 
               {showDangerZone && (

@@ -277,6 +277,7 @@
       "noItemsFor": "No items to buy for {name}"
     },
     "Settings": {
+      "title": "Settings",
       "ambiance": "Ambiance",
       "language": "Language",
       "history": "Change history",
