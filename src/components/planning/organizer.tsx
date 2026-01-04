@@ -19,6 +19,7 @@ import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { DeleteEventDialog } from "../common/delete-event-dialog";
+import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -97,6 +98,7 @@ export function Organizer({
     return false;
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showDangerZone, setShowDangerZone] = useState(false);
 
   // Persist guest prompt dismissal to localStorage
   const dismissGuestPrompt = () => {
@@ -143,6 +145,7 @@ export function Organizer({
 
   const tHeader = useTranslations("EventDashboard.Header");
   const tOrganizer = useTranslations("EventDashboard.Organizer");
+  const tSettings = useTranslations("EventDashboard.Settings");
   const { theme } = useThemeMode();
   const searchParams = useSearchParams();
   const [copied, setCopied] = useState(false);
@@ -280,8 +283,6 @@ export function Organizer({
         plan={plan}
         slug={slug}
         writeKey={effectiveWriteKey}
-        isOwner={isOwner}
-        onDeleteEvent={() => setDeleteDialogOpen(true)}
         userImage={session?.user?.image}
         isAuthenticated={!!session?.user}
         onOpenSettings={() => setTab("settings")}
@@ -345,6 +346,37 @@ export function Organizer({
             <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
           )}
         </Suspense>
+
+        {/* Zone de danger en bas de page */}
+        {!readOnly && isOwner && (
+          <div className="mb-8 mt-12 px-4">
+            <div className="premium-card mx-auto max-w-md border-red-100 bg-red-50/10 p-6">
+              <button
+                onClick={() => setShowDangerZone(!showDangerZone)}
+                className="flex w-full items-center justify-between gap-2 text-sm font-black uppercase tracking-widest text-red-900/60 transition-colors hover:text-red-900"
+              >
+                <div className="flex items-center gap-2">
+                  <Trash2 size={14} /> {tSettings("dangerZone")}
+                </div>
+                {showDangerZone ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+
+              {showDangerZone && (
+                <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2">
+                  <button
+                    onClick={() => setDeleteDialogOpen(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-black uppercase tracking-widest text-red-600 transition-all hover:bg-red-100"
+                  >
+                    <Trash2 size={16} /> {tOrganizer("deleteEvent")}
+                  </button>
+                  <p className="text-center text-[10px] font-medium text-red-900/40">
+                    {tSettings("irreversible")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </main>
 
       <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />

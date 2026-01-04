@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share2, MoreVertical, Trash2, Settings, User } from "lucide-react";
+import { ShieldAlert, Share2, Settings, User } from "lucide-react";
 import { type PlanData } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "../theme-provider";
@@ -15,8 +15,6 @@ interface OrganizerHeaderProps {
   plan: PlanData;
   slug: string;
   writeKey?: string;
-  isOwner?: boolean;
-  onDeleteEvent?: () => void;
   userImage?: string | null;
   isAuthenticated?: boolean;
   onOpenSettings?: () => void;
@@ -28,15 +26,12 @@ export function OrganizerHeader({
   plan,
   slug,
   writeKey,
-  isOwner,
-  onDeleteEvent,
   userImage,
   isAuthenticated,
   onOpenSettings,
 }: OrganizerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
-  const tOrganizer = useTranslations("EventDashboard.Organizer");
   const tSettings = useTranslations("EventDashboard.Settings");
   const [copied, setCopied] = useState(false);
 
@@ -104,27 +99,6 @@ export function OrganizerHeader({
                 >
                   <Share2 size={16} className="text-gray-700" strokeWidth={2.5} />
                 </button>
-                {isOwner && onDeleteEvent && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
-                        title="Options"
-                      >
-                        <MoreVertical size={16} className="text-gray-700" strokeWidth={2.5} />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48 p-2" align="end">
-                      <button
-                        onClick={onDeleteEvent}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
-                      >
-                        <Trash2 size={14} />
-                        {tOrganizer("deleteEvent")}
-                      </button>
-                    </PopoverContent>
-                  </Popover>
-                )}
               </>
             )}
 
