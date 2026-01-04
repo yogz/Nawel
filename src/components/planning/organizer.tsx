@@ -281,6 +281,8 @@ export function Organizer({
         plan={plan}
         slug={slug}
         writeKey={effectiveWriteKey}
+        isOwner={isOwner}
+        onDeleteEvent={() => setDeleteDialogOpen(true)}
       />
 
       <SuccessToast

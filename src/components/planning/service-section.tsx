@@ -79,51 +79,46 @@ export function ServiceSection({
               ? "🍰"
               : "🍴"}
           </div>
-          <div className="flex-1 min-w-0">
-            {!readOnly ? (
-              <button
-                onClick={onEdit}
-                className="group flex items-center gap-2 text-left transition-colors w-full"
-                aria-label={t("editService", { name: service.title })}
-              >
-                <h3 className="text-xl font-bold tracking-tight text-text group-hover:text-accent">
-                  {service.title}
-                </h3>
-              </button>
-            ) : (
-              <h3 className="text-xl font-bold text-text">{service.title}</h3>
-            )}
+          <div className="flex-1 min-w-0 flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              {!readOnly ? (
+                <button
+                  onClick={onEdit}
+                  className="group flex items-center gap-2 text-left transition-colors w-full"
+                  aria-label={t("editService", { name: service.title })}
+                >
+                  <h3 className="text-xl font-bold tracking-tight text-text group-hover:text-accent truncate">
+                    {service.title}
+                  </h3>
+                </button>
+              ) : (
+                <h3 className="text-xl font-bold text-text truncate">{service.title}</h3>
+              )}
+            </div>
             {(service.peopleCount || 0) > 1 && (
-              <p className="mt-1 text-sm font-semibold text-gray-500">
+              <span className="text-sm font-semibold text-gray-500 shrink-0">
                 {service.peopleCount} pers.
-              </p>
+              </span>
             )}
           </div>
         </div>
       </div>
 
-      {service.items.length === 0 && (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-500 font-medium">
-            {isOver && isDraggingFromOtherService ? t("dropHere") : t("noItems")}
+      {service.items.length === 0 && !readOnly && filter.type === "all" && (
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          <p className="text-sm text-gray-600">
+            Quelqu'un rapporte quelque chose ? 😋
           </p>
-          {!readOnly && filter.type === "all" && (
-            <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-              <p className="text-sm text-gray-600">
-                Quelqu'un apporte {service.title.toLowerCase()} ? 😋
-              </p>
-              <Button
-                variant="premium"
-                size="premium"
-                onClick={onCreate}
-                icon={<Plus size={14} />}
-                iconClassName="bg-accent/10 text-accent"
-                className="bg-white hover:bg-gray-50"
-              >
-                <span className="text-xs font-bold text-accent">{t("add")}</span>
-              </Button>
-            </div>
-          )}
+          <Button
+            variant="premium"
+            size="premium"
+            onClick={onCreate}
+            icon={<Plus size={14} />}
+            iconClassName="bg-accent/10 text-accent"
+            className="bg-white hover:bg-gray-50"
+          >
+            <span className="text-xs font-bold text-accent">{t("add")}</span>
+          </Button>
         </div>
       )}
 
