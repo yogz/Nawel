@@ -47,18 +47,18 @@ export function MealContainer({
       {/* Meal Info Row - Premium & Compact */}
       <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-4 shadow-sm backdrop-blur-sm">
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="truncate text-base font-black tracking-tight text-black">
-              {meal.title || meal.date}
-            </h2>
+          <div className="flex items-center gap-2">
             {!readOnly && (
               <button
                 onClick={() => setSheet({ type: "meal-edit", meal })}
-                className="text-accent/40 transition-colors hover:text-accent"
+                className="shrink-0 text-accent/40 transition-colors hover:text-accent"
               >
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
             )}
+            <h2 className="truncate text-base font-black tracking-tight text-black">
+              {meal.title || meal.date}
+            </h2>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-gray-400">

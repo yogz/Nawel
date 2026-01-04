@@ -59,24 +59,26 @@ export const ServiceSection = memo(function ServiceSection({
       )}
     >
       <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
-            {service.icon || getServiceIcon(service.title)}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
+              {service.icon || getServiceIcon(service.title)}
+            </div>
+            <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em]">
+              {service.title}
+            </h3>
           </div>
-          <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em]">
-            {service.title}
-          </h3>
+          {!readOnly && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onEdit}
+              className="h-7 w-7 rounded-full p-0 text-gray-400 hover:bg-accent/10 hover:text-accent"
+            >
+              <Edit3 size={12} />
+            </Button>
+          )}
         </div>
-        {!readOnly && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEdit}
-            className="h-8 w-8 rounded-full p-0 text-gray-400 hover:bg-accent/10 hover:text-accent"
-          >
-            <Edit3 size={14} />
-          </Button>
-        )}
       </div>
 
       <div className="flex flex-col">

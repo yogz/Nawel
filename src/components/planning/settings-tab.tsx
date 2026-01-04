@@ -1,17 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Sparkles, Globe, Check, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  Trash2,
+  Sparkles,
+  Globe,
+  Check,
+  ChevronRight,
+  ChevronDown,
+  ShieldAlert,
+} from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/common/language-selector";
+import { cn } from "@/lib/utils";
 
 interface SettingsTabProps {
   onDeleteEvent: () => void;
   readOnly: boolean;
+  isOwner?: boolean;
 }
 
-export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
+export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
   const tShared = useTranslations("EventDashboard.Shared");
   const { theme, setTheme, themes } = useThemeMode();
@@ -58,11 +68,16 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
         <LanguageSelector variant="grid" showSearch={true} />
       </div>
 
-      {!readOnly && (
+      {!readOnly && isOwner && (
         <div className="space-y-3">
           <button
             onClick={() => setShowDangerZone(!showDangerZone)}
-            className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white/50 px-6 py-4 text-sm font-bold text-gray-400 transition-all hover:bg-white"
+            className={cn(
+              "flex w-full items-center justify-between rounded-2xl border px-6 py-4 text-sm font-bold transition-all",
+              showDangerZone
+                ? "border-red-200 bg-red-50/50 text-red-600"
+                : "border-gray-100 bg-white/50 text-gray-400 hover:bg-white"
+            )}
           >
             <div className="flex items-center gap-2">
               <Trash2 size={14} />
@@ -73,9 +88,16 @@ export function SettingsTab({ onDeleteEvent, readOnly }: SettingsTabProps) {
 
           {showDangerZone && (
             <div className="premium-card border-red-100 bg-red-50/10 p-6 duration-300 animate-in fade-in slide-in-from-top-2">
+              <div className="mb-4 rounded-xl bg-red-50 p-3 text-[10px] font-medium text-red-800">
+                <p className="flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 shrink-0" />
+                  Attention : Cette action est irréversible. Toutes les données de l'événement
+                  seront définitivement supprimées.
+                </p>
+              </div>
               <button
                 onClick={onDeleteEvent}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-sm font-black uppercase tracking-widest text-red-600 transition-all hover:bg-red-100"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 hover:shadow-red-300 active:scale-[0.98]"
               >
                 <Trash2 size={16} /> {t("deleteEvent")}
               </button>

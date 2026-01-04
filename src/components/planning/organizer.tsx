@@ -329,7 +329,11 @@ export function Organizer({
             )}
 
             {tab === "settings" && (
-              <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
+              <SettingsTab
+                onDeleteEvent={() => setDeleteDialogOpen(true)}
+                readOnly={readOnly}
+                isOwner={isOwner}
+              />
             )}
 
             {tab === "shopping" && (
@@ -344,17 +348,6 @@ export function Organizer({
         </main>
 
         <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
-
-        {isOwner && (
-          <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
-            <button
-              onClick={() => setDeleteDialogOpen(true)}
-              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
-            >
-              <Trash2 size={12} /> {tOrganizer("deleteEvent")}
-            </button>
-          </div>
-        )}
       </div>
 
       <DeleteEventDialog
