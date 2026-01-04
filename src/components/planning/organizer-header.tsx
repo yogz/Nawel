@@ -84,7 +84,7 @@ export function OrganizerHeader({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <AppBranding logoSize={18} className="shrink-0" variant="icon-only" />
-            {tab === "planning" && (
+            {(tab === "planning" || tab === "people" || tab === "shopping") && (
               <h1 className="text-xl font-black tracking-tight text-text">
                 {plan.event?.name || "Événement"} ✨
               </h1>

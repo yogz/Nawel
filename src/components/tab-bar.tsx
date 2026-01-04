@@ -30,14 +30,14 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-6">
       <nav
-        className="rounded-3xl border border-purple-200/40 shadow-[0_8px_32px_rgba(120,80,180,0.12)]"
+        className="w-[80%] max-w-3xl rounded-3xl border border-purple-200/40 shadow-[0_8px_32px_rgba(120,80,180,0.12)]"
         style={{
           background: "rgba(255, 255, 255, 0.25)",
           backdropFilter: "blur(50px)",
           WebkitBackdropFilter: "blur(50px)",
         }}
       >
-        <div className="flex items-center gap-2 px-6 py-3">
+        <div className="flex items-center justify-around px-6 py-3">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const selected = active === tab.key;
