@@ -9,9 +9,10 @@ import {
   generateGoogleCalendarUrl,
   generateOutlookCalendarUrl,
   downloadIcsFile,
+  cn,
 } from "@/lib/utils";
 import { type Meal, type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale, useFormatter } from "next-intl";
 
 interface MealContainerProps {
   meal: Meal;
@@ -39,39 +40,62 @@ export function MealContainer({
   itemVariants,
 }: MealContainerProps) {
   const t = useTranslations("EventDashboard.Planning");
+  const locale = useLocale();
+  const format = useFormatter();
   const eventName = plan.event?.name || "Événement";
   const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
+
+  const getFullDateDisplay = () => {
+    if (!meal.date) return null;
+    try {
+      const d = new Date(`${meal.date}T${meal.time || "12:00"}`);
+      let full = format.dateTime(d, {
+        dateStyle: "full",
+        timeStyle: meal.time ? "short" : undefined,
+      });
+
+      if (locale === "fr") {
+        full = full.replace(":", "h");
+      }
+
+      return full.charAt(0).toUpperCase() + full.slice(1);
+    } catch (e) {
+      return meal.date;
+    }
+  };
+
+  const fullDate = getFullDateDisplay();
 
   return (
     <motion.div variants={itemVariants} className="relative flex flex-col gap-3 pt-2">
       {/* Meal Info Row - Premium & Compact */}
       <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-4 shadow-sm backdrop-blur-sm">
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="group flex items-center gap-2">
+          <div
+            className={cn("group flex items-center gap-2", !readOnly && "cursor-pointer")}
+            onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
+          >
             <h2 className="truncate text-base font-black tracking-tight text-black">
               {meal.title || meal.date}
             </h2>
             {!readOnly && (
-              <button
-                onClick={() => setSheet({ type: "meal-edit", meal })}
-                className="shrink-0 text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100"
-              >
+              <button className="shrink-0 text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100">
                 <Edit3 className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-gray-400">
-            {(meal.date || meal.time) && (
-              <div className="flex items-center gap-1 text-accent">
+          <div className="mt-1.5 flex flex-col gap-1 text-[11px]">
+            {fullDate && (
+              <div className="flex items-center gap-1.5 font-bold text-accent">
                 <Clock className="h-3 w-3" />
-                {meal.date} {meal.time && `• ${meal.time}`}
+                {fullDate}
               </div>
             )}
             {meal.address && (
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                <span className="max-w-[120px] truncate">{meal.address}</span>
+              <div className="flex items-center gap-1.5 font-medium text-gray-500">
+                <MapPin className="h-3 w-3 text-gray-400" />
+                <span className="truncate">{meal.address}</span>
               </div>
             )}
           </div>
