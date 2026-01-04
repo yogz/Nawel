@@ -150,7 +150,7 @@ export function PlanningTab({
               key={meal.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6 rounded-3xl border border-white/50 bg-white/40 p-6 shadow-sm"
+              className="space-y-6 rounded-3xl border border-white/30 bg-white/5 p-6"
             >
               <div className="flex items-start gap-4">
                 <div className="shrink-0">
