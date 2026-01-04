@@ -19,7 +19,6 @@ import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import { DeleteEventDialog } from "../common/delete-event-dialog";
-import { Trash2 } from "lucide-react";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -345,18 +344,12 @@ export function Organizer({
         </Suspense>
       </main>
 
-      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} userImage={session?.user?.image} />
-
-      {isOwner && (
-        <div className="mt-8 flex justify-center pb-8 opacity-20 transition-opacity hover:opacity-100">
-          <button
-            onClick={() => setDeleteDialogOpen(true)}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-600 transition-colors hover:text-red-500"
-          >
-            <Trash2 size={12} /> {tOrganizer("deleteEvent")}
-          </button>
-        </div>
-      )}
+      <TabBar
+        active={tab}
+        onChange={setTab}
+        isAuthenticated={!!session?.user}
+        userImage={session?.user?.image}
+      />
 
       <DeleteEventDialog
         open={deleteDialogOpen}
