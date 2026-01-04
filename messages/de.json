@@ -66,31 +66,6 @@
       "contact": "Kontakt"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "Die Kunst des Gastgebens",
-    "heroTitle": "Empfangen Sie mit",
-    "heroTitleHighlight": "Eleganz",
-    "heroDescription": "Entdecken Sie die Freude am Einladen neu. Ohne Lärm, ohne Stress. Nur Sie und Ihre Lieben.",
-    "heroButton": "Die Geschichte beginnen",
-    "scrollText": "Die Reise",
-    "timeline": {
-      "day1": "T-7",
-      "title1": "Die Inspiration",
-      "description1": "Alles beginnt mit einem Wunsch. Sie versenden eine Einladung mit Stil. Elegant und klar, sie macht sofort Lust dabei zu sein.",
-      "day2": "T-5",
-      "title2": "Die Begeisterung",
-      "description2": "Die Einladung zirkuliert. Ihre Lieben schließen sich dem Abenteuer ohne Registrierung an. Mit einem Klick wählen sie ihren Beitrag: Champagner, Salat, Dessert. Die Organisation wird flüssig und natürlich.",
-      "day3": "T-1",
-      "title3": "Die Gelassenheit",
-      "description3": "Jeder hat seine Mission. CoList generiert automatisch eine personalisierte Einkaufsliste für jeden Gast. Kein Stress mehr, jeder weiß genau, was zu tun ist.",
-      "day4": "Der Tag",
-      "title4": "Der Moment",
-      "description4": "Sie stehen nicht gestresst in der Küche. Sie sind bei ihnen. Das ist das CoList-Versprechen."
-    },
-    "ctaTitle": "Ihr nächstes Dinner verdient CoList.",
-    "ctaDescription": "Werden Sie Teil der \"Slow Hosting\" Bewegung.",
-    "ctaButton": "Event erstellen"
-  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "Meine Events",

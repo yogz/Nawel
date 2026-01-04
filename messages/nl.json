@@ -66,31 +66,6 @@
       "contact": "Contact"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "De Kunst van Ontvangen",
-    "heroTitle": "Ontvang met",
-    "heroTitleHighlight": "elegantie",
-    "heroDescription": "Herontdek het plezier van uitnodigen. Zonder drukte, zonder stress. Alleen u en uw geliefden.",
-    "heroButton": "Start het verhaal",
-    "scrollText": "De reis",
-    "timeline": {
-      "day1": "D-7",
-      "title1": "Inspiratie",
-      "description1": "Het begint allemaal met een verlangen. U lanceert een uitnodiging met stijl. Elegant en duidelijk, het wekt meteen de wens om erbij te zijn.",
-      "day2": "D-5",
-      "title2": "Enthousiasme",
-      "description2": "De uitnodiging circuleert. Uw geliefden sluiten zich aan bij het avontuur zonder registratie. Met één klik kiezen ze hun bijdrage: champagne, salade, dessert. Organisatie wordt vloeiend en natuurlijk.",
-      "day3": "D-1",
-      "title3": "Sereniteit",
-      "description3": "Iedereen heeft zijn missie. CoList genereert automatisch een gepersonaliseerde boodschappenlijst voor elke gast. Geen stress meer, iedereen weet precies wat te doen.",
-      "day4": "De Dag",
-      "title4": "Het Moment",
-      "description4": "U bent niet in de keuken aan het stressen. U bent bij hen. Dat is de CoList-belofte."
-    },
-    "ctaTitle": "Uw volgende diner verdient CoList.",
-    "ctaDescription": "Sluit u aan bij de \"Slow Hosting\" beweging.",
-    "ctaButton": "Creëer een evenement"
-  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "Mijn Evenementen",

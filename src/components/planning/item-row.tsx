@@ -100,7 +100,7 @@ function ItemRowComponent({
         <div className="flex flex-col items-end">
           <p
             className={cn(
-              "text-right text-[10px] font-black uppercase tracking-widest",
+              "text-right text-[11px] font-black uppercase tracking-widest",
               person ? "text-accent" : "text-gray-300"
             )}
           >
@@ -111,7 +111,7 @@ function ItemRowComponent({
         <div className="shrink-0">
           <div
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-500",
+              "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500",
               person
                 ? "border-white/50 bg-white shadow-sm"
                 : "border-dashed border-gray-300 bg-gray-100/30"
@@ -119,7 +119,7 @@ function ItemRowComponent({
           >
             {(() => {
               if (!person) {
-                return <CircleHelp size={14} className="text-gray-300" />;
+                return <CircleHelp size={18} className="text-gray-300" />;
               }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {
@@ -133,7 +133,7 @@ function ItemRowComponent({
                   </div>
                 );
               }
-              return <span className="text-[10px] font-black text-accent">{avatar.value}</span>;
+              return <span className="text-[12px] font-black text-accent">{avatar.value}</span>;
             })()}
           </div>
         </div>

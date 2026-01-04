@@ -66,31 +66,6 @@
       "contact": "Contact"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "L'Art de Recevoir",
-    "heroTitle": "Invitez, partagez,",
-    "heroTitleHighlight": "profitez",
-    "heroDescription": "Chacun sait ce qu'il amène. Vous savez ce qu'il vous reste à faire. Et tout le monde passe un bon moment.",
-    "heroButton": "Commencer l'aventure",
-    "scrollText": "Le voyage",
-    "timeline": {
-      "day1": "J-7",
-      "title1": "L'Inspiration",
-      "description1": "Tout commence par une envie. Vous lancez une invitation qui a de l'allure. Élégante et claire, elle donne instantanément envie de répondre présent.",
-      "day2": "J-5",
-      "title2": "L'Engouement",
-      "description2": "L'invitation circule. Vos proches rejoignent l'aventure sans inscription. En un clic, ils choisissent leur contribution : champagne, salade, dessert. L'organisation devient fluide et naturelle.",
-      "day3": "J-1",
-      "title3": "La Sérénité",
-      "description3": "Chacun sa mission. CoList génère automatiquement une liste de courses personnalisée pour chaque invité. Plus de stress, chacun sait exactement quoi faire.",
-      "day4": "Le Jour J",
-      "title4": "Le Moment",
-      "description4": "Vous n'êtes pas en cuisine à stresser. Vous êtes avec eux. C'est ça, la promesse CoList."
-    },
-    "ctaTitle": "Votre prochain dîner mérite CoList.",
-    "ctaDescription": "Rejoignez le mouvement du \"Slow Hosting\".",
-    "ctaButton": "Créer un événement"
-  },
   "Dashboard": {
     "badge": "Tableau de bord",
     "title": "Mes Événements",

@@ -66,31 +66,6 @@
       "contact": "Kontakt"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "Værtskunsten",
-    "heroTitle": "Vær vært med",
-    "heroTitleHighlight": "elegance",
-    "heroDescription": "Genoplev glæden ved at invitere. Uden støjen, uden stressen. Bare dig og dine kære.",
-    "heroButton": "Start historien",
-    "scrollText": "Rejsen",
-    "timeline": {
-      "day1": "D-7",
-      "title1": "Inspiration",
-      "description1": "Det hele starter med et ønske. Du sender en invitation med stil. Elegant og klar får den øjeblikkeligt folk til at ønske at være der.",
-      "day2": "D-5",
-      "title2": "Entusiasme",
-      "description2": "Invitationen cirkulerer. Dine kære tilslutter sig eventyret uden registrering. Med ét klik vælger de deres bidrag: champagne, salat, dessert. Organisationen bliver flydende og naturlig.",
-      "day3": "D-1",
-      "title3": "Ro",
-      "description3": "Alle har deres mission. CoList genererer automatisk en personlig indkøbsliste til hver gæst. Ikke mere stress, alle ved præcis, hvad de skal gøre.",
-      "day4": "Dagen",
-      "title4": "Øjeblikket",
-      "description4": "Du er ikke i køkkenet og stresser. Du er sammen med dem. Det er CoList-løftet."
-    },
-    "ctaTitle": "Din næste middag fortjener CoList.",
-    "ctaDescription": "Tilslut dig \"Slow Hosting\"-bevægelsen.",
-    "ctaButton": "Opret en begivenhed"
-  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "Mine Begivenheder",

@@ -1,30 +1,15 @@
 "use client";
 
-import type {
-  PlanData,
-  Sheet,
-  Meal,
-  Service,
-} from "@/lib/types"; /* added Meal, Service imports and removed SheetState */
+import type { Meal, Service } from "@/lib/types";
 import { useItemHandlers } from "@/features/items";
 import { useMealHandlers } from "@/features/meals";
 import { useServiceHandlers } from "@/features/services";
 import { usePersonHandlers } from "@/features/people";
 import { useIngredientHandlers } from "@/features/ingredients";
 import { useEventHandlers as useEventDeleteHandler } from "@/features/events";
+import type { PersonHandlerParams } from "@/features/shared/types";
 
-interface UseEventHandlersParams {
-  plan: PlanData;
-  setPlan: React.Dispatch<React.SetStateAction<PlanData>>;
-  slug: string;
-  writeKey?: string;
-  readOnly: boolean;
-  setSheet: (sheet: Sheet | null) => void; /* Sheet type */
-  setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
-  setSelectedPerson?: (id: number | null) => void;
-  session?: any;
-  refetch?: () => Promise<any>;
-}
+type UseEventHandlersParams = PersonHandlerParams;
 
 /**
  * Composite hook that combines all event-related handlers.

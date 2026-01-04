@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, type Locale } from "date-fns";
 import { type Meal } from "@/lib/types";
 import {
   Sparkles,
@@ -32,14 +31,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
 
-const dateLocales: Record<string, any> = {
+const dateLocales: Record<string, Locale> = {
   fr,
   en: enUS,
   el,
@@ -47,47 +44,6 @@ const dateLocales: Record<string, any> = {
   es,
   pt,
 };
-
-const DEFAULT_SERVICE_TYPES = [
-  { id: "apero", label: "Apéro", icon: <GlassWater size={20} /> },
-  { id: "entree", label: "Entrée", icon: <Salad size={20} /> },
-  { id: "plat", label: "Plat", icon: <UtensilsCrossed size={20} /> },
-  { id: "fromage", label: "Fromage", icon: <CircleDot size={20} /> },
-  { id: "dessert", label: "Dessert", icon: <Cake size={20} /> },
-  { id: "boisson", label: "Boissons", icon: <Wine size={20} /> },
-  { id: "autre", label: "Autre", icon: <Package size={20} /> },
-];
-
-const QUICK_OPTIONS = [
-  {
-    id: "apero",
-    label: "Apéro",
-    icon: <GlassWater size={20} />,
-    services: ["Boissons", "Apéritif"] as string[],
-  },
-  { id: "entree", label: "Entrée", icon: <Salad size={20} />, services: ["Entrée"] as string[] },
-  {
-    id: "plat",
-    label: "Plat",
-    icon: <UtensilsCrossed size={20} />,
-    services: ["Plat"] as string[],
-  },
-  { id: "dessert", label: "Dessert", icon: <Cake size={20} />, services: ["Dessert"] as string[] },
-  {
-    id: "fromage",
-    label: "Fromage",
-    icon: <CircleDot size={20} />,
-    services: ["Fromage"] as string[],
-  },
-  {
-    id: "boissons",
-    label: "Boissons",
-    icon: <Wine size={20} />,
-    services: ["Boissons"] as string[],
-  },
-  { id: "autre", label: "Autre", icon: <Package size={20} />, services: ["Divers"] as string[] },
-  { id: "custom", label: "Sur mesure", icon: <Plus size={20} />, services: [] as string[] },
-] as const;
 
 export function MealForm({
   meal,

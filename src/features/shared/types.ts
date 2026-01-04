@@ -1,5 +1,19 @@
 import type { PlanData, Item, Service, Person, Sheet } from "@/lib/types";
 
+/** Extended user type with custom emoji field */
+export interface ExtendedUser {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  emoji?: string | null;
+}
+
+/** Session type with extended user */
+export interface ExtendedSession {
+  user: ExtendedUser;
+}
+
 export interface BaseHandlerParams {
   plan: PlanData;
   setPlan: React.Dispatch<React.SetStateAction<PlanData>>;
@@ -8,8 +22,8 @@ export interface BaseHandlerParams {
   readOnly: boolean;
   setSheet: (sheet: Sheet | null) => void;
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
-  session?: any;
-  refetch?: () => Promise<any>;
+  session?: ExtendedSession | null;
+  refetch?: () => Promise<unknown>;
 }
 
 export type ItemHandlerParams = BaseHandlerParams;

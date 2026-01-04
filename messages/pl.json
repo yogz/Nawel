@@ -66,31 +66,6 @@
       "contact": "Kontakt"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "Sztuka gościny",
-    "heroTitle": "Goszczenie z",
-    "heroTitleHighlight": "elegancją",
-    "heroDescription": "Odkryj na nowo przyjemność zapraszania. Bez zgiełku, bez stresu. Tylko Ty i Twoi bliscy.",
-    "heroButton": "Rozpocznij historię",
-    "scrollText": "Podróż",
-    "timeline": {
-      "day1": "D-7",
-      "title1": "Inspiracja",
-      "description1": "Wszystko zaczyna się od pragnienia. Wysyłasz zaproszenie, które ma styl. Eleganckie i przejrzyste, od razu budzi chęć bycia tam.",
-      "day2": "D-5",
-      "title2": "Entuzjazm",
-      "description2": "Zaproszenie krąży. Twoi bliscy dołączają do przygody bez rejestracji. Jednym kliknięciem wybierają swój wkład: szampan, sałatkę, deser. Organizacja staje się płynna i naturalna.",
-      "day3": "D-1",
-      "title3": "Spokój",
-      "description3": "Każdy ma swoją misję. CoList automatycznie generuje spersonalizowaną listę zakupów dla każdego gościa. Koniec ze stresem, każdy dokładnie wie, co ma robić.",
-      "day4": "Dzień D",
-      "title4": "Chwila",
-      "description4": "Nie stresujemy się w kuchni. Jesteś z nimi. To obietnica CoList."
-    },
-    "ctaTitle": "Twoja kolejna kolacja zasługuje na CoList.",
-    "ctaDescription": "Dołącz do ruchu \"Slow Hosting\".",
-    "ctaButton": "Stwórz wydarzenie"
-  },
   "Dashboard": {
     "badge": "Panel",
     "title": "Moje wydarzenia",

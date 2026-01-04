@@ -66,31 +66,6 @@
       "contact": "Contatto"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "L'Arte di Ospitare",
-    "heroTitle": "Ospita con",
-    "heroTitleHighlight": "eleganza",
-    "heroDescription": "Riscopri il piacere di invitare. Senza rumore, senza stress. Solo tu e i tuoi cari.",
-    "heroButton": "Inizia la storia",
-    "scrollText": "Il viaggio",
-    "timeline": {
-      "day1": "G-7",
-      "title1": "Ispirazione",
-      "description1": "Tutto inizia con un desiderio. Lanci un invito che ha stile. Elegante e chiaro, fa subito venire voglia di esserci.",
-      "day2": "G-5",
-      "title2": "Entusiasmo",
-      "description2": "L'invito circola. I tuoi cari si uniscono all'avventura senza registrazione. Con un clic, scelgono il loro contributo: champagne, insalata, dolce. L'organizzazione diventa fluida e naturale.",
-      "day3": "G-1",
-      "title3": "Serenità",
-      "description3": "Tutti hanno la loro missione. CoList genera automaticamente una lista della spesa personalizzata per ogni ospite. Niente più stress, tutti sanno esattamente cosa fare.",
-      "day4": "Il Giorno",
-      "title4": "Il Momento",
-      "description4": "Non sei in cucina stressato. Sei con loro. Questa è la promessa di CoList."
-    },
-    "ctaTitle": "La tua prossima cena merita CoList.",
-    "ctaDescription": "Unisciti al movimento \"Slow Hosting\".",
-    "ctaButton": "Crea un evento"
-  },
   "Dashboard": {
     "badge": "Pannello",
     "title": "I Miei Eventi",

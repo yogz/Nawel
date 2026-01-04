@@ -66,31 +66,6 @@
       "contact": "Kontakt"
     }
   },
-  "LandingStory": {
-    "heroSubtitle": "Konsten att vara värd",
-    "heroTitle": "Var värd med",
-    "heroTitleHighlight": "elegans",
-    "heroDescription": "Återupptäck glädjen i att bjuda in. Utan brus, utan stress. Bara du och dina nära och kära.",
-    "heroButton": "Börja resan",
-    "scrollText": "Resan",
-    "timeline": {
-      "day1": "D-7",
-      "title1": "Inspiration",
-      "description1": "Allt börjar med en önskan. Du skickar ut en inbjudan som har stil. Elegant och tydlig, den får omedelbart folk att vilja vara där.",
-      "day2": "D-5",
-      "title2": "Entusiasm",
-      "description2": "Inbjudan cirkulerar. Dina nära och kära går med i äventyret utan registrering. Med ett klick väljer de sitt bidrag: champagne, sallad, efterrätt. Organisationen blir flytande och naturlig.",
-      "day3": "D-1",
-      "title3": "Sinnesro",
-      "description3": "Alla har sitt uppdrag. CoList genererar automatiskt en personlig inköpslista för varje gäst. Ingen mer stress, alla vet exakt vad de ska göra.",
-      "day4": "Dagen",
-      "title4": "Stunden",
-      "description4": "Du är inte i köket och stressar. Du är med dem. Det är CoList-löftet."
-    },
-    "ctaTitle": "Din nästa middag förtjänar CoList.",
-    "ctaDescription": "Gå med i \"Slow Hosting\"-rörelsen.",
-    "ctaButton": "Skapa ett evenemang"
-  },
   "Dashboard": {
     "badge": "Instrumentpanel",
     "title": "Mina evenemang",
