@@ -6,7 +6,15 @@ import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
-import { PlusIcon, CalendarPlus, Clock, MapPin, ExternalLink, Download } from "lucide-react";
+import {
+  PlusIcon,
+  CalendarPlus,
+  Clock,
+  MapPin,
+  ExternalLink,
+  Download,
+  Calendar,
+} from "lucide-react";
 import {
   generateGoogleCalendarUrl,
   generateOutlookCalendarUrl,
@@ -180,17 +188,23 @@ export function PlanningTab({
                     </h2>
                   )}
 
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
-                    {meal.time && (
+                  <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold text-gray-400">
+                    {meal.title && meal.date && (
                       <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                        <Calendar className="h-3 w-3" />
+                        {meal.date}
+                      </div>
+                    )}
+                    {meal.time && (
+                      <div className="flex items-center gap-1 text-accent">
+                        <Clock className="h-3 w-3 text-accent" />
                         {meal.time}
                       </div>
                     )}
                     {meal.address && (
                       <div className="flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
-                        <span className="max-w-[150px] truncate">{meal.address}</span>
+                        <span className="max-w-[120px] truncate">{meal.address}</span>
                       </div>
                     )}
                   </div>

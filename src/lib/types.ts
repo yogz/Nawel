@@ -14,6 +14,7 @@ export type Meal = InferSelectModel<typeof meals> & {
 
 export type Service = InferSelectModel<typeof services> & {
   items: Item[];
+  icon?: string | null;
 };
 
 export type Person = InferSelectModel<typeof people> & {
