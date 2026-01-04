@@ -349,11 +349,11 @@ export function Organizer({
 
         {/* Zone de danger en bas de page */}
         {!readOnly && isOwner && (
-          <div className="mb-8 mt-16 px-4">
-            <div className="mx-auto max-w-md">
+          <div className="mb-20 mt-16 px-4">
+            <div className="mx-auto max-w-md text-center">
               <button
                 onClick={() => setShowDangerZone(!showDangerZone)}
-                className="flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600"
+                className="inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-600"
               >
                 <span>{tSettings("dangerZone")}</span>
                 {showDangerZone ? (

@@ -76,9 +76,9 @@ export function OrganizerHeader({
       <header
         className="sticky top-0 z-30 border-b border-purple-200/30 px-4 py-1.5 shadow-sm"
         style={{
-          background: "rgba(255, 255, 255, 0.5)",
-          backdropFilter: "blur(30px)",
-          WebkitBackdropFilter: "blur(30px)",
+          background: "rgba(255, 255, 255, 0.3)",
+          backdropFilter: "blur(40px)",
+          WebkitBackdropFilter: "blur(40px)",
         }}
       >
         <div className="flex items-center justify-between">

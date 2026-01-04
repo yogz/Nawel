@@ -32,9 +32,9 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-purple-200/30 shadow-[0_-4px_16px_rgba(120,80,180,0.08)]"
       style={{
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        background: "rgba(255, 255, 255, 0.6)",
-        backdropFilter: "blur(30px)",
-        WebkitBackdropFilter: "blur(30px)",
+        background: "rgba(255, 255, 255, 0.3)",
+        backdropFilter: "blur(40px)",
+        WebkitBackdropFilter: "blur(40px)",
       }}
     >
       <div className="mx-auto flex max-w-xl items-center justify-around py-2.5">
