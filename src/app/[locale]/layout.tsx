@@ -84,7 +84,28 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
-      <body className="bg-gray-50 antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = 'aurora';
+                  var stored = localStorage.getItem('colist-theme');
+                  if (stored) {
+                    var parsed = JSON.parse(stored);
+                    theme = parsed.id || 'aurora';
+                  }
+                  if (theme !== 'none') {
+                    document.body.classList.add('theme-' + theme);
+                  }
+                } catch (e) {}
+              })()
+            `,
+          }}
+        />
+      </head>
+      <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             {children}

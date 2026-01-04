@@ -247,7 +247,8 @@
         "download": "Télécharger (.ics)"
       },
       "editMeal": "Modifier le repas",
-      "editService": "Modifier le service"
+      "editService": "Modifier le service",
+      "addItem": "Ajouter un article"
     },
     "Service": {
       "editService": "Modifier le service {name}",

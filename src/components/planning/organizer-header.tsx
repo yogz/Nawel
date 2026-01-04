@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { motion } from "framer-motion";
@@ -81,77 +80,67 @@ export function OrganizerHeader({
         </div>
       )}
 
-      <header className="sticky top-0 z-30 border-b border-white/20 bg-white/80 px-4 py-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-xl transition-all">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex flex-1 items-center gap-3 min-w-0">
-            <AppBranding logoSize={32} className="shrink-0" variant="icon" />
-            <h1 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm truncate">
-              {plan.event?.name || "Événement"}
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {readOnly && (
-              <span className="flex items-center justify-center h-10 w-10 rounded-full bg-amber-100 text-amber-700 shadow-sm">
-                <ShieldAlert size={18} />
-              </span>
-            )}
-            {!readOnly && (
-              <Button
-                variant="premium"
-                size="premium"
-                shine
-                onClick={handleShare}
-                icon={copied ? <CheckCircle size={18} /> : <Share size={18} />}
-                iconClassName={cn(
-                  "h-5 w-5 transition-all duration-300",
-                  copied ? "bg-green-500 text-white rotate-12 scale-110" : "bg-transparent text-gray-700"
-                )}
-                className="h-10 w-10 rounded-full p-0 flex items-center justify-center shadow-lg shadow-accent/10 hover:shadow-accent/20 border border-white/40 bg-white/60"
-                title={t("shareTitle")}
-              >
-              </Button>
-            )}
-            <div className="relative h-10 w-10 rounded-full overflow-hidden shadow-lg shadow-accent/10 border border-white/40 flex items-center justify-center bg-white/60">
-              <UserNav />
-            </div>
-          </div>
-        </div>
-
-        {tab === "planning" && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-4"
-          >
-            {/* Citation Area */}
-            <div className="mb-6 px-1">
-              <CitationDisplay seed={plan.event?.name || slug} />
+      <div className="sticky top-2 z-30">
+        <header className="rounded-2xl border border-white/40 bg-white/70 px-4 py-3 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] backdrop-blur-xl transition-all">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5">
+              <AppBranding logoSize={24} className="shrink-0" variant="icon" />
+              <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
+                {plan.event?.name || "Événement"}
+              </h1>
             </div>
 
-            <PlanningFilters
-              plan={plan}
-              planningFilter={planningFilter}
-              setPlanningFilter={setPlanningFilter}
-              setSheet={setSheet}
-              sheet={sheet}
-              unassignedItemsCount={unassignedItemsCount}
-              slug={slug}
-              writeKey={writeKey}
-              readOnly={readOnly}
-            />
-          </motion.div>
-        )}
-      </header>
+            <div className="flex shrink-0 items-center gap-2">
+              {readOnly && (
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-sm">
+                  <ShieldAlert size={14} />
+                </span>
+              )}
+              {!readOnly && (
+                <Button
+                  variant="premium"
+                  size="premium"
+                  shine
+                  onClick={handleShare}
+                  icon={copied ? <CheckCircle size={15} /> : <Share size={15} />}
+                  iconClassName={cn(
+                    "h-3.5 w-3.5 transition-all duration-300",
+                    copied
+                      ? "bg-green-500 text-white rotate-12 scale-110"
+                      : "bg-transparent text-gray-700"
+                  )}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-white/60 p-0 shadow-lg shadow-accent/10 hover:shadow-accent/20"
+                  title={t("shareTitle")}
+                ></Button>
+              )}
+              <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10">
+                <UserNav />
+              </div>
+            </div>
+          </div>
+
+          {tab === "planning" && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1"
+            >
+              <div className="px-0.5">
+                <CitationDisplay seed={plan.event?.name || slug} />
+              </div>
+            </motion.div>
+          )}
+        </header>
+      </div>
     </>
   );
 }
 
-interface PlanningFiltersProps {
+export interface PlanningFiltersProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (sheet: Sheet) => void;
+  setSheet: (set: Sheet) => void;
   sheet: Sheet | null;
   unassignedItemsCount: number;
   slug: string;
@@ -159,7 +148,7 @@ interface PlanningFiltersProps {
   readOnly: boolean;
 }
 
-function PlanningFilters({
+export function PlanningFilters({
   plan,
   planningFilter,
   setPlanningFilter,
@@ -173,30 +162,30 @@ function PlanningFilters({
   const t = useTranslations("EventDashboard.Header.filter");
 
   return (
-    <div className="mt-4 flex w-full items-center gap-3">
+    <div className="mb-2 flex w-full items-center justify-center">
       <Tabs
         value={planningFilter.type}
         onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
-        className="w-full"
+        className="w-full max-w-[280px]"
       >
-        <TabsList className="h-auto w-full rounded-2xl bg-gray-100/50 p-1.5 backdrop-blur-md">
+        <TabsList className="h-9 w-full rounded-full border border-white/20 bg-gray-200/30 p-1 backdrop-blur-md">
           <TabsTrigger
             value="all"
-            className="flex-1 gap-2 rounded-xl py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-[0_4px_20px_-4px_rgba(168,85,247,0.4)] sm:text-xs"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-[9px] font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-xs"
           >
-            <Stars size={16} className="shrink-0" />
+            <Stars size={12} className="shrink-0" />
             <span className="truncate">{t("all")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="unassigned"
-            className="flex-1 gap-2 rounded-xl py-3 text-[11px] font-black uppercase tracking-wider text-gray-500 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-[0_4px_20px_-4px_rgba(168,85,247,0.4)] sm:text-xs"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-[9px] font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-xs"
           >
             <div className="relative">
-              <CircleHelp size={16} className="shrink-0" />
+              <CircleHelp size={12} className="shrink-0" />
               {unassignedItemsCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-2 w-2">
+                <span className="absolute -right-1 -top-1 flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500"></span>
                 </span>
               )}
             </div>

@@ -6,8 +6,8 @@ import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "./auth-modal";
 import { ProfileDrawer } from "./profile-drawer";
-import { User as UserIcon, LogIn, Settings } from "lucide-react";
-import { getPersonEmoji, renderAvatar } from "@/lib/utils";
+import { LogIn } from "lucide-react";
+import { renderAvatar } from "@/lib/utils";
 import { useThemeMode } from "../theme-provider";
 
 export function UserNav() {
@@ -17,7 +17,7 @@ export function UserNav() {
   const [showProfileDrawer, setShowProfileDrawer] = useState(false);
 
   if (isPending) {
-    return <div className="h-10 w-10 animate-pulse rounded-full bg-gray-100" />;
+    return <div className="h-full w-full animate-pulse bg-gray-100" />;
   }
 
   if (!session) {
@@ -28,9 +28,8 @@ export function UserNav() {
           size="premium"
           onClick={() => setShowAuthModal(true)}
           icon={<LogIn size={16} />}
-        >
-          <span className="text-xs font-bold text-gray-700">Se connecter</span>
-        </Button>
+          className="h-10 w-10 rounded-full p-0"
+        ></Button>
         <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
     );
@@ -39,10 +38,10 @@ export function UserNav() {
   const user = session.user;
 
   return (
-    <div className="flex items-center gap-3">
+    <>
       <button
         onClick={() => setShowProfileDrawer(true)}
-        className="group flex items-center gap-2 rounded-full border border-transparent bg-white p-1 pr-4 shadow-sm ring-1 ring-gray-100 transition-all hover:shadow-md hover:ring-gray-300 active:scale-95"
+        className="group relative h-full w-full overflow-hidden transition-all hover:opacity-90 active:scale-95"
       >
         {(() => {
           const avatar = renderAvatar(
@@ -60,30 +59,22 @@ export function UserNav() {
               <Image
                 src={avatar.src}
                 alt={user.name || "User avatar"}
-                width={32}
-                height={32}
-                className="h-8 w-8 rounded-full border border-gray-100 object-cover transition-colors group-hover:border-accent"
+                fill
+                sizes="40px"
+                className="object-cover transition-transform group-hover:scale-110"
               />
             );
           }
 
           return (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xl transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+            <div className="flex h-full w-full items-center justify-center bg-accent/10 text-xl text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
               {avatar.value}
             </div>
           );
         })()}
-        <div className="flex flex-col items-start">
-          <span className="max-w-[100px] truncate text-xs font-bold leading-tight text-gray-700">
-            {user.name}
-          </span>
-          <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase leading-tight tracking-widest text-gray-400 transition-colors group-hover:text-black">
-            <Settings size={8} className="stroke-[3]" /> Profil
-          </span>
-        </div>
       </button>
 
       <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
-    </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@
 import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 
 const authenticatedTabs = [
   { key: "planning", icon: CalendarRange },
@@ -29,11 +30,11 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
 
   return (
-    <nav
-      className="bg-white/90 fixed inset-x-0 bottom-0 z-40 border-t border-purple-200/40 backdrop-blur-md shadow-lg"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-    >
-      <div className="mx-auto flex max-w-xl items-center justify-around py-4">
+    <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4">
+      <nav
+        className="pointer-events-auto flex items-center justify-around gap-1 rounded-full border border-white/20 bg-white/70 p-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5 backdrop-blur-xl transition-all"
+        style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
@@ -42,24 +43,29 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               key={tab.key}
               onClick={() => onChange(tab.key)}
               className={clsx(
-                "group flex flex-col items-center gap-1.5 transition-all active:scale-[0.95]",
-                selected ? "text-accent" : "text-gray-400 transition-colors"
+                "relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all active:scale-[0.95]",
+                selected ? "text-accent" : "text-gray-400"
               )}
             >
+              {selected && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 z-0 rounded-full bg-accent/10"
+                  transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
+                />
+              )}
               <div
                 className={clsx(
-                  "flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300",
-                  selected
-                    ? "bg-accent text-white shadow-lg"
-                    : "bg-transparent group-hover:bg-accent/10"
+                  "relative z-10 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                  selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
                 )}
               >
-                <Icon size={selected ? 24 : 22} strokeWidth={selected ? 2.5 : 2} />
+                <Icon size={selected ? 20 : 20} strokeWidth={selected ? 2.5 : 2} />
               </div>
               <span
                 className={clsx(
-                  "text-[9px] font-black uppercase tracking-widest transition-all",
-                  selected ? "opacity-100 text-accent" : "opacity-70"
+                  "relative z-10 text-[9px] font-black uppercase tracking-tighter transition-all",
+                  selected ? "text-accent opacity-100" : "opacity-60"
                 )}
               >
                 {t(tab.key)}
@@ -67,7 +73,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
             </button>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }

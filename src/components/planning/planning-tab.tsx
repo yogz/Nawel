@@ -5,14 +5,8 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
-import {
-  PlusIcon,
-  CalendarPlus,
-  Clock,
-  MapPin,
-  ExternalLink,
-  Download,
-} from "lucide-react";
+import { PlanningFilters } from "./organizer-header";
+import { PlusIcon, CalendarPlus, Clock, MapPin, ExternalLink, Download } from "lucide-react";
 import {
   generateGoogleCalendarUrl,
   generateOutlookCalendarUrl,
@@ -33,6 +27,8 @@ import { useTranslations } from "next-intl";
 interface PlanningTabProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
+  // eslint-disable-next-line no-unused-vars
+  setPlanningFilter: (filter: PlanningFilter) => void;
   activeItemId: number | null;
   readOnly?: boolean;
   sensors: SensorDescriptor<SensorOptions>[];
@@ -43,6 +39,9 @@ interface PlanningTabProps {
   onCreateItem: (serviceId: number) => void;
   onCreateService: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
+  sheet: Sheet | null;
+  slug: string;
+  writeKey?: string;
 }
 
 const containerVariants: Variants = {
@@ -64,6 +63,7 @@ const itemVariants: Variants = {
 export function PlanningTab({
   plan,
   planningFilter,
+  setPlanningFilter,
   activeItemId,
   readOnly,
   sensors,
@@ -74,6 +74,9 @@ export function PlanningTab({
   onCreateItem,
   onCreateService,
   setSheet,
+  sheet,
+  slug,
+  writeKey,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const { theme } = useThemeMode();
@@ -87,6 +90,15 @@ export function PlanningTab({
   }
 
   const eventName = plan.event?.name || "Événement";
+  const unassignedItemsCount = plan.meals.reduce(
+    (acc, meal) =>
+      acc +
+      meal.services.reduce(
+        (acc2, service) => acc2 + service.items.filter((i) => !i.personId).length,
+        0
+      ),
+    0
+  );
 
   return (
     <DndContext
@@ -99,8 +111,22 @@ export function PlanningTab({
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="space-y-16"
+        className="space-y-2 pt-0"
       >
+        <div className="px-0 pt-0">
+          <PlanningFilters
+            plan={plan}
+            planningFilter={planningFilter}
+            setPlanningFilter={setPlanningFilter}
+            setSheet={setSheet}
+            sheet={sheet}
+            unassignedItemsCount={unassignedItemsCount}
+            slug={slug}
+            writeKey={writeKey}
+            readOnly={!!readOnly}
+          />
+        </div>
+
         {plan.meals.map((meal) => {
           const hasMatch = meal.services.some((s) =>
             s.items.some((i) => {
@@ -126,120 +152,109 @@ export function PlanningTab({
             <motion.div
               key={meal.id}
               variants={itemVariants}
-              className="relative"
+              className="relative flex flex-col gap-3 pt-4"
             >
-              {/* Timeline connector line (visual only) */}
-              {plan.meals.length > 1 && (
-                <div className="absolute left-[29px] top-12 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 to-transparent -z-10" />
-              )}
-
-              <div className="flex items-start gap-5">
-                <div className="relative shrink-0 pt-1">
-                  <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full" />
-                  <div className="relative grid h-14 w-14 place-items-center rounded-2xl border border-white/40 bg-gradient-to-br from-white to-gray-50 text-3xl shadow-lg ring-1 ring-black/5 backdrop-blur-sm">
-                    <span>
-                      {theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}
-                    </span>
+              {/* Meal Title Row - Aligned horizontally */}
+              <div className="flex items-center gap-3 px-1">
+                <div className="relative shrink-0">
+                  <div className="absolute inset-0 rounded-full bg-accent/20 blur-lg" />
+                  <div className="relative grid h-10 w-10 place-items-center rounded-xl border border-white/40 bg-white/40 text-xl shadow-sm backdrop-blur-sm">
+                    <span>{theme === "christmas" ? "🎄" : theme === "aurora" ? "✨" : "🍴"}</span>
                   </div>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col pt-1">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                      {!readOnly ? (
-                        <button
-                          onClick={() => setSheet({ type: "meal-edit", meal })}
-                          className="group flex min-w-0 items-center gap-2 text-left transition-colors"
-                          aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
-                        >
-                          <h2 className="text-3xl font-black tracking-tighter text-gray-800 transition-colors group-hover:text-accent">
-                            {meal.title || meal.date}
-                          </h2>
-                        </button>
-                      ) : (
-                        <h2 className="text-3xl font-black tracking-tighter text-gray-800">
-                          {meal.title || meal.date}
-                        </h2>
-                      )}
+                <div className="flex min-w-0 flex-1 flex-col">
+                  {!readOnly ? (
+                    <button
+                      onClick={() => setSheet({ type: "meal-edit", meal })}
+                      className="group flex min-w-0 items-center justify-between text-left transition-colors"
+                      aria-label={`${t("editMeal")} ${meal.title || meal.date}`}
+                    >
+                      <h2 className="truncate text-xl font-black tracking-tight text-gray-800 transition-colors group-hover:text-accent">
+                        {meal.title || meal.date}
+                      </h2>
+                    </button>
+                  ) : (
+                    <h2 className="truncate text-xl font-black tracking-tight text-gray-800">
+                      {meal.title || meal.date}
+                    </h2>
+                  )}
 
-                      <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-gray-500">
-                        {meal.time && (
-                          <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-600">
-                            <Clock className="h-3.5 w-3.5" />
-                            {meal.time}
-                          </div>
-                        )}
-                        {meal.address && (
-                          <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-gray-600">
-                            <MapPin className="h-3.5 w-3.5" />
-                            <span className="max-w-[200px] truncate">{meal.address}</span>
-                          </div>
-                        )}
+                  <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
+                    {meal.time && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {meal.time}
                       </div>
-                    </div>
-
-                    <div className="flex items-center pt-1">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="premium"
-                            className="h-10 w-10 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-                            icon={<CalendarPlus className="h-5 w-5" />}
-                            iconClassName="h-full w-full bg-transparent text-accent"
-                            aria-label={t("calendar.options")}
-                          />
-                        </PopoverTrigger>
-                        <PopoverContent className="glass w-56 p-2" align="end">
-                          <div className="flex flex-col gap-1">
-                            <button
-                              onClick={() => window.open(calendarUrl, "_blank")}
-                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              {t("calendar.google")}
-                            </button>
-                            <button
-                              onClick={() =>
-                                window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
-                              }
-                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              {t("calendar.outlook")}
-                            </button>
-                            <div className="my-1 border-t border-black/[0.05]" />
-                            <button
-                              onClick={() => downloadIcsFile(meal, eventName)}
-                              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
-                            >
-                              <Download className="h-4 w-4" />
-                              {t("calendar.download")}
-                            </button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
-
-                  {/* Removed duplicate CitationDisplay since it is now in OrganizerHeader */}
-
-                  <div className="space-y-4 mt-8">
-                    {meal.services.map((service) => (
-                      <ServiceSection
-                        key={service.id}
-                        service={service}
-                        people={plan.people}
-                        readOnly={readOnly}
-                        onAssign={(item) => onAssign(item, service.id)}
-                        onDelete={onDelete}
-                        onCreate={() => onCreateItem(service.id)}
-                        onEdit={() => setSheet({ type: "service-edit", service })}
-                        filter={planningFilter}
-                        activeItemId={activeItemId}
-                      />
-                    ))}
+                    )}
+                    {meal.address && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span className="max-w-[150px] truncate">{meal.address}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
+
+                <div className="flex shrink-0 items-center">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="premium"
+                        className="h-8 w-8 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
+                        icon={<CalendarPlus className="h-4 w-4" />}
+                        iconClassName="h-full w-full bg-transparent text-accent"
+                        aria-label={t("calendar.options")}
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent className="glass w-56 p-2" align="end">
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => window.open(calendarUrl, "_blank")}
+                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          {t("calendar.google")}
+                        </button>
+                        <button
+                          onClick={() =>
+                            window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")
+                          }
+                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          {t("calendar.outlook")}
+                        </button>
+                        <div className="my-1 border-t border-black/[0.05]" />
+                        <button
+                          onClick={() => downloadIcsFile(meal, eventName)}
+                          className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold transition-all hover:bg-accent hover:text-white"
+                        >
+                          <Download className="h-4 w-4" />
+                          {t("calendar.download")}
+                        </button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              {/* Service Cards - Now Full Width matching the header */}
+              <div className="space-y-4">
+                {meal.services.map((service) => (
+                  <ServiceSection
+                    key={service.id}
+                    service={service}
+                    people={plan.people}
+                    readOnly={readOnly}
+                    onAssign={(item) => onAssign(item, service.id)}
+                    onDelete={onDelete}
+                    onCreate={() => onCreateItem(service.id)}
+                    onEdit={() => setSheet({ type: "service-edit", service })}
+                    filter={planningFilter}
+                    activeItemId={activeItemId}
+                  />
+                ))}
               </div>
             </motion.div>
           );
@@ -261,10 +276,10 @@ export function PlanningTab({
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
-        <div className="mt-12 flex flex-col gap-4 px-4">
+        <div className="mt-8 flex flex-col gap-4 px-4 pb-12">
           <Button
             variant="premium"
-            className="w-full h-14 rounded-2xl border-none bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.02] hover:shadow-purple-500/40"
+            className="h-12 w-full rounded-2xl border-none bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.02] hover:shadow-purple-500/40"
             icon={<PlusIcon className="text-white" />}
             iconClassName="bg-white/20"
             onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}

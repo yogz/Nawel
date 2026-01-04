@@ -1,6 +1,6 @@
 "use client";
 
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -69,7 +69,6 @@ export function Organizer({
     setPlan,
     tab,
     setTab,
-    logs,
     setLogs,
     planningFilter,
     setPlanningFilter,
@@ -83,7 +82,6 @@ export function Organizer({
     setActiveItemId,
     successMessage,
     setSuccessMessage,
-    logsLoading,
     setLogsLoading,
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
@@ -131,7 +129,6 @@ export function Organizer({
     handleDeleteEvent: originalHandleDeleteEvent,
     handleClaimPerson,
     handleUnclaimPerson,
-    handleCreatePerson,
   } = handlers;
 
   // Wrap handleDeleteEvent
@@ -142,11 +139,8 @@ export function Organizer({
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const tHeader = useTranslations("EventDashboard.Header");
   const tOrganizer = useTranslations("EventDashboard.Organizer");
-  const { theme } = useThemeMode();
   const searchParams = useSearchParams();
-  const [copied, setCopied] = useState(false);
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -274,7 +268,7 @@ export function Organizer({
   }, [tab, slug, setLogs, setLogsLoading]);
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24">
+    <div className="mx-auto flex min-h-screen max-w-3xl flex-col pb-24 text-gray-900">
       <OrganizerHeader
         readOnly={readOnly}
         tab={tab}
@@ -293,12 +287,13 @@ export function Organizer({
         type={successMessage?.type || "success"}
       />
 
-      <main className="flex-1 space-y-4 px-4 py-8">
+      <main className="flex-1 space-y-4 px-3 py-4">
         <Suspense fallback={<TabSkeleton />}>
           {tab === "planning" && (
             <PlanningTab
               plan={plan}
               planningFilter={planningFilter}
+              setPlanningFilter={setPlanningFilter}
               activeItemId={activeItemId}
               readOnly={readOnly}
               sensors={sensors}
@@ -311,6 +306,9 @@ export function Organizer({
               onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
               onCreateService={() => setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })}
               setSheet={setSheet}
+              sheet={sheet}
+              slug={slug}
+              writeKey={effectiveWriteKey}
             />
           )}
 

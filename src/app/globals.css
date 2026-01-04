@@ -506,7 +506,7 @@
   }
 
   body {
-    @apply min-h-screen overflow-x-hidden bg-surface font-sans text-text antialiased transition-colors duration-500;
+    @apply min-h-screen overflow-x-hidden bg-surface font-sans text-text antialiased;
   }
 
   a {
@@ -800,95 +800,13 @@
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --muted-foreground: 0 0% 63.1%;
+    --accent: 0 0% 98%;
+    --accent-foreground: 0 0% 9%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  /* Accessible focus indicators */
-  :focus-visible {
-    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-background;
-  }
-}
-
-/* Safe areas iOS */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-  .pt-safe {
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-
-  .bottom-safe {
-    bottom: env(safe-area-inset-bottom, 0px);
-  }
-}
-
-/* Reduced motion accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Shine effect for premium buttons */
-.btn-shine {
-  position: relative;
-  overflow: hidden;
-  transform: translateZ(0);
-  /* Force GPU for Safari overflow fix */
-}
-
-.btn-shine::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -60%;
-  width: 40%;
-  height: 200%;
-  background: linear-gradient(to right, transparent, var(--shine-color), transparent);
-  transform: rotate(30deg);
-  animation: shine-sweep 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  z-index: 10;
-  pointer-events: none;
-}
-
-@keyframes shine-sweep {
-  0% {
-    left: -60%;
-  }
-
-  20% {
-    left: 140%;
-  }
-
-  100% {
-    left: 140%;
   }
 }
