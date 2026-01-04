@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldAlert, Share2, MoreVertical, Trash2 } from "lucide-react";
+import { ShieldAlert, Share2, MoreVertical, Trash2, Settings, User } from "lucide-react";
 import { type PlanData } from "@/lib/types";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "../theme-provider";
@@ -17,6 +17,9 @@ interface OrganizerHeaderProps {
   writeKey?: string;
   isOwner?: boolean;
   onDeleteEvent?: () => void;
+  userImage?: string | null;
+  isAuthenticated?: boolean;
+  onOpenSettings?: () => void;
 }
 
 export function OrganizerHeader({
@@ -27,10 +30,14 @@ export function OrganizerHeader({
   writeKey,
   isOwner,
   onDeleteEvent,
+  userImage,
+  isAuthenticated,
+  onOpenSettings,
 }: OrganizerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const tOrganizer = useTranslations("EventDashboard.Organizer");
+  const tSettings = useTranslations("EventDashboard.Settings");
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
@@ -92,7 +99,7 @@ export function OrganizerHeader({
               <>
                 <button
                   onClick={handleShare}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
                   title={t("shareTitle")}
                 >
                   <Share2 size={16} className="text-gray-700" strokeWidth={2.5} />
@@ -101,7 +108,7 @@ export function OrganizerHeader({
                   <Popover>
                     <PopoverTrigger asChild>
                       <button
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
                         title="Options"
                       >
                         <MoreVertical size={16} className="text-gray-700" strokeWidth={2.5} />
@@ -120,11 +127,38 @@ export function OrganizerHeader({
                 )}
               </>
             )}
+
+            {/* Profile button */}
+            {isAuthenticated && onOpenSettings && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:shadow-md active:scale-95"
+                    title="Profil"
+                  >
+                    {userImage ? (
+                      <img src={userImage} alt="Profil" className="h-full w-full object-cover" />
+                    ) : (
+                      <User size={16} className="text-gray-700" strokeWidth={2.5} />
+                    )}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 p-2" align="end">
+                  <button
+                    onClick={onOpenSettings}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    <Settings size={14} />
+                    {tSettings("title")}
+                  </button>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
 
         {tab === "planning" && (
-          <div className="mt-2 mb-1.5">
+          <div className="mb-1.5 mt-2">
             <h1 className="text-xl font-black tracking-tight text-text">
               {plan.event?.name || "Événement"} ✨
             </h1>
@@ -132,9 +166,7 @@ export function OrganizerHeader({
               <CitationDisplay seed={plan.event?.name || "Événement"} />
             </div>
             {plan.event?.description && (
-              <p className="mt-0.5 text-xs text-text/70">
-                {plan.event.description}
-              </p>
+              <p className="text-text/70 mt-0.5 text-xs">{plan.event.description}</p>
             )}
           </div>
         )}

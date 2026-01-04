@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarRange, Settings, Users, ShoppingCart, User } from "lucide-react";
+import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 
@@ -8,7 +8,7 @@ const authenticatedTabs = [
   { key: "planning", icon: CalendarRange },
   { key: "people", icon: Users },
   { key: "shopping", icon: ShoppingCart },
-  { key: "profile", icon: User },
+  { key: "settings", icon: Settings },
 ] as const;
 
 const guestTabs = [
@@ -17,16 +17,15 @@ const guestTabs = [
   { key: "settings", icon: Settings },
 ] as const;
 
-export type TabKey = "planning" | "people" | "shopping" | "settings" | "profile";
+export type TabKey = "planning" | "people" | "shopping" | "settings";
 
 interface TabBarProps {
   active: TabKey;
   onChange: (key: TabKey) => void;
   isAuthenticated?: boolean;
-  userImage?: string | null;
 }
 
-export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarProps) {
+export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
 
@@ -44,7 +43,6 @@ export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarP
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
-          const isProfile = tab.key === "profile";
 
           return (
             <button
@@ -58,27 +56,17 @@ export function TabBar({ active, onChange, isAuthenticated, userImage }: TabBarP
               <div
                 className={clsx(
                   "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300",
-                  isProfile && userImage
-                    ? "overflow-hidden ring-2 ring-gray-200"
-                    : selected
+                  selected
                     ? "bg-accent text-white shadow-lg"
                     : "bg-transparent group-hover:bg-accent/10"
                 )}
               >
-                {isProfile && userImage ? (
-                  <img
-                    src={userImage}
-                    alt="Profile"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <Icon size={selected ? 22 : 20} strokeWidth={selected ? 2.5 : 2} />
-                )}
+                <Icon size={selected ? 22 : 20} strokeWidth={selected ? 2.5 : 2} />
               </div>
               <span
                 className={clsx(
                   "text-[8.5px] font-black uppercase tracking-widest transition-all",
-                  selected ? "opacity-100 text-accent" : "opacity-60"
+                  selected ? "text-accent opacity-100" : "opacity-60"
                 )}
               >
                 {t(tab.key)}

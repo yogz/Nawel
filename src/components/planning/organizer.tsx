@@ -282,6 +282,9 @@ export function Organizer({
         writeKey={effectiveWriteKey}
         isOwner={isOwner}
         onDeleteEvent={() => setDeleteDialogOpen(true)}
+        userImage={session?.user?.image}
+        isAuthenticated={!!session?.user}
+        onOpenSettings={() => setTab("settings")}
       />
 
       <SuccessToast
@@ -338,18 +341,13 @@ export function Organizer({
             />
           )}
 
-          {tab === "profile" && (
+          {tab === "settings" && (
             <SettingsTab onDeleteEvent={handleDeleteEvent} readOnly={readOnly} />
           )}
         </Suspense>
       </main>
 
-      <TabBar
-        active={tab}
-        onChange={setTab}
-        isAuthenticated={!!session?.user}
-        userImage={session?.user?.image}
-      />
+      <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
 
       <DeleteEventDialog
         open={deleteDialogOpen}
