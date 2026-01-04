@@ -63,7 +63,7 @@ export const ServiceSection = memo(function ServiceSection({
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
             {service.icon || getServiceIcon(service.title)}
           </div>
-          <h3 className="text-sm font-black uppercase tracking-[0.15em] text-[#1a1523]">
+          <h3 className="text-sm font-black uppercase tracking-[0.15em] text-black">
             {service.title}
           </h3>
         </div>
