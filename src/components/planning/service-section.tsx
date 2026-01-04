@@ -100,11 +100,11 @@ export const ServiceSection = memo(function ServiceSection({
         {!readOnly && (
           <Button
             variant="ghost"
-            className="group mt-2 h-10 w-full rounded-xl border border-dashed border-gray-200 bg-gray-50/30 transition-all hover:border-accent/30 hover:bg-white"
+            className="group mt-2 h-10 w-full rounded-xl border border-black/[0.03] bg-black/[0.01] transition-all hover:border-accent/20 hover:bg-white hover:shadow-sm"
             onClick={onCreate}
           >
             <div className="flex items-center gap-2">
-              <PlusIcon size={14} className="text-gray-400 group-hover:text-accent" />
+              <PlusIcon size={14} className="text-gray-300 group-hover:text-accent" />
               <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 group-hover:text-accent">
                 {t("addItem")}
               </span>
