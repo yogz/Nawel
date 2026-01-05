@@ -158,10 +158,7 @@ function ItemRowComponent({
               }}
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-white group-hover:text-accent">
-                <span className="relative flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75 group-hover:bg-white"></span>
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
-                </span>
+                <span className="inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
               </div>
               <span className="text-xs font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white sm:text-[10px]">
                 {t("takeAction")}
@@ -181,12 +178,7 @@ function ItemRowComponent({
           >
             {(() => {
               if (!person) {
-                return (
-                  <div className="relative">
-                    <Plus size={16} className="text-accent" />
-                    <div className="absolute -inset-1 animate-pulse rounded-full bg-accent/20" />
-                  </div>
-                );
+                return <Plus size={16} className="text-accent" />;
               }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {
