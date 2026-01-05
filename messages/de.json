@@ -474,7 +474,11 @@
     "acceptAll": "Alle akzeptieren",
     "rejectAll": "Alle ablehnen",
     "customize": "Anpassen",
-    "legalNotice": "Durch Fortsetzung akzeptieren Sie unsere Verwendung von Cookies gemäß unserer Datenschutzrichtlinie."
+    "saveChoices": "Meine Auswahl speichern",
+    "back": "Zurück",
+    "essentialTitle": "Essenzielle Cookies",
+    "essentialDescription": "Erforderlich für das Funktionieren der Anwendung.",
+    "legalNotice": "Durch das Fortfahren akzeptieren Sie unsere Verwendung von Cookies gemäß unserer Datenschutzrichtlinie."
   },
   "Translations": {
     "person": {

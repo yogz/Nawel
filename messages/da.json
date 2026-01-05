@@ -482,6 +482,10 @@
     "acceptAll": "Acceptér alle",
     "rejectAll": "Afvis alle",
     "customize": "Tilpas",
+    "saveChoices": "Gem mine valg",
+    "back": "Tilbage",
+    "essentialTitle": "Essentielle cookies",
+    "essentialDescription": "Nødvendige for at applikationen kan fungere.",
     "legalNotice": "Ved at fortsætte accepterer du vores brug af cookies i overensstemmelse med vores privatlivspolitik."
   },
   "Translations": {

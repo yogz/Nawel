@@ -482,7 +482,11 @@
     "acceptAll": "Aceitar tudo",
     "rejectAll": "Rejeitar tudo",
     "customize": "Personalizar",
-    "legalNotice": "Ao continuar, você aceita nosso uso de cookies de acordo com nossa política de privacidade."
+    "saveChoices": "Guardar as minhas escolhas",
+    "back": "Voltar",
+    "essentialTitle": "Cookies essenciais",
+    "essentialDescription": "Necessários para o funcionamento da aplicação.",
+    "legalNotice": "Ao continuar, aceitas o nosso uso de cookies de acordo com a nossa política de privacidade."
   },
   "Translations": {
     "person": {

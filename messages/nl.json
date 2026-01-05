@@ -482,6 +482,10 @@
     "acceptAll": "Alles accepteren",
     "rejectAll": "Alles weigeren",
     "customize": "Aanpassen",
+    "saveChoices": "Mijn keuzes opslaan",
+    "back": "Terug",
+    "essentialTitle": "Essentiële cookies",
+    "essentialDescription": "Noodzakelijk voor het functioneren van de applicatie.",
     "legalNotice": "Door verder te gaan, accepteert u ons gebruik van cookies in overeenstemming met ons privacybeleid."
   },
   "Translations": {

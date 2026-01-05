@@ -481,7 +481,11 @@
     "securityDescription": "Twoje dane są zanonimizowane i nigdy nie są udostępniane osobom trzecim",
     "acceptAll": "Zaakceptuj wszystko",
     "rejectAll": "Odrzuć wszystko",
-    "customize": "Dostosuj",
+    "customize": "Personalizuj",
+    "saveChoices": "Zapisz moje wybory",
+    "back": "Wróć",
+    "essentialTitle": "Niezbędne pliki cookie",
+    "essentialDescription": "Niezbędne do działania aplikacji.",
     "legalNotice": "Kontynuując, akceptujesz nasze użycie plików cookie zgodnie z naszą polityką prywatności."
   },
   "Translations": {

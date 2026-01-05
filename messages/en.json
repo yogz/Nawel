@@ -484,6 +484,10 @@
     "acceptAll": "Accept all",
     "rejectAll": "Reject all",
     "customize": "Customize",
+    "saveChoices": "Save my choices",
+    "back": "Back",
+    "essentialTitle": "Essential cookies",
+    "essentialDescription": "Required for the application to function.",
     "legalNotice": "By continuing, you accept our use of cookies in accordance with our privacy policy."
   },
   "Translations": {

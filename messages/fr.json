@@ -497,6 +497,10 @@
     "acceptAll": "Tout accepter",
     "rejectAll": "Tout refuser",
     "customize": "Personnaliser",
+    "saveChoices": "Enregistrer mes choix",
+    "back": "Retour",
+    "essentialTitle": "Cookies essentiels",
+    "essentialDescription": "Nécessaires au fonctionnement de l'application.",
     "legalNotice": "En continuant, vous acceptez notre utilisation des cookies conformément à notre politique de confidentialité."
   },
   "Translations": {

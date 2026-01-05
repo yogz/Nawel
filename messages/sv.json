@@ -482,6 +482,10 @@
     "acceptAll": "Acceptera allt",
     "rejectAll": "Avvisa allt",
     "customize": "Anpassa",
+    "saveChoices": "Spara mina val",
+    "back": "Tillbaka",
+    "essentialTitle": "Nödvändiga kakor",
+    "essentialDescription": "Nödvändiga för att applikationen ska fungera.",
     "legalNotice": "Genom att fortsätta accepterar du vår användning av cookies i enlighet med vår integritetspolicy."
   },
   "Translations": {

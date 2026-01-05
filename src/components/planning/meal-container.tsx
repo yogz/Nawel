@@ -71,19 +71,21 @@ export function MealContainer({
       {/* Meal Info Row - Premium & Compact */}
       <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/40 bg-white/40 p-4 shadow-sm backdrop-blur-sm">
         <div className="flex min-w-0 flex-1 flex-col">
-          <div
-            className={cn("group flex items-center gap-2", !readOnly && "cursor-pointer")}
+          <button
+            type="button"
+            className={cn("group flex items-center gap-2 text-left", !readOnly && "cursor-pointer")}
             onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
+            disabled={readOnly}
           >
             <h2 className="text-gradient-header truncate text-lg font-black tracking-tight">
               {meal.title || meal.date}
             </h2>
             {!readOnly && (
-              <button className="shrink-0 text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100">
+              <span className="shrink-0 text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
                 <Edit3 className="h-3.5 w-3.5" />
-              </button>
+              </span>
             )}
-          </div>
+          </button>
 
           <div className="mt-1.5 flex flex-col gap-1 text-[11px]">
             {fullDate && (
