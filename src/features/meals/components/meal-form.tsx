@@ -14,13 +14,9 @@ import {
   Loader2,
   Trash2,
   UtensilsCrossed,
-  Salad,
+  Utensils,
   GlassWater,
-  Cake,
-  Wine,
-  Package,
-  CircleDot,
-  Plus,
+  FilePlus,
   Clock,
   MapPin,
   ChevronDown,
@@ -51,6 +47,8 @@ export function MealForm({
   meal,
   defaultAdults = 0,
   defaultChildren = 0,
+  defaultDate,
+  defaultAddress,
   onSubmit,
   onDelete,
   onClose,
@@ -58,6 +56,8 @@ export function MealForm({
   meal?: Meal;
   defaultAdults?: number;
   defaultChildren?: number;
+  defaultDate?: string;
+  defaultAddress?: string;
   onSubmit: (
     date: string,
     title: string,
@@ -72,80 +72,54 @@ export function MealForm({
 }) {
   const t = useTranslations("EventDashboard.Meal");
   const tCommon = useTranslations("EventDashboard.Shared");
+  const tCreateEvent = useTranslations("CreateEvent");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
   const dateLocale = dateLocales[currentLocale] || fr;
 
-  const DEFAULT_SERVICE_TYPES = [
-    { id: "apero", label: t("serviceTypes.apero"), icon: <GlassWater size={20} /> },
-    { id: "entree", label: t("serviceTypes.entree"), icon: <Salad size={20} /> },
-    { id: "plat", label: t("serviceTypes.plat"), icon: <UtensilsCrossed size={20} /> },
-    { id: "fromage", label: t("serviceTypes.fromage"), icon: <CircleDot size={20} /> },
-    { id: "dessert", label: t("serviceTypes.dessert"), icon: <Cake size={20} /> },
-    { id: "boisson", label: t("serviceTypes.boisson"), icon: <Wine size={20} /> },
-    { id: "autre", label: t("serviceTypes.autre"), icon: <Package size={20} /> },
-  ];
-
-  const QUICK_OPTIONS = [
+  const CREATION_MODES = [
+    {
+      id: "total",
+      label: tCreateEvent("modeTotalLabel"),
+      desc: tCreateEvent("modeTotalDesc"),
+      icon: <UtensilsCrossed size={20} />,
+      services: ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"],
+    },
+    {
+      id: "classique",
+      label: tCreateEvent("modeClassicLabel"),
+      desc: tCreateEvent("modeClassicDesc"),
+      icon: <Utensils size={20} />,
+      services: ["Entree", "Plats", "Dessert"],
+    },
     {
       id: "apero",
-      label: t("serviceTypes.apero"),
+      label: tCreateEvent("modeAperoLabel"),
+      desc: tCreateEvent("modeAperoDesc"),
       icon: <GlassWater size={20} />,
-      services: [t("serviceTypes.boissons"), t("serviceTypes.apero")],
+      services: ["Aperitif", "Boissons"],
     },
     {
-      id: "entree",
-      label: t("serviceTypes.entree"),
-      icon: <Salad size={20} />,
-      services: [t("serviceTypes.entree")],
-    },
-    {
-      id: "plat",
-      label: t("serviceTypes.plat"),
-      icon: <UtensilsCrossed size={20} />,
-      services: [t("serviceTypes.plat")],
-    },
-    {
-      id: "dessert",
-      label: t("serviceTypes.dessert"),
-      icon: <Cake size={20} />,
-      services: [t("serviceTypes.dessert")],
-    },
-    {
-      id: "fromage",
-      label: t("serviceTypes.fromage"),
-      icon: <CircleDot size={20} />,
-      services: [t("serviceTypes.fromage")],
-    },
-    {
-      id: "boissons",
-      label: t("serviceTypes.boissons"),
-      icon: <Wine size={20} />,
-      services: [t("serviceTypes.boissons")],
-    },
-    {
-      id: "autre",
-      label: t("serviceTypes.autre"),
-      icon: <Package size={20} />,
-      services: [t("serviceTypes.divers")],
-    },
-    {
-      id: "custom",
-      label: t("serviceTypes.custom"),
-      icon: <Plus size={20} />,
+      id: "zero",
+      label: tCreateEvent("modeZeroLabel"),
+      desc: tCreateEvent("modeZeroDesc"),
+      icon: <FilePlus size={20} />,
       services: [],
     },
   ] as const;
 
   const [step, setStep] = useState(1);
-  const [date, setDate] = useState<Date | undefined>(meal?.date ? new Date(meal.date) : undefined);
+  const [date, setDate] = useState<Date | undefined>(
+    meal?.date ? new Date(meal.date) : defaultDate ? new Date(defaultDate) : undefined
+  );
   const [title, setTitle] = useState(meal?.title || "");
   const [adults, setAdults] = useState(meal?.adults ?? defaultAdults);
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [time, setTime] = useState(meal?.time || "");
-  const [address, setAddress] = useState(meal?.address || "");
-  const [quickOption, setQuickOption] = useState<string>("plat");
-  const [selectedServices, setSelectedServices] = useState<string[]>(["plat"]);
+  const [address, setAddress] = useState(meal?.address || defaultAddress || "");
+  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">(
+    "total"
+  );
   const [showDetails, setShowDetails] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -213,24 +187,11 @@ export function MealForm({
       if (isEditMode) {
         onSubmit(formattedDate, title, undefined, adults, children, time, address);
       } else {
-        let servicesToCreate: string[];
-        if (quickOption === "custom") {
-          servicesToCreate = selectedServices.map(
-            (id) => DEFAULT_SERVICE_TYPES.find((m) => m.id === id)?.label || id
-          );
-        } else {
-          const option = QUICK_OPTIONS.find((o) => o.id === quickOption);
-          servicesToCreate = option ? [...option.services] : ["Service"];
-        }
+        const mode = CREATION_MODES.find((m) => m.id === creationMode);
+        const servicesToCreate = mode ? [...mode.services] : [];
         onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
       }
     });
-  };
-
-  const toggleService = (id: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
-    );
   };
 
   const canGoNext = () => {
@@ -470,100 +431,55 @@ export function MealForm({
 
       {step === 2 && !isEditMode && (
         <div className="space-y-4">
-          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-            {t("organisationLabel")}
-          </Label>
-
-          <div className="space-y-3">
-            {QUICK_OPTIONS.map((opt) => {
-              const isSelected = quickOption === opt.id;
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setQuickOption(opt.id)}
-                  className={clsx(
-                    "flex w-full items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all active:scale-[0.98]",
-                    isSelected
-                      ? "border-accent bg-accent/5 shadow-sm ring-1 ring-accent/20"
-                      : "border-gray-50 bg-white hover:border-gray-200"
-                  )}
-                >
-                  <div
-                    className={clsx(
-                      "flex h-12 w-12 items-center justify-center rounded-full text-2xl transition-all duration-300",
-                      isSelected ? "bg-accent text-white shadow-lg shadow-accent/20" : "bg-gray-100"
-                    )}
-                  >
-                    {opt.icon}
-                  </div>
-                  <div className="flex-1">
-                    <span
-                      className={clsx(
-                        "block text-sm font-black uppercase tracking-widest",
-                        isSelected ? "text-accent" : "text-gray-700"
-                      )}
-                    >
-                      {opt.label}
-                    </span>
-                    {opt.services.length > 0 && (
-                      <span className="mt-0.5 block text-[10px] font-bold text-gray-400">
-                        {opt.services.join(" • ")}
-                      </span>
-                    )}
-                  </div>
-                  <div
-                    className={clsx(
-                      "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300",
-                      isSelected ? "border-accent bg-accent" : "border-gray-200 bg-white"
-                    )}
-                  >
-                    {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-white shadow-sm" />}
-                  </div>
-                </button>
-              );
-            })}
+          <div className="space-y-2 pb-2 text-center">
+            <h4 className="text-sm font-bold text-gray-900">{tCreateEvent("menuDescription")}</h4>
           </div>
 
-          {quickOption === "custom" && (
-            <div className="space-y-3 pt-2 animate-in fade-in slide-in-from-top-2">
-              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                {t("serviceSelectionLabel")}
-              </Label>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {DEFAULT_SERVICE_TYPES.map((type) => {
-                  const isSelected = selectedServices.includes(type.id);
-                  return (
-                    <button
-                      key={type.id}
-                      type="button"
-                      onClick={() => toggleService(type.id)}
-                      className={clsx(
-                        "flex items-center gap-2 rounded-xl border-2 p-2 text-left transition-all active:scale-95",
-                        isSelected
-                          ? "border-accent bg-accent/5 text-accent shadow-sm"
-                          : "border-gray-50 text-gray-500 hover:border-gray-200"
-                      )}
-                    >
-                      <div
-                        className={clsx(
-                          "flex h-7 w-7 items-center justify-center rounded-lg text-sm transition-all",
-                          isSelected
-                            ? "bg-accent text-white shadow-md shadow-accent/20"
-                            : "bg-gray-100"
-                        )}
-                      >
-                        {type.icon}
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest">
-                        {type.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <div className="grid grid-cols-1 gap-3">
+            {CREATION_MODES.map((mode) => (
+              <button
+                key={mode.id}
+                type="button"
+                onClick={() => setCreationMode(mode.id)}
+                className={clsx(
+                  "group flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all duration-300",
+                  creationMode === mode.id
+                    ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                    : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
+                )}
+              >
+                <div
+                  className={clsx(
+                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] transition-colors duration-300",
+                    creationMode === mode.id
+                      ? "bg-accent text-white"
+                      : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
+                  )}
+                >
+                  {mode.icon}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span
+                    className={clsx(
+                      "block text-sm font-bold transition-colors",
+                      creationMode === mode.id ? "text-accent" : "text-gray-900"
+                    )}
+                  >
+                    {mode.label}
+                  </span>
+                  <span className="block truncate text-xs text-gray-500">{mode.desc}</span>
+                </div>
+                <div
+                  className={clsx(
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
+                    creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
+                  )}
+                >
+                  {creationMode === mode.id && <div className="h-2 w-2 rounded-full bg-white" />}
+                </div>
+              </button>
+            ))}
+          </div>
 
           <div className="flex gap-3 pt-4">
             <Button
@@ -581,7 +497,7 @@ export function MealForm({
               type="button"
               variant="premium"
               onClick={handleSubmit}
-              disabled={(quickOption === "custom" && selectedServices.length === 0) || isPending}
+              disabled={isPending}
               className="flex-[2] py-6 pr-8 shadow-md"
               icon={isPending ? <Loader2 className="animate-spin" /> : <Sparkles />}
               shine={!isPending}

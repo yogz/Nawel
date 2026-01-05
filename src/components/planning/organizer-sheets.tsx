@@ -141,6 +141,53 @@ export function OrganizerSheets({
     return found?.item.ingredients || sheet.item.ingredients;
   }, [sheet, findItem]);
 
+  // Calculate default service values from the selected meal
+  const serviceDefaults = useMemo(() => {
+    if (sheet?.type !== "service") {
+      return { adults: 0, children: 0, peopleCount: 0 };
+    }
+    if (sheet.mealId === -1) {
+      // New meal: use event defaults
+      return {
+        adults: plan.event?.adults ?? 0,
+        children: plan.event?.children ?? 0,
+        peopleCount: (plan.event?.adults ?? 0) + (plan.event?.children ?? 0),
+      };
+    }
+    // Existing meal: use meal values
+    const meal = plan.meals.find((m) => m.id === sheet.mealId);
+    if (meal) {
+      return {
+        adults: meal.adults,
+        children: meal.children,
+        peopleCount: meal.adults + meal.children,
+      };
+    }
+    // Fallback to event values if meal not found
+    return {
+      adults: plan.event?.adults ?? 0,
+      children: plan.event?.children ?? 0,
+      peopleCount: (plan.event?.adults ?? 0) + (plan.event?.children ?? 0),
+    };
+  }, [sheet, plan.meals, plan.event]);
+
+  // Calculate default meal values from event and last meal
+  const mealDefaults = useMemo(() => {
+    if (sheet?.type !== "meal-create") {
+      return { adults: 0, children: 0, date: undefined, address: undefined };
+    }
+    // Get the last meal's address if available
+    const lastMeal = plan.meals.length > 0 ? plan.meals[plan.meals.length - 1] : null;
+    // Use today's date as default
+    const today = new Date().toISOString().split("T")[0];
+    return {
+      adults: plan.event?.adults ?? 0,
+      children: plan.event?.children ?? 0,
+      date: today,
+      address: lastMeal?.address || undefined,
+    };
+  }, [sheet, plan.meals, plan.event]);
+
   const getTitle = () => {
     if (sheet?.type === "item") {
       return sheet.item ? t("editItem") : t("addItem");
@@ -294,9 +341,9 @@ export function OrganizerSheets({
             <ServiceForm
               meals={plan.meals}
               defaultMealId={sheet.mealId}
-              defaultAdults={plan.event?.adults || 0}
-              defaultChildren={plan.event?.children || 0}
-              defaultPeopleCount={(plan.event?.adults || 0) + (plan.event?.children || 0)}
+              defaultAdults={serviceDefaults.adults}
+              defaultChildren={serviceDefaults.children}
+              defaultPeopleCount={serviceDefaults.peopleCount}
               forceNewMeal={sheet.mealId === -1}
               readOnly={readOnly}
               onSubmit={async (
@@ -351,8 +398,10 @@ export function OrganizerSheets({
           )}
           {sheet?.type === "meal-create" && (
             <MealForm
-              defaultAdults={plan.event?.adults || 0}
-              defaultChildren={plan.event?.children || 0}
+              defaultAdults={mealDefaults.adults}
+              defaultChildren={mealDefaults.children}
+              defaultDate={mealDefaults.date}
+              defaultAddress={mealDefaults.address}
               onSubmit={(
                 date: string,
                 title?: string,
