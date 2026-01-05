@@ -30,6 +30,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { getPersonEmoji, THEME_EMOJIS, renderAvatar } from "@/lib/utils";
 import { LanguageSelector } from "../common/language-selector";
 import { WarningBanner } from "../common/warning-banner";
+import { ConfirmDeleteDialog } from "../common/confirm-delete-dialog";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -53,6 +54,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -479,7 +481,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                               )
                             }
                             iconClassName="bg-red-200 text-red-600 group-hover:bg-red-600 group-hover:text-white"
-                            onClick={handleDeleteAccount}
+                            onClick={() => setShowDeleteDialog(true)}
                             disabled={isDeleting}
                             shine
                           >
@@ -505,6 +507,16 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           </div>
         </div>
       </DrawerContent>
+      <ConfirmDeleteDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        title={tProfile("deleteAccount")}
+        description={tProfile("deleteWarning")}
+        onConfirm={handleDeleteAccount}
+        isPending={isDeleting}
+        confirmLabel={tProfile("confirmDelete")}
+        cancelLabel={tCommon("cancel")}
+      />
     </Drawer>
   );
 }
