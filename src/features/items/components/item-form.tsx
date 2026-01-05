@@ -243,6 +243,27 @@ export function ItemForm({
         />
       </div>
 
+      {/* Note - moved out of more options */}
+      <div className="space-y-2">
+        <Label
+          htmlFor="item-note"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          {t("note")}
+        </Label>
+        <Input
+          id="item-note"
+          placeholder={t("notePlaceholder")}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          onBlur={handleBlurSave}
+          disabled={readOnly}
+          autoCapitalize="sentences"
+          enterKeyHint="done"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
+        />
+      </div>
+
       {/* Quick details row */}
       <div className="flex gap-2">
         <Input
@@ -394,22 +415,6 @@ export function ItemForm({
 
       {showDetails && (
         <div className="space-y-4 border-t border-gray-100 pt-4">
-          <div className="space-y-2">
-            <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
-              {t("note")}
-            </Label>
-            <Input
-              placeholder={t("notePlaceholder")}
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              onBlur={handleBlurSave}
-              disabled={readOnly}
-              autoCapitalize="sentences"
-              enterKeyHint="done"
-              className="h-11 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
-            />
-          </div>
-
           {isEditMode && allServices && allServices.length > 1 && (
             <div className="space-y-2">
               <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
