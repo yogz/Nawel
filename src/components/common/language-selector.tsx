@@ -101,7 +101,7 @@ export function LanguageSelector({
         </button>
 
         <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerContent className="px-4 pb-8">
+          <DrawerContent className="px-4 pb-32">
             <DrawerHeader className="px-0 text-left">
               <div className="flex items-center justify-between">
                 <DrawerTitle className="text-xs font-black uppercase tracking-widest text-gray-400">

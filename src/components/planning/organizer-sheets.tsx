@@ -195,7 +195,7 @@ export function OrganizerSheets({
             </div>
           </DrawerHeader>
         )}
-        <div className="scrollbar-none overflow-y-auto pb-8">
+        <div className="scrollbar-none flex-1 overflow-y-auto pb-40">
           {sheet?.type === "item" && (
             <ItemForm
               people={plan.people}
