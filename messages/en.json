@@ -17,7 +17,12 @@
       "la": "Latin",
       "sv": "Swedish",
       "da": "Danish"
-    }
+    },
+    "cancel": "Cancel",
+    "close": "Close",
+    "chooseLanguage": "Choose a language",
+    "searchPlaceholder": "Search...",
+    "noLanguageFound": "No language found"
   },
   "Landing": {
     "badge": "The new way to celebrate",

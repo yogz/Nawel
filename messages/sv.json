@@ -17,7 +17,12 @@
       "la": "Latin",
       "sv": "Swedish",
       "da": "Danish"
-    }
+    },
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "chooseLanguage": "Välj ett språk",
+    "searchPlaceholder": "Sök...",
+    "noLanguageFound": "Inget språk hittades"
   },
   "Landing": {
     "badge": "Det nya sättet att fira",

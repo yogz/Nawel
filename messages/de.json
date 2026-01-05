@@ -17,7 +17,12 @@
       "la": "Latein",
       "sv": "Schwedisch",
       "da": "Dänisch"
-    }
+    },
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "chooseLanguage": "Sprache wählen",
+    "searchPlaceholder": "Suchen...",
+    "noLanguageFound": "Keine Sprache gefunden"
   },
   "Landing": {
     "badge": "Die neue Art zu feiern",

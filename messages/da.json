@@ -17,7 +17,12 @@
       "la": "Latin",
       "sv": "Swedish",
       "da": "Danish"
-    }
+    },
+    "cancel": "Annuller",
+    "close": "Luk",
+    "chooseLanguage": "Vælg et sprog",
+    "searchPlaceholder": "Søg...",
+    "noLanguageFound": "Intet sprog fundet"
   },
   "Landing": {
     "badge": "Den nye måde at fejre på",

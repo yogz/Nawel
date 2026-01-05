@@ -17,7 +17,12 @@
       "la": "Latin",
       "sv": "Swedish",
       "da": "Danish"
-    }
+    },
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "chooseLanguage": "Kies een taal",
+    "searchPlaceholder": "Zoeken...",
+    "noLanguageFound": "Geen taal gevonden"
   },
   "Landing": {
     "badge": "De nieuwe manier van vieren",

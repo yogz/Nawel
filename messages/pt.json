@@ -17,7 +17,12 @@
       "la": "Latim",
       "sv": "Sueco",
       "da": "Dinamarquês"
-    }
+    },
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "chooseLanguage": "Escolher um idioma",
+    "searchPlaceholder": "Pesquisar...",
+    "noLanguageFound": "Nenhum idioma encontrado"
   },
   "Landing": {
     "badge": "A nova forma de festejar",

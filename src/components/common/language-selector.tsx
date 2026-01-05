@@ -114,7 +114,7 @@ export function LanguageSelector({
                       setSearchQuery("");
                     }}
                     className="rounded-full bg-gray-100 p-1.5 text-gray-500 transition-colors hover:bg-gray-200 active:scale-95"
-                    aria-label="Fermer"
+                    aria-label={t("close") || "Fermer"}
                   >
                     <Globe size={14} />
                   </button>
