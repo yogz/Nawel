@@ -161,7 +161,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           {/* Main Content */}
           <div
             className={clsx(
-              "scrollbar-none absolute inset-0 overflow-y-auto transition-transform duration-300 ease-in-out",
+              "scrollbar-none relative w-full transition-transform duration-300 ease-in-out",
               showAdvanced ? "-translate-x-full" : "translate-x-0"
             )}
           >
