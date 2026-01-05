@@ -193,8 +193,12 @@ export function PeopleTab({
                                 e.stopPropagation();
                                 onClaim?.(person.id);
                               }}
-                              className="rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent transition-all hover:bg-accent hover:text-white active:scale-95"
+                              className="relative flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-accent/20 transition-all hover:scale-105 hover:bg-accent/90 active:scale-95"
                             >
+                              <span className="relative flex h-2 w-2">
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+                              </span>
                               {t("itsMe")}
                             </button>
                           )

@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
-import { Scale, Euro, MessageSquare, ChefHat, CircleHelp, Edit3 } from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat, CircleHelp, Edit3, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "../ui/button";
@@ -103,14 +103,17 @@ function ItemRowComponent({
       {/* Right side: Person Name & Avatar */}
       <div className="flex shrink-0 items-center gap-2.5">
         <div className="flex flex-col items-end">
-          <p
-            className={cn(
-              "text-right text-[12px] font-medium",
-              person ? "text-accent" : "text-gray-400"
-            )}
-          >
-            {person ? getDisplayName(person) : t("takeAction")}
-          </p>
+          {person ? (
+            getDisplayName(person)
+          ) : (
+            <span className="flex items-center gap-1.5 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-accent ring-1 ring-accent/20 transition-all hover:bg-accent hover:text-white">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
+              </span>
+              {t("takeAction")}
+            </span>
+          )}
         </div>
 
         <div className="shrink-0">
@@ -124,7 +127,12 @@ function ItemRowComponent({
           >
             {(() => {
               if (!person) {
-                return <CircleHelp size={18} className="text-gray-300" />;
+                return (
+                  <div className="relative">
+                    <Plus size={18} className="text-accent" />
+                    <div className="absolute -inset-1 animate-pulse rounded-full bg-accent/20" />
+                  </div>
+                );
               }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {

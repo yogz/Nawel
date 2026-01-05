@@ -243,8 +243,9 @@ export function PlanningTab({
           <div className="flex w-full flex-col gap-3">
             <Button
               variant="premium"
-              className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_8px_32px_rgba(var(--accent),0.15)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_12px_40px_rgba(var(--accent),0.25)] active:scale-95"
+              className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_12px_40px_rgba(var(--accent),0.2)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_15px_50px_rgba(var(--accent),0.3)] active:scale-95"
               icon={<PlusIcon className="text-accent" size={20} />}
+              shine
               onClick={() =>
                 onCreateService(
                   activeMealId === "all"
@@ -262,6 +263,7 @@ export function PlanningTab({
               variant="premium"
               className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
               icon={<PlusIcon className="text-gray-400" size={16} />}
+              shine
               onClick={() => setSheet({ type: "meal-create" })}
             >
               <span className="text-[10px] font-bold uppercase tracking-wider">{t("addMeal")}</span>
