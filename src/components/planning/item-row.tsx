@@ -107,16 +107,16 @@ function ItemRowComponent({
             getDisplayName(person)
           ) : (
             <div
-              className="group relative flex h-6 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-accent/10 px-2 py-0.5 pr-3 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:ring-gray-300"
+              className="group relative flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-accent/10 px-2 py-0.5 pr-3 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:ring-gray-300"
               onClick={(e) => {
                 e.stopPropagation();
                 onAssign();
               }}
             >
-              <div className="flex h-4 w-4 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-white group-hover:text-accent">
-                <span className="relative flex h-2 w-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-white group-hover:text-accent">
+                <span className="relative flex h-3 w-3">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75 group-hover:bg-white"></span>
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-accent group-hover:bg-white"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
                 </span>
               </div>
               <span className="text-[10px] font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white">
@@ -129,7 +129,7 @@ function ItemRowComponent({
         <div className="shrink-0">
           <div
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-500",
+              "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-500",
               person
                 ? "border-white/50 bg-white shadow-sm"
                 : "border-dashed border-gray-300 bg-gray-100/30"
@@ -139,7 +139,7 @@ function ItemRowComponent({
               if (!person) {
                 return (
                   <div className="relative">
-                    <Plus size={18} className="text-accent" />
+                    <Plus size={16} className="text-accent" />
                     <div className="absolute -inset-1 animate-pulse rounded-full bg-accent/20" />
                   </div>
                 );
