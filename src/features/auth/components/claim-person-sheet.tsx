@@ -97,10 +97,11 @@ export function ClaimPersonSheet({
               <div className="pt-2">
                 <Button
                   variant="premium"
-                  className="w-full py-6 pr-8 shadow-md"
+                  className="w-full py-7 pr-8 shadow-md"
                   disabled={selectedId === null || isPending}
                   onClick={handleConfirm}
                   icon={isPending ? <Loader2 className="animate-spin" /> : <Check />}
+                  shine={!isPending && selectedId !== null}
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">
                     {isPending ? t("associating") : t("validateButton")}
@@ -117,22 +118,22 @@ export function ClaimPersonSheet({
                 </div>
               </div>
 
-              <button
+              <Button
+                variant="premium"
+                className="w-full border-zinc-200 bg-zinc-900 py-4 shadow-xl shadow-zinc-900/10 active:scale-95 disabled:opacity-50"
                 onClick={() => {
                   sendGAEvent("event", "person_joined_new");
                   onJoinNew();
                 }}
                 disabled={isPending}
-                className="flex w-full items-center gap-3 rounded-2xl bg-zinc-900 p-3 text-white shadow-lg shadow-zinc-900/10 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+                icon={<Plus className="h-5 w-5" />}
+                iconClassName="bg-white/10 text-white"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
-                  <Plus className="h-5 w-5" />
+                <div className="flex-1 text-left">
+                  <div className="text-base font-bold text-white">{t("newProfileButton")}</div>
+                  <div className="text-xs text-white/50">{t("newProfileDescription")}</div>
                 </div>
-                <div className="text-left">
-                  <div className="text-base font-bold">{t("newProfileButton")}</div>
-                  <div className="text-xs text-white/60">{t("newProfileDescription")}</div>
-                </div>
-              </button>
+              </Button>
             </div>
           </div>
         </div>

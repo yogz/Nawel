@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DrawerClose } from "@/components/ui/drawer";
 
 export function ServiceEditForm({
   service,
@@ -150,23 +151,20 @@ export function ServiceEditForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 pt-2">
-        <Button
-          type="button"
-          variant="premium"
-          onClick={onClose}
-          className="w-full py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-        >
-          <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-            {tCommon("close") || "Fermer"}
-          </span>
-        </Button>
+      <div className="flex flex-col gap-3 pt-4">
+        <DrawerClose asChild>
+          <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
+            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+              {tCommon("close") || "Terminer"}
+            </span>
+          </Button>
+        </DrawerClose>
 
         {onDelete && (
           <Button
             type="button"
             variant="premium"
-            className="w-full border-red-100 bg-red-50/30"
+            className="w-full border-red-50 bg-red-50/10 shadow-sm"
             icon={<Trash2 size={16} />}
             iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
             onClick={() => {
@@ -174,7 +172,7 @@ export function ServiceEditForm({
               onDelete(service);
             }}
           >
-            <span className="text-xs font-black uppercase tracking-widest text-red-600">
+            <span className="text-xs font-black uppercase tracking-widest text-red-500 transition-colors group-hover:text-red-600">
               {t("deleteButton")}
             </span>
           </Button>

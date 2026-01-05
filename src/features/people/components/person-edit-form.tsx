@@ -8,9 +8,12 @@ import { THEME_EMOJIS, getPersonEmoji, renderAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DrawerClose } from "@/components/ui/drawer";
 import { useThemeMode } from "@/components/theme-provider";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
+import { sendGAEvent } from "@next/third-parties/google";
 
 export function PersonEditForm({
   person,
@@ -184,21 +187,31 @@ export function PersonEditForm({
       </div>
 
       <div className="space-y-3 border-t border-gray-100 pt-6">
-        <Button
-          variant="premium"
-          className="w-full border-red-100 bg-red-50/30"
-          icon={<Trash2 size={16} />}
-          iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-          onClick={() => {
-            skipSaveRef.current = true;
-            onDelete();
-          }}
-          disabled={readOnly}
-        >
-          <span className="text-xs font-black uppercase tracking-widest text-red-600">
-            {t("deleteButton")}
-          </span>
-        </Button>
+        <DrawerClose asChild>
+          <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
+            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+              {tCommon("close") || "Terminer"}
+            </span>
+          </Button>
+        </DrawerClose>
+
+        {onDelete && (
+          <Button
+            variant="premium"
+            className="w-full border-red-50 bg-red-50/10 shadow-sm"
+            icon={<Trash2 size={16} />}
+            iconClassName="bg-red-50 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+            onClick={() => {
+              skipSaveRef.current = true;
+              onDelete();
+            }}
+            disabled={readOnly}
+          >
+            <span className="text-xs font-black uppercase tracking-widest text-red-500 transition-colors group-hover:text-red-600">
+              {t("deleteButton")}
+            </span>
+          </Button>
+        )}
       </div>
     </div>
   );

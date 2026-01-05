@@ -4,6 +4,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { UserPlus, UserCircle, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
+import { Button } from "@/components/ui/button";
 
 export function GuestAccessSheet({
   open,
@@ -27,41 +28,39 @@ export function GuestAccessSheet({
               <p className="text-gray-600">{t("description")}</p>
             </div>
 
-            <div className="grid gap-3 px-4">
-              <button
+            <div className="grid gap-4 px-4">
+              <Button
+                variant="premium"
+                className="h-auto w-full border-accent/20 bg-accent py-4 text-white shadow-lg shadow-accent/20 active:scale-95"
                 onClick={onAuth}
-                className="flex w-full items-center justify-between rounded-2xl bg-accent p-4 text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] active:scale-95"
+                icon={<UserCircle className="h-6 w-6" />}
+                iconClassName="bg-white/20 text-white"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
-                    <UserCircle className="h-6 w-6" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold">{t("identifyButton")}</div>
-                    <div className="text-xs text-white/80">{t("identifyDescription")}</div>
-                  </div>
+                <div className="flex-1 text-left">
+                  <div className="text-base font-bold">{t("identifyButton")}</div>
+                  <div className="text-xs text-white/70">{t("identifyDescription")}</div>
                 </div>
                 <ArrowRight className="h-5 w-5 opacity-50" />
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="premium"
+                className="h-auto w-full border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                 onClick={() => {
                   sendGAEvent("event", "guest_continued_without_auth");
                   onClose();
                 }}
-                className="flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 text-gray-900 transition-all hover:bg-gray-50 active:scale-95"
+                icon={<UserPlus className="h-6 w-6" />}
+                iconClassName="bg-gray-100 text-gray-500"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-500">
-                    <UserPlus className="h-6 w-6" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold">{t("continueButton")}</div>
-                    <div className="text-xs text-gray-500">{t("continueDescription")}</div>
+                <div className="flex-1 text-left">
+                  <div className="text-base font-bold">{t("continueButton")}</div>
+                  <div className="text-xs font-medium text-gray-500">
+                    {t("continueDescription")}
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-gray-300" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

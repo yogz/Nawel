@@ -115,10 +115,14 @@ export function ShoppingListSheet({
   return (
     <div className="space-y-4">
       {/* Full page link - at top for easy access */}
-      <Button asChild variant="outline" size="sm" className="w-full">
-        <Link href={fullPageUrl}>
-          <ExternalLink size={14} className="mr-2" />
-          {t("openFullScreen")}
+      <Button asChild variant="premium" className="w-full border-gray-100 bg-gray-50/50 py-6">
+        <Link href={fullPageUrl} className="flex items-center justify-center">
+          <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500">
+            <ExternalLink size={14} />
+          </div>
+          <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+            {t("openFullScreen")}
+          </span>
         </Link>
       </Button>
 
