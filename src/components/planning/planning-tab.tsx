@@ -87,6 +87,8 @@ export function PlanningTab({
     plan.meals.length > 0 ? plan.meals[0].id : null
   );
 
+  const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
+
   useEffect(() => {
     setHasMounted(true);
     if (!activeMealId && plan.meals.length > 0) {
@@ -213,46 +215,61 @@ export function PlanningTab({
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
-        <div className="mt-8 flex flex-col gap-3 px-4 pb-12">
-          {/* Main Actions Grid */}
-          <div className="grid grid-cols-2 gap-3">
+        <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
+          {/* Main Actions Stack */}
+          <div className="flex w-full flex-col gap-3">
             <Button
               variant="premium"
-              className="h-12 w-full rounded-2xl border-none bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-700 text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-95"
-              icon={<PlusIcon className="text-white/80" size={18} />}
+              className="h-14 w-full rounded-2xl border-none bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-500/25 transition-all hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-95"
+              icon={<PlusIcon className="text-white/80" size={20} />}
               onClick={() => onCreateService(activeMealId ?? plan.meals[0]?.id ?? -1)}
             >
-              <span className="text-[11px] font-black uppercase tracking-wider">
+              <span className="text-xs font-black uppercase tracking-widest">
                 {t("addService")}
               </span>
             </Button>
 
             <Button
               variant="premium"
-              className="h-12 w-full rounded-2xl border border-white/20 bg-white/60 text-gray-900 shadow-lg shadow-gray-200/50 backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white active:scale-95"
-              icon={<PlusIcon className="text-gray-400" size={18} />}
+              className="h-12 w-full rounded-2xl border border-black/5 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-accent active:scale-95"
+              icon={<PlusIcon className="text-gray-400" size={16} />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
-              <span className="text-[11px] font-black uppercase tracking-wider">
-                {t("addMeal")}
-              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider">{t("addMeal")}</span>
             </Button>
           </div>
 
-          {/* Danger Zone - Only for owner */}
+          {/* Danger Zone - Two-step process */}
           {isOwner && onDeleteEvent && (
-            <button
-              onClick={onDeleteEvent}
-              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50/30 py-4 text-red-500/60 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.98]"
-            >
-              <PlusIcon
-                className="rotate-45 transition-transform group-hover:scale-110"
-                size={16}
-              />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                {tSettings("dangerZone")} / {t("deleteEvent")}
-              </span>
-            </button>
+            <div className="mt-4 flex flex-col items-center gap-4">
+              {!isDeleteRevealed ? (
+                <button
+                  onClick={() => setIsDeleteRevealed(true)}
+                  className="opacity-40 transition-all hover:opacity-100 active:scale-95"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 underline-offset-4 hover:underline">
+                    {tSettings("dangerZone")} / {tSettings("deleteEvent")}
+                  </span>
+                </button>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-10 rounded-xl bg-red-500 px-6 font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/20 hover:bg-red-600"
+                    onClick={onDeleteEvent}
+                  >
+                    {tSettings("deleteEvent")}
+                  </Button>
+                  <button
+                    onClick={() => setIsDeleteRevealed(false)}
+                    className="text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-black"
+                  >
+                    {t("cancel")}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}
