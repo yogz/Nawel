@@ -849,7 +849,6 @@
   .btn-shine-attention {
     position: relative;
     overflow: hidden;
-    animation: pulse-attention 3s ease-in-out infinite;
   }
 
   .btn-shine-attention::after {
@@ -857,43 +856,37 @@
     position: absolute;
     top: -50%;
     left: -150%;
-    width: 100%;
+    width: 150%;
     height: 200%;
     background: linear-gradient(
+      90deg,
       rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.2) 30%,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(255, 255, 255, 0.2) 70%,
+      rgba(168, 85, 247, 0.3) 25%,
+      rgba(236, 72, 153, 0.6) 50%,
+      rgba(168, 85, 247, 0.3) 75%,
       rgba(255, 255, 255, 0) 100%
     );
-    transform: rotate(30deg);
-    animation: shine-sweep 3s infinite;
+    transform: rotate(25deg);
+    animation: wave-sweep 4s ease-in-out infinite;
     z-index: 50;
     pointer-events: none;
+    mix-blend-mode: soft-light;
   }
 
-  @keyframes pulse-attention {
-    0%,
-    70%,
-    100% {
-      transform: scale(1);
-      box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
-    }
-
-    85% {
-      transform: scale(1.15);
-      box-shadow: 0 0 20px 5px rgba(168, 85, 247, 0.2);
-    }
-  }
-
-  @keyframes shine-sweep {
+  @keyframes wave-sweep {
     0% {
       left: -150%;
+      opacity: 0;
     }
 
-    20%,
+    10% {
+      opacity: 1;
+    }
+
+    40%,
     100% {
       left: 150%;
+      opacity: 0;
     }
   }
 }
