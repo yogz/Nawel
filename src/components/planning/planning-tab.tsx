@@ -123,7 +123,7 @@ export function PlanningTab({
         animate="show"
         className="space-y-2 pt-0"
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <div className="px-2">
             <PlanningFilters
               plan={plan}
@@ -216,22 +216,22 @@ export function PlanningTab({
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
-          {/* Main Actions Stack */}
+          {/* Main Actions Stack - Glassmorphism style */}
           <div className="flex w-full flex-col gap-3">
             <Button
               variant="premium"
-              className="h-14 w-full rounded-2xl border-none bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-700 text-white shadow-xl shadow-indigo-500/25 transition-all hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-95"
-              icon={<PlusIcon className="text-white/80" size={20} />}
+              className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_8px_32px_rgba(var(--accent),0.15)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_12px_40px_rgba(var(--accent),0.25)] active:scale-95"
+              icon={<PlusIcon className="text-accent" size={20} />}
               onClick={() => onCreateService(activeMealId ?? plan.meals[0]?.id ?? -1)}
             >
-              <span className="text-xs font-black uppercase tracking-widest">
+              <span className="text-xs font-black uppercase tracking-widest text-accent">
                 {t("addService")}
               </span>
             </Button>
 
             <Button
               variant="premium"
-              className="h-12 w-full rounded-2xl border border-black/5 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-accent active:scale-95"
+              className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
               icon={<PlusIcon className="text-gray-400" size={16} />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
@@ -256,7 +256,7 @@ export function PlanningTab({
                   <Button
                     variant="destructive"
                     size="sm"
-                    className="h-10 rounded-xl bg-red-500 px-6 font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/20 hover:bg-red-600"
+                    className="h-10 rounded-xl bg-red-500/90 px-6 font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/20 backdrop-blur-sm hover:bg-red-600 hover:shadow-red-500/30"
                     onClick={onDeleteEvent}
                   >
                     {tSettings("deleteEvent")}
