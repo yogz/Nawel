@@ -244,7 +244,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                             )}
                           </button>
                           {/* Emoji options */}
-                          {currentEmojis.slice(0, 11).map((emoji) => (
+                          {currentEmojis.slice(0, 17).map((emoji) => (
                             <button
                               key={emoji}
                               onClick={() => handleEmojiSelect(emoji)}
@@ -370,7 +370,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                 Langue
               </Label>
-              <LanguageSelector variant="compact" showSearch={true} />
+              <LanguageSelector variant="bottomSheet" showSearch={true} />
             </div>
 
             {/* Status Messages */}
