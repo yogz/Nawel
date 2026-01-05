@@ -258,6 +258,48 @@ export function MealForm({
 
       {step === 1 && (
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label
+              htmlFor="title"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              {t("titleLabel")}
+            </Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={handleBlurSave}
+              placeholder={t("titlePlaceholder")}
+              autoCapitalize="sentences"
+              enterKeyHint="next"
+              className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="address"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              {t("addressLabel")}
+            </Label>
+            <div className="relative">
+              <Input
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                onBlur={handleBlurSave}
+                placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                autoCapitalize="sentences"
+                enterKeyHint="next"
+                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+              />
+              <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label
@@ -301,48 +343,6 @@ export function MealForm({
                 />
                 <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="title"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {t("titleLabel")}
-            </Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={handleBlurSave}
-              placeholder={t("titlePlaceholder")}
-              autoCapitalize="sentences"
-              enterKeyHint="next"
-              className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {t("addressLabel")}
-            </Label>
-            <div className="relative">
-              <Input
-                id="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                onBlur={handleBlurSave}
-                placeholder={t("addressPlaceholder")}
-                autoComplete="street-address"
-                autoCapitalize="sentences"
-                enterKeyHint="next"
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
-              />
-              <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
 
