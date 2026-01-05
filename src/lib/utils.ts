@@ -76,11 +76,10 @@ export const THEME_EMOJIS: Record<string, string[]> = {
  * Returns the display name for a person.
  * Priority: User Name (Google profile) > Person Name (manual)
  */
-export function getDisplayName(
-  person: Pick<Person, "name"> & {
-    user?: { name?: string | null } | null;
-  }
-): string {
+export function getDisplayName(person: {
+  name: string;
+  user?: { name?: string | null } | null;
+}): string {
   // Now decoupled: person.name is the source of truth for guests
   return person.name;
 }
@@ -90,7 +89,9 @@ export function getDisplayName(
  * Priority: User Image > User Emoji > Manually Set Guest Emoji > Dynamic Theme Fallback
  */
 export function renderAvatar(
-  person: Pick<Person, "name" | "emoji"> & {
+  person: {
+    name: string;
+    emoji?: string | null;
     image?: string | null;
     user?: { image?: string | null; emoji?: string | null } | null;
   },
