@@ -36,7 +36,7 @@ function ItemRowComponent({
     <div
       onClick={() => !readOnly && onAssign()}
       className={cn(
-        "group relative flex cursor-pointer items-center justify-between gap-3 px-1 py-3 transition-all active:bg-black/5"
+        "group relative flex cursor-pointer items-center justify-between gap-3 px-2 py-3 transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.98] active:bg-black/5"
       )}
     >
       {/* Left side: Item Name & Metadata */}
