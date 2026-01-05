@@ -9,6 +9,7 @@ import {
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { MealHandlerParams } from "@/features/shared/types";
+import { trackMealServiceAction } from "@/lib/analytics";
 
 export function useMealHandlers({
   plan,
@@ -50,6 +51,7 @@ export function useMealHandlers({
         ),
       }));
       setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+      trackMealServiceAction("meal_created", title || date);
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
@@ -89,6 +91,7 @@ export function useMealHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        trackMealServiceAction("meal_created", title || date);
       } catch (error) {
         console.error("Failed to create meal with services:", error);
         setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
@@ -152,6 +155,7 @@ export function useMealHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
+        trackMealServiceAction("meal_updated", title || date);
       } catch (error) {
         console.error("Failed to update meal:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
@@ -163,6 +167,7 @@ export function useMealHandlers({
     if (readOnly) {
       return;
     }
+    const meal = plan.meals.find((m) => m.id === id);
     const previousPlan = plan;
     setPlan((prev: PlanData) => ({
       ...prev,
@@ -170,6 +175,7 @@ export function useMealHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: "Repas supprimé ✓", type: "success" });
+    trackMealServiceAction("meal_deleted", meal?.title || meal?.date);
     startTransition(async () => {
       try {
         await deleteMealAction({ id, slug, key: writeKey });

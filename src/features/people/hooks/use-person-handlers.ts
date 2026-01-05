@@ -10,6 +10,7 @@ import {
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
+import { trackPersonAction } from "@/lib/analytics";
 
 export function usePersonHandlers({
   plan,
@@ -45,6 +46,7 @@ export function usePersonHandlers({
         setSelectedPerson?.(created.id);
         setSheet(null);
         setSuccessMessage({ text: `${name} ajouté(e) ! ✨`, type: "success" });
+        trackPersonAction("person_created", name);
       } catch (error) {
         console.error("Failed to create person:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
@@ -84,6 +86,7 @@ export function usePersonHandlers({
 
         setSheet(null);
         setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });
+        trackPersonAction("person_updated", name);
       } catch (error) {
         console.error("Failed to update person:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
@@ -112,6 +115,7 @@ export function usePersonHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: `${person?.name || "Convive"} supprimé ✓`, type: "success" });
+    trackPersonAction("person_deleted", person?.name);
 
     startTransition(async () => {
       try {

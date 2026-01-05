@@ -4,6 +4,7 @@ import { CalendarRange, Settings, Users, ShoppingCart } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
+import { trackTabChange } from "@/lib/analytics";
 
 const authenticatedTabs = [
   { key: "planning", icon: CalendarRange },
@@ -30,6 +31,13 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
 
+  const handleTabChange = (key: TabKey) => {
+    if (key !== active) {
+      trackTabChange(key, active);
+    }
+    onChange(key);
+  };
+
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4">
       <nav
@@ -42,7 +50,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
           return (
             <button
               key={tab.key}
-              onClick={() => onChange(tab.key)}
+              onClick={() => handleTabChange(tab.key)}
               className={clsx(
                 "relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all active:scale-[0.95]",
                 selected ? "text-accent" : "text-gray-400"

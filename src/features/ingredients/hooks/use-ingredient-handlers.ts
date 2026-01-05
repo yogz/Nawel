@@ -10,6 +10,7 @@ import {
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { IngredientHandlerParams } from "@/features/shared/types";
+import { trackAIAction } from "@/lib/analytics";
 
 export function useIngredientHandlers({
   setPlan,
@@ -62,6 +63,8 @@ export function useIngredientHandlers({
         })),
       })),
     }));
+
+    trackAIAction("ai_ingredients_generated", itemName, generated.length);
   };
 
   const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {

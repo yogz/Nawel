@@ -12,6 +12,7 @@ import {
 } from "@/app/actions";
 import type { Item, Service, Person, PlanData, ItemData } from "@/lib/types";
 import type { ItemHandlerParams } from "@/features/shared/types";
+import { trackItemAction, trackDragDrop } from "@/lib/analytics";
 
 export function useItemHandlers({
   plan,
@@ -67,6 +68,7 @@ export function useItemHandlers({
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
         setSheet(null);
         setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
+        trackItemAction("item_created", itemData.name);
       } catch (error) {
         console.error("Failed to create item:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
@@ -100,6 +102,7 @@ export function useItemHandlers({
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
       setSuccessMessage({ text: "Modifications enregistrées ✓", type: "success" });
+      trackItemAction("item_updated", updatedItem.name);
       if (closeSheet) {
         setSheet(null);
       }
@@ -129,6 +132,7 @@ export function useItemHandlers({
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
     setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
+    trackItemAction("item_assigned", item.name, { assigned_to: personName });
 
     // Easter egg for Cécile
     if (
@@ -186,6 +190,7 @@ export function useItemHandlers({
     setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
     setSheet(null);
     setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
+    trackItemAction("item_deleted", item.name);
 
     startTransition(async () => {
       try {
@@ -211,6 +216,9 @@ export function useItemHandlers({
     if (sourceService.id === targetServiceId) {
       return;
     }
+
+    trackItemAction("item_moved", item.name);
+    trackDragDrop();
 
     startTransition(async () => {
       setServiceItems(sourceService.id, (items) => items.filter((i) => i.id !== itemId));

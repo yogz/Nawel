@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Check, Share2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { trackShareAction } from "@/lib/analytics";
 
 export function ShareModal({
   slug,
@@ -26,15 +27,22 @@ export function ShareModal({
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const shareUrl = `${baseUrl}/event/${slug}${adminKey ? `?key=${adminKey}` : ""}`;
 
+  // Track when share modal is opened
+  useEffect(() => {
+    trackShareAction("share_opened");
+  }, []);
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
+    trackShareAction("share_link_copied", "clipboard");
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleWhatsAppShare = () => {
     const message = t("shareMessage", { name: eventName || "cet événement", url: shareUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    trackShareAction("share_link_copied", "whatsapp");
     window.open(whatsappUrl, "_blank");
   };
 
@@ -46,6 +54,7 @@ export function ShareModal({
           text: t("shareMessage", { name: eventName || "cet événement", url: "" }),
           url: shareUrl,
         });
+        trackShareAction("share_link_copied", "native");
       } catch (err) {
         console.log("Error sharing", err);
       }

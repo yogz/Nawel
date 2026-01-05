@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { createServiceAction, updateServiceAction, deleteServiceAction } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { ServiceHandlerParams } from "@/features/shared/types";
+import { trackMealServiceAction } from "@/lib/analytics";
 
 export function useServiceHandlers({
   plan,
@@ -45,6 +46,7 @@ export function useServiceHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Service ajouté ! ✓", type: "success" });
+        trackMealServiceAction("service_created", title);
       } catch (error) {
         console.error("Failed to create service:", error);
         setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
@@ -95,6 +97,7 @@ export function useServiceHandlers({
         }));
         setSheet(null);
         setSuccessMessage({ text: "Service mis à jour ✓", type: "success" });
+        trackMealServiceAction("service_updated", title);
       } catch (error) {
         console.error("Failed to update service:", error);
         setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
@@ -106,6 +109,15 @@ export function useServiceHandlers({
     if (readOnly) {
       return;
     }
+    // Find service title before deletion for tracking
+    let serviceTitle: string | undefined;
+    for (const meal of plan.meals) {
+      const service = meal.services.find((s) => s.id === id);
+      if (service) {
+        serviceTitle = service.title;
+        break;
+      }
+    }
     const previousPlan = plan;
     setPlan((prev: PlanData) => ({
       ...prev,
@@ -116,6 +128,7 @@ export function useServiceHandlers({
     }));
     setSheet(null);
     setSuccessMessage({ text: "Service supprimé ✓", type: "success" });
+    trackMealServiceAction("service_deleted", serviceTitle);
 
     startTransition(async () => {
       try {
