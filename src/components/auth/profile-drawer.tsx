@@ -413,7 +413,10 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 {/* Danger Zone / Advanced View - In-Place Reveal */}
                 <div className="pt-4">
                   {!showAdvanced ? (
-                    <DangerZoneTrigger onClick={() => setShowAdvanced(true)} />
+                    <DangerZoneTrigger
+                      onClick={() => setShowAdvanced(true)}
+                      className="bg-transparent opacity-60 hover:bg-red-50 hover:opacity-100"
+                    />
                   ) : (
                     <div className="animate-in fade-in slide-in-from-bottom-2">
                       <DangerZoneContent
