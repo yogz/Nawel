@@ -295,6 +295,8 @@
       "forPeople": "Pour {count} personne{count, plural, one {} other {s}}",
       "assignLabel": "Qui s'en occupe ?",
       "unassigned": "À prévoir",
+      "assignToUnassigned": "Laisser non assigné",
+      "assignToPerson": "Assigner à {name}",
       "defaultNote": "Pour {count} personne{count, plural, one {} other {s}}",
       "note": "Note",
       "movePlaceholder": "Autre service",

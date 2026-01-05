@@ -126,15 +126,10 @@ export function Organizer({
     handleMoveItem,
     handleDelete,
     findItem,
-    handleDeleteEvent: originalHandleDeleteEvent,
+    handleDeleteEvent,
     handleClaimPerson,
     handleUnclaimPerson,
   } = handlers;
-
-  // Wrap handleDeleteEvent
-  const handleDeleteEvent = () => {
-    originalHandleDeleteEvent();
-  };
 
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);

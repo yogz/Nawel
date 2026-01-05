@@ -50,7 +50,13 @@ export function ItemForm({
   allServices?: Array<Service & { mealTitle: string }>;
   currentServiceId?: number;
   servicePeopleCount?: number;
-  onSubmit: (values: { name: string; quantity?: string; note?: string; price?: number }) => void;
+  onSubmit: (values: {
+    name: string;
+    quantity?: string;
+    note?: string;
+    price?: number;
+    personId?: number | null;
+  }) => void;
   onAssign: (personId: number | null) => void;
   onMoveService?: (targetServiceId: number) => void;
   onDelete?: () => void;
@@ -156,13 +162,22 @@ export function ItemForm({
       return;
     }
     startTransition(() => {
-      onSubmit({
+      const values: {
+        name: string;
+        quantity?: string;
+        note?: string;
+        price?: number;
+        personId?: number | null;
+      } = {
         name,
         quantity: quantity || undefined,
         note: note || undefined,
         price: price ? parseFloat(price) : undefined,
-        personId: !isEditMode ? selectedPersonId : undefined,
-      } as any);
+      };
+      if (!isEditMode) {
+        values.personId = selectedPersonId;
+      }
+      onSubmit(values);
     });
   };
 
@@ -232,6 +247,8 @@ export function ItemForm({
         <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
             onClick={() => handlePersonClick(null)}
+            aria-label={t("assignToUnassigned")}
+            aria-pressed={!currentPersonId}
             className={clsx(
               "flex shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
               !currentPersonId
@@ -262,6 +279,8 @@ export function ItemForm({
               <button
                 key={person.id}
                 onClick={() => handlePersonClick(person.id)}
+                aria-label={t("assignToPerson", { name: getDisplayName(person) })}
+                aria-pressed={isSelected}
                 className={clsx(
                   "flex min-w-[64px] shrink-0 flex-col items-center gap-1.5 rounded-[20px] p-2 transition-all active:scale-95",
                   isSelected

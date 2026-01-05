@@ -245,6 +245,8 @@ export function PlanningTab({
               {!isDeleteRevealed ? (
                 <button
                   onClick={() => setIsDeleteRevealed(true)}
+                  aria-label={`${tSettings("dangerZone")}: ${tSettings("deleteEvent")}`}
+                  aria-expanded={isDeleteRevealed}
                   className="opacity-40 transition-all hover:opacity-100 active:scale-95"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 underline-offset-4 hover:underline">
@@ -263,6 +265,7 @@ export function PlanningTab({
                   </Button>
                   <button
                     onClick={() => setIsDeleteRevealed(false)}
+                    aria-label={t("cancel")}
                     className="text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-black"
                   >
                     {t("cancel")}

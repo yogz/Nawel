@@ -283,6 +283,8 @@
       "forPeople": "For {count} {count, plural, one {person} other {people}}",
       "assignLabel": "Who handles this?",
       "unassigned": "To assign",
+      "assignToUnassigned": "Leave unassigned",
+      "assignToPerson": "Assign to {name}",
       "defaultNote": "For {count} {count, plural, one {person} other {people}}",
       "note": "Note",
       "movePlaceholder": "Other course",

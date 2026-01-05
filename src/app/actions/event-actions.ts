@@ -65,14 +65,20 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
 
   // Automatically add owner as a guest if they are logged in
   if (session?.user) {
+    const user = session.user as {
+      id: string;
+      name?: string | null;
+      image?: string | null;
+      emoji?: string | null;
+    };
     const [person] = await db
       .insert(people)
       .values({
         eventId: created.id,
-        name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
-        emoji: (session.user as any).emoji ?? null, // Initial sync
-        image: session.user.image ?? null, // Initial sync
-        userId: session.user.id,
+        name: sanitizeStrictText(user.name ?? "Utilisateur", 50),
+        emoji: user.emoji ?? null,
+        image: user.image ?? null,
+        userId: user.id,
       })
       .returning();
     await logChange("create", "people", person.id, null, person);
