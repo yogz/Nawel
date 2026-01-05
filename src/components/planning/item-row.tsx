@@ -102,7 +102,7 @@ function ItemRowComponent({
               {item.name}
             </p>
             {!readOnly && (
-              <Edit3 className="h-4 w-4 shrink-0 text-accent/40 opacity-100 transition-opacity sm:h-3 sm:w-3 sm:opacity-0 sm:group-hover:opacity-100" />
+              <Edit3 className="h-4 w-4 shrink-0 text-accent/40 opacity-0 transition-opacity group-hover:opacity-100 sm:h-3 sm:w-3" />
             )}
           </div>
 

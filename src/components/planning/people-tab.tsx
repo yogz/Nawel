@@ -121,7 +121,10 @@ export function PeopleTab({
                     : "text-gray-400 hover:bg-gray-100 hover:text-accent"
                 )}
               >
-                <Pencil size={12} />
+                <Pencil
+                  size={12}
+                  className="opacity-0 transition-opacity group-hover:opacity-100"
+                />
               </button>
             )}
             {person.userId === currentUserId && (
@@ -206,10 +209,13 @@ export function PeopleTab({
                         {!readOnly && (
                           <button
                             onClick={() => setSheet({ type: "person-edit", person })}
-                            className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-accent"
+                            className="group rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-accent"
                           >
                             <motion.div whileHover={{ rotate: 15 }}>
-                              <Sparkles size={16} />
+                              <Sparkles
+                                size={16}
+                                className="opacity-0 transition-opacity group-hover:opacity-100"
+                              />
                             </motion.div>
                           </button>
                         )}
