@@ -143,7 +143,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           </div>
         </DrawerHeader>
 
-        <div className="scrollbar-none flex-1 overflow-y-auto pb-40">
+        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
           <div className="space-y-5">
             {/* Avatar with Emoji Picker */}
             <div className="flex flex-col items-center gap-2">

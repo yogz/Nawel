@@ -505,7 +505,7 @@ export function EventForm({
         <DrawerHeader className="px-0 text-left">
           <DrawerTitle>{stepTitles[step - 1]}</DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none flex-1 overflow-y-auto pb-40">{content}</div>
+        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">{content}</div>
       </DrawerContent>
     </Drawer>
   );

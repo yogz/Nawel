@@ -45,7 +45,7 @@ export function ClaimPersonSheet({
         <DrawerHeader className="px-0 text-left">
           <DrawerTitle>{t("title")}</DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none flex-1 overflow-y-auto pb-40">
+        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
           <div className="space-y-3 py-3 transition-all duration-300">
             <div className="space-y-2 px-4 text-center">
               <p className="text-gray-600">{t("description")}</p>

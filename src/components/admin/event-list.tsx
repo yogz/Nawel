@@ -231,7 +231,7 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
           <DrawerHeader className="px-1 text-left">
             <DrawerTitle>Modifier l'événement</DrawerTitle>
           </DrawerHeader>
-          <div className="scrollbar-none flex-1 overflow-y-auto pb-40">
+          <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
             <form onSubmit={handleUpdate} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nom</Label>
