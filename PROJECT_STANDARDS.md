@@ -53,3 +53,9 @@ This document serves as the "Source of Truth" for any code changes in the CoList
 
 - **Client/Server Boundary**: Minimize `"use client"` usage. Only leaf components or interactive containers should be client-side.
 - **Damping**: Use reasonable damping/spring physical properties in `framer-motion` to keep animations feeling "premium" but not sluggish.
+
+## 8. Internationalization (i18n)
+
+- **Mandatory Translations**: All user-facing texts **MUST** be translated into every supported language (refer to the `messages/` directory).
+- **No Hardcoded Strings**: Hardcoded strings are strictly prohibited in UI components. Always use `next-intl` hooks (e.g., `useTranslations`) to retrieve localized messages.
+- **Consistency**: When adding a new translation key, ensure it is added to all JSON files in the `messages/` directory to prevent `MISSING_MESSAGE` errors during build.
