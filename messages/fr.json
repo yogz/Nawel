@@ -279,6 +279,7 @@
       "irreversible": "Cette action est irréversible."
     },
     "ItemForm": {
+      "editItem": "Modifier l'article {name}",
       "label": "Article",
       "placeholder": "Ex: Fromage, Vin rouge, Bûche...",
       "quantityLabel": "Quantité",
@@ -301,6 +302,7 @@
       "forPeople": "Pour {count} personne{count, plural, one {} other {s}}",
       "assignLabel": "Qui s'en occupe ?",
       "unassigned": "À prévoir",
+      "takeAction": "Je prends !",
       "assignToUnassigned": "Laisser non assigné",
       "assignToPerson": "Assigner à {name}",
       "defaultNote": "Pour {count} personne{count, plural, one {} other {s}}",

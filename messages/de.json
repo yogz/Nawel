@@ -284,6 +284,7 @@
       "forPeople": "Für {count} {count, plural, one {Person} other {Personen}}",
       "assignLabel": "Wer kümmert sich darum?",
       "unassigned": "Zuzuweisen",
+      "takeAction": "Ich nehm's!",
       "defaultNote": "Für {count} {count, plural, one {Person} other {Personen}}",
       "note": "Notiz",
       "movePlaceholder": "Anderer Gang",

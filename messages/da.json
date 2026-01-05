@@ -285,6 +285,7 @@
       "forPeople": "Til {count} {count, plural, one {person} other {personer}}",
       "assignLabel": "Hvem håndterer dette?",
       "unassigned": "At tildele",
+      "takeAction": "Jeg tager den!",
       "defaultNote": "Til {count} {count, plural, one {person} other {personer}}",
       "note": "Note",
       "movePlaceholder": "Anden ret",

@@ -292,6 +292,7 @@
       "forPeople": "Για {count} {count, plural, one {άτομο} other {άτομα}}",
       "assignLabel": "Ποιος το αναλαμβάνει;",
       "unassigned": "Προς ανάθεση",
+      "takeAction": "Το παίρνω!",
       "defaultNote": "Για {count} {count, plural, one {άτομο} other {άτομα}}",
       "note": "Σημείωση",
       "movePlaceholder": "Άλλο μέρος",

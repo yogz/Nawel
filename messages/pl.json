@@ -285,6 +285,7 @@
       "forPeople": "Dla {count} {count, plural, one {osoby} few {osób} other {osób}}",
       "assignLabel": "Kto się tym zajmie?",
       "unassigned": "Do przypisania",
+      "takeAction": "Biorę!",
       "defaultNote": "Dla {count} {count, plural, one {osoby} few {osób} other {osób}}",
       "note": "Uwaga",
       "movePlaceholder": "Inne danie",

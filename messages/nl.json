@@ -285,6 +285,7 @@
       "forPeople": "Voor {count} {count, plural, one {persoon} other {personen}}",
       "assignLabel": "Wie zorgt hiervoor?",
       "unassigned": "Toe te wijzen",
+      "takeAction": "Ik neem het!",
       "defaultNote": "Voor {count} {count, plural, one {persoon} other {personen}}",
       "note": "Notitie",
       "movePlaceholder": "Andere gang",

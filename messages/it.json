@@ -285,6 +285,7 @@
       "forPeople": "Per {count} {count, plural, one {persona} other {persone}}",
       "assignLabel": "Chi se ne occupa?",
       "unassigned": "Da assegnare",
+      "takeAction": "Lo prendo io!",
       "defaultNote": "Per {count} {count, plural, one {persona} other {persone}}",
       "note": "Nota",
       "movePlaceholder": "Altra portata",

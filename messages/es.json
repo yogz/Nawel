@@ -284,6 +284,7 @@
       "forPeople": "Para {count} {count, plural, one {persona} other {personas}}",
       "assignLabel": "¿Quién se encarga?",
       "unassigned": "Por asignar",
+      "takeAction": "¡Me lo pido!",
       "defaultNote": "Para {count} {count, plural, one {persona} other {personas}}",
       "note": "Nota",
       "movePlaceholder": "Otro tiempo",

@@ -109,7 +109,7 @@ function ItemRowComponent({
               person ? "text-accent" : "text-gray-400"
             )}
           >
-            {person ? getDisplayName(person) : t("unassigned")}
+            {person ? getDisplayName(person) : t("takeAction")}
           </p>
         </div>
 

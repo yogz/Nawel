@@ -292,6 +292,7 @@
       "forPeople": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
       "assignLabel": "Quem trata disto?",
       "unassigned": "A atribuir",
+      "takeAction": "Eu levo!",
       "defaultNote": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
       "note": "Nota",
       "movePlaceholder": "Outro tempo",

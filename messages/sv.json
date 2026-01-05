@@ -285,6 +285,7 @@
       "forPeople": "För {count} {count, plural, one {person} other {personer}}",
       "assignLabel": "Vem tar hand om detta?",
       "unassigned": "Att tilldela",
+      "takeAction": "Jag tar den!",
       "defaultNote": "För {count} {count, plural, one {person} other {personer}}",
       "note": "Notering",
       "movePlaceholder": "Annan rätt",
