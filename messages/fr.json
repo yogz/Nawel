@@ -498,5 +498,65 @@
     "rejectAll": "Tout refuser",
     "customize": "Personnaliser",
     "legalNotice": "En continuant, vous acceptez notre utilisation des cookies conformément à notre politique de confidentialité."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} ajouté(e) ! ✨",
+      "errorAdd": "Erreur lors de l'ajout ❌",
+      "updated": "Convive mis à jour ✓",
+      "errorUpdate": "Erreur lors de la mise à jour ❌",
+      "deleted": "{name} supprimé ✓",
+      "errorDelete": "Erreur lors de la suppression ❌",
+      "claimed": "Profil associé avec succès ✓",
+      "errorClaim": "Erreur lors de l'association ❌",
+      "unclaimed": "Profil dissocié avec succès ✓",
+      "errorUnclaim": "Erreur lors de la déliaison ❌"
+    },
+    "item": {
+      "added": "{name} ajouté ! ✨",
+      "errorAdd": "Erreur lors de l'ajout ❌",
+      "updated": "Article mis à jour ✓",
+      "errorUpdate": "Erreur lors de la mise à jour ❌",
+      "deleted": "Article supprimé ✓",
+      "errorDelete": "Erreur lors de la suppression ❌",
+      "moved": "Article déplacé ✓",
+      "errorMove": "Erreur lors du déplacement ❌"
+    },
+    "meal": {
+      "added": "Repas créé ! ✨",
+      "errorAdd": "Erreur lors de la création ❌",
+      "updated": "Repas mis à jour ✓",
+      "errorUpdate": "Erreur lors de la mise à jour ❌",
+      "deleted": "Repas supprimé ✓",
+      "errorDelete": "Erreur lors de la suppression ❌"
+    },
+    "service": {
+      "added": "Service ajouté ! ✨",
+      "errorAdd": "Erreur lors de l'ajout ❌",
+      "updated": "Service mis à jour ✓",
+      "errorUpdate": "Erreur lors de la mise à jour ❌",
+      "deleted": "Service supprimé ✓",
+      "errorDelete": "Erreur lors de la suppression ❌"
+    },
+    "profile": {
+      "fullName": "Nom complet",
+      "exampleName": "Ex: Jean Dupont",
+      "changeEmoji": "Changer l'emoji",
+      "chooseEmoji": "Choisir un emoji",
+      "close": "Fermer",
+      "theme": "Thème",
+      "language": "Langue",
+      "logout": "Se déconnecter",
+      "deleteAccountWarning": "Attention : Cette action est irréversible. Toutes vos données seront supprimées.",
+      "updateLoading": "Enregistrement...",
+      "synchronized": "Synchronisé"
+    },
+    "actions": {
+      "notLoggedInProfile": "Vous devez être connecté pour modifier votre profil.",
+      "notLoggedInDelete": "Vous devez être connecté pour supprimer votre compte.",
+      "notLoggedInAI": "Vous devez être connecté pour utiliser la génération IA.",
+      "ingredientsGenerationFailed": "Aucun ingrédient généré. Réessayez.",
+      "confirmationRequired": "La confirmation est requise."
+    }
   }
 }

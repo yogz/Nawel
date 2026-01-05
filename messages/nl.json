@@ -483,5 +483,65 @@
     "rejectAll": "Alles weigeren",
     "customize": "Aanpassen",
     "legalNotice": "Door verder te gaan, accepteert u ons gebruik van cookies in overeenstemming met ons privacybeleid."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} toegevoegd! ✨",
+      "errorAdd": "Fout bij toevoegen gast ❌",
+      "updated": "Gast bijgewerkt ✓",
+      "errorUpdate": "Fout bij bijwerken gast ❌",
+      "deleted": "{name} verwijderd ✓",
+      "errorDelete": "Fout bij verwijderen gast ❌",
+      "claimed": "Profiel succesvol gekoppeld ✓",
+      "errorClaim": "Fout bij koppelen profiel ❌",
+      "unclaimed": "Profiel succesvol ontkoppeld ✓",
+      "errorUnclaim": "Fout bij ontkoppelen profiel ❌"
+    },
+    "item": {
+      "added": "{name} toegevoegd! ✨",
+      "errorAdd": "Fout bij toevoegen item ❌",
+      "updated": "Item bijgewerkt ✓",
+      "errorUpdate": "Fout bij bijwerken item ❌",
+      "deleted": "Item verwijderd ✓",
+      "errorDelete": "Fout bij verwijderen item ❌",
+      "moved": "Item verplaatst ✓",
+      "errorMove": "Fout bij verplaatsen item ❌"
+    },
+    "meal": {
+      "added": "Maaltijd gemaakt! ✨",
+      "errorAdd": "Fout bij maken maaltijd ❌",
+      "updated": "Maaltijd bijgewerkt ✓",
+      "errorUpdate": "Fout bij bijwerken maaltijd ❌",
+      "deleted": "Maaltijd verwijderd ✓",
+      "errorDelete": "Fout bij verwijderen maaltijd ❌"
+    },
+    "service": {
+      "added": "Service toegevoegd! ✨",
+      "errorAdd": "Fout bij toevoegen service ❌",
+      "updated": "Service bijgewerkt ✓",
+      "errorUpdate": "Fout bij bijwerken service ❌",
+      "deleted": "Service verwijderd ✓",
+      "errorDelete": "Fout bij verwijderen service ❌"
+    },
+    "profile": {
+      "fullName": "Volledige naam",
+      "exampleName": "Bijv. Jan Jansen",
+      "changeEmoji": "Emoji wijzigen",
+      "chooseEmoji": "Emoji kiezen",
+      "close": "Sluiten",
+      "theme": "Thema",
+      "language": "Taal",
+      "logout": "Afmelden",
+      "deleteAccountWarning": "Waarschuwing: deze actie kan niet ongedaan worden gemaakt. Alle uw gegevens worden verwijderd.",
+      "updateLoading": "Opslaan...",
+      "synchronized": "Gesynchroniseerd"
+    },
+    "actions": {
+      "notLoggedInProfile": "U moet aangemeldinvullen om uw profiel te wijzigen.",
+      "notLoggedInDelete": "U moet aangemeld zijn om uw account te verwijderen.",
+      "notLoggedInAI": "U moet aangemeld zijn om AI-generatie te gebruiken.",
+      "ingredientsGenerationFailed": "Geen ingrediënten gegenereerd. Probeer opnieuw.",
+      "confirmationRequired": "Bevestiging vereist."
+    }
   }
 }

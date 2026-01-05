@@ -483,5 +483,65 @@
     "rejectAll": "Avvisa allt",
     "customize": "Anpassa",
     "legalNotice": "Genom att fortsätta accepterar du vår användning av cookies i enlighet med vår integritetspolicy."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} tillagd! ✨",
+      "errorAdd": "Fel vid tilläggning av gäst ❌",
+      "updated": "Gäst uppdaterad ✓",
+      "errorUpdate": "Fel vid uppdatering av gäst ❌",
+      "deleted": "{name} borttagen ✓",
+      "errorDelete": "Fel vid borttagning av gäst ❌",
+      "claimed": "Profil länkad framgångsrikt ✓",
+      "errorClaim": "Fel vid länkning av profil ❌",
+      "unclaimed": "Profil frånkopplad framgångsrikt ✓",
+      "errorUnclaim": "Fel vid frånkoppling av profil ❌"
+    },
+    "item": {
+      "added": "{name} tillagd! ✨",
+      "errorAdd": "Fel vid tilläggning av artikel ❌",
+      "updated": "Artikel uppdaterad ✓",
+      "errorUpdate": "Fel vid uppdatering av artikel ❌",
+      "deleted": "Artikel borttagen ✓",
+      "errorDelete": "Fel vid borttagning av artikel ❌",
+      "moved": "Artikel flyttad ✓",
+      "errorMove": "Fel vid förflyttning av artikel ❌"
+    },
+    "meal": {
+      "added": "Måltid skapad! ✨",
+      "errorAdd": "Fel vid skapande av måltid ❌",
+      "updated": "Måltid uppdaterad ✓",
+      "errorUpdate": "Fel vid uppdatering av måltid ❌",
+      "deleted": "Måltid borttagen ✓",
+      "errorDelete": "Fel vid borttagning av måltid ❌"
+    },
+    "service": {
+      "added": "Tjänst tillagd! ✨",
+      "errorAdd": "Fel vid tilläggning av tjänst ❌",
+      "updated": "Tjänst uppdaterad ✓",
+      "errorUpdate": "Fel vid uppdatering av tjänst ❌",
+      "deleted": "Tjänst borttagen ✓",
+      "errorDelete": "Fel vid borttagning av tjänst ❌"
+    },
+    "profile": {
+      "fullName": "Fullt namn",
+      "exampleName": "T.ex. Anders Andersson",
+      "changeEmoji": "Byt emoji",
+      "chooseEmoji": "Välj emoji",
+      "close": "Stäng",
+      "theme": "Tema",
+      "language": "Språk",
+      "logout": "Logga ut",
+      "deleteAccountWarning": "Varning: denna åtgärd kan inte ångras. Alla dina data kommer att tas bort.",
+      "updateLoading": "Sparar...",
+      "synchronized": "Synkroniserad"
+    },
+    "actions": {
+      "notLoggedInProfile": "Du måste vara inloggad för att ändra din profil.",
+      "notLoggedInDelete": "Du måste vara inloggad för att ta bort ditt konto.",
+      "notLoggedInAI": "Du måste vara inloggad för att använda AI-generering.",
+      "ingredientsGenerationFailed": "Inga ingredienser genererade. Försök igen.",
+      "confirmationRequired": "Bekräftelse krävs."
+    }
   }
 }

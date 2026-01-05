@@ -485,5 +485,65 @@
     "rejectAll": "Reject all",
     "customize": "Customize",
     "legalNotice": "By continuing, you accept our use of cookies in accordance with our privacy policy."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} added! ✨",
+      "errorAdd": "Error adding guest ❌",
+      "updated": "Guest updated ✓",
+      "errorUpdate": "Error updating guest ❌",
+      "deleted": "{name} deleted ✓",
+      "errorDelete": "Error deleting guest ❌",
+      "claimed": "Profile linked successfully ✓",
+      "errorClaim": "Error linking profile ❌",
+      "unclaimed": "Profile unlinked successfully ✓",
+      "errorUnclaim": "Error unlinking profile ❌"
+    },
+    "item": {
+      "added": "{name} added! ✨",
+      "errorAdd": "Error adding item ❌",
+      "updated": "Item updated ✓",
+      "errorUpdate": "Error updating item ❌",
+      "deleted": "Item deleted ✓",
+      "errorDelete": "Error deleting item ❌",
+      "moved": "Item moved ✓",
+      "errorMove": "Error moving item ❌"
+    },
+    "meal": {
+      "added": "Meal created! ✨",
+      "errorAdd": "Error creating meal ❌",
+      "updated": "Meal updated ✓",
+      "errorUpdate": "Error updating meal ❌",
+      "deleted": "Meal deleted ✓",
+      "errorDelete": "Error deleting meal ❌"
+    },
+    "service": {
+      "added": "Service added! ✨",
+      "errorAdd": "Error adding service ❌",
+      "updated": "Service updated ✓",
+      "errorUpdate": "Error updating service ❌",
+      "deleted": "Service deleted ✓",
+      "errorDelete": "Error deleting service ❌"
+    },
+    "profile": {
+      "fullName": "Full name",
+      "exampleName": "E.g. John Doe",
+      "changeEmoji": "Change emoji",
+      "chooseEmoji": "Choose emoji",
+      "close": "Close",
+      "theme": "Theme",
+      "language": "Language",
+      "logout": "Sign out",
+      "deleteAccountWarning": "Warning: This action is irreversible. All your data will be deleted.",
+      "updateLoading": "Saving...",
+      "synchronized": "Synchronized"
+    },
+    "actions": {
+      "notLoggedInProfile": "You must be logged in to modify your profile.",
+      "notLoggedInDelete": "You must be logged in to delete your account.",
+      "notLoggedInAI": "You must be logged in to use AI generation.",
+      "ingredientsGenerationFailed": "No ingredients generated. Try again.",
+      "confirmationRequired": "Confirmation is required."
+    }
   }
 }

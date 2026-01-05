@@ -483,5 +483,65 @@
     "rejectAll": "Afvis alle",
     "customize": "Tilpas",
     "legalNotice": "Ved at fortsætte accepterer du vores brug af cookies i overensstemmelse med vores privatlivspolitik."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} tilføjet! ✨",
+      "errorAdd": "Fejl ved tilføjelse af gæst ❌",
+      "updated": "Gæst opdateret ✓",
+      "errorUpdate": "Fejl ved opdatering af gæst ❌",
+      "deleted": "{name} slettet ✓",
+      "errorDelete": "Fejl ved sletning af gæst ❌",
+      "claimed": "Profil kædet sammen korrekt ✓",
+      "errorClaim": "Fejl ved sammenkædning af profil ❌",
+      "unclaimed": "Profil afkoblet korrekt ✓",
+      "errorUnclaim": "Fejl ved afkoblingen af profil ❌"
+    },
+    "item": {
+      "added": "{name} tilføjet! ✨",
+      "errorAdd": "Fejl ved tilføjelse af element ❌",
+      "updated": "Element opdateret ✓",
+      "errorUpdate": "Fejl ved opdatering af element ❌",
+      "deleted": "Element slettet ✓",
+      "errorDelete": "Fejl ved sletning af element ❌",
+      "moved": "Element flyttet ✓",
+      "errorMove": "Fejl ved flytning af element ❌"
+    },
+    "meal": {
+      "added": "Måltid oprettet! ✨",
+      "errorAdd": "Fejl ved oprettelse af måltid ❌",
+      "updated": "Måltid opdateret ✓",
+      "errorUpdate": "Fejl ved opdatering af måltid ❌",
+      "deleted": "Måltid slettet ✓",
+      "errorDelete": "Fejl ved sletning af måltid ❌"
+    },
+    "service": {
+      "added": "Service tilføjet! ✨",
+      "errorAdd": "Fejl ved tilføjelse af service ❌",
+      "updated": "Service opdateret ✓",
+      "errorUpdate": "Fejl ved opdatering af service ❌",
+      "deleted": "Service slettet ✓",
+      "errorDelete": "Fejl ved sletning af service ❌"
+    },
+    "profile": {
+      "fullName": "Fulde navn",
+      "exampleName": "F.eks. Hans Hansen",
+      "changeEmoji": "Skift emoji",
+      "chooseEmoji": "Vælg emoji",
+      "close": "Luk",
+      "theme": "Tema",
+      "language": "Sprog",
+      "logout": "Log ud",
+      "deleteAccountWarning": "Advarsel: denne handling kan ikke fortrydes. Alle dine data vil blive slettet.",
+      "updateLoading": "Gemmer...",
+      "synchronized": "Synkroniseret"
+    },
+    "actions": {
+      "notLoggedInProfile": "Du skal være logget ind for at ændre din profil.",
+      "notLoggedInDelete": "Du skal være logget ind for at slette din konto.",
+      "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
+      "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
+      "confirmationRequired": "Bekræftelse påkrævet."
+    }
   }
 }

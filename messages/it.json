@@ -483,5 +483,65 @@
     "rejectAll": "Rifiuta tutto",
     "customize": "Personalizza",
     "legalNotice": "Continuando, accetti il nostro utilizzo dei cookie in conformità con la nostra politica sulla privacy."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} aggiunto! ✨",
+      "errorAdd": "Errore nell'aggiunta dell'ospite ❌",
+      "updated": "Ospite aggiornato ✓",
+      "errorUpdate": "Errore nell'aggiornamento dell'ospite ❌",
+      "deleted": "{name} eliminato ✓",
+      "errorDelete": "Errore nell'eliminazione dell'ospite ❌",
+      "claimed": "Profilo collegato con successo ✓",
+      "errorClaim": "Errore nel collegamento del profilo ❌",
+      "unclaimed": "Profilo scollegato con successo ✓",
+      "errorUnclaim": "Errore nello scollegamento del profilo ❌"
+    },
+    "item": {
+      "added": "{name} aggiunto! ✨",
+      "errorAdd": "Errore nell'aggiunta dell'articolo ❌",
+      "updated": "Articolo aggiornato ✓",
+      "errorUpdate": "Errore nell'aggiornamento dell'articolo ❌",
+      "deleted": "Articolo eliminato ✓",
+      "errorDelete": "Errore nell'eliminazione dell'articolo ❌",
+      "moved": "Articolo spostato ✓",
+      "errorMove": "Errore nello spostamento dell'articolo ❌"
+    },
+    "meal": {
+      "added": "Pasto creato! ✨",
+      "errorAdd": "Errore nella creazione del pasto ❌",
+      "updated": "Pasto aggiornato ✓",
+      "errorUpdate": "Errore nell'aggiornamento del pasto ❌",
+      "deleted": "Pasto eliminato ✓",
+      "errorDelete": "Errore nell'eliminazione del pasto ❌"
+    },
+    "service": {
+      "added": "Servizio aggiunto! ✨",
+      "errorAdd": "Errore nell'aggiunta del servizio ❌",
+      "updated": "Servizio aggiornato ✓",
+      "errorUpdate": "Errore nell'aggiornamento del servizio ❌",
+      "deleted": "Servizio eliminato ✓",
+      "errorDelete": "Errore nell'eliminazione del servizio ❌"
+    },
+    "profile": {
+      "fullName": "Nome completo",
+      "exampleName": "Es: Marco Rossi",
+      "changeEmoji": "Cambia emoji",
+      "chooseEmoji": "Scegli emoji",
+      "close": "Chiudi",
+      "theme": "Tema",
+      "language": "Lingua",
+      "logout": "Esci",
+      "deleteAccountWarning": "Avvertenza: questa azione è irreversibile. Tutti i tuoi dati verranno eliminati.",
+      "updateLoading": "Salvataggio in corso...",
+      "synchronized": "Sincronizzato"
+    },
+    "actions": {
+      "notLoggedInProfile": "Devi essere connesso per modificare il tuo profilo.",
+      "notLoggedInDelete": "Devi essere connesso per eliminare il tuo account.",
+      "notLoggedInAI": "Devi essere connesso per utilizzare la generazione AI.",
+      "ingredientsGenerationFailed": "Nessun ingrediente generato. Riprova.",
+      "confirmationRequired": "Conferma richiesta."
+    }
   }
 }

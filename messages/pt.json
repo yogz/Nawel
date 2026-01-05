@@ -483,5 +483,65 @@
     "rejectAll": "Rejeitar tudo",
     "customize": "Personalizar",
     "legalNotice": "Ao continuar, você aceita nosso uso de cookies de acordo com nossa política de privacidade."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} adicionado! ✨",
+      "errorAdd": "Erro ao adicionar convidado ❌",
+      "updated": "Convidado atualizado ✓",
+      "errorUpdate": "Erro ao atualizar convidado ❌",
+      "deleted": "{name} deletado ✓",
+      "errorDelete": "Erro ao deletar convidado ❌",
+      "claimed": "Perfil vinculado com sucesso ✓",
+      "errorClaim": "Erro ao vincular perfil ❌",
+      "unclaimed": "Perfil desvinculado com sucesso ✓",
+      "errorUnclaim": "Erro ao desvincular perfil ❌"
+    },
+    "item": {
+      "added": "{name} adicionado! ✨",
+      "errorAdd": "Erro ao adicionar item ❌",
+      "updated": "Item atualizado ✓",
+      "errorUpdate": "Erro ao atualizar item ❌",
+      "deleted": "Item deletado ✓",
+      "errorDelete": "Erro ao deletar item ❌",
+      "moved": "Item movido ✓",
+      "errorMove": "Erro ao mover item ❌"
+    },
+    "meal": {
+      "added": "Refeição criada! ✨",
+      "errorAdd": "Erro ao criar refeição ❌",
+      "updated": "Refeição atualizada ✓",
+      "errorUpdate": "Erro ao atualizar refeição ❌",
+      "deleted": "Refeição deletada ✓",
+      "errorDelete": "Erro ao deletar refeição ❌"
+    },
+    "service": {
+      "added": "Serviço adicionado! ✨",
+      "errorAdd": "Erro ao adicionar serviço ❌",
+      "updated": "Serviço atualizado ✓",
+      "errorUpdate": "Erro ao atualizar serviço ❌",
+      "deleted": "Serviço deletado ✓",
+      "errorDelete": "Erro ao deletar serviço ❌"
+    },
+    "profile": {
+      "fullName": "Nome completo",
+      "exampleName": "Ex: João Silva",
+      "changeEmoji": "Mudar emoji",
+      "chooseEmoji": "Escolher emoji",
+      "close": "Fechar",
+      "theme": "Tema",
+      "language": "Idioma",
+      "logout": "Sair",
+      "deleteAccountWarning": "Aviso: esta ação é irreversível. Todos os seus dados serão deletados.",
+      "updateLoading": "Salvando...",
+      "synchronized": "Sincronizado"
+    },
+    "actions": {
+      "notLoggedInProfile": "Você deve estar conectado para modificar seu perfil.",
+      "notLoggedInDelete": "Você deve estar conectado para deletar sua conta.",
+      "notLoggedInAI": "Você deve estar conectado para usar a geração por IA.",
+      "ingredientsGenerationFailed": "Nenhum ingrediente gerado. Tente novamente.",
+      "confirmationRequired": "Confirmação necessária."
+    }
   }
 }

@@ -5,7 +5,8 @@ import { type Service } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Check } from "lucide-react";
+import { Trash2, Check, ChevronDown } from "lucide-react";
+import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import {
   Select,
@@ -39,6 +40,7 @@ export function ServiceEditForm({
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
+  const [showDetails, setShowDetails] = useState(false);
   const skipSaveRef = useRef(false);
   const stateRef = useRef({ title, adults, children, peopleCount });
 
@@ -158,22 +160,41 @@ export function ServiceEditForm({
       </div>
 
       <div className="flex flex-col gap-3 pt-4">
-        {onDelete && (
-          <Button
-            type="button"
-            variant="premium"
-            className="w-full border-red-50 bg-red-50/10 shadow-sm"
-            icon={<Trash2 size={16} />}
-            iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-            onClick={() => {
-              skipSaveRef.current = true;
-              onDelete(service);
-            }}
-          >
-            <span className="text-xs font-black uppercase tracking-widest text-red-500 transition-colors group-hover:text-red-600">
-              {t("deleteButton")}
-            </span>
-          </Button>
+        <button
+          type="button"
+          onClick={() => setShowDetails(!showDetails)}
+          className="group flex items-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+        >
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+            <ChevronDown
+              className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
+            />
+          </div>
+          {showDetails ? tCommon("showLess") : tCommon("showMore")}
+        </button>
+
+        {showDetails && (
+          <div className="space-y-4 border-t border-gray-100 pt-4">
+            {onDelete && (
+              <div className="pt-2">
+                <Button
+                  type="button"
+                  variant="premium"
+                  className="w-full border-red-100 bg-red-50/30"
+                  icon={<Trash2 size={14} />}
+                  iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
+                  onClick={() => {
+                    skipSaveRef.current = true;
+                    onDelete(service);
+                  }}
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-red-600">
+                    {t("deleteButton")}
+                  </span>
+                </Button>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

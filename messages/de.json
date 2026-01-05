@@ -475,5 +475,65 @@
     "rejectAll": "Alle ablehnen",
     "customize": "Anpassen",
     "legalNotice": "Durch Fortsetzung akzeptieren Sie unsere Verwendung von Cookies gemäß unserer Datenschutzrichtlinie."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} hinzugefügt! ✨",
+      "errorAdd": "Fehler beim Hinzufügen des Gastes ❌",
+      "updated": "Gast aktualisiert ✓",
+      "errorUpdate": "Fehler beim Aktualisieren des Gastes ❌",
+      "deleted": "{name} gelöscht ✓",
+      "errorDelete": "Fehler beim Löschen des Gastes ❌",
+      "claimed": "Profil erfolgreich verknüpft ✓",
+      "errorClaim": "Fehler beim Verknüpfen des Profils ❌",
+      "unclaimed": "Profil erfolgreich entfernt ✓",
+      "errorUnclaim": "Fehler beim Entfernen des Profils ❌"
+    },
+    "item": {
+      "added": "{name} hinzugefügt! ✨",
+      "errorAdd": "Fehler beim Hinzufügen des Artikels ❌",
+      "updated": "Artikel aktualisiert ✓",
+      "errorUpdate": "Fehler beim Aktualisieren des Artikels ❌",
+      "deleted": "Artikel gelöscht ✓",
+      "errorDelete": "Fehler beim Löschen des Artikels ❌",
+      "moved": "Artikel verschoben ✓",
+      "errorMove": "Fehler beim Verschieben des Artikels ❌"
+    },
+    "meal": {
+      "added": "Mahlzeit erstellt! ✨",
+      "errorAdd": "Fehler beim Erstellen der Mahlzeit ❌",
+      "updated": "Mahlzeit aktualisiert ✓",
+      "errorUpdate": "Fehler beim Aktualisieren der Mahlzeit ❌",
+      "deleted": "Mahlzeit gelöscht ✓",
+      "errorDelete": "Fehler beim Löschen der Mahlzeit ❌"
+    },
+    "service": {
+      "added": "Service hinzugefügt! ✨",
+      "errorAdd": "Fehler beim Hinzufügen des Services ❌",
+      "updated": "Service aktualisiert ✓",
+      "errorUpdate": "Fehler beim Aktualisieren des Services ❌",
+      "deleted": "Service gelöscht ✓",
+      "errorDelete": "Fehler beim Löschen des Services ❌"
+    },
+    "profile": {
+      "fullName": "Vollständiger Name",
+      "exampleName": "z.B. Max Mustermann",
+      "changeEmoji": "Emoji ändern",
+      "chooseEmoji": "Emoji wählen",
+      "close": "Schließen",
+      "theme": "Design",
+      "language": "Sprache",
+      "logout": "Abmelden",
+      "deleteAccountWarning": "Warnung: Diese Aktion ist nicht rückgängig zu machen. Alle Ihre Daten werden gelöscht.",
+      "updateLoading": "Wird gespeichert...",
+      "synchronized": "Synchronisiert"
+    },
+    "actions": {
+      "notLoggedInProfile": "Sie müssen angemeldet sein, um Ihr Profil zu ändern.",
+      "notLoggedInDelete": "Sie müssen angemeldet sein, um Ihren Account zu löschen.",
+      "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
+      "ingredientsGenerationFailed": "Keine Zutaten generiert. Bitte versuchen Sie es erneut.",
+      "confirmationRequired": "Bestätigung erforderlich."
+    }
   }
 }

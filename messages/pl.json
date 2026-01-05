@@ -483,5 +483,65 @@
     "rejectAll": "Odrzuć wszystko",
     "customize": "Dostosuj",
     "legalNotice": "Kontynuując, akceptujesz nasze użycie plików cookie zgodnie z naszą polityką prywatności."
+  },
+  "Translations": {
+    "person": {
+      "added": "{name} dodany! ✨",
+      "errorAdd": "Błąd dodawania gościa ❌",
+      "updated": "Gość zaktualizowany ✓",
+      "errorUpdate": "Błąd aktualizacji gościa ❌",
+      "deleted": "{name} usunięty ✓",
+      "errorDelete": "Błąd usuwania gościa ❌",
+      "claimed": "Profil powiązany pomyślnie ✓",
+      "errorClaim": "Błąd powiązania profilu ❌",
+      "unclaimed": "Profil odłączony pomyślnie ✓",
+      "errorUnclaim": "Błąd odłączenia profilu ❌"
+    },
+    "item": {
+      "added": "{name} dodany! ✨",
+      "errorAdd": "Błąd dodawania przedmiotu ❌",
+      "updated": "Przedmiot zaktualizowany ✓",
+      "errorUpdate": "Błąd aktualizacji przedmiotu ❌",
+      "deleted": "Przedmiot usunięty ✓",
+      "errorDelete": "Błąd usuwania przedmiotu ❌",
+      "moved": "Przedmiot przesunięty ✓",
+      "errorMove": "Błąd przenoszenia przedmiotu ❌"
+    },
+    "meal": {
+      "added": "Posiłek stworzony! ✨",
+      "errorAdd": "Błąd tworzenia posiłku ❌",
+      "updated": "Posiłek zaktualizowany ✓",
+      "errorUpdate": "Błąd aktualizacji posiłku ❌",
+      "deleted": "Posiłek usunięty ✓",
+      "errorDelete": "Błąd usuwania posiłku ❌"
+    },
+    "service": {
+      "added": "Usługa dodana! ✨",
+      "errorAdd": "Błąd dodawania usługi ❌",
+      "updated": "Usługa zaktualizowana ✓",
+      "errorUpdate": "Błąd aktualizacji usługi ❌",
+      "deleted": "Usługa usunięta ✓",
+      "errorDelete": "Błąd usuwania usługi ❌"
+    },
+    "profile": {
+      "fullName": "Pełna nazwa",
+      "exampleName": "Np. Jan Kowalski",
+      "changeEmoji": "Zmień emoji",
+      "chooseEmoji": "Wybierz emoji",
+      "close": "Zamknij",
+      "theme": "Motyw",
+      "language": "Język",
+      "logout": "Wyloguj się",
+      "deleteAccountWarning": "Ostrzeżenie: tej czynności nie można cofnąć. Wszystkie Twoje dane zostaną usunięte.",
+      "updateLoading": "Zapisywanie...",
+      "synchronized": "Zsynchronizowane"
+    },
+    "actions": {
+      "notLoggedInProfile": "Musisz być zalogowany, aby zmodyfikować swój profil.",
+      "notLoggedInDelete": "Musisz być zalogowany, aby usunąć konto.",
+      "notLoggedInAI": "Musisz być zalogowany, aby używać generowania AI.",
+      "ingredientsGenerationFailed": "Nie wygenerowano składników. Spróbuj ponownie.",
+      "confirmationRequired": "Wymagane potwierdzenie."
+    }
   }
 }

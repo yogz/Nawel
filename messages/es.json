@@ -475,5 +475,65 @@
     "rejectAll": "Rechazar todo",
     "customize": "Personalizar",
     "legalNotice": "Al continuar, aceptas nuestro uso de cookies de acuerdo con nuestra política de privacidad."
+  },
+  "Translations": {
+    "person": {
+      "added": "¡{name} añadido(a)! ✨",
+      "errorAdd": "Error al añadir invitado ❌",
+      "updated": "Invitado actualizado ✓",
+      "errorUpdate": "Error al actualizar invitado ❌",
+      "deleted": "{name} eliminado ✓",
+      "errorDelete": "Error al eliminar invitado ❌",
+      "claimed": "Perfil vinculado correctamente ✓",
+      "errorClaim": "Error al vincular perfil ❌",
+      "unclaimed": "Perfil desvinculado correctamente ✓",
+      "errorUnclaim": "Error al desvincular perfil ❌"
+    },
+    "item": {
+      "added": "¡{name} añadido! ✨",
+      "errorAdd": "Error al añadir artículo ❌",
+      "updated": "Artículo actualizado ✓",
+      "errorUpdate": "Error al actualizar artículo ❌",
+      "deleted": "Artículo eliminado ✓",
+      "errorDelete": "Error al eliminar artículo ❌",
+      "moved": "Artículo movido ✓",
+      "errorMove": "Error al mover artículo ❌"
+    },
+    "meal": {
+      "added": "¡Comida creada! ✨",
+      "errorAdd": "Error al crear comida ❌",
+      "updated": "Comida actualizada ✓",
+      "errorUpdate": "Error al actualizar comida ❌",
+      "deleted": "Comida eliminada ✓",
+      "errorDelete": "Error al eliminar comida ❌"
+    },
+    "service": {
+      "added": "¡Servicio añadido! ✨",
+      "errorAdd": "Error al añadir servicio ❌",
+      "updated": "Servicio actualizado ✓",
+      "errorUpdate": "Error al actualizar servicio ❌",
+      "deleted": "Servicio eliminado ✓",
+      "errorDelete": "Error al eliminar servicio ❌"
+    },
+    "profile": {
+      "fullName": "Nombre completo",
+      "exampleName": "Ej: Juan Pérez",
+      "changeEmoji": "Cambiar emoji",
+      "chooseEmoji": "Elegir emoji",
+      "close": "Cerrar",
+      "theme": "Tema",
+      "language": "Idioma",
+      "logout": "Cerrar sesión",
+      "deleteAccountWarning": "Advertencia: Esta acción es irreversible. Todos tus datos serán eliminados.",
+      "updateLoading": "Guardando...",
+      "synchronized": "Sincronizado"
+    },
+    "actions": {
+      "notLoggedInProfile": "Debes estar conectado para modificar tu perfil.",
+      "notLoggedInDelete": "Debes estar conectado para eliminar tu cuenta.",
+      "notLoggedInAI": "Debes estar conectado para usar la generación por IA.",
+      "ingredientsGenerationFailed": "No se generaron ingredientes. Inténtalo de nuevo.",
+      "confirmationRequired": "Se requiere confirmación."
+    }
   }
 }
