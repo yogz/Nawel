@@ -1,14 +1,25 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState, useEffect } from "react";
 import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
-import { Scale, Euro, MessageSquare, ChefHat, CircleHelp, Edit3, Plus } from "lucide-react";
+import {
+  Scale,
+  Euro,
+  MessageSquare,
+  ChefHat,
+  CircleHelp,
+  Edit3,
+  Plus,
+  ArrowRight,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "../ui/button";
 import { SwipeableCard } from "../ui/swipeable-card";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface ItemRowProps {
   item: Item;
@@ -31,15 +42,48 @@ function ItemRowComponent({
 }: ItemRowProps) {
   const t = useTranslations("EventDashboard.ItemForm");
   const tShared = useTranslations("EventDashboard.Shared");
+  const isMobile = useIsMobile();
+  const [hasSeenSwipeHint, setHasSeenSwipeHint] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("colist_swipe_hint_seen") === "true";
+    }
+    return false;
+  });
+
+  // Haptic feedback on mobile
+  const triggerHaptic = () => {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(10);
+    }
+  };
+
+  useEffect(() => {
+    if (hasSeenSwipeHint) {
+      return;
+    }
+    // Auto-dismiss after 5 seconds
+    const timer = setTimeout(() => {
+      setHasSeenSwipeHint(true);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("colist_swipe_hint_seen", "true");
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [hasSeenSwipeHint]);
 
   const content = (
     <button
       type="button"
-      onClick={() => !readOnly && onAssign()}
+      onClick={() => {
+        if (!readOnly) {
+          triggerHaptic();
+          onAssign();
+        }
+      }}
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-3 px-2 py-3 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.98] active:bg-black/5",
+        "group relative flex w-full items-center justify-between gap-3 px-3 py-4 text-left transition-all duration-150 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.96] active:bg-gray-100 sm:px-2 sm:py-3",
         !readOnly &&
           "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
@@ -58,7 +102,7 @@ function ItemRowComponent({
               {item.name}
             </p>
             {!readOnly && (
-              <Edit3 className="h-3 w-3 shrink-0 text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100" />
+              <Edit3 className="h-4 w-4 shrink-0 text-accent/40 opacity-100 transition-opacity sm:h-3 sm:w-3 sm:opacity-0 sm:group-hover:opacity-100" />
             )}
           </div>
 
@@ -68,26 +112,26 @@ function ItemRowComponent({
             (item.ingredients && item.ingredients.length > 0)) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gray-600">
-                  <Scale size={11} className="text-gray-500" />
+                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-gray-600 sm:text-[10px]">
+                  <Scale size={12} className="text-gray-500 sm:h-[11px] sm:w-[11px]" />
                   {item.quantity}
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-700">
-                  <Euro size={11} className="text-green-600/70" />
+                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-green-700 sm:text-[10px]">
+                  <Euro size={12} className="text-green-600/70 sm:h-[11px] sm:w-[11px]" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-purple-700">
-                  <ChefHat size={11} className="text-purple-600/70" />
+                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-purple-700 sm:text-[10px]">
+                  <ChefHat size={12} className="text-purple-600/70 sm:h-[11px] sm:w-[11px]" />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1 text-[10px] font-medium italic text-blue-700">
-                  <MessageSquare size={11} className="text-blue-600/70" />
+                <div className="flex items-center gap-1 text-xs font-medium italic text-blue-700 sm:text-[10px]">
+                  <MessageSquare size={12} className="text-blue-600/70 sm:h-[11px] sm:w-[11px]" />
                   <span className="max-w-[140px] truncate">
                     {item.note.startsWith("EventDashboard.")
                       ? t("defaultNote", { count: peopleCount || 0 })
@@ -119,7 +163,7 @@ function ItemRowComponent({
                   <span className="relative inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
                 </span>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white">
+              <span className="text-xs font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white sm:text-[10px]">
                 {t("takeAction")}
               </span>
             </div>
@@ -152,6 +196,8 @@ function ItemRowComponent({
                       src={avatar.src}
                       alt={getDisplayName(person)}
                       className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 );
@@ -164,6 +210,27 @@ function ItemRowComponent({
 
       {/* Subtle bottom line for separation */}
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-black/5" />
+
+      {/* Swipe hint for mobile */}
+      {!readOnly && isMobile && !hasSeenSwipeHint && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0 }}
+            className="absolute bottom-0 left-0 top-0 flex items-center rounded-l-lg bg-accent/10 px-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              setHasSeenSwipeHint(true);
+              if (typeof window !== "undefined") {
+                localStorage.setItem("colist_swipe_hint_seen", "true");
+              }
+            }}
+          >
+            <ArrowRight className="h-4 w-4 animate-pulse text-accent" />
+          </motion.div>
+        </AnimatePresence>
+      )}
     </button>
   );
 

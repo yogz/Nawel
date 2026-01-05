@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Calendar } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealContainer } from "./meal-container";
 import { cn } from "@/lib/utils";
 import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 import {
   type DragEndEvent,
@@ -84,6 +85,7 @@ export function PlanningTab({
   const tHeader = useTranslations("EventDashboard.Header");
   const tSettings = useTranslations("EventDashboard.Settings");
   const { theme } = useThemeMode();
+  const isMobile = useIsMobile();
   const [hasMounted, setHasMounted] = useState(false);
   const [activeMealId, setActiveMealId] = useState<number | "all" | null>(
     plan.meals.length > 1 ? "all" : plan.meals.length > 0 ? plan.meals[0].id : null
@@ -113,14 +115,18 @@ export function PlanningTab({
     return null;
   }
 
-  const unassignedItemsCount = plan.meals.reduce(
-    (acc, meal) =>
-      acc +
-      meal.services.reduce(
-        (acc2, service) => acc2 + service.items.filter((i) => !i.personId).length,
+  const unassignedItemsCount = useMemo(
+    () =>
+      plan.meals.reduce(
+        (acc, meal) =>
+          acc +
+          meal.services.reduce(
+            (acc2, service) => acc2 + service.items.filter((i) => !i.personId).length,
+            0
+          ),
         0
       ),
-    0
+    [plan.meals]
   );
 
   return (
@@ -131,9 +137,9 @@ export function PlanningTab({
       onDragEnd={onDragEnd}
     >
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
+        variants={isMobile ? {} : containerVariants}
+        initial={isMobile ? false : "hidden"}
+        animate={isMobile ? false : "show"}
         className="space-y-2 pt-0"
       >
         <div className="flex flex-col gap-3">
@@ -223,19 +229,33 @@ export function PlanningTab({
           })}
       </motion.div>
       {plan.meals.length === 0 && planningFilter.type === "all" && (
-        <div className="px-4 py-8 text-center">
-          <p className="mb-4 text-gray-500">{t("noMeals")}</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="px-4 py-12 text-center"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="mb-6 flex justify-center"
+          >
+            <Calendar className="h-20 w-20 text-gray-300" />
+          </motion.div>
+          <h3 className="mb-2 text-lg font-bold text-gray-900">{t("noMeals")}</h3>
+          <p className="mx-auto mb-6 max-w-sm text-sm text-gray-500">
+            Créez votre premier repas pour commencer à organiser votre événement
+          </p>
           {!readOnly && (
             <Button
               variant="premium"
-              className="w-full border-2 border-dashed border-accent/20 bg-accent/5 p-4 pr-6"
-              icon={<PlusIcon />}
+              className="h-14 w-full max-w-xs text-base font-bold sm:h-12 sm:text-sm"
+              icon={<PlusIcon size={24} className="sm:h-5 sm:w-5" />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
-              <span className="font-semibold text-accent">{t("addMeal")}</span>
+              {t("addMeal")}
             </Button>
           )}
-        </div>
+        </motion.div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">

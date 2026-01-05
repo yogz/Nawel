@@ -108,8 +108,8 @@ export function MealContainer({
             <PopoverTrigger asChild>
               <Button
                 variant="premium"
-                className="h-8 w-8 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
-                icon={<Calendar className="h-3 w-3" />}
+                className="h-11 w-11 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95 sm:h-8 sm:w-8"
+                icon={<Calendar className="h-4 w-4 sm:h-3 sm:w-3" />}
                 iconClassName="h-full w-full"
               />
             </PopoverTrigger>

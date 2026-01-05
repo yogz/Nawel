@@ -71,7 +71,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               </div>
               <span
                 className={clsx(
-                  "relative z-10 text-[9px] font-black uppercase tracking-tighter transition-all",
+                  "relative z-10 text-xs font-black uppercase tracking-tighter transition-all sm:text-[9px]",
                   selected ? "text-accent opacity-100" : "opacity-60"
                 )}
               >

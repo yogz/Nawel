@@ -250,7 +250,12 @@ export function Organizer({
   }, [writeKey, slug, setReadOnly]);
 
   return (
-    <div className="flex min-h-screen flex-col pb-24 text-gray-900">
+    <div
+      className="flex min-h-screen flex-col text-gray-900"
+      style={{
+        paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
+      }}
+    >
       <OrganizerHeader
         readOnly={readOnly}
         tab={tab}
@@ -270,7 +275,7 @@ export function Organizer({
       />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-3 py-4">
+        <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab

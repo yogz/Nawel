@@ -92,7 +92,7 @@ export function OrganizerHeader({
           style={{
             background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 30%, rgba(255, 255, 255, 0) 100%)`,
           }}
-          className="w-full px-4 pb-6 pt-4 backdrop-blur-sm transition-all"
+          className="w-full px-4 pb-8 pt-6 backdrop-blur-sm transition-all sm:px-4 sm:pb-6 sm:pt-4"
         >
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between gap-4">
@@ -105,8 +105,8 @@ export function OrganizerHeader({
 
               <div className="flex shrink-0 items-center gap-2">
                 {readOnly && (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-sm">
-                    <ShieldAlert size={14} />
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-sm sm:h-8 sm:w-8">
+                    <ShieldAlert size={16} className="sm:h-[14px] sm:w-[14px]" />
                   </span>
                 )}
                 {!readOnly && (
@@ -114,7 +114,7 @@ export function OrganizerHeader({
                     variant="premium"
                     onClick={handleShare}
                     className={cn(
-                      "h-8 w-8 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95",
+                      "h-11 w-11 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95 sm:h-8 sm:w-8",
                       showAttention && "btn-shine-attention"
                     )}
                     icon={
@@ -131,7 +131,7 @@ export function OrganizerHeader({
                     title={t("shareTitle")}
                   />
                 )}
-                <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10">
+                <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10 sm:h-8 sm:w-8">
                   <UserNav />
                 </div>
               </div>
@@ -140,7 +140,10 @@ export function OrganizerHeader({
             {tab === "planning" && (
               <div className="mt-1">
                 <div className="px-0.5 pb-0.5">
-                  <CitationDisplay seed={plan.event?.name || slug} className="text-[10px]" />
+                  <CitationDisplay
+                    seed={plan.event?.name || slug}
+                    className="text-xs sm:text-[10px]"
+                  />
                 </div>
               </div>
             )}
@@ -186,14 +189,14 @@ export function PlanningFilters({
         <TabsList className="h-9 w-full rounded-full border border-white/20 bg-gray-200/30 p-1 backdrop-blur-md">
           <TabsTrigger
             value="all"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-[9px] font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-xs"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
           >
             <Stars size={12} className="shrink-0" />
             <span className="truncate">{t("all")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="unassigned"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-[9px] font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-xs"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
           >
             <div className="relative">
               <CircleHelp size={12} className="shrink-0" />
