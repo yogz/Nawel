@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import confetti from "canvas-confetti";
 import {
   createItemAction,
@@ -24,6 +25,7 @@ export function useItemHandlers({
   setSuccessMessage,
 }: ItemHandlerParams) {
   const [, startTransition] = useTransition();
+  const t = useTranslations("Translations");
 
   const setServiceItems = (serviceId: number, updater: (items: Item[]) => Item[]) => {
     setPlan((prev: PlanData) => ({
@@ -71,7 +73,7 @@ export function useItemHandlers({
         trackItemAction("item_created", itemData.name);
       } catch (error) {
         console.error("Failed to create item:", error);
-        setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+        setSuccessMessage({ text: t("item.errorAdd"), type: "error" });
       }
     });
   };
@@ -198,7 +200,7 @@ export function useItemHandlers({
       } catch (error) {
         console.error("Failed to delete item:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+        setSuccessMessage({ text: t("item.errorDelete"), type: "error" });
       }
     });
   };

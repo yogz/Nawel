@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { createServiceAction, updateServiceAction, deleteServiceAction } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { ServiceHandlerParams } from "@/features/shared/types";
@@ -16,6 +17,7 @@ export function useServiceHandlers({
   setSuccessMessage,
 }: ServiceHandlerParams) {
   const [, startTransition] = useTransition();
+  const t = useTranslations("Translations");
 
   const handleCreateService = (
     mealId: number,
@@ -49,7 +51,7 @@ export function useServiceHandlers({
         trackMealServiceAction("service_created", title);
       } catch (error) {
         console.error("Failed to create service:", error);
-        setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+        setSuccessMessage({ text: t("service.errorAdd"), type: "error" });
       }
     });
   };
@@ -100,7 +102,7 @@ export function useServiceHandlers({
         trackMealServiceAction("service_updated", title);
       } catch (error) {
         console.error("Failed to update service:", error);
-        setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+        setSuccessMessage({ text: t("service.errorUpdate"), type: "error" });
       }
     });
   };
@@ -136,7 +138,7 @@ export function useServiceHandlers({
       } catch (error) {
         console.error("Failed to delete service:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+        setSuccessMessage({ text: t("service.errorDelete"), type: "error" });
       }
     });
   };

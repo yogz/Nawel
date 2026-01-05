@@ -1,11 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { deleteEventAction } from "@/app/actions";
 import type { BaseHandlerParams } from "@/features/shared/types";
 
 export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHandlerParams) {
   const [, startTransition] = useTransition();
+  const t = useTranslations("Translations");
 
   const handleDeleteEvent = async () => {
     try {
@@ -18,7 +20,7 @@ export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHand
       }
     } catch (error) {
       console.error("Failed to delete event:", error);
-      setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+      setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
     }
   };
 

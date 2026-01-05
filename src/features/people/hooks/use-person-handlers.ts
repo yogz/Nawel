@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import {
   createPersonAction,
   updatePersonAction,
@@ -25,6 +26,7 @@ export function usePersonHandlers({
   refetch,
 }: PersonHandlerParams) {
   const [, startTransition] = useTransition();
+  const t = useTranslations("Translations");
 
   const handleCreatePerson = (name: string, emoji?: string | null, userId?: string) => {
     if (readOnly) {
@@ -45,11 +47,11 @@ export function usePersonHandlers({
         }));
         setSelectedPerson?.(created.id);
         setSheet(null);
-        setSuccessMessage({ text: `${name} ajouté(e) ! ✨`, type: "success" });
+        setSuccessMessage({ text: t("person.added", { name }), type: "success" });
         trackPersonAction("person_created", name);
       } catch (error) {
         console.error("Failed to create person:", error);
-        setSuccessMessage({ text: "Erreur lors de l'ajout ❌", type: "error" });
+        setSuccessMessage({ text: t("person.errorAdd"), type: "error" });
       }
     });
   };
@@ -85,11 +87,11 @@ export function usePersonHandlers({
         }
 
         setSheet(null);
-        setSuccessMessage({ text: "Convive mis à jour ✓", type: "success" });
+        setSuccessMessage({ text: t("person.updated"), type: "success" });
         trackPersonAction("person_updated", name);
       } catch (error) {
         console.error("Failed to update person:", error);
-        setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
       }
     });
   };
@@ -114,7 +116,10 @@ export function usePersonHandlers({
       })),
     }));
     setSheet(null);
-    setSuccessMessage({ text: `${person?.name || "Convive"} supprimé ✓`, type: "success" });
+    setSuccessMessage({
+      text: t("person.deleted", { name: person?.name || "Convive" }),
+      type: "success",
+    });
     trackPersonAction("person_deleted", person?.name);
 
     startTransition(async () => {
@@ -123,7 +128,7 @@ export function usePersonHandlers({
       } catch (error) {
         console.error("Failed to delete person:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+        setSuccessMessage({ text: t("person.errorDelete"), type: "error" });
       }
     });
   };
@@ -150,11 +155,11 @@ export function usePersonHandlers({
                 : p
             ),
           }));
-          setSuccessMessage({ text: "Compte associé ! ✨", type: "success" });
+          setSuccessMessage({ text: t("person.claimed"), type: "success" });
           resolve(updated);
         } catch (error) {
           console.error("Failed to claim person:", error);
-          setSuccessMessage({ text: "Erreur lors de l'association ❌", type: "error" });
+          setSuccessMessage({ text: t("person.errorClaim"), type: "error" });
           reject(error);
         }
       });
@@ -172,10 +177,10 @@ export function usePersonHandlers({
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, userId: null } : p)),
         }));
-        setSuccessMessage({ text: "Compte délié ✓", type: "success" });
+        setSuccessMessage({ text: t("person.unclaimed"), type: "success" });
       } catch (error) {
         console.error("Failed to unclaim person:", error);
-        setSuccessMessage({ text: "Erreur lors de la déliaison ❌", type: "error" });
+        setSuccessMessage({ text: t("person.errorUnclaim"), type: "error" });
       }
     });
   };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import {
   createMealAction,
   updateMealAction,
@@ -21,6 +22,7 @@ export function useMealHandlers({
   setSuccessMessage,
 }: MealHandlerParams) {
   const [, startTransition] = useTransition();
+  const t = useTranslations("Translations");
 
   const handleCreateMeal = async (
     date: string,
@@ -55,7 +57,7 @@ export function useMealHandlers({
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
-      setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
+      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
       return 0;
     }
   };
@@ -94,7 +96,7 @@ export function useMealHandlers({
         trackMealServiceAction("meal_created", title || date);
       } catch (error) {
         console.error("Failed to create meal with services:", error);
-        setSuccessMessage({ text: "Erreur lors de la création ❌", type: "error" });
+        setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
       }
     });
   };
@@ -158,7 +160,7 @@ export function useMealHandlers({
         trackMealServiceAction("meal_updated", title || date);
       } catch (error) {
         console.error("Failed to update meal:", error);
-        setSuccessMessage({ text: "Erreur lors de la mise à jour ❌", type: "error" });
+        setSuccessMessage({ text: t("meal.errorUpdate"), type: "error" });
       }
     });
   };
@@ -182,7 +184,7 @@ export function useMealHandlers({
       } catch (error) {
         console.error("Failed to delete meal:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: "Erreur lors de la suppression ❌", type: "error" });
+        setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
       }
     });
   };
