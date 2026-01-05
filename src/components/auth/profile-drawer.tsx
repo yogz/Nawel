@@ -28,6 +28,7 @@ interface ProfileDrawerProps {
  * Features: Avatar emoji picker, 2-theme toggle, compact language selector.
  */
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
+  // All hooks must be called unconditionally and in the same order
   const router = useRouter();
   const { data: session, isPending: sessionPending, refetch } = useSession();
   const { theme, setTheme } = useThemeMode();
@@ -121,11 +122,13 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     handleSaveProfile(name, emoji);
   };
 
-  if (sessionPending || !session) {
+  const currentEmojis = THEME_EMOJIS[theme] || THEME_EMOJIS.classic;
+
+  // Early return after all hooks - but only if drawer is not open
+  // This prevents rendering when session is not ready, but keeps hooks consistent
+  if (!open || sessionPending || !session) {
     return null;
   }
-
-  const currentEmojis = THEME_EMOJIS[theme] || THEME_EMOJIS.classic;
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
