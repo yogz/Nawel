@@ -118,10 +118,12 @@ export function ServiceForm({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {!forceNewMeal && meals.length > 0 && (
         <div className="space-y-2">
-          <Label>{t("selectMealLabel")}</Label>
+          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+            {t("selectMealLabel")}
+          </Label>
           <Select
             value={mealId}
             onValueChange={(val) => {
@@ -160,40 +162,32 @@ export function ServiceForm({
       )}
 
       {(mealId === "new" || forceNewMeal) && (
-        <div className="space-y-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+        <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50 p-4">
           <p className="text-xs font-black uppercase tracking-widest text-gray-400">
             {t("newMealSection")}
           </p>
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <div className="relative">
-              <Input
-                id="date"
-                type="date"
-                value={newMealDate ? format(newMealDate, "yyyy-MM-dd") : ""}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setNewMealDate(val ? new Date(val) : undefined);
-                }}
-                className="h-10 w-full rounded-xl border-gray-100 bg-gray-50/50 pl-9 text-base focus:bg-white focus:ring-accent/20"
-              />
-              <CalendarIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="meal-title">{tMeal("titleLabel")}</Label>
-            <Input
-              id="meal-title"
-              placeholder={tMeal("titlePlaceholder")}
-              value={newMealTitle}
-              onChange={(e) => setNewMealTitle(e.target.value)}
-              disabled={readOnly}
-              autoCapitalize="sentences"
-              enterKeyHint="next"
-              className="h-10 rounded-xl"
-            />
-          </div>
           <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label
+                htmlFor="date"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              >
+                Date
+              </Label>
+              <div className="relative">
+                <Input
+                  id="date"
+                  type="date"
+                  value={newMealDate ? format(newMealDate, "yyyy-MM-dd") : ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setNewMealDate(val ? new Date(val) : undefined);
+                  }}
+                  className="h-10 w-full rounded-xl border-gray-100 bg-gray-50/50 pl-9 text-base focus:bg-white focus:ring-accent/20"
+                />
+                <CalendarIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="meal-time">{tMeal("timeLabel")}</Label>
               <div className="relative">
@@ -211,7 +205,30 @@ export function ServiceForm({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="meal-address">{tMeal("addressLabel")}</Label>
+            <Label
+              htmlFor="meal-title"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              {tMeal("titleLabel")}
+            </Label>
+            <Input
+              id="meal-title"
+              placeholder={tMeal("titlePlaceholder")}
+              value={newMealTitle}
+              onChange={(e) => setNewMealTitle(e.target.value)}
+              disabled={readOnly}
+              autoCapitalize="sentences"
+              enterKeyHint="next"
+              className="h-10 rounded-xl"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="meal-address"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              {tMeal("addressLabel")}
+            </Label>
             <div className="relative">
               <Input
                 id="meal-address"
@@ -243,7 +260,6 @@ export function ServiceForm({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={readOnly}
-          autoFocus
           autoCapitalize="sentences"
           enterKeyHint="done"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"

@@ -31,7 +31,7 @@ export function PersonForm({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="space-y-2">
         <Label
           htmlFor="person-name"
@@ -50,7 +50,6 @@ export function PersonForm({
             }
           }}
           disabled={readOnly}
-          autoFocus
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"

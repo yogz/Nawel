@@ -207,7 +207,6 @@ export function ItemForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           disabled={readOnly}
-          autoFocus={!defaultItem}
           autoCapitalize="sentences"
           enterKeyHint="next"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"

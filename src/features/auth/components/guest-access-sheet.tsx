@@ -22,7 +22,7 @@ export function GuestAccessSheet({
           <DrawerTitle>{t("title")}</DrawerTitle>
         </DrawerHeader>
         <div className="scrollbar-none overflow-y-auto pb-8">
-          <div className="space-y-6 py-6 font-sans">
+          <div className="space-y-4 py-6 font-sans">
             <div className="space-y-2 px-4 text-center">
               <p className="text-gray-600">{t("description")}</p>
             </div>

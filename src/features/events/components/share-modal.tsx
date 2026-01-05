@@ -64,7 +64,7 @@ export function ShareModal({
   };
 
   return (
-    <div className="space-y-6 pb-2 pt-1 transition-all">
+    <div className="space-y-4 pb-2 pt-1 transition-all">
       <div className="text-center">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
