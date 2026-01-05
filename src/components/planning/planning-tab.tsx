@@ -244,7 +244,7 @@ export function PlanningTab({
             <Button
               variant="premium"
               className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_12px_40px_rgba(var(--accent),0.2)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_15px_50px_rgba(var(--accent),0.3)] active:scale-95"
-              icon={<PlusIcon className="text-accent" size={20} />}
+              icon={<PlusIcon size={20} />}
               shine
               onClick={() =>
                 onCreateService(
@@ -262,7 +262,7 @@ export function PlanningTab({
             <Button
               variant="premium"
               className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
-              icon={<PlusIcon className="text-gray-400" size={16} />}
+              icon={<PlusIcon size={16} />}
               shine
               onClick={() => setSheet({ type: "meal-create" })}
             >
