@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars } from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
@@ -41,6 +41,13 @@ export function OrganizerHeader({
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
+  const [showAttention, setShowAttention] = useState(true);
+
+  // Stop the attention-grabbing effect after 2 minutes
+  useEffect(() => {
+    const timer = setTimeout(() => setShowAttention(false), 2 * 60 * 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleShare = async () => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -106,7 +113,10 @@ export function OrganizerHeader({
                   <Button
                     variant="premium"
                     onClick={handleShare}
-                    className="btn-shine-attention h-8 w-8 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95"
+                    className={cn(
+                      "h-8 w-8 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95",
+                      showAttention && "btn-shine-attention"
+                    )}
                     icon={
                       copied ? (
                         <CheckCircle
