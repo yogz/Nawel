@@ -76,26 +76,49 @@ export function useMealHandlers({
     }
     startTransition(async () => {
       try {
-        const created = await createMealWithServicesAction({
-          date,
-          title,
-          services,
-          slug,
-          key: writeKey,
-          adults,
-          children,
-          time,
-          address,
-        });
-        setPlan((prev: PlanData) => ({
-          ...prev,
-          meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
-        }));
-        setSheet(null);
-        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
-        trackMealServiceAction("meal_created", title || date);
+        // If no services, use createMealAction instead
+        if (services.length === 0) {
+          const created = await createMealAction({
+            date,
+            title,
+            slug,
+            key: writeKey,
+            adults,
+            children,
+            time,
+            address,
+          });
+          setPlan((prev: PlanData) => ({
+            ...prev,
+            meals: [...prev.meals, { ...created, services: [] }].sort((a, b) =>
+              a.date.localeCompare(b.date)
+            ),
+          }));
+          setSheet(null);
+          setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+          trackMealServiceAction("meal_created", title || date);
+        } else {
+          const created = await createMealWithServicesAction({
+            date,
+            title,
+            services,
+            slug,
+            key: writeKey,
+            adults,
+            children,
+            time,
+            address,
+          });
+          setPlan((prev: PlanData) => ({
+            ...prev,
+            meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
+          }));
+          setSheet(null);
+          setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+          trackMealServiceAction("meal_created", title || date);
+        }
       } catch (error) {
-        console.error("Failed to create meal with services:", error);
+        console.error("Failed to create meal:", error);
         setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
       }
     });
