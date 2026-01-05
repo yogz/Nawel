@@ -6,11 +6,11 @@ import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
-import { PlusIcon, Edit3, Trash2 } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealContainer } from "./meal-container";
 import { cn } from "@/lib/utils";
-import { WarningBanner } from "../common/warning-banner";
+import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
 
 import {
   type DragEndEvent,
@@ -41,7 +41,7 @@ interface PlanningTabProps {
   slug: string;
   writeKey?: string;
   isOwner?: boolean;
-  onDeleteEvent?: () => void;
+  onDeleteEvent?: () => Promise<void>;
 }
 
 const containerVariants: Variants = {
@@ -89,6 +89,17 @@ export function PlanningTab({
   );
 
   const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteWrapper = async () => {
+    if (!onDeleteEvent) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteEvent();
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     setHasMounted(true);
@@ -242,38 +253,32 @@ export function PlanningTab({
 
           {/* Danger Zone - Two-step process */}
           {isOwner && onDeleteEvent && (
-            <div className="mt-4 flex flex-col items-center gap-4">
+            <div className="mt-4 flex w-full flex-col items-center gap-4">
               {!isDeleteRevealed ? (
-                <button
-                  onClick={() => setIsDeleteRevealed(true)}
-                  aria-label={`${tSettings("dangerZone")}: ${tSettings("deleteEvent")}`}
-                  aria-expanded={isDeleteRevealed}
-                  className="opacity-40 transition-all hover:opacity-100 active:scale-95"
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 underline-offset-4 hover:underline">
-                    {tSettings("dangerZone")} / {tSettings("deleteEvent")}
-                  </span>
-                </button>
+                <div className="w-full max-w-sm">
+                  <DangerZoneTrigger
+                    onClick={() => setIsDeleteRevealed(true)}
+                    label={`${tSettings("dangerZone")} / ${tSettings("deleteEvent")}`}
+                    className="bg-transparent opacity-60 hover:bg-red-50 hover:opacity-100"
+                  />
+                </div>
               ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <div className="mb-4">
-                    <WarningBanner message="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées." />
-                  </div>
-                  <Button
-                    variant="destructive"
-                    className="h-14 w-full rounded-2xl bg-red-600 px-6 font-black uppercase tracking-widest text-white shadow-xl shadow-red-500/20 transition-all hover:bg-red-700 active:scale-95"
-                    onClick={onDeleteEvent}
-                    icon={<Trash2 size={20} />}
-                  >
-                    {tSettings("deleteEvent")}
-                  </Button>
-                  <button
-                    onClick={() => setIsDeleteRevealed(false)}
-                    aria-label={t("cancel")}
-                    className="text-[10px] font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-black"
-                  >
-                    {t("cancel")}
-                  </button>
+                <div className="w-full animate-in fade-in slide-in-from-bottom-2">
+                  <DangerZoneContent
+                    onDelete={handleDeleteWrapper}
+                    onCancel={() => setIsDeleteRevealed(false)}
+                    isDeleting={isDeleting}
+                    title={tSettings("deleteEvent")}
+                    warningMessage="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées."
+                    deleteButtonLabel={tSettings("deleteEvent")}
+                    confirmationConfig={{
+                      title: tSettings("deleteEvent"),
+                      description:
+                        "Cette action est irréversible. Veuillez taper le nom de l'événement pour confirmer.",
+                      confirmationInput: plan.event?.name,
+                      confirmLabel: tSettings("deleteEvent"),
+                    }}
+                  />
                 </div>
               )}
             </div>

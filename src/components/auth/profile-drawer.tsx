@@ -30,7 +30,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { getPersonEmoji, THEME_EMOJIS, renderAvatar } from "@/lib/utils";
 import { LanguageSelector } from "../common/language-selector";
 import { WarningBanner } from "../common/warning-banner";
-import { ConfirmDeleteDialog } from "../common/confirm-delete-dialog";
+import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -43,18 +43,14 @@ interface ProfileDrawerProps {
  */
 export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { data: session, isPending: sessionPending, refetch } = useSession();
   const { theme, setTheme, themes } = useThemeMode();
-  const locale = useLocale() as Locale;
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("Profile");
   const [name, setName] = useState("");
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -448,19 +444,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
 
                   {/* Advanced Options Trigger */}
                   <div className="pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowAdvanced(true)}
-                      className="group flex w-full flex-col items-center justify-center gap-1 py-4 opacity-60 transition-all hover:opacity-100"
-                    >
-                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                        Options avancées
-                      </span>
-                      <ChevronDown
-                        size={14}
-                        className="text-gray-300 transition-transform group-hover:translate-y-0.5 group-hover:text-gray-500"
-                      />
-                    </button>
+                    <DangerZoneTrigger onClick={() => setShowAdvanced(true)} />
                   </div>
                 </div>
               </div>
@@ -474,76 +458,24 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               showAdvanced ? "translate-x-0" : "translate-x-full"
             )}
           >
-            <div className="flex flex-col items-center justify-center space-y-6 pt-8">
-              {/* Danger Zone Header */}
-              <div className="flex flex-col items-center gap-4 text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-red-100">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
-                    <AlertTriangle size={24} strokeWidth={2.5} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-lg font-black uppercase tracking-widest text-gray-900">
-                    {tProfile("dangerZone")}
-                  </h4>
-                </div>
-              </div>
-
-              {/* Warning Banner */}
-              <div className="w-full px-1">
-                <WarningBanner
-                  message="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
-                  className="border-red-100 bg-red-50/50 text-red-600"
-                />
-              </div>
-
-              {/* Actions */}
-              <div className="w-full space-y-3 pt-4">
-                <Button
-                  variant="premium"
-                  className="w-full border-red-200 bg-red-50/80 py-7 shadow-xl shadow-red-500/5 hover:bg-red-100/80"
-                  icon={
-                    isDeleting ? (
-                      <Loader2 size={18} className="animate-spin" />
-                    ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-200 text-red-600 transition-colors group-hover:bg-red-600 group-hover:text-white">
-                        <Trash2 size={16} />
-                      </div>
-                    )
-                  }
-                  onClick={() => setShowDeleteDialog(true)}
-                  disabled={isDeleting}
-                  shine
-                >
-                  <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-red-700">
-                    {isDeleting ? "Suppression..." : "Confirmer la suppression"}
-                  </span>
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowAdvanced(false)}
-                  disabled={isDeleting}
-                  className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                >
-                  {tCommon("cancel") || "Annuler"}
-                </Button>
-              </div>
-            </div>
+            <DangerZoneContent
+              onDelete={handleDeleteAccount}
+              onCancel={() => setShowAdvanced(false)}
+              isDeleting={isDeleting}
+              title={tProfile("dangerZone")}
+              warningMessage="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
+              deleteButtonLabel={tProfile("confirmDelete")}
+              cancelButtonLabel={tCommon("cancel") || "Annuler"}
+              confirmationConfig={{
+                title: tProfile("deleteAccount"),
+                description: tProfile("deleteWarning"),
+                confirmLabel: tProfile("confirmDelete"),
+                cancelLabel: tCommon("cancel") || "Annuler",
+              }}
+            />
           </div>
         </div>
       </DrawerContent>
-
-      <ConfirmDeleteDialog
-        open={showDeleteDialog}
-        onOpenChange={setShowDeleteDialog}
-        title={tProfile("deleteAccount")}
-        description={tProfile("deleteWarning")}
-        onConfirm={handleDeleteAccount}
-        isPending={isDeleting}
-        confirmLabel={tProfile("confirmDelete")}
-        cancelLabel={tCommon("cancel")}
-      />
     </Drawer>
   );
 }

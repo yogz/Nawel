@@ -18,8 +18,6 @@ import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
-import { DeleteEventDialog } from "../common/delete-event-dialog";
-import { Trash2 } from "lucide-react";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
@@ -94,7 +92,6 @@ export function Organizer({
     }
     return false;
   });
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Persist guest prompt dismissal to localStorage
   const dismissGuestPrompt = () => {
@@ -298,7 +295,7 @@ export function Organizer({
                 slug={slug}
                 writeKey={effectiveWriteKey}
                 isOwner={isOwner}
-                onDeleteEvent={() => setDeleteDialogOpen(true)}
+                onDeleteEvent={handleDeleteEvent}
               />
             )}
 
@@ -328,13 +325,6 @@ export function Organizer({
 
         <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
       </div>
-
-      <DeleteEventDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        eventName={plan.event?.name || slug}
-        onConfirm={handleDeleteEvent}
-      />
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
       <Suspense fallback={null}>
