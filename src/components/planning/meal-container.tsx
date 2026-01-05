@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Clock, MapPin, Calendar, Edit3, ExternalLink, Download } from "lucide-react";
+import { Clock, MapPin, Calendar, Edit3, ExternalLink, Download, PlusIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { ServiceSection } from "./service-section";
@@ -23,6 +23,7 @@ interface MealContainerProps {
   onAssign: (item: Item, serviceId?: number) => void;
   onDelete: (item: Item) => void;
   onCreateItem: (serviceId: number) => void;
+  onCreateService?: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   itemVariants: Variants;
 }
@@ -36,6 +37,7 @@ export function MealContainer({
   onAssign,
   onDelete,
   onCreateItem,
+  onCreateService,
   setSheet,
   itemVariants,
 }: MealContainerProps) {
@@ -159,6 +161,19 @@ export function MealContainer({
             activeItemId={activeItemId}
           />
         ))}
+        {!readOnly && onCreateService && (
+          <Button
+            variant="premium"
+            className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_12px_40px_rgba(var(--accent),0.2)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_15px_50px_rgba(var(--accent),0.3)] active:scale-95"
+            icon={<PlusIcon size={20} />}
+            shine
+            onClick={() => onCreateService(meal.id)}
+          >
+            <span className="text-xs font-black uppercase tracking-widest text-accent">
+              {t("addService")}
+            </span>
+          </Button>
+        )}
       </div>
     </motion.div>
   );

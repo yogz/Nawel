@@ -224,6 +224,7 @@ export function PlanningTab({
                 onAssign={onAssign}
                 onDelete={onDelete}
                 onCreateItem={onCreateItem}
+                onCreateService={onCreateService}
                 setSheet={setSheet}
                 itemVariants={itemVariants}
               />
