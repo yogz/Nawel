@@ -110,7 +110,7 @@ export function MealContainer({
                 variant="premium"
                 className="h-7 w-7 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md"
                 icon={<Calendar className="h-3 w-3" />}
-                iconClassName="h-full w-full bg-transparent text-accent"
+                iconClassName="h-full w-full"
               />
             </PopoverTrigger>
             <PopoverContent className="glass w-56 p-2" align="end">
