@@ -163,7 +163,7 @@ export function ServiceEditForm({
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
-          className="group flex items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+          className="group flex w-full items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
         >
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
             <ChevronDown
