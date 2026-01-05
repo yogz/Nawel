@@ -107,6 +107,7 @@ export const ServiceSection = memo(function ServiceSection({
             <div className="flex items-center gap-2">
               <PlusIcon
                 size={14}
+                strokeWidth={3}
                 className="text-accent transition-transform group-hover:scale-125"
               />
               <span className="text-[10px] font-black uppercase tracking-wider text-gray-500 group-hover:text-accent">
