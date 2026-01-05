@@ -33,19 +33,13 @@ function ItemRowComponent({
   const tShared = useTranslations("EventDashboard.Shared");
 
   const content = (
-    <div
-      role={readOnly ? undefined : "button"}
-      tabIndex={readOnly ? undefined : 0}
+    <button
+      type="button"
       onClick={() => !readOnly && onAssign()}
-      onKeyDown={(e) => {
-        if (!readOnly && (e.key === "Enter" || e.key === " ")) {
-          e.preventDefault();
-          onAssign();
-        }
-      }}
+      disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex items-center justify-between gap-3 px-2 py-3 transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.98] active:bg-black/5",
+        "group relative flex w-full items-center justify-between gap-3 px-2 py-3 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.98] active:bg-black/5",
         !readOnly &&
           "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
@@ -152,7 +146,7 @@ function ItemRowComponent({
 
       {/* Subtle bottom line for separation */}
       <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-black/5" />
-    </div>
+    </button>
   );
 
   if (readOnly) {

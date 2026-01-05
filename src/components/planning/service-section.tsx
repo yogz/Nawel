@@ -59,9 +59,11 @@ export const ServiceSection = memo(function ServiceSection({
       )}
     >
       <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
-        <div
-          className={cn("group flex items-center gap-2", !readOnly && "cursor-pointer")}
+        <button
+          type="button"
+          className={cn("group flex items-center gap-2 text-left", !readOnly && "cursor-pointer")}
           onClick={() => !readOnly && onEdit()}
+          disabled={readOnly}
         >
           <div className="flex items-center gap-3">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
@@ -72,11 +74,11 @@ export const ServiceSection = memo(function ServiceSection({
             </h3>
           </div>
           {!readOnly && (
-            <button className="text-accent/20 opacity-0 transition-all hover:text-accent group-hover:opacity-100">
+            <span className="text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
               <Edit3 size={12} />
-            </button>
+            </span>
           )}
-        </div>
+        </button>
       </div>
 
       <div className="flex flex-col">

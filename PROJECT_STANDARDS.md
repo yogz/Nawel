@@ -32,11 +32,11 @@ This document serves as the "Source of Truth" for any code changes in the CoList
 
 - **Premium Design**: Maintain the "WOW" factor. Use gradients, glassmorphism, and micro-animations defined in `globals.css`.
 - **Mobile First**: All UI must be perfectly responsive and usable on small touch screens.
-- **Interaction Patterns**:
-  - Use `Drawer` (`@/components/ui/drawer`) for forms and secondary actions on mobile. It provides a native-like gesture experience (swipe-to-close) powered by **Vaul**.
-  - Use `Sheet` (`@/components/ui/sheet`) for side menus or desktop sideboards.
-  - Use `SuccessToast` for user feedback.
-  - **Auto-Save**: Prefer auto-save patterns (with debounce) for complex forms over manual "Save" buttons.
+- **Mobile UX & Interaction Patterns**:
+  - **Semantic Buttons**: Always use `<button type="button">` instead of `<div>` with `onClick` for any interactive surface. This ensures proper touch registration on mobile and handles accessibility out of the box.
+  - **Input Management**: Keep `repositionInputs={true}` enabled on `Drawer` components to automatically adjust the viewport when the virtual keyboard appears.
+  - **Portalled Overlays**: Use portalled components (Radix `Popover`, `Dialog`, etc.) for menus and overlays to avoid clipping by parent container `overflow: hidden` and to maintain correct positioning during keyboard-induced viewport resizes.
+  - **Toast Duration**: Use the global `TOAST_DURATION` (standard: 2000ms) for validation feedback to keep the UI snappy.
 
 ## 5. Accessibility (A11y)
 

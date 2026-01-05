@@ -8,6 +8,8 @@ import { useSearchParams } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { useSession } from "@/lib/auth-client";
 import { updateUserAction } from "@/app/actions/user-actions";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
+import { cn } from "@/lib/utils";
 
 // Language metadata with flags and native names
 const LANGUAGE_META: Record<string, { flag: string; nativeName: string; region: string }> = {
@@ -97,25 +99,14 @@ export function LanguageSelector({
           <span className="text-xs font-bold">{LANGUAGE_META[locale]?.nativeName}</span>
         </button>
 
-        {/* Bottom Sheet */}
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
-              onClick={() => {
-                setIsOpen(false);
-                setSearchQuery("");
-              }}
-            />
-            {/* Sheet */}
-            <div className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md animate-in fade-in slide-in-from-bottom-4">
-              <div className="rounded-3xl border border-gray-200 bg-white shadow-2xl">
-                {/* Header */}
-                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-                  <span className="text-xs font-black uppercase tracking-widest text-gray-400">
-                    Choisir une langue
-                  </span>
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerContent className="px-4 pb-8">
+            <DrawerHeader className="px-0 text-left">
+              <div className="flex items-center justify-between">
+                <DrawerTitle className="text-xs font-black uppercase tracking-widest text-gray-400">
+                  {t("chooseLanguage") || "Choisir une langue"}
+                </DrawerTitle>
+                <DrawerClose asChild>
                   <button
                     onClick={() => {
                       setIsOpen(false);
@@ -126,64 +117,68 @@ export function LanguageSelector({
                   >
                     <Globe size={14} />
                   </button>
-                </div>
+                </DrawerClose>
+              </div>
+            </DrawerHeader>
 
-                {/* Search (if many languages) */}
-                {showSearch && routing.locales.length > 6 && (
-                  <div className="border-b border-gray-100 p-3">
-                    <div className="relative">
-                      <Search
-                        size={16}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-                        aria-label="Rechercher une langue"
-                      />
-                    </div>
+            <div className="space-y-4">
+              {/* Search (if many languages) */}
+              {showSearch && routing.locales.length > 6 && (
+                <div className="relative">
+                  <Search
+                    size={16}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder={t("searchPlaceholder") || "Rechercher..."}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-xl border border-gray-100 bg-gray-50/50 py-2.5 pl-10 pr-3 text-sm focus:border-accent focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    aria-label="Rechercher une langue"
+                  />
+                </div>
+              )}
+
+              {/* Language grid */}
+              <div className="no-scrollbar max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-2 pb-2">
+                  {filteredLocales.map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => handleLanguageChange(l as Locale)}
+                      className={cn(
+                        "flex items-center gap-3 rounded-xl p-3 text-left transition-all active:scale-95",
+                        locale === l
+                          ? "bg-accent/10 ring-2 ring-accent/30"
+                          : "bg-gray-50 hover:bg-gray-100"
+                      )}
+                      aria-label={`Sélectionner ${LANGUAGE_META[l]?.nativeName}`}
+                    >
+                      <span className="text-2xl">{LANGUAGE_META[l]?.flag}</span>
+                      <div className="min-w-0 flex-1">
+                        <p
+                          className={cn(
+                            "truncate text-sm font-bold",
+                            locale === l ? "text-accent" : "text-gray-800"
+                          )}
+                        >
+                          {LANGUAGE_META[l]?.nativeName}
+                        </p>
+                      </div>
+                      {locale === l && <Check size={16} className="shrink-0 text-accent" />}
+                    </button>
+                  ))}
+                </div>
+                {filteredLocales.length === 0 && (
+                  <div className="py-8 text-center text-sm text-gray-500">
+                    {t("noLanguageFound") || "Aucune langue trouvée"}
                   </div>
                 )}
-
-                {/* Language grid */}
-                <div className="max-h-64 overflow-y-auto p-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    {filteredLocales.map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => handleLanguageChange(l as Locale)}
-                        className={`flex items-center gap-3 rounded-xl p-3 text-left transition-all active:scale-95 ${
-                          locale === l
-                            ? "bg-accent/10 ring-2 ring-accent/30"
-                            : "bg-gray-50 hover:bg-gray-100"
-                        }`}
-                        aria-label={`Sélectionner ${LANGUAGE_META[l]?.nativeName}`}
-                      >
-                        <span className="text-2xl">{LANGUAGE_META[l]?.flag}</span>
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={`truncate text-sm font-bold ${locale === l ? "text-accent" : "text-gray-800"}`}
-                          >
-                            {LANGUAGE_META[l]?.nativeName}
-                          </p>
-                        </div>
-                        {locale === l && <Check size={16} className="shrink-0 text-accent" />}
-                      </button>
-                    ))}
-                  </div>
-                  {filteredLocales.length === 0 && (
-                    <div className="py-8 text-center text-sm text-gray-500">
-                      Aucune langue trouvée
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
-          </>
-        )}
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }

@@ -4,7 +4,7 @@
  */
 
 // Toast/Message durations (ms)
-export const TOAST_DURATION = 3000;
+export const TOAST_DURATION = 2000;
 
 // AI Ingredient generation
 export const AI_CACHE_MIN_CONFIRMATIONS = 3;
