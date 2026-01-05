@@ -211,7 +211,8 @@
         "download": "Scarica (.ics)"
       },
       "editMeal": "Modifica pasto",
-      "editService": "Modifica portata"
+      "editService": "Modifica portata",
+      "cancel": "Annulla"
     },
     "Service": {
       "editService": "Modifica portata {name}",

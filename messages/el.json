@@ -218,7 +218,8 @@
         "download": "Λήψη (.ics)"
       },
       "editMeal": "Επεξεργασία γεύματος",
-      "editService": "Επεξεργασία μέρους"
+      "editService": "Επεξεργασία μέρους",
+      "cancel": "Ακύρωση"
     },
     "Service": {
       "editService": "Επεξεργασία μέρους {name}",

@@ -211,7 +211,8 @@
         "download": "Pobierz (.ics)"
       },
       "editMeal": "Edytuj posiłek",
-      "editService": "Edytuj danie"
+      "editService": "Edytuj danie",
+      "cancel": "Anuluj"
     },
     "Service": {
       "editService": "Edytuj danie {name}",

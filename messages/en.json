@@ -211,7 +211,8 @@
         "download": "Download (.ics)"
       },
       "editMeal": "Edit meal",
-      "editService": "Edit course"
+      "editService": "Edit course",
+      "cancel": "Cancel"
     },
     "Service": {
       "editService": "Edit course {name}",

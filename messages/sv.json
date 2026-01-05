@@ -211,7 +211,8 @@
         "download": "Ladda ner (.ics)"
       },
       "editMeal": "Redigera måltid",
-      "editService": "Redigera rätt"
+      "editService": "Redigera rätt",
+      "cancel": "Avbryt"
     },
     "Service": {
       "editService": "Redigera rätt {name}",

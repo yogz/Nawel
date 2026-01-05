@@ -210,7 +210,8 @@
         "download": "Herunterladen (.ics)"
       },
       "editMeal": "Mahlzeit bearbeiten",
-      "editService": "Gang bearbeiten"
+      "editService": "Gang bearbeiten",
+      "cancel": "Abbrechen"
     },
     "Service": {
       "editService": "Gang bearbeiten {name}",

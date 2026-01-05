@@ -210,7 +210,8 @@
         "download": "Descargar (.ics)"
       },
       "editMeal": "Editar comida",
-      "editService": "Editar tiempo"
+      "editService": "Editar tiempo",
+      "cancel": "Cancelar"
     },
     "Service": {
       "editService": "Editar tiempo {name}",

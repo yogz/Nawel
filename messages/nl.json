@@ -211,7 +211,8 @@
         "download": "Downloaden (.ics)"
       },
       "editMeal": "Maaltijd bewerken",
-      "editService": "Gang bewerken"
+      "editService": "Gang bewerken",
+      "cancel": "Annuleren"
     },
     "Service": {
       "editService": "Gang bewerken {name}",

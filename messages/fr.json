@@ -223,7 +223,8 @@
       },
       "editMeal": "Modifier le repas",
       "editService": "Modifier le service",
-      "addItem": "Ajouter un article"
+      "addItem": "Ajouter un article",
+      "cancel": "Annuler"
     },
     "Service": {
       "editService": "Modifier le service {name}",
