@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useThemeMode } from "../theme-provider";
 
 interface PeopleTabProps {
@@ -61,12 +61,13 @@ export function PeopleTab({
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
         <button
+          type="button"
           onClick={() => setSelectedPerson(null)}
           className={clsx(
-            "rounded-full px-4 py-2 text-sm font-semibold shadow-sm",
+            "rounded-full border px-4 py-2.5 text-sm font-semibold shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:py-2",
             selectedPerson === null
-              ? "bg-accent text-white"
-              : "bg-white text-gray-700 ring-1 ring-gray-200"
+              ? "border-accent/20 bg-accent text-white shadow-lg shadow-accent/20"
+              : "border-gray-200 bg-white text-gray-700 hover:border-accent/20"
           )}
         >
           {t("all")}
@@ -75,15 +76,16 @@ export function PeopleTab({
           <div
             key={person.id}
             className={clsx(
-              "group flex items-center rounded-full shadow-sm transition-all",
+              "group flex items-center rounded-full border shadow-sm transition-all",
               selectedPerson === person.id
-                ? "bg-accent text-white ring-2 ring-accent/20"
-                : "bg-white text-gray-700 ring-1 ring-gray-200"
+                ? "border-accent/20 bg-accent text-white shadow-lg shadow-accent/20"
+                : "border-gray-200 bg-white text-gray-700 hover:border-accent/20"
             )}
           >
             <button
+              type="button"
               onClick={() => setSelectedPerson(person.id)}
-              className="flex items-center px-4 py-2 text-sm font-semibold"
+              className="flex items-center px-4 py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:py-2"
             >
               <span className="mr-1.5 flex h-5 w-5 items-center justify-center overflow-hidden rounded-full transition-all">
                 {(() => {
@@ -110,20 +112,22 @@ export function PeopleTab({
             </button>
             {!readOnly && (
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setSheet({ type: "person-edit", person });
                 }}
+                aria-label={t("edit")}
                 className={clsx(
-                  "mr-1 flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                  "mr-1 flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 sm:h-7 sm:w-7",
                   selectedPerson === person.id
                     ? "text-white/80 hover:bg-white/20 hover:text-white"
                     : "text-gray-400 hover:bg-gray-100 hover:text-accent"
                 )}
               >
                 <Pencil
-                  size={12}
-                  className="opacity-0 transition-opacity group-hover:opacity-100"
+                  size={14}
+                  className="opacity-0 transition-opacity group-hover:opacity-100 sm:h-3 sm:w-3"
                 />
               </button>
             )}
@@ -136,8 +140,9 @@ export function PeopleTab({
         ))}
         {!readOnly && (
           <button
+            type="button"
             onClick={() => setSheet({ type: "person" })}
-            className="rounded-full border-2 border-dashed border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700"
+            className="rounded-full border-2 border-dashed border-accent/20 bg-accent/5 px-4 py-2.5 text-sm font-semibold text-accent transition-all hover:border-accent/40 hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:py-2"
           >
             + {t("addMember")}
           </button>
@@ -153,9 +158,9 @@ export function PeopleTab({
 
             return (
               <div key={person.id} className="space-y-3">
-                <div className="sticky top-[72px] z-20 -mx-4 border-y border-accent/20 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 px-4 py-3 backdrop-blur-sm">
+                <div className="sticky top-[72px] z-20 -mx-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 px-4 py-4 shadow-sm backdrop-blur-sm transition-all duration-300 sm:mx-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-2xl shadow-sm ring-2 ring-accent/20">
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-2xl shadow-sm">
                       {(() => {
                         const avatar = renderAvatar(
                           person,
@@ -178,7 +183,7 @@ export function PeopleTab({
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-black tracking-tight text-text">
+                        <h3 className="text-gradient-header text-xl font-black tracking-tight">
                           {getDisplayName(person)}
                         </h3>
                         {person.userId === currentUserId ? (
@@ -208,13 +213,15 @@ export function PeopleTab({
                         )}
                         {!readOnly && (
                           <button
+                            type="button"
                             onClick={() => setSheet({ type: "person-edit", person })}
-                            className="group rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-accent"
+                            aria-label={t("edit")}
+                            className="group rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 sm:p-1"
                           >
                             <motion.div whileHover={{ rotate: 15 }}>
                               <Sparkles
-                                size={16}
-                                className="opacity-0 transition-opacity group-hover:opacity-100"
+                                size={18}
+                                className="opacity-0 transition-opacity group-hover:opacity-100 sm:h-4 sm:w-4"
                               />
                             </motion.div>
                           </button>
@@ -226,11 +233,12 @@ export function PeopleTab({
                     </div>
                     {personItems.length > 0 && (
                       <button
+                        type="button"
                         onClick={() => setSheet({ type: "shopping-list", person })}
                         aria-label={t("shoppingList")}
-                        className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-white"
+                        className="flex h-11 items-center gap-1.5 rounded-full bg-accent/10 px-3 py-2 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:h-auto sm:py-1.5"
                       >
-                        <ShoppingCart size={14} />
+                        <ShoppingCart size={16} className="sm:h-[14px] sm:w-[14px]" />
                         <span className="hidden sm:inline">{t("shoppingList")}</span>
                       </button>
                     )}
@@ -240,63 +248,68 @@ export function PeopleTab({
                   {personItems.map(({ item, service, mealTitle }: PersonItem) => (
                     <motion.button
                       key={item.id}
+                      type="button"
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSheet({ type: "item", serviceId: service.id, item })}
                       disabled={readOnly}
                       aria-label={t("editItem", { name: item.name })}
-                      className="group w-full cursor-pointer rounded-2xl border border-black/[0.03] bg-white p-4 text-left shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all duration-200 hover:border-accent/10 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] disabled:cursor-default"
+                      className="group relative w-full cursor-pointer overflow-hidden rounded-[24px] border border-gray-100 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] disabled:cursor-default sm:p-4"
                     >
-                      <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-accent/60">
-                        {mealTitle} • {service.title}
-                      </p>
-                      <p className="text-base font-bold text-text transition-colors group-hover:text-accent">
-                        {item.name}
-                      </p>
-                      {(item.quantity ||
-                        item.note ||
-                        item.price ||
-                        (item.ingredients && item.ingredients.length > 0)) && (
-                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                          {item.quantity?.trim() && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-gray-600">
-                              <Scale size={12} className="text-gray-500" />
-                              {item.quantity}
-                            </div>
-                          )}
-                          {item.price && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-green-600">
-                              <Euro size={12} className="text-green-500" />
-                              {item.price.toFixed(2)} €
-                            </div>
-                          )}
-                          {item.note && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-600">
-                              <MessageSquare size={12} className="text-gray-500" />
-                              <span className="max-w-[150px] truncate">
-                                {item.note.startsWith("EventDashboard.")
-                                  ? tForm("defaultNote", {
-                                      count:
-                                        service.peopleCount ||
-                                        service.adults + service.children ||
-                                        0,
-                                    })
-                                  : item.note}
-                              </span>
-                            </div>
-                          )}
-                          {item.ingredients && item.ingredients.length > 0 && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-purple-500">
-                              <ChefHat size={12} className="text-purple-400" />
-                              {item.ingredients.filter((i) => i.checked).length}/
-                              {item.ingredients.length}
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      {/* Decorative background gradient */}
+                      <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+                      <div className="relative">
+                        <p className="mb-1 text-xs font-black uppercase tracking-widest text-accent/60 sm:text-[10px]">
+                          {mealTitle} • {service.title}
+                        </p>
+                        <p className="text-base font-bold text-text transition-colors group-hover:text-accent sm:text-base">
+                          {item.name}
+                        </p>
+                        {(item.quantity ||
+                          item.note ||
+                          item.price ||
+                          (item.ingredients && item.ingredients.length > 0)) && (
+                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                            {item.quantity?.trim() && (
+                              <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-tight text-gray-600 sm:text-[11px]">
+                                <Scale size={14} className="text-gray-500 sm:h-3 sm:w-3" />
+                                {item.quantity}
+                              </div>
+                            )}
+                            {item.price && (
+                              <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-tight text-green-600 sm:text-[11px]">
+                                <Euro size={14} className="text-green-500 sm:h-3 sm:w-3" />
+                                {item.price.toFixed(2)} €
+                              </div>
+                            )}
+                            {item.note && (
+                              <div className="flex items-center gap-1 text-xs font-bold italic tracking-tight text-gray-600 sm:text-[11px]">
+                                <MessageSquare size={14} className="text-gray-500 sm:h-3 sm:w-3" />
+                                <span className="max-w-[150px] truncate">
+                                  {item.note.startsWith("EventDashboard.")
+                                    ? tForm("defaultNote", {
+                                        count:
+                                          service.peopleCount ||
+                                          service.adults + service.children ||
+                                          0,
+                                      })
+                                    : item.note}
+                                </span>
+                              </div>
+                            )}
+                            {item.ingredients && item.ingredients.length > 0 && (
+                              <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-tight text-purple-500 sm:text-[11px]">
+                                <ChefHat size={14} className="text-purple-400 sm:h-3 sm:w-3" />
+                                {item.ingredients.filter((i) => i.checked).length}/
+                                {item.ingredients.length}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </motion.button>
                   ))}
                   {personItems.length === 0 && (
-                    <div className="rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/50 py-8 text-center">
+                    <div className="rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/50 py-8 text-center">
                       <p className="text-sm font-medium text-gray-400">{t("noItems")}</p>
                     </div>
                   )}

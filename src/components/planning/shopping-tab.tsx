@@ -283,7 +283,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       <div className="space-y-4">
         {/* Owner dropdown selector */}
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
-          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium">
+          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
             <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
@@ -324,7 +324,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         </Select>
 
         {/* Global progress */}
-        <div className="premium-card p-5">
+        <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
           <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
@@ -356,53 +356,57 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               <Link
                 key={person.id}
                 href={url}
-                className="group block rounded-2xl border border-black/[0.03] bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-md"
+                className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
               >
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10 text-2xl">
-                    {(() => {
-                      const avatar = renderAvatar(
-                        person,
-                        plan.people.map((p) => p.name)
-                      );
-                      if (avatar.type === "image") {
-                        return (
-                          <img
-                            src={avatar.src}
-                            alt={getDisplayName(person)}
-                            className="h-full w-full object-cover"
-                          />
+                {/* Decorative background gradient */}
+                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+                <div className="relative">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10 text-2xl">
+                      {(() => {
+                        const avatar = renderAvatar(
+                          person,
+                          plan.people.map((p) => p.name)
                         );
-                      }
-                      return avatar.value;
-                    })()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-text">{getDisplayName(person)}</h3>
-                      {isComplete && (
-                        <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
-                          <Check size={10} />
-                          {t("completed")}
-                        </span>
-                      )}
+                        if (avatar.type === "image") {
+                          return (
+                            <img
+                              src={avatar.src}
+                              alt={getDisplayName(person)}
+                              className="h-full w-full object-cover"
+                            />
+                          );
+                        }
+                        return avatar.value;
+                      })()}
                     </div>
-                    <div className="mt-1 flex items-center gap-3">
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
-                        <div
-                          className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${isComplete ? "bg-green-500" : "bg-accent"}`}
-                          style={{ transform: `scaleX(${progress / 100})` }}
-                        />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-text">{getDisplayName(person)}</h3>
+                        {isComplete && (
+                          <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+                            <Check size={10} />
+                            {t("completed")}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        {checkedItems}/{totalItems}
-                      </span>
+                      <div className="mt-1 flex items-center gap-3">
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                          <div
+                            className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${isComplete ? "bg-green-500" : "bg-accent"}`}
+                            style={{ transform: `scaleX(${progress / 100})` }}
+                          />
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          {checkedItems}/{totalItems}
+                        </span>
+                      </div>
                     </div>
+                    <ExternalLink
+                      size={18}
+                      className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
+                    />
                   </div>
-                  <ExternalLink
-                    size={18}
-                    className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
-                  />
                 </div>
               </Link>
             );
@@ -418,7 +422,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       {/* Owner dropdown selector */}
       {isOwner && (
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
-          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium">
+          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
             <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
@@ -460,7 +464,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       )}
 
       {/* Header with progress */}
-      <div className="premium-card p-5">
+      <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
         <div className="mb-3 flex items-center gap-4">
           {displayPerson && (
             <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-3xl">
@@ -505,9 +509,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       {fullPageUrl && (
         <Link
           href={fullPageUrl}
-          className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50"
+          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:h-auto"
         >
-          <ExternalLink size={16} />
+          <ExternalLink size={18} className="sm:h-4 sm:w-4" />
           {t("openFullScreen")}
         </Link>
       )}
@@ -522,45 +526,52 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           return (
             <button
               key={aggregatedItem.id}
+              type="button"
               onClick={() => handleToggle(aggregatedItem)}
               disabled={isPending}
               aria-label={`${t(isChecked ? "uncheck" : "check")} ${itemName}`}
               aria-pressed={isChecked}
               className={clsx(
-                "flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all active:scale-[0.98]",
+                "group relative flex w-full items-start gap-4 overflow-hidden rounded-[24px] border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:p-4",
                 isChecked
-                  ? "border-green-200 bg-green-50"
-                  : "border-white/20 bg-white shadow-sm hover:border-accent/20 hover:bg-accent/5"
+                  ? "border-green-200 bg-green-50 shadow-sm"
+                  : "border border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5"
               )}
             >
+              {/* Decorative background gradient */}
+              {!isChecked && (
+                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+              )}
               {/* Checkbox */}
               <div
                 className={clsx(
-                  "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
+                  "relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 transition-all sm:h-6 sm:w-6",
                   isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
                 )}
               >
-                {isChecked && <Check size={14} strokeWidth={3} />}
+                {isChecked && (
+                  <Check size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />
+                )}
               </div>
 
               {/* Content */}
-              <div className="min-w-0 flex-1">
+              <div className="relative z-10 min-w-0 flex-1">
                 <div className="flex items-baseline gap-2">
                   <span
                     className={clsx(
-                      "text-base font-semibold transition-all",
+                      "text-base font-semibold transition-all sm:text-base",
                       isChecked ? "text-green-700 line-through" : "text-text"
                     )}
                   >
                     {itemName}
                   </span>
                   {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm text-muted-foreground sm:text-sm">
                       {formatAggregatedQuantity(aggregatedItem.quantity, aggregatedItem.unit)}
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="mt-0.5 text-xs text-muted-foreground sm:text-xs">
                   {aggregatedItem.sources.length > 1 ? (
                     <span className="font-medium text-accent">
                       {t("sources", { count: aggregatedItem.sources.length })}
