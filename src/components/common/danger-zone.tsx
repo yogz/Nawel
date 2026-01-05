@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ChevronDown, Loader2, Trash2 } from "lucide-react";
+import { AlertTriangle, ChevronDown, Loader2, Trash2, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { WarningBanner } from "./warning-banner";
 import { ConfirmDeleteDialog } from "./confirm-delete-dialog";
@@ -27,14 +27,14 @@ export function DangerZoneTrigger({
       type="button"
       onClick={onClick}
       className={clsx(
-        "group flex w-full items-center justify-center gap-3 rounded-2xl bg-purple-50/80 py-4 transition-all hover:bg-purple-100 active:scale-[0.98]",
+        "group flex w-full items-center justify-center gap-3 rounded-2xl border border-red-100 bg-red-50/50 py-4 transition-all hover:border-red-200 hover:bg-red-50 active:scale-[0.98]",
         className
       )}
     >
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-purple-100 transition-transform group-hover:scale-110">
-        <ChevronDown size={14} className="text-purple-400" />
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-red-100 transition-transform group-hover:scale-110 group-hover:ring-red-200">
+        <ChevronDown size={14} className="text-red-500" />
       </div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 group-hover:text-purple-500">
+      <span className="text-[10px] font-black uppercase tracking-widest text-red-600 group-hover:text-red-700">
         {label}
       </span>
     </button>
@@ -100,32 +100,31 @@ export function DangerZoneContent({
       {/* Actions */}
       <div className="w-full space-y-3 pt-4">
         <Button
-          variant="premium"
-          className="w-full border-red-200 bg-red-50/80 py-7 shadow-xl shadow-red-500/5 hover:bg-red-100/80"
-          icon={
-            isDeleting ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-200 text-red-600 transition-colors group-hover:bg-red-600 group-hover:text-white">
-                <Trash2 size={16} />
-              </div>
-            )
-          }
+          variant="destructive"
           onClick={() => setShowDialog(true)}
           disabled={isDeleting}
-          shine
+          className="w-full py-6 text-sm font-bold shadow-lg shadow-red-500/10 hover:shadow-xl hover:shadow-red-500/20"
         >
-          <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-red-700">
-            {isDeleting ? "Suppression..." : deleteButtonLabel}
-          </span>
+          {isDeleting ? (
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              Suppression...
+            </>
+          ) : (
+            <>
+              <Trash2 size={18} />
+              {deleteButtonLabel}
+            </>
+          )}
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={onCancel}
           disabled={isDeleting}
-          className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className="w-full border-2 border-gray-200 bg-white py-6 text-sm font-bold text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
         >
+          <X size={18} />
           {cancelButtonLabel}
         </Button>
       </div>
