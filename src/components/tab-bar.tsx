@@ -39,7 +39,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4">
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-1 rounded-full border border-white/20 bg-white/70 p-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5 backdrop-blur-xl transition-all"
+        className="pointer-events-auto flex items-center justify-around gap-1 rounded-full border border-white/20 bg-white/70 p-1.5 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5 backdrop-blur-xl transition-all"
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         {tabs.map((tab) => {
@@ -50,7 +50,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               key={tab.key}
               onClick={() => handleTabChange(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all active:scale-[0.95]",
+                "relative flex h-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all active:scale-[0.95]",
                 selected ? "text-accent" : "text-gray-400"
               )}
             >
@@ -63,11 +63,11 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               )}
               <div
                 className={clsx(
-                  "relative z-10 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300",
+                  "relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300",
                   selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
                 )}
               >
-                <Icon size={selected ? 20 : 20} strokeWidth={selected ? 2.5 : 2} />
+                <Icon size={selected ? 18 : 18} strokeWidth={selected ? 2.5 : 2} />
               </div>
               <span
                 className={clsx(
