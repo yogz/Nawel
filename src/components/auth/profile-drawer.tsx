@@ -176,9 +176,6 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     <h4 className="text-lg font-black uppercase tracking-widest text-gray-900">
                       {tProfile("dangerZone")}
                     </h4>
-                    <p className="max-w-[280px] px-4 text-xs font-medium leading-relaxed text-gray-500">
-                      {tProfile("deleteWarning")}
-                    </p>
                   </div>
                 </div>
 
@@ -213,13 +210,14 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     </span>
                   </Button>
 
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={() => setShowAdvanced(false)}
                     disabled={isDeleting}
-                    className="flex w-full justify-center py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+                    className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                   >
-                    {tProfile("back") || "Retour"}
-                  </button>
+                    {tCommon("cancel") || "Annuler"}
+                  </Button>
                 </div>
               </div>
             </div>
