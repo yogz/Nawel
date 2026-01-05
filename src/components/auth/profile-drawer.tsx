@@ -2,6 +2,7 @@
 
 import { useSession, signOut } from "@/lib/auth-client";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
@@ -148,118 +149,105 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             {/* Avatar with Emoji Picker */}
             <div className="flex flex-col items-center gap-2">
               <div className="relative">
-                {/* Clickable Avatar */}
-                <button
-                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="group relative h-20 w-20 cursor-pointer transition-transform active:scale-95"
-                  aria-label={t("profile.changeEmoji")}
-                >
-                  <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100 transition-all group-hover:ring-4 group-hover:ring-accent/20">
-                    {(() => {
-                      const avatar = renderAvatar(
-                        {
-                          name: name || session.user.name || "User",
-                          emoji: null,
-                          user: { ...session.user, emoji: selectedEmoji },
-                        },
-                        [],
-                        theme
-                      );
+                {/* Clickable Avatar with Popover */}
+                <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="group relative h-20 w-20 cursor-pointer transition-transform active:scale-95"
+                      aria-label={t("profile.changeEmoji")}
+                    >
+                      <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100 transition-all group-hover:ring-4 group-hover:ring-accent/20">
+                        {(() => {
+                          const avatar = renderAvatar(
+                            {
+                              name: name || session.user.name || "User",
+                              emoji: null,
+                              user: { ...session.user, emoji: selectedEmoji },
+                            },
+                            [],
+                            theme
+                          );
 
-                      if (avatar.type === "image") {
-                        return (
-                          <Image
-                            src={avatar.src}
-                            alt={name}
-                            width={80}
-                            height={80}
-                            className="h-full w-full object-cover"
-                          />
-                        );
-                      }
-                      return (
-                        <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
-                          {avatar.value}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                  {/* Edit indicator */}
-                  <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-accent text-xs text-white shadow-md transition-transform group-hover:scale-110">
-                    ✏️
-                  </div>
-                </button>
-
-                {/* Emoji Picker - Mobile-friendly bottom sheet style */}
-                <Drawer open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-                  <DrawerContent className="px-6 pb-8">
-                    <DrawerHeader className="px-0 text-left">
-                      <div className="flex items-center justify-between">
-                        <DrawerTitle className="text-xs font-black uppercase tracking-widest text-gray-400">
-                          {t("profile.chooseEmoji")}
-                        </DrawerTitle>
-                        <DrawerClose asChild>
-                          <button
-                            onClick={() => setShowEmojiPicker(false)}
-                            className="rounded-full bg-gray-100 p-1.5 text-gray-500 transition-colors hover:bg-gray-200 active:scale-95"
-                            aria-label="Fermer"
-                          >
-                            <X size={14} />
-                          </button>
-                        </DrawerClose>
+                          if (avatar.type === "image") {
+                            return (
+                              <Image
+                                src={avatar.src}
+                                alt={name}
+                                width={80}
+                                height={80}
+                                className="h-full w-full object-cover"
+                              />
+                            );
+                          }
+                          return (
+                            <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
+                              {avatar.value}
+                            </div>
+                          );
+                        })()}
                       </div>
-                    </DrawerHeader>
-
-                    <div className="grid grid-cols-6 gap-2 pt-2">
-                      {/* Auto/Default option */}
-                      <button
-                        onClick={() => handleEmojiSelect(null)}
-                        className={clsx(
-                          "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[9px] font-black uppercase transition-all active:scale-95",
-                          selectedEmoji === null
-                            ? "bg-accent text-white ring-2 ring-accent/30"
-                            : "bg-gray-100 text-gray-400 hover:bg-gray-200"
-                        )}
-                        aria-label={t("profile.autoAvatar")}
-                      >
-                        {session.user.image ? (
-                          <Image
-                            src={session.user.image}
-                            alt="Photo"
-                            fill
-                            className={clsx(
-                              "object-cover",
-                              selectedEmoji !== null && "opacity-50 grayscale"
-                            )}
-                          />
-                        ) : (
-                          "Auto"
-                        )}
-                        {selectedEmoji === null && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-accent/30">
-                            <Check size={14} className="text-white drop-shadow" />
-                          </div>
-                        )}
-                      </button>
-                      {/* Emoji options */}
-                      {currentEmojis.slice(0, 17).map((emoji) => (
+                      {/* Edit indicator */}
+                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-accent text-xs text-white shadow-md transition-transform group-hover:scale-110">
+                        ✏️
+                      </div>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-4" align="center" sideOffset={8}>
+                    <div className="space-y-3">
+                      <div className="text-xs font-black uppercase tracking-widest text-gray-400">
+                        {t("profile.chooseEmoji")}
+                      </div>
+                      <div className="grid grid-cols-6 gap-2">
+                        {/* Auto/Default option */}
                         <button
-                          key={emoji}
-                          onClick={() => handleEmojiSelect(emoji)}
+                          onClick={() => handleEmojiSelect(null)}
                           className={clsx(
-                            "flex aspect-square items-center justify-center rounded-xl text-2xl transition-all active:scale-95",
-                            selectedEmoji === emoji
-                              ? "bg-accent shadow-md ring-2 ring-accent/30"
-                              : "bg-gray-50 hover:bg-gray-100"
+                            "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[9px] font-black uppercase transition-all active:scale-95",
+                            selectedEmoji === null
+                              ? "bg-accent text-white ring-2 ring-accent/30"
+                              : "bg-gray-100 text-gray-400 hover:bg-gray-200"
                           )}
-                          aria-label={`Sélectionner ${emoji}`}
+                          aria-label={t("profile.autoAvatar")}
                         >
-                          {emoji}
+                          {session.user.image ? (
+                            <Image
+                              src={session.user.image}
+                              alt="Photo"
+                              fill
+                              className={clsx(
+                                "object-cover",
+                                selectedEmoji !== null && "opacity-50 grayscale"
+                              )}
+                            />
+                          ) : (
+                            "Auto"
+                          )}
+                          {selectedEmoji === null && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-accent/30">
+                              <Check size={14} className="text-white drop-shadow" />
+                            </div>
+                          )}
                         </button>
-                      ))}
+                        {/* Emoji options */}
+                        {currentEmojis.slice(0, 17).map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleEmojiSelect(emoji)}
+                            className={clsx(
+                              "flex aspect-square items-center justify-center rounded-xl text-2xl transition-all active:scale-95",
+                              selectedEmoji === emoji
+                                ? "bg-accent shadow-md ring-2 ring-accent/30"
+                                : "bg-gray-50 hover:bg-gray-100"
+                            )}
+                            aria-label={`Sélectionner ${emoji}`}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </DrawerContent>
-                </Drawer>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Email & Status */}

@@ -59,6 +59,27 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * SESSION_EXPIRE_DAYS,
     updateAge: 60 * 60 * 24 * SESSION_REFRESH_DAYS,
   },
+  logger: {
+    level: process.env.NODE_ENV === "production" ? "error" : "warn",
+    log: (level, message, ...args) => {
+      // Filter out negative timeout warnings to reduce noise
+      if (message.includes("TimeoutNegativeWarning") || message.includes("negative number")) {
+        // Log at debug level instead of error/warn
+        if (process.env.NODE_ENV === "development") {
+          console.debug(`[Better Auth ${level}] ${message}`, ...args);
+        }
+        return;
+      }
+      // Log other messages normally
+      if (level === "error") {
+        console.error(`[Better Auth] ${message}`, ...args);
+      } else if (level === "warn") {
+        console.warn(`[Better Auth] ${message}`, ...args);
+      } else if (process.env.NODE_ENV === "development") {
+        console.log(`[Better Auth ${level}] ${message}`, ...args);
+      }
+    },
+  },
   user: {
     deleteUser: {
       enabled: true,

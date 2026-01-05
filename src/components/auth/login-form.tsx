@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn, signUp } from "@/lib/auth-client";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,11 +33,14 @@ export function LoginForm() {
     setLoading(true);
 
     try {
+      const callbackPath = isUserMode ? "/" : "/admin";
+      const callbackURL = getPathname({ href: callbackPath, locale });
+
       if (authMode === "signin") {
         const { error } = await signIn.email({
           email,
           password,
-          callbackURL: isUserMode ? "/" : "/admin",
+          callbackURL,
         });
         if (error) {
           setError(error.message || t("errorSignin"));
@@ -49,7 +52,7 @@ export function LoginForm() {
           email,
           password,
           name: email.split("@")[0],
-          callbackURL: "/",
+          callbackURL,
         });
         if (error) {
           setError(error.message || t("errorSignup"));
@@ -138,9 +141,11 @@ export function LoginForm() {
               onClick={async () => {
                 setLoading(true);
                 try {
+                  const callbackPath = isUserMode ? "/" : "/admin";
+                  const callbackURL = getPathname({ href: callbackPath, locale });
                   await signIn.social({
                     provider: "google",
-                    callbackURL: isUserMode ? `/${locale}` : `/${locale}/admin`,
+                    callbackURL,
                   });
                   sendGAEvent("event", "login", { method: "google" });
                 } catch (err) {
