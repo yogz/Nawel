@@ -826,10 +826,10 @@
       rgba(255, 255, 255, 0) 100%
     );
     transform: rotate(30deg);
-    animation: shine-periodic 8s infinite;
+    animation: shine-periodic-simple 8s infinite;
   }
 
-  @keyframes shine-periodic {
+  @keyframes shine-periodic-simple {
     0% {
       top: -110%;
       left: -210%;
@@ -838,6 +838,55 @@
     10% {
       top: 100%;
       left: 100%;
+    }
+
+    100% {
+      top: 100%;
+      left: 100%;
+    }
+  }
+
+  .btn-shine-attention {
+    position: relative;
+    overflow: hidden;
+    animation: pulse-attention 6s ease-in-out infinite;
+  }
+
+  .btn-shine-attention::after {
+    content: "";
+    position: absolute;
+    top: -110%;
+    left: -210%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: shine-periodic-attention 6s infinite;
+  }
+
+  @keyframes pulse-attention {
+    0%,
+    90%,
+    100% {
+      transform: scale(1);
+    }
+
+    95% {
+      transform: scale(1.1);
+    }
+  }
+
+  @keyframes shine-periodic-attention {
+    0%,
+    80% {
+      top: -110%;
+      left: -210%;
     }
 
     100% {

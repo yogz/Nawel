@@ -105,9 +105,8 @@ export function OrganizerHeader({
                 {!readOnly && (
                   <Button
                     variant="premium"
-                    shine
                     onClick={handleShare}
-                    className="h-8 w-8 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95"
+                    className="btn-shine-attention h-8 w-8 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95"
                     icon={
                       copied ? (
                         <CheckCircle
