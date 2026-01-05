@@ -486,5 +486,17 @@
       "attributed": "Attribué",
       "character": "Personnage"
     }
+  },
+  "CookieConsent": {
+    "title": "Respectons votre vie privée",
+    "description": "Nous utilisons des cookies pour améliorer votre expérience et analyser l'utilisation de notre application.",
+    "usageTitle": "Analyse d'utilisation",
+    "usageDescription": "Nous aide à comprendre comment vous utilisez l'app pour l'améliorer",
+    "securityTitle": "Données sécurisées",
+    "securityDescription": "Vos données sont anonymisées et jamais partagées avec des tiers",
+    "acceptAll": "Tout accepter",
+    "rejectAll": "Tout refuser",
+    "customize": "Personnaliser",
+    "legalNotice": "En continuant, vous acceptez notre utilisation des cookies conformément à notre politique de confidentialité."
   }
 }

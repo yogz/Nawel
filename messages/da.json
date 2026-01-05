@@ -471,5 +471,17 @@
       "attributed": "Tilskrevet",
       "character": "Karakter"
     }
+  },
+  "CookieConsent": {
+    "title": "Respekt for dit privatliv",
+    "description": "Vi bruger cookies til at forbedre din oplevelse og analysere brugen af vores applikation.",
+    "usageTitle": "Brugsanalyse",
+    "usageDescription": "Hjælper os med at forstå, hvordan du bruger appen for at forbedre den",
+    "securityTitle": "Sikre data",
+    "securityDescription": "Dine data er anonymiserede og deles aldrig med tredjeparter",
+    "acceptAll": "Acceptér alle",
+    "rejectAll": "Afvis alle",
+    "customize": "Tilpas",
+    "legalNotice": "Ved at fortsætte accepterer du vores brug af cookies i overensstemmelse med vores privatlivspolitik."
   }
 }

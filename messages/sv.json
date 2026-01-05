@@ -471,5 +471,17 @@
       "attributed": "Tillskriven",
       "character": "Karaktär"
     }
+  },
+  "CookieConsent": {
+    "title": "Respekt för din integritet",
+    "description": "Vi använder cookies för att förbättra din upplevelse och analysera användningen av vår applikation.",
+    "usageTitle": "Användningsanalys",
+    "usageDescription": "Hjälper oss att förstå hur du använder appen för att förbättra den",
+    "securityTitle": "Säker data",
+    "securityDescription": "Dina data är anonymiserade och delas aldrig med tredje part",
+    "acceptAll": "Acceptera allt",
+    "rejectAll": "Avvisa allt",
+    "customize": "Anpassa",
+    "legalNotice": "Genom att fortsätta accepterar du vår användning av cookies i enlighet med vår integritetspolicy."
   }
 }

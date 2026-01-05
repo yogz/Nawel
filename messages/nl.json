@@ -471,5 +471,17 @@
       "attributed": "Toegeschreven",
       "character": "Personage"
     }
+  },
+  "CookieConsent": {
+    "title": "Respect voor uw privacy",
+    "description": "We gebruiken cookies om uw ervaring te verbeteren en het gebruik van onze applicatie te analyseren.",
+    "usageTitle": "Gebruiksanalyse",
+    "usageDescription": "Helpt ons te begrijpen hoe u de app gebruikt om deze te verbeteren",
+    "securityTitle": "Veilige gegevens",
+    "securityDescription": "Uw gegevens zijn geanonimiseerd en worden nooit gedeeld met derden",
+    "acceptAll": "Alles accepteren",
+    "rejectAll": "Alles weigeren",
+    "customize": "Aanpassen",
+    "legalNotice": "Door verder te gaan, accepteert u ons gebruik van cookies in overeenstemming met ons privacybeleid."
   }
 }

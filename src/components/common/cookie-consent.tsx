@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl";
  * Handles GDPR/RGPD compliance for analytics tracking
  */
 export function CookieConsent() {
+  const t = useTranslations("CookieConsent");
   const [isOpen, setIsOpen] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -58,11 +59,10 @@ export function CookieConsent() {
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10">
               <Cookie className="h-6 w-6 text-accent" />
             </div>
-            <DrawerTitle className="text-xl">Respectons votre vie privée</DrawerTitle>
+            <DrawerTitle className="text-xl">{t("title")}</DrawerTitle>
           </div>
           <DrawerDescription className="text-base leading-relaxed">
-            Nous utilisons des cookies pour améliorer votre expérience et analyser l'utilisation de
-            notre application.
+            {t("description")}
           </DrawerDescription>
         </DrawerHeader>
 
@@ -74,10 +74,8 @@ export function CookieConsent() {
                 <ChartBar className="h-4 w-4 text-accent" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Analyse d'utilisation</p>
-                <p className="text-xs text-muted-foreground">
-                  Nous aide à comprendre comment vous utilisez l'app pour l'améliorer
-                </p>
+                <p className="text-sm font-medium">{t("usageTitle")}</p>
+                <p className="text-xs text-muted-foreground">{t("usageDescription")}</p>
               </div>
             </div>
 
@@ -86,10 +84,8 @@ export function CookieConsent() {
                 <Shield className="h-4 w-4 text-accent" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Données sécurisées</p>
-                <p className="text-xs text-muted-foreground">
-                  Vos données sont anonymisées et jamais partagées avec des tiers
-                </p>
+                <p className="text-sm font-medium">{t("securityTitle")}</p>
+                <p className="text-xs text-muted-foreground">{t("securityDescription")}</p>
               </div>
             </div>
           </div>
@@ -101,24 +97,21 @@ export function CookieConsent() {
               className="h-12 w-full text-base font-semibold"
               size="lg"
             >
-              Tout accepter
+              {t("acceptAll")}
             </Button>
 
             <div className="grid grid-cols-2 gap-2">
               <Button onClick={handleReject} variant="outline" className="h-11">
-                Tout refuser
+                {t("rejectAll")}
               </Button>
               <Button onClick={handleCustomize} variant="ghost" className="h-11">
-                Personnaliser
+                {t("customize")}
               </Button>
             </div>
           </div>
 
           {/* Legal Notice */}
-          <p className="pt-2 text-center text-xs text-muted-foreground">
-            En continuant, vous acceptez notre utilisation des cookies conformément à notre
-            politique de confidentialité.
-          </p>
+          <p className="pt-2 text-center text-xs text-muted-foreground">{t("legalNotice")}</p>
         </div>
       </DrawerContent>
     </Drawer>

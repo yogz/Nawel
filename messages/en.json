@@ -473,5 +473,17 @@
       "attributed": "Attributed",
       "character": "Character"
     }
+  },
+  "CookieConsent": {
+    "title": "Respect for your privacy",
+    "description": "We use cookies to improve your experience and analyze the usage of our application.",
+    "usageTitle": "Usage analytics",
+    "usageDescription": "Helps us understand how you use the app to improve it",
+    "securityTitle": "Secure data",
+    "securityDescription": "Your data is anonymized and never shared with third parties",
+    "acceptAll": "Accept all",
+    "rejectAll": "Reject all",
+    "customize": "Customize",
+    "legalNotice": "By continuing, you accept our use of cookies in accordance with our privacy policy."
   }
 }

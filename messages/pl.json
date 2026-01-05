@@ -471,5 +471,17 @@
       "attributed": "Przypisany",
       "character": "Postać"
     }
+  },
+  "CookieConsent": {
+    "title": "Szanujemy Twoją prywatność",
+    "description": "Używamy plików cookie, aby poprawić Twoje doświadczenie i analizować użytkowanie naszej aplikacji.",
+    "usageTitle": "Analiza użytkowania",
+    "usageDescription": "Pomaga nam zrozumieć, jak korzystasz z aplikacji, aby ją ulepszyć",
+    "securityTitle": "Bezpieczne dane",
+    "securityDescription": "Twoje dane są zanonimizowane i nigdy nie są udostępniane osobom trzecim",
+    "acceptAll": "Zaakceptuj wszystko",
+    "rejectAll": "Odrzuć wszystko",
+    "customize": "Dostosuj",
+    "legalNotice": "Kontynuując, akceptujesz nasze użycie plików cookie zgodnie z naszą polityką prywatności."
   }
 }

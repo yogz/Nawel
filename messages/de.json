@@ -463,5 +463,17 @@
       "attributed": "Zugeschrieben",
       "character": "Charakter"
     }
+  },
+  "CookieConsent": {
+    "title": "Respekt für Ihre Privatsphäre",
+    "description": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern und die Nutzung unserer Anwendung zu analysieren.",
+    "usageTitle": "Nutzungsanalyse",
+    "usageDescription": "Hilft uns zu verstehen, wie Sie die App nutzen, um sie zu verbessern",
+    "securityTitle": "Sichere Daten",
+    "securityDescription": "Ihre Daten sind anonymisiert und werden niemals an Dritte weitergegeben",
+    "acceptAll": "Alle akzeptieren",
+    "rejectAll": "Alle ablehnen",
+    "customize": "Anpassen",
+    "legalNotice": "Durch Fortsetzung akzeptieren Sie unsere Verwendung von Cookies gemäß unserer Datenschutzrichtlinie."
   }
 }
