@@ -300,8 +300,8 @@ export function MealForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="flex gap-4">
+            <div className="flex-[3] space-y-2">
               <Label
                 htmlFor="date"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
@@ -318,13 +318,13 @@ export function MealForm({
                     setDate(val ? new Date(val) : undefined);
                   }}
                   onBlur={handleBlurSave}
-                  className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-11 text-base focus:bg-white focus:ring-accent/20"
                 />
                 <CalendarIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex-[2] space-y-2">
               <Label
                 htmlFor="time"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
@@ -339,7 +339,7 @@ export function MealForm({
                   onChange={(e) => setTime(e.target.value)}
                   enterKeyHint="next"
                   onBlur={handleBlurSave}
-                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-11 text-base focus:bg-white focus:ring-accent/20"
                 />
                 <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>

@@ -81,11 +81,12 @@ export function PlanningTab({
   onDeleteEvent,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
+  const tHeader = useTranslations("EventDashboard.Header");
   const tSettings = useTranslations("EventDashboard.Settings");
   const { theme } = useThemeMode();
   const [hasMounted, setHasMounted] = useState(false);
-  const [activeMealId, setActiveMealId] = useState<number | null>(
-    plan.meals.length > 0 ? plan.meals[0].id : null
+  const [activeMealId, setActiveMealId] = useState<number | "all" | null>(
+    plan.meals.length > 1 ? "all" : plan.meals.length > 0 ? plan.meals[0].id : null
   );
 
   const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
@@ -104,7 +105,7 @@ export function PlanningTab({
   useEffect(() => {
     setHasMounted(true);
     if (!activeMealId && plan.meals.length > 0) {
-      setActiveMealId(plan.meals[0].id);
+      setActiveMealId(plan.meals.length > 1 ? "all" : plan.meals[0].id);
     }
   }, [plan.meals, activeMealId]);
 
@@ -150,14 +151,20 @@ export function PlanningTab({
             />
           </div>
 
-          {plan.meals.length > 1 && (
+          {planningFilter.type === "all" && plan.meals.length > 1 && (
             <div className="px-2">
               <Tabs
                 value={activeMealId?.toString()}
-                onValueChange={(val) => setActiveMealId(parseInt(val))}
+                onValueChange={(val) => setActiveMealId(val === "all" ? "all" : parseInt(val))}
                 className="w-full"
               >
                 <TabsList className="no-scrollbar h-10 w-full justify-start gap-2 overflow-x-auto bg-transparent p-0">
+                  <TabsTrigger
+                    value="all"
+                    className="rounded-full border border-black/5 bg-white/50 px-4 py-1.5 text-xs font-bold text-gray-500 shadow-sm transition-all data-[state=active]:border-accent/20 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md"
+                  >
+                    {tHeader("filter.all")}
+                  </TabsTrigger>
                   {plan.meals.map((meal) => (
                     <TabsTrigger
                       key={meal.id}
@@ -174,7 +181,11 @@ export function PlanningTab({
         </div>
 
         {plan.meals
-          .filter((meal) => (plan.meals.length > 1 ? meal.id === activeMealId : true))
+          .filter((meal) =>
+            planningFilter.type === "all" && plan.meals.length > 1
+              ? activeMealId === "all" || meal.id === activeMealId
+              : true
+          )
           .map((meal) => {
             const hasMatch = meal.services.some((s) =>
               s.items.some((i) => {
@@ -234,7 +245,13 @@ export function PlanningTab({
               variant="premium"
               className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_8px_32px_rgba(var(--accent),0.15)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_12px_40px_rgba(var(--accent),0.25)] active:scale-95"
               icon={<PlusIcon className="text-accent" size={20} />}
-              onClick={() => onCreateService(activeMealId ?? plan.meals[0]?.id ?? -1)}
+              onClick={() =>
+                onCreateService(
+                  activeMealId === "all"
+                    ? plan.meals[0]?.id
+                    : (activeMealId ?? plan.meals[0]?.id ?? -1)
+                )
+              }
             >
               <span className="text-xs font-black uppercase tracking-widest text-accent">
                 {t("addService")}
