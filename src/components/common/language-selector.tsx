@@ -9,6 +9,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import { useSession } from "@/lib/auth-client";
 import { updateUserAction } from "@/app/actions/user-actions";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { cn } from "@/lib/utils";
 
 // Language metadata with flags and native names
@@ -183,73 +184,73 @@ export function LanguageSelector({
     );
   }
 
-  // Compact variant (dropdown) - kept for desktop
   if (variant === "compact") {
     return (
-      <div className={`relative ${className}`}>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-        >
-          <Globe size={16} />
-          <span className="text-lg">{LANGUAGE_META[locale]?.flag}</span>
-          <span className="hidden sm:inline">{LANGUAGE_META[locale]?.nativeName}</span>
-        </button>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              "flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95",
+              className
+            )}
+            aria-label="Changer la langue"
+          >
+            <Globe size={16} />
+            <span className="text-lg">{LANGUAGE_META[locale]?.flag}</span>
+            <span className="hidden sm:inline">{LANGUAGE_META[locale]?.nativeName}</span>
+          </button>
+        </PopoverTrigger>
 
-        {isOpen && (
-          <>
-            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-            <div className="absolute right-0 top-full z-50 mt-2 w-72 rounded-2xl border border-gray-200 bg-white shadow-xl">
-              {showSearch && routing.locales.length > 6 && (
-                <div className="border-b border-gray-100 p-3">
-                  <div className="relative">
-                    <Search
-                      size={16}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search languages..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="max-h-96 overflow-y-auto p-2">
-                {filteredLocales.map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => handleLanguageChange(l as Locale)}
-                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition-all ${
-                      locale === l ? "bg-accent/10 text-accent" : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{LANGUAGE_META[l]?.flag}</span>
-                      <div>
-                        <p className="text-sm font-semibold">{LANGUAGE_META[l]?.nativeName}</p>
-                        <p className="text-xs text-gray-500">{t(`languages.${l}`)}</p>
-                      </div>
-                    </div>
-                    {locale === l && (
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white">
-                        <Check size={12} />
-                      </div>
-                    )}
-                  </button>
-                ))}
-                {filteredLocales.length === 0 && (
-                  <div className="px-3 py-8 text-center text-sm text-gray-500">
-                    No languages found
-                  </div>
-                )}
+        <PopoverContent align="end" className="w-72 rounded-2xl p-0 shadow-xl" sideOffset={8}>
+          {showSearch && routing.locales.length > 6 && (
+            <div className="border-b border-gray-100 p-3">
+              <div className="relative">
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  placeholder={t("searchPlaceholder") || "Search languages..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                />
               </div>
             </div>
-          </>
-        )}
-      </div>
+          )}
+          <div className="max-h-96 overflow-y-auto p-2">
+            {filteredLocales.map((l) => (
+              <button
+                key={l}
+                onClick={() => handleLanguageChange(l as Locale)}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left transition-all active:scale-95",
+                  locale === l ? "bg-accent/10 text-accent" : "hover:bg-gray-50"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{LANGUAGE_META[l]?.flag}</span>
+                  <div>
+                    <p className="text-sm font-semibold">{LANGUAGE_META[l]?.nativeName}</p>
+                    <p className="text-xs text-gray-500">{t(`languages.${l}`)}</p>
+                  </div>
+                </div>
+                {locale === l && (
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-white">
+                    <Check size={12} />
+                  </div>
+                )}
+              </button>
+            ))}
+            {filteredLocales.length === 0 && (
+              <div className="px-3 py-8 text-center text-sm text-gray-500">
+                {t("noLanguageFound") || "No languages found"}
+              </div>
+            )}
+          </div>
+        </PopoverContent>
+      </Popover>
     );
   }
 

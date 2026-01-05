@@ -18,7 +18,10 @@
       "sv": "Suédois",
       "da": "Danois"
     },
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "chooseLanguage": "Choisir une langue",
+    "searchPlaceholder": "Rechercher...",
+    "noLanguageFound": "Aucune langue trouvée"
   },
   "Landing": {
     "badge": "La nouvelle façon de festoyer",
