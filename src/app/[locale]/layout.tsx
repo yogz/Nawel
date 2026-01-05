@@ -43,10 +43,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      // URLs absolues pour éviter les problèmes de proxy/cache
+      { url: new URL("/favicon.ico", "https://colist.fr"), sizes: "any" },
+      { url: new URL("/LogoIcon.png", "https://colist.fr"), type: "image/png", sizes: "32x32" },
+      // Fallback avec chemins relatifs
       { url: "/favicon.ico", sizes: "any" },
       { url: "/LogoIcon.png", type: "image/png", sizes: "32x32" },
     ],
-    apple: "/apple-icon.png",
+    shortcut: [{ url: new URL("/favicon.ico", "https://colist.fr") }, { url: "/favicon.ico" }],
+    apple: [{ url: new URL("/apple-icon.png", "https://colist.fr") }, "/apple-icon.png"],
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -89,6 +94,11 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <head>
+        {/* Favicons explicites pour forcer le chargement */}
+        <link rel="icon" type="image/x-icon" href="https://colist.fr/favicon.ico" />
+        <link rel="shortcut icon" type="image/x-icon" href="https://colist.fr/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="https://colist.fr/LogoIcon.png" />
+        <link rel="apple-touch-icon" href="https://colist.fr/apple-icon.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter, Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { createEventAction, updateEventWithMealAction, deleteEventAction } from "@/app/actions";
-import { Calendar, Plus, Clock, History, Pencil, Trash2, Users, ArrowRight } from "lucide-react";
+import { Calendar, Clock, History, Users, ArrowRight } from "lucide-react";
 import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
@@ -31,8 +31,6 @@ type Event = {
   children: number;
   meals?: Meal[];
 };
-
-import { Button } from "./ui/button";
 
 export function EventList({
   events,
@@ -306,6 +304,9 @@ export function EventList({
                     onSwipeRight={() => setEditingEvent(event)}
                     leftLabel={t("delete")}
                     rightLabel={t("edit")}
+                    confirmLeft
+                    confirmLeftTitle={t("deleteConfirmTitle")}
+                    confirmLeftMessage={t("deleteConfirmDescription")}
                   >
                     {cardContent}
                   </SwipeableCard>

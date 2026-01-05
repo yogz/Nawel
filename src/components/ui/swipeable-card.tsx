@@ -209,7 +209,7 @@ export function SwipeableCard({
           onDragEnd={handleDragEnd}
           animate={controls}
           className={`relative z-10 ${className}`}
-          style={{ touchAction: "pan-y" }}
+          style={{ touchAction: "pan-x" }}
           onClickCapture={handleClickCapture}
         >
           {children}
