@@ -29,6 +29,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
 import { getPersonEmoji, THEME_EMOJIS, renderAvatar } from "@/lib/utils";
 import { LanguageSelector } from "../common/language-selector";
+import { WarningBanner } from "../common/warning-banner";
 
 interface ProfileDrawerProps {
   open: boolean;
@@ -479,6 +480,10 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     {tProfile("deleteWarning")}
                   </p>
                 </div>
+                <WarningBanner
+                  message="Attention : Cette action est irréversible. Toutes vos données personnelles et vos participations seront définitivement supprimées."
+                  className="mt-2"
+                />
               </div>
 
               {error && (

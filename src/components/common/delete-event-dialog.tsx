@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WarningBanner } from "./warning-banner";
 
 interface DeleteEventDialogProps {
   open: boolean;
@@ -60,6 +61,9 @@ export function DeleteEventDialog({
           <DialogDescription className="text-sm leading-relaxed text-gray-500">
             {t("deleteConfirmDescription")}
           </DialogDescription>
+          <div className="mt-4">
+            <WarningBanner message="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées." />
+          </div>
         </DialogHeader>
 
         <div className="space-y-3 py-4">

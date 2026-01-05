@@ -31,7 +31,6 @@ const OrganizerSheets = lazy(() =>
 );
 const PlanningTab = lazy(() => import("./planning-tab").then((m) => ({ default: m.PlanningTab })));
 const PeopleTab = lazy(() => import("./people-tab").then((m) => ({ default: m.PeopleTab })));
-const SettingsTab = lazy(() => import("./settings-tab").then((m) => ({ default: m.SettingsTab })));
 const ShoppingTab = lazy(() => import("./shopping-tab").then((m) => ({ default: m.ShoppingTab })));
 const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default: m.AuthModal })));
 
@@ -253,15 +252,6 @@ export function Organizer({
     validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
   }, [writeKey, slug, setReadOnly]);
 
-  useEffect(() => {
-    if (tab === "settings") {
-      setLogsLoading(true);
-      getChangeLogsAction({ slug })
-        .then(setLogs)
-        .finally(() => setLogsLoading(false));
-    }
-  }, [tab, slug, setLogs, setLogsLoading]);
-
   return (
     <div className="flex min-h-screen flex-col pb-24 text-gray-900">
       <OrganizerHeader
@@ -322,14 +312,6 @@ export function Organizer({
                 currentUserId={session?.user?.id}
                 onClaim={handleClaimPerson}
                 onUnclaim={handleUnclaimPerson}
-              />
-            )}
-
-            {tab === "settings" && (
-              <SettingsTab
-                onDeleteEvent={() => setDeleteDialogOpen(true)}
-                readOnly={readOnly}
-                isOwner={isOwner}
               />
             )}
 
