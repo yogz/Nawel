@@ -46,25 +46,30 @@ export function ServiceEditForm({
     stateRef.current = { title, adults, children, peopleCount };
   }, [title, adults, children, peopleCount]);
 
+  const handleBlurSave = () => {
+    if (skipSaveRef.current) {
+      return;
+    }
+    const {
+      title: currTitle,
+      adults: currAdults,
+      children: currChildren,
+      peopleCount: currCount,
+    } = stateRef.current;
+    const hasChanged =
+      currTitle !== (service?.title || "") ||
+      currAdults !== (service?.adults || 0) ||
+      currChildren !== (service?.children || 0) ||
+      currCount !== (service?.peopleCount || 0);
+
+    if (hasChanged && currTitle.trim()) {
+      onSubmit(service.id, currTitle, currAdults, currChildren, currCount);
+    }
+  };
+
   useEffect(() => {
     return () => {
-      if (!skipSaveRef.current) {
-        const {
-          title: currTitle,
-          adults: currAdults,
-          children: currChildren,
-          peopleCount: currCount,
-        } = stateRef.current;
-        const hasChanged =
-          currTitle !== (service?.title || "") ||
-          currAdults !== (service?.adults || 0) ||
-          currChildren !== (service?.children || 0) ||
-          currCount !== (service?.peopleCount || 0);
-
-        if (hasChanged && currTitle.trim()) {
-          onSubmit(service.id, currTitle, currAdults, currChildren, currCount);
-        }
-      }
+      handleBlurSave();
     };
   }, [service, onSubmit]);
 
@@ -86,6 +91,7 @@ export function ServiceEditForm({
           id="service-title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onBlur={handleBlurSave}
           placeholder={t("placeholder")}
           required
           autoCapitalize="sentences"
@@ -152,14 +158,6 @@ export function ServiceEditForm({
       </div>
 
       <div className="flex flex-col gap-3 pt-4">
-        <DrawerClose asChild>
-          <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
-            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              {tCommon("close") || "Terminer"}
-            </span>
-          </Button>
-        </DrawerClose>
-
         {onDelete && (
           <Button
             type="button"

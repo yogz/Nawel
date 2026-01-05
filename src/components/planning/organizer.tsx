@@ -338,6 +338,7 @@ export function Organizer({
           handlers={handlers}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
+          successMessage={successMessage}
           setSuccessMessage={setSuccessMessage}
           planningFilter={planningFilter}
           setPlanningFilter={setPlanningFilter}

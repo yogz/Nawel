@@ -10,6 +10,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
+import { CookieConsent } from "@/components/common/cookie-consent";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -113,6 +114,7 @@ export default async function RootLayout({
           <ThemeProvider>
             {children}
             <SnowOverlay />
+            <CookieConsent />
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

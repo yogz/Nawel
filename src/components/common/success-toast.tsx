@@ -23,7 +23,7 @@ export function SuccessToast({
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
-          className="pointer-events-none fixed inset-x-0 top-24 z-[110] flex justify-center px-4"
+          className="pointer-events-none fixed inset-x-0 bottom-32 z-[110] flex justify-center px-4"
         >
           <div
             className={clsx(

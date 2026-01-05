@@ -7,6 +7,37 @@ import { sendGAEvent } from "@next/third-parties/google";
  * All GA4 events are prefixed with the action context for easy filtering
  */
 
+// Constants
+const IS_DEV = process.env.NODE_ENV === "development";
+const ANALYTICS_ENABLED = typeof window !== "undefined";
+
+// Consent management
+let hasConsent = true; // Default to true, can be controlled by cookie banner
+
+/**
+ * Set analytics consent status (for GDPR compliance)
+ */
+export function setAnalyticsConsent(consent: boolean) {
+  hasConsent = consent;
+  if (typeof window !== "undefined") {
+    localStorage.setItem("analytics_consent", consent ? "true" : "false");
+  }
+}
+
+/**
+ * Check if analytics consent has been given
+ */
+export function getAnalyticsConsent(): boolean {
+  if (typeof window === "undefined") return false;
+  const stored = localStorage.getItem("analytics_consent");
+  return stored === null ? true : stored === "true"; // Default to true if not set
+}
+
+// Initialize consent from storage
+if (typeof window !== "undefined") {
+  hasConsent = getAnalyticsConsent();
+}
+
 type EventPageAction =
   | "tab_changed"
   | "item_created"
@@ -29,6 +60,14 @@ type EventPageAction =
   | "filter_changed"
   | "drag_drop_used";
 
+type LandingAction =
+  | "discover_click"
+  | "feature_viewed"
+  | "demo_viewed"
+  | "demo_step"
+  | "faq_interaction"
+  | "cta_click";
+
 interface TrackEventParams {
   action: EventPageAction;
   category?: string;
@@ -47,6 +86,23 @@ export function trackEvent({
   value,
   ...extra
 }: TrackEventParams) {
+  // Debug mode - log instead of sending
+  if (IS_DEV) {
+    console.log("[Analytics Debug]", {
+      action,
+      category,
+      label,
+      value,
+      ...extra,
+    });
+    return;
+  }
+
+  // Check consent
+  if (!hasConsent || !ANALYTICS_ENABLED) {
+    return;
+  }
+
   try {
     sendGAEvent("event", action, {
       event_category: category,
@@ -166,13 +222,79 @@ export function trackDragDrop() {
  * Landing page specific tracking
  */
 export function trackLandingEvent(
-  action: string,
+  action: LandingAction,
   params: Record<string, string | number | boolean> = {}
 ) {
+  // Debug mode - log instead of sending
+  if (IS_DEV) {
+    console.log("[Analytics Debug] Landing:", { action, ...params });
+    return;
+  }
+
+  // Check consent
+  if (!hasConsent || !ANALYTICS_ENABLED) {
+    return;
+  }
+
   try {
     sendGAEvent("event", action, params);
   } catch (error) {
     console.debug("[Analytics] Failed to track landing event:", action, error);
+  }
+}
+
+/**
+ * Track performance metrics
+ */
+export function trackPerformance(metric: string, value: number, context?: string) {
+  // Debug mode - log instead of sending
+  if (IS_DEV) {
+    console.log("[Analytics Debug] Performance:", { metric, value, context });
+    return;
+  }
+
+  // Check consent
+  if (!hasConsent || !ANALYTICS_ENABLED) {
+    return;
+  }
+
+  try {
+    sendGAEvent("timing_complete", {
+      name: metric,
+      value: Math.round(value),
+      event_category: "performance",
+      event_label: context,
+    });
+  } catch (error) {
+    console.debug("[Analytics] Failed to track performance:", metric, error);
+  }
+}
+
+/**
+ * Track errors and exceptions
+ */
+export function trackError(error: Error | string, context?: string, fatal = false) {
+  const errorMessage = typeof error === "string" ? error : error.message;
+
+  // Debug mode - log instead of sending
+  if (IS_DEV) {
+    console.log("[Analytics Debug] Error:", { error: errorMessage, context, fatal });
+    return;
+  }
+
+  // Check consent
+  if (!hasConsent || !ANALYTICS_ENABLED) {
+    return;
+  }
+
+  try {
+    sendGAEvent("exception", {
+      description: errorMessage,
+      fatal,
+      context,
+    });
+  } catch (err) {
+    console.debug("[Analytics] Failed to track error:", errorMessage, err);
   }
 }
 

@@ -192,6 +192,34 @@ export function ItemForm({
     }
   };
 
+  const handleBlurSave = () => {
+    if (!isEditMode || readOnly) {
+      return;
+    }
+
+    const {
+      name: currName,
+      quantity: currQty,
+      note: currNote,
+      price: currPrice,
+    } = stateRef.current;
+
+    const hasChanges =
+      currName !== (defaultItem?.name || "") ||
+      currQty !== (defaultItem?.quantity || "") ||
+      currNote !== getDisplayNote(defaultItem?.note) ||
+      currPrice !== (defaultItem?.price?.toString() || "");
+
+    if (hasChanges && currName.trim()) {
+      onSubmit({
+        name: currName,
+        quantity: currQty || undefined,
+        note: currNote || undefined,
+        price: currPrice ? parseFloat(currPrice) : undefined,
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Name - always visible */}
@@ -207,6 +235,7 @@ export function ItemForm({
           placeholder={t("placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={handleBlurSave}
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
@@ -220,6 +249,7 @@ export function ItemForm({
           placeholder={t("quantityPlaceholder")}
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
+          onBlur={handleBlurSave}
           disabled={readOnly}
           autoCapitalize="none"
           enterKeyHint="next"
@@ -232,6 +262,7 @@ export function ItemForm({
           placeholder={t("pricePlaceholder")}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+          onBlur={handleBlurSave}
           disabled={readOnly}
           enterKeyHint="next"
           className="h-11 w-24 rounded-xl border-gray-100 bg-gray-50/50 text-sm focus:bg-white"
@@ -328,6 +359,26 @@ export function ItemForm({
       </div>
 
       {/* Expandable details */}
+      {/* AI Ingredients section - only for existing items */}
+      {isEditMode && (
+        <ItemIngredients
+          ingredients={ingredients}
+          itemName={name}
+          itemNote={note}
+          isGenerating={isGenerating}
+          isAuthenticated={isAuthenticated}
+          onGenerateIngredients={
+            onGenerateIngredients ? (n, o) => onGenerateIngredients(n, o, locale) : undefined
+          }
+          onToggleIngredient={onToggleIngredient}
+          onDeleteIngredient={onDeleteIngredient}
+          onCreateIngredient={onCreateIngredient}
+          onDeleteAllIngredients={onDeleteAllIngredients}
+          onRequestAuth={onRequestAuth}
+        />
+      )}
+
+      {/* Expandable details moved to bottom */}
       <button
         type="button"
         onClick={() => setShowDetails(!showDetails)}
@@ -351,6 +402,7 @@ export function ItemForm({
               placeholder={t("notePlaceholder")}
               value={note}
               onChange={(e) => setNote(e.target.value)}
+              onBlur={handleBlurSave}
               disabled={readOnly}
               autoCapitalize="sentences"
               enterKeyHint="done"
@@ -404,27 +456,8 @@ export function ItemForm({
         </div>
       )}
 
-      {/* AI Ingredients section - only for existing items */}
-      {isEditMode && (
-        <ItemIngredients
-          ingredients={ingredients}
-          itemName={name}
-          itemNote={note}
-          isGenerating={isGenerating}
-          isAuthenticated={isAuthenticated}
-          onGenerateIngredients={
-            onGenerateIngredients ? (n, o) => onGenerateIngredients(n, o, locale) : undefined
-          }
-          onToggleIngredient={onToggleIngredient}
-          onDeleteIngredient={onDeleteIngredient}
-          onCreateIngredient={onCreateIngredient}
-          onDeleteAllIngredients={onDeleteAllIngredients}
-          onRequestAuth={onRequestAuth}
-        />
-      )}
-
       {/* Action buttons - only for creation */}
-      {!isEditMode ? (
+      {!isEditMode && (
         <div className="pt-4">
           <Button
             variant="premium"
@@ -438,16 +471,6 @@ export function ItemForm({
               {isPending ? t("adding") : t("addButton")}
             </span>
           </Button>
-        </div>
-      ) : (
-        <div className="pt-4">
-          <DrawerClose asChild>
-            <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
-              <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                {tCommon("close") || "Terminer"}
-              </span>
-            </Button>
-          </DrawerClose>
         </div>
       )}
     </div>

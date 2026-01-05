@@ -155,41 +155,48 @@ export function MealForm({
     stateRef.current = { date, title, adults, children, time, address };
   }, [date, title, adults, children, time, address]);
 
+  const handleBlurSave = () => {
+    if (!isEditMode || skipSaveRef.current) {
+      return;
+    }
+    const {
+      date: currDate,
+      title: currTitle,
+      adults: currAdults,
+      children: currChildren,
+      time: currTime,
+      address: currAddress,
+    } = stateRef.current;
+    if (!currDate) {
+      return;
+    }
+
+    const formattedDate = format(currDate, "yyyy-MM-dd");
+    const hasChanged =
+      formattedDate !== (meal?.date || "") ||
+      currTitle !== (meal?.title || "") ||
+      currAdults !== (meal?.adults ?? defaultAdults) ||
+      currChildren !== (meal?.children ?? defaultChildren) ||
+      currTime !== (meal?.time || "") ||
+      currAddress !== (meal?.address || "");
+
+    if (hasChanged) {
+      onSubmit(
+        formattedDate,
+        currTitle,
+        undefined,
+        currAdults,
+        currChildren,
+        currTime,
+        currAddress
+      );
+    }
+  };
+
   useEffect(() => {
     return () => {
-      if (isEditMode && !skipSaveRef.current) {
-        const {
-          date: currDate,
-          title: currTitle,
-          adults: currAdults,
-          children: currChildren,
-          time: currTime,
-          address: currAddress,
-        } = stateRef.current;
-        if (!currDate) {
-          return;
-        }
-
-        const formattedDate = format(currDate, "yyyy-MM-dd");
-        const hasChanged =
-          formattedDate !== (meal?.date || "") ||
-          currTitle !== (meal?.title || "") ||
-          currAdults !== (meal?.adults ?? defaultAdults) ||
-          currChildren !== (meal?.children ?? defaultChildren) ||
-          currTime !== (meal?.time || "") ||
-          currAddress !== (meal?.address || "");
-
-        if (hasChanged) {
-          onSubmit(
-            formattedDate,
-            currTitle,
-            undefined,
-            currAdults,
-            currChildren,
-            currTime,
-            currAddress
-          );
-        }
+      if (!skipSaveRef.current) {
+        handleBlurSave();
       }
     };
   }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
@@ -266,6 +273,7 @@ export function MealForm({
                     const val = e.target.value;
                     setDate(val ? new Date(val) : undefined);
                   }}
+                  onBlur={handleBlurSave}
                   className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                 />
                 <CalendarIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -286,6 +294,7 @@ export function MealForm({
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   enterKeyHint="next"
+                  onBlur={handleBlurSave}
                   className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                 />
                 <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -304,6 +313,7 @@ export function MealForm({
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onBlur={handleBlurSave}
               placeholder={t("titlePlaceholder")}
               autoCapitalize="sentences"
               enterKeyHint="next"
@@ -323,6 +333,7 @@ export function MealForm({
                 id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                onBlur={handleBlurSave}
                 placeholder={t("addressPlaceholder")}
                 autoComplete="street-address"
                 autoCapitalize="sentences"
@@ -376,35 +387,44 @@ export function MealForm({
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 pt-2">
-            <div className="flex gap-3">
-              <DrawerClose asChild>
-                <Button
-                  type="button"
-                  variant="premium"
-                  className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-                >
-                  <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                    {tCommon(isEditMode ? "close" : "cancel")}
-                  </span>
-                </Button>
-              </DrawerClose>
-              {!isEditMode && (
-                <Button
-                  type="button"
-                  variant="premium"
-                  onClick={() => setStep(2)}
-                  disabled={!canGoNext()}
-                  className="flex-[2] py-6 pr-8 shadow-md"
-                  icon={<Sparkles size={18} />}
-                  shine
-                >
-                  <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    {tCommon("next")}
-                  </span>
-                </Button>
-              )}
-            </div>
+          <div
+            className={clsx(
+              "flex flex-col gap-3 pt-2",
+              isEditMode && "mt-4 border-t border-gray-100 pt-6"
+            )}
+          >
+            {(!isEditMode || onDelete) && (
+              <div className="flex gap-3">
+                {!isEditMode && (
+                  <>
+                    <DrawerClose asChild>
+                      <Button
+                        type="button"
+                        variant="premium"
+                        className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+                      >
+                        <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+                          {tCommon("cancel")}
+                        </span>
+                      </Button>
+                    </DrawerClose>
+                    <Button
+                      type="button"
+                      variant="premium"
+                      onClick={() => setStep(2)}
+                      disabled={!canGoNext()}
+                      className="flex-[2] py-6 pr-8 shadow-md"
+                      icon={<Sparkles size={18} />}
+                      shine
+                    >
+                      <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                        {tCommon("next")}
+                      </span>
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
 
             {isEditMode && onDelete && (
               <Button

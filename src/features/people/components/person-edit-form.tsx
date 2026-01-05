@@ -43,20 +43,23 @@ export function PersonEditForm({
     stateRef.current = { name, selectedEmoji, selectedImage };
   }, [name, selectedEmoji, selectedImage]);
 
+  const handleBlurSave = () => {
+    if (readOnly) {
+      return;
+    }
+    const { name: currName, selectedEmoji: currEmoji, selectedImage: currImage } = stateRef.current;
+    const hasChanged =
+      currName !== person.name || currEmoji !== person.emoji || currImage !== person.image;
+
+    if (hasChanged && currName.trim()) {
+      onSubmit(currName, currEmoji, currImage);
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (!skipSaveRef.current && !readOnly) {
-        const {
-          name: currName,
-          selectedEmoji: currEmoji,
-          selectedImage: currImage,
-        } = stateRef.current;
-        const hasChanged =
-          currName !== person.name || currEmoji !== person.emoji || currImage !== person.image;
-
-        if (hasChanged && currName.trim()) {
-          onSubmit(currName, currEmoji, currImage);
-        }
+        handleBlurSave();
       }
     };
   }, [person, readOnly, onSubmit]);
@@ -112,6 +115,7 @@ export function PersonEditForm({
             id="edit-person-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={handleBlurSave}
             disabled={readOnly}
             className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
           />
@@ -187,14 +191,6 @@ export function PersonEditForm({
       </div>
 
       <div className="space-y-3 border-t border-gray-100 pt-6">
-        <DrawerClose asChild>
-          <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
-            <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-              {tCommon("close") || "Terminer"}
-            </span>
-          </Button>
-        </DrawerClose>
-
         {onDelete && (
           <Button
             variant="premium"
