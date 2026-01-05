@@ -3,7 +3,7 @@
 import { useSession, signOut } from "@/lib/auth-client";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Input } from "../ui/input";
+import { DrawerInput } from "../ui/drawer-input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
@@ -287,7 +287,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-black">
                   <User size={18} />
                 </div>
-                <Input
+                <DrawerInput
                   id="profile-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
