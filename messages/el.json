@@ -197,8 +197,9 @@
       "shareNavigatorTitle": "Εκδήλωση - {name}",
       "shareNavigatorText": "Ελάτε στην εκδήλωση \"{name}\" στο CoList!",
       "filter": {
-        "all": "Εμφάνιση όλων",
-        "unassigned": "Προς ανάθεση ({count})"
+        "all": "Πλήρες μενού",
+        "unassigned": "Προς ανάληψη ({count})",
+        "allMeals": "Όλα τα γεύματα"
       }
     },
     "TabBar": {

@@ -190,8 +190,9 @@
       "shareNavigatorTitle": "Begivenhed - {name}",
       "shareNavigatorText": "Tilslut dig begivenheden \"{name}\" på CoList!",
       "filter": {
-        "all": "Vis alle",
-        "unassigned": "At tage ({count})"
+        "all": "Hele menuen",
+        "unassigned": "Skal tages ({count})",
+        "allMeals": "Alle måltider"
       }
     },
     "TabBar": {

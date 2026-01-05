@@ -163,7 +163,7 @@ export function PlanningTab({
                     value="all"
                     className="rounded-full border border-black/5 bg-white/50 px-4 py-1.5 text-xs font-bold text-gray-500 shadow-sm transition-all data-[state=active]:border-accent/20 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md"
                   >
-                    {tHeader("filter.all")}
+                    {tHeader("filter.allMeals")}
                   </TabsTrigger>
                   {plan.meals.map((meal) => (
                     <TabsTrigger

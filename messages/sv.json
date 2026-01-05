@@ -190,8 +190,9 @@
       "shareNavigatorTitle": "Evenemang - {name}",
       "shareNavigatorText": "Gå med i evenemanget \"{name}\" på CoList!",
       "filter": {
-        "all": "Visa alla",
-        "unassigned": "Att ta ({count})"
+        "all": "Hela menyn",
+        "unassigned": "Att ta ({count})",
+        "allMeals": "Alla måltider"
       }
     },
     "TabBar": {

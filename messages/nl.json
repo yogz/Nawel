@@ -190,8 +190,9 @@
       "shareNavigatorTitle": "Evenement - {name}",
       "shareNavigatorText": "Doe mee met het evenement \"{name}\" op CoList!",
       "filter": {
-        "all": "Toon alles",
-        "unassigned": "Te nemen ({count})"
+        "all": "Volledig menu",
+        "unassigned": "Te nemen ({count})",
+        "allMeals": "Alle maaltijden"
       }
     },
     "TabBar": {

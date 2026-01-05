@@ -190,8 +190,9 @@
       "shareNavigatorTitle": "Evento - {name}",
       "shareNavigatorText": "Unisciti all'evento \"{name}\" su CoList!",
       "filter": {
-        "all": "Mostra tutto",
-        "unassigned": "Da prendere ({count})"
+        "all": "Menu completo",
+        "unassigned": "Da prendere ({count})",
+        "allMeals": "Tutti i pasti"
       }
     },
     "TabBar": {
