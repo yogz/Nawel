@@ -68,8 +68,8 @@ function ItemRowComponent({
             (item.ingredients && item.ingredients.length > 0)) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                  <Scale size={11} className="text-gray-400" />
+                <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-gray-600">
+                  <Scale size={11} className="text-gray-500" />
                   {item.quantity}
                 </div>
               )}
@@ -86,8 +86,8 @@ function ItemRowComponent({
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1 text-[10px] font-medium italic text-blue-600">
-                  <MessageSquare size={11} className="text-blue-500/70" />
+                <div className="flex items-center gap-1 text-[10px] font-medium italic text-blue-700">
+                  <MessageSquare size={11} className="text-blue-600/70" />
                   <span className="max-w-[140px] truncate">
                     {item.note.startsWith("EventDashboard.")
                       ? t("defaultNote", { count: peopleCount || 0 })
@@ -105,8 +105,8 @@ function ItemRowComponent({
         <div className="flex flex-col items-end">
           <p
             className={cn(
-              "text-right text-[11px] font-black uppercase tracking-widest",
-              person ? "text-accent" : "text-gray-300"
+              "text-right text-[12px] font-medium",
+              person ? "text-accent" : "text-gray-400"
             )}
           >
             {person ? getDisplayName(person) : t("unassigned")}

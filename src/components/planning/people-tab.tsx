@@ -248,8 +248,8 @@ export function PeopleTab({
                         (item.ingredients && item.ingredients.length > 0)) && (
                         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                           {item.quantity?.trim() && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-gray-500">
-                              <Scale size={12} className="text-gray-400" />
+                            <div className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-tight text-gray-600">
+                              <Scale size={12} className="text-gray-500" />
                               {item.quantity}
                             </div>
                           )}
@@ -260,8 +260,8 @@ export function PeopleTab({
                             </div>
                           )}
                           {item.note && (
-                            <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-500">
-                              <MessageSquare size={12} className="text-gray-400" />
+                            <div className="flex items-center gap-1 text-[11px] font-bold italic tracking-tight text-gray-600">
+                              <MessageSquare size={12} className="text-gray-500" />
                               <span className="max-w-[150px] truncate">
                                 {item.note.startsWith("EventDashboard.")
                                   ? tForm("defaultNote", {
