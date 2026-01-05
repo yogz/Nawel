@@ -61,7 +61,8 @@ export function useServiceHandlers({
     title?: string,
     adults?: number,
     children?: number,
-    peopleCount?: number
+    peopleCount?: number,
+    closeSheet = false
   ) => {
     if (readOnly) {
       return;
@@ -97,7 +98,9 @@ export function useServiceHandlers({
             }),
           })),
         }));
-        setSheet(null);
+        if (closeSheet) {
+          setSheet(null);
+        }
         setSuccessMessage({ text: "Service mis à jour ✓", type: "success" });
         trackMealServiceAction("service_updated", title);
       } catch (error) {

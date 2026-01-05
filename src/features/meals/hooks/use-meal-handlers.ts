@@ -108,7 +108,8 @@ export function useMealHandlers({
     adults?: number,
     children?: number,
     time?: string,
-    address?: string
+    address?: string,
+    closeSheet = false
   ) => {
     if (readOnly) {
       return;
@@ -155,7 +156,9 @@ export function useMealHandlers({
             return updatedMeal;
           }),
         }));
-        setSheet(null);
+        if (closeSheet) {
+          setSheet(null);
+        }
         setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
         trackMealServiceAction("meal_updated", title || date);
       } catch (error) {

@@ -60,7 +60,8 @@ export function usePersonHandlers({
     id: number,
     name: string,
     emoji?: string | null,
-    image?: string | null
+    image?: string | null,
+    closeSheet = false
   ) => {
     if (readOnly) {
       return;
@@ -85,8 +86,9 @@ export function usePersonHandlers({
         ) {
           await refetch();
         }
-
-        setSheet(null);
+        if (closeSheet) {
+          setSheet(null);
+        }
         setSuccessMessage({ text: t("person.updated"), type: "success" });
         trackPersonAction("person_updated", name);
       } catch (error) {
