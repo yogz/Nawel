@@ -117,7 +117,7 @@ export function OrganizerHeader({
                         <Share size={16} className="text-gray-700 group-hover:text-white" />
                       )
                     }
-                    iconClassName="h-full w-full bg-white group-hover:bg-accent"
+                    iconClassName="h-full w-full group-hover:bg-accent"
                     title={t("shareTitle")}
                   />
                 )}
