@@ -39,6 +39,8 @@ interface PlanningTabProps {
   sheet: Sheet | null;
   slug: string;
   writeKey?: string;
+  isOwner?: boolean;
+  onDeleteEvent?: () => void;
 }
 
 const containerVariants: Variants = {
@@ -74,8 +76,11 @@ export function PlanningTab({
   sheet,
   slug,
   writeKey,
+  isOwner,
+  onDeleteEvent,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
+  const tSettings = useTranslations("EventDashboard.Settings");
   const { theme } = useThemeMode();
   const [hasMounted, setHasMounted] = useState(false);
   const [activeMealId, setActiveMealId] = useState<number | null>(
@@ -208,16 +213,47 @@ export function PlanningTab({
         </div>
       )}
       {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
-        <div className="mt-8 flex flex-col gap-4 px-4 pb-12">
-          <Button
-            variant="premium"
-            className="h-12 w-full rounded-2xl border-none bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-[1.02] hover:shadow-purple-500/40"
-            icon={<PlusIcon className="text-white" />}
-            iconClassName="bg-white/20"
-            onClick={() => onCreateService(plan.meals[0]?.id ?? -1)}
-          >
-            <span className="text-sm font-black uppercase tracking-wider">{t("addService")}</span>
-          </Button>
+        <div className="mt-8 flex flex-col gap-3 px-4 pb-12">
+          {/* Main Actions Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              variant="premium"
+              className="h-12 w-full rounded-2xl border-none bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-700 text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] hover:shadow-indigo-500/40 active:scale-95"
+              icon={<PlusIcon className="text-white/80" size={18} />}
+              onClick={() => onCreateService(activeMealId ?? plan.meals[0]?.id ?? -1)}
+            >
+              <span className="text-[11px] font-black uppercase tracking-wider">
+                {t("addService")}
+              </span>
+            </Button>
+
+            <Button
+              variant="premium"
+              className="h-12 w-full rounded-2xl border border-white/20 bg-white/60 text-gray-900 shadow-lg shadow-gray-200/50 backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white active:scale-95"
+              icon={<PlusIcon className="text-gray-400" size={18} />}
+              onClick={() => setSheet({ type: "meal-create" })}
+            >
+              <span className="text-[11px] font-black uppercase tracking-wider">
+                {t("addMeal")}
+              </span>
+            </Button>
+          </div>
+
+          {/* Danger Zone - Only for owner */}
+          {isOwner && onDeleteEvent && (
+            <button
+              onClick={onDeleteEvent}
+              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-100 bg-red-50/30 py-4 text-red-500/60 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.98]"
+            >
+              <PlusIcon
+                className="rotate-45 transition-transform group-hover:scale-110"
+                size={16}
+              />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                {tSettings("dangerZone")} / {t("deleteEvent")}
+              </span>
+            </button>
+          )}
         </div>
       )}
     </DndContext>

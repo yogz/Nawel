@@ -9,6 +9,7 @@ const authenticatedTabs = [
   { key: "planning", icon: CalendarRange },
   { key: "people", icon: Users },
   { key: "shopping", icon: ShoppingCart },
+  { key: "settings", icon: Settings },
 ] as const;
 
 const guestTabs = [

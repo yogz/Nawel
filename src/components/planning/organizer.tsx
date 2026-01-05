@@ -312,6 +312,8 @@ export function Organizer({
                 sheet={sheet}
                 slug={slug}
                 writeKey={effectiveWriteKey}
+                isOwner={isOwner}
+                onDeleteEvent={() => setDeleteDialogOpen(true)}
               />
             )}
 
