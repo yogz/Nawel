@@ -161,68 +161,15 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           </div>
         </DrawerHeader>
 
-        <div className="scrollbar-none overflow-y-auto">
-          {showAdvanced ? (
-            <div className="duration-300 animate-in fade-in slide-in-from-right-4">
-              <div className="flex flex-col items-center justify-center space-y-6 pt-8">
-                {/* Danger Zone Header */}
-                <div className="flex flex-col items-center gap-4 text-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-red-100">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
-                      <AlertTriangle size={24} strokeWidth={2.5} />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="text-lg font-black uppercase tracking-widest text-gray-900">
-                      {tProfile("dangerZone")}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* Warning Banner */}
-                <div className="w-full">
-                  <WarningBanner
-                    message="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
-                    className="border-red-100 bg-red-50/50 text-red-600"
-                  />
-                </div>
-
-                {/* Actions */}
-                <div className="w-full space-y-3 pt-4">
-                  <Button
-                    variant="premium"
-                    className="w-full border-red-200 bg-red-50/80 py-7 shadow-xl shadow-red-500/5 hover:bg-red-100/80"
-                    icon={
-                      isDeleting ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-200 text-red-600 transition-colors group-hover:bg-red-600 group-hover:text-white">
-                          <Trash2 size={16} />
-                        </div>
-                      )
-                    }
-                    onClick={() => setShowDeleteDialog(true)}
-                    disabled={isDeleting}
-                    shine
-                  >
-                    <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-red-700">
-                      {isDeleting ? "Suppression..." : "Confirmer la suppression"}
-                    </span>
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    onClick={() => setShowAdvanced(false)}
-                    disabled={isDeleting}
-                    className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-                  >
-                    {tCommon("cancel") || "Annuler"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4 pb-8 duration-300 animate-in fade-in slide-in-from-left-4">
+        <div className="relative h-full overflow-hidden">
+          {/* Main Content */}
+          <div
+            className={clsx(
+              "scrollbar-none absolute inset-0 overflow-y-auto transition-transform duration-300 ease-in-out",
+              showAdvanced ? "-translate-x-full" : "translate-x-0"
+            )}
+          >
+            <div className="space-y-4 pb-8 pt-4">
               <div className="space-y-4">
                 {/* Avatar Display (Read Only) */}
                 <div className="flex flex-col items-center gap-2">
@@ -504,22 +451,89 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     <button
                       type="button"
                       onClick={() => setShowAdvanced(true)}
-                      className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-purple-50/80 py-4 transition-all hover:bg-purple-100 active:scale-[0.98]"
+                      className="group flex w-full flex-col items-center justify-center gap-1 py-4 opacity-60 transition-all hover:opacity-100"
                     >
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-purple-100 transition-transform group-hover:scale-110">
-                        <ChevronDown size={14} className="text-purple-400" />
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-purple-400 group-hover:text-purple-500">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
                         Options avancées
                       </span>
+                      <ChevronDown
+                        size={14}
+                        className="text-gray-300 transition-transform group-hover:translate-y-0.5 group-hover:text-gray-500"
+                      />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Danger Zone / Advanced View */}
+          <div
+            className={clsx(
+              "scrollbar-none absolute inset-0 overflow-y-auto bg-white transition-transform duration-300 ease-in-out",
+              showAdvanced ? "translate-x-0" : "translate-x-full"
+            )}
+          >
+            <div className="flex flex-col items-center justify-center space-y-6 pt-8">
+              {/* Danger Zone Header */}
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-red-100">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
+                    <AlertTriangle size={24} strokeWidth={2.5} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-lg font-black uppercase tracking-widest text-gray-900">
+                    {tProfile("dangerZone")}
+                  </h4>
+                </div>
+              </div>
+
+              {/* Warning Banner */}
+              <div className="w-full px-1">
+                <WarningBanner
+                  message="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
+                  className="border-red-100 bg-red-50/50 text-red-600"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="w-full space-y-3 pt-4">
+                <Button
+                  variant="premium"
+                  className="w-full border-red-200 bg-red-50/80 py-7 shadow-xl shadow-red-500/5 hover:bg-red-100/80"
+                  icon={
+                    isDeleting ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-200 text-red-600 transition-colors group-hover:bg-red-600 group-hover:text-white">
+                        <Trash2 size={16} />
+                      </div>
+                    )
+                  }
+                  onClick={() => setShowDeleteDialog(true)}
+                  disabled={isDeleting}
+                  shine
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-red-700">
+                    {isDeleting ? "Suppression..." : "Confirmer la suppression"}
+                  </span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowAdvanced(false)}
+                  disabled={isDeleting}
+                  className="w-full text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                >
+                  {tCommon("cancel") || "Annuler"}
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </DrawerContent>
+
       <ConfirmDeleteDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
