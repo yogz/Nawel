@@ -534,14 +534,17 @@
       "logout": "Afmelden",
       "deleteAccountWarning": "Waarschuwing: deze actie kan niet ongedaan worden gemaakt. Alle uw gegevens worden verwijderd.",
       "updateLoading": "Opslaan...",
-      "synchronized": "Gesynchroniseerd"
+      "synchronized": "Gesynchroniseerd",
+      "autoAvatar": "Automatische Avatar",
+      "selectEmoji": "Selecteer {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "U moet aangemeldinvullen om uw profiel te wijzigen.",
       "notLoggedInDelete": "U moet aangemeld zijn om uw account te verwijderen.",
       "notLoggedInAI": "U moet aangemeld zijn om AI-generatie te gebruiken.",
       "ingredientsGenerationFailed": "Geen ingrediënten gegenereerd. Probeer opnieuw.",
-      "confirmationRequired": "Bevestiging vereist."
+      "confirmationRequired": "Bevestiging vereist.",
+      "deleteError": "Er is een fout opgetreden bij het verwijderen van je account."
     }
   }
 }

@@ -526,14 +526,17 @@
       "logout": "Cerrar sesión",
       "deleteAccountWarning": "Advertencia: Esta acción es irreversible. Todos tus datos serán eliminados.",
       "updateLoading": "Guardando...",
-      "synchronized": "Sincronizado"
+      "synchronized": "Sincronizado",
+      "autoAvatar": "Avatar Automático",
+      "selectEmoji": "Seleccionar {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "Debes estar conectado para modificar tu perfil.",
       "notLoggedInDelete": "Debes estar conectado para eliminar tu cuenta.",
       "notLoggedInAI": "Debes estar conectado para usar la generación por IA.",
       "ingredientsGenerationFailed": "No se generaron ingredientes. Inténtalo de nuevo.",
-      "confirmationRequired": "Se requiere confirmación."
+      "confirmationRequired": "Se requiere confirmación.",
+      "deleteError": "Ocurrió un error al eliminar tu cuenta."
     }
   }
 }

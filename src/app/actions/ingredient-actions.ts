@@ -55,6 +55,15 @@ export const generateIngredientsAction = createSafeAction(
   generateIngredientsSchema,
   async (input): Promise<GenerateResult> => {
     try {
+      const t = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "Translations",
+      });
+      const tAi = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "EventDashboard.AI",
+      });
+
       // Require authenticated user for AI generation
       const session = await auth.api.getSession({
         headers: await headers(),
@@ -62,7 +71,7 @@ export const generateIngredientsAction = createSafeAction(
       if (!session) {
         return {
           success: false,
-          error: "Vous devez être connecté pour utiliser la génération IA.",
+          error: t("actions.notLoggedInAI"),
         };
       }
 
@@ -77,11 +86,6 @@ export const generateIngredientsAction = createSafeAction(
       // Fetch item to check for custom quantity
       const item = await db.query.items.findFirst({
         where: eq(items.id, input.itemId),
-      });
-
-      const tAi = await getTranslations({
-        locale: input.locale || "fr",
-        namespace: "EventDashboard.AI",
       });
 
       // Construct localized guest description
@@ -136,14 +140,16 @@ export const generateIngredientsAction = createSafeAction(
           console.error("[AI] Generation failed:", aiError);
           return {
             success: false,
-            error: tAi.has("generationError") ? tAi("generationError") : "Erreur de génération IA.",
+            error: tAi.has("generationError")
+              ? tAi("generationError")
+              : t("actions.ingredientsGenerationFailed"),
           };
         }
 
         if (!generatedIngredients || generatedIngredients.length === 0) {
           return {
             success: false,
-            error: "L'IA n'a retourné aucun ingrédient. Réessayez.",
+            error: t("actions.ingredientsGenerationFailed"),
           };
         }
 
@@ -186,7 +192,7 @@ export const generateIngredientsAction = createSafeAction(
       }
 
       if (!generatedIngredients || generatedIngredients.length === 0) {
-        return { success: false, error: "Aucun ingrédient généré. Réessayez." };
+        return { success: false, error: t("actions.ingredientsGenerationFailed") };
       }
 
       // Insert all ingredients
@@ -212,9 +218,13 @@ export const generateIngredientsAction = createSafeAction(
       return { success: true, data: inserted };
     } catch (error) {
       console.error("[generateIngredientsAction] Unexpected error:", error);
+      const t = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "Translations",
+      });
       return {
         success: false,
-        error: "Une erreur inattendue est survenue. Réessayez.",
+        error: t("actions.ingredientsGenerationFailed"),
       };
     }
   }

@@ -32,6 +32,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const { theme, setTheme } = useThemeMode();
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("Profile");
+  const t = useTranslations("Translations");
   const [name, setName] = useState("");
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,7 +152,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <button
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                   className="group relative h-20 w-20 cursor-pointer transition-transform active:scale-95"
-                  aria-label="Changer l'emoji"
+                  aria-label={t("profile.changeEmoji")}
                 >
                   <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100 transition-all group-hover:ring-4 group-hover:ring-accent/20">
                     {(() => {
@@ -202,7 +203,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-2xl">
                         <div className="mb-3 flex items-center justify-between">
                           <span className="text-xs font-black uppercase tracking-widest text-gray-400">
-                            Choisir un emoji
+                            {t("profile.chooseEmoji")}
                           </span>
                           <button
                             onClick={() => setShowEmojiPicker(false)}
@@ -222,7 +223,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                                 ? "bg-accent text-white ring-2 ring-accent/30"
                                 : "bg-gray-100 text-gray-400 hover:bg-gray-200"
                             )}
-                            aria-label="Avatar automatique"
+                            aria-label={t("profile.autoAvatar")}
                           >
                             {session.user.image ? (
                               <Image
@@ -275,13 +276,13 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   {isSubmitting && (
                     <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-accent">
                       <Loader2 size={10} className="animate-spin" />
-                      <span>Enregistrement...</span>
+                      <span>{t("profile.updateLoading")}</span>
                     </div>
                   )}
                   {success && (
                     <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-green-500">
                       <Check size={10} />
-                      <span>Synchronisé</span>
+                      <span>{t("profile.synchronized")}</span>
                     </div>
                   )}
                 </div>
@@ -294,7 +295,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 htmlFor="profile-name"
                 className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
               >
-                Nom complet
+                {t("profile.fullName")}
               </Label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-black">
@@ -309,7 +310,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       handleSaveProfile();
                     }
                   }}
-                  placeholder="Ex: Jean Dupont"
+                  placeholder={t("profile.exampleName")}
                   className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
                   required
                 />
@@ -335,7 +336,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             {/* Theme Toggle - Compact Segment Control */}
             <div className="flex items-center justify-between rounded-xl bg-gray-50/50 p-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Thème
+                {t("profile.theme")}
               </Label>
               <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
                 <button
@@ -368,7 +369,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             {/* Language Selector - Compact Inline */}
             <div className="flex items-center justify-between rounded-xl bg-gray-50/50 p-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                Langue
+                {t("profile.language")}
               </Label>
               <LanguageSelector variant="bottomSheet" showSearch={true} />
             </div>
@@ -394,7 +395,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 }}
               >
                 <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
-                  Se déconnecter
+                  {t("profile.logout")}
                 </span>
               </Button>
 
@@ -412,7 +413,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       onCancel={() => setShowAdvanced(false)}
                       isDeleting={isDeleting}
                       title={tProfile("dangerZone")}
-                      warningMessage="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
+                      warningMessage={t("profile.deleteAccountWarning")}
                       deleteButtonLabel={tProfile("confirmDelete")}
                       cancelButtonLabel={tCommon("cancel") || "Annuler"}
                       confirmationConfig={{

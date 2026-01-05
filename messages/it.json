@@ -534,14 +534,17 @@
       "logout": "Esci",
       "deleteAccountWarning": "Avvertenza: questa azione è irreversibile. Tutti i tuoi dati verranno eliminati.",
       "updateLoading": "Salvataggio in corso...",
-      "synchronized": "Sincronizzato"
+      "synchronized": "Sincronizzato",
+      "autoAvatar": "Avatar Automatico",
+      "selectEmoji": "Seleziona {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "Devi essere connesso per modificare il tuo profilo.",
       "notLoggedInDelete": "Devi essere connesso per eliminare il tuo account.",
       "notLoggedInAI": "Devi essere connesso per utilizzare la generazione AI.",
       "ingredientsGenerationFailed": "Nessun ingrediente generato. Riprova.",
-      "confirmationRequired": "Conferma richiesta."
+      "confirmationRequired": "Conferma richiesta.",
+      "deleteError": "Si è verificato un errore durante l'eliminazione del tuo account."
     }
   }
 }

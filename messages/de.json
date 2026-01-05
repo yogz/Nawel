@@ -526,14 +526,17 @@
       "logout": "Abmelden",
       "deleteAccountWarning": "Warnung: Diese Aktion ist nicht rückgängig zu machen. Alle Ihre Daten werden gelöscht.",
       "updateLoading": "Wird gespeichert...",
-      "synchronized": "Synchronisiert"
+      "synchronized": "Synchronisiert",
+      "autoAvatar": "Automatischer Avatar",
+      "selectEmoji": "{emoji} auswählen"
     },
     "actions": {
       "notLoggedInProfile": "Sie müssen angemeldet sein, um Ihr Profil zu ändern.",
       "notLoggedInDelete": "Sie müssen angemeldet sein, um Ihren Account zu löschen.",
       "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
       "ingredientsGenerationFailed": "Keine Zutaten generiert. Bitte versuchen Sie es erneut.",
-      "confirmationRequired": "Bestätigung erforderlich."
+      "confirmationRequired": "Bestätigung erforderlich.",
+      "deleteError": "Bei der Löschung deines Kontos ist ein Fehler aufgetreten."
     }
   }
 }

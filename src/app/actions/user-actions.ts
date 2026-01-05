@@ -8,19 +8,24 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { events, user } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Updates the current user's profile information.
  * Follows PROJECT_STANDARDS: uses createSafeAction and revalidatePath.
  */
 export const updateUserAction = createSafeAction(updateUserSchema, async (data) => {
+  const t = await getTranslations({
+    locale: "fr",
+    namespace: "Translations",
+  });
   const currentHeaders = await headers();
   const session = await auth.api.getSession({
     headers: currentHeaders,
   });
 
   if (!session) {
-    throw new Error("Vous devez être connecté pour modifier votre profil.");
+    throw new Error(t("actions.notLoggedInProfile"));
   }
 
   try {
@@ -50,17 +55,21 @@ export const updateUserAction = createSafeAction(updateUserSchema, async (data) 
  * Permanently deletes the user account and all associated events.
  */
 export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) => {
+  const t = await getTranslations({
+    locale: "fr",
+    namespace: "Translations",
+  });
   const currentHeaders = await headers();
   const session = await auth.api.getSession({
     headers: currentHeaders,
   });
 
   if (!session) {
-    throw new Error("Vous devez être connecté pour supprimer votre compte.");
+    throw new Error(t("actions.notLoggedInDelete"));
   }
 
   if (!data.confirm) {
-    throw new Error("La confirmation est requise.");
+    throw new Error(t("actions.confirmationRequired"));
   }
 
   try {
@@ -78,6 +87,6 @@ export const deleteUserAction = createSafeAction(deleteUserSchema, async (data) 
     return { success: true };
   } catch (error: unknown) {
     console.error("Delete user error:", error);
-    throw new Error("Une erreur est survenue lors de la suppression de votre compte.");
+    throw new Error(t("actions.deleteError"));
   }
 });

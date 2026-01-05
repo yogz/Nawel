@@ -534,14 +534,17 @@
       "logout": "Log ud",
       "deleteAccountWarning": "Advarsel: denne handling kan ikke fortrydes. Alle dine data vil blive slettet.",
       "updateLoading": "Gemmer...",
-      "synchronized": "Synkroniseret"
+      "synchronized": "Synkroniseret",
+      "autoAvatar": "Automatisk Avatar",
+      "selectEmoji": "Vælg {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "Du skal være logget ind for at ændre din profil.",
       "notLoggedInDelete": "Du skal være logget ind for at slette din konto.",
       "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
       "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
-      "confirmationRequired": "Bekræftelse påkrævet."
+      "confirmationRequired": "Bekræftelse påkrævet.",
+      "deleteError": "Der opstod en fejl under sletning af din konto."
     }
   }
 }

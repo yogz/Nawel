@@ -534,14 +534,17 @@
       "logout": "Logga ut",
       "deleteAccountWarning": "Varning: denna åtgärd kan inte ångras. Alla dina data kommer att tas bort.",
       "updateLoading": "Sparar...",
-      "synchronized": "Synkroniserad"
+      "synchronized": "Synkroniserad",
+      "autoAvatar": "Automatisk Avatar",
+      "selectEmoji": "Välj {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "Du måste vara inloggad för att ändra din profil.",
       "notLoggedInDelete": "Du måste vara inloggad för att ta bort ditt konto.",
       "notLoggedInAI": "Du måste vara inloggad för att använda AI-generering.",
       "ingredientsGenerationFailed": "Inga ingredienser genererade. Försök igen.",
-      "confirmationRequired": "Bekräftelse krävs."
+      "confirmationRequired": "Bekräftelse krävs.",
+      "deleteError": "Ett fel uppstod när ditt konto skulle raderas."
     }
   }
 }

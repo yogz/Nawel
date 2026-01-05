@@ -534,14 +534,17 @@
       "logout": "Sair",
       "deleteAccountWarning": "Aviso: esta ação é irreversível. Todos os seus dados serão deletados.",
       "updateLoading": "Salvando...",
-      "synchronized": "Sincronizado"
+      "synchronized": "Sincronizado",
+      "autoAvatar": "Avatar Automático",
+      "selectEmoji": "Selecionar {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "Você deve estar conectado para modificar seu perfil.",
       "notLoggedInDelete": "Você deve estar conectado para deletar sua conta.",
       "notLoggedInAI": "Você deve estar conectado para usar a geração por IA.",
       "ingredientsGenerationFailed": "Nenhum ingrediente gerado. Tente novamente.",
-      "confirmationRequired": "Confirmação necessária."
+      "confirmationRequired": "Confirmação necessária.",
+      "deleteError": "Ocorreu um erro ao deletar sua conta."
     }
   }
 }

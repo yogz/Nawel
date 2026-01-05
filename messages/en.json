@@ -536,14 +536,17 @@
       "logout": "Sign out",
       "deleteAccountWarning": "Warning: This action is irreversible. All your data will be deleted.",
       "updateLoading": "Saving...",
-      "synchronized": "Synchronized"
+      "synchronized": "Synchronized",
+      "autoAvatar": "Auto Avatar",
+      "selectEmoji": "Select {emoji}"
     },
     "actions": {
       "notLoggedInProfile": "You must be logged in to modify your profile.",
       "notLoggedInDelete": "You must be logged in to delete your account.",
       "notLoggedInAI": "You must be logged in to use AI generation.",
       "ingredientsGenerationFailed": "No ingredients generated. Try again.",
-      "confirmationRequired": "Confirmation is required."
+      "confirmationRequired": "Confirmation is required.",
+      "deleteError": "An error occurred while deleting your account."
     }
   }
 }
