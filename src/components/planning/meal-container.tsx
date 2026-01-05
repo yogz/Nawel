@@ -69,7 +69,7 @@ export function MealContainer({
   return (
     <motion.div variants={itemVariants} className="relative flex flex-col gap-3 pt-2">
       {/* Meal Info Row - Premium & Compact */}
-      <div className="mx-2 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-md backdrop-blur-md transition-all duration-300">
+      <div className="mx-2 flex items-center gap-3 rounded-2xl border border-accent/30 bg-accent/10 p-4 shadow-md ring-1 ring-accent/20 backdrop-blur-md transition-all duration-300">
         <div className="flex min-w-0 flex-1 flex-col">
           <button
             type="button"
