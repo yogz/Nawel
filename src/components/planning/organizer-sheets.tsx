@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
+import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
 import { ItemForm } from "@/features/items/components/item-form";
 import { ServiceForm } from "@/features/services/components/service-form";
@@ -61,6 +62,7 @@ export function OrganizerSheets({
   onDismissGuestPrompt,
   onJoinNew,
 }: OrganizerSheetsProps) {
+  const tCommon = useTranslations("EventDashboard.Shared");
   const t = useTranslations("EventDashboard.Sheets");
   const searchParams = useSearchParams();
   const params = useParams();
@@ -176,7 +178,17 @@ export function OrganizerSheets({
       <DrawerContent className="px-6">
         {sheet?.type !== "share" && (
           <DrawerHeader className="px-0 text-left">
-            <DrawerTitle>{getTitle()}</DrawerTitle>
+            <div className="flex items-center justify-between">
+              <DrawerTitle>{getTitle()}</DrawerTitle>
+              <DrawerClose asChild>
+                <button
+                  className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                  aria-label={tCommon("close") || "Fermer"}
+                >
+                  <X size={16} />
+                </button>
+              </DrawerClose>
+            </div>
           </DrawerHeader>
         )}
         <div className="scrollbar-none overflow-y-auto pb-8">

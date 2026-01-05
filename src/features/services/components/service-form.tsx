@@ -328,8 +328,8 @@ export function ServiceForm({
       <div className="pt-4">
         <Button
           variant="premium"
-          className="w-full py-7 pr-8 shadow-md"
-          icon={isPending ? <Loader2 className="animate-spin" /> : <Plus />}
+          className="w-full py-6 pr-8 shadow-md"
+          icon={isPending ? <Loader2 className="animate-spin" /> : <Plus size={18} />}
           onClick={handleSubmit}
           disabled={
             readOnly ||

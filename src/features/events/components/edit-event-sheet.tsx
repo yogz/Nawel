@@ -13,7 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
@@ -140,7 +146,17 @@ export function EditEventSheet({
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DrawerContent className="px-6">
         <DrawerHeader className="px-0 text-left">
-          <DrawerTitle>{t("editTitle")}</DrawerTitle>
+          <div className="flex items-center justify-between">
+            <DrawerTitle>{t("editTitle")}</DrawerTitle>
+            <DrawerClose asChild>
+              <button
+                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                aria-label={tCommon("close") || "Fermer"}
+              >
+                <X size={16} />
+              </button>
+            </DrawerClose>
+          </div>
         </DrawerHeader>
         <div className="scrollbar-none overflow-y-auto pb-8">
           <div className="space-y-4 pb-4">
@@ -302,17 +318,18 @@ export function EditEventSheet({
 
             {/* Action Buttons */}
             <div className="flex gap-3 pt-2">
-              <Button
-                type="button"
-                variant="premium"
-                onClick={onClose}
-                className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-                icon={<X size={16} />}
-              >
-                <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                  {tCommon("cancel")}
-                </span>
-              </Button>
+              <DrawerClose asChild>
+                <Button
+                  type="button"
+                  variant="premium"
+                  className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+                  icon={<X size={16} />}
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+                    {tCommon("cancel")}
+                  </span>
+                </Button>
+              </DrawerClose>
               <Button
                 type="button"
                 variant="premium"

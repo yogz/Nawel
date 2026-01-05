@@ -134,7 +134,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
             <DrawerClose asChild>
               <button
                 className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
-                aria-label="Close"
+                aria-label={tCommon("close") || "Fermer"}
               >
                 <X size={16} />
               </button>

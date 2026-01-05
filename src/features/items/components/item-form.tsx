@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Loader2, Plus, CircleHelp } from "lucide-react";
+import { Trash2, ChevronDown, Loader2, Plus, CircleHelp, Check, X } from "lucide-react";
+import { DrawerClose } from "@/components/ui/drawer";
 import clsx from "clsx";
 import { ItemIngredients } from "./item-ingredients";
 import { useTranslations } from "next-intl";
@@ -423,7 +424,7 @@ export function ItemForm({
       )}
 
       {/* Action buttons - only for creation */}
-      {!isEditMode && (
+      {!isEditMode ? (
         <div className="pt-4">
           <Button
             variant="premium"
@@ -437,6 +438,16 @@ export function ItemForm({
               {isPending ? t("adding") : t("addButton")}
             </span>
           </Button>
+        </div>
+      ) : (
+        <div className="pt-4">
+          <DrawerClose asChild>
+            <Button variant="premium" className="w-full py-7 pr-8 shadow-md" icon={<Check />} shine>
+              <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                {tCommon("close") || "Terminer"}
+              </span>
+            </Button>
+          </DrawerClose>
         </div>
       )}
     </div>

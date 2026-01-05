@@ -35,6 +35,7 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
+import { DrawerClose } from "@/components/ui/drawer";
 
 const dateLocales: Record<string, Locale> = {
   fr,
@@ -377,35 +378,25 @@ export function MealForm({
 
           <div className="flex flex-col gap-3 pt-2">
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="premium"
-                onClick={onClose}
-                className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
-              >
-                <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                  {tCommon("cancel")}
-                </span>
-              </Button>
-              {isEditMode ? (
+              <DrawerClose asChild>
                 <Button
                   type="button"
                   variant="premium"
-                  onClick={onClose}
                   className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
                 >
                   <span className="text-xs font-black uppercase tracking-widest text-gray-500">
-                    {tCommon("close") || "Fermer"}
+                    {tCommon(isEditMode ? "close" : "cancel")}
                   </span>
                 </Button>
-              ) : (
+              </DrawerClose>
+              {!isEditMode && (
                 <Button
                   type="button"
                   variant="premium"
                   onClick={() => setStep(2)}
                   disabled={!canGoNext()}
                   className="flex-[2] py-6 pr-8 shadow-md"
-                  icon={<Sparkles />}
+                  icon={<Sparkles size={18} />}
                   shine
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">

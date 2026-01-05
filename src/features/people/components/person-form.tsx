@@ -93,8 +93,8 @@ export function PersonForm({
       <div className="pt-2">
         <Button
           variant="premium"
-          className="w-full py-7 pr-8 shadow-md"
-          icon={<UserPlus />}
+          className="w-full py-6 pr-8 shadow-md"
+          icon={<UserPlus size={18} />}
           onClick={handleSubmit}
           disabled={readOnly || !name.trim()}
           shine
