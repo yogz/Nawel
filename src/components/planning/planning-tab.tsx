@@ -111,10 +111,7 @@ export function PlanningTab({
     }
   }, [plan.meals, activeMealId]);
 
-  if (!hasMounted) {
-    return null;
-  }
-
+  // All hooks must be called before any conditional returns
   const unassignedItemsCount = useMemo(
     () =>
       plan.meals.reduce(
@@ -128,6 +125,11 @@ export function PlanningTab({
       ),
     [plan.meals]
   );
+
+  // Early return after all hooks are called
+  if (!hasMounted) {
+    return null;
+  }
 
   return (
     <DndContext
