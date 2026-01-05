@@ -61,22 +61,22 @@ export function DeleteEventDialog({
           <DialogDescription className="text-sm leading-relaxed text-gray-500">
             {t("deleteConfirmDescription")}
           </DialogDescription>
-          <div className="mt-4">
-            <WarningBanner message="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées." />
-          </div>
         </DialogHeader>
 
-        <div className="space-y-3 py-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
-            {t("deleteConfirmInstruction", { name: eventName })}
-          </p>
-          <Input
-            value={confirmText}
-            onChange={(e) => setConfirmText(e.target.value)}
-            placeholder={t("deleteConfirmPlaceholder")}
-            className="rounded-xl border-red-100 bg-red-50/20 focus:border-red-300 focus:ring-red-200"
-            autoFocus
-          />
+        <div className="space-y-4 py-4">
+          <WarningBanner message="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées." />
+          <div className="space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400">
+              {t("deleteConfirmInstruction", { name: eventName })}
+            </p>
+            <Input
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder={t("deleteConfirmPlaceholder")}
+              className="rounded-xl border-red-100 bg-red-50/20 focus:border-red-300 focus:ring-red-200"
+              autoFocus
+            />
+          </div>
         </div>
 
         <DialogFooter className="gap-2 sm:gap-3">

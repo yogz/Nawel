@@ -480,11 +480,12 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     {tProfile("deleteWarning")}
                   </p>
                 </div>
-                <WarningBanner
-                  message="Attention : Cette action est irréversible. Toutes vos données personnelles et vos participations seront définitivement supprimées."
-                  className="mt-2"
-                />
               </div>
+
+              <WarningBanner
+                message="Attention : Cette action est irréversible. Toutes vos données personnelles et vos participations seront définitivement supprimées."
+                className="mx-1"
+              />
 
               {error && (
                 <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500">

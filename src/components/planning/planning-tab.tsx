@@ -6,10 +6,11 @@ import { motion, type Variants } from "framer-motion";
 import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
-import { PlusIcon, Edit3 } from "lucide-react";
+import { PlusIcon, Edit3, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealContainer } from "./meal-container";
 import { cn } from "@/lib/utils";
+import { WarningBanner } from "../common/warning-banner";
 
 import {
   type DragEndEvent,
@@ -255,11 +256,14 @@ export function PlanningTab({
                 </button>
               ) : (
                 <div className="flex flex-col items-center gap-3">
+                  <div className="mb-4">
+                    <WarningBanner message="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées." />
+                  </div>
                   <Button
                     variant="destructive"
-                    size="sm"
-                    className="h-10 rounded-xl bg-red-500/90 px-6 font-black uppercase tracking-wider text-white shadow-lg shadow-red-500/20 backdrop-blur-sm hover:bg-red-600 hover:shadow-red-500/30"
+                    className="h-14 w-full rounded-2xl bg-red-600 px-6 font-black uppercase tracking-widest text-white shadow-xl shadow-red-500/20 transition-all hover:bg-red-700 active:scale-95"
                     onClick={onDeleteEvent}
+                    icon={<Trash2 size={20} />}
                   >
                     {tSettings("deleteEvent")}
                   </Button>
