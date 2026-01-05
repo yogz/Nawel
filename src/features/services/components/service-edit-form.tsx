@@ -73,7 +73,7 @@ export function ServiceEditForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="space-y-4">
       <div className="space-y-2">
         <Label
           htmlFor="service-title"
@@ -87,7 +87,6 @@ export function ServiceEditForm({
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t("placeholder")}
           required
-          autoFocus
           autoCapitalize="sentences"
           enterKeyHint="done"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
@@ -181,6 +180,6 @@ export function ServiceEditForm({
           </Button>
         )}
       </div>
-    </form>
+    </div>
   );
 }

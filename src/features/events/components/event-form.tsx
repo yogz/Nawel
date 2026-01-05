@@ -190,7 +190,7 @@ export function EventForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
                 {t("dateLabel")}
@@ -198,7 +198,7 @@ export function EventForm({
               <div className="relative">
                 <Input
                   type="date"
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 pr-4 text-base focus:bg-white"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   enterKeyHint="next"
@@ -216,7 +216,7 @@ export function EventForm({
               <div className="relative">
                 <Input
                   type="time"
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 text-base focus:bg-white"
+                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 pr-4 text-base focus:bg-white"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   enterKeyHint="next"

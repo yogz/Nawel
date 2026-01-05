@@ -165,7 +165,7 @@ export function EditEventSheet({
 
             {/* Date & Time - only if event has a meal */}
             {hasMeal && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label
                     htmlFor="date"
@@ -182,7 +182,7 @@ export function EditEventSheet({
                         setDate(e.target.value ? new Date(e.target.value) : undefined)
                       }
                       enterKeyHint="next"
-                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 pr-4 text-base focus:bg-white focus:ring-accent/20"
                     />
                     <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   </div>
@@ -201,7 +201,7 @@ export function EditEventSheet({
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
                       enterKeyHint="next"
-                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 pr-4 text-base focus:bg-white focus:ring-accent/20"
                     />
                     <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   </div>
