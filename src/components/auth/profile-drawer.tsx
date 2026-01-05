@@ -53,7 +53,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -65,7 +65,6 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       setSelectedEmoji((session.user as any).emoji || null);
       setError(null);
       setSuccess(false);
-      setIsDeleteRevealed(false);
       setShowAdvanced(false);
     }
   }, [session, open]);
@@ -139,7 +138,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         <DrawerHeader className="px-0 text-left">
           <div className="flex items-center justify-between">
             <DrawerTitle>
-              {isDeleteRevealed ? tProfile("deleteAccount") : tProfile("settings")}
+              {showAdvanced ? tProfile("deleteAccount") : tProfile("settings")}
             </DrawerTitle>
             <DrawerClose asChild>
               <button
@@ -448,70 +447,56 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
 
                   {showAdvanced && (
                     <div className="mt-2 space-y-4 animate-in fade-in slide-in-from-top-2">
-                      {!isDeleteRevealed ? (
-                        <Button
-                          variant="premium"
-                          className="w-full border-red-100 bg-red-50/30"
-                          icon={<Trash2 size={14} />}
-                          iconClassName="bg-red-100 text-red-500 group-hover:bg-red-500 group-hover:text-white"
-                          onClick={() => setIsDeleteRevealed(true)}
-                        >
-                          <span className="text-xs font-black uppercase tracking-widest text-red-400 group-hover:text-red-600">
-                            {tProfile("deleteAccount")}
-                          </span>
-                        </Button>
-                      ) : (
-                        <div className="space-y-4 rounded-3xl border-2 border-red-100 bg-red-50/20 p-4 animate-in fade-in zoom-in-95">
-                          <div className="flex flex-col items-center gap-3 text-center">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
-                              <AlertTriangle size={24} />
-                            </div>
-                            <div className="space-y-1">
-                              <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">
-                                {tProfile("dangerZone")}
-                              </h4>
-                              <p className="px-2 text-[10px] font-bold text-gray-500">
-                                {tProfile("deleteWarning")}
-                              </p>
-                            </div>
+                      <div className="space-y-4 rounded-3xl border-2 border-red-100 bg-red-50/20 p-4 animate-in fade-in zoom-in-95">
+                        <div className="flex flex-col items-center gap-3 text-center">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
+                            <AlertTriangle size={24} />
                           </div>
-
-                          <WarningBanner
-                            message="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
-                            className="bg-white/50"
-                          />
-
-                          <div className="space-y-2">
-                            <Button
-                              variant="premium"
-                              className="w-full border-red-200 bg-red-100/50 py-7 pr-8 shadow-xl shadow-red-500/10"
-                              icon={
-                                isDeleting ? (
-                                  <Loader2 size={18} className="animate-spin" />
-                                ) : (
-                                  <Trash2 size={18} />
-                                )
-                              }
-                              iconClassName="bg-red-200 text-red-600 group-hover:bg-red-600 group-hover:text-white"
-                              onClick={handleDeleteAccount}
-                              disabled={isDeleting}
-                              shine
-                            >
-                              <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
-                                {isDeleting ? "Suppression..." : tProfile("confirmDelete")}
-                              </span>
-                            </Button>
-
-                            <button
-                              onClick={() => setIsDeleteRevealed(false)}
-                              disabled={isDeleting}
-                              className="flex w-full justify-center py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
-                            >
-                              {tProfile("back")}
-                            </button>
+                          <div className="space-y-1">
+                            <h4 className="text-sm font-black uppercase tracking-widest text-gray-900">
+                              {tProfile("dangerZone")}
+                            </h4>
+                            <p className="px-2 text-[10px] font-bold text-gray-500">
+                              {tProfile("deleteWarning")}
+                            </p>
                           </div>
                         </div>
-                      )}
+
+                        <WarningBanner
+                          message="Attention : Cette action est irréversible. Toutes vos données seront supprimées."
+                          className="bg-white/50"
+                        />
+
+                        <div className="space-y-2">
+                          <Button
+                            variant="premium"
+                            className="w-full border-red-200 bg-red-100/50 py-7 pr-8 shadow-xl shadow-red-500/10"
+                            icon={
+                              isDeleting ? (
+                                <Loader2 size={18} className="animate-spin" />
+                              ) : (
+                                <Trash2 size={18} />
+                              )
+                            }
+                            iconClassName="bg-red-200 text-red-600 group-hover:bg-red-600 group-hover:text-white"
+                            onClick={handleDeleteAccount}
+                            disabled={isDeleting}
+                            shine
+                          >
+                            <span className="text-xs font-black uppercase tracking-widest text-red-600 group-hover:text-white">
+                              {isDeleting ? "Suppression..." : tProfile("confirmDelete")}
+                            </span>
+                          </Button>
+
+                          <button
+                            onClick={() => setShowAdvanced(false)}
+                            disabled={isDeleting}
+                            className="flex w-full justify-center py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+                          >
+                            {tProfile("back")}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
