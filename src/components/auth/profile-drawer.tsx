@@ -157,11 +157,11 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           </div>
         </DrawerHeader>
 
-        <div className="relative h-full overflow-hidden">
+        <div className="grid grid-cols-1 grid-rows-1 overflow-x-hidden">
           {/* Main Content */}
           <div
             className={clsx(
-              "scrollbar-none relative w-full transition-transform duration-300 ease-in-out",
+              "col-start-1 row-start-1 w-full transition-transform duration-300 ease-in-out",
               showAdvanced ? "-translate-x-full" : "translate-x-0"
             )}
           >
@@ -454,7 +454,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
           {/* Danger Zone / Advanced View */}
           <div
             className={clsx(
-              "scrollbar-none absolute inset-0 overflow-y-auto bg-white transition-transform duration-300 ease-in-out",
+              "col-start-1 row-start-1 w-full bg-white transition-transform duration-300 ease-in-out",
               showAdvanced ? "translate-x-0" : "translate-x-full"
             )}
           >
