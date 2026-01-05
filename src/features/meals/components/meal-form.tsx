@@ -442,10 +442,10 @@ export function MealForm({
                 type="button"
                 onClick={() => setCreationMode(mode.id)}
                 className={clsx(
-                  "group flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all duration-300",
+                  "group flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all duration-300 active:scale-[0.98]",
                   creationMode === mode.id
                     ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
-                    : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
+                    : "border-gray-50 bg-gray-50/30 hover:scale-[1.01] hover:border-gray-200 hover:bg-white hover:shadow-md"
                 )}
               >
                 <div
@@ -472,7 +472,9 @@ export function MealForm({
                 <div
                   className={clsx(
                     "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300",
-                    creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
+                    creationMode === mode.id
+                      ? "border-accent bg-accent"
+                      : "border-gray-200 group-hover:border-gray-300"
                   )}
                 >
                   {creationMode === mode.id && <div className="h-2 w-2 rounded-full bg-white" />}
