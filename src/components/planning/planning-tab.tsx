@@ -154,7 +154,7 @@ export function PlanningTab({
           {planningFilter.type === "all" && plan.meals.length > 1 && (
             <div className="px-2">
               <Tabs
-                value={activeMealId?.toString()}
+                value={activeMealId === null ? "all" : activeMealId.toString()}
                 onValueChange={(val) => setActiveMealId(val === "all" ? "all" : parseInt(val))}
                 className="w-full"
               >
