@@ -4,13 +4,15 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Sparkles, Share2, Users, Calendar } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "./common/language-selector";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
 import { sendGAEvent } from "@next/third-parties/google";
+import { trackDiscoverClick, trackFeatureView } from "@/lib/analytics";
+import { useTrackView } from "@/hooks/use-track-view";
 
 export function Landing() {
   const t = useTranslations("Landing");
@@ -25,24 +27,28 @@ export function Landing() {
 
   const features = [
     {
+      id: "collaboration",
       title: t("feature2Title"),
       description: t("feature2Description"),
       icon: <Users className="h-6 w-6" />,
       image: "/aura-collaboration.png",
     },
     {
+      id: "sharing",
       title: t("feature4Title"),
       description: t("feature4Description"),
       icon: <Share2 className="h-6 w-6" />,
       image: "/aura-checklist.png",
     },
     {
+      id: "ai",
       title: t("feature3Title"),
       description: t("feature3Description"),
       icon: <Sparkles className="h-6 w-6" />,
       image: "/aura-ai.png",
     },
     {
+      id: "calendar",
       title: t("feature1Title"),
       description: t("feature1Description"),
       icon: <Calendar className="h-6 w-6" />,
@@ -97,6 +103,7 @@ export function Landing() {
             </Link>
             <Link
               href="#discover"
+              onClick={() => trackDiscoverClick("landing")}
               className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
             >
               {t("discover")}
@@ -118,33 +125,7 @@ export function Landing() {
         <div className="max-xl mx-auto px-6">
           <div className="grid gap-16 sm:gap-32">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`flex flex-col items-center gap-12 sm:flex-row ${index % 2 === 1 ? "sm:flex-row-reverse" : ""}`}
-              >
-                <div className="flex-1 space-y-4 sm:space-y-6">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-gray-100 sm:h-12 sm:w-12 sm:rounded-2xl">
-                    {feature.icon}
-                  </div>
-                  <h2 className="text-2xl font-bold sm:text-4xl">{feature.title}</h2>
-                  <p className="text-base leading-relaxed text-gray-600 sm:text-lg">
-                    {feature.description}
-                  </p>
-                </div>
-                <div className="relative aspect-[16/10] w-full flex-1 overflow-hidden rounded-2xl bg-gray-200 shadow-xl shadow-gray-200 ring-1 ring-gray-900/5 sm:rounded-3xl sm:shadow-2xl">
-                  <Image
-                    src={feature.image}
-                    alt={feature.title}
-                    fill
-                    className="object-cover object-top transition-transform duration-700 hover:scale-105"
-                  />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent" />
-                </div>
-              </motion.div>
+              <FeatureCard key={feature.id} {...feature} index={index} variant="landing" />
             ))}
           </div>
         </div>
@@ -177,5 +158,50 @@ export function Landing() {
       {/* Mobile Sticky CTA */}
       <StickyCta />
     </div>
+  );
+}
+
+interface FeatureCardProps {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  image: string;
+  index: number;
+  variant: string;
+}
+
+function FeatureCard({ id, title, description, icon, image, index, variant }: FeatureCardProps) {
+  const ref = useTrackView<HTMLDivElement>({
+    onView: useCallback(() => trackFeatureView(id, variant), [id, variant]),
+    threshold: 0.3,
+  });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
+      className={`flex flex-col items-center gap-12 sm:flex-row ${index % 2 === 1 ? "sm:flex-row-reverse" : ""}`}
+    >
+      <div className="flex-1 space-y-4 sm:space-y-6">
+        <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-gray-100 sm:h-12 sm:w-12 sm:rounded-2xl">
+          {icon}
+        </div>
+        <h2 className="text-2xl font-bold sm:text-4xl">{title}</h2>
+        <p className="text-base leading-relaxed text-gray-600 sm:text-lg">{description}</p>
+      </div>
+      <div className="relative aspect-[16/10] w-full flex-1 overflow-hidden rounded-2xl bg-gray-200 shadow-xl shadow-gray-200 ring-1 ring-gray-900/5 sm:rounded-3xl sm:shadow-2xl">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover object-top transition-transform duration-700 hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent" />
+      </div>
+    </motion.div>
   );
 }

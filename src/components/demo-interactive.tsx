@@ -1,12 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, MessageCircle, Send, Plus, User } from "lucide-react";
 import Image from "next/image";
+import { trackDemoView, trackDemoStep } from "@/lib/analytics";
+import { useTrackView } from "@/hooks/use-track-view";
 
 export function DemoInteractive() {
   const [step, setStep] = useState(0);
+  const hasTrackedSteps = useRef<Set<number>>(new Set());
+
+  // Track when demo becomes visible
+  const demoRef = useTrackView<HTMLElement>({
+    onView: useCallback(() => trackDemoView("landing"), []),
+    threshold: 0.3,
+  });
 
   // Auto-advance loop for the demo
   useEffect(() => {
@@ -16,6 +25,14 @@ export function DemoInteractive() {
     return () => clearInterval(timer);
   }, []);
 
+  // Track demo steps (only once per step)
+  useEffect(() => {
+    if (!hasTrackedSteps.current.has(step)) {
+      hasTrackedSteps.current.add(step);
+      trackDemoStep(step, "landing");
+    }
+  }, [step]);
+
   const variants = {
     enter: { opacity: 0, x: 20 },
     center: { opacity: 1, x: 0 },
@@ -23,7 +40,7 @@ export function DemoInteractive() {
   };
 
   return (
-    <section className="overflow-hidden bg-gray-50 py-24 sm:py-32">
+    <section ref={demoRef} className="overflow-hidden bg-gray-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

@@ -4,10 +4,17 @@ import { useTranslations } from "next-intl";
 import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { trackFaqInteraction } from "@/lib/analytics";
 
 export function Faq() {
   const t = useTranslations("FAQ");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const handleToggle = (index: number) => {
+    const isOpening = openIndex !== index;
+    setOpenIndex(isOpening ? index : null);
+    trackFaqInteraction(index, isOpening ? "opened" : "closed");
+  };
 
   const questions = [
     { q: t("q1"), a: t("a1") },
@@ -27,7 +34,7 @@ export function Faq() {
             <div key={index} className="pt-6">
               <dt>
                 <button
-                  onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  onClick={() => handleToggle(index)}
                   className="flex w-full items-start justify-between text-left text-gray-900"
                 >
                   <span className="text-base font-semibold leading-7">{faq.q}</span>

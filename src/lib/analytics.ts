@@ -161,3 +161,37 @@ export function trackDragDrop() {
     action: "drag_drop_used",
   });
 }
+
+/**
+ * Landing page specific tracking
+ */
+export function trackLandingEvent(
+  action: string,
+  params: Record<string, string | number | boolean> = {}
+) {
+  try {
+    sendGAEvent("event", action, params);
+  } catch (error) {
+    console.debug("[Analytics] Failed to track landing event:", action, error);
+  }
+}
+
+export function trackDiscoverClick(variant: string) {
+  trackLandingEvent("discover_click", { variant });
+}
+
+export function trackFeatureView(feature: string, variant: string) {
+  trackLandingEvent("feature_viewed", { feature, variant });
+}
+
+export function trackDemoView(variant: string) {
+  trackLandingEvent("demo_viewed", { variant });
+}
+
+export function trackDemoStep(step: number, variant: string) {
+  trackLandingEvent("demo_step", { step, variant });
+}
+
+export function trackFaqInteraction(questionIndex: number, action: "opened" | "closed") {
+  trackLandingEvent("faq_interaction", { question_index: questionIndex, action });
+}

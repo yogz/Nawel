@@ -12,13 +12,15 @@ import {
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { LanguageSelector } from "./common/language-selector";
 import { useTranslations } from "next-intl";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
 import { sendGAEvent } from "@next/third-parties/google";
+import { trackDiscoverClick, trackFeatureView } from "@/lib/analytics";
+import { useTrackView } from "@/hooks/use-track-view";
 
 export function LandingAlt() {
   const t = useTranslations("LandingAlt");
@@ -33,18 +35,21 @@ export function LandingAlt() {
 
   const features = [
     {
+      id: "guests",
       title: t("feature3Title"),
       description: t("feature3Description"),
       icon: <CheckCircle2 className="h-6 w-6" />,
       image: "/alt_guests.png",
     },
     {
+      id: "shopping",
       title: t("feature2Title"),
       description: t("feature2Description"),
       icon: <ShoppingBasket className="h-6 w-6" />,
       image: "/alt_shopping.png",
     },
     {
+      id: "ai-chef",
       title: t("feature1Title"),
       description: t("feature1Description"),
       icon: <Wand2 className="h-6 w-6" />,
@@ -52,6 +57,7 @@ export function LandingAlt() {
       tag: t("feature1Tag"),
     },
     {
+      id: "menu",
       title: t("feature4Title"),
       description: t("feature4Description"),
       icon: <Sparkles className="h-6 w-6" />,
@@ -113,6 +119,7 @@ export function LandingAlt() {
             </Link>
             <Link
               href="#discover"
+              onClick={() => trackDiscoverClick("landing-alt")}
               className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-gray-200 bg-white/80 px-8 py-4 text-lg font-bold text-gray-900 backdrop-blur-sm transition-all hover:border-gray-300 hover:bg-white sm:w-auto"
             >
               {t("ctaDemo")}
@@ -134,41 +141,7 @@ export function LandingAlt() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid gap-24 sm:gap-40">
             {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`flex flex-col items-center gap-12 lg:gap-24 ${index % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"}`}
-              >
-                <div className="flex-1 space-y-6 text-center lg:text-left">
-                  <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm ring-1 ring-indigo-100">
-                    {feature.icon}
-                  </div>
-                  <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                    {feature.title}
-                    {feature.tag && (
-                      <span className="ml-4 inline-flex items-center rounded-full bg-purple-100 px-3 py-1 align-middle text-sm font-medium text-purple-800">
-                        {feature.tag}
-                      </span>
-                    )}
-                  </h2>
-                  <p className="mx-auto max-w-lg text-lg leading-relaxed text-gray-600 sm:text-xl lg:mx-0">
-                    {feature.description}
-                  </p>
-                </div>
-
-                <div className="relative aspect-[4/3] w-full flex-1 transform overflow-hidden rounded-3xl bg-gray-100 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5 transition-transform duration-700 hover:scale-[1.02]">
-                  <Image
-                    src={feature.image}
-                    alt={feature.title}
-                    fill
-                    className="object-cover object-top"
-                  />
-                  <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/5" />
-                </div>
-              </motion.div>
+              <FeatureCardAlt key={feature.id} {...feature} index={index} variant="landing-alt" />
             ))}
           </div>
         </div>
@@ -235,5 +208,65 @@ export function LandingAlt() {
       {/* Mobile Sticky CTA */}
       <StickyCta />
     </div>
+  );
+}
+
+interface FeatureCardAltProps {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  image: string;
+  tag?: string;
+  index: number;
+  variant: string;
+}
+
+function FeatureCardAlt({
+  id,
+  title,
+  description,
+  icon,
+  image,
+  tag,
+  index,
+  variant,
+}: FeatureCardAltProps) {
+  const ref = useTrackView<HTMLDivElement>({
+    onView: useCallback(() => trackFeatureView(id, variant), [id, variant]),
+    threshold: 0.3,
+  });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
+      className={`flex flex-col items-center gap-12 lg:gap-24 ${index % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"}`}
+    >
+      <div className="flex-1 space-y-6 text-center lg:text-left">
+        <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-sm ring-1 ring-indigo-100">
+          {icon}
+        </div>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+          {title}
+          {tag && (
+            <span className="ml-4 inline-flex items-center rounded-full bg-purple-100 px-3 py-1 align-middle text-sm font-medium text-purple-800">
+              {tag}
+            </span>
+          )}
+        </h2>
+        <p className="mx-auto max-w-lg text-lg leading-relaxed text-gray-600 sm:text-xl lg:mx-0">
+          {description}
+        </p>
+      </div>
+
+      <div className="relative aspect-[4/3] w-full flex-1 transform overflow-hidden rounded-3xl bg-gray-100 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5 transition-transform duration-700 hover:scale-[1.02]">
+        <Image src={image} alt={title} fill className="object-cover object-top" />
+        <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/5" />
+      </div>
+    </motion.div>
   );
 }
