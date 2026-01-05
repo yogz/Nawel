@@ -75,7 +75,7 @@ export function MealContainer({
             className={cn("group flex items-center gap-2", !readOnly && "cursor-pointer")}
             onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
           >
-            <h2 className="truncate text-base font-black tracking-tight text-black">
+            <h2 className="text-gradient-header truncate text-lg font-black tracking-tight">
               {meal.title || meal.date}
             </h2>
             {!readOnly && (
