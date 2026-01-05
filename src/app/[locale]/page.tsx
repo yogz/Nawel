@@ -31,10 +31,14 @@ export default async function Home(props: {
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-6 pb-24">
+    <div className="flex min-h-screen flex-col text-gray-900">
       <DashboardHeader />
 
-      <EventList events={events} writeEnabled writeKey={key} />
-    </main>
+      <div className="mx-auto w-full max-w-3xl flex-1">
+        <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
+          <EventList events={events} writeEnabled writeKey={key} />
+        </main>
+      </div>
+    </div>
   );
 }
