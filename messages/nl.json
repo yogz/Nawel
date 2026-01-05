@@ -337,8 +337,7 @@
       "deleting": "Verwijderen...",
       "deleteAll": "Alles verwijderen",
       "showMore": "Meer opties",
-      "showLess": "Minder opties",
-      "saved": "Opgeslagen"
+      "showLess": "Minder opties"
     },
     "Meal": {
       "serviceTypes": {

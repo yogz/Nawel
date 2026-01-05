@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
-import { X, Check } from "lucide-react";
+import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
 import { ItemForm } from "@/features/items/components/item-form";
 import { ServiceForm } from "@/features/services/components/service-form";
@@ -141,19 +141,6 @@ export function OrganizerSheets({
     return found?.item.ingredients || sheet.item.ingredients;
   }, [sheet, findItem]);
 
-  const [showSaved, setShowSaved] = useState(false);
-  useEffect(() => {
-    if (
-      successMessage?.text?.includes("Modifications") ||
-      successMessage?.text?.includes("mis à jour") ||
-      successMessage?.text?.includes("enregistrées")
-    ) {
-      setShowSaved(true);
-      const timer = setTimeout(() => setShowSaved(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage]);
-
   const getTitle = () => {
     if (sheet?.type === "item") {
       return sheet.item ? t("editItem") : t("addItem");
@@ -196,12 +183,6 @@ export function OrganizerSheets({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <DrawerTitle>{getTitle()}</DrawerTitle>
-                {showSaved && (
-                  <span className="flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-green-500 duration-300 animate-in fade-in slide-in-from-left-2">
-                    <Check size={10} strokeWidth={3} />
-                    {tCommon("saved") || "Enregistré"}
-                  </span>
-                )}
               </div>
               <DrawerClose asChild>
                 <button

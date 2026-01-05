@@ -330,8 +330,7 @@
       "deleting": "Eliminando...",
       "deleteAll": "Eliminar todo",
       "showMore": "Más opciones",
-      "showLess": "Menos opciones",
-      "saved": "Guardado"
+      "showLess": "Menos opciones"
     },
     "Meal": {
       "serviceTypes": {

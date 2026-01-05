@@ -352,8 +352,7 @@
       "deleting": "Suppression...",
       "deleteAll": "Tout supprimer",
       "showMore": "Plus d'options",
-      "showLess": "Moins d'options",
-      "saved": "Enregistré"
+      "showLess": "Moins d'options"
     },
     "Meal": {
       "serviceTypes": {
