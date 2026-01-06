@@ -69,15 +69,20 @@ export function MealContainer({
   const fullDate = getFullDateDisplay();
 
   return (
-    <motion.div variants={itemVariants} className="relative flex flex-col gap-3 pt-2">
+    <motion.div variants={itemVariants} className="relative flex flex-col gap-6 pt-2">
       {/* Meal Info Row - Premium & Compact */}
-      <div className="mx-2 flex items-center gap-3 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-4 shadow-sm backdrop-blur-sm transition-all duration-300">
+      <div className="mx-2 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
         <div className="flex min-w-0 flex-1 flex-col">
           <button
             type="button"
-            className={cn("group flex items-center gap-2 text-left", !readOnly && "cursor-pointer")}
+            className={cn(
+              "group flex items-center gap-2 text-left",
+              !readOnly &&
+                "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+            )}
             onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
             disabled={readOnly}
+            aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
           >
             <h2 className="text-gradient-header truncate text-lg font-black tracking-tight">
               {meal.title || meal.date}
@@ -89,16 +94,16 @@ export function MealContainer({
             )}
           </button>
 
-          <div className="mt-1.5 flex flex-col gap-1 text-[11px]">
+          <div className="mt-2 flex flex-col gap-1.5 text-[11px]">
             {fullDate && (
               <div className="flex items-center gap-1.5 font-bold text-accent">
-                <Clock className="h-3 w-3" />
+                <Clock className="h-3 w-3" aria-hidden="true" />
                 {fullDate}
               </div>
             )}
             {meal.address && (
-              <div className="flex items-center gap-1.5 font-medium text-gray-500">
-                <MapPin className="h-3 w-3 text-gray-400" />
+              <div className="flex items-center gap-1.5 font-medium text-gray-600">
+                <MapPin className="h-3 w-3 text-gray-500" aria-hidden="true" />
                 <span className="truncate">{meal.address}</span>
               </div>
             )}
@@ -110,9 +115,10 @@ export function MealContainer({
             <PopoverTrigger asChild>
               <Button
                 variant="premium"
-                className="h-11 w-11 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all hover:scale-105 hover:shadow-md active:scale-95 sm:h-8 sm:w-8"
-                icon={<Calendar className="h-4 w-4 sm:h-3 sm:w-3" />}
+                className="h-11 w-11 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:w-10"
+                icon={<Calendar className="h-4 w-4 sm:h-3.5 sm:w-3.5" />}
                 iconClassName="h-full w-full"
+                aria-label={t("calendar.addToCalendar")}
               />
             </PopoverTrigger>
             <PopoverContent className="glass w-56 p-2" align="end">
@@ -146,7 +152,7 @@ export function MealContainer({
       </div>
 
       {/* Service Cards */}
-      <div className="space-y-4 px-2 pb-4">
+      <div className="space-y-6 px-2 pb-4">
         {meal.services.map((service) => (
           <ServiceSection
             key={service.id}
@@ -164,10 +170,11 @@ export function MealContainer({
         {!readOnly && onCreateService && (
           <Button
             variant="premium"
-            className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_12px_40px_rgba(var(--accent),0.2)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_15px_50px_rgba(var(--accent),0.3)] active:scale-95"
+            className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-accent backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-accent-lg focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95"
             icon={<PlusIcon size={20} />}
             shine
             onClick={() => onCreateService(meal.id)}
+            aria-label={t("addService")}
           >
             <span className="text-xs font-black uppercase tracking-widest text-accent">
               {t("addService")}

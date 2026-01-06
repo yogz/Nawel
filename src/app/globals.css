@@ -306,8 +306,8 @@
   .theme-readable .text-muted-foreground,
   .theme-readable .text-gray-600 {
     color: #ffffff !important;
-    /* Force white for muted text */
-    opacity: 0.9 !important;
+    /* Force white for muted text - improved contrast */
+    opacity: 0.95 !important;
     font-weight: 700 !important;
   }
 
@@ -498,6 +498,8 @@
 
   .text-gradient-header {
     @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent;
+    font-weight: 900;
+    letter-spacing: -0.02em;
   }
 
   body {
@@ -773,14 +775,22 @@
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 0 0% 0%;
-    /* Sober Black */
+    --accent: 280 75% 65%;
+    /* Vibrant Purple - Better visibility than black */
+    --accent-rgb: 168, 85, 247;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --ring: 280 75% 65%;
+    /* Match accent color for focus rings */
     --radius: 1.25rem;
   }
 

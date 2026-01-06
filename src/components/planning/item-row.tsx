@@ -83,9 +83,9 @@ function ItemRowComponent({
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-3 px-3 py-4 text-left transition-all duration-150 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] active:scale-[0.96] active:bg-gray-100 sm:px-2 sm:py-3",
+        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.96] active:bg-gray-100 sm:px-3 sm:py-4",
         !readOnly &&
-          "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+          "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
     >
       {/* Left side: Item Name & Metadata */}
@@ -102,7 +102,10 @@ function ItemRowComponent({
               {item.name}
             </p>
             {!readOnly && (
-              <Edit3 className="h-4 w-4 shrink-0 text-accent/40 opacity-0 transition-opacity group-hover:opacity-100 sm:h-3 sm:w-3" />
+              <Edit3
+                className="h-4 w-4 shrink-0 text-accent/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:h-3.5 sm:w-3.5"
+                aria-hidden="true"
+              />
             )}
           </div>
 
@@ -110,28 +113,44 @@ function ItemRowComponent({
             item.note ||
             item.price ||
             (item.ingredients && item.ingredients.length > 0)) && (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-gray-600 sm:text-[10px]">
-                  <Scale size={12} className="text-gray-500 sm:h-[11px] sm:w-[11px]" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 sm:text-[10px]">
+                  <Scale
+                    size={13}
+                    className="text-gray-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
                   {item.quantity}
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-green-700 sm:text-[10px]">
-                  <Euro size={12} className="text-green-600/70 sm:h-[11px] sm:w-[11px]" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 sm:text-[10px]">
+                  <Euro
+                    size={13}
+                    className="text-green-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-purple-700 sm:text-[10px]">
-                  <ChefHat size={12} className="text-purple-600/70 sm:h-[11px] sm:w-[11px]" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 sm:text-[10px]">
+                  <ChefHat
+                    size={13}
+                    className="text-purple-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1 text-xs font-medium italic text-blue-700 sm:text-[10px]">
-                  <MessageSquare size={12} className="text-blue-600/70 sm:h-[11px] sm:w-[11px]" />
+                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 sm:text-[10px]">
+                  <MessageSquare
+                    size={13}
+                    className="text-blue-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
                   <span className="max-w-[140px] truncate">
                     {item.note.startsWith("EventDashboard.")
                       ? t("defaultNote", { count: peopleCount || 0 })
@@ -145,17 +164,19 @@ function ItemRowComponent({
       </div>
 
       {/* Right side: Person Name & Avatar */}
-      <div className="flex shrink-0 items-center gap-2.5">
+      <div className="flex shrink-0 items-center gap-3">
         <div className="flex flex-col items-end">
           {person ? (
             getDisplayName(person)
           ) : (
-            <div
-              className="group relative flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-accent/10 px-2 py-0.5 pr-3 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:ring-gray-300"
+            <button
+              type="button"
+              className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-accent/10 px-2.5 py-1 pr-3 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:ring-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
               onClick={(e) => {
                 e.stopPropagation();
                 onAssign();
               }}
+              aria-label={t("takeAction")}
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-white group-hover:text-accent">
                 <span className="inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
@@ -163,14 +184,14 @@ function ItemRowComponent({
               <span className="text-xs font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white sm:text-[10px]">
                 {t("takeAction")}
               </span>
-            </div>
+            </button>
           )}
         </div>
 
         <div className="shrink-0">
           <div
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-500",
+              "flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 sm:h-8 sm:w-8",
               person
                 ? "border-white/50 bg-white shadow-sm"
                 : "border-dashed border-gray-300 bg-gray-100/30"
@@ -178,7 +199,7 @@ function ItemRowComponent({
           >
             {(() => {
               if (!person) {
-                return <Plus size={16} className="text-accent" />;
+                return <Plus size={16} className="text-accent" aria-hidden="true" />;
               }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {
@@ -194,7 +215,11 @@ function ItemRowComponent({
                   </div>
                 );
               }
-              return <span className="text-[12px] font-black text-accent">{avatar.value}</span>;
+              return (
+                <span className="text-[12px] font-black text-accent" aria-hidden="true">
+                  {avatar.value}
+                </span>
+              );
             })()}
           </div>
         </div>
@@ -219,7 +244,7 @@ function ItemRowComponent({
               }
             }}
           >
-            <ArrowRight className="h-4 w-4 animate-pulse text-accent" />
+            <ArrowRight className="h-4 w-4 animate-pulse text-accent" aria-hidden="true" />
           </motion.div>
         </AnimatePresence>
       )}

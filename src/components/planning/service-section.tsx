@@ -54,22 +54,27 @@ export const ServiceSection = memo(function ServiceSection({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative rounded-2xl border border-white/40 bg-white/90 p-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-300",
+        "relative rounded-2xl border border-white/40 bg-white/90 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6",
         isOver && "scale-[1.01] ring-2 ring-accent ring-offset-2"
       )}
     >
-      <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-2">
+      <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-3">
         <button
           type="button"
-          className={cn("group flex items-center gap-2 text-left", !readOnly && "cursor-pointer")}
+          className={cn(
+            "group flex items-center gap-2 text-left",
+            !readOnly &&
+              "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+          )}
           onClick={() => !readOnly && onEdit()}
           disabled={readOnly}
+          aria-label={readOnly ? undefined : t("editService", { name: service.title })}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm transition-all duration-300 group-hover:border-accent/20 group-hover:bg-accent/10 sm:h-9 sm:w-9">
               {service.icon || getServiceIcon(service.title)}
             </div>
-            <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em]">
+            <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em] sm:text-base">
               {service.title}
             </h3>
           </div>
@@ -81,11 +86,11 @@ export const ServiceSection = memo(function ServiceSection({
         </button>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         {filteredItems.map((item, index) => (
           <div
             key={item.id}
-            className={index !== filteredItems.length - 1 ? "border-b border-gray-100" : ""}
+            className={index !== filteredItems.length - 1 ? "border-b border-gray-100 pb-1" : ""}
           >
             <ItemRow
               item={item}
@@ -102,9 +107,10 @@ export const ServiceSection = memo(function ServiceSection({
         {!readOnly && (
           <Button
             variant="premium"
-            className="mt-2 h-10 w-full rounded-xl"
+            className="mt-3 h-11 w-full rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-10"
             icon={<PlusIcon size={14} strokeWidth={3} />}
             onClick={onCreate}
+            aria-label={t("addItem")}
           >
             <span className="text-[10px] font-black uppercase tracking-wider">{t("addItem")}</span>
           </Button>
