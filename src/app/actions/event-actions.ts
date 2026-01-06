@@ -123,7 +123,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       time: input.time,
       address: input.address,
       title: "Repas",
-      services: ["Service"],
+      services: ["Le Menu"],
       adults: created.adults,
       children: created.children,
     });

@@ -15,7 +15,6 @@ import {
   UtensilsCrossed,
   Utensils,
   GlassWater,
-  FilePlus,
   Clock,
   MapPin,
   ChevronDown,
@@ -102,8 +101,8 @@ export function MealForm({
       id: "service-unique",
       label: tCreateEvent("modeServiceUniqueLabel"),
       desc: tCreateEvent("modeServiceUniqueDesc"),
-      icon: <FilePlus size={20} />,
-      services: ["Général"],
+      icon: <Utensils size={20} />,
+      services: ["Le Menu"],
     },
   ] as const;
 
