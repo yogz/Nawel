@@ -24,12 +24,10 @@ export function NewEventCard({ onClick }: NewEventCardProps) {
       <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-accent/10 blur-3xl transition-all group-hover:bg-accent/20 sm:h-32 sm:w-32" />
       <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/15 sm:h-40 sm:w-40" />
 
-      <div className="relative flex flex-col items-center justify-center space-y-3 py-2 text-center sm:space-y-4 sm:py-4">
-        <Plus
-          size={32}
-          strokeWidth={3}
-          className="text-accent transition-transform duration-500 group-hover:rotate-90 sm:h-10 sm:w-10"
-        />
+      <div className="relative flex flex-col items-center justify-center space-y-4 py-2 text-center sm:space-y-5 sm:py-4">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-accent shadow-xl shadow-accent/10 transition-all duration-500 group-hover:rotate-90 group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-accent/20 sm:h-20 sm:w-20">
+          <Plus size={32} strokeWidth={3} className="sm:h-10 sm:w-10" />
+        </div>
 
         <div className="space-y-1">
           <h3 className="text-sm font-bold tracking-tight text-gray-900 sm:text-base">
