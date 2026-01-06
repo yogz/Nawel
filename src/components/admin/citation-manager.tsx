@@ -200,7 +200,9 @@ export function CitationManager() {
 
       // Vérifier les changements dans localized
       const localizedChanged = Object.keys(editedItem.localized).some(
-        (key) => editedItem.localized[key] !== activeItem.localized[key]
+        (key) =>
+          editedItem.localized[key as keyof typeof editedItem.localized] !==
+          activeItem.localized[key as keyof typeof activeItem.localized]
       );
       if (localizedChanged) {
         updates.localized = editedItem.localized;
@@ -208,7 +210,9 @@ export function CitationManager() {
 
       // Vérifier les changements dans attribution
       const attributionChanged = Object.keys(editedItem.attribution).some(
-        (key) => editedItem.attribution[key] !== activeItem.attribution[key]
+        (key) =>
+          editedItem.attribution[key as keyof typeof editedItem.attribution] !==
+          activeItem.attribution[key as keyof typeof activeItem.attribution]
       );
       if (attributionChanged) {
         updates.attribution = editedItem.attribution;
