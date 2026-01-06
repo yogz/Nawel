@@ -100,9 +100,9 @@ export function MealForm({
       services: ["Aperitif", "Boissons"],
     },
     {
-      id: "zero",
-      label: tCreateEvent("modeZeroLabel"),
-      desc: tCreateEvent("modeZeroDesc"),
+      id: "service-unique",
+      label: tCreateEvent("modeServiceUniqueLabel"),
+      desc: tCreateEvent("modeServiceUniqueDesc"),
       icon: <FilePlus size={20} />,
       services: [],
     },
@@ -117,9 +117,9 @@ export function MealForm({
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [time, setTime] = useState(meal?.time || "");
   const [address, setAddress] = useState(meal?.address || defaultAddress || "");
-  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">(
-    "total"
-  );
+  const [creationMode, setCreationMode] = useState<
+    "total" | "classique" | "apero" | "service-unique"
+  >("total");
   const [showDetails, setShowDetails] = useState(false);
   const [isPending, startTransition] = useTransition();
 

@@ -21,7 +21,7 @@ export default function CreateEventClient() {
   const handleCreateEvent = async (
     name: string,
     description?: string,
-    creationMode?: "total" | "classique" | "apero" | "zero",
+    creationMode?: "total" | "classique" | "apero" | "service-unique",
     date?: string,
     adults?: number,
     children?: number,
@@ -43,7 +43,7 @@ export default function CreateEventClient() {
         });
 
         sendGAEvent("event", "event_created", {
-          creation_mode: creationMode || "zero",
+          creation_mode: creationMode || "service-unique",
         });
 
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);

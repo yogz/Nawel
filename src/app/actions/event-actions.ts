@@ -84,7 +84,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     await logChange("create", "people", person.id, null, person);
   }
 
-  if (input.creationMode && input.creationMode !== "zero") {
+  if (input.creationMode && input.creationMode !== "service-unique") {
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
     let services: string[] = [];
 
@@ -113,6 +113,20 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         children: created.children,
       });
     }
+  } else if (input.creationMode === "service-unique") {
+    // Créer un repas avec un seul service vide
+    const defaultDate = input.date || new Date().toISOString().split("T")[0];
+    await createMealWithServicesAction({
+      slug: created.slug,
+      key: adminKey,
+      date: defaultDate,
+      time: input.time,
+      address: input.address,
+      title: "Repas",
+      services: ["Service"],
+      adults: created.adults,
+      children: created.children,
+    });
   }
 
   revalidatePath("/");

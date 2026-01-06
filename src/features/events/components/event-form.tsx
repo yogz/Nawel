@@ -42,7 +42,7 @@ export function EventForm({
   onSubmit: (
     name: string,
     description?: string,
-    creationMode?: "total" | "classique" | "apero" | "zero",
+    creationMode?: "total" | "classique" | "apero" | "service-unique",
     date?: string,
     adults?: number,
     children?: number,
@@ -71,9 +71,9 @@ export function EventForm({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(initialData?.name ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "zero">(
-    "total"
-  );
+  const [creationMode, setCreationMode] = useState<
+    "total" | "classique" | "apero" | "service-unique"
+  >("total");
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState(initialData?.time ?? "20:00");
   const [address, setAddress] = useState(initialData?.address ?? "");
@@ -100,9 +100,9 @@ export function EventForm({
       icon: <GlassWater size={20} />,
     },
     {
-      id: "zero",
-      label: t("modeZeroLabel"),
-      desc: t("modeZeroDesc"),
+      id: "service-unique",
+      label: t("modeServiceUniqueLabel"),
+      desc: t("modeServiceUniqueDesc"),
       icon: <FilePlus size={20} />,
     },
   ] as const;
