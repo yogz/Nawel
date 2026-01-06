@@ -164,7 +164,12 @@ function ItemRowComponent({
       </div>
 
       {/* Right side: Person Name & Avatar */}
-      <div className="flex shrink-0 items-center gap-3">
+      <div
+        className={cn(
+          "flex shrink-0 items-center gap-3",
+          person && "rounded-lg border border-accent/10 px-2 py-1"
+        )}
+      >
         <div className="flex flex-col items-end">
           {person ? (
             getDisplayName(person)
@@ -193,7 +198,7 @@ function ItemRowComponent({
             className={cn(
               "flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 sm:h-8 sm:w-8",
               person
-                ? "border-white/50 bg-white shadow-sm"
+                ? "border-accent/20 bg-accent/10 shadow-sm"
                 : "border-dashed border-gray-300 bg-gray-100/30"
             )}
           >
