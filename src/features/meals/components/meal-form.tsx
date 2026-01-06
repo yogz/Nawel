@@ -103,7 +103,7 @@ export function MealForm({
       label: tCreateEvent("modeServiceUniqueLabel"),
       desc: tCreateEvent("modeServiceUniqueDesc"),
       icon: <FilePlus size={20} />,
-      services: [],
+      services: ["Général"],
     },
   ] as const;
 
