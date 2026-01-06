@@ -190,10 +190,17 @@ export function EventList({
             const url = `/event/${event.slug}${event.adminKey ? `?key=${event.adminKey}` : ""}`;
 
             const cardContent = (
-              <button
-                type="button"
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   if (!e.defaultPrevented) {
+                    router.push(url);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
                     router.push(url);
                   }
                 }}
@@ -296,7 +303,7 @@ export function EventList({
                     </div>
                   </div>
                 </div>
-              </button>
+              </div>
             );
 
             return (
