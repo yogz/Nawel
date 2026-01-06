@@ -76,7 +76,6 @@ export default function CreateEventClient() {
 
       <div className="mb-8 space-y-3 sm:mb-10 sm:space-y-4">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
-        <p className="text-sm leading-relaxed text-gray-600 sm:text-base">{t("description")}</p>
       </div>
 
       <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
