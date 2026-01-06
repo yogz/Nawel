@@ -17,7 +17,7 @@ export function IngredientForm({
   onSubmit,
   onCancel,
   className,
-  autoFocus = true,
+  autoFocus = false,
 }: IngredientFormProps) {
   const t = useTranslations("EventDashboard.ItemForm.Ingredients");
   const tShared = useTranslations("EventDashboard.Shared");

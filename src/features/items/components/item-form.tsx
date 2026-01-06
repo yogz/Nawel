@@ -258,7 +258,6 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
-          autoFocus={!isEditMode}
           className="h-14 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:text-base"
         />
       </div>
