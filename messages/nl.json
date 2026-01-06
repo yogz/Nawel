@@ -332,6 +332,7 @@
       "adultsLabel": "Volwassenen",
       "childrenLabel": "Kinderen",
       "peopleCountLabel": "Aantal personen",
+      "items": "artikelen",
       "adultsCount": "{count, plural, =0 {niemand} one {volwassene} other {volwassenen}}",
       "childrenCount": "{count, plural, =0 {geen kind} one {kind} other {kinderen}}",
       "cancel": "Annuleren",

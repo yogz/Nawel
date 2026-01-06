@@ -332,6 +332,7 @@
       "adultsLabel": "Vuxna",
       "childrenLabel": "Barn",
       "peopleCountLabel": "Antal personer",
+      "items": "artiklar",
       "adultsCount": "{count, plural, =0 {ingen} one {vuxen} other {vuxna}}",
       "childrenCount": "{count, plural, =0 {inget barn} one {barn} other {barn}}",
       "cancel": "Avbryt",

@@ -325,6 +325,7 @@
       "adultsLabel": "Adultos",
       "childrenLabel": "Niños",
       "peopleCountLabel": "Número de personas",
+      "items": "artículos",
       "adultsCount": "{count, plural, =0 {ninguna persona} one {adulto} other {adultos}}",
       "childrenCount": "{count, plural, =0 {ningún niño} one {niño} other {niños}}",
       "cancel": "Cancelar",

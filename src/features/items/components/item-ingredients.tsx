@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, Sparkles, Lock, Plus, X } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
+import { IngredientForm } from "./ingredient-form";
 import { Input } from "@/components/ui/input";
 import { type Ingredient } from "@/lib/types";
 import { useTranslations } from "next-intl";
@@ -106,47 +107,14 @@ export function ItemIngredients({
 
       {/* Manual add form when no ingredients */}
       {!readOnly && hasNoIngredients && showManualAdd && (
-        <div className="space-y-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
-          <Input
-            placeholder={t("namePlaceholder")}
-            aria-label={t("nameLabel")}
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            className="h-12 rounded-xl"
-            onKeyDown={(e) => e.key === "Enter" && handleManualAdd()}
-            autoFocus
-          />
-          <Input
-            placeholder={t("quantityPlaceholder")}
-            aria-label={t("quantityLabel")}
-            value={newQuantity}
-            onChange={(e) => setNewQuantity(e.target.value)}
-            className="h-12 rounded-xl"
-            onKeyDown={(e) => e.key === "Enter" && handleManualAdd()}
-          />
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleManualAdd}
-              disabled={!newName.trim()}
-              className="flex-1 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-accent/90 active:scale-95 disabled:opacity-50"
-            >
-              {t("add")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowManualAdd(false);
-                setNewName("");
-                setNewQuantity("");
-              }}
-              aria-label="Annuler"
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-500 transition-all hover:bg-gray-100 active:scale-95"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        </div>
+        <IngredientForm
+          onSubmit={handleManualAdd}
+          onCancel={() => {
+            setShowManualAdd(false);
+            setNewName("");
+            setNewQuantity("");
+          }}
+        />
       )}
 
       {/* Loading state with skeleton */}

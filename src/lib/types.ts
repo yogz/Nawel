@@ -56,7 +56,8 @@ export type Sheet =
   | { type: "share" }
   | { type: "guest-access" }
   | { type: "claim-person"; unclaimed: Person[] }
-  | { type: "shopping-list"; person: Person };
+  | { type: "shopping-list"; person: Person }
+  | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] };
 
 // Basic item data for creation/updates
 export type ItemData = {

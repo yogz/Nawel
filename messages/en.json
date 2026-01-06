@@ -335,6 +335,7 @@
       "adultsLabel": "Adults",
       "childrenLabel": "Children",
       "peopleCountLabel": "Number of people",
+      "items": "items",
       "adultsCount": "{count, plural, =0 {no one} one {adult} other {adults}}",
       "childrenCount": "{count, plural, =0 {no child} one {child} other {children}}",
       "cancel": "Cancel",

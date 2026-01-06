@@ -14,6 +14,7 @@ import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams, useParams } from "next/navigation";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
+import { ItemIngredientsManager } from "@/features/items/components/item-ingredients-manager";
 
 import {
   type PlanData,
@@ -134,11 +135,19 @@ export function OrganizerSheets({
   }, [currentServiceId, plan.meals]);
 
   const itemIngredients = useMemo(() => {
-    if (sheet?.type !== "item" || !sheet.item) {
-      return undefined;
+    if (!sheet) return undefined;
+
+    if (sheet.type === "item" && sheet.item) {
+      const found = findItem(sheet.item.id);
+      return found?.item.ingredients || sheet.item.ingredients;
     }
-    const found = findItem(sheet.item.id);
-    return found?.item.ingredients || sheet.item.ingredients;
+
+    if (sheet.type === "item-ingredients") {
+      const found = findItem(sheet.itemId);
+      return found?.item.ingredients || sheet.ingredients;
+    }
+
+    return undefined;
   }, [sheet, findItem]);
 
   // Calculate default service values from the selected meal
@@ -332,6 +341,17 @@ export function OrganizerSheets({
               onDeleteAllIngredients={
                 sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined
               }
+              onManageIngredients={
+                sheet.item
+                  ? () =>
+                      setSheet({
+                        type: "item-ingredients",
+                        itemId: sheet.item!.id,
+                        itemName: sheet.item!.name,
+                        ingredients: itemIngredients || [],
+                      })
+                  : undefined
+              }
               isGenerating={isGenerating}
               isAuthenticated={!!currentUserId}
               onRequestAuth={onAuth}
@@ -487,6 +507,79 @@ export function OrganizerSheets({
               writeKey={writeKey}
               onToggleIngredient={handleToggleIngredient}
               onToggleItemChecked={handlers.handleToggleItemChecked}
+            />
+          )}
+
+          {sheet?.type === "item-ingredients" && (
+            <ItemIngredientsManager
+              itemId={sheet.itemId}
+              itemName={sheet.itemName}
+              ingredients={itemIngredients || []}
+              onToggleIngredient={(id, checked) =>
+                handleToggleIngredient(id, sheet.itemId, checked)
+              }
+              onDeleteIngredient={(id) => handleDeleteIngredient(id, sheet.itemId)}
+              onCreateIngredient={(name, qty) => handleCreateIngredient(sheet.itemId, name, qty)}
+              onDeleteAll={() => handleDeleteAllIngredients(sheet.itemId)}
+              onGenerateIngredients={
+                handleGenerateIngredients
+                  ? async (name, note) => {
+                      setIsGenerating(true);
+                      try {
+                        const adults = (() => {
+                          const found = findItem(sheet.itemId);
+                          const sId = found?.item.serviceId;
+                          const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                          return s?.adults;
+                        })();
+                        const children = (() => {
+                          const found = findItem(sheet.itemId);
+                          const sId = found?.item.serviceId;
+                          const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                          return s?.children;
+                        })();
+                        const peopleCount = (() => {
+                          const found = findItem(sheet.itemId);
+                          const sId = found?.item.serviceId;
+                          const s = plan.meals.flatMap((m) => m.services).find((s) => s.id === sId);
+                          return s?.peopleCount;
+                        })();
+
+                        // Extract people count from note if present
+                        let finalPeopleCount = peopleCount;
+                        if (note) {
+                          const match = note.match(/Pour (\d+) personne/i);
+                          if (match) finalPeopleCount = parseInt(match[1]);
+                        }
+
+                        await handleGenerateIngredients(
+                          sheet.itemId,
+                          name,
+                          adults,
+                          children,
+                          finalPeopleCount,
+                          locale
+                        );
+                        setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
+                      } catch (error) {
+                        console.error("Failed to generate ingredients:", error);
+                        setSuccessMessage({ text: t("generationError"), type: "error" });
+                      } finally {
+                        setIsGenerating(false);
+                      }
+                    }
+                  : undefined
+              }
+              isGenerating={isGenerating}
+              isAuthenticated={!!currentUserId}
+              onRequestAuth={onAuth}
+              itemNote={
+                sheet.type === "item-ingredients"
+                  ? findItem(sheet.itemId)?.item.note || undefined
+                  : undefined
+              }
+              onClose={() => setSheet(null)}
+              readOnly={readOnly}
             />
           )}
         </div>

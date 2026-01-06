@@ -14,7 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Loader2, Plus, CircleHelp, Check, X } from "lucide-react";
+import {
+  Trash2,
+  ChevronDown,
+  Loader2,
+  Plus,
+  CircleHelp,
+  Check,
+  X,
+  Sparkles,
+  Lock,
+} from "lucide-react";
 import { DrawerClose } from "@/components/ui/drawer";
 import clsx from "clsx";
 import { ItemIngredients } from "./item-ingredients";
@@ -39,6 +49,7 @@ export function ItemForm({
   onDeleteIngredient,
   onCreateIngredient,
   onDeleteAllIngredients,
+  onManageIngredients,
   isGenerating,
   // Auth props for AI features
   isAuthenticated,
@@ -69,6 +80,7 @@ export function ItemForm({
   onDeleteIngredient?: (id: number) => void;
   onCreateIngredient?: (name: string, quantity?: string) => void;
   onDeleteAllIngredients?: () => void;
+  onManageIngredients?: () => void;
   isGenerating?: boolean;
   // Auth props for AI features
   isAuthenticated?: boolean;
@@ -394,23 +406,86 @@ export function ItemForm({
       </div>
 
       {/* Expandable details */}
-      {/* AI Ingredients section - only for existing items */}
+      {/* Ingredients Section - Simplified for Mobile First */}
       {isEditMode && (
-        <ItemIngredients
-          ingredients={ingredients}
-          itemName={name}
-          itemNote={note}
-          isGenerating={isGenerating}
-          isAuthenticated={isAuthenticated}
-          onGenerateIngredients={
-            onGenerateIngredients ? (n, o) => onGenerateIngredients(n, o, locale) : undefined
-          }
-          onToggleIngredient={onToggleIngredient}
-          onDeleteIngredient={onDeleteIngredient}
-          onCreateIngredient={onCreateIngredient}
-          onDeleteAllIngredients={onDeleteAllIngredients}
-          onRequestAuth={onRequestAuth}
-        />
+        <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-all hover:bg-white hover:shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <Label className="text-[11px] font-black uppercase tracking-widest text-gray-400">
+                  {t("Ingredients.nameLabel")}
+                </Label>
+                <p className="text-sm font-bold text-gray-700">
+                  {ingredients?.length || 0} {tCommon("items")}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onManageIngredients}
+              className="rounded-xl border-gray-200 bg-white px-4 text-xs font-bold uppercase tracking-widest text-accent shadow-sm active:scale-95"
+            >
+              {t("Ingredients.add")}
+            </Button>
+          </div>
+
+          {/* Quick preview of ingredients OR AI Button */}
+          {ingredients && ingredients.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {ingredients.slice(0, 3).map((ing) => (
+                <span
+                  key={ing.id}
+                  className={clsx(
+                    "rounded-lg px-2 py-1 text-[10px] font-medium",
+                    ing.checked
+                      ? "bg-green-100 text-green-700 line-through"
+                      : "border border-gray-100 bg-white text-gray-600"
+                  )}
+                >
+                  {ing.name}
+                </span>
+              ))}
+              {ingredients.length > 3 && (
+                <span className="rounded-lg bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500">
+                  +{ingredients.length - 3}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="pt-1">
+              {isAuthenticated ? (
+                <Button
+                  type="button"
+                  onClick={() => onGenerateIngredients?.(name, note, locale)}
+                  disabled={isGenerating || !name.trim()}
+                  className="h-11 w-full gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-xs font-bold text-white shadow-md transition-all active:scale-95"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      {t("Ingredients.generating")}
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={14} />
+                      {t("Ingredients.generateButton")}
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={onRequestAuth}
+                  variant="outline"
+                  className="h-11 w-full gap-2 rounded-xl border border-dashed border-purple-200 bg-purple-50 text-[10px] font-bold uppercase tracking-tight text-purple-600"
+                >
+                  <Lock size={12} />
+                  {t("Ingredients.authRequired")}
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Expandable details moved to bottom */}

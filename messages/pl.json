@@ -332,6 +332,7 @@
       "adultsLabel": "Dorośli",
       "childrenLabel": "Dzieci",
       "peopleCountLabel": "Liczba osób",
+      "items": "artykuły",
       "adultsCount": "{count, plural, =0 {nikt} one {dorosły} few {dorośli} other {dorosłych}}",
       "childrenCount": "{count, plural, =0 {brak dzieci} one {dziecko} few {dzieci} other {dzieci}}",
       "cancel": "Anuluj",

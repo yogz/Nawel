@@ -332,6 +332,7 @@
       "adultsLabel": "Adultos",
       "childrenLabel": "Crianças",
       "peopleCountLabel": "Número de pessoas",
+      "items": "itens",
       "adultsCount": "{count, plural, =0 {nenhuma pessoa} one {adulto} other {adultos}}",
       "childrenCount": "{count, plural, =0 {nenhuma criança} one {criança} other {crianças}}",
       "cancel": "Cancelar",

@@ -332,6 +332,7 @@
       "adultsLabel": "Voksne",
       "childrenLabel": "Børn",
       "peopleCountLabel": "Antal personer",
+      "items": "genstande",
       "adultsCount": "{count, plural, =0 {ingen} one {voksen} other {voksne}}",
       "childrenCount": "{count, plural, =0 {intet barn} one {barn} other {børn}}",
       "cancel": "Annuller",

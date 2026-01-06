@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { IngredientForm } from "@/features/items/components/ingredient-form";
 import { Plus, X } from "lucide-react";
 import { type Ingredient } from "@/lib/types";
 import clsx from "clsx";
@@ -102,47 +103,20 @@ export function IngredientList({
       {!readOnly && (
         <>
           {showAddForm ? (
-            <div className="mt-3 space-y-2 rounded-xl border border-gray-200 bg-gray-50 p-3">
-              <Input
-                placeholder={t("namePlaceholder")}
-                aria-label={t("nameLabel")}
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="h-11 rounded-xl"
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                autoFocus
-              />
-              <Input
-                placeholder={t("quantityPlaceholder")}
-                aria-label={t("quantityLabel")}
-                value={newQuantity}
-                onChange={(e) => setNewQuantity(e.target.value)}
-                className="h-11 rounded-xl"
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-              />
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  disabled={!newName.trim()}
-                  className="flex-1 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-50"
-                >
-                  {t("add")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setNewName("");
-                    setNewQuantity("");
-                  }}
-                  aria-label={tShared("cancel")}
-                  className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-500 transition-all hover:bg-gray-100 active:scale-95"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            </div>
+            <IngredientForm
+              onSubmit={(name, qty) => {
+                onCreate(name, qty);
+                setShowAddForm(false);
+                setNewName("");
+                setNewQuantity("");
+              }}
+              onCancel={() => {
+                setShowAddForm(false);
+                setNewName("");
+                setNewQuantity("");
+              }}
+              className="mt-3"
+            />
           ) : (
             <button
               type="button"
