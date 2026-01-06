@@ -7,7 +7,6 @@ import { Calendar, Clock, History, Users, ArrowRight } from "lucide-react";
 import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
-import { EventForm } from "@/features/events/components/event-form";
 import { NewEventCard } from "./events/new-event-card";
 import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { useTranslations, useFormatter } from "next-intl";
@@ -41,7 +40,6 @@ export function EventList({
   writeEnabled: boolean;
   writeKey?: string;
 }) {
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { data: session } = useSession();
@@ -51,37 +49,6 @@ export function EventList({
   const [error, setError] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
-
-  const handleCreateEvent = async (
-    name: string,
-    description?: string,
-    creationMode?: "total" | "classique" | "apero" | "zero",
-    date?: string,
-    adults?: number,
-    children?: number,
-    time?: string,
-    address?: string
-  ) => {
-    setError(null);
-    startTransition(async () => {
-      try {
-        const result = await createEventAction({
-          name,
-          description,
-          creationMode,
-          date,
-          time,
-          address,
-          adults: adults ?? 0,
-          children: children ?? 0,
-        });
-        router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
-      } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : t("errorOccurred");
-        setError(message);
-      }
-    });
-  };
 
   const handleUpdateEvent = async (data: {
     name: string;
@@ -336,7 +303,7 @@ export function EventList({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {writeEnabled && (
           <div className="sm:col-span-1 lg:col-span-1">
-            <NewEventCard onClick={() => setShowCreateForm(true)} />
+            <NewEventCard onClick={() => router.push("/create-event")} />
           </div>
         )}
         {uniqueEvents.length > 0 && (
@@ -347,17 +314,6 @@ export function EventList({
         )}
       </div>
 
-      {showCreateForm && (
-        <EventForm
-          onSubmit={handleCreateEvent}
-          onClose={() => {
-            setShowCreateForm(false);
-            setError(null);
-          }}
-          isPending={isPending}
-          error={error}
-        />
-      )}
       {editingEvent && (
         <EditEventSheet
           open={!!editingEvent}
