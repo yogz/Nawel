@@ -12,6 +12,7 @@ import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { motion } from "framer-motion";
 import { CitationDisplay } from "../common/citation-display";
+import { Link } from "@/i18n/navigation";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -42,10 +43,19 @@ export function OrganizerHeader({
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
+  const [showLogoHint, setShowLogoHint] = useState(true);
 
   // Stop the attention-grabbing effect after 2 minutes
   useEffect(() => {
     const timer = setTimeout(() => setShowAttention(false), 2 * 60 * 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show logo hint animation on mount, then hide after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLogoHint(false);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -97,7 +107,41 @@ export function OrganizerHeader({
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                <AppBranding logoSize={36} className="shrink-0" variant="icon" />
+                <motion.div
+                  initial={false}
+                  animate={
+                    showLogoHint
+                      ? {
+                          scale: [1, 1.15, 1],
+                        }
+                      : {}
+                  }
+                  transition={
+                    showLogoHint
+                      ? {
+                          duration: 1.2,
+                          repeat: 2,
+                          ease: "easeInOut",
+                        }
+                      : {}
+                  }
+                >
+                  <Link
+                    href="/"
+                    className={cn(
+                      "group shrink-0 rounded-lg p-1 transition-all duration-300 hover:scale-105 hover:bg-accent/10 active:scale-95",
+                      showLogoHint && "bg-accent/10"
+                    )}
+                    aria-label="Retour à l'accueil"
+                    title="Retour à l'accueil"
+                  >
+                    <AppBranding
+                      logoSize={36}
+                      className="shrink-0 transition-opacity group-hover:opacity-80"
+                      variant="icon"
+                    />
+                  </Link>
+                </motion.div>
                 <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
                   {plan.event?.name || "Événement"}
                 </h1>
