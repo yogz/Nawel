@@ -67,21 +67,27 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {isPremium && icon && (
-          <div
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300",
-              active
-                ? "bg-accent text-white"
-                : "bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white",
-              iconClassName
+        {asChild ? (
+          props.children
+        ) : (
+          <>
+            {isPremium && icon && (
+              <div
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300",
+                  active
+                    ? "bg-accent text-white"
+                    : "bg-accent/10 text-accent group-hover:bg-accent group-hover:text-white",
+                  iconClassName
+                )}
+              >
+                {icon}
+              </div>
             )}
-          >
-            {icon}
-          </div>
+            {!isPremium && icon}
+            {props.children}
+          </>
         )}
-        {!isPremium && icon}
-        {props.children}
       </Comp>
     );
   }
