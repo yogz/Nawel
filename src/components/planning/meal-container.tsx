@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { Clock, MapPin, Calendar, Edit3, ExternalLink, Download, PlusIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
@@ -25,7 +25,6 @@ interface MealContainerProps {
   onCreateItem: (serviceId: number) => void;
   onCreateService?: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
-  itemVariants: Variants;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
 }
@@ -41,7 +40,6 @@ export function MealContainer({
   onCreateItem,
   onCreateService,
   setSheet,
-  itemVariants,
   handleAssign,
   currentUserId,
 }: MealContainerProps) {
@@ -73,7 +71,12 @@ export function MealContainer({
   const fullDate = getFullDateDisplay();
 
   return (
-    <motion.div variants={itemVariants} className="relative flex flex-col gap-6 pt-2">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 50, damping: 20 }}
+      className="relative flex flex-col gap-6 pt-2"
+    >
       {/* Meal Info Row - Premium & Compact */}
       <div className="mx-2 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
         <div className="flex min-w-0 flex-1 flex-col">

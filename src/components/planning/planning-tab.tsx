@@ -194,7 +194,6 @@ export function PlanningTab({
                 onCreateItem={onCreateItem}
                 onCreateService={onCreateService}
                 setSheet={setSheet}
-                itemVariants={itemVariants}
                 handleAssign={handleAssign}
                 currentUserId={currentUserId}
               />
