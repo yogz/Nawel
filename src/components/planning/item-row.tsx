@@ -166,13 +166,15 @@ function ItemRowComponent({
       {/* Right side: Person Name & Avatar */}
       <div
         className={cn(
-          "flex shrink-0 items-center gap-3",
-          person && "rounded-lg border border-accent/10 px-2 py-1"
+          "flex shrink-0 items-center gap-2",
+          person ? "rounded-lg border border-accent/20 bg-accent/10 px-2.5 py-1.5" : "gap-3"
         )}
       >
         <div className="flex flex-col items-end">
           {person ? (
-            getDisplayName(person)
+            <span className="text-xs font-semibold text-accent sm:text-[10px]">
+              {getDisplayName(person)}
+            </span>
           ) : (
             <button
               type="button"
@@ -193,41 +195,29 @@ function ItemRowComponent({
           )}
         </div>
 
-        <div className="shrink-0">
-          <div
-            className={cn(
-              "flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 sm:h-8 sm:w-8",
-              person
-                ? "border-accent/20 bg-accent/10 shadow-sm"
-                : "border-dashed border-gray-300 bg-gray-100/30"
-            )}
-          >
+        {person && (
+          <div className="shrink-0">
             {(() => {
-              if (!person) {
-                return null;
-              }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {
                 return (
-                  <div className="h-full w-full overflow-hidden rounded-full ring-1 ring-accent/10">
-                    <img
-                      src={avatar.src}
-                      alt={getDisplayName(person)}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
+                  <img
+                    src={avatar.src}
+                    alt={getDisplayName(person)}
+                    className="h-7 w-7 rounded object-cover sm:h-6 sm:w-6"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 );
               }
               return (
-                <span className="text-[12px] font-black text-accent" aria-hidden="true">
+                <span className="text-lg font-black text-accent sm:text-base" aria-hidden="true">
                   {avatar.value}
                 </span>
               );
             })()}
           </div>
-        </div>
+        )}
       </div>
 
       {/* Subtle bottom line for separation */}
