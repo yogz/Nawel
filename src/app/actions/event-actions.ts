@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people, meals } from "@drizzle/schema";
-import { eq, desc, or, exists, and } from "drizzle-orm";
+import { eq, desc, or, exists, and, inArray, sql } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
 import {
@@ -134,32 +134,40 @@ export const getMyEventsAction = withErrorThrower(async () => {
     return [];
   }
 
-  // Use db.query to get relations easily
-  const allEvents = await db.query.events.findMany({
-    where: or(
-      eq(events.ownerId, session.user.id),
-      exists(
-        db
-          .select()
-          .from(people)
-          .where(and(eq(people.eventId, events.id), eq(people.userId, session.user.id)))
-      )
-    ),
+  // Get event IDs where user is owner
+  const ownedEventIds = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(eq(events.ownerId, session.user.id));
+
+  // Get event IDs where user is participant
+  const participantEventIds = await db
+    .selectDistinct({ id: events.id })
+    .from(events)
+    .innerJoin(people, eq(people.eventId, events.id))
+    .where(eq(people.userId, session.user.id));
+
+  // Combine and deduplicate IDs
+  const allEventIds = new Set<number>();
+  ownedEventIds.forEach((row) => allEventIds.add(row.id));
+  participantEventIds.forEach((row) => allEventIds.add(row.id));
+
+  const uniqueEventIds = Array.from(allEventIds);
+
+  if (uniqueEventIds.length === 0) {
+    return [];
+  }
+
+  // Fetch the full events with relations using the unique IDs
+  const uniqueEvents = await db.query.events.findMany({
+    where: inArray(events.id, uniqueEventIds),
     with: {
       meals: true,
     },
     orderBy: desc(events.createdAt),
   });
 
-  // Deduplicate events by ID (in case user is both owner and participant)
-  const uniqueEventsMap = new Map<number, (typeof allEvents)[0]>();
-  for (const event of allEvents) {
-    if (!uniqueEventsMap.has(event.id)) {
-      uniqueEventsMap.set(event.id, event);
-    }
-  }
-
-  return Array.from(uniqueEventsMap.values());
+  return uniqueEvents;
 });
 
 export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {
