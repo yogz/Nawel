@@ -255,7 +255,7 @@ export function OrganizerSheets({
               onSubmit={(vals) =>
                 sheet.item
                   ? handleUpdateItem(sheet.item.id, vals)
-                  : handleCreateItem({ ...vals, serviceId: sheet.serviceId })
+                  : handleCreateItem({ ...vals, serviceId: currentServiceId })
               }
               onAssign={(pId) => sheet.item && handleAssign(sheet.item, pId)}
               onMoveService={(sId) => sheet.item && handleMoveItem(sheet.item.id, sId)}
