@@ -47,6 +47,7 @@ export function OrganizerHeader({
   const [showLogoHint, setShowLogoHint] = useState(true);
   const [hovered, setHovered] = useState(false);
   const [animationStep, setAnimationStep] = useState<"logo" | "home" | "arrow">("logo");
+  const [animationComplete, setAnimationComplete] = useState(false);
 
   // Stop the attention-grabbing effect after 2 minutes
   useEffect(() => {
@@ -63,8 +64,14 @@ export function OrganizerHeader({
     timers.push(
       setTimeout(() => setAnimationStep("home"), 1200),
       setTimeout(() => setAnimationStep("arrow"), 2400),
-      setTimeout(() => setAnimationStep("logo"), 3600),
-      setTimeout(() => setShowLogoHint(false), 4800)
+      setTimeout(() => {
+        setAnimationStep("logo");
+        // Attendre la fin de la transition du logo avant de désactiver
+        setTimeout(() => {
+          setShowLogoHint(false);
+          setAnimationComplete(true);
+        }, 700);
+      }, 3600)
     );
 
     return () => {
@@ -129,8 +136,8 @@ export function OrganizerHeader({
                 >
                   <div className="relative h-9 w-9 sm:h-9 sm:w-9">
                     <AnimatePresence mode="wait">
-                      {hovered ? (
-                        // Hover effect: show home icon with smooth fade
+                      {hovered && animationComplete ? (
+                        // Hover effect: show home icon with smooth fade (seulement après la fin de l'animation)
                         <motion.div
                           key="hover-home"
                           initial={{ opacity: 0, scale: 0.95 }}
