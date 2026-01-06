@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import {
   createMealAction,
   updateMealAction,
@@ -22,6 +23,7 @@ export function useMealHandlers({
   setSuccessMessage,
 }: MealHandlerParams) {
   const [, startTransition] = useTransition();
+  const router = useRouter();
   const t = useTranslations("Translations");
 
   const handleCreateMeal = async (
@@ -54,6 +56,7 @@ export function useMealHandlers({
       }));
       setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
       trackMealServiceAction("meal_created", title || date);
+      router.refresh();
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
@@ -97,6 +100,7 @@ export function useMealHandlers({
           setSheet(null);
           setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
           trackMealServiceAction("meal_created", title || date);
+          router.refresh();
         } else {
           const created = await createMealWithServicesAction({
             date,
@@ -116,6 +120,7 @@ export function useMealHandlers({
           setSheet(null);
           setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
           trackMealServiceAction("meal_created", title || date);
+          router.refresh();
         }
       } catch (error) {
         console.error("Failed to create meal:", error);

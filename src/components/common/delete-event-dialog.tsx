@@ -27,8 +27,6 @@ export function DeleteEventDialog({
       onOpenChange={onOpenChange}
       title={t("deleteConfirmTitle")}
       description={t("deleteConfirmDescription")}
-      confirmationInput={eventName}
-      validationInstruction={t("deleteConfirmInstruction", { name: eventName })}
       onConfirm={onConfirm}
       isPending={isPending}
       confirmLabel={isPending ? tShared("deleting") : t("deleteConfirmButton")}

@@ -281,9 +281,6 @@ export function EventList({
                     onSwipeRight={() => setEditingEvent(event)}
                     leftLabel={t("delete")}
                     rightLabel={t("edit")}
-                    confirmLeft
-                    confirmLeftTitle={t("deleteConfirmTitle")}
-                    confirmLeftMessage={t("deleteConfirmDescription")}
                   >
                     {cardContent}
                   </SwipeableCard>
