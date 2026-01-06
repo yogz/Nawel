@@ -52,25 +52,25 @@ export default function CreateEventClient() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-12">
-      <div className="mb-8">
-        <AppBranding logoSize={44} textSize="md" />
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-12">
+      <div className="mb-6 sm:mb-8">
+        <AppBranding logoSize={40} textSize="md" />
       </div>
 
       <Link
         href="/login?mode=user"
-        className="mb-8 flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent"
+        className="mb-6 flex touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8"
       >
-        <ArrowLeft size={16} />
+        <ArrowLeft size={18} className="sm:h-4 sm:w-4" />
         {t("backToLogin")}
       </Link>
 
-      <div className="mb-10 space-y-4">
-        <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="text-gray-600">{t("description")}</p>
+      <div className="mb-8 space-y-3 sm:mb-10 sm:space-y-4">
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
+        <p className="text-sm text-gray-600 sm:text-base">{t("description")}</p>
       </div>
 
-      <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-xl shadow-gray-200/50">
+      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:rounded-3xl sm:p-8">
         <EventForm
           onSubmit={handleCreateEvent}
           onClose={() => router.push("/login?mode=user")}
