@@ -63,6 +63,8 @@ export function CitationManager() {
     setCurrentIndex(0);
   }, [search, filterCategory, filterRating]);
 
+  const activeItem = filteredItems[currentIndex];
+
   // Cancel editing when active item changes
   useEffect(() => {
     if (isEditing && activeItem?.id !== editedItem?.id) {
@@ -70,8 +72,6 @@ export function CitationManager() {
       setEditedItem(null);
     }
   }, [activeItem?.id, isEditing, editedItem?.id]);
-
-  const activeItem = filteredItems[currentIndex];
 
   const handleNext = () => {
     if (filteredItems.length === 0) {
