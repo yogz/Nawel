@@ -91,9 +91,6 @@ export function useMealHandlers({
           time,
           address,
         });
-        // Fermer le drawer d'abord pour éviter les problèmes de rendu
-        setSheet(null);
-
         // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
         const newMeal = { ...created, services: [] };
         setPlan((prev: PlanData) => {
@@ -132,9 +129,6 @@ export function useMealHandlers({
           time,
           address,
         });
-        // Fermer le drawer d'abord pour éviter les problèmes de rendu
-        setSheet(null);
-
         // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
         setPlan((prev: PlanData) => {
           // Vérifier si le repas existe déjà pour éviter les doublons

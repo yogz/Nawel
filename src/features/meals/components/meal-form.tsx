@@ -193,6 +193,8 @@ export function MealForm({
       const mode = CREATION_MODES.find((m) => m.id === creationMode);
       const servicesToCreate = mode ? [...mode.services] : [];
       await onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
+      // Fermer le drawer après la création pour que le state se mette à jour
+      onClose();
     }
   };
 
