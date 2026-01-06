@@ -296,3 +296,32 @@ export const deleteAuditLogsSchema = z
 export const deleteCitationAdminSchema = z.object({
   id: z.string(),
 });
+
+export const updateCitationAdminSchema = z.object({
+  id: z.string(),
+  updates: z.object({
+    type: z.string().optional(),
+    tone: z.string().optional(),
+    category: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+    rating: z.number().min(1).max(3).optional(),
+    original: z
+      .object({
+        lang: z.string().optional(),
+        text: z.string().optional(),
+      })
+      .optional(),
+    localized: z.record(z.string()).optional(),
+    attribution: z
+      .object({
+        author: z.string().nullable().optional(),
+        work: z.string().nullable().optional(),
+        year: z.number().nullable().optional(),
+        origin: z.string().nullable().optional(),
+        confidence: z.enum(["high", "medium", "low"]).optional(),
+        origin_type: z.string().nullable().optional(),
+        origin_qualifier: z.string().nullable().optional(),
+      })
+      .optional(),
+  }),
+});

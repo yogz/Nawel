@@ -15,6 +15,7 @@ import {
   deleteUserAdminSchema,
   toggleUserBanAdminSchema,
   deleteCitationAdminSchema,
+  updateCitationAdminSchema,
 } from "./schemas";
 import fs from "fs";
 import path from "path";
@@ -399,5 +400,86 @@ export const deleteCitationAdminAction = createSafeAction(
 
     revalidatePath("/admin/citations");
     return { success: true };
+  }
+);
+
+export const updateCitationAdminAction = createSafeAction(
+  updateCitationAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    const filePath = path.join(process.cwd(), "src/data/citations-v3.json");
+
+    if (!fs.existsSync(filePath)) {
+      throw new Error("Fichier de citations introuvable.");
+    }
+
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    const citationsData = JSON.parse(fileContent) as {
+      version?: number;
+      items: Array<any>;
+    };
+
+    const itemIndex = citationsData.items.findIndex((item: any) => item.id === input.id);
+
+    if (itemIndex === -1) {
+      throw new Error("Citation introuvable.");
+    }
+
+    // Mise à jour de l'item avec les nouvelles valeurs
+    const currentItem = citationsData.items[itemIndex];
+
+    // Mise à jour des champs de base
+    if (input.updates.type !== undefined) {
+      currentItem.type = input.updates.type;
+    }
+    if (input.updates.tone !== undefined) {
+      currentItem.tone = input.updates.tone;
+    }
+    if (input.updates.category !== undefined) {
+      currentItem.category = input.updates.category;
+    }
+    if (input.updates.tags !== undefined) {
+      currentItem.tags = input.updates.tags;
+    }
+    if (input.updates.rating !== undefined) {
+      currentItem.rating = input.updates.rating;
+    }
+
+    // Mise à jour de original
+    if (input.updates.original) {
+      if (input.updates.original.lang !== undefined) {
+        currentItem.original.lang = input.updates.original.lang;
+      }
+      if (input.updates.original.text !== undefined) {
+        currentItem.original.text = input.updates.original.text;
+      }
+    }
+
+    // Mise à jour de localized
+    if (input.updates.localized) {
+      currentItem.localized = {
+        ...currentItem.localized,
+        ...input.updates.localized,
+      };
+    }
+
+    // Mise à jour de attribution
+    if (input.updates.attribution) {
+      currentItem.attribution = {
+        ...currentItem.attribution,
+        ...input.updates.attribution,
+      };
+    }
+
+    citationsData.items[itemIndex] = currentItem;
+
+    // Mise à jour de la version pour forcer le rafraîchissement côté client
+    citationsData.version = (citationsData.version || 0) + 1;
+
+    fs.writeFileSync(filePath, JSON.stringify(citationsData, null, 2), "utf8");
+
+    revalidatePath("/admin/citations");
+    return { success: true, item: currentItem };
   }
 );

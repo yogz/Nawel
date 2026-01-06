@@ -14,12 +14,15 @@ import {
   Trash2,
   Globe,
   Languages,
+  Edit,
+  Save,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SuccessToast } from "@/components/common/success-toast";
 import { useToast } from "@/hooks/use-toast";
 import { useLocale, useTranslations } from "next-intl";
-import { deleteCitationAdminAction } from "@/app/actions/admin-actions";
+import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
 
 export function CitationManager() {
   const locale = useLocale();
@@ -31,6 +34,9 @@ export function CitationManager() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterRating, setFilterRating] = useState<number | "all">("all");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedItem, setEditedItem] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Local state for items
   const [items, setItems] = useState(citationsDataV3.items);
@@ -56,6 +62,14 @@ export function CitationManager() {
   useEffect(() => {
     setCurrentIndex(0);
   }, [search, filterCategory, filterRating]);
+
+  // Cancel editing when active item changes
+  useEffect(() => {
+    if (isEditing && activeItem?.id !== editedItem?.id) {
+      setIsEditing(false);
+      setEditedItem(null);
+    }
+  }, [activeItem?.id, isEditing, editedItem?.id]);
 
   const activeItem = filteredItems[currentIndex];
 
@@ -144,6 +158,84 @@ export function CitationManager() {
       }
     } catch (error) {
       setToastMessage({ text: "Erreur lors de la suppression", type: "error" });
+    }
+  };
+
+  const handleEdit = () => {
+    if (activeItem) {
+      setEditedItem(JSON.parse(JSON.stringify(activeItem))); // Deep copy
+      setIsEditing(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedItem(null);
+  };
+
+  const handleSave = async () => {
+    if (!editedItem || !activeItem) return;
+
+    setIsSaving(true);
+    try {
+      const updates: any = {};
+
+      // Comparer et construire les mises à jour
+      if (editedItem.type !== activeItem.type) updates.type = editedItem.type;
+      if (editedItem.tone !== activeItem.tone) updates.tone = editedItem.tone;
+      if (editedItem.category !== activeItem.category) updates.category = editedItem.category;
+      if (JSON.stringify(editedItem.tags) !== JSON.stringify(activeItem.tags))
+        updates.tags = editedItem.tags;
+      if (editedItem.rating !== activeItem.rating) updates.rating = editedItem.rating;
+
+      if (
+        editedItem.original.lang !== activeItem.original.lang ||
+        editedItem.original.text !== activeItem.original.text
+      ) {
+        updates.original = {
+          lang: editedItem.original.lang,
+          text: editedItem.original.text,
+        };
+      }
+
+      // Vérifier les changements dans localized
+      const localizedChanged = Object.keys(editedItem.localized).some(
+        (key) => editedItem.localized[key] !== activeItem.localized[key]
+      );
+      if (localizedChanged) {
+        updates.localized = editedItem.localized;
+      }
+
+      // Vérifier les changements dans attribution
+      const attributionChanged = Object.keys(editedItem.attribution).some(
+        (key) => editedItem.attribution[key] !== activeItem.attribution[key]
+      );
+      if (attributionChanged) {
+        updates.attribution = editedItem.attribution;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        setIsEditing(false);
+        setIsSaving(false);
+        return;
+      }
+
+      const result = await updateCitationAdminAction({
+        id: activeItem.id,
+        updates,
+      });
+
+      if (result?.success) {
+        // Mettre à jour l'item dans le state local
+        setItems((prev) => prev.map((item) => (item.id === activeItem.id ? result.item : item)));
+        setIsEditing(false);
+        setEditedItem(null);
+        setToastMessage({ text: "Citation mise à jour", type: "success" });
+      }
+    } catch (error) {
+      setToastMessage({ text: "Erreur lors de la mise à jour", type: "error" });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -259,52 +351,296 @@ export function CitationManager() {
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs font-black tracking-widest text-accent/40">
-                      {activeItem.id}
+                      {(isEditing && editedItem ? editedItem : activeItem).id}
                     </span>
                     <div className="flex gap-0.5">
-                      {[...Array(3)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${i < (activeItem.rating || 1) ? "fill-yellow-400 text-yellow-400" : "text-gray-100"}`}
-                        />
-                      ))}
+                      {[...Array(3)].map((_, i) => {
+                        const currentItem = isEditing && editedItem ? editedItem : activeItem;
+                        return (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${i < (currentItem.rating || 1) ? "fill-yellow-400 text-yellow-400" : "text-gray-100"}`}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div className="rounded-2xl border border-black/[0.03] bg-white/50 p-6 shadow-sm ring-1 ring-black/[0.05] transition-all hover:bg-white hover:shadow-md">
                       <p className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-accent/30">
-                        Aperçu Interactif (Cliquable)
+                        {isEditing ? "Texte Original" : "Aperçu Interactif (Cliquable)"}
                       </p>
-                      <CitationDisplay item={activeItem} />
+                      {isEditing && editedItem ? (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Langue
+                            </label>
+                            <input
+                              type="text"
+                              value={editedItem.original.lang}
+                              onChange={(e) =>
+                                setEditedItem({
+                                  ...editedItem,
+                                  original: { ...editedItem.original, lang: e.target.value },
+                                })
+                              }
+                              className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Texte
+                            </label>
+                            <textarea
+                              value={editedItem.original.text}
+                              onChange={(e) =>
+                                setEditedItem({
+                                  ...editedItem,
+                                  original: { ...editedItem.original, text: e.target.value },
+                                })
+                              }
+                              rows={3}
+                              className="w-full rounded-xl border border-black/10 bg-white p-3 text-sm focus:ring-2 focus:ring-accent/20"
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <CitationDisplay item={isEditing && editedItem ? editedItem : activeItem} />
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 pt-4">
-                    <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
-                      <Palette className="h-3 w-3" /> {activeItem.tone || "soft"}
-                    </div>
-                    <div className="flex items-center gap-1.5 rounded-full bg-black/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                      <Layout className="h-3 w-3" /> {activeItem.category}
-                    </div>
-                    {activeItem.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-black/5 px-3 py-1 text-[10px] font-medium italic text-muted-foreground"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
+                  <div className="space-y-4 pt-4">
+                    {isEditing && editedItem ? (
+                      <>
+                        <div>
+                          <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Type
+                          </label>
+                          <input
+                            type="text"
+                            value={editedItem.type || ""}
+                            onChange={(e) => setEditedItem({ ...editedItem, type: e.target.value })}
+                            className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Tone
+                          </label>
+                          <input
+                            type="text"
+                            value={editedItem.tone || ""}
+                            onChange={(e) => setEditedItem({ ...editedItem, tone: e.target.value })}
+                            className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Catégorie
+                          </label>
+                          <input
+                            type="text"
+                            value={editedItem.category || ""}
+                            onChange={(e) =>
+                              setEditedItem({ ...editedItem, category: e.target.value })
+                            }
+                            className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Tags (séparés par des virgules)
+                          </label>
+                          <input
+                            type="text"
+                            value={editedItem.tags?.join(", ") || ""}
+                            onChange={(e) =>
+                              setEditedItem({
+                                ...editedItem,
+                                tags: e.target.value
+                                  .split(",")
+                                  .map((t) => t.trim())
+                                  .filter(Boolean),
+                              })
+                            }
+                            className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="mb-2 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                            Note (1-3)
+                          </label>
+                          <select
+                            value={editedItem.rating || 1}
+                            onChange={(e) =>
+                              setEditedItem({ ...editedItem, rating: Number(e.target.value) })
+                            }
+                            className="h-10 w-full rounded-xl border border-black/10 bg-white px-3 text-sm focus:ring-2 focus:ring-accent/20"
+                          >
+                            <option value={1}>★</option>
+                            <option value={2}>★★</option>
+                            <option value={3}>★★★</option>
+                          </select>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
+                          <Palette className="h-3 w-3" /> {activeItem.tone || "soft"}
+                        </div>
+                        <div className="flex items-center gap-1.5 rounded-full bg-black/5 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          <Layout className="h-3 w-3" /> {activeItem.category}
+                        </div>
+                        {activeItem.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-black/5 px-3 py-1 text-[10px] font-medium italic text-muted-foreground"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 <div className="mt-10 border-t border-black/5 pt-8 lg:mt-0">
                   <h4 className="mb-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-accent/50">
-                    <Globe className="h-4 w-4" /> Détails Techniques
+                    <Globe className="h-4 w-4" /> {isEditing ? "Attribution" : "Détails Techniques"}
                   </h4>
-                  <div className="scrollbar-hide max-h-40 overflow-auto rounded-2xl bg-black/5 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                    {JSON.stringify(activeItem.attribution, null, 2)}
-                  </div>
+                  {isEditing && editedItem ? (
+                    <div className="space-y-3 rounded-2xl bg-black/5 p-4">
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Auteur
+                        </label>
+                        <input
+                          type="text"
+                          value={editedItem.attribution.author || ""}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                author: e.target.value || null,
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                          placeholder="Auteur"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Œuvre
+                        </label>
+                        <input
+                          type="text"
+                          value={editedItem.attribution.work || ""}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                work: e.target.value || null,
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                          placeholder="Œuvre"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Année
+                        </label>
+                        <input
+                          type="number"
+                          value={editedItem.attribution.year || ""}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                year: e.target.value ? Number(e.target.value) : null,
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                          placeholder="Année"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Confiance
+                        </label>
+                        <select
+                          value={editedItem.attribution.confidence || "medium"}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                confidence: e.target.value as "high" | "medium" | "low",
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                        >
+                          <option value="high">High</option>
+                          <option value="medium">Medium</option>
+                          <option value="low">Low</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Origin Type
+                        </label>
+                        <input
+                          type="text"
+                          value={editedItem.attribution.origin_type || ""}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                origin_type: e.target.value || null,
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                          placeholder="Origin Type"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          Origin Qualifier
+                        </label>
+                        <input
+                          type="text"
+                          value={editedItem.attribution.origin_qualifier || ""}
+                          onChange={(e) =>
+                            setEditedItem({
+                              ...editedItem,
+                              attribution: {
+                                ...editedItem.attribution,
+                                origin_qualifier: e.target.value || null,
+                              },
+                            })
+                          }
+                          className="h-9 w-full rounded-lg border border-black/10 bg-white px-2 text-[11px] focus:ring-2 focus:ring-accent/20"
+                          placeholder="Origin Qualifier"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="scrollbar-hide max-h-40 overflow-auto rounded-2xl bg-black/5 p-4 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                      {JSON.stringify(activeItem.attribution, null, 2)}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -325,14 +661,35 @@ export function CitationManager() {
                           {lang}
                         </span>
                         <div className="space-y-3">
-                          <p className="text-text/80 line-clamp-2 text-[12px] font-medium italic leading-relaxed">
-                            {activeItem.localized[lang as keyof typeof activeItem.localized] ||
-                              activeItem.original.text}
-                          </p>
+                          {isEditing && editedItem ? (
+                            <textarea
+                              value={editedItem.localized[lang] || ""}
+                              onChange={(e) =>
+                                setEditedItem({
+                                  ...editedItem,
+                                  localized: {
+                                    ...editedItem.localized,
+                                    [lang]: e.target.value,
+                                  },
+                                })
+                              }
+                              rows={3}
+                              className="w-full rounded-lg border border-black/10 bg-white p-2 text-[12px] focus:ring-2 focus:ring-accent/20"
+                              placeholder={editedItem.original.text}
+                            />
+                          ) : (
+                            <p className="text-text/80 line-clamp-2 text-[12px] font-medium italic leading-relaxed">
+                              {activeItem.localized[lang as keyof typeof activeItem.localized] ||
+                                activeItem.original.text}
+                            </p>
+                          )}
                           <div className="flex items-center gap-2">
                             <div className="h-[1px] w-4 bg-accent/20" />
                             <p className="text-[9px] font-black uppercase tracking-widest text-accent/60">
-                              {getAttributionLabel(activeItem, lang)}
+                              {getAttributionLabel(
+                                isEditing && editedItem ? editedItem : activeItem,
+                                lang
+                              )}
                             </p>
                           </div>
                         </div>
@@ -347,28 +704,74 @@ export function CitationManager() {
                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         Type
                       </span>
-                      <span className="text-xs font-bold text-text">{activeItem.type}</span>
+                      <span className="text-xs font-bold text-text">
+                        {(isEditing && editedItem ? editedItem : activeItem).type}
+                      </span>
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         Confiance
                       </span>
                       <span
-                        className={`text-xs font-bold ${activeItem.attribution.confidence === "high" ? "text-green-500" : "text-orange-500"}`}
+                        className={`text-xs font-bold ${(isEditing && editedItem ? editedItem : activeItem).attribution.confidence === "high" ? "text-green-500" : "text-orange-500"}`}
                       >
-                        {activeItem.attribution.confidence || "medium"}
+                        {(isEditing && editedItem ? editedItem : activeItem).attribution
+                          .confidence || "medium"}
                       </span>
                     </div>
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    className="group h-12 rounded-2xl px-6 text-destructive transition-all hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => handleDelete(activeItem.id)}
-                  >
-                    <Trash2 className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
-                    <span className="text-xs font-bold uppercase tracking-widest">Supprimer</span>
-                  </Button>
+                  <div className="flex gap-2">
+                    {!isEditing ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          className="group h-12 rounded-2xl px-6 text-accent transition-all hover:bg-accent/10 hover:text-accent"
+                          onClick={handleEdit}
+                        >
+                          <Edit className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
+                          <span className="text-xs font-bold uppercase tracking-widest">
+                            Éditer
+                          </span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="group h-12 rounded-2xl px-6 text-destructive transition-all hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => handleDelete(activeItem.id)}
+                        >
+                          <Trash2 className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
+                          <span className="text-xs font-bold uppercase tracking-widest">
+                            Supprimer
+                          </span>
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          variant="ghost"
+                          className="group h-12 rounded-2xl px-6 text-muted-foreground transition-all hover:bg-black/5"
+                          onClick={handleCancelEdit}
+                          disabled={isSaving}
+                        >
+                          <X className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
+                          <span className="text-xs font-bold uppercase tracking-widest">
+                            Annuler
+                          </span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="group h-12 rounded-2xl px-6 text-green-600 transition-all hover:bg-green-600/10 hover:text-green-600"
+                          onClick={handleSave}
+                          disabled={isSaving}
+                        >
+                          <Save className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
+                          <span className="text-xs font-bold uppercase tracking-widest">
+                            {isSaving ? "Sauvegarde..." : "Sauvegarder"}
+                          </span>
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
