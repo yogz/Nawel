@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { flushSync } from "react-dom";
 import {
   createMealAction,
   updateMealAction,
@@ -88,12 +89,18 @@ export function useMealHandlers({
             time,
             address,
           });
-          setPlan((prev: PlanData) => ({
-            ...prev,
-            meals: [...prev.meals, { ...created, services: [] }].sort((a, b) =>
-              a.date.localeCompare(b.date)
-            ),
-          }));
+          // Mettre à jour le state immédiatement avec flushSync pour forcer le re-render
+          flushSync(() => {
+            setPlan((prev: PlanData) => {
+              const newMeals = [...prev.meals, { ...created, services: [] }].sort((a, b) =>
+                a.date.localeCompare(b.date)
+              );
+              return {
+                ...prev,
+                meals: newMeals,
+              };
+            });
+          });
           setSheet(null);
           setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
           trackMealServiceAction("meal_created", title || date);
@@ -109,10 +116,18 @@ export function useMealHandlers({
             time,
             address,
           });
-          setPlan((prev: PlanData) => ({
-            ...prev,
-            meals: [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date)),
-          }));
+          // Mettre à jour le state immédiatement avec flushSync pour forcer le re-render
+          flushSync(() => {
+            setPlan((prev: PlanData) => {
+              const newMeals = [...prev.meals, created].sort((a, b) =>
+                a.date.localeCompare(b.date)
+              );
+              return {
+                ...prev,
+                meals: newMeals,
+              };
+            });
+          });
           setSheet(null);
           setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
           trackMealServiceAction("meal_created", title || date);
