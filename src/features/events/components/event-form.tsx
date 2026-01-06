@@ -145,7 +145,7 @@ export function EventForm({
   const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
 
   const content = (
-    <div className="flex flex-col gap-5 sm:gap-4">
+    <div className="flex flex-col gap-5 overscroll-contain sm:gap-4">
       {/* Progress indicator */}
       {!initialData && (
         <div className="flex gap-2">

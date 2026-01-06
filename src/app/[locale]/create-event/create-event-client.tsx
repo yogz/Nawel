@@ -52,25 +52,31 @@ export default function CreateEventClient() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-12">
+    <main
+      className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-6 sm:px-6 sm:py-12"
+      style={{
+        paddingTop: `calc(1.5rem + env(safe-area-inset-top, 0px))`,
+        paddingBottom: `calc(1.5rem + env(safe-area-inset-bottom, 0px))`,
+      }}
+    >
       <div className="mb-6 sm:mb-8">
         <AppBranding logoSize={40} textSize="md" />
       </div>
 
       <Link
         href="/login?mode=user"
-        className="mb-6 flex touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8"
+        className="mb-6 flex min-h-[44px] touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8 sm:min-h-0"
       >
-        <ArrowLeft size={18} className="sm:h-4 sm:w-4" />
+        <ArrowLeft size={20} className="sm:h-4 sm:w-4" />
         {t("backToLogin")}
       </Link>
 
       <div className="mb-8 space-y-3 sm:mb-10 sm:space-y-4">
         <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
-        <p className="text-sm text-gray-600 sm:text-base">{t("description")}</p>
+        <p className="text-sm leading-relaxed text-gray-600 sm:text-base">{t("description")}</p>
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:rounded-3xl sm:p-8">
+      <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
         <EventForm
           onSubmit={handleCreateEvent}
           onClose={() => router.push("/login?mode=user")}
