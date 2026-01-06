@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "purpose": "Sous-titres courts pour repas (joli, joyeux, convivial).",
   "languages": ["fr", "en", "el", "es", "pt", "de"],
   "items": [
@@ -911,13 +911,11 @@
       "attribution": {
         "author": "Marcel Proust",
         "work": null,
-        "origin_type": "aphorism",
-        "origin_qualifier": "attributed",
+        "origin_type": null,
+        "origin_qualifier": null,
         "year": null,
         "origin": null,
-        "confidence": "medium",
-        "origin_type": null,
-        "origin_qualifier": null
+        "confidence": "medium"
       },
       "original": {
         "lang": "fr",
@@ -1667,13 +1665,11 @@
       "attribution": {
         "author": "Helen Keller",
         "work": null,
-        "origin_type": "quote_short",
-        "origin_qualifier": "attributed",
+        "origin_type": null,
+        "origin_qualifier": null,
         "year": null,
         "origin": null,
-        "confidence": "high",
-        "origin_type": null,
-        "origin_qualifier": null
+        "confidence": "high"
       },
       "original": {
         "lang": "en",
@@ -1905,7 +1901,7 @@
         "origin": "Campaign slogan",
         "confidence": "high",
         "origin_type": "slogan",
-        "origin_qualifier": "campaign"
+        "origin_qualifier": null
       },
       "original": {
         "lang": "en",
