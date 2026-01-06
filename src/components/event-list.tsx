@@ -140,11 +140,14 @@ export function EventList({
     });
   };
 
+  // Deduplicate events by ID (in case user is both owner and participant)
+  const uniqueEvents = Array.from(new Map(events.map((event) => [event.id, event])).values());
+
   // Grouping logic
   const now = new Date();
   const todayStr = now.toISOString().split("T")[0];
 
-  const categorized = events.reduce(
+  const categorized = uniqueEvents.reduce(
     (acc, event) => {
       // Determine the most relevant date for categorization
       // Either the last meal date, or the createdAt date if no meals
@@ -329,7 +332,7 @@ export function EventList({
             <NewEventCard onClick={() => setShowCreateForm(true)} />
           </div>
         )}
-        {events.length > 0 && (
+        {uniqueEvents.length > 0 && (
           <div className="col-span-1 space-y-10 sm:col-span-1 lg:col-span-2">
             {renderSection(t("upcoming"), categorized.upcoming, <Clock size={16} />, false)}
             {renderSection(t("past"), categorized.past, <History size={16} />, true)}
