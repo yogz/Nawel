@@ -170,6 +170,7 @@
     "summaryAddress": "Ort",
     "descriptionLabel": "Begrüßungsnachricht",
     "descriptionPlaceholder": "Ein paar Worte für Ihre Gäste...",
+    "errorDefault": "Ein Fehler ist aufgetreten",
     "createButton": "Los geht's!",
     "creatingButton": "Erstellung..."
   },
@@ -200,6 +201,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Hauptnavigation",
       "planning": "Menü",
       "people": "Gäste",
       "shopping": "Einkäufe",
@@ -211,6 +213,7 @@
       "addService": "Gang hinzufügen",
       "calendar": {
         "options": "Kalenderoptionen",
+        "addToCalendar": "Zum Kalender hinzufügen",
         "google": "Google Kalender",
         "outlook": "Outlook / Office 365",
         "download": "Herunterladen (.ics)"

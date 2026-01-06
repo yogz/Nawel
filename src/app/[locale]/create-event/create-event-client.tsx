@@ -8,9 +8,12 @@ import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
 import { AppBranding } from "@/components/common/app-branding";
+import { useSession } from "@/lib/auth-client";
 
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
+  const tDashboard = useTranslations("Dashboard");
+  const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -64,11 +67,11 @@ export default function CreateEventClient() {
       </div>
 
       <Link
-        href="/login?mode=user"
+        href={session ? "/" : "/login?mode=user"}
         className="mb-6 flex min-h-[44px] touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8 sm:min-h-0"
       >
         <ArrowLeft size={20} className="sm:h-4 sm:w-4" />
-        {t("backToLogin")}
+        {session ? tDashboard("title") : t("backToLogin")}
       </Link>
 
       <div className="mb-8 space-y-3 sm:mb-10 sm:space-y-4">
@@ -79,11 +82,12 @@ export default function CreateEventClient() {
       <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
         <EventForm
           onSubmit={handleCreateEvent}
-          onClose={() => router.push("/login?mode=user")}
+          onClose={() => router.push(session ? "/" : "/login?mode=user")}
           isPending={isPending}
           error={error}
           inline
           showWarnings
+          isAuthenticated={!!session}
         />
       </div>
     </main>

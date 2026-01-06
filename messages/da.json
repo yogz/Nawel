@@ -171,6 +171,7 @@
     "summaryAddress": "Sted",
     "descriptionLabel": "Velkomstbesked",
     "descriptionPlaceholder": "En lille besked til dine gæster...",
+    "errorDefault": "Der opstod en fejl",
     "createButton": "Lad os komme i gang!",
     "creatingButton": "Opretter..."
   },
@@ -201,6 +202,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Hovednavigation",
       "planning": "Menu",
       "people": "Gæster",
       "shopping": "Indkøb",
@@ -212,6 +214,7 @@
       "addService": "Tilføj en ret",
       "calendar": {
         "options": "Kalenderindstillinger",
+        "addToCalendar": "Tilføj til kalender",
         "google": "Google Kalender",
         "outlook": "Outlook / Office 365",
         "download": "Download (.ics)"

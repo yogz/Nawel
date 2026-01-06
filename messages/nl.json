@@ -171,6 +171,7 @@
     "summaryAddress": "Locatie",
     "descriptionLabel": "Welkomstbericht",
     "descriptionPlaceholder": "Een klein bericht voor uw gasten...",
+    "errorDefault": "Er is een fout opgetreden",
     "createButton": "Laten we gaan!",
     "creatingButton": "Aanmaken..."
   },
@@ -201,6 +202,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Hoofdnavigatie",
       "planning": "Menu",
       "people": "Gasten",
       "shopping": "Boodschappen",
@@ -212,6 +214,7 @@
       "addService": "Gang toevoegen",
       "calendar": {
         "options": "Agenda opties",
+        "addToCalendar": "Toevoegen aan agenda",
         "google": "Google Agenda",
         "outlook": "Outlook / Office 365",
         "download": "Downloaden (.ics)"

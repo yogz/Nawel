@@ -171,6 +171,7 @@
     "summaryAddress": "Plats",
     "descriptionLabel": "Välkomstmeddelande",
     "descriptionPlaceholder": "Ett litet meddelande till dina gäster...",
+    "errorDefault": "Ett fel uppstod",
     "createButton": "Kör!",
     "creatingButton": "Skapar..."
   },
@@ -201,6 +202,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Huvudnavigering",
       "planning": "Meny",
       "people": "Gäster",
       "shopping": "Inköp",
@@ -212,6 +214,7 @@
       "addService": "Lägg till rätt",
       "calendar": {
         "options": "Kalenderalternativ",
+        "addToCalendar": "Lägg till i kalendern",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
         "download": "Ladda ner (.ics)"

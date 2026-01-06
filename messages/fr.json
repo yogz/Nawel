@@ -182,6 +182,7 @@
     "summaryAddress": "Lieu",
     "descriptionLabel": "Message d'accueil",
     "descriptionPlaceholder": "Un petit mot pour vos invités...",
+    "errorDefault": "Une erreur est survenue",
     "createButton": "C'est parti !",
     "creatingButton": "Création..."
   },
@@ -212,6 +213,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Navigation principale",
       "planning": "Menu",
       "people": "Convives",
       "shopping": "Courses",
@@ -223,6 +225,7 @@
       "addService": "Ajouter un service",
       "calendar": {
         "options": "Options de calendrier",
+        "addToCalendar": "Ajouter au calendrier",
         "google": "Google Agenda",
         "outlook": "Outlook / Office 365",
         "download": "Télécharger (.ics)"

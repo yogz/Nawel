@@ -171,6 +171,7 @@
     "summaryAddress": "Location",
     "descriptionLabel": "Welcome message",
     "descriptionPlaceholder": "A small message for your guests...",
+    "errorDefault": "An error occurred",
     "createButton": "Let's go!",
     "creatingButton": "Creating..."
   },
@@ -201,6 +202,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Main navigation",
       "planning": "Menu",
       "people": "Guests",
       "shopping": "Shopping",
@@ -212,6 +214,7 @@
       "addService": "Add a course",
       "calendar": {
         "options": "Calendar options",
+        "addToCalendar": "Add to calendar",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
         "download": "Download (.ics)"

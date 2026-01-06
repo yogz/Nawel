@@ -208,6 +208,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Navegação principal",
       "planning": "Menu",
       "people": "Convidados",
       "shopping": "Compras",
@@ -219,6 +220,7 @@
       "addService": "Adicionar tempo",
       "calendar": {
         "options": "Opções de calendário",
+        "addToCalendar": "Adicionar ao calendário",
         "google": "Google Agenda",
         "outlook": "Outlook / Office 365",
         "download": "Descarregar (.ics)"

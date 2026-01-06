@@ -171,6 +171,7 @@
     "summaryAddress": "Lokalizacja",
     "descriptionLabel": "Wiadomość powitalna",
     "descriptionPlaceholder": "Krótka wiadomość dla gości...",
+    "errorDefault": "Wystąpił błąd",
     "createButton": "Zaczynamy!",
     "creatingButton": "Tworzenie..."
   },
@@ -201,6 +202,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Nawigacja główna",
       "planning": "Menu",
       "people": "Goście",
       "shopping": "Zakupy",
@@ -212,6 +214,7 @@
       "addService": "Dodaj danie",
       "calendar": {
         "options": "Opcje kalendarza",
+        "addToCalendar": "Dodaj do kalendarza",
         "google": "Kalendarz Google",
         "outlook": "Outlook / Office 365",
         "download": "Pobierz (.ics)"

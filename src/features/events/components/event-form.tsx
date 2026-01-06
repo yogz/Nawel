@@ -37,6 +37,7 @@ export function EventForm({
   inline = false,
   showWarnings = false,
   initialData,
+  isAuthenticated,
 }: {
   onSubmit: (
     name: string,
@@ -62,6 +63,7 @@ export function EventForm({
     address?: string;
     time?: string;
   };
+  isAuthenticated?: boolean;
 }) {
   const t = useTranslations("CreateEvent");
   const tShared = useTranslations("EventDashboard.Shared");
@@ -161,7 +163,7 @@ export function EventForm({
         </div>
       )}
 
-      {showWarnings && step === 1 && (
+      {showWarnings && step === 1 && !isAuthenticated && (
         <div className="space-y-3 rounded-2xl border border-accent/10 bg-accent/5 p-4 sm:rounded-[24px]">
           <div className="flex gap-3 text-accent">
             <Sparkles size={20} className="shrink-0 sm:h-[18px] sm:w-[18px]" />
@@ -186,6 +188,27 @@ export function EventForm({
                 autoFocus
                 autoCapitalize="sentences"
                 enterKeyHint="next"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2.5 sm:space-y-2">
+            <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
+              {t("addressLabel")}
+            </Label>
+            <div className="relative">
+              <Input
+                className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={t("addressPlaceholder")}
+                autoComplete="street-address"
+                autoCapitalize="sentences"
+                enterKeyHint="next"
+              />
+              <MapPin
+                size={20}
+                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
               />
             </div>
           </div>
@@ -307,80 +330,59 @@ export function EventForm({
 
       {/* Step 2: L'Ambiance */}
       {step === 2 && (
-        <div className="space-y-5 sm:space-y-4">
-          <div className="space-y-2 pb-2 text-center">
-            <h4 className="text-base font-bold text-gray-900 sm:text-sm">{t("menuDescription")}</h4>
+        <div className="space-y-4 sm:space-y-3">
+          <div className="pb-1 text-center sm:pb-2">
+            <h4 className="text-sm font-bold text-gray-900 sm:text-sm">{t("menuDescription")}</h4>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:gap-2.5">
             {CREATION_MODES.map((mode) => (
               <button
                 key={mode.id}
                 type="button"
                 onClick={() => setCreationMode(mode.id)}
                 className={cn(
-                  "group flex touch-manipulation items-center gap-4 rounded-2xl border-2 p-4 text-left transition-all duration-300 active:scale-[0.98] sm:gap-3 sm:p-3",
+                  "group flex touch-manipulation items-center gap-3 rounded-xl border-2 p-3 text-left transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:rounded-2xl sm:p-2.5",
                   creationMode === mode.id
-                    ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                    ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/5"
                     : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] transition-colors duration-300 sm:h-12 sm:w-12",
+                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 sm:h-10 sm:w-10 sm:rounded-[18px]",
                     creationMode === mode.id
                       ? "bg-accent text-white"
                       : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
                   )}
                 >
-                  <div className="h-6 w-6 sm:h-5 sm:w-5">{mode.icon}</div>
+                  <div className="h-5 w-5 sm:h-4 sm:w-4">{mode.icon}</div>
                 </div>
                 <div className="min-w-0 flex-1">
                   <span
                     className={cn(
-                      "block text-base font-bold transition-colors sm:text-sm",
+                      "block text-sm font-bold transition-colors sm:text-sm",
                       creationMode === mode.id ? "text-accent" : "text-gray-900"
                     )}
                   >
                     {mode.label}
                   </span>
-                  <span className="block truncate text-sm text-gray-500 sm:text-xs">
+                  <span className="block truncate text-xs text-gray-500 sm:text-xs">
                     {mode.desc}
                   </span>
                 </div>
                 <div
                   className={cn(
-                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 sm:h-6 sm:w-6",
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 sm:h-5 sm:w-5",
                     creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
                   )}
                 >
                   {creationMode === mode.id && (
-                    <div className="h-2.5 w-2.5 rounded-full bg-white sm:h-2 sm:w-2" />
+                    <div className="h-2 w-2 rounded-full bg-white sm:h-1.5 sm:w-1.5" />
                   )}
                 </div>
               </button>
             ))}
-          </div>
-
-          <div className="space-y-2.5 pt-2 sm:space-y-2">
-            <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-              {t("addressLabel")}
-            </Label>
-            <div className="relative">
-              <Input
-                className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder={t("addressPlaceholder")}
-                autoComplete="street-address"
-                autoCapitalize="sentences"
-                enterKeyHint="next"
-              />
-              <MapPin
-                size={20}
-                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
-              />
-            </div>
           </div>
 
           <div className="flex gap-3 pt-3 sm:pt-2">

@@ -170,6 +170,7 @@
     "summaryAddress": "Lugar",
     "descriptionLabel": "Mensaje de bienvenida",
     "descriptionPlaceholder": "Un pequeño mensaje para tus invitados...",
+    "errorDefault": "Ha ocurrido un error",
     "createButton": "¡Vamos allá!",
     "creatingButton": "Creación..."
   },
@@ -200,6 +201,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Navegación principal",
       "planning": "Menú",
       "people": "Invitados",
       "shopping": "Compras",
@@ -211,6 +213,7 @@
       "addService": "Añadir tiempo",
       "calendar": {
         "options": "Opciones de calendario",
+        "addToCalendar": "Añadir al calendario",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
         "download": "Descargar (.ics)"

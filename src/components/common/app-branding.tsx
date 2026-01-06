@@ -9,6 +9,7 @@ interface AppBrandingProps {
   textSize?: "sm" | "md" | "lg";
   onClick?: () => void;
   variant?: "icon-text" | "text-only" | "icon-text-logos" | "icon";
+  noLink?: boolean;
 }
 
 const textSizeClasses = {
@@ -24,6 +25,7 @@ export function AppBranding({
   textSize = "md",
   onClick,
   variant = "icon-text",
+  noLink = false,
 }: AppBrandingProps) {
   let content;
 
@@ -113,6 +115,10 @@ export function AppBranding({
         {content}
       </button>
     );
+  }
+
+  if (noLink) {
+    return <div className="transition-opacity hover:opacity-80">{content}</div>;
   }
 
   return (

@@ -159,7 +159,7 @@ export function OrganizerHeader({
                             transition={{ duration: 0.6, ease: "easeInOut" }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <AppBranding logoSize={36} className="shrink-0" variant="icon" />
+                            <AppBranding logoSize={36} className="shrink-0" variant="icon" noLink />
                           </motion.div>
                         ) : animationStep === "home" ? (
                           <motion.div
@@ -194,7 +194,7 @@ export function OrganizerHeader({
                           transition={{ duration: 0.4, ease: "easeInOut" }}
                           className="absolute inset-0 flex items-center justify-center"
                         >
-                          <AppBranding logoSize={36} className="shrink-0" variant="icon" />
+                          <AppBranding logoSize={36} className="shrink-0" variant="icon" noLink />
                         </motion.div>
                       )}
                     </AnimatePresence>

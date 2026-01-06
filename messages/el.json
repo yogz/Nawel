@@ -208,6 +208,7 @@
       }
     },
     "TabBar": {
+      "navigation": "Κύρια πλοήγηση",
       "planning": "Μενού",
       "people": "Καλεσμένοι",
       "shopping": "Αγορές",
@@ -219,6 +220,7 @@
       "addService": "Προσθήκη μέρους",
       "calendar": {
         "options": "Επιλογές ημερολογίου",
+        "addToCalendar": "Προσθήκη στο ημερολόγιο",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
         "download": "Λήψη (.ics)"
