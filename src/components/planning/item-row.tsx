@@ -171,17 +171,17 @@ function ItemRowComponent({
           ) : (
             <button
               type="button"
-              className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border border-transparent bg-accent/10 px-2.5 py-1 pr-3 shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:bg-accent hover:shadow-md hover:ring-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
+              className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
               onClick={(e) => {
                 e.stopPropagation();
                 onAssign();
               }}
               aria-label={t("takeAction")}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent transition-all duration-300 group-hover:bg-white group-hover:text-accent">
-                <span className="inline-flex h-3 w-3 rounded-full bg-accent group-hover:bg-white"></span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent">
+                <Plus size={16} className="transition-colors duration-300" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-accent transition-colors duration-300 group-hover:text-white sm:text-[10px]">
+              <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
                 {t("takeAction")}
               </span>
             </button>
@@ -199,7 +199,7 @@ function ItemRowComponent({
           >
             {(() => {
               if (!person) {
-                return <Plus size={16} className="text-accent" aria-hidden="true" />;
+                return null;
               }
               const avatar = renderAvatar(person, allPeopleNames);
               if (avatar.type === "image") {
