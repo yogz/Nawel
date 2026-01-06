@@ -85,6 +85,13 @@
       "when": 1766655465415,
       "tag": "0011_ambiguous_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1767740543190,
+      "tag": "0012_tricky_blade",
+      "breakpoints": true
     }
   ]
 }

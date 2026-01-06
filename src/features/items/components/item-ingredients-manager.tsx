@@ -78,11 +78,20 @@ export function ItemIngredientsManager({
     }
   };
 
-  // Auto-focus on mount
+  // Auto-focus on mount & Scroll on generation
   useEffect(() => {
     const timer = setTimeout(() => inputRef.current?.focus(), 500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (justGenerated && scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [justGenerated]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4">
@@ -218,21 +227,35 @@ export function ItemIngredientsManager({
           ))
         )}
 
+        {/* Padding for the sticky elements */}
+        <div className="h-40" />
+      </div>
+
+      {/* Floating AI Feedback / Quick Actions Area */}
+      <div className="pointer-events-none absolute bottom-[108px] left-0 right-0 z-10 px-4">
         {justGenerated && !feedbackSent && (
-          <div className="mt-8 space-y-4 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 duration-500 animate-in fade-in slide-in-from-bottom-4">
+          <div className="pointer-events-auto mx-auto max-w-lg space-y-4 rounded-3xl border border-indigo-100 bg-white/95 p-5 shadow-2xl shadow-indigo-200/50 backdrop-blur-md duration-500 animate-in fade-in slide-in-from-bottom-8">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-indigo-100 p-2">
-                <Sparkles size={18} className="text-indigo-600" />
+              <div className="rounded-xl bg-indigo-100 p-2 text-indigo-600">
+                <Sparkles size={18} />
               </div>
-              <div>
-                <p className="text-sm font-bold text-gray-900">
-                  Que pensez-vous de cette proposition ?
+              <div className="flex-1">
+                <p className="text-sm font-bold leading-none text-gray-900">
+                  Proposition pertinente ?
                 </p>
-                <p className="text-xs text-gray-500">Notez la pertinence de 1 à 10</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Notez de 1 à 10 pour améliorer la suite
+                </p>
               </div>
+              <button
+                onClick={() => setFeedbackSent(true)}
+                className="p-1 text-gray-400 transition-colors hover:text-gray-600"
+              >
+                <X size={16} />
+              </button>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-2">
+            <div className="flex flex-wrap justify-between gap-1.5">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                 <button
                   key={n}
@@ -252,13 +275,10 @@ export function ItemIngredientsManager({
         )}
 
         {feedbackSent && (
-          <div className="mt-8 rounded-2xl border border-green-100 bg-green-50 p-4 text-center duration-300 animate-in zoom-in">
+          <div className="pointer-events-auto mx-auto max-w-xs rounded-2xl border border-green-100 bg-white/95 p-3 text-center shadow-xl backdrop-blur-md duration-300 animate-in zoom-in">
             <p className="text-sm font-bold text-green-700">Merci pour votre retour ! 🙏</p>
           </div>
         )}
-
-        {/* Padding for the sticky footer */}
-        <div className="h-32" />
       </div>
 
       {/* Sticky Input Footer */}

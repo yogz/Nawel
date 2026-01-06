@@ -359,8 +359,6 @@ export function OrganizerSheets({
                 isAuthenticated={!!currentUserId}
                 onRequestAuth={onAuth}
                 currentUserId={currentUserId}
-                onSaveFeedback={handlers.handleSaveFeedback}
-                justGenerated={handlers.justGenerated === sheet.item?.id}
               />
             )}
 

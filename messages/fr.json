@@ -326,7 +326,8 @@
         "quantityPlaceholder": "Ex: 2 pincées, 10g...",
         "quantityLabel": "Quantité",
         "add": "Ajouter",
-        "analyzing": "Analyse de la recette..."
+        "analyzing": "Analyse de la recette...",
+        "count": "{count, plural, =0 {aucun ingrédient} one {1 ingrédient} other {# ingrédients}}"
       }
     },
     "ServiceForm": {

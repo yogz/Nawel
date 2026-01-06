@@ -310,7 +310,8 @@
         "quantityPlaceholder": "Np.: 2 szczypty, 10g...",
         "quantityLabel": "Ilość",
         "add": "Dodaj",
-        "analyzing": "Analizowanie przepisu..."
+        "analyzing": "Analizowanie przepisu...",
+        "count": "{count, plural, =0 {brak składników} one {1 składnik} other {# składniki}}"
       }
     },
     "ServiceForm": {

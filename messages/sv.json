@@ -310,7 +310,8 @@
         "quantityPlaceholder": "Ex: 2 nypor, 10g...",
         "quantityLabel": "Mängd",
         "add": "Lägg till",
-        "analyzing": "Analyserar recept..."
+        "analyzing": "Analyserar recept...",
+        "count": "{count, plural, =0 {inga ingredienser} one {1 ingrediens} other {# ingredienser}}"
       }
     },
     "ServiceForm": {

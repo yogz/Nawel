@@ -310,7 +310,8 @@
         "quantityPlaceholder": "Es: 2 pizzichi, 10g...",
         "quantityLabel": "Quantità",
         "add": "Aggiungi",
-        "analyzing": "Analisi ricetta in corso..."
+        "analyzing": "Analisi ricetta in corso...",
+        "count": "{count, plural, =0 {nessun ingrediente} one {1 ingrediente} other {# ingredienti}}"
       }
     },
     "ServiceForm": {

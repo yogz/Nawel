@@ -310,7 +310,8 @@
         "quantityPlaceholder": "Bijv: 2 snufjes, 10g...",
         "quantityLabel": "Hoeveelheid",
         "add": "Toevoegen",
-        "analyzing": "Recept analyseren..."
+        "analyzing": "Recept analyseren...",
+        "count": "{count, plural, =0 {geen ingrediënten} one {1 ingrediënt} other {# ingrediënten}}"
       }
     },
     "ServiceForm": {

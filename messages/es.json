@@ -308,7 +308,8 @@
         "quantityPlaceholder": "Ej: 2 pizcas, 10g...",
         "quantityLabel": "Cantidad",
         "add": "Añadir",
-        "analyzing": "Analizando receta..."
+        "analyzing": "Analizando receta...",
+        "count": "{count, plural, =0 {ningún ingrediente} one {1 ingrediente} other {# ingredientes}}"
       }
     },
     "ServiceForm": {

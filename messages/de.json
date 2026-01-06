@@ -308,7 +308,8 @@
         "quantityPlaceholder": "Z.B. 2 Prisen, 10g...",
         "quantityLabel": "Menge",
         "add": "Hinzufügen",
-        "analyzing": "Rezeptanalyse..."
+        "analyzing": "Rezeptanalyse...",
+        "count": "{count, plural, =0 {keine Zutaten} one {1 Zutat} other {# Zutaten}}"
       }
     },
     "ServiceForm": {

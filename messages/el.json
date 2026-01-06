@@ -315,7 +315,8 @@
         "quantityPlaceholder": "Π.χ. 2 πρέζες, 10γρ...",
         "quantityLabel": "Ποσότητα",
         "add": "Προσθήκη",
-        "analyzing": "Ανάλυση συνταγής..."
+        "analyzing": "Ανάλυση συνταγής...",
+        "count": "{count, plural, =0 {χωρίς συστατικά} one {1 συστατικό} other {# συστατικά}}"
       }
     },
     "ServiceForm": {

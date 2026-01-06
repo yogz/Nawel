@@ -313,7 +313,8 @@
         "quantityPlaceholder": "Ex: 2 pinches, 10g...",
         "quantityLabel": "Quantity",
         "add": "Add",
-        "analyzing": "Analyzing recipe..."
+        "analyzing": "Analyzing recipe...",
+        "count": "{count, plural, =0 {no ingredients} one {1 ingredient} other {# ingredients}}"
       }
     },
     "ServiceForm": {
