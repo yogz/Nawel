@@ -46,8 +46,8 @@ const DrawerContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed bottom-0 z-50 mt-24 flex h-auto max-h-[96vh] flex-col rounded-t-[2.5rem] border border-white/20 bg-surface shadow-2xl",
-        "left-0 right-0",
-        "sm:left-1/2 sm:right-auto sm:max-w-md sm:-translate-x-1/2",
+        "left-0 right-0 w-full",
+        "sm:left-0 sm:right-0 sm:mx-auto sm:w-full sm:max-w-md",
         className
       )}
       style={{

@@ -7,7 +7,6 @@ import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
 import { PlusIcon, Calendar } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealContainer } from "./meal-container";
 import { cn } from "@/lib/utils";
 import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
@@ -86,14 +85,10 @@ export function PlanningTab({
   currentUserId,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
-  const tHeader = useTranslations("EventDashboard.Header");
   const tSettings = useTranslations("EventDashboard.Settings");
   const { theme } = useThemeMode();
   const isMobile = useIsMobile();
   const [hasMounted, setHasMounted] = useState(false);
-  const [activeMealId, setActiveMealId] = useState<number | "all" | null>(
-    plan.meals.length > 1 ? "all" : plan.meals.length > 0 ? plan.meals[0].id : null
-  );
 
   const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -110,10 +105,7 @@ export function PlanningTab({
 
   useEffect(() => {
     setHasMounted(true);
-    if (!activeMealId && plan.meals.length > 0) {
-      setActiveMealId(plan.meals.length > 1 ? "all" : plan.meals[0].id);
-    }
-  }, [plan.meals, activeMealId]);
+  }, []);
 
   // All hooks must be called before any conditional returns
   const unassignedItemsCount = useMemo(
@@ -162,48 +154,21 @@ export function PlanningTab({
               readOnly={!!readOnly}
             />
           </div>
-
-          {planningFilter.type === "all" && plan.meals.length > 1 && (
-            <div className="px-2">
-              <Tabs
-                value={activeMealId === null ? "all" : activeMealId.toString()}
-                onValueChange={(val) => setActiveMealId(val === "all" ? "all" : parseInt(val))}
-                className="w-full"
-              >
-                <TabsList className="no-scrollbar h-10 w-full justify-start gap-2 overflow-x-auto bg-transparent p-0">
-                  <TabsTrigger
-                    value="all"
-                    className="rounded-full border border-black/5 bg-white/50 px-4 py-1.5 text-xs font-bold text-gray-500 shadow-sm transition-all data-[state=active]:border-accent/20 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md"
-                  >
-                    {tHeader("filter.allMeals")}
-                  </TabsTrigger>
-                  {plan.meals.map((meal) => (
-                    <TabsTrigger
-                      key={meal.id}
-                      value={meal.id.toString()}
-                      className="rounded-full border border-black/5 bg-white/50 px-4 py-1.5 text-xs font-bold text-gray-500 shadow-sm transition-all data-[state=active]:border-accent/20 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md"
-                    >
-                      {meal.title || meal.date}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            </div>
-          )}
         </div>
 
         {plan.meals
-          .filter((meal) =>
-            planningFilter.type === "all" && plan.meals.length > 1
-              ? activeMealId === "all" || meal.id === activeMealId
-              : true
-          )
-          .map((meal) => {
+          .filter((meal) => {
+            // Afficher tous les repas (même vides) pour le filtre "all"
+            if (planningFilter.type === "all") {
+              return true;
+            }
+            // Pour les autres filtres, vérifier s'il y a des correspondances
+            // Si le repas n'a pas de services, il n'y a pas de correspondance
+            if (!meal.services || meal.services.length === 0) {
+              return false;
+            }
             const hasMatch = meal.services.some((s) =>
               s.items.some((i) => {
-                if (planningFilter.type === "all") {
-                  return true;
-                }
                 if (planningFilter.type === "unassigned") {
                   return !i.personId;
                 }
@@ -213,10 +178,9 @@ export function PlanningTab({
                 return false;
               })
             );
-            if (planningFilter.type !== "all" && !hasMatch) {
-              return null;
-            }
-
+            return hasMatch;
+          })
+          .map((meal) => {
             return (
               <MealContainer
                 key={meal.id}
@@ -270,24 +234,6 @@ export function PlanningTab({
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
           {/* Main Actions Stack - Glassmorphism style */}
           <div className="flex w-full flex-col gap-3">
-            <Button
-              variant="premium"
-              className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-[0_12px_40px_rgba(var(--accent),0.2)] backdrop-blur-xl transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_15px_50px_rgba(var(--accent),0.3)] active:scale-95"
-              icon={<PlusIcon size={20} />}
-              shine
-              onClick={() =>
-                onCreateService(
-                  activeMealId === "all"
-                    ? plan.meals[0]?.id
-                    : (activeMealId ?? plan.meals[0]?.id ?? -1)
-                )
-              }
-            >
-              <span className="text-xs font-black uppercase tracking-widest text-accent">
-                {t("addService")}
-              </span>
-            </Button>
-
             <Button
               variant="premium"
               className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
