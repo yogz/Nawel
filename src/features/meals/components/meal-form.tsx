@@ -66,7 +66,7 @@ export function MealForm({
     children?: number,
     time?: string,
     address?: string
-  ) => void;
+  ) => void | Promise<void>;
   onDelete?: (meal: Meal) => void;
   onClose: () => void;
 }) {
@@ -177,21 +177,23 @@ export function MealForm({
     };
   }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!date || isPending) {
       return;
     }
     const formattedDate = format(date, "yyyy-MM-dd");
 
-    startTransition(() => {
-      if (isEditMode) {
-        onSubmit(formattedDate, title, undefined, adults, children, time, address);
-      } else {
-        const mode = CREATION_MODES.find((m) => m.id === creationMode);
-        const servicesToCreate = mode ? [...mode.services] : [];
-        onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
-      }
-    });
+    // Pour la création, ne pas utiliser startTransition pour que le state se mette à jour immédiatement
+    if (isEditMode) {
+      startTransition(async () => {
+        await onSubmit(formattedDate, title, undefined, adults, children, time, address);
+      });
+    } else {
+      // Pour la création, appeler directement sans startTransition pour mise à jour immédiate
+      const mode = CREATION_MODES.find((m) => m.id === creationMode);
+      const servicesToCreate = mode ? [...mode.services] : [];
+      await onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
+    }
   };
 
   const canGoNext = () => {

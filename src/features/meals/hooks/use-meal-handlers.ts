@@ -2,7 +2,6 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { flushSync } from "react-dom";
 import {
   createMealAction,
   updateMealAction,
@@ -47,12 +46,16 @@ export function useMealHandlers({
         time,
         address,
       });
-      setPlan((prev: PlanData) => ({
-        ...prev,
-        meals: [...prev.meals, { ...created, services: [] }].sort((a, b) =>
-          a.date.localeCompare(b.date)
-        ),
-      }));
+      // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
+      setPlan((prev: PlanData) => {
+        const newMeal = { ...created, services: [] };
+        const newMeals = [...prev.meals, newMeal].sort((a, b) => a.date.localeCompare(b.date));
+        // Retourner un nouvel objet pour forcer le re-render
+        return {
+          ...prev,
+          meals: newMeals,
+        };
+      });
       setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
       trackMealServiceAction("meal_created", title || date);
       return created.id;
@@ -63,7 +66,7 @@ export function useMealHandlers({
     }
   };
 
-  const handleCreateMealWithServices = (
+  const handleCreateMealWithServices = async (
     date: string,
     title?: string,
     services: string[] = [],
@@ -75,68 +78,61 @@ export function useMealHandlers({
     if (readOnly) {
       return;
     }
-    startTransition(async () => {
-      try {
-        // If no services, use createMealAction instead
-        if (services.length === 0) {
-          const created = await createMealAction({
-            date,
-            title,
-            slug,
-            key: writeKey,
-            adults,
-            children,
-            time,
-            address,
-          });
-          // Mettre à jour le state immédiatement avec flushSync pour forcer le re-render
-          flushSync(() => {
-            setPlan((prev: PlanData) => {
-              const newMeals = [...prev.meals, { ...created, services: [] }].sort((a, b) =>
-                a.date.localeCompare(b.date)
-              );
-              return {
-                ...prev,
-                meals: newMeals,
-              };
-            });
-          });
-          setSheet(null);
-          setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
-          trackMealServiceAction("meal_created", title || date);
-        } else {
-          const created = await createMealWithServicesAction({
-            date,
-            title,
-            services,
-            slug,
-            key: writeKey,
-            adults,
-            children,
-            time,
-            address,
-          });
-          // Mettre à jour le state immédiatement avec flushSync pour forcer le re-render
-          flushSync(() => {
-            setPlan((prev: PlanData) => {
-              const newMeals = [...prev.meals, created].sort((a, b) =>
-                a.date.localeCompare(b.date)
-              );
-              return {
-                ...prev,
-                meals: newMeals,
-              };
-            });
-          });
-          setSheet(null);
-          setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
-          trackMealServiceAction("meal_created", title || date);
-        }
-      } catch (error) {
-        console.error("Failed to create meal:", error);
-        setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+    try {
+      // If no services, use createMealAction instead
+      if (services.length === 0) {
+        const created = await createMealAction({
+          date,
+          title,
+          slug,
+          key: writeKey,
+          adults,
+          children,
+          time,
+          address,
+        });
+        // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
+        setPlan((prev: PlanData) => {
+          const newMeal = { ...created, services: [] };
+          const newMeals = [...prev.meals, newMeal].sort((a, b) => a.date.localeCompare(b.date));
+          // Retourner un nouvel objet pour forcer le re-render
+          return {
+            ...prev,
+            meals: newMeals,
+          };
+        });
+        setSheet(null);
+        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        trackMealServiceAction("meal_created", title || date);
+      } else {
+        const created = await createMealWithServicesAction({
+          date,
+          title,
+          services,
+          slug,
+          key: writeKey,
+          adults,
+          children,
+          time,
+          address,
+        });
+        // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
+        setPlan((prev: PlanData) => {
+          const newMeals = [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date));
+          // Retourner un nouvel objet pour forcer le re-render
+          return {
+            ...prev,
+            meals: newMeals,
+          };
+        });
+        setSheet(null);
+        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        trackMealServiceAction("meal_created", title || date);
       }
-    });
+    } catch (error) {
+      console.error("Failed to create meal:", error);
+      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+    }
   };
 
   const handleUpdateMeal = (
