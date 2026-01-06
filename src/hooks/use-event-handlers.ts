@@ -70,5 +70,7 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleDeleteIngredient: ingredientHandlers.handleDeleteIngredient,
     handleCreateIngredient: ingredientHandlers.handleCreateIngredient,
     handleDeleteAllIngredients: ingredientHandlers.handleDeleteAllIngredients,
+    handleSaveFeedback: ingredientHandlers.handleSaveFeedback,
+    justGenerated: ingredientHandlers.justGenerated,
   };
 }

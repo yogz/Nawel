@@ -223,6 +223,11 @@ export const deleteAllIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),
 });
 
+export const saveAIFeedbackSchema = baseInput.extend({
+  itemId: z.number().int().positive(),
+  rating: z.number().int().min(1).max(10),
+});
+
 export const updateEventAdminSchema = z.object({
   id: z.number().int().positive(),
   name: safeText(100),

@@ -122,6 +122,7 @@ export const generateIngredientsAction = createSafeAction(
         .limit(1);
 
       let generatedIngredients: GeneratedIngredient[];
+      let finalCacheId: number | undefined = cached?.id;
 
       if (cached && cached.confirmations >= AI_CACHE_MIN_CONFIRMATIONS) {
         // Cache is trusted (3+ confirmations) - use it directly
@@ -181,12 +182,16 @@ export const generateIngredientsAction = createSafeAction(
             }
           } else {
             // No cache exists - create new entry
-            await db.insert(ingredientCache).values({
-              dishName: normalizedName,
-              peopleCount,
-              ingredients: JSON.stringify(generatedIngredients),
-              confirmations: 1,
-            });
+            const [newCache] = await db
+              .insert(ingredientCache)
+              .values({
+                dishName: normalizedName,
+                peopleCount,
+                ingredients: JSON.stringify(generatedIngredients),
+                confirmations: 1,
+              })
+              .returning();
+            finalCacheId = newCache.id;
           }
         }
       }
@@ -195,8 +200,13 @@ export const generateIngredientsAction = createSafeAction(
         return { success: false, error: t("actions.ingredientsGenerationFailed") };
       }
 
-      // Insert all ingredients
+      // Insert all ingredients and link item to cache
       const inserted = await db.transaction(async (tx) => {
+        // Update item with cacheId if we have one
+        if (finalCacheId) {
+          await tx.update(items).set({ cacheId: finalCacheId }).where(eq(items.id, input.itemId));
+        }
+
         const results = [];
         for (let i = 0; i < generatedIngredients.length; i++) {
           const ing = generatedIngredients[i];

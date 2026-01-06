@@ -172,6 +172,8 @@ export type CacheEntry = {
   peopleCount: number;
   ingredients: string; // JSON string
   confirmations: number;
+  ratingSum: number;
+  ratingCount: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -181,14 +183,17 @@ export const getAllCacheEntriesAction = withErrorThrower(
     await requireAdmin();
 
     if (search && search.trim()) {
-      return await db
+      return (await db
         .select()
         .from(ingredientCache)
         .where(ilike(ingredientCache.dishName, `%${search.trim()}%`))
-        .orderBy(desc(ingredientCache.updatedAt));
+        .orderBy(desc(ingredientCache.updatedAt))) as CacheEntry[];
     }
 
-    return await db.select().from(ingredientCache).orderBy(desc(ingredientCache.updatedAt));
+    return (await db
+      .select()
+      .from(ingredientCache)
+      .orderBy(desc(ingredientCache.updatedAt))) as CacheEntry[];
   }
 );
 

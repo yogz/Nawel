@@ -141,4 +141,6 @@ export interface OrganizerHandlers {
   handleCreateIngredient: (itemId: number, name: string, quantity?: string) => void;
   handleDeleteAllIngredients: (itemId: number) => void;
   handleToggleItemChecked: (itemId: number, checked: boolean) => void;
+  handleSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
+  justGenerated?: number | null;
 }

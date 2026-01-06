@@ -191,10 +191,13 @@ export const items = pgTable(
     }),
     order: integer("order_index").notNull().default(0),
     checked: boolean("checked").notNull().default(false),
+    aiRating: integer("ai_rating"),
+    cacheId: integer("cache_id").references(() => ingredientCache.id, { onDelete: "set null" }),
   },
   (table) => ({
     serviceIdIdx: index("items_service_id_idx").on(table.serviceId),
     personIdIdx: index("items_person_id_idx").on(table.personId),
+    cacheIdIdx: index("items_cache_id_idx").on(table.cacheId),
   })
 );
 
@@ -296,6 +299,8 @@ export const ingredientCache = pgTable(
     peopleCount: integer("people_count").notNull(), // number of servings
     ingredients: text("ingredients").notNull(), // JSON array [{name, quantity}]
     confirmations: integer("confirmations").notNull().default(1), // number of times AI returned same result
+    ratingSum: integer("rating_sum").notNull().default(0),
+    ratingCount: integer("rating_count").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

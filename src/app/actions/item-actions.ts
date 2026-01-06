@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
-import { items } from "@drizzle/schema";
+import { items, ingredientCache } from "@drizzle/schema";
 import { eq, asc, sql } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -15,6 +15,7 @@ import {
   reorderSchema,
   moveItemSchema,
   toggleItemCheckedSchema,
+  saveAIFeedbackSchema,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
 
@@ -184,5 +185,30 @@ export const toggleItemCheckedAction = createSafeAction(toggleItemCheckedSchema,
     .where(eq(items.id, input.id))
     .returning();
   revalidatePath(`/event/${input.slug}`);
+  return updated;
+});
+export const saveAIFeedbackAction = createSafeAction(saveAIFeedbackSchema, async (input) => {
+  await verifyEventAccess(input.slug, input.key);
+
+  const [updated] = await db
+    .update(items)
+    .set({ aiRating: input.rating })
+    .where(eq(items.id, input.itemId))
+    .returning();
+
+  // Also update global cache if linked
+  if (updated?.cacheId) {
+    await db
+      .update(ingredientCache)
+      .set({
+        ratingSum: sql`${ingredientCache.ratingSum} + ${input.rating}`,
+        ratingCount: sql`${ingredientCache.ratingCount} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(ingredientCache.id, updated.cacheId));
+  }
+
+  revalidatePath(`/event/${input.slug}`);
+  revalidatePath(`/admin/cache`);
   return updated;
 });

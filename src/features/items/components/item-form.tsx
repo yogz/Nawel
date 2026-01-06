@@ -50,6 +50,8 @@ export function ItemForm({
   onCreateIngredient,
   onDeleteAllIngredients,
   onManageIngredients,
+  onSaveFeedback,
+  justGenerated,
   isGenerating,
   // Auth props for AI features
   isAuthenticated,
@@ -81,6 +83,8 @@ export function ItemForm({
   onCreateIngredient?: (name: string, quantity?: string) => void;
   onDeleteAllIngredients?: () => void;
   onManageIngredients?: () => void;
+  onSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
+  justGenerated?: boolean;
   isGenerating?: boolean;
   // Auth props for AI features
   isAuthenticated?: boolean;
@@ -115,6 +119,7 @@ export function ItemForm({
   const userPerson = currentUserId ? people.find((p) => p.userId === currentUserId) : undefined;
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -449,6 +454,36 @@ export function ItemForm({
                 <span className="rounded-lg bg-gray-100 px-2 py-1 text-[10px] font-medium text-gray-500">
                   +{ingredients.length - 3}
                 </span>
+              )}
+              {justGenerated && !feedbackSent && (
+                <div className="mt-3 space-y-3 rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 p-3 duration-500 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={14} className="text-indigo-600" />
+                    <p className="text-[11px] font-bold text-gray-900">Proposition pertinente ?</p>
+                  </div>
+                  <div className="flex flex-wrap justify-between gap-1">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={async () => {
+                          if (onSaveFeedback && defaultItem?.id) {
+                            await onSaveFeedback(defaultItem.id, n);
+                            setFeedbackSent(true);
+                          }
+                        }}
+                        className="flex h-6 w-6 items-center justify-center rounded-md border border-gray-100 bg-white text-[10px] font-bold text-gray-600 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {feedbackSent && (
+                <div className="mt-3 rounded-xl border border-green-100 bg-green-50 p-2 text-center duration-300 animate-in zoom-in">
+                  <p className="text-[10px] font-bold text-green-700">Merci ! 🙏</p>
+                </div>
               )}
             </div>
           ) : (

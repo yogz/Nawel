@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { Search, Eye, Pencil, Trash2, Users, CheckCircle, AlertTriangle } from "lucide-react";
+import { Search, Eye, Pencil, Trash2, Users, CheckCircle, AlertTriangle, Star } from "lucide-react";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
 
 type ParsedIngredient = {
@@ -174,6 +174,8 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
         {entries.map((entry) => {
           const ingredients = parseIngredients(entry.ingredients);
           const isTrusted = entry.confirmations >= AI_CACHE_MIN_CONFIRMATIONS;
+          const ratingAverage =
+            entry.ratingCount > 0 ? (entry.ratingSum / entry.ratingCount).toFixed(1) : null;
 
           return (
             <div
@@ -195,6 +197,14 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
                       <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
                         <AlertTriangle className="h-3 w-3" />
                         En attente
+                      </span>
+                    )}
+
+                    {ratingAverage && (
+                      <span className="flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                        <Star className="h-3 w-3 fill-indigo-700" />
+                        {ratingAverage}/10
+                        <span className="ml-0.5 text-[10px] opacity-60">({entry.ratingCount})</span>
                       </span>
                     )}
                   </div>

@@ -24,6 +24,8 @@ interface ItemIngredientsManagerProps {
   onRequestAuth?: () => void;
   itemNote?: string;
   readOnly?: boolean;
+  onSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
+  justGenerated?: boolean;
 }
 
 export function ItemIngredientsManager({
@@ -41,12 +43,15 @@ export function ItemIngredientsManager({
   onRequestAuth,
   itemNote,
   readOnly,
+  onSaveFeedback,
+  justGenerated,
 }: ItemIngredientsManagerProps) {
   const t = useTranslations("EventDashboard.ItemForm.Ingredients");
   const tShared = useTranslations("EventDashboard.Shared");
 
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -80,25 +85,31 @@ export function ItemIngredientsManager({
   }, []);
 
   return (
-    <div className="flex h-[85vh] flex-col bg-white">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-6 py-4">
+      <div className="flex items-center justify-between border-b px-6 py-4 pt-10 sm:pt-4">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">{itemName}</h2>
+          <h2 className="text-xl font-bold text-gray-900">{itemName}</h2>
           <p className="text-xs font-black uppercase tracking-widest text-gray-500">
             {ingredients.length} {tShared("items")}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {ingredients.length > 0 && !readOnly && (
             <button
               onClick={onDeleteAll}
               className="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50"
               aria-label={tShared("deleteAll")}
             >
-              <Trash2 size={20} />
+              <Trash2 size={22} />
             </button>
           )}
+          <button
+            onClick={onClose}
+            className="rounded-full bg-gray-100 p-2 text-gray-500 transition-colors hover:bg-gray-200"
+          >
+            <X size={24} />
+          </button>
         </div>
       </div>
 
@@ -206,6 +217,46 @@ export function ItemIngredientsManager({
             </div>
           ))
         )}
+
+        {justGenerated && !feedbackSent && (
+          <div className="mt-8 space-y-4 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 p-6 duration-500 animate-in fade-in slide-in-from-bottom-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-indigo-100 p-2">
+                <Sparkles size={18} className="text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900">
+                  Que pensez-vous de cette proposition ?
+                </p>
+                <p className="text-xs text-gray-500">Notez la pertinence de 1 à 10</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap justify-between gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                <button
+                  key={n}
+                  onClick={async () => {
+                    if (onSaveFeedback) {
+                      await onSaveFeedback(itemId, n);
+                      setFeedbackSent(true);
+                    }
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-100 bg-white text-xs font-bold text-gray-600 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {feedbackSent && (
+          <div className="mt-8 rounded-2xl border border-green-100 bg-green-50 p-4 text-center duration-300 animate-in zoom-in">
+            <p className="text-sm font-bold text-green-700">Merci pour votre retour ! 🙏</p>
+          </div>
+        )}
+
         {/* Padding for the sticky footer */}
         <div className="h-32" />
       </div>

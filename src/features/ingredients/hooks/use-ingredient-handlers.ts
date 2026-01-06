@@ -8,7 +8,9 @@ import {
   deleteIngredientAction,
   deleteAllIngredientsAction,
 } from "@/app/actions";
+import { saveAIFeedbackAction } from "@/app/actions/item-actions";
 import type { PlanData } from "@/lib/types";
+import { useState } from "react";
 import type { IngredientHandlerParams } from "@/features/shared/types";
 import { trackAIAction } from "@/lib/analytics";
 
@@ -20,6 +22,7 @@ export function useIngredientHandlers({
   setSuccessMessage,
 }: IngredientHandlerParams) {
   const [, startTransition] = useTransition();
+  const [justGenerated, setJustGenerated] = useState<number | null>(null); // itemId
 
   const handleGenerateIngredients = async (
     itemId: number,
@@ -65,6 +68,14 @@ export function useIngredientHandlers({
     }));
 
     trackAIAction("ai_ingredients_generated", itemName, generated.length);
+    setJustGenerated(itemId);
+  };
+
+  const handleSaveFeedback = async (itemId: number, rating: number) => {
+    if (readOnly) return;
+
+    await saveAIFeedbackAction({ itemId, rating, slug, key: writeKey });
+    setJustGenerated(null);
   };
 
   const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {
@@ -191,5 +202,7 @@ export function useIngredientHandlers({
     handleDeleteIngredient,
     handleCreateIngredient,
     handleDeleteAllIngredients,
+    handleSaveFeedback,
+    justGenerated,
   };
 }
