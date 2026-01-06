@@ -54,17 +54,17 @@ export function OrganizerHeader({
     return () => clearTimeout(timer);
   }, []);
 
-  // Animation sequence: Logo -> Home -> Arrow -> Logo
+  // Animation sequence: Logo -> Home -> Arrow -> Logo (douce et subtile)
   useEffect(() => {
     if (!showLogoHint) return;
 
     const timers: NodeJS.Timeout[] = [];
 
     timers.push(
-      setTimeout(() => setAnimationStep("home"), 800),
-      setTimeout(() => setAnimationStep("arrow"), 1600),
-      setTimeout(() => setAnimationStep("logo"), 2400),
-      setTimeout(() => setShowLogoHint(false), 3200)
+      setTimeout(() => setAnimationStep("home"), 1200),
+      setTimeout(() => setAnimationStep("arrow"), 2400),
+      setTimeout(() => setAnimationStep("logo"), 3600),
+      setTimeout(() => setShowLogoHint(false), 4800)
     );
 
     return () => {
@@ -130,28 +130,26 @@ export function OrganizerHeader({
                   <div className="relative h-9 w-9 sm:h-9 sm:w-9">
                     <AnimatePresence mode="wait">
                       {hovered ? (
-                        // Hover effect: show home icon with flip
+                        // Hover effect: show home icon with smooth fade
                         <motion.div
                           key="hover-home"
-                          initial={{ rotateY: -180, opacity: 0 }}
-                          animate={{ rotateY: 0, opacity: 1 }}
-                          exit={{ rotateY: 180, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{ transformStyle: "preserve-3d" }}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.4, ease: "easeInOut" }}
                           className="absolute inset-0 flex items-center justify-center"
                         >
                           <Home className="h-7 w-7 text-accent" />
                         </motion.div>
                       ) : showLogoHint ? (
-                        // Animation sequence during page load
+                        // Animation sequence during page load - douce et subtile
                         animationStep === "logo" ? (
                           <motion.div
                             key="logo-anim"
-                            initial={{ rotateY: -180 }}
-                            animate={{ rotateY: 0 }}
-                            exit={{ rotateY: 180 }}
-                            transition={{ duration: 0.4 }}
-                            style={{ transformStyle: "preserve-3d" }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
                             <AppBranding logoSize={36} className="shrink-0" variant="icon" />
@@ -159,37 +157,34 @@ export function OrganizerHeader({
                         ) : animationStep === "home" ? (
                           <motion.div
                             key="home-anim"
-                            initial={{ rotateY: -180 }}
-                            animate={{ rotateY: 0 }}
-                            exit={{ rotateY: 180 }}
-                            transition={{ duration: 0.4 }}
-                            style={{ transformStyle: "preserve-3d" }}
+                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 4 }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <Home className="h-9 w-9 text-accent" />
+                            <Home className="h-8 w-8 text-accent" />
                           </motion.div>
                         ) : (
                           <motion.div
                             key="arrow-anim"
-                            initial={{ rotateY: -180 }}
-                            animate={{ rotateY: 0 }}
-                            exit={{ rotateY: 180 }}
-                            transition={{ duration: 0.4 }}
-                            style={{ transformStyle: "preserve-3d" }}
+                            initial={{ opacity: 0, scale: 0.9, x: -4 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, x: 4 }}
+                            transition={{ duration: 0.6, ease: "easeInOut" }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <ArrowLeft className="h-9 w-9 text-accent" />
+                            <ArrowLeft className="h-8 w-8 text-accent" />
                           </motion.div>
                         )
                       ) : (
                         // Default: show logo
                         <motion.div
                           key="logo-default"
-                          initial={{ rotateY: 180, opacity: 0 }}
-                          animate={{ rotateY: 0, opacity: 1 }}
-                          exit={{ rotateY: -180, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                          style={{ transformStyle: "preserve-3d" }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.4, ease: "easeInOut" }}
                           className="absolute inset-0 flex items-center justify-center"
                         >
                           <AppBranding logoSize={36} className="shrink-0" variant="icon" />

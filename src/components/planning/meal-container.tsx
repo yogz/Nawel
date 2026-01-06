@@ -26,6 +26,8 @@ interface MealContainerProps {
   onCreateService?: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   itemVariants: Variants;
+  handleAssign?: (item: Item, personId: number | null) => void;
+  currentUserId?: string;
 }
 
 export function MealContainer({
@@ -40,6 +42,8 @@ export function MealContainer({
   onCreateService,
   setSheet,
   itemVariants,
+  handleAssign,
+  currentUserId,
 }: MealContainerProps) {
   const t = useTranslations("EventDashboard.Planning");
   const locale = useLocale();
@@ -165,6 +169,8 @@ export function MealContainer({
             onEdit={() => setSheet({ type: "service-edit", service })}
             filter={planningFilter}
             activeItemId={activeItemId}
+            handleAssign={handleAssign}
+            currentUserId={currentUserId}
           />
         ))}
         {!readOnly && onCreateService && (

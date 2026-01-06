@@ -19,6 +19,8 @@ interface ServiceSectionProps {
   onEdit: () => void;
   filter: PlanningFilter;
   activeItemId: number | null;
+  handleAssign?: (item: Item, personId: number | null) => void;
+  currentUserId?: string;
 }
 
 export const ServiceSection = memo(function ServiceSection({
@@ -31,6 +33,8 @@ export const ServiceSection = memo(function ServiceSection({
   onEdit,
   filter,
   activeItemId,
+  handleAssign,
+  currentUserId,
 }: ServiceSectionProps) {
   const t = useTranslations("EventDashboard.Planning");
   const { setNodeRef, isOver } = useDroppable({
@@ -101,6 +105,9 @@ export const ServiceSection = memo(function ServiceSection({
               onDelete={() => onDelete(item)}
               allPeopleNames={allPeopleNames}
               peopleCount={service.peopleCount || 0}
+              handleAssign={handleAssign}
+              currentUserId={currentUserId}
+              people={people}
             />
           </div>
         ))}

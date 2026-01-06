@@ -125,6 +125,7 @@ export function Organizer({
     handleDeleteEvent,
     handleClaimPerson,
     handleUnclaimPerson,
+    handleAssign,
   } = handlers;
 
   // State for ingredient generation
@@ -301,6 +302,8 @@ export function Organizer({
                 writeKey={effectiveWriteKey}
                 isOwner={isOwner}
                 onDeleteEvent={handleDeleteEvent}
+                handleAssign={handleAssign}
+                currentUserId={session?.user?.id}
               />
             )}
 

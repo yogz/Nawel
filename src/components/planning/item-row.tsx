@@ -29,6 +29,9 @@ interface ItemRowProps {
   readOnly?: boolean;
   allPeopleNames?: string[];
   peopleCount?: number;
+  handleAssign?: (item: Item, personId: number | null) => void;
+  currentUserId?: string;
+  people?: Person[];
 }
 
 function ItemRowComponent({
@@ -39,6 +42,9 @@ function ItemRowComponent({
   readOnly,
   allPeopleNames,
   peopleCount,
+  handleAssign,
+  currentUserId,
+  people,
 }: ItemRowProps) {
   const t = useTranslations("EventDashboard.ItemForm");
   const tShared = useTranslations("EventDashboard.Shared");
@@ -71,15 +77,29 @@ function ItemRowComponent({
     return () => clearTimeout(timer);
   }, [hasSeenSwipeHint]);
 
+  // Find current user's person if they are linked
+  const currentPerson =
+    currentUserId && people ? people.find((p) => p.userId === currentUserId) : null;
+
+  // Handle click: if user has a person and item is not assigned, assign directly
+  const handleClick = () => {
+    if (readOnly) return;
+
+    triggerHaptic();
+
+    // If user is identified/linked to a person and item is not assigned, assign directly
+    if (currentPerson && !item.personId && handleAssign) {
+      handleAssign(item, currentPerson.id);
+    } else {
+      // Otherwise, open the drawer to edit/assign
+      onAssign();
+    }
+  };
+
   const content = (
     <button
       type="button"
-      onClick={() => {
-        if (!readOnly) {
-          triggerHaptic();
-          onAssign();
-        }
-      }}
+      onClick={handleClick}
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
@@ -181,7 +201,14 @@ function ItemRowComponent({
               className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
               onClick={(e) => {
                 e.stopPropagation();
-                onAssign();
+                // If user has a person and handleAssign is available, assign directly
+                if (currentPerson && handleAssign) {
+                  triggerHaptic();
+                  handleAssign(item, currentPerson.id);
+                } else {
+                  // Otherwise, open the drawer
+                  onAssign();
+                }
               }}
               aria-label={t("takeAction")}
             >

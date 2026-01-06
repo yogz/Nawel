@@ -43,6 +43,8 @@ interface PlanningTabProps {
   writeKey?: string;
   isOwner?: boolean;
   onDeleteEvent?: () => Promise<void>;
+  handleAssign?: (item: Item, personId: number | null) => void;
+  currentUserId?: string;
 }
 
 const containerVariants: Variants = {
@@ -80,6 +82,8 @@ export function PlanningTab({
   writeKey,
   isOwner,
   onDeleteEvent,
+  handleAssign,
+  currentUserId,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tHeader = useTranslations("EventDashboard.Header");
@@ -227,6 +231,8 @@ export function PlanningTab({
                 onCreateService={onCreateService}
                 setSheet={setSheet}
                 itemVariants={itemVariants}
+                handleAssign={handleAssign}
+                currentUserId={currentUserId}
               />
             );
           })}
