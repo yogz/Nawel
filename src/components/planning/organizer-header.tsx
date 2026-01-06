@@ -10,9 +10,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
-import { motion } from "framer-motion";
 import { CitationDisplay } from "../common/citation-display";
 import { Link } from "@/i18n/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Home, ArrowLeft } from "lucide-react";
 
 interface OrganizerHeaderProps {
   readOnly: boolean;
@@ -44,6 +45,8 @@ export function OrganizerHeader({
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
   const [showLogoHint, setShowLogoHint] = useState(true);
+  const [hovered, setHovered] = useState(false);
+  const [animationStep, setAnimationStep] = useState<"logo" | "home" | "arrow">("logo");
 
   // Stop the attention-grabbing effect after 2 minutes
   useEffect(() => {
@@ -51,13 +54,23 @@ export function OrganizerHeader({
     return () => clearTimeout(timer);
   }, []);
 
-  // Show logo hint animation on mount, then hide after 3 seconds
+  // Animation sequence: Logo -> Home -> Arrow -> Logo
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLogoHint(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!showLogoHint) return;
+
+    const timers: NodeJS.Timeout[] = [];
+
+    timers.push(
+      setTimeout(() => setAnimationStep("home"), 800),
+      setTimeout(() => setAnimationStep("arrow"), 1600),
+      setTimeout(() => setAnimationStep("logo"), 2400),
+      setTimeout(() => setShowLogoHint(false), 3200)
+    );
+
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, [showLogoHint]);
 
   const handleShare = async () => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -107,42 +120,84 @@ export function OrganizerHeader({
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                <motion.div
-                  initial={false}
-                  animate={
-                    showLogoHint
-                      ? {
-                          scale: [1, 1.15, 1],
-                        }
-                      : {}
-                  }
-                  transition={
-                    showLogoHint
-                      ? {
-                          duration: 1.2,
-                          repeat: 2,
-                          ease: "easeInOut",
-                        }
-                      : {}
-                  }
-                  className="inline-flex"
+                <Link
+                  href="/"
+                  aria-label="Retour à l'accueil"
+                  className="relative block shrink-0 rounded-lg transition-all duration-300 hover:bg-accent/10"
+                  onMouseEnter={() => setHovered(true)}
+                  onMouseLeave={() => setHovered(false)}
                 >
-                  <Link
-                    href="/"
-                    className={cn(
-                      "group shrink-0 rounded-lg p-1 transition-all duration-300 hover:scale-105 hover:bg-accent/10 active:scale-95",
-                      showLogoHint && "bg-accent/10"
-                    )}
-                    aria-label="Retour à l'accueil"
-                    title="Retour à l'accueil"
-                  >
-                    <AppBranding
-                      logoSize={28}
-                      className="shrink-0 transition-opacity group-hover:opacity-80"
-                      variant="icon"
-                    />
-                  </Link>
-                </motion.div>
+                  <div className="relative h-9 w-9 sm:h-9 sm:w-9">
+                    <AnimatePresence mode="wait">
+                      {hovered ? (
+                        // Hover effect: show home icon with flip
+                        <motion.div
+                          key="hover-home"
+                          initial={{ rotateY: -180, opacity: 0 }}
+                          animate={{ rotateY: 0, opacity: 1 }}
+                          exit={{ rotateY: 180, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ transformStyle: "preserve-3d" }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <Home className="h-7 w-7 text-accent" />
+                        </motion.div>
+                      ) : showLogoHint ? (
+                        // Animation sequence during page load
+                        animationStep === "logo" ? (
+                          <motion.div
+                            key="logo-anim"
+                            initial={{ rotateY: -180 }}
+                            animate={{ rotateY: 0 }}
+                            exit={{ rotateY: 180 }}
+                            transition={{ duration: 0.4 }}
+                            style={{ transformStyle: "preserve-3d" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <AppBranding logoSize={36} className="shrink-0" variant="icon" />
+                          </motion.div>
+                        ) : animationStep === "home" ? (
+                          <motion.div
+                            key="home-anim"
+                            initial={{ rotateY: -180 }}
+                            animate={{ rotateY: 0 }}
+                            exit={{ rotateY: 180 }}
+                            transition={{ duration: 0.4 }}
+                            style={{ transformStyle: "preserve-3d" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <Home className="h-9 w-9 text-accent" />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="arrow-anim"
+                            initial={{ rotateY: -180 }}
+                            animate={{ rotateY: 0 }}
+                            exit={{ rotateY: 180 }}
+                            transition={{ duration: 0.4 }}
+                            style={{ transformStyle: "preserve-3d" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <ArrowLeft className="h-9 w-9 text-accent" />
+                          </motion.div>
+                        )
+                      ) : (
+                        // Default: show logo
+                        <motion.div
+                          key="logo-default"
+                          initial={{ rotateY: 180, opacity: 0 }}
+                          animate={{ rotateY: 0, opacity: 1 }}
+                          exit={{ rotateY: -180, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ transformStyle: "preserve-3d" }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <AppBranding logoSize={36} className="shrink-0" variant="icon" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Link>
                 <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
                   {plan.event?.name || "Événement"}
                 </h1>
