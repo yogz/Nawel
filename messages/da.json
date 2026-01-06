@@ -240,7 +240,8 @@
       "articlesCount": "{count, plural, =0 {ingen varer} one {1 vare} other {# varer}}",
       "confirmUnlink": "Er du sikker på, at du ikke længere ønsker at være tilknyttet denne profil?",
       "me": "Mig",
-      "editItem": "Rediger vare {name}"
+      "editItem": "Rediger vare {name}",
+      "edit": "Rediger"
     },
     "Shopping": {
       "notAssociated": "Profil ikke tilknyttet",

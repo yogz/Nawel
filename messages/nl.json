@@ -240,7 +240,8 @@
       "articlesCount": "{count, plural, =0 {geen items} one {1 item} other {# items}}",
       "confirmUnlink": "Weet u zeker dat u niet langer geassocieerd wilt worden met dit profiel?",
       "me": "Ik",
-      "editItem": "Item bewerken {name}"
+      "editItem": "Item bewerken {name}",
+      "edit": "Bewerken"
     },
     "Shopping": {
       "notAssociated": "Profiel niet geassocieerd",

@@ -239,7 +239,8 @@
       "articlesCount": "{count, plural, =0 {kein Artikel} one {1 Artikel} other {# Artikel}}",
       "confirmUnlink": "Sind Sie sicher, dass Sie nicht mehr mit diesem Profil verknüpft sein möchten?",
       "me": "Ich",
-      "editItem": "Artikel bearbeiten {name}"
+      "editItem": "Artikel bearbeiten {name}",
+      "edit": "Bearbeiten"
     },
     "Shopping": {
       "notAssociated": "Profil nicht verknüpft",

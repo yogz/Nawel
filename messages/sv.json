@@ -240,7 +240,8 @@
       "articlesCount": "{count, plural, =0 {inga artiklar} one {1 artikel} other {# artiklar}}",
       "confirmUnlink": "Är du säker på att du inte längre vill vara kopplad till denna profil?",
       "me": "Jag",
-      "editItem": "Redigera artikel {name}"
+      "editItem": "Redigera artikel {name}",
+      "edit": "Redigera"
     },
     "Shopping": {
       "notAssociated": "Profil ej kopplad",

@@ -240,7 +240,8 @@
       "articlesCount": "{count, plural, =0 {nessun articolo} one {1 articolo} other {# articoli}}",
       "confirmUnlink": "Sei sicuro di non voler più essere associato a questo profilo?",
       "me": "Io",
-      "editItem": "Modifica articolo {name}"
+      "editItem": "Modifica articolo {name}",
+      "edit": "Modifica"
     },
     "Shopping": {
       "notAssociated": "Profilo non associato",

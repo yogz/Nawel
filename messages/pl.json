@@ -240,7 +240,8 @@
       "articlesCount": "{count, plural, =0 {brak przedmiotów} one {1 przedmiot} few {# przedmioty} other {# przedmiotów}}",
       "confirmUnlink": "Czy na pewno nie chcesz już być powiązany z tym profilem?",
       "me": "Ja",
-      "editItem": "Edytuj przedmiot {name}"
+      "editItem": "Edytuj przedmiot {name}",
+      "edit": "Edytuj"
     },
     "Shopping": {
       "notAssociated": "Profil niepowiązany",
