@@ -135,7 +135,7 @@ export const getMyEventsAction = withErrorThrower(async () => {
   }
 
   // Use db.query to get relations easily
-  return await db.query.events.findMany({
+  const allEvents = await db.query.events.findMany({
     where: or(
       eq(events.ownerId, session.user.id),
       exists(
@@ -150,6 +150,16 @@ export const getMyEventsAction = withErrorThrower(async () => {
     },
     orderBy: desc(events.createdAt),
   });
+
+  // Deduplicate events by ID (in case user is both owner and participant)
+  const uniqueEventsMap = new Map<number, (typeof allEvents)[0]>();
+  for (const event of allEvents) {
+    if (!uniqueEventsMap.has(event.id)) {
+      uniqueEventsMap.set(event.id, event);
+    }
+  }
+
+  return Array.from(uniqueEventsMap.values());
 });
 
 export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {
