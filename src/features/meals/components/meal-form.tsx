@@ -9,7 +9,6 @@ import { type Meal } from "@/lib/types";
 import {
   Sparkles,
   ArrowLeft,
-  Check,
   CalendarIcon,
   Loader2,
   Trash2,

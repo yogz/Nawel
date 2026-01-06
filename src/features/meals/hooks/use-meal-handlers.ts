@@ -91,25 +91,15 @@ export function useMealHandlers({
           time,
           address,
         });
-        // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
+        // Mettre à jour le state immédiatement
         const newMeal = { ...created, services: [] };
         setPlan((prev: PlanData) => {
           // Vérifier si le repas existe déjà pour éviter les doublons
           const mealExists = prev.meals.some((m) => m.id === newMeal.id);
           if (mealExists) {
-            console.log("[handleCreateMealWithServices] Meal already exists, skipping update");
             return prev;
           }
           const newMeals = [...prev.meals, newMeal].sort((a, b) => a.date.localeCompare(b.date));
-          console.log(
-            "[handleCreateMealWithServices] State update - prev meals:",
-            prev.meals.length,
-            "new meals:",
-            newMeals.length,
-            "new meal:",
-            newMeal
-          );
-          // Retourner un nouvel objet pour forcer le re-render
           return {
             ...prev,
             meals: newMeals,
@@ -129,26 +119,14 @@ export function useMealHandlers({
           time,
           address,
         });
-        // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
+        // Mettre à jour le state immédiatement
         setPlan((prev: PlanData) => {
           // Vérifier si le repas existe déjà pour éviter les doublons
           const mealExists = prev.meals.some((m) => m.id === created.id);
           if (mealExists) {
-            console.log(
-              "[handleCreateMealWithServices] Meal with services already exists, skipping update"
-            );
             return prev;
           }
           const newMeals = [...prev.meals, created].sort((a, b) => a.date.localeCompare(b.date));
-          console.log(
-            "[handleCreateMealWithServices] State update with services - prev meals:",
-            prev.meals.length,
-            "new meals:",
-            newMeals.length,
-            "created:",
-            created
-          );
-          // Retourner un nouvel objet pour forcer le re-render
           return {
             ...prev,
             meals: newMeals,
