@@ -54,11 +54,12 @@ export const ServiceSection = memo(function ServiceSection({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative rounded-2xl border border-white/40 bg-white/90 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6",
-        isOver && "scale-[1.01] ring-2 ring-accent ring-offset-2"
+        "relative rounded-2xl border border-white/60 bg-white/70 p-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-white/80 hover:bg-white/75 hover:shadow-xl sm:p-6",
+        "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-50",
+        isOver && "scale-[1.01] ring-2 ring-accent/50 ring-offset-2"
       )}
     >
-      <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-3">
+      <div className="relative z-10 mb-5 flex items-center justify-between border-b border-white/40 pb-3">
         <button
           type="button"
           className={cn(
@@ -86,11 +87,11 @@ export const ServiceSection = memo(function ServiceSection({
         </button>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="relative z-10 flex flex-col gap-1">
         {filteredItems.map((item, index) => (
           <div
             key={item.id}
-            className={index !== filteredItems.length - 1 ? "border-b border-gray-100 pb-1" : ""}
+            className={index !== filteredItems.length - 1 ? "border-b border-white/30 pb-1" : ""}
           >
             <ItemRow
               item={item}
