@@ -57,7 +57,11 @@ export function Landing() {
   ];
 
   return (
-    <div ref={containerRef} className="relative bg-white text-gray-900">
+    <div
+      ref={containerRef}
+      className="relative bg-white text-gray-900"
+      style={{ position: "relative" }}
+    >
       {/* Hero Section */}
       <motion.section
         style={{ opacity: heroOpacity, scale: heroScale }}
@@ -71,6 +75,7 @@ export function Landing() {
             src="/aura-hero.png"
             alt="Hero Aura"
             fill
+            sizes="100vw"
             className="object-cover opacity-60"
             priority
           />
@@ -198,6 +203,7 @@ function FeatureCard({ id, title, description, icon, image, index, variant }: Fe
           src={image}
           alt={title}
           fill
+          sizes="(max-width: 640px) 100vw, 50vw"
           className="object-cover object-top transition-transform duration-700 hover:scale-105"
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent" />

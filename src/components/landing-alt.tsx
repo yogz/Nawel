@@ -80,6 +80,7 @@ export function LandingAlt() {
             src="/alt_hero.png"
             alt="Hero Aura"
             fill
+            sizes="100vw"
             className="object-cover opacity-60"
             priority
           />
@@ -264,7 +265,13 @@ function FeatureCardAlt({
       </div>
 
       <div className="relative aspect-[4/3] w-full flex-1 transform overflow-hidden rounded-3xl bg-gray-100 shadow-2xl shadow-gray-200 ring-1 ring-gray-900/5 transition-transform duration-700 hover:scale-[1.02]">
-        <Image src={image} alt={title} fill className="object-cover object-top" />
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover object-top"
+        />
         <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-black/5" />
       </div>
     </motion.div>
