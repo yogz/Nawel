@@ -265,7 +265,7 @@ export function MealForm({
             <div className="flex-[3] space-y-2">
               <Label
                 htmlFor="date"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
               >
                 {t("dateLabel")}
               </Label>
@@ -279,16 +279,16 @@ export function MealForm({
                     setDate(val ? new Date(val) : undefined);
                   }}
                   onBlur={handleBlurSave}
-                  className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-11 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
                 />
-                <CalendarIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
 
             <div className="flex-[2] space-y-2">
               <Label
                 htmlFor="time"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
               >
                 {t("timeLabel")}
               </Label>
@@ -300,9 +300,9 @@ export function MealForm({
                   onChange={(e) => setTime(e.target.value)}
                   enterKeyHint="next"
                   onBlur={handleBlurSave}
-                  className="h-12 w-full rounded-2xl border-gray-100 bg-gray-50/50 pl-11 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
                 />
-                <Clock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
           </div>

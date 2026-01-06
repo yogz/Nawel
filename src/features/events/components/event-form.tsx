@@ -192,38 +192,38 @@ export function EventForm({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
                 {t("dateLabel")}
               </Label>
               <div className="relative">
                 <Input
                   type="date"
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 pr-4 text-base focus:bg-white"
+                  className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   enterKeyHint="next"
                 />
                 <Calendar
-                  size={18}
-                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
                 {t("timeLabel")}
               </Label>
               <div className="relative">
                 <Input
                   type="time"
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-10 pr-4 text-base focus:bg-white"
+                  className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   enterKeyHint="next"
                 />
                 <Clock
-                  size={18}
-                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
                 />
               </div>
             </div>
@@ -501,11 +501,13 @@ export function EventForm({
 
   return (
     <Drawer open onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="px-6">
-        <DrawerHeader className="px-0 text-left">
-          <DrawerTitle>{stepTitles[step - 1]}</DrawerTitle>
+      <DrawerContent className="px-4 sm:px-6">
+        <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
+          <DrawerTitle className="text-lg sm:text-xl">{stepTitles[step - 1]}</DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">{content}</div>
+        <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
+          {content}
+        </div>
       </DrawerContent>
     </Drawer>
   );

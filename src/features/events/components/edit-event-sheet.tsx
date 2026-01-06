@@ -185,7 +185,7 @@ export function EditEventSheet({
                 <div className="space-y-2">
                   <Label
                     htmlFor="date"
-                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
                   >
                     {tMeal("dateLabel")}
                   </Label>
@@ -198,15 +198,15 @@ export function EditEventSheet({
                         setDate(e.target.value ? new Date(e.target.value) : undefined)
                       }
                       enterKeyHint="next"
-                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 pr-4 text-base focus:bg-white focus:ring-accent/20"
+                      className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                     />
-                    <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Calendar className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-4 sm:w-4" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label
                     htmlFor="time"
-                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
                   >
                     {tMeal("timeLabel")}
                   </Label>
@@ -217,9 +217,9 @@ export function EditEventSheet({
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
                       enterKeyHint="next"
-                      className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 pr-4 text-base focus:bg-white focus:ring-accent/20"
+                      className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                     />
-                    <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-4 sm:w-4" />
                   </div>
                 </div>
               </div>

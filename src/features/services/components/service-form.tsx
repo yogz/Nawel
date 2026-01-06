@@ -170,7 +170,7 @@ export function ServiceForm({
             <div className="space-y-2">
               <Label
                 htmlFor="date"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
               >
                 Date
               </Label>
@@ -183,13 +183,18 @@ export function ServiceForm({
                     const val = e.target.value;
                     setNewMealDate(val ? new Date(val) : undefined);
                   }}
-                  className="h-10 w-full rounded-xl border-gray-100 bg-gray-50/50 pl-9 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-14 w-full touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:pl-9"
                 />
-                <CalendarIcon className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-2.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="meal-time">{tMeal("timeLabel")}</Label>
+              <Label
+                htmlFor="meal-time"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+              >
+                {tMeal("timeLabel")}
+              </Label>
               <div className="relative">
                 <Input
                   id="meal-time"
@@ -198,9 +203,9 @@ export function ServiceForm({
                   onChange={(e) => setNewMealTime(e.target.value)}
                   disabled={readOnly}
                   enterKeyHint="next"
-                  className="h-10 rounded-xl pl-9"
+                  className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:pl-9"
                 />
-                <Clock className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-2.5 sm:h-4 sm:w-4" />
               </div>
             </div>
           </div>
