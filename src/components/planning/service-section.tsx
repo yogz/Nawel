@@ -115,12 +115,20 @@ export const ServiceSection = memo(function ServiceSection({
         {!readOnly && (
           <Button
             variant="premium"
-            className="mt-3 h-11 w-full rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-10"
-            icon={<PlusIcon size={14} strokeWidth={3} />}
-            onClick={onCreate}
+            className="mt-4 h-14 w-full touch-manipulation rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.98] sm:mt-3 sm:h-11"
+            icon={<PlusIcon size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />}
+            onClick={() => {
+              // Haptic feedback on mobile
+              if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                navigator.vibrate(10);
+              }
+              onCreate();
+            }}
             aria-label={t("addItem")}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider">{t("addItem")}</span>
+            <span className="text-xs font-black uppercase tracking-wider sm:text-[10px]">
+              {t("addItem")}
+            </span>
           </Button>
         )}
       </div>

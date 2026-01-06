@@ -224,25 +224,25 @@ export function OrganizerSheets({
 
   return (
     <Drawer open={!!sheet} onOpenChange={(open) => !open && setSheet(null)}>
-      <DrawerContent className="px-6">
+      <DrawerContent className="px-4 sm:px-6">
         {sheet?.type !== "share" && (
-          <DrawerHeader className="px-0 text-left">
+          <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <DrawerTitle>{getTitle()}</DrawerTitle>
+                <DrawerTitle className="text-lg sm:text-xl">{getTitle()}</DrawerTitle>
               </div>
               <DrawerClose asChild>
                 <button
-                  className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                  className="touch-manipulation rounded-full bg-gray-50 p-2 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
                   aria-label={tCommon("close") || "Fermer"}
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               </DrawerClose>
             </div>
           </DrawerHeader>
         )}
-        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-20 sm:pb-40">
+        <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
           {sheet?.type === "item" && (
             <ItemForm
               people={plan.people}
