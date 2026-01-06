@@ -114,7 +114,6 @@ export function ItemIngredients({
             onChange={(e) => setNewName(e.target.value)}
             className="h-12 rounded-xl"
             onKeyDown={(e) => e.key === "Enter" && handleManualAdd()}
-            autoFocus
           />
           <Input
             placeholder={t("quantityPlaceholder")}
