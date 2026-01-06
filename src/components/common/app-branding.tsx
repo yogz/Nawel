@@ -63,13 +63,16 @@ export function AppBranding({
     );
   } else if (variant === "icon") {
     content = (
-      <div className={cn("flex items-center", className)}>
+      <div
+        className={cn("flex items-center justify-center", className)}
+        style={{ width: logoSize, height: logoSize }}
+      >
         <Image
           src="/LogoIcon.png"
           alt="CoList Logo"
           width={logoSize}
           height={logoSize}
-          className="shrink-0"
+          className="shrink-0 object-contain"
           priority
         />
       </div>
