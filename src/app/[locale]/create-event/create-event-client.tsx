@@ -54,7 +54,7 @@ export default function CreateEventClient() {
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col px-6 py-12">
       <div className="mb-8">
-        <AppBranding logoSize={36} textSize="md" />
+        <AppBranding logoSize={44} textSize="md" />
       </div>
 
       <Link

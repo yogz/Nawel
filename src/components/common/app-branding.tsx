@@ -20,7 +20,7 @@ const textSizeClasses = {
 export function AppBranding({
   href = "/",
   className,
-  logoSize = 32,
+  logoSize = 40,
   textSize = "md",
   onClick,
   variant = "icon-text",
