@@ -38,14 +38,14 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
     }
     onChange(key);
 
-    // Show label for 3 seconds
+    // Show label for 1.5 seconds
     setVisibleLabel(key);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
       setVisibleLabel(null);
-    }, 3000);
+    }, 1500);
   };
 
   // Cleanup timeout on unmount
@@ -58,9 +58,9 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-4 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4">
+    <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-1 rounded-full border border-white/20 bg-white/70 p-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5 backdrop-blur-xl transition-all duration-300"
+        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/70 p-2 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] ring-1 ring-black/5 backdrop-blur-xl transition-all duration-300"
         style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
         role="tablist"
         aria-label={t("navigation")}
@@ -78,7 +78,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.95] sm:h-10",
+                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.9] sm:h-12",
                 selected ? "text-accent" : "text-gray-500"
               )}
             >
@@ -90,35 +90,33 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
                   aria-hidden="true"
                 />
               )}
+
+              {/* Floating Bubble Label */}
+              <AnimatePresence>
+                {isLabelVisible && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
+                    animate={{ opacity: 1, y: -45, scale: 1, x: "-50%" }}
+                    exit={{ opacity: 0, y: 0, scale: 0.5, x: "-50%" }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="absolute left-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg sm:text-[9px]"
+                  >
+                    {t(tab.key)}
+                    {/* Tiny arrow/beak */}
+                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div
                 className={clsx(
-                  "relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 sm:h-7 sm:w-7",
+                  "relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
                   selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
                 )}
                 aria-hidden="true"
               >
-                <Icon size={selected ? 19 : 17} strokeWidth={selected ? 2.5 : 2} />
+                <Icon size={selected ? 22 : 20} strokeWidth={selected ? 2.5 : 2} />
               </div>
-              <AnimatePresence>
-                {isLabelVisible && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="relative z-10 w-full overflow-hidden"
-                  >
-                    <span
-                      className={clsx(
-                        "block text-center text-[10px] font-black uppercase tracking-tighter sm:text-[8px]",
-                        selected ? "text-accent" : "text-gray-500"
-                      )}
-                    >
-                      {t(tab.key)}
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </button>
           );
         })}
