@@ -78,7 +78,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.95] sm:h-12",
+                "relative flex h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.95] sm:h-10",
                 selected ? "text-accent" : "text-gray-500"
               )}
             >
@@ -92,32 +92,33 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               )}
               <div
                 className={clsx(
-                  "relative z-10 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 sm:h-8 sm:w-8",
+                  "relative z-10 flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 sm:h-7 sm:w-7",
                   selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
                 )}
                 aria-hidden="true"
               >
-                <Icon size={selected ? 20 : 18} strokeWidth={selected ? 2.5 : 2} />
+                <Icon size={selected ? 19 : 17} strokeWidth={selected ? 2.5 : 2} />
               </div>
-              <div className="relative h-3 w-full overflow-hidden sm:h-2.5">
-                <AnimatePresence mode="wait">
-                  {isLabelVisible && (
-                    <motion.span
-                      key={tab.key}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.2 }}
+              <AnimatePresence>
+                {isLabelVisible && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative z-10 w-full overflow-hidden"
+                  >
+                    <span
                       className={clsx(
-                        "absolute inset-0 z-10 text-center text-[10px] font-black uppercase tracking-tighter sm:text-[8px]",
+                        "block text-center text-[10px] font-black uppercase tracking-tighter sm:text-[8px]",
                         selected ? "text-accent" : "text-gray-500"
                       )}
                     >
                       {t(tab.key)}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </div>
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </button>
           );
         })}

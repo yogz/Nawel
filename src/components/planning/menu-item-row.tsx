@@ -122,127 +122,121 @@ function ItemRowComponent({
             )}
           </div>
 
-          {/* Bottom row: Metadata & Person Action */}
-          <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-            {/* Metadata (quantity, price, etc.) */}
-            {(item.quantity ||
-              item.note ||
-              item.price ||
-              (item.ingredients && item.ingredients.length > 0)) && (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                {item.quantity?.trim() && (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 sm:text-[10px]">
-                    <Scale
-                      size={13}
-                      className="text-gray-600 sm:h-[11px] sm:w-[11px]"
-                      aria-hidden="true"
-                    />
-                    {item.quantity}
-                  </div>
-                )}
-                {item.price && (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 sm:text-[10px]">
-                    <Euro
-                      size={13}
-                      className="text-green-600 sm:h-[11px] sm:w-[11px]"
-                      aria-hidden="true"
-                    />
-                    {item.price.toFixed(2)}
-                  </div>
-                )}
-                {item.ingredients && item.ingredients.length > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 sm:text-[10px]">
-                    <ChefHat
-                      size={13}
-                      className="text-purple-600 sm:h-[11px] sm:w-[11px]"
-                      aria-hidden="true"
-                    />
-                    {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
-                  </div>
-                )}
-                {item.note && (
-                  <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 sm:text-[10px]">
-                    <MessageSquare
-                      size={13}
-                      className="text-blue-600 sm:h-[11px] sm:w-[11px]"
-                      aria-hidden="true"
-                    />
-                    <span className="max-w-[140px] truncate">
-                      {item.note.startsWith("EventDashboard.")
-                        ? t("defaultNote", { count: peopleCount || 0 })
-                        : item.note}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Person & Avatar / Take Action (moved here) */}
-            <div
-              className={cn(
-                "flex shrink-0 items-center gap-2",
-                person ? "rounded-lg border border-accent/20 bg-accent/10 px-2 py-1" : "gap-3"
+          {/* Metadata Row */}
+          {(item.quantity ||
+            item.note ||
+            item.price ||
+            (item.ingredients && item.ingredients.length > 0)) && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              {item.quantity?.trim() && (
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 sm:text-[10px]">
+                  <Scale
+                    size={13}
+                    className="text-gray-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
+                  {item.quantity}
+                </div>
               )}
-            >
-              <div className="flex flex-col items-end">
-                {person ? (
-                  <span className="text-xs font-semibold text-accent sm:text-[10px]">
-                    {getDisplayName(person)}
+              {item.price && (
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 sm:text-[10px]">
+                  <Euro
+                    size={13}
+                    className="text-green-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
+                  {item.price.toFixed(2)}
+                </div>
+              )}
+              {item.ingredients && item.ingredients.length > 0 && (
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 sm:text-[10px]">
+                  <ChefHat
+                    size={13}
+                    className="text-purple-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
+                  {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
+                </div>
+              )}
+              {item.note && (
+                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 sm:text-[10px]">
+                  <MessageSquare
+                    size={13}
+                    className="text-blue-600 sm:h-[11px] sm:w-[11px]"
+                    aria-hidden="true"
+                  />
+                  <span className="max-w-[140px] truncate">
+                    {item.note.startsWith("EventDashboard.")
+                      ? t("defaultNote", { count: peopleCount || 0 })
+                      : item.note}
                   </span>
-                ) : (
-                  <button
-                    type="button"
-                    className="group relative flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-9"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (currentPerson && handleAssign) {
-                        triggerHaptic();
-                        handleAssign(item, currentPerson.id);
-                      } else {
-                        onAssign();
-                      }
-                    }}
-                    aria-label={t("takeAction")}
-                  >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
-                      <Plus size={18} className="transition-colors duration-300 sm:h-4 sm:w-4" />
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
-                      {t("takeAction")}
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {person && (
-                <div className="shrink-0">
-                  {(() => {
-                    const avatar = renderAvatar(person, allPeopleNames);
-                    if (avatar.type === "image") {
-                      return (
-                        <img
-                          src={avatar.src}
-                          alt={getDisplayName(person)}
-                          className="h-6 w-6 rounded object-cover sm:h-5 sm:w-5"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      );
-                    }
-                    return (
-                      <span
-                        className="text-base font-black text-accent sm:text-sm"
-                        aria-hidden="true"
-                      >
-                        {avatar.value}
-                      </span>
-                    );
-                  })()}
                 </div>
               )}
             </div>
-          </div>
+          )}
         </div>
+      </div>
+
+      {/* Person & Avatar / Take Action - Always on the right */}
+      <div
+        className={cn(
+          "flex shrink-0 items-center gap-2",
+          person ? "rounded-lg border border-accent/20 bg-accent/10 px-2 py-1" : "gap-3"
+        )}
+      >
+        <div className="flex flex-col items-end">
+          {person ? (
+            <span className="text-xs font-semibold text-accent sm:text-[10px]">
+              {getDisplayName(person)}
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="group relative flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-9"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentPerson && handleAssign) {
+                  triggerHaptic();
+                  handleAssign(item, currentPerson.id);
+                } else {
+                  onAssign();
+                }
+              }}
+              aria-label={t("takeAction")}
+            >
+              <div className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
+                <Plus size={18} className="transition-colors duration-300 sm:h-4 sm:w-4" />
+              </div>
+              <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
+                {t("takeAction")}
+              </span>
+            </button>
+          )}
+        </div>
+
+        {person && (
+          <div className="shrink-0">
+            {(() => {
+              const avatar = renderAvatar(person, allPeopleNames);
+              if (avatar.type === "image") {
+                return (
+                  <img
+                    src={avatar.src}
+                    alt={getDisplayName(person)}
+                    className="h-6 w-6 rounded object-cover sm:h-5 sm:w-5"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                );
+              }
+              return (
+                <span className="text-base font-black text-accent sm:text-sm" aria-hidden="true">
+                  {avatar.value}
+                </span>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       {/* Subtle bottom line for separation */}
