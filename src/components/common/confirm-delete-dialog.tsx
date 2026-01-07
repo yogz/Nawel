@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Trash2, AlertTriangle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WarningBanner } from "./warning-banner";
 
 interface ConfirmDeleteDialogProps {
@@ -42,11 +42,12 @@ export function ConfirmDeleteDialog({
 }: ConfirmDeleteDialogProps) {
   const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-    if (!open) {
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen) {
       setInputValue("");
     }
-  }, [open]);
+    onOpenChange(newOpen);
+  };
 
   const handleConfirm = async () => {
     if (confirmationInput && inputValue !== confirmationInput) {
@@ -58,7 +59,7 @@ export function ConfirmDeleteDialog({
   const isConfirmDisabled = confirmationInput ? inputValue !== confirmationInput : false;
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent className="sm:max-w-[425px]">
         <AlertDialogHeader>
           <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-500">

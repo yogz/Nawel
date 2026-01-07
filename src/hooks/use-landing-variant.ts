@@ -1,29 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
 
 type LandingVariant = "landing" | "landing-alt";
 
-export function useLandingVariant() {
-  const [variant, setVariant] = useState<LandingVariant | null>(null);
+const STORAGE_KEY = "landing-variant";
 
-  useEffect(() => {
-    const savedVariant = localStorage.getItem("landing-variant") as LandingVariant | null;
+function getSnapshot(): LandingVariant | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
 
-    if (savedVariant && (savedVariant === "landing" || savedVariant === "landing-alt")) {
-      setVariant(savedVariant);
-    } else {
-      const newVariant: LandingVariant = Math.random() < 0.5 ? "landing" : "landing-alt";
-      localStorage.setItem("landing-variant", newVariant);
-      setVariant(newVariant);
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved === "landing" || saved === "landing-alt") {
+    return saved;
+  }
 
-      // Track the assignment in GA4
-      sendGAEvent("event", "landing_variant_assigned", {
-        variant: newVariant,
-      });
-    }
-  }, []);
+  // Assign new variant
+  const newVariant: LandingVariant = Math.random() < 0.5 ? "landing" : "landing-alt";
+  localStorage.setItem(STORAGE_KEY, newVariant);
 
-  return variant;
+  // Track the assignment in GA4
+  sendGAEvent("event", "landing_variant_assigned", {
+    variant: newVariant,
+  });
+
+  return newVariant;
+}
+
+function getServerSnapshot(): LandingVariant | null {
+  return null;
+}
+
+function subscribe(callback: () => void): () => void {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+export function useLandingVariant(): LandingVariant | null {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

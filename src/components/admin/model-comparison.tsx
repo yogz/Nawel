@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -20,22 +20,10 @@ export function ModelComparison() {
   const [guestCount, setGuestCount] = useState("4 personnes");
   const [systemPrompt, setSystemPrompt] = useState(getDefaultSystemPrompt("4 personnes"));
   const [userPrompt, setUserPrompt] = useState(getDefaultUserPrompt("Boeuf bourguignon"));
-  const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  // Initialize with all models - no effect needed
+  const [selectedModels, setSelectedModels] = useState<string[]>(() => [...AVAILABLE_FREE_MODELS]);
   const [results, setResults] = useState<ModelTestResult[]>([]);
   const [isPending, startTransition] = useTransition();
-  const [isClient, setIsClient] = useState(false);
-
-  // Initialiser côté client pour éviter les erreurs d'hydratation
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Initialiser les modèles après le premier render
-  useEffect(() => {
-    if (isClient && selectedModels.length === 0) {
-      setSelectedModels([...AVAILABLE_FREE_MODELS]);
-    }
-  }, [isClient, selectedModels.length]);
 
   const handleDishNameChange = (value: string) => {
     setDishName(value);
@@ -164,8 +152,7 @@ export function ModelComparison() {
       <div className="rounded-2xl border border-white/20 bg-white/80 p-6 backdrop-blur-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-text">
-            Modèles à tester{" "}
-            {isClient && `(${selectedModels.length}/${AVAILABLE_FREE_MODELS.length})`}
+            Modèles à tester ({selectedModels.length}/{AVAILABLE_FREE_MODELS.length})
           </h2>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={selectAllModels}>
@@ -204,7 +191,7 @@ export function ModelComparison() {
             ) : (
               <>
                 <Play className="mr-2 h-4 w-4" />
-                Lancer le test{isClient && ` (${selectedModels.length} modèles)`}
+                Lancer le test ({selectedModels.length} modèles)
               </>
             )}
           </Button>
