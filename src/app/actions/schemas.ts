@@ -335,3 +335,7 @@ export const submitFeedbackSchema = z.object({
   content: safeText(2000),
   url: z.string().optional(),
 });
+
+export const deleteFeedbackAdminSchema = z.object({
+  id: z.number().int().positive(),
+});

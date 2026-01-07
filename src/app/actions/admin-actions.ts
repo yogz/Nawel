@@ -1,7 +1,16 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { events, meals, services, people, items, ingredientCache, user } from "@drizzle/schema";
+import {
+  events,
+  meals,
+  services,
+  people,
+  items,
+  ingredientCache,
+  user,
+  feedback,
+} from "@drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { eq, count, desc, ilike } from "drizzle-orm";
@@ -16,6 +25,7 @@ import {
   toggleUserBanAdminSchema,
   deleteCitationAdminSchema,
   updateCitationAdminSchema,
+  deleteFeedbackAdminSchema,
 } from "./schemas";
 import fs from "fs";
 import path from "path";
@@ -485,5 +495,60 @@ export const updateCitationAdminAction = createSafeAction(
 
     revalidatePath("/admin/citations");
     return { success: true, item: currentItem };
+  }
+);
+
+// ==========================================
+// Feedback Admin Actions
+// ==========================================
+
+export type AdminFeedback = {
+  id: number;
+  userId: string | null;
+  content: string;
+  userAgent: string | null;
+  url: string | null;
+  createdAt: Date;
+  user?: {
+    name: string;
+    email: string;
+  } | null;
+};
+
+export const getAllFeedbackAction = withErrorThrower(async (): Promise<AdminFeedback[]> => {
+  await requireAdmin();
+
+  const allFeedback = await db.query.feedback.findMany({
+    with: {
+      user: true,
+    },
+    orderBy: (feedback, { desc }) => [desc(feedback.createdAt)],
+  });
+
+  return allFeedback.map((f) => ({
+    id: f.id,
+    userId: f.userId,
+    content: f.content,
+    userAgent: f.userAgent,
+    url: f.url,
+    createdAt: f.createdAt,
+    user: f.user
+      ? {
+          name: f.user.name,
+          email: f.user.email,
+        }
+      : null,
+  }));
+});
+
+export const deleteFeedbackAdminAction = createSafeAction(
+  deleteFeedbackAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    await db.delete(feedback).where(eq(feedback.id, input.id));
+
+    revalidatePath("/admin/feedback");
+    return { success: true };
   }
 );
