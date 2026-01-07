@@ -62,7 +62,7 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className="z-[70]" overlayClassName="z-[60]">
         <DrawerHeader>
           <DrawerTitle className="flex items-center gap-2">
             <Bug className="h-5 w-5 text-accent" />
