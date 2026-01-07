@@ -121,16 +121,27 @@
     "signingIn": "Aanmelden...",
     "signingUp": "Aanmaken...",
     "googleButton": "Aanmelden met Google",
-    "or continueWith": "Of doorgaan met",
+    "orContinueWith": "Of doorgaan met",
     "noAccount": "Nog geen account?",
     "haveAccount": "Al een account?",
     "guestLink": "Doorgaan zonder aanmelden"
   },
+  "FAQ": {
+    "title": "Veelgestelde Vragen",
+    "q1": "Is het echt gratis?",
+    "a1": "Ja, CoList is voorlopig 100% gratis. Alle functies, inclusief AI en onbeperkte uitnodigingen, zijn kosteloos toegankelijk.",
+    "q2": "Moeten mijn gasten een account aanmaken?",
+    "a2": "Nee! Dat is juist onze kracht. Ze ontvangen je link, klikken erop en kunnen zonder registratie of app-installatie aangeven wat ze meenemen.",
+    "q3": "Wat als iemand geen smartphone heeft?",
+    "a3": "De link werkt in elke browser (computer, tablet, smartphone). Je kunt ook handmatig toevoegen wat oma meeneemt als ze niet online is.",
+    "q4": "Hoe werkt de boodschappenlijst?",
+    "a4": "De app verzamelt alles wat nog gekocht moet worden (wat nog niemand heeft genomen) in een globale lijst voor de gastheer, en maakt een gepersonaliseerde lijst voor elke gast met hun eigen bijdragen."
+  },
   "Profile": {
     "settings": "Profielinstellingen",
-    "deleteAccount": "Mijn account verwijderen",
+    "deleteAccount": "Mijn gebruikersprofiel verwijderen",
     "dangerZone": "Gevarenzone",
-    "deleteWarning": "Deze actie is onomkeerbaar. Al uw gegevens en de evenementen die u heeft aangemaakt worden permanent verwijderd.",
+    "deleteWarning": "Deze actie is onomkeerbaar. Uw gebruikersprofiel en al uw gegevens worden permanent verwijderd.",
     "confirmDelete": "Verwijdering bevestigen",
     "back": "Terug"
   },
@@ -311,7 +322,9 @@
         "quantityLabel": "Hoeveelheid",
         "add": "Toevoegen",
         "analyzing": "Recept analyseren...",
-        "count": "{count, plural, =0 {geen ingrediënten} one {1 ingrediënt} other {# ingrediënten}}"
+        "count": "{count, plural, =0 {geen ingrediënten} one {1 ingrediënt} other {# ingrediënten}}",
+        "deleteConfirmTitle": "Alle ingrediënten verwijderen?",
+        "deleteConfirmDescription": "Weet u zeker dat u alle ingrediënten uit deze lijst wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
       }
     },
     "ServiceForm": {
@@ -549,7 +562,7 @@
       "theme": "Thema",
       "language": "Taal",
       "logout": "Afmelden",
-      "deleteAccountWarning": "Waarschuwing: deze actie kan niet ongedaan worden gemaakt. Alle uw gegevens worden verwijderd.",
+      "deleteAccountWarning": "Waarschuwing: deze actie verwijdert uw gebruikersprofiel permanent. Deze actie kan niet ongedaan worden gemaakt.",
       "updateLoading": "Opslaan...",
       "synchronized": "Gesynchroniseerd",
       "autoAvatar": "Automatische Avatar",

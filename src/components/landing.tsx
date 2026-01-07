@@ -160,6 +160,9 @@ export function Landing() {
         <p>{t("footer")}</p>
       </footer>
 
+      {/* FAQ Section */}
+      <Faq />
+
       {/* Mobile Sticky CTA */}
       <StickyCta />
     </div>

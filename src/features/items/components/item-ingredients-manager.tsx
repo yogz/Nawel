@@ -6,6 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X, Plus, Trash2, CheckCircle2, Circle, Sparkles, Loader2, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import clsx from "clsx";
 
 interface ItemIngredientsManagerProps {
@@ -105,13 +116,31 @@ export function ItemIngredientsManager({
         </div>
         <div className="flex items-center gap-3">
           {ingredients.length > 0 && !readOnly && (
-            <button
-              onClick={onDeleteAll}
-              className="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50"
-              aria-label={tShared("deleteAll")}
-            >
-              <Trash2 size={22} />
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  className="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50"
+                  aria-label={tShared("deleteAll")}
+                >
+                  <Trash2 size={22} />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("deleteConfirmDescription")}</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{tShared("cancel")}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDeleteAll}
+                    className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+                  >
+                    {tShared("delete")}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
           <button
             onClick={onClose}

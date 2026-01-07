@@ -121,16 +121,27 @@
     "signingIn": "Loggar in...",
     "signingUp": "Skapar...",
     "googleButton": "Logga in med Google",
-    "or continueWith": "Eller fortsätt med",
+    "orContinueWith": "Eller fortsätt med",
     "noAccount": "Inget konto än?",
     "haveAccount": "Har redan ett konto?",
     "guestLink": "Fortsätt utan att logga in"
   },
+  "FAQ": {
+    "title": "Vanliga Frågor",
+    "q1": "Är det verkligen gratis?",
+    "a1": "Ja, CoList är 100% gratis för tillfället. Alla funktioner, inklusive AI och obegränsade inbjudningar, är tillgängliga utan kostnad.",
+    "q2": "Måste mina gäster skapa ett konto?",
+    "a2": "Nej! Det är vår styrka. De får din länk, klickar och kan ange vad de tar med sig utan någon registrering eller appinstallation.",
+    "q3": "Vad händer om någon inte har en smartphone?",
+    "a3": "Länken fungerar i alla webbläsare (dator, surfplatta, smartphone). Du kan också manuellt lägga till vad mormor tar med sig om hon inte är ansluten.",
+    "q4": "Hur fungerar inköpslistan?",
+    "a4": "Appen sammanställer allt som finns kvar att köpa (det som ingen har tagit ännu) i en global lista för värden, och skapar en personlig lista för varje gäst med deras egna bidrag."
+  },
   "Profile": {
     "settings": "Profilinställningar",
-    "deleteAccount": "Ta bort mitt konto",
+    "deleteAccount": "Ta bort min användarprofil",
     "dangerZone": "Farozonen",
-    "deleteWarning": "Denna åtgärd är oåterkallelig. All din data och de evenemang du skapat kommer att raderas permanent.",
+    "deleteWarning": "Denna åtgärd är oåterkallelig. Din användarprofil och all din data kommer att raderas permanent.",
     "confirmDelete": "Bekräfta radering",
     "back": "Tillbaka"
   },
@@ -311,7 +322,9 @@
         "quantityLabel": "Mängd",
         "add": "Lägg till",
         "analyzing": "Analyserar recept...",
-        "count": "{count, plural, =0 {inga ingredienser} one {1 ingrediens} other {# ingredienser}}"
+        "count": "{count, plural, =0 {inga ingredienser} one {1 ingrediens} other {# ingredienser}}",
+        "deleteConfirmTitle": "Ta bort alla ingredienser?",
+        "deleteConfirmDescription": "Är du säker på att du vill ta bort alla ingredienser från listan? Denna åtgärd kan inte ångras."
       }
     },
     "ServiceForm": {
@@ -549,7 +562,7 @@
       "theme": "Tema",
       "language": "Språk",
       "logout": "Logga ut",
-      "deleteAccountWarning": "Varning: denna åtgärd kan inte ångras. Alla dina data kommer att tas bort.",
+      "deleteAccountWarning": "Varning: denna åtgärd kommer att ta bort din användarprofil permanent. Denna åtgärd kan inte ångras.",
       "updateLoading": "Sparar...",
       "synchronized": "Synkroniserad",
       "autoAvatar": "Automatisk Avatar",

@@ -385,8 +385,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 </span>
               </Button>
 
-              {/* Danger Zone - In-Place Reveal */}
-              <div className="pt-2">
+              {/* Danger Zone - In-Place Reveal (with extra space) */}
+              <div className="pt-6">
                 {!showAdvanced ? (
                   <DangerZoneTrigger
                     onClick={() => setShowAdvanced(true)}

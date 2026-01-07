@@ -125,11 +125,22 @@
     "haveAccount": "¿Ya tienes una cuenta?",
     "guestLink": "Continuar sin identificarse"
   },
+  "FAQ": {
+    "title": "Preguntas frecuentes",
+    "q1": "¿Es realmente gratis?",
+    "a1": "Sí, CoList es 100% gratis por ahora. Todas las funciones, incluyendo la IA y las invitaciones ilimitadas, son accesibles sin costo.",
+    "q2": "¿Mis invitados necesitan crear una cuenta?",
+    "a2": "¡No! Ese es nuestro punto fuerte. Reciben tu enlace, hacen clic y pueden indicar qué van a traer sin ningún registro ni instalación de aplicación.",
+    "q3": "¿Y si alguien no tiene un smartphone?",
+    "a3": "El enlace funciona en cualquier navegador (ordenador, tableta, smartphone). También puedes añadir manualmente lo que trae la abuela si no está conectada.",
+    "q4": "¿Cómo funciona la lista de la compra?",
+    "a4": "La aplicación recopila todo lo que queda por comprar (lo que nadie ha cogido todavía) en una lista global para el anfitrión, y crea una lista personalizada para cada invitado con sus propias contribuciones."
+  },
   "Profile": {
     "settings": "Ajustes del perfil",
-    "deleteAccount": "Eliminar mi cuenta",
+    "deleteAccount": "Eliminar mi perfil de usuario",
     "dangerZone": "Zona de peligro",
-    "deleteWarning": "Esta acción es irreversible. Todos tus datos y eventos que hayas creado se eliminarán permanentemente.",
+    "deleteWarning": "Esta acción es irreversible. Tu perfil de usuario y todos tus datos personales se eliminarán de forma permanente.",
     "confirmDelete": "Confirmar eliminación",
     "back": "Volver"
   },
@@ -309,7 +320,9 @@
         "quantityLabel": "Cantidad",
         "add": "Añadir",
         "analyzing": "Analizando receta...",
-        "count": "{count, plural, =0 {ningún ingrediente} one {1 ingrediente} other {# ingredientes}}"
+        "count": "{count, plural, =0 {ningún ingrediente} one {1 ingrediente} other {# ingredientes}}",
+        "deleteConfirmTitle": "¿Eliminar todos los ingredientes?",
+        "deleteConfirmDescription": "¿Estás seguro de que deseas eliminar todos los ingredientes de esta lista? Esta acción es irreversible."
       }
     },
     "ServiceForm": {
@@ -541,7 +554,7 @@
       "theme": "Tema",
       "language": "Idioma",
       "logout": "Cerrar sesión",
-      "deleteAccountWarning": "Advertencia: Esta acción es irreversible. Todos tus datos serán eliminados.",
+      "deleteAccountWarning": "Atención: Esta acción eliminará permanentemente su perfil de usuario. Es irreversible.",
       "updateLoading": "Guardando...",
       "synchronized": "Sincronizado",
       "autoAvatar": "Avatar Automático",

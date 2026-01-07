@@ -8,6 +8,17 @@ import { Plus, X } from "lucide-react";
 import { type Ingredient } from "@/lib/types";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface IngredientListProps {
   ingredients: Ingredient[];
@@ -54,13 +65,28 @@ export function IngredientList({
           Ingredients ({checkedCount}/{ingredients.length})
         </span>
         {!readOnly && (
-          <button
-            type="button"
-            onClick={onDeleteAll}
-            className="text-xs text-red-400 hover:text-red-600"
-          >
-            {tShared("deleteAll") || "Tout supprimer"}
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button type="button" className="text-xs text-red-400 hover:text-red-600">
+                {tShared("deleteAll") || "Tout supprimer"}
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("deleteConfirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>{t("deleteConfirmDescription")}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{tShared("cancel")}</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={onDeleteAll}
+                  className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+                >
+                  {tShared("delete")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
       </div>
 

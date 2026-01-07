@@ -121,16 +121,27 @@
     "signingIn": "Accesso in corso...",
     "signingUp": "Creazione in corso...",
     "googleButton": "Accedi con Google",
-    "or continueWith": "Oppure continua con",
+    "orContinueWith": "Oppure continua con",
     "noAccount": "Non hai ancora un account?",
     "haveAccount": "Hai già un account?",
     "guestLink": "Continua senza accedere"
   },
+  "FAQ": {
+    "title": "Domande Frequenti",
+    "q1": "È davvero gratuito?",
+    "a1": "Sì, CoList è attualmente gratuito al 100%. Tutte le funzionalità, inclusa l'IA e gli inviti illimitati, sono accessibili senza costi.",
+    "q2": "I miei ospiti devono creare un account?",
+    "a2": "No! Questo è il nostro punto di forza. Ricevono il tuo link, cliccano e possono indicare cosa porteranno senza alcuna registrazione o installazione di app.",
+    "q3": "E se qualcuno non ha uno smartphone?",
+    "a3": "Il link funziona su qualsiasi browser (computer, tablet, smartphone). Puoi anche aggiungere manualmente ciò che porta la nonna se lei non è connessa.",
+    "q4": "Come funziona la lista della spesa?",
+    "a4": "L'app raccoglie tutto ciò che resta da acquistare (quello che nessuno ha ancora preso) in una lista globale per l'organizzatore, e crea una lista personalizzata per ogni ospite con i propri contributi."
+  },
   "Profile": {
     "settings": "Impostazioni profilo",
-    "deleteAccount": "Elimina il mio account",
+    "deleteAccount": "Elimina il mio profilo utente",
     "dangerZone": "Zona Pericolosa",
-    "deleteWarning": "Questa azione è irreversibile. Tutti i tuoi dati e gli eventi che hai creato saranno eliminati permanentemente.",
+    "deleteWarning": "Questa azione è irreversibile. Il tuo profilo utente e tutti i tuoi dati saranno eliminati permanentemente.",
     "confirmDelete": "Conferma eliminazione",
     "back": "Indietro"
   },
@@ -311,7 +322,9 @@
         "quantityLabel": "Quantità",
         "add": "Aggiungi",
         "analyzing": "Analisi ricetta in corso...",
-        "count": "{count, plural, =0 {nessun ingrediente} one {1 ingrediente} other {# ingredienti}}"
+        "count": "{count, plural, =0 {nessun ingrediente} one {1 ingrediente} other {# ingredienti}}",
+        "deleteConfirmTitle": "Eliminare tutti gli ingredienti?",
+        "deleteConfirmDescription": "Sei sicuro di voler eliminare tutti gli ingredienti da questo elenco? Questa azione è irreversibile."
       }
     },
     "ServiceForm": {
@@ -549,7 +562,7 @@
       "theme": "Tema",
       "language": "Lingua",
       "logout": "Esci",
-      "deleteAccountWarning": "Avvertenza: questa azione è irreversibile. Tutti i tuoi dati verranno eliminati.",
+      "deleteAccountWarning": "Avvertenza: questa azione eliminerà permanentemente il tuo profilo utente. È irreversibile.",
       "updateLoading": "Salvataggio in corso...",
       "synchronized": "Sincronizzato",
       "autoAvatar": "Avatar Automatico",

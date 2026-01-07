@@ -121,16 +121,27 @@
     "signingIn": "Logowanie...",
     "signingUp": "Tworzenie...",
     "googleButton": "Zaloguj się przez Google",
-    "or continueWith": "Lub kontynuuj z",
+    "orContinueWith": "Lub kontynuuj z",
     "noAccount": "Nie masz jeszcze konta?",
     "haveAccount": "Masz już konto?",
     "guestLink": "Kontynuuj bez logowania"
   },
+  "FAQ": {
+    "title": "Najczęściej Zadawane Pytania",
+    "q1": "Czy to naprawdę jest darmowe?",
+    "a1": "Tak, CoList jest obecnie w 100% darmowy. Wszystkie funkcje, w tym AI i nieograniczona liczba zaproszeń, są dostępne bezpłatnie.",
+    "q2": "Czy moi goście muszą zakładać konto?",
+    "a2": "Nie! To nasza mocna strona. Otrzymują Twój link, klikają i mogą wskazać, co przynoszą, bez żadnej rejestracji ani instalowania aplikacji.",
+    "q3": "Co jeśli ktoś nie ma smartfona?",
+    "a3": "Link działa w każdej przeglądarce (komputer, tablet, smartfon). Możesz także ręcznie dodać to, co przynosi babcia, jeśli nie jest połączona.",
+    "q4": "Jak działa lista zakupów?",
+    "a4": "Aplikacja kompiluje wszystko, co pozostało do kupienia (czego nikt jeszcze nie wziął), w globalną listę dla gospodarza i tworzy spersonalizowaną listę dla każdego gościa z jego własnym wkładem."
+  },
   "Profile": {
     "settings": "Ustawienia profilu",
-    "deleteAccount": "Usuń moje konto",
+    "deleteAccount": "Usuń mój profil użytkownika",
     "dangerZone": "Strefa niebezpieczna",
-    "deleteWarning": "Ta akcja jest nieodwracalna. Wszystkie Twoje dane i wydarzenia, które stworzyłeś, zostaną trwale usunięte.",
+    "deleteWarning": "To działanie jest nieodwracalne. Twój profil użytkownika oraz wszystkie Twoje dane zostaną trwale usunięte.",
     "confirmDelete": "Potwierdź usunięcie",
     "back": "Wstecz"
   },
@@ -311,7 +322,9 @@
         "quantityLabel": "Ilość",
         "add": "Dodaj",
         "analyzing": "Analizowanie przepisu...",
-        "count": "{count, plural, =0 {brak składników} one {1 składnik} other {# składniki}}"
+        "count": "{count, plural, =0 {brak składników} one {1 składnik} other {# składniki}}",
+        "deleteConfirmTitle": "Usunąć wszystkie składniki?",
+        "deleteConfirmDescription": "Czy na pewno chcesz usunąć wszystkie składniki z tej listy? Tej akcji nie można cofnąć."
       }
     },
     "ServiceForm": {
@@ -549,7 +562,7 @@
       "theme": "Motyw",
       "language": "Język",
       "logout": "Wyloguj się",
-      "deleteAccountWarning": "Ostrzeżenie: tej czynności nie można cofnąć. Wszystkie Twoje dane zostaną usunięte.",
+      "deleteAccountWarning": "Ostrzeżenie: ta czynność na stałe usunie Twój profil użytkownika. Jest ona nieodwracalna.",
       "updateLoading": "Zapisywanie...",
       "synchronized": "Zsynchronizowane",
       "autoAvatar": "Automatyczny Avatar",

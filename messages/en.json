@@ -121,16 +121,27 @@
     "signingIn": "Signing in...",
     "signingUp": "Creating...",
     "googleButton": "Sign in with Google",
-    "or continueWith": "Or continue with",
+    "orContinueWith": "Or continue with",
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",
     "guestLink": "Continue without signing in"
   },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "q1": "Is it really free?",
+    "a1": "Yes, CoList is 100% free for now. All features, including AI and unlimited invitations, are accessible at no cost.",
+    "q2": "Do my guests need to create an account?",
+    "a2": "No! That's our strength. They receive your link, click, and can indicate what they are bringing without any registration or app installation.",
+    "q3": "What if someone doesn't have a smartphone?",
+    "a3": "The link works on any browser (computer, tablet, smartphone). You can also manually add what Grandma is bringing if she's not connected.",
+    "q4": "How does the shopping list work?",
+    "a4": "The app compiles everything left to buy (what no one has taken yet) into a global list for the host, and creates a personalized list for each guest with their own contributions."
+  },
   "Profile": {
     "settings": "Profile settings",
-    "deleteAccount": "Delete my account",
+    "deleteAccount": "Delete my user profile",
     "dangerZone": "Danger Zone",
-    "deleteWarning": "This action is irreversible. All your data and the events you created will be permanently deleted.",
+    "deleteWarning": "This action is irreversible. Your user profile and all your data will be permanently deleted.",
     "confirmDelete": "Confirm deletion",
     "back": "Back"
   },
@@ -314,7 +325,9 @@
         "quantityLabel": "Quantity",
         "add": "Add",
         "analyzing": "Analyzing recipe...",
-        "count": "{count, plural, =0 {no ingredients} one {1 ingredient} other {# ingredients}}"
+        "count": "{count, plural, =0 {no ingredients} one {1 ingredient} other {# ingredients}}",
+        "deleteConfirmTitle": "Delete all ingredients?",
+        "deleteConfirmDescription": "Are you sure you want to delete all ingredients from this list? This action is irreversible."
       }
     },
     "ServiceForm": {
@@ -552,7 +565,7 @@
       "theme": "Theme",
       "language": "Language",
       "logout": "Sign out",
-      "deleteAccountWarning": "Warning: This action is irreversible. All your data will be deleted.",
+      "deleteAccountWarning": "Warning: This action will permanently delete your user profile. It is irreversible.",
       "updateLoading": "Saving...",
       "synchronized": "Synchronized",
       "autoAvatar": "Auto Avatar",

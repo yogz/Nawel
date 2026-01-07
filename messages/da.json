@@ -121,16 +121,27 @@
     "signingIn": "Logger ind...",
     "signingUp": "Opretter...",
     "googleButton": "Log ind med Google",
-    "or continueWith": "Eller fortsæt med",
+    "orContinueWith": "Eller fortsæt med",
     "noAccount": "Har du ikke en konto endnu?",
     "haveAccount": "Har du allerede en konto?",
     "guestLink": "Fortsæt uden at logge ind"
   },
+  "FAQ": {
+    "title": "Ofte Stillede Spørgsmål",
+    "q1": "Er det virkelig gratis?",
+    "a1": "Ja, CoList er 100% gratis i øjeblikket. Alle funktioner, inklusive AI og ubegrænsede invitationer, er tilgængelige uden omkostninger.",
+    "q2": "Skal mine gæster oprette en konto?",
+    "a2": "Nej! Det er vores styrke. De modtager dit link, klikker og kan angive, hvad de medbringer uden nogen registrering eller app-installation.",
+    "q3": "Hvad hvis nogen ikke har en smartphone?",
+    "a3": "Linket virker i enhver browser (computer, tablet, smartphone). Du kan også manuelt tilføje, hvad mormor medbringer, hvis hun ikke er online.",
+    "q4": "Hvordan fungerer indkøbslisten?",
+    "a4": "Appen samler alt, hvad der er tilbage at købe (det som ingen har taget endnu), i en samlet liste til værten og opretter en personlig liste til hver gæst med deres egne bidrag."
+  },
   "Profile": {
     "settings": "Profilindstillinger",
-    "deleteAccount": "Slet min konto",
+    "deleteAccount": "Slet min brugerprofil",
     "dangerZone": "Farezone",
-    "deleteWarning": "Denne handling er irreversibel. Alle dine data og de begivenheder, du har oprettet, vil blive slettet permanent.",
+    "deleteWarning": "Denne handling er irreversibel. Din brugerprofil og alle dine data vil blive slettet permanent.",
     "confirmDelete": "Bekræft sletning",
     "back": "Tilbage"
   },
@@ -311,7 +322,9 @@
         "quantityLabel": "Mængde",
         "add": "Tilføj",
         "analyzing": "Analyserer opskrift...",
-        "count": "{count, plural, =0 {ingen ingredienser} one {1 ingrediens} other {# ingredienser}}"
+        "count": "{count, plural, =0 {ingen ingredienser} one {1 ingrediens} other {# ingredienser}}",
+        "deleteConfirmTitle": "Slet alle ingredienser?",
+        "deleteConfirmDescription": "Er du sikker på, at du vil slette alle ingredienser fra denne liste? Denne handling kan ikke fortrydes."
       }
     },
     "ServiceForm": {
@@ -549,7 +562,7 @@
       "theme": "Tema",
       "language": "Sprog",
       "logout": "Log ud",
-      "deleteAccountWarning": "Advarsel: denne handling kan ikke fortrydes. Alle dine data vil blive slettet.",
+      "deleteAccountWarning": "Advarsel: denne handling vil slette din brugerprofil permanent. Den kan ikke fortrydes.",
       "updateLoading": "Gemmer...",
       "synchronized": "Synkroniseret",
       "autoAvatar": "Automatisk Avatar",
