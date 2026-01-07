@@ -130,6 +130,13 @@
       "body": "Witaj w CoList! Kliknij poniższy link, aby zweryfikować swój adres e-mail i aktywować konto:",
       "button": "Zweryfikuj mój e-mail",
       "footer": "Jeśli nie utworzyłeś konta CoList, możesz bezpiecznie zignorować tę wiadomość."
+    },
+    "EmailVerificationBanner": {
+      "messageFull": "Twój e-mail nie został jeszcze zweryfikowany. Zweryfikuj go, aby uzyskać dostęp do wszystkich funkcji.",
+      "messageShort": "E-mail niezweryfikowany.",
+      "resend": "Wyślij ponownie",
+      "sent": "Wysłano!",
+      "error": "Wystąpił błąd."
     }
   },
   "FAQ": {

@@ -9,68 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
+import { useTranslations } from "next-intl";
+import { AuthForm } from "./auth-form";
 
 export function LoginForm() {
   const t = useTranslations("Login");
-  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
   const isUserMode = mode === "user";
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const callbackPath = isUserMode ? "/" : "/admin";
-      const callbackURL = getPathname({ href: callbackPath, locale });
-
-      if (authMode === "signin") {
-        const { error } = await signIn.email({
-          email,
-          password,
-          callbackURL,
-        });
-        if (error) {
-          setError(error.message || t("errorSignin"));
-          setLoading(false);
-          return;
-        }
-      } else {
-        const { error } = await signUp.email({
-          email,
-          password,
-          name: email.split("@")[0],
-          callbackURL,
-        });
-        if (error) {
-          setError(error.message || t("errorSignup"));
-          setLoading(false);
-          return;
-        }
-        sendGAEvent("event", "sign_up", { method: "email" });
-      }
-
-      sendGAEvent("event", "login", { method: "email" });
-
-      router.push(isUserMode ? "/" : "/admin");
-      router.refresh();
-    } catch {
-      setError(t("errorDefault"));
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center px-4">
@@ -121,157 +68,13 @@ export function LoginForm() {
         </div>
 
         <div className="relative z-20 w-full overflow-hidden rounded-3xl border border-white/50 bg-white/80 p-8 shadow-2xl backdrop-blur-2xl transition-all">
-          <div className="relative z-10">
-            <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
-              {isUserMode
-                ? authMode === "signin"
-                  ? t("signinTitle")
-                  : t("signupTitle")
-                : t("adminTitle")}
-            </h1>
-            <p className="mb-8 text-center text-sm font-medium text-gray-500">
-              {isUserMode
-                ? authMode === "signin"
-                  ? t("signinDescription")
-                  : t("signupDescription")
-                : t("adminDescription")}
-            </p>
-
-            <Button
-              onClick={async () => {
-                setLoading(true);
-                try {
-                  const callbackPath = isUserMode ? "/" : "/admin";
-                  const callbackURL = getPathname({ href: callbackPath, locale });
-                  await signIn.social({
-                    provider: "google",
-                    callbackURL,
-                  });
-                  sendGAEvent("event", "login", { method: "google" });
-                } catch (err) {
-                  console.error(err);
-                  setLoading(false);
-                }
-              }}
-              disabled={loading}
-              variant="outline"
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 hover:text-[#1f1f1f] active:scale-95"
-              shine
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <GoogleIcon className="h-5 w-5" />
-              )}
-              {t("googleButton")}
-            </Button>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-100" />
-              </div>
-              <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-                <span className="bg-transparent px-3 text-gray-400">{t("orContinueWith")}</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="text-[10px] font-black uppercase tracking-widest text-gray-400"
-                >
-                  {t("emailLabel")}
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("emailPlaceholder")}
-                  required
-                  disabled={loading}
-                  autoComplete="email"
-                  enterKeyHint="next"
-                  className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-[10px] font-black uppercase tracking-widest text-gray-400"
-                >
-                  {t("passwordLabel")}
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t("passwordPlaceholder")}
-                  required
-                  disabled={loading}
-                  autoComplete={authMode === "signin" ? "current-password" : "new-password"}
-                  enterKeyHint="done"
-                  className="h-12 border-gray-100 bg-white/50 px-4 focus:bg-white"
-                />
-              </div>
-
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-500"
-                >
-                  {error}
-                </motion.p>
-              )}
-
-              <Button
-                type="submit"
-                className="h-12 w-full rounded-2xl bg-gray-900 font-bold text-white shadow-xl shadow-gray-900/10 transition-all hover:bg-gray-800 active:scale-95 disabled:opacity-50"
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <Loader2 size={16} className="animate-spin" />
-                    {authMode === "signin" ? t("signingIn") : t("signingUp")}
-                  </span>
-                ) : authMode === "signin" ? (
-                  t("signinButton")
-                ) : (
-                  t("signupButton")
-                )}
-              </Button>
-            </form>
-
-            {isUserMode && (
-              <p className="mt-8 text-center text-xs font-semibold text-gray-500">
-                {authMode === "signin" ? (
-                  <>
-                    {t("noAccount")}{" "}
-                    <button
-                      onClick={() => setAuthMode("signup")}
-                      className="font-bold text-accent hover:underline"
-                    >
-                      {t("signupButton")}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {t("haveAccount")}{" "}
-                    <button
-                      onClick={() => setAuthMode("signin")}
-                      className="font-bold text-accent hover:underline"
-                    >
-                      {t("signinButton")}
-                    </button>
-                  </>
-                )}
-              </p>
-            )}
-          </div>
+          <AuthForm
+            isUserMode={isUserMode}
+            onSuccess={() => {
+              router.push(isUserMode ? "/" : "/admin");
+              router.refresh();
+            }}
+          />
         </div>
       </div>
 

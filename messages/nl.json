@@ -130,6 +130,13 @@
       "body": "Welkom bij CoList! Klik op de onderstaande link om uw e-mailadres te verifiëren en uw account te activeren:",
       "button": "Verifieer mijn e-mail",
       "footer": "Als u geen CoList-account heeft aangemaakt, kunt u deze e-mail veilig negeren."
+    },
+    "EmailVerificationBanner": {
+      "messageFull": "Uw e-mailadres is nog niet geverifieerd. Verifieer het om toegang te krijgen tot alle functies.",
+      "messageShort": "Email niet geverifieerd.",
+      "resend": "Opnieuw verzenden",
+      "sent": "Verzonden!",
+      "error": "Er is een fout opgetreden."
     }
   },
   "FAQ": {

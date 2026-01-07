@@ -129,6 +129,13 @@
       "body": "Willkommen bei CoList! Klicken Sie auf den untenstehenden Link, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren:",
       "button": "E-Mail bestätigen",
       "footer": "Wenn Sie kein CoList-Konto erstellt haben, können Sie diese E-Mail einfach ignorieren."
+    },
+    "EmailVerificationBanner": {
+      "messageFull": "Ihre E-Mail wurde noch nicht verifiziert. Bitte verifizieren Sie diese, um alle Funktionen zu nutzen.",
+      "messageShort": "E-Mail nicht verifiziert.",
+      "resend": "Erneut senden",
+      "sent": "Gesendet!",
+      "error": "Ein Fehler ist aufgetreten."
     }
   },
   "FAQ": {

@@ -130,6 +130,13 @@
       "body": "Välkommen till CoList! Klicka på länken nedan för att verifiera din e-postadress och aktivera ditt konto:",
       "button": "Verifiera min e-post",
       "footer": "Om du inte har skapat ett CoList-konto kan du ignorera detta e-postmeddelande."
+    },
+    "EmailVerificationBanner": {
+      "messageFull": "Din e-postadress har inte verifierats ännu. Verifiera den för att få tillgång till alla funktioner.",
+      "messageShort": "E-post ej verifierad.",
+      "resend": "Skicka igen",
+      "sent": "Skickat!",
+      "error": "Ett fel uppstod."
     }
   },
   "FAQ": {

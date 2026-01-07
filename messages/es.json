@@ -129,6 +129,13 @@
       "body": "¡Bienvenido a CoList! Haz clic en el enlace de abajo para verificar tu dirección de correo electrónico y activar tu cuenta:",
       "button": "Verificar mi correo",
       "footer": "Si no creaste una cuenta en CoList, puedes ignorar este correo con seguridad."
+    },
+    "EmailVerificationBanner": {
+      "messageFull": "Tu correo electrónico aún no ha sido verificado. Por favor, verifícalo para acceder a todas las funciones.",
+      "messageShort": "Correo no verificado.",
+      "resend": "Reenviar",
+      "sent": "¡Enviado!",
+      "error": "Ocurrió un error."
     }
   },
   "FAQ": {

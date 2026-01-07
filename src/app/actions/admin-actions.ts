@@ -258,9 +258,12 @@ export type AdminUser = {
   id: string;
   name: string;
   email: string;
+  emailVerified: boolean;
   role: string | null;
   banned: boolean | null;
   createdAt: Date;
+  lastLogin: Date | null;
+  linkedAccounts: string[];
   eventsCount: number;
   peopleCount: number;
 };
@@ -269,6 +272,13 @@ export const getAllUsersAction = withErrorThrower(async (): Promise<AdminUser[]>
   await requireAdmin();
 
   const allUsers = await db.query.user.findMany({
+    with: {
+      sessions: {
+        orderBy: (s, { desc }) => [desc(s.createdAt)],
+        limit: 1,
+      },
+      accounts: true,
+    },
     orderBy: (user, { desc }) => [desc(user.createdAt)],
   });
 
@@ -288,9 +298,12 @@ export const getAllUsersAction = withErrorThrower(async (): Promise<AdminUser[]>
         id: u.id,
         name: u.name,
         email: u.email,
+        emailVerified: u.emailVerified,
         role: u.role ?? "user",
         banned: u.banned,
         createdAt: u.createdAt,
+        lastLogin: u.sessions[0]?.createdAt ?? null,
+        linkedAccounts: u.accounts.map((acc) => acc.providerId),
         eventsCount: eventsResult?.count ?? 0,
         peopleCount: peopleResult?.count ?? 0,
       };

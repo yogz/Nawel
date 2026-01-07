@@ -42,7 +42,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
-    requireEmailVerification: true,
+    requireEmailVerification: false, // Allow auto-login before verification; banner will remind them
   },
   socialProviders: {
     google: {

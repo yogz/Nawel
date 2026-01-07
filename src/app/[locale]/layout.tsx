@@ -73,6 +73,7 @@ export const viewport: Viewport = {
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";
+import { VerificationBanner } from "@/components/auth/verification-banner";
 
 export default async function RootLayout({
   children,
@@ -158,6 +159,7 @@ export default async function RootLayout({
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
+            <VerificationBanner />
             {children}
             <BugReportButton />
             <SnowOverlay />

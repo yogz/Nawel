@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getAllEventsAction } from "@/app/actions/admin-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminEventList } from "@/components/admin/admin-event-list";
+import { Suspense } from "react";
 
 import { setRequestLocale } from "next-intl/server";
 
@@ -44,7 +45,9 @@ export default async function AdminPage(props: { params: Promise<{ locale: strin
             {events.length} événement{events.length > 1 ? "s" : ""} au total
           </p>
         </div>
-        <AdminEventList initialEvents={events} />
+        <Suspense fallback={<div>Chargement...</div>}>
+          <AdminEventList initialEvents={events} />
+        </Suspense>
       </main>
     </div>
   );

@@ -17,7 +17,12 @@ import {
   Shield,
   Mail,
   Clock,
+  ExternalLink,
+  Link2,
+  XCircle,
+  HelpCircle,
 } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 
 export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [users, setUsers] = useState(initialUsers);
@@ -112,23 +117,58 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4" />
                     {user.email}
+                    {user.emailVerified ? (
+                      <span className="flex items-center gap-1 text-[10px] font-medium text-green-600">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Vérifié
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-[10px] font-medium text-red-500">
+                        <XCircle className="h-3 w-3" />
+                        Non vérifié
+                      </span>
+                    )}
                   </div>
+
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    Inscrit le {formatDate(user.createdAt)}
+                    Dernière connexion :{" "}
+                    {user.lastLogin ? formatDate(user.lastLogin) : "Jamais connecté"}
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
+                  <Link
+                    href={`/admin?q=${encodeURIComponent(user.email)}`}
+                    className="flex items-center gap-1.5 transition-colors hover:text-primary"
+                  >
                     <Calendar className="h-4 w-4" />
                     <strong>{user.eventsCount}</strong> événement{user.eventsCount > 1 ? "s" : ""}
-                  </span>
+                    <ExternalLink className="h-3 w-3" />
+                  </Link>
                   <span className="flex items-center gap-1.5">
                     <UserIcon className="h-4 w-4" />
                     <strong>{user.peopleCount}</strong> profil{user.peopleCount > 1 ? "s" : ""} lié
                     {user.peopleCount > 1 ? "s" : ""}
                   </span>
+                </div>
+
+                <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1 rounded-md bg-black/5 px-2 py-1">
+                    <Link2 className="h-3 w-3" />
+                    <span className="font-medium">Comptes liés :</span>
+                    {user.linkedAccounts.length > 0 ? (
+                      <span className="text-text/80 capitalize">
+                        {user.linkedAccounts.join(", ")}
+                      </span>
+                    ) : (
+                      <span className="text-text/40 italic">Aucun</span>
+                    )}
+                    <div className="ml-1 flex items-center gap-1 border-l border-black/10 pl-2 text-[10px] text-muted-foreground/60">
+                      <HelpCircle className="h-2.5 w-2.5" />
+                      Services tiers utilisés pour se connecter (Google, Facebook, etc.)
+                    </div>
+                  </div>
                 </div>
               </div>
 

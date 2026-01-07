@@ -24,7 +24,11 @@ import {
   Check,
   Baby,
   User,
+  Search,
+  X,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export function AdminEventList({ initialEvents }: { initialEvents: EventWithStats[] }) {
   const [events, setEvents] = useState(initialEvents);
@@ -32,6 +36,28 @@ export function AdminEventList({ initialEvents }: { initialEvents: EventWithStat
   const [deletingEvent, setDeletingEvent] = useState<EventWithStats | null>(null);
   const [isPending, startTransition] = useTransition();
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setSearchQuery(q);
+    }
+  }, [searchParams]);
+
+  const filteredEvents = events.filter((event) => {
+    const searchLower = searchQuery.toLowerCase().trim();
+    if (!searchLower) return true;
+
+    return (
+      event.name.toLowerCase().includes(searchLower) ||
+      event.slug.toLowerCase().includes(searchLower) ||
+      event.owner?.name.toLowerCase().includes(searchLower) ||
+      event.owner?.email.toLowerCase().includes(searchLower)
+    );
+  });
 
   const getEditUrl = (event: EventWithStats) => {
     return event.adminKey ? `/event/${event.slug}?key=${event.adminKey}` : `/event/${event.slug}`;
@@ -122,8 +148,31 @@ export function AdminEventList({ initialEvents }: { initialEvents: EventWithStat
 
   return (
     <>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Rechercher par nom, slug, propriétaire..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-text"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {filteredEvents.length} résultat{filteredEvents.length > 1 ? "s" : ""}
+        </p>
+      </div>
+
       <div className="grid gap-4">
-        {events.map((event) => (
+        {filteredEvents.map((event) => (
           <div
             key={event.id}
             className="rounded-2xl border border-white/20 bg-white/80 p-4 shadow-lg backdrop-blur-sm sm:p-6"
