@@ -1,9 +1,10 @@
 "use client";
 
 import { CalendarRange, Users, ShoppingCart } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { trackTabChange } from "@/lib/analytics";
 
 const authenticatedTabs = [
@@ -28,13 +29,33 @@ interface TabBarProps {
 export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
+  const [visibleLabel, setVisibleLabel] = useState<TabKey | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleTabChange = (key: TabKey) => {
     if (key !== active) {
       trackTabChange(key, active);
     }
     onChange(key);
+
+    // Show label for 3 seconds
+    setVisibleLabel(key);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setVisibleLabel(null);
+    }, 3000);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="pointer-events-none fixed bottom-4 left-1/2 z-40 w-full max-w-sm -translate-x-1/2 px-4">
@@ -47,6 +68,8 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
+          const isLabelVisible = visibleLabel === tab.key;
+
           return (
             <button
               key={tab.key}
@@ -76,14 +99,25 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               >
                 <Icon size={selected ? 20 : 18} strokeWidth={selected ? 2.5 : 2} />
               </div>
-              <span
-                className={clsx(
-                  "relative z-10 text-xs font-black uppercase tracking-tighter transition-all duration-300 sm:text-[9px]",
-                  selected ? "text-accent opacity-100" : "opacity-70"
-                )}
-              >
-                {t(tab.key)}
-              </span>
+              <div className="relative h-3 w-full overflow-hidden sm:h-2.5">
+                <AnimatePresence mode="wait">
+                  {isLabelVisible && (
+                    <motion.span
+                      key={tab.key}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.2 }}
+                      className={clsx(
+                        "absolute inset-0 z-10 text-center text-[10px] font-black uppercase tracking-tighter sm:text-[8px]",
+                        selected ? "text-accent" : "text-gray-500"
+                      )}
+                    >
+                      {t(tab.key)}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
             </button>
           );
         })}
