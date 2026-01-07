@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, signUp, authClient } from "@/lib/auth-client";
+import { signIn, signUp, authClient, requestPasswordReset } from "@/lib/auth-client";
 import { useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,7 +106,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     setError("");
     setLoading(true);
     try {
-      const { error } = await (authClient as any).forgetPassword({
+      const { error } = await requestPasswordReset({
         email,
         redirectTo: "/reset-password",
       });

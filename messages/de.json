@@ -139,7 +139,13 @@
     },
     "forgotPassword": "Passwort vergessen?",
     "errorEmailRequired": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
-    "successResetEmail": "Zurücksetzungs-E-Mail gesendet! Überprüfen Sie Ihren Posteingang."
+    "successResetEmail": "Zurücksetzungs-E-Mail gesendet! Überprüfen Sie Ihren Posteingang.",
+    "EmailReset": {
+      "subject": "Passwort zurücksetzen",
+      "body": "Sie haben das Zurücksetzen Ihres CoList-Passworts angefordert. Klicken Sie auf die Schaltfläche unten, um fortzufahren.",
+      "button": "Passwort zurücksetzen",
+      "footer": "Wenn Sie diese Zurücksetzung nicht angefordert haben, können Sie diese E-Mail ignorieren."
+    }
   },
   "FAQ": {
     "title": "Häufig gestellte Fragen",

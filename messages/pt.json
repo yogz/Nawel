@@ -139,7 +139,13 @@
     },
     "forgotPassword": "Esqueceu a sua palavra-passe?",
     "errorEmailRequired": "Por favor, introduza o seu endereço de e-mail.",
-    "successResetEmail": "E-mail de redefinição enviado! Verifique a sua caixa de entrada."
+    "successResetEmail": "E-mail de redefinição enviado! Verifique a sua caixa de entrada.",
+    "EmailReset": {
+      "subject": "Redefinir sua senha",
+      "body": "Você solicitou a redefinição da sua senha da CoList. Clique no botão abaixo para continuar.",
+      "button": "Redefinir senha",
+      "footer": "Se você não solicitou essa redefinição, pode ignorar este e-mail com segurança."
+    }
   },
   "FAQ": {
     "title": "Perguntas Frequentes",

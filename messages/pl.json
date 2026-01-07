@@ -140,7 +140,13 @@
     },
     "forgotPassword": "Zapomniałeś hasła?",
     "errorEmailRequired": "Proszę podać swój adres e-mail.",
-    "successResetEmail": "E-mail z linkiem do resetowania został wysłany! Sprawdź swoją skrzynkę odbiorczą."
+    "successResetEmail": "E-mail z linkiem do resetowania został wysłany! Sprawdź swoją skrzynkę odbiorczą.",
+    "EmailReset": {
+      "subject": "Zresetuj swoje hasło",
+      "body": "Poprosiłeś o zresetowanie hasła do konta CoList. Kliknij w poniższy przycisk, aby kontynuować.",
+      "button": "Resetuj hasło",
+      "footer": "Jeśli nie prosiłeś o zresetowanie hasła, możesz bezpiecznie zignorować tę wiadomość."
+    }
   },
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",

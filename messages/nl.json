@@ -140,7 +140,13 @@
     },
     "forgotPassword": "Wachtwoord vergeten?",
     "errorEmailRequired": "Voer uw e-mailadres in.",
-    "successResetEmail": "Reset-e-mail verzonden! Controleer uw inbox."
+    "successResetEmail": "Reset-e-mail verzonden! Controleer uw inbox.",
+    "EmailReset": {
+      "subject": "Stel je wachtwoord opnieuw in",
+      "body": "Je hebt een wachtwoordherstel aangevraagd voor je CoList-account. Klik op de onderstaande knop om door te gaan.",
+      "button": "Wachtwoord herstellen",
+      "footer": "Als je dit herstel niet hebt aangevraagd, kun je deze e-mail veilig negeren."
+    }
   },
   "FAQ": {
     "title": "Veelgestelde Vragen",

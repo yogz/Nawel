@@ -140,7 +140,13 @@
     },
     "forgotPassword": "Forgot password?",
     "errorEmailRequired": "Please enter your email address.",
-    "successResetEmail": "Reset email sent! Check your inbox."
+    "successResetEmail": "Reset email sent! Check your inbox.",
+    "EmailReset": {
+      "subject": "Reset your password",
+      "body": "You requested a password reset for your CoList account. Click the button below to continue.",
+      "button": "Reset Password",
+      "footer": "If you did not request a password reset, you can safely ignore this email."
+    }
   },
   "FAQ": {
     "title": "Frequently Asked Questions",

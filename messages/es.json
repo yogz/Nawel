@@ -139,7 +139,13 @@
     },
     "forgotPassword": "¿Has olvidado tu contraseña?",
     "errorEmailRequired": "Por favor, introduce tu dirección de correo electrónico.",
-    "successResetEmail": "¡Correo de restablecimiento enviado! Revisa tu bandeja de entrada."
+    "successResetEmail": "¡Correo de restablecimiento enviado! Revisa tu bandeja de entrada.",
+    "EmailReset": {
+      "subject": "Restablecer tu contraseña",
+      "body": "Has solicitado restablecer tu contraseña de CoList. Haz clic en el botón de abajo para continuar.",
+      "button": "Restablecer contraseña",
+      "footer": "Si no has solicitado este restablecimiento, puedes ignorar este correo de forma segura."
+    }
   },
   "FAQ": {
     "title": "Preguntas frecuentes",

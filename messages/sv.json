@@ -140,7 +140,13 @@
     },
     "forgotPassword": "Glömt lösenordet?",
     "errorEmailRequired": "Ange din e-postadress.",
-    "successResetEmail": "Återställnings-e-post har skickats! Kontrollera din inkorg."
+    "successResetEmail": "Återställnings-e-post har skickats! Kontrollera din inkorg.",
+    "EmailReset": {
+      "subject": "Återställ ditt lösenord",
+      "body": "Du har begärt att få återställa ditt lösenord för CoList. Klicka på knappen nedan för att fortsätta.",
+      "button": "Återställ lösenord",
+      "footer": "Om du inte har begärt detta kan du säkert ignorera detta e-postmeddelande."
+    }
   },
   "FAQ": {
     "title": "Vanliga Frågor",

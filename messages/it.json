@@ -140,7 +140,13 @@
     },
     "forgotPassword": "Password dimenticata?",
     "errorEmailRequired": "Inserisci il tuo indirizzo email.",
-    "successResetEmail": "Email di ripristino inviata! Controlla la tua casella di posta."
+    "successResetEmail": "Email di ripristino inviata! Controlla la tua casella di posta.",
+    "EmailReset": {
+      "subject": "Reimposta la tua password",
+      "body": "Hai richiesto la reimpostazione della password per il tuo account CoList. Clicca sul pulsante qui sotto per continuare.",
+      "button": "Reimposta password",
+      "footer": "Se non hai richiesto questa reimpostazione, puoi ignorare tranquillamente questa email."
+    }
   },
   "FAQ": {
     "title": "Domande Frequenti",
