@@ -54,7 +54,7 @@ export function AdminHeader({ user }: { user: User }) {
         </div>
 
         {/* Navigation tabs */}
-        <nav className="-mb-px flex gap-1">
+        <nav className="-mb-px flex gap-1 overflow-x-auto pb-px scrollbar-hide">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -63,14 +63,14 @@ export function AdminHeader({ user }: { user: User }) {
                 key={item.href}
                 href={item.href}
                 className={clsx(
-                  "flex items-center gap-2 rounded-t-lg px-4 py-2.5 text-sm font-medium transition-colors",
+                  "flex shrink-0 items-center gap-2 rounded-t-lg px-3 py-2.5 text-sm font-medium transition-colors sm:px-4",
                   isActive
                     ? "border-b-2 border-primary bg-primary/5 text-primary"
                     : "text-muted-foreground hover:bg-black/5 hover:text-text"
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                <span className="hidden sm:inline">{item.label}</span>
               </Link>
             );
           })}
