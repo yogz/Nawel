@@ -8,7 +8,7 @@ const THEMES: { id: ThemeName; label: string; description: string; emoji: string
   {
     id: "none",
     label: "Classique",
-    description: "Sérious, sobre et minimaliste Noir & Blanc",
+    description: "Sobre, élégant et lisible - Neutre et raffiné",
     emoji: "⚫️",
   },
   { id: "christmas", label: "Noël", description: "Ambiance festive avec neige", emoji: "🎄" },
@@ -78,11 +78,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Retirer tous les thèmes
-    document.body.classList.remove("theme-christmas", "theme-aurora", "theme-readable");
+    document.body.classList.remove(
+      "theme-christmas",
+      "theme-aurora",
+      "theme-readable",
+      "theme-none"
+    );
     // Ajouter le thème actif
-    if (theme !== "none") {
-      document.body.classList.add(`theme-${theme}`);
-    }
+    document.body.classList.add(`theme-${theme}`);
   }, [theme]);
 
   const setTheme = (newTheme: ThemeName) => {

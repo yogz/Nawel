@@ -146,9 +146,7 @@ export default async function RootLayout({
                     var parsed = JSON.parse(stored);
                     theme = parsed.id || 'aurora';
                   }
-                  if (theme !== 'none') {
-                    document.body.classList.add('theme-' + theme);
-                  }
+                  document.body.classList.add('theme-' + theme);
                 } catch (e) {}
               })()
             `,
