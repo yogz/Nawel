@@ -22,6 +22,7 @@ export function ShareModal({
   eventName?: string;
 }) {
   const t = useTranslations("EventDashboard.Sheets.Share");
+  const tShared = useTranslations("EventDashboard.Shared");
   const [copiedLink, setCopiedLink] = useState(false);
 
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -40,7 +41,7 @@ export function ShareModal({
   };
 
   const handleWhatsAppShare = () => {
-    const message = t("shareMessage", { name: eventName || "cet événement", url: shareUrl });
+    const message = t("shareMessage", { name: eventName || tShared("thisEvent"), url: shareUrl });
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     trackShareAction("share_link_copied", "whatsapp");
     window.open(whatsappUrl, "_blank");
@@ -50,8 +51,8 @@ export function ShareModal({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: eventName || "Événement CoList",
-          text: t("shareMessage", { name: eventName || "cet événement", url: "" }),
+          title: eventName || `${tShared("defaultEventName")} CoList`,
+          text: t("shareMessage", { name: eventName || tShared("thisEvent"), url: "" }),
           url: shareUrl,
         });
         trackShareAction("share_link_copied", "native");

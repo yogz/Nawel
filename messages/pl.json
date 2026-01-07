@@ -228,7 +228,8 @@
         "addToCalendar": "Dodaj do kalendarza",
         "google": "Kalendarz Google",
         "outlook": "Outlook / Office 365",
-        "download": "Pobierz (.ics)"
+        "download": "Pobierz (.ics)",
+        "description": "Dołącz do nas na \"{title}\" w CoList!"
       },
       "editMeal": "Edytuj posiłek",
       "editService": "Edytuj danie",
@@ -368,7 +369,10 @@
       "deleting": "Usuwanie...",
       "deleteAll": "Usuń wszystko",
       "showMore": "Więcej opcji",
-      "showLess": "Mniej opcji"
+      "showLess": "Mniej opcji",
+      "defaultEventName": "Wydarzenie",
+      "thisEvent": "to wydarzenie",
+      "eventDeleted": "Wydarzenie usunięte ✓"
     },
     "Meal": {
       "serviceTypes": {

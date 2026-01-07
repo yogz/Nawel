@@ -228,7 +228,8 @@
         "addToCalendar": "Toevoegen aan agenda",
         "google": "Google Agenda",
         "outlook": "Outlook / Office 365",
-        "download": "Downloaden (.ics)"
+        "download": "Downloaden (.ics)",
+        "description": "Doe mee met \"{title}\" op CoList!"
       },
       "editMeal": "Maaltijd bewerken",
       "editService": "Gang bewerken",
@@ -368,7 +369,10 @@
       "deleting": "Verwijderen...",
       "deleteAll": "Alles verwijderen",
       "showMore": "Meer opties",
-      "showLess": "Minder opties"
+      "showLess": "Minder opties",
+      "defaultEventName": "Evenement",
+      "thisEvent": "dit evenement",
+      "eventDeleted": "Evenement verwijderd ✓"
     },
     "Meal": {
       "serviceTypes": {

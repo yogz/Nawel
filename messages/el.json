@@ -234,7 +234,8 @@
         "addToCalendar": "Προσθήκη στο ημερολόγιο",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
-        "download": "Λήψη (.ics)"
+        "download": "Λήψη (.ics)",
+        "description": "Ελάτε μαζί μας για \"{title}\" στο CoList!"
       },
       "editMeal": "Επεξεργασία γεύματος",
       "editService": "Επεξεργασία μέρους",
@@ -368,7 +369,10 @@
       "deleting": "Διαγραφή...",
       "deleteAll": "Διαγραφή όλων",
       "showMore": "Περισσότερες επιλογές",
-      "showLess": "Λιγότερες επιλογές"
+      "showLess": "Λιγότερες επιλογές",
+      "defaultEventName": "Εκδήλωση",
+      "thisEvent": "αυτή η εκδήλωση",
+      "eventDeleted": "Εκδήλωση διαγράφηκε ✓"
     },
     "Meal": {
       "serviceTypes": {

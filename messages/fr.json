@@ -229,7 +229,8 @@
         "addToCalendar": "Ajouter au calendrier",
         "google": "Google Agenda",
         "outlook": "Outlook / Office 365",
-        "download": "Télécharger (.ics)"
+        "download": "Télécharger (.ics)",
+        "description": "Rejoins-nous pour \"{title}\" sur CoList !"
       },
       "editMeal": "Modifier le repas",
       "editService": "Modifier le service",
@@ -373,7 +374,10 @@
       "deleting": "Suppression...",
       "deleteAll": "Tout supprimer",
       "showMore": "Plus d'options",
-      "showLess": "Moins d'options"
+      "showLess": "Moins d'options",
+      "defaultEventName": "Événement",
+      "thisEvent": "cet événement",
+      "eventDeleted": "Événement supprimé ✓"
     },
     "Meal": {
       "serviceTypes": {

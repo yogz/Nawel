@@ -42,6 +42,7 @@ export function OrganizerHeader({
 }: OrganizerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
+  const tShared = useTranslations("EventDashboard.Shared");
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
   const [showLogoHint, setShowLogoHint] = useState(true);
@@ -203,7 +204,7 @@ export function OrganizerHeader({
                   </div>
                 </Link>
                 <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
-                  {plan.event?.name || "Événement"}
+                  {plan.event?.name || tShared("defaultEventName")}
                 </h1>
               </div>
 

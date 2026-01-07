@@ -46,8 +46,10 @@ export function MealContainer({
   const t = useTranslations("EventDashboard.Planning");
   const locale = useLocale();
   const format = useFormatter();
-  const eventName = plan.event?.name || "Événement";
-  const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
+  const eventName = plan.event?.name || "Event";
+  const calendarTitle = meal.title ? `${eventName} - ${meal.title}` : eventName;
+  const calendarDescription = t("calendar.description", { title: calendarTitle });
+  const calendarUrl = generateGoogleCalendarUrl(meal, eventName, calendarDescription);
 
   const getFullDateDisplay = () => {
     if (!meal.date) {
@@ -140,7 +142,12 @@ export function MealContainer({
                   {t("calendar.google")}
                 </button>
                 <button
-                  onClick={() => window.open(generateOutlookCalendarUrl(meal, eventName), "_blank")}
+                  onClick={() =>
+                    window.open(
+                      generateOutlookCalendarUrl(meal, eventName, calendarDescription),
+                      "_blank"
+                    )
+                  }
                   className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
@@ -148,7 +155,7 @@ export function MealContainer({
                 </button>
                 <div className="my-1 border-t border-black/[0.05]" />
                 <button
-                  onClick={() => downloadIcsFile(meal, eventName)}
+                  onClick={() => downloadIcsFile(meal, eventName, calendarDescription)}
                   className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
                 >
                   <Download className="h-3.5 w-3.5" />

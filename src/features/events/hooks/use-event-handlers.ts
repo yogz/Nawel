@@ -8,12 +8,13 @@ import type { BaseHandlerParams } from "@/features/shared/types";
 export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
+  const tShared = useTranslations("EventDashboard.Shared");
 
   const handleDeleteEvent = async () => {
     try {
       const result = await deleteEventAction({ slug, key: writeKey });
       if (result.success) {
-        setSuccessMessage({ text: "Événement supprimé ✓", type: "success" });
+        setSuccessMessage({ text: tShared("eventDeleted"), type: "success" });
         setTimeout(() => {
           window.location.href = "/";
         }, 1500);

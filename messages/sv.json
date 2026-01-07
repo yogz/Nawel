@@ -228,7 +228,8 @@
         "addToCalendar": "Lägg till i kalendern",
         "google": "Google Calendar",
         "outlook": "Outlook / Office 365",
-        "download": "Ladda ner (.ics)"
+        "download": "Ladda ner (.ics)",
+        "description": "Gå med oss för \"{title}\" på CoList!"
       },
       "editMeal": "Redigera måltid",
       "editService": "Redigera rätt",
@@ -368,7 +369,10 @@
       "deleting": "Tar bort...",
       "deleteAll": "Ta bort alla",
       "showMore": "Fler alternativ",
-      "showLess": "Färre alternativ"
+      "showLess": "Färre alternativ",
+      "defaultEventName": "Evenemang",
+      "thisEvent": "detta evenemang",
+      "eventDeleted": "Evenemang borttaget ✓"
     },
     "Meal": {
       "serviceTypes": {

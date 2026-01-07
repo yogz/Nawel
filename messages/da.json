@@ -228,7 +228,8 @@
         "addToCalendar": "Tilføj til kalender",
         "google": "Google Kalender",
         "outlook": "Outlook / Office 365",
-        "download": "Download (.ics)"
+        "download": "Download (.ics)",
+        "description": "Deltag med os til \"{title}\" på CoList!"
       },
       "editMeal": "Rediger måltid",
       "editService": "Rediger ret",
@@ -368,7 +369,10 @@
       "deleting": "Sletter...",
       "deleteAll": "Slet alle",
       "showMore": "Flere muligheder",
-      "showLess": "Færre muligheder"
+      "showLess": "Færre muligheder",
+      "defaultEventName": "Begivenhed",
+      "thisEvent": "denne begivenhed",
+      "eventDeleted": "Begivenhed slettet ✓"
     },
     "Meal": {
       "serviceTypes": {

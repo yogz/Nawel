@@ -162,7 +162,8 @@ export function getPersonEmoji(
 
 export function generateGoogleCalendarUrl(
   meal: { date: string; title?: string | null; time?: string | null; address?: string | null },
-  eventName: string
+  eventName: string,
+  description: string
 ) {
   const title = meal.title ? `${eventName} - ${meal.title}` : eventName;
   const dateStr = meal.date.replace(/-/g, ""); // "YYYYMMDD"
@@ -183,7 +184,7 @@ export function generateGoogleCalendarUrl(
     action: "TEMPLATE",
     text: title,
     dates: `${start}/${end}`,
-    details: `Rejoins-nous pour "${title}" sur CoList !`,
+    details: description,
   });
 
   if (meal.address) {
@@ -195,7 +196,8 @@ export function generateGoogleCalendarUrl(
 
 export function generateOutlookCalendarUrl(
   meal: { date: string; title?: string | null; time?: string | null; address?: string | null },
-  eventName: string
+  eventName: string,
+  description: string
 ) {
   const title = meal.title ? `${eventName} - ${meal.title}` : eventName;
   const dateStr = meal.date; // "YYYY-MM-DD"
@@ -218,7 +220,7 @@ export function generateOutlookCalendarUrl(
     subject: title,
     startdt,
     enddt,
-    body: `Rejoins-nous pour "${title}" sur CoList !`,
+    body: description,
   });
 
   if (meal.address) {
@@ -230,7 +232,8 @@ export function generateOutlookCalendarUrl(
 
 export function downloadIcsFile(
   meal: { date: string; title?: string | null; time?: string | null; address?: string | null },
-  eventName: string
+  eventName: string,
+  description: string
 ) {
   const title = meal.title ? `${eventName} - ${meal.title}` : eventName;
   const dateStr = meal.date.replace(/-/g, "");
@@ -253,7 +256,7 @@ export function downloadIcsFile(
     `DTSTART:${start}`,
     `DTEND:${end}`,
     `SUMMARY:${title}`,
-    `DESCRIPTION:Rejoins-nous pour "${title}" sur CoList !`,
+    `DESCRIPTION:${description}`,
     meal.address ? `LOCATION:${meal.address}` : "",
     "END:VEVENT",
     "END:VCALENDAR",
@@ -268,27 +271,6 @@ export function downloadIcsFile(
   link.click();
   document.body.removeChild(link);
 }
-
-export const getICalFile = (title: string, date?: string | Date, url?: string) => {
-  const start = date ? new Date(date) : new Date();
-  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
-
-  const format = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-
-  return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//CoList//NONSGML v1.0//EN",
-    "BEGIN:VEVENT",
-    `SUMMARY:Organisation de ${title}`,
-    `DTSTART:${format(start)}`,
-    `DTEND:${format(end)}`,
-    `DESCRIPTION:Rejoins-nous pour "${title}" sur CoList !`,
-    url ? `URL:${url}` : "",
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ].join("\r\n");
-};
 
 /**
  * Returns an appropriate emoji for a service based on its title.
