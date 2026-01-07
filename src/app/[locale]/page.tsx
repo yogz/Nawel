@@ -1,7 +1,7 @@
 import { getMyEventsAction } from "@/app/actions";
-import { EventList } from "@/components/event-list";
-import { DashboardHeader } from "@/components/dashboard-header";
-import { LandingRouter } from "@/components/landing-router";
+import { EventList } from "@/components/events/event-list";
+import { DashboardHeader } from "@/components/layout";
+import { LandingRouter } from "@/components/landing";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";

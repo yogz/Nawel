@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
-import { HeroSection, FeatureCard, CtaFooter } from "./landing-shared";
+import { HeroSection, FeatureCard, CtaFooter } from "./shared";
 
 export function LandingAlt() {
   const t = useTranslations("LandingAlt");

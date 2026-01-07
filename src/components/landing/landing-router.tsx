@@ -1,8 +1,8 @@
 "use client";
 
 import { useLandingVariant } from "@/hooks/use-landing-variant";
-import { Landing } from "@/components/landing";
-import { LandingAlt } from "@/components/landing-alt";
+import { Landing } from "./landing";
+import { LandingAlt } from "./landing-alt";
 
 export function LandingRouter() {
   const variant = useLandingVariant();

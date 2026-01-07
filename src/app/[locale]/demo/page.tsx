@@ -1,4 +1,4 @@
-import { LandingAlt } from "@/components/landing-alt";
+import { LandingAlt } from "@/components/landing";
 import { setRequestLocale } from "next-intl/server";
 
 export default async function DemoPage(props: { params: Promise<{ locale: string }> }) {

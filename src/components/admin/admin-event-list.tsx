@@ -26,7 +26,7 @@ import {
   User,
 } from "lucide-react";
 
-export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }) {
+export function AdminEventList({ initialEvents }: { initialEvents: EventWithStats[] }) {
   const [events, setEvents] = useState(initialEvents);
   const [editingEvent, setEditingEvent] = useState<EventWithStats | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<EventWithStats | null>(null);

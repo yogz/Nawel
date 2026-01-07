@@ -4,10 +4,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { updateEventWithMealAction, deleteEventAction } from "@/app/actions";
 import { Calendar, Clock, History, Users, ArrowRight } from "lucide-react";
-import { SwipeableCard } from "./ui/swipeable-card";
-import { DeleteEventDialog } from "./common/delete-event-dialog";
+import { SwipeableCard } from "../ui/swipeable-card";
+import { DeleteEventDialog } from "../common/delete-event-dialog";
 import { useSession } from "@/lib/auth-client";
-import { NewEventCard } from "./events/new-event-card";
+import { NewEventCard } from "./new-event-card";
 import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { useTranslations, useFormatter } from "next-intl";
 
