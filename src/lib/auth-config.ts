@@ -43,12 +43,15 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     requireEmailVerification: false, // Allow auto-login before verification; banner will remind them
-    sendResetPassword: async ({ user, url }: { user: any; url: string }) => {
+    sendResetPassword: async ({ user, url, token }: { user: any; url: string; token: string }) => {
       const locale = user.language || "fr";
       const t = await getTranslations({
         locale,
         namespace: "Login.EmailReset",
       });
+
+      const baseUrl = (process.env.BETTER_AUTH_URL || "").replace(/\/$/, "");
+      const resetUrl = `${baseUrl}/${locale}/reset-password?token=${token}`;
 
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
@@ -59,7 +62,7 @@ export const auth = betterAuth({
             <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
             <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
             <div style="margin: 30px 0;">
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
+              <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
                 ${t("button")}
               </a>
             </div>
@@ -108,7 +111,8 @@ export const auth = betterAuth({
         namespace: "Login.EmailVerification",
       });
 
-      const verifyUrl = `${process.env.BETTER_AUTH_URL || ""}/${locale}/verify-email?token=${token}`;
+      const baseUrl = (process.env.BETTER_AUTH_URL || "").replace(/\/$/, "");
+      const verifyUrl = `${baseUrl}/${locale}/verify-email?token=${token}`;
 
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
