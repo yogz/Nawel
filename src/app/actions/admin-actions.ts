@@ -341,7 +341,8 @@ export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, asy
   }
 
   // Finally delete the user via Better Auth to ensure sessions and accounts are cleaned up
-  await (auth.api as any).removeUser({
+  await auth.api.removeUser({
+    headers: await headers(),
     body: {
       userId: input.id,
     },
