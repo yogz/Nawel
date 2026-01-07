@@ -309,3 +309,19 @@ export const ingredientCache = pgTable(
     dishPeopleIdx: index("ingredient_cache_dish_people_idx").on(table.dishName, table.peopleCount),
   })
 );
+// Feedback Table for bug reports and user feedback
+export const feedback = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  content: text("content").notNull(),
+  userAgent: text("user_agent"),
+  url: text("url"), // Current URL where the bug was reported
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+  user: one(user, {
+    fields: [feedback.userId],
+    references: [user.id],
+  }),
+}));

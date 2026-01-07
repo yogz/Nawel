@@ -582,8 +582,19 @@
       "notLoggedInDelete": "Du skal være logget ind for at slette din konto.",
       "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
       "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
-      "confirmationRequired": "Bekræftelse påkrævet.",
-      "deleteError": "Der opstod en fejl under sletning af din konto."
+      "confirmationRequired": "Bekræftelse er påkrævet.",
+      "deleteError": "Der opstod en fejl under sletning af din konto.",
+      "errorSubmitFeedback": "Fejl ved afsendelse af feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Rapportér en fejl",
+    "title": "Rapportér en fejl",
+    "description": "Fortæl os hvad der er galt, vi kigger på det med det samme! 🐞",
+    "placeholder": "Beskriv problemet her...",
+    "submit": "Indsend rapport",
+    "successTitle": "Tak! ✨",
+    "successDescription": "Din rapport er modtaget. Tak fordi du hjælper os med at forbedre CoList!",
+    "errorDescription": "Afsendelse mislykkedes. Prøv venligst igen senere."
   }
 }

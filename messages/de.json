@@ -571,11 +571,22 @@
     },
     "actions": {
       "notLoggedInProfile": "Sie müssen angemeldet sein, um Ihr Profil zu ändern.",
-      "notLoggedInDelete": "Sie müssen angemeldet sein, um Ihren Account zu löschen.",
+      "notLoggedInDelete": "Sie müssen angemeldet sein, um Ihr Konto zu löschen.",
       "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
-      "ingredientsGenerationFailed": "Keine Zutaten generiert. Bitte versuchen Sie es erneut.",
-      "confirmationRequired": "Bestätigung erforderlich.",
-      "deleteError": "Bei der Löschung deines Kontos ist ein Fehler aufgetreten."
+      "ingredientsGenerationFailed": "Keine Zutaten generiert. Versuchen Sie es erneut.",
+      "confirmationRequired": "Bestätigung ist erforderlich.",
+      "deleteError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten.",
+      "errorSubmitFeedback": "Fehler beim Senden des Feedbacks."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Fehler melden",
+    "title": "Fehler melden",
+    "description": "Sagen Sie uns, was nicht stimmt, wir kümmern uns sofort darum! 🐞",
+    "placeholder": "Beschreiben Sie das Problem hier...",
+    "submit": "Bericht senden",
+    "successTitle": "Vielen Dank! ✨",
+    "successDescription": "Ihr Bericht wurde empfangen. Vielen Dank, dass Sie uns helfen, CoList zu verbessern!",
+    "errorDescription": "Senden fehlgeschlagen. Bitte versuchen Sie es später erneut."
   }
 }

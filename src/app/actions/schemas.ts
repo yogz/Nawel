@@ -330,3 +330,8 @@ export const updateCitationAdminSchema = z.object({
       .optional(),
   }),
 });
+
+export const submitFeedbackSchema = z.object({
+  content: safeText(2000),
+  url: z.string().optional(),
+});

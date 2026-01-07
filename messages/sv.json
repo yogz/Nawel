@@ -583,7 +583,18 @@
       "notLoggedInAI": "Du måste vara inloggad för att använda AI-generering.",
       "ingredientsGenerationFailed": "Inga ingredienser genererade. Försök igen.",
       "confirmationRequired": "Bekräftelse krävs.",
-      "deleteError": "Ett fel uppstod när ditt konto skulle raderas."
+      "deleteError": "Ett fel uppstod när ditt konto skulle raderas.",
+      "errorSubmitFeedback": "Fel vid inskickande av feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Rapportera ett fel",
+    "title": "Rapportera ett fel",
+    "description": "Berätta vad som är fel, så tittar vi på det direkt! 🐞",
+    "placeholder": "Beskriv problemet här...",
+    "submit": "Skicka rapport",
+    "successTitle": "Tack! ✨",
+    "successDescription": "Din rapport har tagits emot. Tack för att du hjälper oss att förbättre CoList!",
+    "errorDescription": "Det gick inte att skicka. Försök igen senare."
   }
 }

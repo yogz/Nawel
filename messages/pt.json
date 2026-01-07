@@ -582,7 +582,18 @@
       "notLoggedInAI": "Você deve estar conectado para usar a geração por IA.",
       "ingredientsGenerationFailed": "Nenhum ingrediente gerado. Tente novamente.",
       "confirmationRequired": "Confirmação necessária.",
-      "deleteError": "Ocorreu um erro ao deletar sua conta."
+      "deleteError": "Ocorreu um erro ao deletar sua conta.",
+      "errorSubmitFeedback": "Erro ao enviar o feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Reportar um erro",
+    "title": "Reportar um erro",
+    "description": "Conte-nos o que está errado, vamos analisar isso imediatamente! 🐞",
+    "placeholder": "Descreva o problema aqui...",
+    "submit": "Enviar relatório",
+    "successTitle": "Obrigado! ✨",
+    "successDescription": "Seu relatório foi recebido. Obrigado por nos ajudar a melhorar o CoList!",
+    "errorDescription": "O envio falhou. Por favor, tente novamente mais tarde."
   }
 }

@@ -583,7 +583,18 @@
       "notLoggedInAI": "Devi essere connesso per utilizzare la generazione AI.",
       "ingredientsGenerationFailed": "Nessun ingrediente generato. Riprova.",
       "confirmationRequired": "Conferma richiesta.",
-      "deleteError": "Si è verificato un errore durante l'eliminazione del tuo account."
+      "deleteError": "Si è verificato un errore durante l'eliminazione del tuo account.",
+      "errorSubmitFeedback": "Errore durante l'invio del feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Segnala un bug",
+    "title": "Segnala un bug",
+    "description": "Dicci cosa c'è che non va, lo controlleremo subito! 🐞",
+    "placeholder": "Descrivi il problema qui...",
+    "submit": "Invia segnalazione",
+    "successTitle": "Grazie! ✨",
+    "successDescription": "La tua segnalazione è stata ricevuta. Grazie per aiutarci a migliorare CoList!",
+    "errorDescription": "Invio fallito. Riprova più tardi."
   }
 }

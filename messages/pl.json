@@ -583,7 +583,18 @@
       "notLoggedInAI": "Musisz być zalogowany, aby używać generowania AI.",
       "ingredientsGenerationFailed": "Nie wygenerowano składników. Spróbuj ponownie.",
       "confirmationRequired": "Wymagane potwierdzenie.",
-      "deleteError": "Podczas usuwania konta pojawił się błąd."
+      "deleteError": "Podczas usuwania konta pojawił się błąd.",
+      "errorSubmitFeedback": "Błąd podczas przesyłania opinii."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Zgłoś błąd",
+    "title": "Zgłoś błąd",
+    "description": "Powiedz nam, co jest nie tak, sprawdzimy to natychmiast! 🐞",
+    "placeholder": "Opisz problem tutaj...",
+    "submit": "Wyślij zgłoszenie",
+    "successTitle": "Dziękujemy! ✨",
+    "successDescription": "Twoje zgłoszenie zostało odebrane. Dziękujemy za pomoc w ulepszaniu CoList!",
+    "errorDescription": "Przesyłanie nie powiodło się. Spróbuj ponownie później."
   }
 }

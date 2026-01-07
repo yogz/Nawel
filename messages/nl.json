@@ -583,7 +583,18 @@
       "notLoggedInAI": "U moet aangemeld zijn om AI-generatie te gebruiken.",
       "ingredientsGenerationFailed": "Geen ingrediënten gegenereerd. Probeer opnieuw.",
       "confirmationRequired": "Bevestiging vereist.",
-      "deleteError": "Er is een fout opgetreden bij het verwijderen van je account."
+      "deleteError": "Er is een fout opgetreden bij het verwijderen van je account.",
+      "errorSubmitFeedback": "Fout bij het verzenden van feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Meld een bug",
+    "title": "Meld een bug",
+    "description": "Vertel ons wat er mis is, we kijken er direct naar! 🐞",
+    "placeholder": "Beschrijf het probleem hier...",
+    "submit": "Meld bug",
+    "successTitle": "Bedankt! ✨",
+    "successDescription": "Je rapport is ontvangen. Bedankt voor het helpen verbeteren van CoList!",
+    "errorDescription": "Verzenden mislukt. Probeer het later opnieuw."
   }
 }

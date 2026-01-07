@@ -586,7 +586,18 @@
       "notLoggedInAI": "You must be logged in to use AI generation.",
       "ingredientsGenerationFailed": "No ingredients generated. Try again.",
       "confirmationRequired": "Confirmation is required.",
-      "deleteError": "An error occurred while deleting your account."
+      "deleteError": "An error occurred while deleting your account.",
+      "errorSubmitFeedback": "Error submitting feedback."
     }
+  },
+  "Feedback": {
+    "triggerLabel": "Report a bug",
+    "title": "Report a bug",
+    "description": "Tell us what's wrong, we'll look into it right away! 🐞",
+    "placeholder": "Describe the issue here...",
+    "submit": "Submit report",
+    "successTitle": "Thank you! ✨",
+    "successDescription": "Your report has been received. Thanks for helping us improve CoList!",
+    "errorDescription": "Submission failed. Please try again later."
   }
 }

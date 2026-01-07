@@ -72,6 +72,8 @@ export const viewport: Viewport = {
   themeColor: "#ffffff",
 };
 
+import { BugReportButton } from "@/components/feedback/bug-report-button";
+
 export default async function RootLayout({
   children,
   params,
@@ -157,6 +159,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             {children}
+            <BugReportButton />
             <SnowOverlay />
             <CookieConsent />
             <AnalyticsSessionSync />
