@@ -5,7 +5,28 @@ import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type CitationItem = (typeof citationsDataV3.items)[number];
+interface CitationItem {
+  id: string;
+  type: string;
+  tone: string;
+  category: string;
+  tags: string[];
+  attribution: {
+    author: string | null;
+    work: string | null;
+    year: number | null;
+    origin: string | null;
+    confidence: string;
+    origin_type: string | null;
+    origin_qualifier: string | null;
+  };
+  original: {
+    lang: string;
+    text: string;
+  };
+  localized: Record<string, string>;
+  rating: number;
+}
 
 export function CitationDisplay({
   seed,
