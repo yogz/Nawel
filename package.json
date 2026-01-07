@@ -86,5 +86,8 @@
     "*.{js,jsx,ts,tsx,json,md,css}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "jsdom": "^23.2.0"
   }
 }
