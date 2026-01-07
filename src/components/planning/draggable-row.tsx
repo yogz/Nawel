@@ -6,7 +6,7 @@ import { type ReactNode } from "react";
 
 import { type DraggableSyntheticListeners } from "@dnd-kit/core";
 
-export function SortableRow({
+export function DraggableRow({
   id,
   children,
 }: {

@@ -18,12 +18,12 @@ import { validateWriteKeyAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 
 // Lightweight components loaded immediately
-import { OrganizerHeader } from "./organizer-header";
+import { EventPlannerHeader } from "./event-planner-header";
 import { SuccessToast } from "../common/success-toast";
 
 // Heavy components loaded lazily (code-splitting)
-const OrganizerSheets = lazy(() =>
-  import("./organizer-sheets").then((m) => ({ default: m.OrganizerSheets }))
+const EventPlannerSheets = lazy(() =>
+  import("./event-planner-sheets").then((m) => ({ default: m.EventPlannerSheets }))
 );
 const PlanningTab = lazy(() => import("./planning-tab").then((m) => ({ default: m.PlanningTab })));
 const PeopleTab = lazy(() => import("./people-tab").then((m) => ({ default: m.PeopleTab })));
@@ -55,7 +55,7 @@ function TabSkeleton() {
   );
 }
 
-export function Organizer({
+export function EventPlanner({
   initialPlan,
   slug,
   writeKey,
@@ -311,7 +311,7 @@ export function Organizer({
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      <OrganizerHeader
+      <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}
         plan={plan}
@@ -390,7 +390,7 @@ export function Organizer({
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
       <Suspense fallback={null}>
-        <OrganizerSheets
+        <EventPlannerSheets
           sheet={sheet}
           setSheet={setSheet}
           plan={plan}

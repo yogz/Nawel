@@ -4,10 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
-import { PlanningFilters } from "./organizer-header";
+import { PlanningFilters } from "./event-planner-header";
 import { PlusIcon, Calendar } from "lucide-react";
 import { MealContainer } from "./meal-container";
-import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
+import { DangerZoneTrigger, DangerZoneContent } from "../common/destructive-actions";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
 import {

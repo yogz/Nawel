@@ -292,7 +292,7 @@ function ItemRowComponent({
 }
 
 // Memoize to prevent re-renders when parent re-renders but item hasn't changed
-export const ItemRow = memo(ItemRowComponent, (prev, next) => {
+export const MenuItemRow = memo(ItemRowComponent, (prev, next) => {
   return (
     prev.item.id === next.item.id &&
     prev.item.name === next.item.name &&

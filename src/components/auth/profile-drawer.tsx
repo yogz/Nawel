@@ -16,7 +16,7 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { THEME_EMOJIS, renderAvatar } from "@/lib/utils";
 import { LanguageSelector } from "../common/language-selector";
-import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
+import { DangerZoneTrigger, DangerZoneContent } from "../common/destructive-actions";
 
 interface ProfileDrawerProps {
   open: boolean;

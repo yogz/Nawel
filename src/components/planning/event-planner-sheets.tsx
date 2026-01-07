@@ -27,7 +27,7 @@ import {
   type PlanningFilter,
 } from "@/lib/types";
 
-interface OrganizerSheetsProps {
+interface EventPlannerSheetsProps {
   sheet: Sheet | null;
   setSheet: (sheet: Sheet | null) => void;
   plan: PlanData;
@@ -48,7 +48,7 @@ interface OrganizerSheetsProps {
   onJoinNew: () => void;
 }
 
-export function OrganizerSheets({
+export function EventPlannerSheets({
   sheet,
   setSheet,
   plan,
@@ -64,7 +64,7 @@ export function OrganizerSheets({
   onAuth,
   onDismissGuestPrompt,
   onJoinNew,
-}: OrganizerSheetsProps) {
+}: EventPlannerSheetsProps) {
   const tCommon = useTranslations("EventDashboard.Shared");
   const t = useTranslations("EventDashboard.Sheets");
   const searchParams = useSearchParams();

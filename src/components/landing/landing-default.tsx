@@ -9,7 +9,7 @@ import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
 import { HeroSection, FeatureCard, CtaFooter } from "./shared";
 
-export function Landing() {
+export function LandingDefault() {
   const t = useTranslations("Landing");
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({

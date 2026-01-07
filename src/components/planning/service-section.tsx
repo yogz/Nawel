@@ -3,7 +3,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import { PlusIcon, Edit3 } from "lucide-react";
 import { type PlanningFilter, type Service, type Person, type Item } from "@/lib/types";
-import { ItemRow } from "./item-row";
+import { MenuItemRow } from "./menu-item-row";
 import { Button } from "../ui/button";
 import { memo } from "react";
 import { useTranslations } from "next-intl";
@@ -103,7 +103,7 @@ export const ServiceSection = memo(function ServiceSection({
             key={item.id}
             className={index !== filteredItems.length - 1 ? "border-b border-white/30 pb-1" : ""}
           >
-            <ItemRow
+            <MenuItemRow
               item={item}
               person={people.find((p) => p.id === item.personId)}
               readOnly={readOnly}

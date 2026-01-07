@@ -15,7 +15,7 @@ import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
 
-interface OrganizerHeaderProps {
+interface EventPlannerHeaderProps {
   readOnly: boolean;
   tab: string;
   plan: PlanData;
@@ -28,7 +28,7 @@ interface OrganizerHeaderProps {
   writeKey?: string;
 }
 
-export function OrganizerHeader({
+export function EventPlannerHeader({
   readOnly,
   tab,
   plan,
@@ -39,7 +39,7 @@ export function OrganizerHeader({
   unassignedItemsCount: _unassignedItemsCount,
   slug,
   writeKey,
-}: OrganizerHeaderProps) {
+}: EventPlannerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const tShared = useTranslations("EventDashboard.Shared");

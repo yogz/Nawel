@@ -9,7 +9,7 @@ import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
 import { HeroSection, FeatureCard, CtaFooter } from "./shared";
 
-export function LandingAlt() {
+export function LandingVariantB() {
   const t = useTranslations("LandingAlt");
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({

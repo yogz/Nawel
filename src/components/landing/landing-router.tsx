@@ -1,8 +1,8 @@
 "use client";
 
 import { useLandingVariant } from "@/hooks/use-landing-variant";
-import { Landing } from "./landing";
-import { LandingAlt } from "./landing-alt";
+import { LandingDefault } from "./landing-default";
+import { LandingVariantB } from "./landing-variant-b";
 
 export function LandingRouter() {
   const variant = useLandingVariant();
@@ -13,5 +13,5 @@ export function LandingRouter() {
   }
 
   // A/B test entre Landing et LandingAlt (par défaut 'landing')
-  return variant === "landing-alt" ? <LandingAlt /> : <Landing />;
+  return variant === "landing-alt" ? <LandingVariantB /> : <LandingDefault />;
 }

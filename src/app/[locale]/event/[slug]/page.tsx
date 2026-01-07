@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
-import { Organizer } from "@/components/planning/organizer";
+import { EventPlanner } from "@/components/planning/event-planner";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 // ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
@@ -36,7 +36,12 @@ export default async function Page(props: Props) {
 
   return (
     <Suspense fallback={<div className="min-h-screen w-full animate-pulse bg-gray-50/50" />}>
-      <Organizer initialPlan={plan} slug={params.slug} writeKey={key} writeEnabled={writeEnabled} />
+      <EventPlanner
+        initialPlan={plan}
+        slug={params.slug}
+        writeKey={key}
+        writeEnabled={writeEnabled}
+      />
     </Suspense>
   );
 }
