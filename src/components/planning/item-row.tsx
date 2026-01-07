@@ -200,10 +200,9 @@ function ItemRowComponent({
                     {getDisplayName(person)}
                   </span>
                 ) : (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
+                  <button
+                    type="button"
+                    className="group relative flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-9"
                     onClick={(e) => {
                       e.stopPropagation();
                       if (currentPerson && handleAssign) {
@@ -213,27 +212,15 @@ function ItemRowComponent({
                         onAssign();
                       }
                     }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (currentPerson && handleAssign) {
-                          triggerHaptic();
-                          handleAssign(item, currentPerson.id);
-                        } else {
-                          onAssign();
-                        }
-                      }
-                    }}
                     aria-label={t("takeAction")}
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent">
-                      <Plus size={16} className="transition-colors duration-300" />
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
+                      <Plus size={18} className="transition-colors duration-300 sm:h-4 sm:w-4" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
                       {t("takeAction")}
                     </span>
-                  </div>
+                  </button>
                 )}
               </div>
 

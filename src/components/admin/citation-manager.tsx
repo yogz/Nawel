@@ -24,6 +24,38 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocale, useTranslations } from "next-intl";
 import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
 
+/** Citation attribution data */
+interface CitationAttribution {
+  author: string | null;
+  work: string | null;
+  year: number | null;
+  origin: string | null;
+  confidence: string; // "high" | "medium" | "low" in practice
+  origin_type: string | null;
+  origin_qualifier: string | null;
+}
+
+/** Citation item structure from citations-v3.json */
+interface CitationItem {
+  id: string;
+  type: string;
+  tone: string;
+  category: string;
+  tags: string[];
+  attribution: CitationAttribution;
+  original: {
+    lang: string;
+    text: string;
+  };
+  localized: Record<string, string>;
+  rating: number;
+}
+
+/** Partial update for citation fields */
+type CitationUpdate = Partial<Pick<CitationItem, "category" | "type" | "tone" | "rating">> & {
+  localized?: Record<string, string>;
+};
+
 export function CitationManager() {
   const locale = useLocale();
   const t = useTranslations("Citations");
@@ -35,7 +67,7 @@ export function CitationManager() {
   const [filterRating, setFilterRating] = useState<number | "all">("all");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedItem, setEditedItem] = useState<any>(null);
+  const [editedItem, setEditedItem] = useState<CitationItem | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   // Local state for items
@@ -104,7 +136,7 @@ export function CitationManager() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [filteredItems.length]);
 
-  const getAttributionLabel = (citation: any, targetLocale: string) => {
+  const getAttributionLabel = (citation: CitationItem, _targetLocale: string) => {
     const attr = citation.attribution;
 
     // 1. Author & Work
@@ -180,7 +212,8 @@ export function CitationManager() {
 
     setIsSaving(true);
     try {
-      const updates: any = {};
+      // Build updates object - typed loosely as server validates
+      const updates: Record<string, unknown> = {};
 
       // Comparer et construire les mises à jour
       if (editedItem.type !== activeItem.type) {

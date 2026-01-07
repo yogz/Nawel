@@ -1,19 +1,37 @@
 /**
  * Centralized input sanitization for security
  * Protects against: XSS, SQL injection, prompt injection, code injection
+ *
+ * Uses DOMPurify for robust HTML sanitization (works on both server and client)
  */
 
-// Generic text sanitization - removes dangerous characters
+import DOMPurify from "isomorphic-dompurify";
+
+// Configure DOMPurify to strip all HTML (text-only output)
+const TEXT_ONLY_CONFIG = {
+  ALLOWED_TAGS: [], // No HTML tags allowed
+  ALLOWED_ATTR: [], // No attributes allowed
+  KEEP_CONTENT: true, // Keep text content
+};
+
+/**
+ * Generic text sanitization - removes all HTML and dangerous content
+ * Uses DOMPurify for robust XSS protection
+ */
 export function sanitizeText(input: string, maxLength: number = 500): string {
   if (typeof input !== "string") {
     return "";
   }
-  return input
+
+  // First pass: DOMPurify strips all HTML/scripts
+  const sanitized = DOMPurify.sanitize(input, TEXT_ONLY_CONFIG);
+
+  // Second pass: additional safety measures
+  return sanitized
     .slice(0, maxLength)
-    .replace(/[<>]/g, "") // Prevent HTML/XML injection
-    .replace(/javascript:/gi, "") // Prevent JS protocol
-    .replace(/on\w+=/gi, "") // Prevent event handlers
+    .replace(/javascript:/gi, "") // Prevent JS protocol (belt and suspenders)
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "") // Remove control characters
+    .replace(/\r\n|\r/g, "\n") // Normalize line endings
     .trim();
 }
 

@@ -9,10 +9,32 @@ import {
 
 describe("sanitize.ts", () => {
   describe("sanitizeText", () => {
-    it("removes dangerous tags", () => {
-      const input = '<script>alert("xss")</script>Hello <img src=x onerror=alert(1)>';
-      // Current implementation simply strips dangerous tags
-      expect(sanitizeText(input)).toBe('scriptalert("xss")/scriptHello img src=x alert(1)');
+    it("completely removes script tags and their content", () => {
+      const input = '<script>alert("xss")</script>Hello';
+      // DOMPurify completely removes script tags including content (most secure)
+      expect(sanitizeText(input)).toBe("Hello");
+    });
+
+    it("strips all HTML tags", () => {
+      const input = "<b>bold</b> <i>italic</i> <a href='#'>link</a>";
+      expect(sanitizeText(input)).toBe("bold italic link");
+    });
+
+    it("removes img tags with onerror handlers", () => {
+      const input = "<img src=x onerror=alert(1)>Hello";
+      expect(sanitizeText(input)).toBe("Hello");
+    });
+
+    it("removes javascript: protocol", () => {
+      const input = "Click javascript:alert(1) here";
+      expect(sanitizeText(input)).toBe("Click alert(1) here");
+    });
+
+    it("handles nested script attempts", () => {
+      const input = "<<script>script>alert(1)<</script>/script>";
+      const result = sanitizeText(input);
+      expect(result).not.toContain("<script>");
+      expect(result).not.toContain("</script>");
     });
 
     it("trims whitespace", () => {
@@ -21,6 +43,17 @@ describe("sanitize.ts", () => {
 
     it("truncates to maxLength", () => {
       expect(sanitizeText("hello world", 5)).toBe("hello");
+    });
+
+    it("handles empty and invalid input", () => {
+      expect(sanitizeText("")).toBe("");
+      expect(sanitizeText(null as unknown as string)).toBe("");
+      expect(sanitizeText(undefined as unknown as string)).toBe("");
+    });
+
+    it("removes control characters", () => {
+      const input = "hello\x00\x08world";
+      expect(sanitizeText(input)).toBe("helloworld");
     });
   });
 

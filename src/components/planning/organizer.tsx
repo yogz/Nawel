@@ -34,7 +34,14 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
-import { useEventHandlers } from "@/hooks/use-event-handlers";
+
+// Feature-specific hooks (imported directly for better tree-shaking)
+import { useItemHandlers } from "@/features/items";
+import { useMealHandlers } from "@/features/meals";
+import { useServiceHandlers } from "@/features/services";
+import { usePersonHandlers } from "@/features/people";
+import { useIngredientHandlers } from "@/features/ingredients";
+import { useEventHandlers as useEventDeleteHandler } from "@/features/events";
 
 // Loading skeleton for tabs
 function TabSkeleton() {
@@ -105,19 +112,71 @@ export function Organizer({
   const effectiveWriteKey =
     writeKey || (isOwner && plan.event?.adminKey ? plan.event.adminKey : undefined);
 
-  const handlers = useEventHandlers({
+  // Base params shared by all feature hooks
+  const handlerParams = {
     plan,
     setPlan,
     slug,
     writeKey: effectiveWriteKey,
     readOnly,
     setSheet,
-    setSelectedPerson,
     setSuccessMessage,
     session,
     refetch,
-  });
+  };
 
+  // Call individual feature hooks
+  const itemHandlers = useItemHandlers(handlerParams);
+  const mealHandlers = useMealHandlers(handlerParams);
+  const serviceHandlers = useServiceHandlers(handlerParams);
+  const personHandlers = usePersonHandlers({ ...handlerParams, setSelectedPerson });
+  const ingredientHandlers = useIngredientHandlers(handlerParams);
+  const eventHandlers = useEventDeleteHandler(handlerParams);
+
+  // Combine all handlers for components that need the full set
+  const handlers = {
+    // Item handlers
+    handleCreateItem: itemHandlers.handleCreateItem,
+    handleUpdateItem: itemHandlers.handleUpdateItem,
+    handleAssign: itemHandlers.handleAssign,
+    handleDelete: itemHandlers.handleDelete,
+    handleMoveItem: itemHandlers.handleMoveItem,
+    findItem: itemHandlers.findItem,
+    handleToggleItemChecked: itemHandlers.handleToggleItemChecked,
+
+    // Meal handlers
+    handleCreateMeal: mealHandlers.handleCreateMeal,
+    handleCreateMealWithServices: mealHandlers.handleCreateMealWithServices,
+    handleUpdateMeal: mealHandlers.handleUpdateMeal,
+    handleDeleteMeal: (meal: { id: number }) => mealHandlers.handleDeleteMeal(meal.id),
+
+    // Service handlers
+    handleCreateService: serviceHandlers.handleCreateService,
+    handleUpdateService: serviceHandlers.handleUpdateService,
+    handleDeleteService: (service: { id: number }) =>
+      serviceHandlers.handleDeleteService(service.id),
+
+    // Person handlers
+    handleCreatePerson: personHandlers.handleCreatePerson,
+    handleUpdatePerson: personHandlers.handleUpdatePerson,
+    handleDeletePerson: personHandlers.handleDeletePerson,
+    handleClaimPerson: personHandlers.handleClaimPerson,
+    handleUnclaimPerson: personHandlers.handleUnclaimPerson,
+
+    // Event handlers
+    handleDeleteEvent: eventHandlers.handleDeleteEvent,
+
+    // Ingredient handlers
+    handleGenerateIngredients: ingredientHandlers.handleGenerateIngredients,
+    handleToggleIngredient: ingredientHandlers.handleToggleIngredient,
+    handleDeleteIngredient: ingredientHandlers.handleDeleteIngredient,
+    handleCreateIngredient: ingredientHandlers.handleCreateIngredient,
+    handleDeleteAllIngredients: ingredientHandlers.handleDeleteAllIngredients,
+    handleSaveFeedback: ingredientHandlers.handleSaveFeedback,
+    justGenerated: ingredientHandlers.justGenerated,
+  };
+
+  // Destructure commonly used handlers for local use
   const {
     handleMoveItem,
     handleDelete,

@@ -2,13 +2,12 @@
 
 import { useMemo } from "react";
 import { Sparkles, Pencil, ShoppingCart, Scale, Euro, MessageSquare, ChefHat } from "lucide-react";
-import { renderAvatar, getDisplayName } from "@/lib/utils";
+import { getDisplayName } from "@/lib/utils";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
 import { useTranslations } from "next-intl";
-import { useThemeMode } from "../theme-provider";
+import { PersonAvatar } from "../common/person-avatar";
 
 interface PeopleTabProps {
   plan: PlanData;
@@ -37,7 +36,6 @@ export function PeopleTab({
   onClaim,
   onUnclaim,
 }: PeopleTabProps) {
-  const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.People");
   const tForm = useTranslations("EventDashboard.ItemForm");
   const itemsByPerson = useMemo(() => {
@@ -87,27 +85,12 @@ export function PeopleTab({
               onClick={() => setSelectedPerson(person.id)}
               className="flex items-center px-4 py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:py-2"
             >
-              <span className="mr-1.5 flex h-5 w-5 items-center justify-center overflow-hidden rounded-full transition-all">
-                {(() => {
-                  const avatar = renderAvatar(
-                    person,
-                    plan.people.map((p) => p.name),
-                    theme
-                  );
-                  if (avatar.type === "image") {
-                    return (
-                      <Image
-                        src={avatar.src}
-                        alt={getDisplayName(person)}
-                        width={20}
-                        height={20}
-                        className="h-full w-full object-cover"
-                      />
-                    );
-                  }
-                  return avatar.value;
-                })()}
-              </span>
+              <PersonAvatar
+                person={person}
+                allNames={plan.people.map((p) => p.name)}
+                size="xs"
+                className="mr-1.5"
+              />
               {getDisplayName(person)}
             </button>
             {!readOnly && (
@@ -160,27 +143,13 @@ export function PeopleTab({
               <div key={person.id} className="space-y-3">
                 <div className="sticky top-[72px] z-20 -mx-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 px-4 py-4 shadow-sm backdrop-blur-sm transition-all duration-300 sm:mx-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-2xl shadow-sm">
-                      {(() => {
-                        const avatar = renderAvatar(
-                          person,
-                          plan.people.map((p) => p.name),
-                          theme
-                        );
-                        if (avatar.type === "image") {
-                          return (
-                            <Image
-                              src={avatar.src}
-                              alt={getDisplayName(person)}
-                              width={48}
-                              height={48}
-                              className="h-full w-full object-cover"
-                            />
-                          );
-                        }
-                        return avatar.value;
-                      })()}
-                    </div>
+                    <PersonAvatar
+                      person={person}
+                      allNames={plan.people.map((p) => p.name)}
+                      size="lg"
+                      rounded="2xl"
+                      className="shadow-sm"
+                    />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-gradient-header text-xl font-black tracking-tight">

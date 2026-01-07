@@ -11,11 +11,12 @@ import { sendGAEvent } from "@next/third-parties/google";
 const IS_DEV = process.env.NODE_ENV === "development";
 const ANALYTICS_ENABLED = typeof window !== "undefined";
 
-// Consent management
-let hasConsent = true; // Default to true, can be controlled by cookie banner
+// Consent management - GDPR compliant (opt-in required)
+let hasConsent = false;
 
 /**
  * Set analytics consent status (for GDPR compliance)
+ * Must be explicitly called with `true` after user gives consent
  */
 export function setAnalyticsConsent(consent: boolean) {
   hasConsent = consent;
@@ -26,13 +27,15 @@ export function setAnalyticsConsent(consent: boolean) {
 
 /**
  * Check if analytics consent has been given
+ * Returns false by default (GDPR: opt-in required)
  */
 export function getAnalyticsConsent(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
   const stored = localStorage.getItem("analytics_consent");
-  return stored === null ? true : stored === "true"; // Default to true if not set
+  // GDPR: Default to false if no explicit consent stored
+  return stored === "true";
 }
 
 // Initialize consent from storage

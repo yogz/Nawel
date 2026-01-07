@@ -23,6 +23,15 @@ interface ProfileDrawerProps {
   onClose: () => void;
 }
 
+/** Extended user type with custom emoji field from Better Auth */
+interface UserWithEmoji {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  emoji?: string | null;
+}
+
 /**
  * Profile settings drawer - Compact version.
  * Features: Avatar emoji picker, 2-theme toggle, compact language selector.
@@ -48,8 +57,9 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   // Sync state with session when drawer opens
   useEffect(() => {
     if (session?.user && open) {
-      setName(session.user.name || "");
-      setSelectedEmoji((session.user as any).emoji || null);
+      const user = session.user as UserWithEmoji;
+      setName(user.name || "");
+      setSelectedEmoji(user.emoji || null);
       setError(null);
       setSuccess(false);
       setShowAdvanced(false);
@@ -70,9 +80,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
     }
 
     // Check if anything actually changed
-    const hasChanged =
-      finalName !== (session.user.name || "") ||
-      finalEmoji !== ((session.user as any).emoji || null);
+    const user = session.user as UserWithEmoji;
+    const hasChanged = finalName !== (user.name || "") || finalEmoji !== (user.emoji || null);
 
     if (!hasChanged) {
       return;
