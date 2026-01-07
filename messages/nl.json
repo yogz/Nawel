@@ -324,7 +324,12 @@
         "analyzing": "Recept analyseren...",
         "count": "{count, plural, =0 {geen ingrediënten} one {1 ingrediënt} other {# ingrediënten}}",
         "deleteConfirmTitle": "Alle ingrediënten verwijderen?",
-        "deleteConfirmDescription": "Weet u zeker dat u alle ingrediënten uit deze lijst wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt."
+        "deleteConfirmDescription": "Weet u zeker dat u alle ingrediënten uit deze lijst wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+        "addDescription": "Voeg ingrediënten hieronder toe of gebruik onze AI",
+        "aiRatingTitle": "Is dit voorstel relevant?",
+        "aiRatingDescription": "Beoordeel van 1 tot 5 om ons te helpen verbeteren",
+        "feedbackThanks": "Bedankt voor je feedback! 🙏",
+        "quantityShort": "Hov."
       }
     },
     "ServiceForm": {

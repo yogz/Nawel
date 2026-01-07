@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { type Person } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -269,19 +268,6 @@ export function downloadIcsFile(
   link.click();
   document.body.removeChild(link);
 }
-
-const getShareNavigatorText = (title: string) => ({
-  title: "CoList",
-  text: `Rejoins-nous pour "${title}" sur CoList !`,
-});
-
-const getWhatsAppText = (title: string, url: string) =>
-  `Rejoins-nous pour "${title}" sur CoList ! 🎁 ${url}`;
-
-const getEmailContent = (title: string, url: string) => ({
-  subject: `Organisation de ${title} sur CoList`,
-  body: `Rejoins-nous pour "${title}" sur CoList ! 🎁 ${url}`,
-});
 
 export const getICalFile = (title: string, date?: string | Date, url?: string) => {
   const start = date ? new Date(date) : new Date();

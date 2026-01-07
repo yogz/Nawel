@@ -50,7 +50,9 @@ export function MealContainer({
   const calendarUrl = generateGoogleCalendarUrl(meal, eventName);
 
   const getFullDateDisplay = () => {
-    if (!meal.date) return null;
+    if (!meal.date) {
+      return null;
+    }
     try {
       const d = new Date(`${meal.date}T${meal.time || "12:00"}`);
       let full = format.dateTime(d, {

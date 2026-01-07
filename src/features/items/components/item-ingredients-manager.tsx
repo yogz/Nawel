@@ -62,7 +62,8 @@ export function ItemIngredientsManager({
 
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
-  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [isRated, setIsRated] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -164,9 +165,7 @@ export function ItemIngredientsManager({
 
             <div className="space-y-2">
               <p className="text-lg font-bold text-gray-900">{t("addManual")}</p>
-              <p className="text-sm text-gray-500">
-                Ajoutez les ingrédients ci-dessous ou utilisez notre IA
-              </p>
+              <p className="text-sm text-gray-500">{t("addDescription")}</p>
             </div>
 
             {!readOnly && onGenerateIngredients && (
@@ -262,39 +261,35 @@ export function ItemIngredientsManager({
 
       {/* Floating AI Feedback / Quick Actions Area */}
       <div className="pointer-events-none absolute bottom-[108px] left-0 right-0 z-10 px-4">
-        {justGenerated && !feedbackSent && (
+        {justGenerated && !isDismissed && !isRated && (
           <div className="pointer-events-auto mx-auto max-w-lg space-y-4 rounded-3xl border border-indigo-100 bg-white/95 p-5 shadow-2xl shadow-indigo-200/50 backdrop-blur-md duration-500 animate-in fade-in slide-in-from-bottom-8">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-indigo-100 p-2 text-indigo-600">
                 <Sparkles size={18} />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-bold leading-none text-gray-900">
-                  Proposition pertinente ?
-                </p>
-                <p className="mt-1 text-xs text-gray-500">
-                  Notez de 1 à 10 pour améliorer la suite
-                </p>
+                <p className="text-sm font-bold leading-none text-gray-900">{t("aiRatingTitle")}</p>
+                <p className="mt-1 text-xs text-gray-500">{t("aiRatingDescription")}</p>
               </div>
               <button
-                onClick={() => setFeedbackSent(true)}
+                onClick={() => setIsDismissed(true)}
                 className="p-1 text-gray-400 transition-colors hover:text-gray-600"
               >
                 <X size={16} />
               </button>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-1.5">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+            <div className="flex flex-nowrap justify-between gap-1.5">
+              {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   onClick={async () => {
                     if (onSaveFeedback) {
                       await onSaveFeedback(itemId, n);
-                      setFeedbackSent(true);
+                      setIsRated(true);
                     }
                   }}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-100 bg-white text-xs font-bold text-gray-600 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
+                  className="flex h-10 w-full items-center justify-center rounded-xl border border-gray-100 bg-white text-sm font-bold text-gray-600 shadow-sm transition-all hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-600 active:scale-90"
                 >
                   {n}
                 </button>
@@ -303,9 +298,9 @@ export function ItemIngredientsManager({
           </div>
         )}
 
-        {feedbackSent && (
+        {isRated && (
           <div className="pointer-events-auto mx-auto max-w-xs rounded-2xl border border-green-100 bg-white/95 p-3 text-center shadow-xl backdrop-blur-md duration-300 animate-in zoom-in">
-            <p className="text-sm font-bold text-green-700">Merci pour votre retour ! 🙏</p>
+            <p className="text-sm font-bold text-green-700">{t("feedbackThanks")}</p>
           </div>
         )}
       </div>
@@ -327,7 +322,7 @@ export function ItemIngredientsManager({
               </div>
               <div className="w-24">
                 <Input
-                  placeholder="Qté"
+                  placeholder={t("quantityShort")}
                   value={newQuantity}
                   onChange={(e) => setNewQuantity(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}

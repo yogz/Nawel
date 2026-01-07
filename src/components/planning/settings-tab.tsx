@@ -65,7 +65,7 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
         <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Globe size={14} /> {t("language")}
         </h3>
-        <LanguageSelector variant="grid" showSearch={true} />
+        <LanguageSelector variant="grid" showSearch />
       </div>
 
       {!readOnly && isOwner && (

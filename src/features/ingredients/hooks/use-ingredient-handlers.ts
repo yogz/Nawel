@@ -72,7 +72,9 @@ export function useIngredientHandlers({
   };
 
   const handleSaveFeedback = async (itemId: number, rating: number) => {
-    if (readOnly) return;
+    if (readOnly) {
+      return;
+    }
 
     await saveAIFeedbackAction({ itemId, rating, slug, key: writeKey });
     setJustGenerated(null);

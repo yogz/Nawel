@@ -324,7 +324,12 @@
         "analyzing": "Analyserer opskrift...",
         "count": "{count, plural, =0 {ingen ingredienser} one {1 ingrediens} other {# ingredienser}}",
         "deleteConfirmTitle": "Slet alle ingredienser?",
-        "deleteConfirmDescription": "Er du sikker på, at du vil slette alle ingredienser fra denne liste? Denne handling kan ikke fortrydes."
+        "deleteConfirmDescription": "Er du sikker på, at du vil slette alle ingredienser fra denne liste? Denne handling kan ikke fortrydes.",
+        "addDescription": "Tilføj ingredienser nedenfor eller brug vores AI",
+        "aiRatingTitle": "Er forslaget relevant?",
+        "aiRatingDescription": "Giv en vurdering fra 1 til 5 for at hjælpe os med at forbedre os",
+        "feedbackThanks": "Tak for din feedback! 🙏",
+        "quantityShort": "Ant"
       }
     },
     "ServiceForm": {

@@ -357,7 +357,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                 {t("profile.language")}
               </Label>
-              <LanguageSelector variant="bottomSheet" showSearch={true} />
+              <LanguageSelector variant="bottomSheet" showSearch />
             </div>
 
             {/* Status Messages */}

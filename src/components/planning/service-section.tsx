@@ -42,9 +42,15 @@ export const ServiceSection = memo(function ServiceSection({
   });
 
   const filteredItems = service.items.filter((i) => {
-    if (filter.type === "all") return true;
-    if (filter.type === "unassigned") return !i.personId;
-    if (filter.type === "person") return i.personId === filter.personId;
+    if (filter.type === "all") {
+      return true;
+    }
+    if (filter.type === "unassigned") {
+      return !i.personId;
+    }
+    if (filter.type === "person") {
+      return i.personId === filter.personId;
+    }
     return true;
   });
 

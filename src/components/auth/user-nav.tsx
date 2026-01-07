@@ -29,7 +29,7 @@ export function UserNav() {
           onClick={() => setShowAuthModal(true)}
           icon={<LogIn size={16} />}
           className="h-10 w-10 rounded-full p-0"
-        ></Button>
+        />
         <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
     );

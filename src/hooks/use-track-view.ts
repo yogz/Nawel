@@ -22,8 +22,12 @@ export function useTrackView<T extends HTMLElement = HTMLDivElement>({
 
   useEffect(() => {
     const element = ref.current;
-    if (!element) return;
-    if (triggerOnce && hasTriggered) return;
+    if (!element) {
+      return;
+    }
+    if (triggerOnce && hasTriggered) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {

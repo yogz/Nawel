@@ -73,7 +73,7 @@ export function LandingAlt() {
         className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
       >
         <div className="absolute right-6 top-6 z-50">
-          <LanguageSelector variant="compact" showSearch={true} />
+          <LanguageSelector variant="compact" showSearch />
         </div>
         <div className="absolute inset-0 -z-10">
           <Image

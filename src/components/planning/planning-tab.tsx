@@ -25,7 +25,7 @@ import { useTranslations } from "next-intl";
 interface PlanningTabProps {
   plan: PlanData;
   planningFilter: PlanningFilter;
-  // eslint-disable-next-line no-unused-vars
+
   setPlanningFilter: (filter: PlanningFilter) => void;
   activeItemId: number | null;
   readOnly?: boolean;
@@ -89,7 +89,9 @@ export function PlanningTab({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteWrapper = async () => {
-    if (!onDeleteEvent) return;
+    if (!onDeleteEvent) {
+      return;
+    }
     setIsDeleting(true);
     try {
       await onDeleteEvent();

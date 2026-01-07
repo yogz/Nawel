@@ -322,7 +322,12 @@
         "analyzing": "Analizando receta...",
         "count": "{count, plural, =0 {ningún ingrediente} one {1 ingrediente} other {# ingredientes}}",
         "deleteConfirmTitle": "¿Eliminar todos los ingredientes?",
-        "deleteConfirmDescription": "¿Estás seguro de que deseas eliminar todos los ingredientes de esta lista? Esta acción es irreversible."
+        "deleteConfirmDescription": "¿Estás seguro de que deseas eliminar todos los ingredientes de esta lista? Esta acción es irreversible.",
+        "addDescription": "Añade los ingredientes abajo o usa nuestra IA",
+        "aiRatingTitle": "¿Propuesta relevante?",
+        "aiRatingDescription": "Califica de 1 a 5 para ayudarnos a mejorar",
+        "feedbackThanks": "¡Gracias por tus comentarios! 🙏",
+        "quantityShort": "Cant."
       }
     },
     "ServiceForm": {

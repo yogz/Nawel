@@ -135,7 +135,9 @@ export function OrganizerSheets({
   }, [currentServiceId, plan.meals]);
 
   const itemIngredients = useMemo(() => {
-    if (!sheet) return undefined;
+    if (!sheet) {
+      return undefined;
+    }
 
     if (sheet.type === "item" && sheet.item) {
       const found = findItem(sheet.item.id);
@@ -284,7 +286,9 @@ export function OrganizerSheets({
                           let peopleCount = undefined;
                           if (currentNote) {
                             const match = currentNote.match(/Pour (\d+) personne/i);
-                            if (match) peopleCount = parseInt(match[1]);
+                            if (match) {
+                              peopleCount = parseInt(match[1]);
+                            }
                           }
 
                           await handleGenerateIngredients(
@@ -539,7 +543,9 @@ export function OrganizerSheets({
             handleGenerateIngredients
               ? async (name, note) => {
                   const currentSheet = sheet;
-                  if (currentSheet?.type !== "item-ingredients") return;
+                  if (currentSheet?.type !== "item-ingredients") {
+                    return;
+                  }
                   const currentId = currentSheet.itemId;
 
                   setIsGenerating(true);
@@ -552,7 +558,9 @@ export function OrganizerSheets({
                     let finalPeopleCount = peopleCount;
                     if (note) {
                       const match = note.match(/Pour (\d+) personne/i);
-                      if (match) finalPeopleCount = parseInt(match[1]);
+                      if (match) {
+                        finalPeopleCount = parseInt(match[1]);
+                      }
                     }
 
                     await handleGenerateIngredients(

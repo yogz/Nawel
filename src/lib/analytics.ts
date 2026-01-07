@@ -28,7 +28,9 @@ export function setAnalyticsConsent(consent: boolean) {
  * Check if analytics consent has been given
  */
 export function getAnalyticsConsent(): boolean {
-  if (typeof window === "undefined") return false;
+  if (typeof window === "undefined") {
+    return false;
+  }
   const stored = localStorage.getItem("analytics_consent");
   return stored === null ? true : stored === "true"; // Default to true if not set
 }

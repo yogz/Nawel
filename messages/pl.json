@@ -324,7 +324,12 @@
         "analyzing": "Analizowanie przepisu...",
         "count": "{count, plural, =0 {brak składników} one {1 składnik} other {# składniki}}",
         "deleteConfirmTitle": "Usunąć wszystkie składniki?",
-        "deleteConfirmDescription": "Czy na pewno chcesz usunąć wszystkie składniki z tej listy? Tej akcji nie można cofnąć."
+        "deleteConfirmDescription": "Czy na pewno chcesz usunąć wszystkie składniki z tej listy? Tej akcji nie można cofnąć.",
+        "addDescription": "Dodaj składniki poniżej lub użyj naszej AI",
+        "aiRatingTitle": "Czy ta propozycja jest trafna?",
+        "aiRatingDescription": "Oceń od 1 do 5, aby pomóc nam ulepszyć system",
+        "feedbackThanks": "Dziękujemy za opinię! 🙏",
+        "quantityShort": "Ilość"
       }
     },
     "ServiceForm": {

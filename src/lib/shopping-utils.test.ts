@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseQuantity, aggregateShoppingList, formatAggregatedQuantity } from "./shopping-utils";
+import { type Ingredient, type Item } from "./types";
 
 describe("Shopping Utils", () => {
   describe("parseQuantity", () => {
@@ -23,18 +24,18 @@ describe("Shopping Utils", () => {
 
   describe("aggregateShoppingList", () => {
     it("should aggregate items with same name and unit", () => {
-      const items: any[] = [
+      const items = [
         {
-          type: "ingredient",
-          ingredient: { name: "oeufs", quantity: "4", checked: false },
-          item: { name: "Portokalopita" },
+          type: "ingredient" as const,
+          ingredient: { name: "oeufs", quantity: "4", checked: false } as unknown as Ingredient,
+          item: { name: "Portokalopita" } as unknown as Item,
           mealTitle: "M1",
           serviceTitle: "S1",
         },
         {
-          type: "ingredient",
-          ingredient: { name: "oeufs", quantity: "6", checked: false },
-          item: { name: "Flan" },
+          type: "ingredient" as const,
+          ingredient: { name: "oeufs", quantity: "6", checked: false } as unknown as Ingredient,
+          item: { name: "Flan" } as unknown as Item,
           mealTitle: "M2",
           serviceTitle: "S1",
         },
@@ -48,18 +49,22 @@ describe("Shopping Utils", () => {
     });
 
     it("should not aggregate items with different units", () => {
-      const items: any[] = [
+      const items = [
         {
-          type: "ingredient",
-          ingredient: { name: "farine", quantity: "200g", checked: false },
-          item: { name: "Cake" },
+          type: "ingredient" as const,
+          ingredient: { name: "farine", quantity: "200g", checked: false } as unknown as Ingredient,
+          item: { name: "Cake" } as unknown as Item,
           mealTitle: "M1",
           serviceTitle: "S1",
         },
         {
-          type: "ingredient",
-          ingredient: { name: "farine", quantity: "1 cup", checked: false },
-          item: { name: "Pancakes" },
+          type: "ingredient" as const,
+          ingredient: {
+            name: "farine",
+            quantity: "1 cup",
+            checked: false,
+          } as unknown as Ingredient,
+          item: { name: "Pancakes" } as unknown as Item,
           mealTitle: "M2",
           serviceTitle: "S1",
         },
@@ -70,23 +75,27 @@ describe("Shopping Utils", () => {
     });
 
     it("should consider checked only if all sources are checked", () => {
-      const items: any[] = [
+      const items = [
         {
-          type: "ingredient",
-          ingredient: { name: "sel", quantity: "1g", checked: true },
-          item: { name: "A" },
+          type: "ingredient" as const,
+          ingredient: { name: "sel", quantity: "1g", checked: true } as unknown as Ingredient,
+          item: { name: "A" } as unknown as Item,
+          mealTitle: "M1",
+          serviceTitle: "S1",
         },
         {
-          type: "ingredient",
-          ingredient: { name: "sel", quantity: "1g", checked: false },
-          item: { name: "B" },
+          type: "ingredient" as const,
+          ingredient: { name: "sel", quantity: "1g", checked: false } as unknown as Ingredient,
+          item: { name: "B" } as unknown as Item,
+          mealTitle: "M1",
+          serviceTitle: "S1",
         },
       ];
 
       const aggregated = aggregateShoppingList(items);
       expect(aggregated[0].checked).toBe(false);
 
-      items[1].ingredient.checked = true;
+      (items[1].ingredient as unknown as Ingredient).checked = true;
       const aggregated2 = aggregateShoppingList(items);
       expect(aggregated2[0].checked).toBe(true);
     });

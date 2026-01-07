@@ -174,19 +174,30 @@ export function CitationManager() {
   };
 
   const handleSave = async () => {
-    if (!editedItem || !activeItem) return;
+    if (!editedItem || !activeItem) {
+      return;
+    }
 
     setIsSaving(true);
     try {
       const updates: any = {};
 
       // Comparer et construire les mises à jour
-      if (editedItem.type !== activeItem.type) updates.type = editedItem.type;
-      if (editedItem.tone !== activeItem.tone) updates.tone = editedItem.tone;
-      if (editedItem.category !== activeItem.category) updates.category = editedItem.category;
-      if (JSON.stringify(editedItem.tags) !== JSON.stringify(activeItem.tags))
+      if (editedItem.type !== activeItem.type) {
+        updates.type = editedItem.type;
+      }
+      if (editedItem.tone !== activeItem.tone) {
+        updates.tone = editedItem.tone;
+      }
+      if (editedItem.category !== activeItem.category) {
+        updates.category = editedItem.category;
+      }
+      if (JSON.stringify(editedItem.tags) !== JSON.stringify(activeItem.tags)) {
         updates.tags = editedItem.tags;
-      if (editedItem.rating !== activeItem.rating) updates.rating = editedItem.rating;
+      }
+      if (editedItem.rating !== activeItem.rating) {
+        updates.rating = editedItem.rating;
+      }
 
       if (
         editedItem.original.lang !== activeItem.original.lang ||

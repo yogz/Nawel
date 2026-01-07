@@ -322,7 +322,12 @@
         "analyzing": "Rezeptanalyse...",
         "count": "{count, plural, =0 {keine Zutaten} one {1 Zutat} other {# Zutaten}}",
         "deleteConfirmTitle": "Alle Zutaten löschen?",
-        "deleteConfirmDescription": "Sind Sie sicher, dass Sie alle Zutaten aus dieser Liste löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+        "deleteConfirmDescription": "Sind Sie sicher, dass Sie alle Zutaten aus dieser Liste löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "addDescription": "Zutaten unten hinzufügen oder unsere KI nutzen",
+        "aiRatingTitle": "Vorschlag relevant?",
+        "aiRatingDescription": "Bewerten Sie von 1 bis 5, um uns zu verbessern",
+        "feedbackThanks": "Danke für Ihr Feedback! 🙏",
+        "quantityShort": "Menge"
       }
     },
     "ServiceForm": {
