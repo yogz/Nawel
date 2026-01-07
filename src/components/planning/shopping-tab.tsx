@@ -194,31 +194,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     [optimisticToggles]
   );
 
-  // Non-owner user not linked to any person
-  if (!isOwner && !currentPerson) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <UserX className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">{t("notAssociated")}</h3>
-        <p className="text-sm text-muted-foreground">{t("notAssociatedDesc")}</p>
-      </div>
-    );
-  }
-
-  // No items assigned at all
-  if (peopleWithItems.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <ShoppingCart className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">{t("noShopping")}</h3>
-        <p className="text-sm text-muted-foreground">
-          {isOwner ? t("noShoppingOwnerDesc") : t("noShoppingUserDesc")}
-        </p>
-      </div>
-    );
-  }
-
-  // Calculate per-person summaries for "all" view
+  // Calculate per-person summaries for "all" view (must be before early returns)
   const personSummaries = useMemo(() => {
     return peopleWithItems.map((person) => {
       const flatList: {
@@ -265,6 +241,30 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       return { person, totalItems, checkedItems };
     });
   }, [plan.meals, peopleWithItems]);
+
+  // Non-owner user not linked to any person
+  if (!isOwner && !currentPerson) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <UserX className="mb-4 h-16 w-16 text-gray-200" />
+        <h3 className="mb-2 text-lg font-bold text-text">{t("notAssociated")}</h3>
+        <p className="text-sm text-muted-foreground">{t("notAssociatedDesc")}</p>
+      </div>
+    );
+  }
+
+  // No items assigned at all
+  if (peopleWithItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <ShoppingCart className="mb-4 h-16 w-16 text-gray-200" />
+        <h3 className="mb-2 text-lg font-bold text-text">{t("noShopping")}</h3>
+        <p className="text-sm text-muted-foreground">
+          {isOwner ? t("noShoppingOwnerDesc") : t("noShoppingUserDesc")}
+        </p>
+      </div>
+    );
+  }
 
   const fullPageUrl =
     displayPerson && writeKey

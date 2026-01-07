@@ -14,20 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Trash2,
-  ChevronDown,
-  Loader2,
-  Plus,
-  CircleHelp,
-  Check,
-  X,
-  Sparkles,
-  Lock,
-} from "lucide-react";
-import { DrawerClose } from "@/components/ui/drawer";
+import { Trash2, ChevronDown, Loader2, Plus, CircleHelp, Sparkles, Lock } from "lucide-react";
 import clsx from "clsx";
-import { ItemIngredients } from "./item-ingredients";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
@@ -45,10 +33,10 @@ export function ItemForm({
   // Ingredient props
   ingredients,
   onGenerateIngredients,
-  onToggleIngredient,
-  onDeleteIngredient,
-  onCreateIngredient,
-  onDeleteAllIngredients,
+  onToggleIngredient: _onToggleIngredient,
+  onDeleteIngredient: _onDeleteIngredient,
+  onCreateIngredient: _onCreateIngredient,
+  onDeleteAllIngredients: _onDeleteAllIngredients,
   onManageIngredients,
   isGenerating,
   // Auth props for AI features
@@ -115,7 +103,7 @@ export function ItemForm({
   const userPerson = currentUserId ? people.find((p) => p.userId === currentUserId) : undefined;
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const _timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const isEditMode = !!defaultItem;
@@ -163,7 +151,7 @@ export function ItemForm({
     };
   }, [isEditMode, readOnly, defaultItem]); // defaultItem is stable, readOnly/isEditMode too usually
 
-  const hasChanged =
+  const _hasChanged =
     isEditMode &&
     (name !== (defaultItem?.name || "") ||
       quantity !== (defaultItem?.quantity || "") ||

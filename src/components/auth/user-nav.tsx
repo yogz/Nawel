@@ -47,7 +47,7 @@ export function UserNav() {
           const avatar = renderAvatar(
             {
               name: user.name || "User",
-              emoji: (user as any).emoji || null,
+              emoji: (user as { emoji?: string | null }).emoji || null,
               user: user,
             },
             [],

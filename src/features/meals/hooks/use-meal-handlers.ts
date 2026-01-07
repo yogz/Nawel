@@ -175,10 +175,10 @@ export function useMealHandlers({
               return m;
             }
 
-            const oldTotal = m.adults + m.children;
+            const _oldTotal = m.adults + m.children;
             const newAdults = adults ?? m.adults;
             const newChildren = children ?? m.children;
-            const newTotal = newAdults + newChildren;
+            const _newTotal = newAdults + newChildren;
 
             const updatedMeal = {
               ...m,

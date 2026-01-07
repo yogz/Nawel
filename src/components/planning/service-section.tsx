@@ -1,7 +1,7 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
-import { PlusIcon, Users, Edit3 } from "lucide-react";
+import { PlusIcon, Edit3 } from "lucide-react";
 import { type PlanningFilter, type Service, type Person, type Item } from "@/lib/types";
 import { ItemRow } from "./item-row";
 import { Button } from "../ui/button";
@@ -32,7 +32,7 @@ export const ServiceSection = memo(function ServiceSection({
   onCreate,
   onEdit,
   filter,
-  activeItemId,
+  activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
 }: ServiceSectionProps) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";

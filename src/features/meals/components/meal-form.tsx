@@ -73,7 +73,7 @@ export function MealForm({
   const tCreateEvent = useTranslations("CreateEvent");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
-  const dateLocale = dateLocales[currentLocale] || fr;
+  const _dateLocale = dateLocales[currentLocale] || fr;
 
   const CREATION_MODES = [
     {

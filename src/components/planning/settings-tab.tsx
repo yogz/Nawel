@@ -23,7 +23,7 @@ interface SettingsTabProps {
 
 export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
-  const tShared = useTranslations("EventDashboard.Shared");
+  const _tShared = useTranslations("EventDashboard.Shared");
   const { theme, setTheme, themes } = useThemeMode();
   const [showDangerZone, setShowDangerZone] = useState(false);
 
@@ -91,7 +91,7 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
               <div className="mb-4 rounded-xl bg-red-50 p-3 text-[10px] font-medium text-red-800">
                 <p className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 shrink-0" />
-                  Attention : Cette action est irréversible. Toutes les données de l'événement
+                  Attention : Cette action est irréversible. Toutes les données de l&apos;événement
                   seront définitivement supprimées.
                 </p>
               </div>

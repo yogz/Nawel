@@ -3,15 +3,7 @@
 import { useState, useMemo, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Check,
-  Share2,
-  ShoppingBag,
-  Copy,
-  CheckCircle,
-  ChevronDown,
-} from "lucide-react";
+import { ArrowLeft, Check, Share2, ShoppingBag, CheckCircle, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
@@ -38,7 +30,7 @@ export function ShoppingPage({
   writeKey,
   writeEnabled,
 }: ShoppingPageProps) {
-  const router = useRouter();
+  const _router = useRouter();
   const [plan, setPlan] = useState(initialPlan);
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);

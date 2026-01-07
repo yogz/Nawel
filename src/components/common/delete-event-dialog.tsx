@@ -14,7 +14,7 @@ interface DeleteEventDialogProps {
 export function DeleteEventDialog({
   open,
   onOpenChange,
-  eventName,
+  eventName: _eventName,
   onConfirm,
   isPending = false,
 }: DeleteEventDialogProps) {

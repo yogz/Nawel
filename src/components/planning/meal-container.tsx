@@ -67,7 +67,7 @@ export function MealContainer({
       }
 
       return full.charAt(0).toUpperCase() + full.slice(1);
-    } catch (e) {
+    } catch (_e) {
       return meal.date;
     }
   };

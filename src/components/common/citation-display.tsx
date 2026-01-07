@@ -5,13 +5,15 @@ import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type CitationItem = (typeof citationsDataV3.items)[number];
+
 export function CitationDisplay({
   seed,
   item,
   className,
 }: {
   seed?: string;
-  item?: any;
+  item?: CitationItem;
   className?: string;
 }) {
   const locale = useLocale();

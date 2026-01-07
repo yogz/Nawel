@@ -20,10 +20,10 @@ import {
   DrawerTitle,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
+import { format } from "date-fns";
 
 const dateLocales: Record<string, typeof fr> = {
   fr,
@@ -76,7 +76,7 @@ export function EditEventSheet({
   const tMeal = useTranslations("EventDashboard.Meal");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
-  const dateLocale = dateLocales[currentLocale] || fr;
+  const _dateLocale = dateLocales[currentLocale] || fr;
 
   // Form state
   const [name, setName] = useState(initialData.name);
@@ -108,15 +108,35 @@ export function EditEventSheet({
     stateRef.current = { name, description, adults, children, date, time, address };
   }, [name, description, adults, children, date, time, address, initialData]);
 
-  // Reset form when initialData changes
+  // Reset form when initialData changes (only set if value differs to avoid cascading renders)
   useEffect(() => {
-    setName(initialData.name);
-    setDescription(initialData.description || "");
-    setAdults(initialData.adults);
-    setChildren(initialData.children);
-    setDate(initialData.date ? new Date(initialData.date) : undefined);
-    setTime(initialData.time || "");
-    setAddress(initialData.address || "");
+    const newDate = initialData.date ? new Date(initialData.date) : undefined;
+    const newDesc = initialData.description || "";
+    const newTime = initialData.time || "";
+    const newAddr = initialData.address || "";
+
+    if (name !== initialData.name) {
+      setName(initialData.name);
+    }
+    if (description !== newDesc) {
+      setDescription(newDesc);
+    }
+    if (adults !== initialData.adults) {
+      setAdults(initialData.adults);
+    }
+    if (children !== initialData.children) {
+      setChildren(initialData.children);
+    }
+    if (date?.getTime() !== newDate?.getTime()) {
+      setDate(newDate);
+    }
+    if (time !== newTime) {
+      setTime(newTime);
+    }
+    if (address !== newAddr) {
+      setAddress(newAddr);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData]);
 
   const handleSubmit = () => {
@@ -130,14 +150,6 @@ export function EditEventSheet({
       time: time.trim() || undefined,
       address: address.trim() || undefined,
     });
-  };
-
-  const format = (date: Date, fmt: string) => {
-    const pad = (n: number) => n.toString().padStart(2, "0");
-    if (fmt === "yyyy-MM-dd") {
-      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-    }
-    return date.toLocaleDateString();
   };
 
   const hasMeal = !!initialData.mealId;

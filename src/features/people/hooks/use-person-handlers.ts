@@ -139,33 +139,35 @@ export function usePersonHandlers({
     if (readOnly) {
       return Promise.reject(new Error("Read only"));
     }
-    return new Promise<any>((resolve, reject) => {
-      startTransition(async () => {
-        try {
-          const updated = await claimPersonAction({ personId, slug, key: writeKey });
-          setPlan((prev: PlanData) => ({
-            ...prev,
-            people: prev.people.map((p) =>
-              p.id === personId
-                ? {
-                    ...p,
-                    userId: updated.userId,
-                    name: updated.name,
-                    emoji: updated.emoji,
-                    image: updated.image,
-                  }
-                : p
-            ),
-          }));
-          setSuccessMessage({ text: t("person.claimed"), type: "success" });
-          resolve(updated);
-        } catch (error) {
-          console.error("Failed to claim person:", error);
-          setSuccessMessage({ text: t("person.errorClaim"), type: "error" });
-          reject(error);
-        }
-      });
-    });
+    return new Promise<{ userId: string | null; name: string; emoji: string | null }>(
+      (resolve, reject) => {
+        startTransition(async () => {
+          try {
+            const updated = await claimPersonAction({ personId, slug, key: writeKey });
+            setPlan((prev: PlanData) => ({
+              ...prev,
+              people: prev.people.map((p) =>
+                p.id === personId
+                  ? {
+                      ...p,
+                      userId: updated.userId,
+                      name: updated.name,
+                      emoji: updated.emoji,
+                      image: updated.image,
+                    }
+                  : p
+              ),
+            }));
+            setSuccessMessage({ text: t("person.claimed"), type: "success" });
+            resolve(updated);
+          } catch (error) {
+            console.error("Failed to claim person:", error);
+            setSuccessMessage({ text: t("person.errorClaim"), type: "error" });
+            reject(error);
+          }
+        });
+      }
+    );
   };
 
   const handleUnclaimPerson = (personId: number) => {

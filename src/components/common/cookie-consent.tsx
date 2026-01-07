@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { setAnalyticsConsent, getAnalyticsConsent } from "@/lib/analytics";
+import { setAnalyticsConsent } from "@/lib/analytics";
 import { Cookie, Shield, ChartBar, ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 

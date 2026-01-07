@@ -65,7 +65,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem(STORAGE_KEY);
           }
         }
-      } catch (e) {
+      } catch (_e) {
         // Fallback pour l'ancien format (simple string)
         if (THEMES.some((t) => t.id === (storedStr as ThemeName))) {
           // Si c'est l'ancien format, on le considère comme expiré ou on le migre

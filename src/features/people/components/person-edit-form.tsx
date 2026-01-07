@@ -1,19 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Trash2, Check, ChevronDown } from "lucide-react";
+import { Trash2, ChevronDown, Check } from "lucide-react";
 import Image from "next/image";
 import { type Person } from "@/lib/types";
 import { THEME_EMOJIS, getPersonEmoji, renderAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DrawerClose } from "@/components/ui/drawer";
 import { useThemeMode } from "@/components/theme-provider";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
 
 export function PersonEditForm({
   person,
@@ -21,7 +18,7 @@ export function PersonEditForm({
   onSubmit,
   onDelete,
   readOnly,
-  currentUserId,
+  currentUserId: _currentUserId,
 }: {
   person: Person;
   allPeople: Person[];

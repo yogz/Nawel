@@ -34,7 +34,7 @@ export function PeopleTab({
   readOnly,
   currentUserId,
   onClaim,
-  onUnclaim,
+  onUnclaim: _onUnclaim,
 }: PeopleTabProps) {
   const t = useTranslations("EventDashboard.People");
   const tForm = useTranslations("EventDashboard.ItemForm");

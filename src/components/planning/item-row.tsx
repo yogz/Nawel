@@ -3,20 +3,10 @@
 import { memo, useState, useEffect } from "react";
 import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
-import {
-  Scale,
-  Euro,
-  MessageSquare,
-  ChefHat,
-  CircleHelp,
-  Edit3,
-  Plus,
-  ArrowRight,
-} from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat, Edit3, Plus, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Button } from "../ui/button";
 import { SwipeableCard } from "../ui/swipeable-card";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-is-mobile";

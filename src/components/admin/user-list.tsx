@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
-  Users,
   Calendar,
   User as UserIcon,
   Trash2,
@@ -218,14 +217,14 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
       <Drawer open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
         <DrawerContent className="px-4">
           <DrawerHeader className="px-1 text-left">
-            <DrawerTitle>Supprimer l'utilisateur</DrawerTitle>
+            <DrawerTitle>Supprimer l&apos;utilisateur</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-4 pb-8">
             <p className="text-muted-foreground">
-              Êtes-vous sûr de vouloir supprimer définitivement l'utilisateur{" "}
+              Êtes-vous sûr de vouloir supprimer définitivement l&apos;utilisateur{" "}
               <strong className="text-text">{deletingUser?.name}</strong> ? Cette action est
-              irréversible. Les événements dont il est propriétaire seront conservés mais n'auront
-              plus de propriétaire.
+              irréversible. Les événements dont il est propriétaire seront conservés mais
+              n&apos;auront plus de propriétaire.
             </p>
 
             <div className="flex gap-2 pt-2">

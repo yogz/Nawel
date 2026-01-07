@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { createEventAction, updateEventWithMealAction, deleteEventAction } from "@/app/actions";
+import { updateEventWithMealAction, deleteEventAction } from "@/app/actions";
 import { Calendar, Clock, History, Users, ArrowRight } from "lucide-react";
 import { SwipeableCard } from "./ui/swipeable-card";
 import { DeleteEventDialog } from "./common/delete-event-dialog";
@@ -46,7 +46,7 @@ export function EventList({
   const t = useTranslations("Dashboard.EventList");
   const format = useFormatter();
 
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<Event | null>(null);
 

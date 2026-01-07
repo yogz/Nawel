@@ -2,7 +2,7 @@
 
 import { Check } from "lucide-react";
 import clsx from "clsx";
-import { getPersonEmoji, renderAvatar, getDisplayName } from "@/lib/utils";
+import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { type Person, type PlanningFilter } from "@/lib/types";
 
 interface PersonSelectSheetProps {

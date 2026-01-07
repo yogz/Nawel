@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { IngredientForm } from "@/features/items/components/ingredient-form";
 import { Plus, X } from "lucide-react";
 import { type Ingredient } from "@/lib/types";
@@ -43,7 +42,7 @@ export function IngredientList({
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
 
-  const handleAdd = () => {
+  const _handleAdd = () => {
     if (newName.trim()) {
       onCreate(newName.trim(), newQuantity.trim() || undefined);
       setNewName("");

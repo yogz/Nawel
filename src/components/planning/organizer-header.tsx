@@ -32,11 +32,11 @@ export function OrganizerHeader({
   readOnly,
   tab,
   plan,
-  planningFilter,
-  setPlanningFilter,
-  setSheet,
-  sheet,
-  unassignedItemsCount,
+  planningFilter: _planningFilter,
+  setPlanningFilter: _setPlanningFilter,
+  setSheet: _setSheet,
+  sheet: _sheet,
+  unassignedItemsCount: _unassignedItemsCount,
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
@@ -272,15 +272,15 @@ export interface PlanningFiltersProps {
 }
 
 export function PlanningFilters({
-  plan,
+  plan: _plan,
   planningFilter,
   setPlanningFilter,
-  setSheet,
-  sheet,
+  setSheet: _setSheet,
+  sheet: _sheet,
   unassignedItemsCount,
-  slug,
-  writeKey,
-  readOnly,
+  slug: _slug,
+  writeKey: _writeKey,
+  readOnly: _readOnly,
 }: PlanningFiltersProps) {
   const t = useTranslations("EventDashboard.Header.filter");
 

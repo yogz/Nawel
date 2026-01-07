@@ -12,16 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon, Plus, Clock, MapPin, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
-const dateLocales: Record<string, any> = {
+const dateLocales: Record<string, typeof fr> = {
   fr,
   en: enUS,
   el,
@@ -64,7 +61,7 @@ export function ServiceForm({
   const tMeal = useTranslations("EventDashboard.Meal");
   const params = useParams();
   const currentLocale = (params.locale as string) || "fr";
-  const dateLocale = dateLocales[currentLocale] || fr;
+  const _dateLocale = dateLocales[currentLocale] || fr;
   const initialMealId =
     defaultMealId !== undefined && defaultMealId !== -1
       ? String(defaultMealId)

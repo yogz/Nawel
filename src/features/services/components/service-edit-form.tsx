@@ -5,7 +5,7 @@ import { type Service } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Check, ChevronDown } from "lucide-react";
+import { Trash2, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import {
@@ -15,13 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DrawerClose } from "@/components/ui/drawer";
-
 export function ServiceEditForm({
   service,
   onSubmit,
   onDelete,
-  onClose,
+  onClose: _onClose,
 }: {
   service: Service;
   onSubmit: (
@@ -75,7 +73,7 @@ export function ServiceEditForm({
     };
   }, [service, onSubmit]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const _handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // No longer needed since we save on close, but we keep the form element for layout
   };

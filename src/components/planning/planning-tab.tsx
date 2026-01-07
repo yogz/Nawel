@@ -3,12 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
-import { ServiceSection } from "./service-section";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./organizer-header";
 import { PlusIcon, Calendar } from "lucide-react";
 import { MealContainer } from "./meal-container";
-import { cn } from "@/lib/utils";
 import { DangerZoneTrigger, DangerZoneContent } from "../common/danger-zone";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
@@ -81,7 +79,7 @@ export function PlanningTab({
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tSettings = useTranslations("EventDashboard.Settings");
-  const { theme } = useThemeMode();
+  const { theme: _theme } = useThemeMode();
   const isMobile = useIsMobile();
   const [hasMounted, setHasMounted] = useState(false);
 

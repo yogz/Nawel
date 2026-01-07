@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Sparkles, Lock, Plus, X } from "lucide-react";
+import { Loader2, Sparkles, Lock, Plus } from "lucide-react";
 import { IngredientList } from "@/components/planning/ingredient-list";
 import { IngredientForm } from "./ingredient-form";
-import { Input } from "@/components/ui/input";
 import { type Ingredient } from "@/lib/types";
 import { useTranslations } from "next-intl";
 

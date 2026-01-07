@@ -6,7 +6,7 @@ import { deleteEventAction } from "@/app/actions";
 import type { BaseHandlerParams } from "@/features/shared/types";
 
 export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHandlerParams) {
-  const [, startTransition] = useTransition();
+  const [, _startTransition] = useTransition();
   const t = useTranslations("Translations");
   const tShared = useTranslations("EventDashboard.Shared");
 

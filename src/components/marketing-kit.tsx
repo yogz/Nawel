@@ -89,7 +89,7 @@ export function MarketingKit() {
           <Instagram className="mx-auto mb-4 h-12 w-12 text-pink-600" />
           <h1 className="mb-4 text-4xl font-bold text-gray-900">Kit Marketing Instagram</h1>
           <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Vos plans de communication prêts à l'emploi. Textes, hashtags et visuels pour vos
+            Vos plans de communication prêts à l&apos;emploi. Textes, hashtags et visuels pour vos
             campagnes.
           </p>
         </div>
@@ -153,7 +153,7 @@ export function MarketingKit() {
                     className="inline-flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
                   >
                     <Download className="h-4 w-4" />
-                    Télécharger l'image
+                    Télécharger l&apos;image
                   </a>
                 </div>
 
@@ -178,7 +178,7 @@ export function MarketingKit() {
 
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <Hash className="h-3 w-3" />
-                  <span>N'oublie pas d'ajouter le lien en bio !</span>
+                  <span>N&apos;oublie pas d&apos;ajouter le lien en bio !</span>
                 </div>
               </div>
             </div>

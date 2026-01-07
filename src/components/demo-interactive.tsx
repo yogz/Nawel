@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, MessageCircle, Send, Plus, User } from "lucide-react";
-import Image from "next/image";
+import { Check } from "lucide-react";
 import { trackDemoView, trackDemoStep } from "@/lib/analytics";
 import { useTrackView } from "@/hooks/use-track-view";
 
@@ -44,7 +43,7 @@ export function DemoInteractive() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            La preuve par l'exemple
+            La preuve par l&apos;exemple
           </h2>
           <p className="mt-4 text-lg leading-8 text-gray-600">
             Voyez ce que vos invités voient. En 3 secondes.
@@ -71,10 +70,11 @@ export function DemoInteractive() {
                   >
                     <div className="mb-4 flex flex-col gap-2">
                       <div className="max-w-[85%] self-start rounded-lg rounded-tl-none bg-white p-3 text-sm shadow-sm">
-                        Salut ! J'organise un dîner samedi pro. 🍝
+                        Salut ! J&apos;organise un dîner samedi pro. 🍝
                       </div>
                       <div className="max-w-[85%] self-start rounded-lg rounded-tl-none bg-white p-3 text-sm shadow-sm">
-                        C'est un potluck, chacun ramène un truc ! Regardez ce qu'il manque ici : 👇
+                        C&apos;est un potluck, chacun ramène un truc ! Regardez ce qu&apos;il manque
+                        ici : 👇
                       </div>
                       <div className="max-w-[85%] self-start overflow-hidden rounded-lg bg-white p-2 shadow-sm">
                         <div className="flex items-center gap-3 rounded border border-slate-200 bg-slate-100 p-2">
@@ -115,7 +115,7 @@ export function DemoInteractive() {
                     {/* App Content */}
                     <div className="space-y-4 p-4">
                       <div className="text-sm font-medium uppercase tracking-wider text-gray-500">
-                        Ce qu'il manque
+                        Ce qu&apos;il manque
                       </div>
 
                       <div className="space-y-3">
@@ -156,7 +156,7 @@ export function DemoInteractive() {
                           animate={{ opacity: 1, y: 0 }}
                           className="mt-8 rounded-xl bg-green-50 p-4 text-center"
                         >
-                          <p className="text-sm font-medium text-green-800">✅ C'est noté !</p>
+                          <p className="text-sm font-medium text-green-800">✅ C&apos;est noté !</p>
                           <p className="mt-1 text-xs text-green-600">Merci pour le champagne !</p>
                         </motion.div>
                       )}
