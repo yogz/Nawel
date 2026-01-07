@@ -82,7 +82,7 @@ export function MealContainer({
       className="relative flex flex-col gap-6 pt-2"
     >
       {/* Meal Info Row - Premium & Compact */}
-      <div className="mx-2 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
+      <div className="mx-0 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
         <div className="flex min-w-0 flex-1 flex-col">
           <button
             type="button"
@@ -168,7 +168,7 @@ export function MealContainer({
       </div>
 
       {/* Service Cards */}
-      <div className="space-y-6 px-2 pb-4">
+      <div className="space-y-6 px-0 pb-4">
         {meal.services.map((service) => (
           <ServiceSection
             key={service.id}

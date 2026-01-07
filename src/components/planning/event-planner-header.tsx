@@ -125,7 +125,7 @@ export function EventPlannerHeader({
           style={{
             background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 30%, rgba(255, 255, 255, 0) 100%)`,
           }}
-          className="w-full px-4 pb-8 pt-5 backdrop-blur-sm transition-all sm:px-4 sm:pb-6 sm:pt-4"
+          className="w-full px-2 pb-8 pt-5 backdrop-blur-sm transition-all sm:px-2 sm:pb-6 sm:pt-4"
         >
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between gap-4">

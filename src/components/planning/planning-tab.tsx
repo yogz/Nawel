@@ -136,7 +136,7 @@ export function PlanningTab({
         className="space-y-2 pt-0"
       >
         <div className="flex flex-col gap-3">
-          <div className="px-2">
+          <div className="px-0">
             <PlanningFilters
               plan={plan}
               planningFilter={planningFilter}

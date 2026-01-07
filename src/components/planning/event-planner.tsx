@@ -330,7 +330,7 @@ export function EventPlanner({
       />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
+        <main className="space-y-4 px-2 py-6 sm:px-2 sm:py-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab
