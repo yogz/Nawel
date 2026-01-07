@@ -608,7 +608,7 @@
       "notLoggedInProfile": "Vous devez être connecté pour modifier votre profil.",
       "notLoggedInDelete": "Vous devez être connecté pour supprimer votre compte.",
       "notLoggedInAI": "Vous devez être connecté pour utiliser la génération IA.",
-      "emailNotVerifiedAI": "Vous devez vérifier votre email pour utilizar la génération IA.",
+      "emailNotVerifiedAI": "Vous devez vérifier votre email pour utiliser la génération IA.",
       "ingredientsGenerationFailed": "Aucun ingrédient généré. Réessayez.",
       "confirmationRequired": "La confirmation est requise.",
       "deleteError": "Une erreur est survenue lors de la suppression de votre compte.",

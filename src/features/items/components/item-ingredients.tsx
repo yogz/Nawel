@@ -14,6 +14,7 @@ interface ItemIngredientsProps {
   readOnly?: boolean;
   isGenerating?: boolean;
   isAuthenticated?: boolean;
+  isEmailVerified?: boolean;
   onGenerateIngredients?: (name: string, note?: string) => Promise<void>;
   onToggleIngredient?: (id: number, checked: boolean) => void;
   onDeleteIngredient?: (id: number) => void;
@@ -29,6 +30,7 @@ export function ItemIngredients({
   readOnly,
   isGenerating,
   isAuthenticated,
+  isEmailVerified,
   onGenerateIngredients,
   onToggleIngredient,
   onDeleteIngredient,
@@ -37,6 +39,7 @@ export function ItemIngredients({
   onRequestAuth,
 }: ItemIngredientsProps) {
   const t = useTranslations("EventDashboard.ItemForm.Ingredients");
+  const tActions = useTranslations("Translations.actions");
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
@@ -62,7 +65,24 @@ export function ItemIngredients({
       {!readOnly && hasNoIngredients && !showManualAdd && (
         <div className="space-y-2">
           {/* AI Generate button */}
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
+            <button
+              type="button"
+              onClick={onRequestAuth}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-200 bg-purple-50 px-4 py-3 text-sm font-medium text-purple-600 transition-all hover:border-purple-300 hover:bg-purple-100"
+            >
+              <Lock size={16} />
+              {t("authRequired")}
+            </button>
+          ) : !isEmailVerified ? (
+            <button
+              disabled
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600"
+            >
+              <Lock size={16} />
+              {tActions("emailNotVerifiedAI")}
+            </button>
+          ) : (
             <button
               type="button"
               onClick={() => onGenerateIngredients(itemName, itemNote)}
@@ -80,15 +100,6 @@ export function ItemIngredients({
                   {t("generateButton")}
                 </>
               )}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onRequestAuth}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-200 bg-purple-50 px-4 py-3 text-sm font-medium text-purple-600 transition-all hover:border-purple-300 hover:bg-purple-100"
-            >
-              <Lock size={16} />
-              {t("authRequired")}
             </button>
           )}
 

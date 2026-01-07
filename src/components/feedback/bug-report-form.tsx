@@ -62,7 +62,11 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="z-[70]" overlayClassName="z-[60]">
+      <DrawerContent
+        className="z-[70]"
+        overlayClassName="z-[60]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DrawerHeader>
           <DrawerTitle className="flex items-center gap-2">
             <Bug className="h-5 w-5 text-accent" />
@@ -70,36 +74,37 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
           </DrawerTitle>
           <DrawerDescription>{t("description")}</DrawerDescription>
         </DrawerHeader>
+        <div className="scrollbar-none min-h-[40vh] overflow-y-auto overscroll-contain pb-6">
+          <form onSubmit={handleSubmit} className="px-4 pb-4">
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={t("placeholder")}
+              className="min-h-[150px] rounded-2xl border-white/40 bg-white/50 ring-accent/20 focus-visible:ring-accent/50"
+              required
+            />
 
-        <form onSubmit={handleSubmit} className="px-4 pb-4">
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={t("placeholder")}
-            className="min-h-[150px] rounded-2xl border-white/40 bg-white/50 ring-accent/20 focus-visible:ring-accent/50"
-            required
-          />
-
-          <DrawerFooter className="px-0 pt-6">
-            <Button
-              type="submit"
-              disabled={isSubmitting || !content.trim()}
-              variant="premium"
-              icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Send />}
-              className="h-12 w-full"
-            >
-              {isSubmitting ? commonT("loading") : t("submit")}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => onOpenChange(false)}
-              className="h-11 w-full rounded-2xl"
-            >
-              {commonT("cancel")}
-            </Button>
-          </DrawerFooter>
-        </form>
+            <DrawerFooter className="px-0 pt-6">
+              <Button
+                type="submit"
+                disabled={isSubmitting || !content.trim()}
+                variant="premium"
+                icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Send />}
+                className="h-12 w-full"
+              >
+                {isSubmitting ? commonT("loading") : t("submit")}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => onOpenChange(false)}
+                className="h-11 w-full rounded-2xl"
+              >
+                {commonT("cancel")}
+              </Button>
+            </DrawerFooter>
+          </form>
+        </div>
       </DrawerContent>
     </Drawer>
   );

@@ -41,6 +41,7 @@ export function ItemForm({
   isGenerating,
   // Auth props for AI features
   isAuthenticated,
+  isEmailVerified,
   onRequestAuth,
   // Current user for default person selection
   currentUserId,
@@ -72,6 +73,7 @@ export function ItemForm({
   isGenerating?: boolean;
   // Auth props for AI features
   isAuthenticated?: boolean;
+  isEmailVerified?: boolean;
   onRequestAuth?: () => void;
   // Current user for default person selection
   currentUserId?: string;
@@ -80,6 +82,7 @@ export function ItemForm({
   const tCommon = useTranslations("EventDashboard.Shared");
   const params = useParams();
   const locale = params.locale as string;
+  const tActions = useTranslations("Translations.actions");
 
   const defaultNote =
     !defaultItem && servicePeopleCount ? t("defaultNote", { count: servicePeopleCount }) : "";
@@ -434,7 +437,27 @@ export function ItemForm({
             </div>
           ) : (
             <div className="pt-1">
-              {isAuthenticated ? (
+              {!isAuthenticated ? (
+                <Button
+                  onClick={onRequestAuth}
+                  variant="outline"
+                  className="h-11 w-full gap-2 rounded-xl border border-dashed border-purple-200 bg-purple-50 text-[10px] font-bold uppercase tracking-tight text-purple-600"
+                >
+                  <Lock size={12} />
+                  {t("Ingredients.authRequired")}
+                </Button>
+              ) : !isEmailVerified ? (
+                <div className="flex flex-col items-center gap-1.5">
+                  <Button
+                    disabled
+                    variant="outline"
+                    className="h-11 w-full gap-2 rounded-xl border border-dashed border-red-200 bg-red-50 text-[10px] font-bold uppercase tracking-tight text-red-600"
+                  >
+                    <Lock size={12} />
+                    {tActions("emailNotVerifiedAI")}
+                  </Button>
+                </div>
+              ) : (
                 <Button
                   type="button"
                   onClick={() => onGenerateIngredients?.(name, note, locale)}
@@ -452,15 +475,6 @@ export function ItemForm({
                       {t("Ingredients.generateButton")}
                     </>
                   )}
-                </Button>
-              ) : (
-                <Button
-                  onClick={onRequestAuth}
-                  variant="outline"
-                  className="h-11 w-full gap-2 rounded-xl border border-dashed border-purple-200 bg-purple-50 text-[10px] font-bold uppercase tracking-tight text-purple-600"
-                >
-                  <Lock size={12} />
-                  {t("Ingredients.authRequired")}
                 </Button>
               )}
             </div>

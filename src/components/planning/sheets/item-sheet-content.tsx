@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ItemForm } from "@/features/items/components/item-form";
 import type { PlanData, Item, Service, Sheet, ItemData } from "@/lib/types";
 import { useTranslations } from "next-intl";
+import { useSession } from "@/lib/auth-client";
 
 interface ItemSheetContentProps {
   sheet: Extract<Sheet, { type: "item" }>;
@@ -61,6 +62,7 @@ export function ItemSheetContent({
   handleDeleteAllIngredients,
 }: ItemSheetContentProps) {
   const t = useTranslations("EventDashboard.Sheets");
+  const { data: session } = useSession();
 
   const defaultItem = useMemo(() => {
     if (!sheet.item) {
@@ -190,6 +192,7 @@ export function ItemSheetContent({
       }
       isGenerating={isGenerating}
       isAuthenticated={!!currentUserId}
+      isEmailVerified={!!session?.user.emailVerified}
       onRequestAuth={onAuth}
       currentUserId={currentUserId}
     />
