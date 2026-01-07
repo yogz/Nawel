@@ -27,7 +27,7 @@ const getTrustedOrigins = (): string[] => {
 };
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, ""),
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: getTrustedOrigins(),
   database: drizzleAdapter(db, {
@@ -50,8 +50,15 @@ export const auth = betterAuth({
         namespace: "Login.EmailReset",
       });
 
-      const baseUrl = (process.env.BETTER_AUTH_URL || "").replace(/\/$/, "");
-      const resetUrl = `${baseUrl}/${locale}/reset-password?token=${token}`;
+      let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
+      try {
+        const extracted = new URL(url).origin;
+        if (extracted && extracted.includes(".")) origin = extracted;
+      } catch (e) {
+        // use default origin
+      }
+
+      const resetUrl = `${origin}/${locale}/reset-password?token=${token}`;
 
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
@@ -111,8 +118,15 @@ export const auth = betterAuth({
         namespace: "Login.EmailVerification",
       });
 
-      const baseUrl = (process.env.BETTER_AUTH_URL || "").replace(/\/$/, "");
-      const verifyUrl = `${baseUrl}/${locale}/verify-email?token=${token}`;
+      let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
+      try {
+        const extracted = new URL(url).origin;
+        if (extracted && extracted.includes(".")) origin = extracted;
+      } catch (e) {
+        // use default origin
+      }
+
+      const verifyUrl = `${origin}/${locale}/verify-email?token=${token}`;
 
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
