@@ -364,11 +364,13 @@ export const sendPasswordResetAdminAction = createSafeAction(
       throw new Error("Utilisateur introuvable");
     }
 
+    const locale = u.language || "fr";
+
     // Trigger the actual better-auth request-password-reset flow
     await auth.api.requestPasswordReset({
       body: {
         email: u.email,
-        redirectTo: "/reset-password",
+        redirectTo: `/${locale}/reset-password`,
       },
     });
 

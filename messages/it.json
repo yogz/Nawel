@@ -619,5 +619,24 @@
     "successTitle": "Grazie! ✨",
     "successDescription": "La tua segnalazione è stata ricevuta. Grazie per aiutarci a migliorare CoList!",
     "errorDescription": "Invio fallito. Riprova più tardi."
+  },
+  "ResetPassword": {
+    "title": "Nuova Password",
+    "description": "Scegli una nuova password sicura per il tuo account.",
+    "passwordLabel": "Nuova Password",
+    "passwordPlaceholder": "Almeno 8 caratteri",
+    "button": "Reimposta",
+    "success": "Password reimpostata con successo! Ora puoi accedere.",
+    "error": "Il link non è valido o è scaduto.",
+    "errorSame": "La nuova password deve essere diversa dalla precedente.",
+    "backToLogin": "Torna al login"
+  },
+  "VerifyEmail": {
+    "title": "Email verificata!",
+    "description": "Il tuo indirizzo email è stato confermato con successo.",
+    "button": "Vai al mio account",
+    "loading": "Verifica in corso...",
+    "error": "Il link non è valido o è scaduto.",
+    "success": "Ora sei connesso."
   }
 }

@@ -619,5 +619,24 @@
     "successTitle": "Bedankt! ✨",
     "successDescription": "Je rapport is ontvangen. Bedankt voor het helpen verbeteren van CoList!",
     "errorDescription": "Verzenden mislukt. Probeer het later opnieuw."
+  },
+  "ResetPassword": {
+    "title": "Nieuw Wachtwoord",
+    "description": "Kies een nieuw veilig wachtwoord voor je account.",
+    "passwordLabel": "Nieuw Wachtwoord",
+    "passwordPlaceholder": "Minimaal 8 tekens",
+    "button": "Herstellen",
+    "success": "Wachtwoord succesvol hersteld! Je kunt nu inloggen.",
+    "error": "De link is ongeldig of verlopen.",
+    "errorSame": "Het nieuwe wachtwoord moet anders zijn dan het oude.",
+    "backToLogin": "Terug naar inloggen"
+  },
+  "VerifyEmail": {
+    "title": "Email geverifieerd!",
+    "description": "Uw e-mailadres is succesvol bevestigd.",
+    "button": "Naar mijn account",
+    "loading": "E-mail verifiëren...",
+    "error": "De link is ongeldig of verlopen.",
+    "success": "U bent nu ingelogd."
   }
 }

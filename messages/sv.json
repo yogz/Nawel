@@ -619,5 +619,24 @@
     "successTitle": "Tack! ✨",
     "successDescription": "Din rapport har tagits emot. Tack för att du hjälper oss att förbättre CoList!",
     "errorDescription": "Det gick inte att skicka. Försök igen senare."
+  },
+  "ResetPassword": {
+    "title": "Nytt Lösenord",
+    "description": "Välj ett nytt säkert lösenord för ditt konto.",
+    "passwordLabel": "Nytt Lösenord",
+    "passwordPlaceholder": "Minst 8 tecken",
+    "button": "Återställ",
+    "success": "Lösenordet har återställts! Du kan nu logga in.",
+    "error": "Länken är ogiltig eller har gått ut.",
+    "errorSame": "Det nya lösenordet måste skilja sig från det gamla.",
+    "backToLogin": "Tillbaka till inloggning"
+  },
+  "VerifyEmail": {
+    "title": "E-post verifierad!",
+    "description": "Din e-postadress har bekräftats.",
+    "button": "Gå till mitt konto",
+    "loading": "Verifierar e-post...",
+    "error": "Länken är ogiltig eller har gått ut.",
+    "success": "Du är nu inloggad."
   }
 }

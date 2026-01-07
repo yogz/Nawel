@@ -611,5 +611,24 @@
     "successTitle": "Vielen Dank! ✨",
     "successDescription": "Ihr Bericht wurde empfangen. Vielen Dank, dass Sie uns helfen, CoList zu verbessern!",
     "errorDescription": "Senden fehlgeschlagen. Bitte versuchen Sie es später erneut."
+  },
+  "ResetPassword": {
+    "title": "Neues Passwort",
+    "description": "Wählen Sie ein neues sicheres Passwort für Ihr Konto.",
+    "passwordLabel": "Neues Passwort",
+    "passwordPlaceholder": "Mindestens 8 Zeichen",
+    "button": "Zurücksetzen",
+    "success": "Passwort erfolgreich zurückgesetzt! Sie können sich jetzt anmelden.",
+    "error": "Der Link ist ungültig oder abgelaufen.",
+    "errorSame": "Das neue Passwort muss sich vom alten unterscheiden.",
+    "backToLogin": "Zurück zum Login"
+  },
+  "VerifyEmail": {
+    "title": "Email verifiziert!",
+    "description": "Ihre E-Mail-Adresse wurde erfolgreich bestätigt.",
+    "button": "Zu meinem Konto",
+    "loading": "E-Mail wird verifiziert...",
+    "error": "Der Link ist ungültig oder abgelaufen.",
+    "success": "Sie sind jetzt angemeldet."
   }
 }

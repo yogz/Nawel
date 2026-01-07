@@ -108,7 +108,8 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     try {
       const { error } = await requestPasswordReset({
         email,
-        redirectTo: "/reset-password",
+        redirectTo:
+          getPathname({ href: "/reset-password", locale }) + `?email=${encodeURIComponent(email)}`,
       });
 
       if (error) {

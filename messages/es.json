@@ -611,5 +611,24 @@
     "successTitle": "¡Gracias! ✨",
     "successDescription": "Hemos recibido tu informe. ¡Gracias por ayudarnos a mejorar CoList!",
     "errorDescription": "Error al enviar. Por favor, inténtalo de nuevo más tarde."
+  },
+  "ResetPassword": {
+    "title": "Nueva contraseña",
+    "description": "Elige una nueva contraseña segura pour tu cuenta.",
+    "passwordLabel": "Nueva contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "button": "Restablecer",
+    "success": "¡Contraseña restablecida! Ahora puedes iniciar sesión.",
+    "error": "El enlace es inválido o ha expirado.",
+    "errorSame": "La nueva contraseña debe ser diferente a la anterior.",
+    "backToLogin": "Volver al inicio de sesión"
+  },
+  "VerifyEmail": {
+    "title": "¡Email verificado!",
+    "description": "Tu dirección de email ha sido confirmada con éxito.",
+    "button": "Ir a mi cuenta",
+    "loading": "Verificando tu email...",
+    "error": "El enlace es inválido o ha expirado.",
+    "success": "Ahora estás conectado."
   }
 }

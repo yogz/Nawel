@@ -622,5 +622,24 @@
     "successTitle": "Thank you! ✨",
     "successDescription": "Your report has been received. Thanks for helping us improve CoList!",
     "errorDescription": "Submission failed. Please try again later."
+  },
+  "ResetPassword": {
+    "title": "New Password",
+    "description": "Choose a new secure password for your account.",
+    "passwordLabel": "New Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "button": "Reset Password",
+    "success": "Password reset successfully! You can now log in.",
+    "error": "The link is invalid or has expired.",
+    "errorSame": "New password must be different from the old one.",
+    "backToLogin": "Back to login"
+  },
+  "VerifyEmail": {
+    "title": "Email Verified!",
+    "description": "Your email address has been successfully confirmed.",
+    "button": "Go to my account",
+    "loading": "Verifying your email...",
+    "error": "The link is invalid or has expired.",
+    "success": "You are now logged in."
   }
 }

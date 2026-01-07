@@ -624,5 +624,24 @@
     "successTitle": "Merci ! ✨",
     "successDescription": "Votre rapport a été bien reçu. Merci de nous aider à améliorer CoList !",
     "errorDescription": "L'envoi a échoué. Réessayez plus tard."
+  },
+  "ResetPassword": {
+    "title": "Nouveau mot de passe",
+    "description": "Choisissez un nouveau mot de passe sécurisé pour votre compte.",
+    "passwordLabel": "Nouveau mot de passe",
+    "passwordPlaceholder": "8 caractères minimum",
+    "button": "Réinitialiser",
+    "success": "Mot de passe réinitialisé ! Vous pouvez maintenant vous connecter.",
+    "error": "Le lien est invalide ou a expiré.",
+    "errorSame": "Le nouveau mot de passe doit être différent de l'ancien.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "VerifyEmail": {
+    "title": "Email vérifié !",
+    "description": "Votre adresse email a été confirmée avec succès.",
+    "button": "Accéder à mon compte",
+    "loading": "Vérification de votre email...",
+    "error": "Le lien est invalide ou a expiré.",
+    "success": "Vous êtes maintenant connecté."
   }
 }

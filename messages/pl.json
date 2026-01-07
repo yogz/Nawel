@@ -619,5 +619,24 @@
     "successTitle": "Dziękujemy! ✨",
     "successDescription": "Twoje zgłoszenie zostało odebrane. Dziękujemy za pomoc w ulepszaniu CoList!",
     "errorDescription": "Przesyłanie nie powiodło się. Spróbuj ponownie później."
+  },
+  "ResetPassword": {
+    "title": "Nowe Hasło",
+    "description": "Wybierz nowe bezpieczne hasło dla swojego konta.",
+    "passwordLabel": "Nowe Hasło",
+    "passwordPlaceholder": "Minimum 8 znaków",
+    "button": "Resetuj",
+    "success": "Hasło zostało zresetowane! Możesz się teraz zalogować.",
+    "error": "Link jest nieprawidłowy lub wygasł.",
+    "errorSame": "Nowe hasło musi być inne niż stare.",
+    "backToLogin": "Powrót do logowania"
+  },
+  "VerifyEmail": {
+    "title": "Email zweryfikowany!",
+    "description": "Twój adres email został pomyślnie potwierdzony.",
+    "button": "Przejdź do konta",
+    "loading": "Weryfikacja adresu email...",
+    "error": "Link jest nieprawidłowy lub wygasł.",
+    "success": "Jesteś teraz zalogowany."
   }
 }

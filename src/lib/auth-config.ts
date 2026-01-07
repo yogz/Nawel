@@ -93,12 +93,22 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url }: { user: any; url: string }) => {
+    sendVerificationEmail: async ({
+      user,
+      url,
+      token,
+    }: {
+      user: any;
+      url: string;
+      token: string;
+    }) => {
       const locale = user.language || "fr";
       const t = await getTranslations({
         locale,
         namespace: "Login.EmailVerification",
       });
+
+      const verifyUrl = `${process.env.BETTER_AUTH_URL || ""}/${locale}/verify-email?token=${token}`;
 
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
@@ -109,7 +119,7 @@ export const auth = betterAuth({
             <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
             <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
             <div style="margin: 30px 0;">
-              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
+              <a href="${verifyUrl}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
                 ${t("button")}
               </a>
             </div>

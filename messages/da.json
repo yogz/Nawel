@@ -619,5 +619,24 @@
     "successTitle": "Tak! ✨",
     "successDescription": "Din rapport er modtaget. Tak fordi du hjælper os med at forbedre CoList!",
     "errorDescription": "Afsendelse mislykkedes. Prøv venligst igen senere."
+  },
+  "ResetPassword": {
+    "title": "Ny Adgangskode",
+    "description": "Vælg en ny sikker adgangskode til din konto.",
+    "passwordLabel": "Ny Adgangskode",
+    "passwordPlaceholder": "Mindst 8 tegn",
+    "button": "Nulstil",
+    "success": "Adgangskoden er nulstillet! Du kan nu logge ind.",
+    "error": "Linket er ugyldigt eller udløbet.",
+    "errorSame": "Den nye adgangskode skal være forskellig fra den gamle.",
+    "backToLogin": "Tilbage til login"
+  },
+  "VerifyEmail": {
+    "title": "Email bekræftet!",
+    "description": "Din e-mailadresse er blevet bekræftet.",
+    "button": "Gå til min konto",
+    "loading": "Verificerer din e-mail...",
+    "error": "Linket er ugyldigt eller udløbet.",
+    "success": "Du er nu logget ind."
   }
 }
