@@ -201,24 +201,40 @@
   }
 
   .theme-none .btn-prominent,
-  .theme-none button[class*="primary"],
-  .theme-none button[class*="accent"],
-  .theme-none [class*="bg-primary"],
-  .theme-none [class*="bg-accent"] {
+  .theme-none button[class*="bg-primary"],
+  .theme-none button[class*="bg-accent"],
+  .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]),
+  .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) {
     background: hsl(var(--accent));
-    color: #ffffff;
+    color: #ffffff !important;
     border: none;
     box-shadow: 0 4px 10px hsla(var(--accent) / 0.2);
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* Ensure text inside these is also white */
+  .theme-none .btn-prominent *,
+  .theme-none [class*="bg-primary"] *,
+  .theme-none [class*="bg-accent"] * {
+    color: #ffffff !important;
+  }
+
   .theme-none .btn-prominent:hover,
-  .theme-none button[class*="primary"]:hover,
-  .theme-none button[class*="accent"]:hover {
+  .theme-none button[class*="bg-primary"]:hover,
+  .theme-none button[class*="bg-accent"]:hover {
     background: hsl(230 25% 30%);
     box-shadow: 0 6px 15px hsla(var(--accent) / 0.3);
     transform: translateY(-1px);
     filter: brightness(1.1);
+  }
+
+  /* Disable gradient header for class theme - plain dark text is much more readable */
+  .theme-none .text-gradient-header {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    color: #1a1c1e !important;
+    -webkit-text-fill-color: currentColor !important;
   }
 
   .theme-none .glass {
