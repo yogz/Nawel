@@ -364,10 +364,11 @@ export const sendPasswordResetAdminAction = createSafeAction(
       throw new Error("Utilisateur introuvable");
     }
 
-    // Trigger the actual better-auth forget-password flow
-    await (auth.api as any).forgetPassword({
+    // Trigger the actual better-auth request-password-reset flow
+    await auth.api.requestPasswordReset({
       body: {
         email: u.email,
+        redirectTo: "/reset-password",
       },
     });
 
