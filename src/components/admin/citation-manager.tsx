@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
 import { CitationDisplay } from "@/components/common/citation-display";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { SuccessToast } from "@/components/common/success-toast";
 import { useToast } from "@/hooks/use-toast";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
 
 /** Citation attribution data */
@@ -51,13 +51,7 @@ interface CitationItem {
   rating: number;
 }
 
-/** Partial update for citation fields */
-type CitationUpdate = Partial<Pick<CitationItem, "category" | "type" | "tone" | "rating">> & {
-  localized?: Record<string, string>;
-};
-
 export function CitationManager() {
-  const locale = useLocale();
   const t = useTranslations("Citations");
   const tLang = useTranslations("common.languages");
   const { message: toastMessage, setMessage: setToastMessage } = useToast();
@@ -105,19 +99,19 @@ export function CitationManager() {
     }
   }, [activeItem?.id, isEditing, editedItem?.id]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (filteredItems.length === 0) {
       return;
     }
     setCurrentIndex((prev) => (prev + 1) % filteredItems.length);
-  };
+  }, [filteredItems.length]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (filteredItems.length === 0) {
       return;
     }
     setCurrentIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
-  };
+  }, [filteredItems.length]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -134,7 +128,7 @@ export function CitationManager() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [filteredItems.length]);
+  }, [handleNext, handlePrev]);
 
   const getAttributionLabel = (citation: CitationItem, _targetLocale: string) => {
     const attr = citation.attribution;
@@ -188,7 +182,7 @@ export function CitationManager() {
         setItems((prev) => prev.filter((i) => i.id !== id));
         setToastMessage({ text: "Citation supprimée", type: "success" });
       }
-    } catch (error) {
+    } catch (_error) {
       setToastMessage({ text: "Erreur lors de la suppression", type: "error" });
     }
   };
@@ -280,7 +274,7 @@ export function CitationManager() {
         setEditedItem(null);
         setToastMessage({ text: "Citation mise à jour", type: "success" });
       }
-    } catch (error) {
+    } catch (_error) {
       setToastMessage({ text: "Erreur lors de la mise à jour", type: "error" });
     } finally {
       setIsSaving(false);

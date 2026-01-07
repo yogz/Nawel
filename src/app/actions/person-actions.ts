@@ -17,7 +17,7 @@ import {
   baseInput,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
-import { auth } from "@/lib/auth-config";
+import { auth, type User } from "@/lib/auth-config";
 import { headers } from "next/headers";
 
 export const joinEventAction = createSafeAction(baseInput, async (input) => {
@@ -45,7 +45,7 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
     .values({
       eventId: event.id,
       name: sanitizeStrictText(session.user.name ?? "Utilisateur", 50),
-      emoji: (session.user as any).emoji ?? null,
+      emoji: (session.user as User).emoji ?? null,
       image: session.user.image ?? null,
       userId: session.user.id,
     })
@@ -71,7 +71,7 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
     });
     if (linkedUser) {
       name = sanitizeStrictText(linkedUser.name, 50);
-      emoji = (linkedUser as any).emoji ?? null;
+      emoji = (linkedUser as { emoji?: string | null }).emoji ?? null;
       image = linkedUser.image ?? null;
     }
   }
@@ -152,7 +152,7 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
       userId: session.user.id,
       // Initialize Guest data from User profile upon claim (Last Choice logic: User data wins here as it's the new source)
       name: sanitizeStrictText(session.user.name ?? oldPerson?.name ?? "Utilisateur", 50),
-      emoji: (session.user as any).emoji ?? null,
+      emoji: (session.user as User).emoji ?? null,
       image: session.user.image ?? null,
     })
     .where(eq(people.id, input.personId))

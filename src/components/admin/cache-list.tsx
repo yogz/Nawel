@@ -349,7 +349,7 @@ export function CacheList({ initialEntries }: { initialEntries: CacheEntry[] }) 
       <Drawer open={!!deletingEntry} onOpenChange={(open) => !open && setDeletingEntry(null)}>
         <DrawerContent className="px-4">
           <DrawerHeader className="px-1 text-left">
-            <DrawerTitle>Supprimer l'entrée</DrawerTitle>
+            <DrawerTitle>Supprimer l&apos;entrée</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-4 pb-8">
             <p className="text-muted-foreground">

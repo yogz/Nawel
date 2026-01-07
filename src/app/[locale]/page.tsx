@@ -4,7 +4,7 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import { LandingRouter } from "@/components/landing-router";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 // ISR: revalidate every 60 seconds
 export const revalidate = 60;
@@ -24,7 +24,6 @@ export default async function Home(props: {
     return <LandingRouter />;
   }
 
-  const t = await getTranslations("Dashboard");
   const events = await getMyEventsAction();
   const searchParams = await props.searchParams;
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;

@@ -326,7 +326,7 @@ export function AuditLogList({ initialLogs }: { initialLogs: AuditLogEntry[] }) 
       <Drawer open={showManageModal} onOpenChange={(open) => !open && setShowManageModal(false)}>
         <DrawerContent className="px-4">
           <DrawerHeader className="px-1 text-left">
-            <DrawerTitle>Gestion du journal d'audit</DrawerTitle>
+            <DrawerTitle>Gestion du journal d&apos;audit</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-6 pb-8">
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">

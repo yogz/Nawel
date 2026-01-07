@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people, meals } from "@drizzle/schema";
-import { eq, desc, or, exists, and, inArray, sql } from "drizzle-orm";
+import { eq, desc, inArray } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyEventAccess } from "./shared";
 import {

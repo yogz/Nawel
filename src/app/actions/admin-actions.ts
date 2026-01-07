@@ -420,11 +420,10 @@ export const updateCitationAdminAction = createSafeAction(
     }
 
     const fileContent = fs.readFileSync(filePath, "utf8");
-    const citationsData = JSON.parse(fileContent) as {
-      version?: number;
-      items: Array<any>;
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const citationsData = JSON.parse(fileContent) as { version?: number; items: any[] };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const itemIndex = citationsData.items.findIndex((item: any) => item.id === input.id);
 
     if (itemIndex === -1) {

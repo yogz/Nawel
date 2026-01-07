@@ -229,7 +229,7 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
       <Drawer open={!!editingEvent} onOpenChange={(open) => !open && setEditingEvent(null)}>
         <DrawerContent className="px-4">
           <DrawerHeader className="px-1 text-left">
-            <DrawerTitle>Modifier l'événement</DrawerTitle>
+            <DrawerTitle>Modifier l&apos;événement</DrawerTitle>
           </DrawerHeader>
           <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
             <form onSubmit={handleUpdate} className="space-y-4">
@@ -334,7 +334,7 @@ export function EventList({ initialEvents }: { initialEvents: EventWithStats[] }
       <Drawer open={!!deletingEvent} onOpenChange={(open) => !open && setDeletingEvent(null)}>
         <DrawerContent className="px-4">
           <DrawerHeader className="px-1 text-left">
-            <DrawerTitle>Supprimer l'événement</DrawerTitle>
+            <DrawerTitle>Supprimer l&apos;événement</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-4 pb-8">
             <p className="text-muted-foreground">
