@@ -108,7 +108,7 @@ function ItemRowComponent({
             <p
               className={cn(
                 "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
-                "text-gray-900",
+                "text-text",
                 person && "opacity-100"
               )}
             >
@@ -129,10 +129,10 @@ function ItemRowComponent({
             (item.ingredients && item.ingredients.length > 0)) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:text-[10px]">
                   <Scale
                     size={13}
-                    className="text-gray-600 sm:h-[11px] sm:w-[11px]"
+                    className="text-muted-foreground sm:h-[11px] sm:w-[11px]"
                     aria-hidden="true"
                   />
                   {item.quantity}
@@ -204,10 +204,10 @@ function ItemRowComponent({
               }}
               aria-label={t("takeAction")}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
                 <Plus size={18} className="transition-colors duration-300 sm:h-4 sm:w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
+              <span className="text-xs font-black uppercase tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
                 {t("takeAction")}
               </span>
             </button>

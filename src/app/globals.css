@@ -8,10 +8,7 @@
     --surface: #e8dbf5;
     --muted: #d4c5e8;
     --accent: 280 75% 65%;
-    --accent-glow: 280 100% 75%;
-    --accent-soft: #f0e6fa;
     --text: #3a2b52;
-    --shine-color: rgba(168, 85, 247, 0.5);
     --header-fade: #e8dbf5;
 
     --card-bg: rgba(255, 255, 255, 0.95);
@@ -152,10 +149,7 @@
     --muted: #f1f3f5;
     --accent: 230 25% 35%;
     /* Slate Indigo Deep */
-    --accent-glow: 230 30% 50%;
-    --accent-soft: #f0f2f5;
     --text: #1a1c1e;
-    --shine-color: rgba(0, 0, 0, 0.04);
     --header-fade: #fdfdfd;
 
     --card-bg: #ffffff;
@@ -294,9 +288,6 @@
     /* Theme-specific tokens */
     --surface: #000000;
     --text: #ffffff;
-    --accent-glow: 45 100% 70%;
-    --accent-soft: #0a0a0a;
-    --shine-color: rgba(255, 255, 255, 0.5);
     --header-fade: #000000;
 
     --card-bg: #0a0a0a;
@@ -437,12 +428,9 @@
     --surface: #fefcfa;
     --muted: #fce7e7;
     --accent: 0 74% 42%;
-    --accent-glow: 0 100% 50%;
-    --accent-soft: #fef2f2;
     --text: #450a0a;
     --gold: #d4af37;
     --green: #15803d;
-    --shine-color: rgba(212, 175, 55, 0.6);
     --header-fade: #fefcfa;
 
     --card-bg: rgba(255, 255, 255, 0.85);
