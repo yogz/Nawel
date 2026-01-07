@@ -137,7 +137,10 @@
       "resend": "Wyślij ponownie",
       "sent": "Wysłano!",
       "error": "Wystąpił błąd."
-    }
+    },
+    "forgotPassword": "Zapomniałeś hasła?",
+    "errorEmailRequired": "Proszę podać swój adres e-mail.",
+    "successResetEmail": "E-mail z linkiem do resetowania został wysłany! Sprawdź swoją skrzynkę odbiorczą."
   },
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",

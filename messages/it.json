@@ -137,7 +137,10 @@
       "resend": "Reinvia",
       "sent": "Inviato!",
       "error": "Si è verificato un errore."
-    }
+    },
+    "forgotPassword": "Password dimenticata?",
+    "errorEmailRequired": "Inserisci il tuo indirizzo email.",
+    "successResetEmail": "Email di ripristino inviata! Controlla la tua casella di posta."
   },
   "FAQ": {
     "title": "Domande Frequenti",

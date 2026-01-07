@@ -136,7 +136,10 @@
       "resend": "Erneut senden",
       "sent": "Gesendet!",
       "error": "Ein Fehler ist aufgetreten."
-    }
+    },
+    "forgotPassword": "Passwort vergessen?",
+    "errorEmailRequired": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
+    "successResetEmail": "Zurücksetzungs-E-Mail gesendet! Überprüfen Sie Ihren Posteingang."
   },
   "FAQ": {
     "title": "Häufig gestellte Fragen",

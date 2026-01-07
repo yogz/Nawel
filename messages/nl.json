@@ -137,7 +137,10 @@
       "resend": "Opnieuw verzenden",
       "sent": "Verzonden!",
       "error": "Er is een fout opgetreden."
-    }
+    },
+    "forgotPassword": "Wachtwoord vergeten?",
+    "errorEmailRequired": "Voer uw e-mailadres in.",
+    "successResetEmail": "Reset-e-mail verzonden! Controleer uw inbox."
   },
   "FAQ": {
     "title": "Veelgestelde Vragen",

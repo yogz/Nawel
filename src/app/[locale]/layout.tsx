@@ -13,6 +13,7 @@ import { SnowOverlay } from "@/components/snow-overlay";
 import { CookieConsent } from "@/components/common/cookie-consent";
 import { AnalyticsSessionSync } from "@/components/analytics/analytics-session-sync";
 import { AnalyticsMonitor } from "@/components/analytics/analytics-monitor";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -166,6 +167,7 @@ export default async function RootLayout({
             <CookieConsent />
             <AnalyticsSessionSync />
             <AnalyticsMonitor />
+            <Toaster position="top-center" richColors duration={2000} />
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

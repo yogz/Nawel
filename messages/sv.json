@@ -137,7 +137,10 @@
       "resend": "Skicka igen",
       "sent": "Skickat!",
       "error": "Ett fel uppstod."
-    }
+    },
+    "forgotPassword": "Glömt lösenordet?",
+    "errorEmailRequired": "Ange din e-postadress.",
+    "successResetEmail": "Återställnings-e-post har skickats! Kontrollera din inkorg."
   },
   "FAQ": {
     "title": "Vanliga Frågor",

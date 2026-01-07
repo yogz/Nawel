@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, signUp } from "@/lib/auth-client";
+import { signIn, signUp, authClient } from "@/lib/auth-client";
 import { useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
+import { toast } from "sonner";
 
 interface AuthFormProps {
   initialMode?: "signin" | "signup";
@@ -81,6 +82,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
   const handleGoogleAuth = async () => {
     setLoading(true);
+    setError("");
     try {
       const callbackPath = isUserMode ? "/" : "/admin";
       const callbackURL = getPathname({ href: callbackPath, locale });
@@ -92,6 +94,33 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     } catch (err) {
       console.error(err);
       setError(t("errorDefault"));
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError(t("errorEmailRequired"));
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const { error } = await (authClient as any).forgetPassword({
+        email,
+        redirectTo: "/reset-password",
+      });
+
+      if (error) {
+        setError(error.message || t("errorDefault"));
+        toast.error(error.message || t("errorDefault"));
+      } else {
+        toast.success(t("successResetEmail"));
+      }
+    } catch {
+      setError(t("errorDefault"));
+      toast.error(t("errorDefault"));
+    } finally {
       setLoading(false);
     }
   };
@@ -190,6 +219,17 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {authMode === "signin" && (
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-[10px] font-bold text-accent hover:underline"
+                  >
+                    {t("forgotPassword")}
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && (

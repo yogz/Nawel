@@ -5,9 +5,14 @@ import {
   type AdminUser,
   toggleUserBanAdminAction,
   deleteUserAdminAction,
+  sendPasswordResetAdminAction,
 } from "@/app/actions/admin-actions";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+
 import {
   Calendar,
   User as UserIcon,
@@ -20,7 +25,7 @@ import {
   ExternalLink,
   Link2,
   XCircle,
-  HelpCircle,
+  KeyRound,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
@@ -28,7 +33,19 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [users, setUsers] = useState(initialUsers);
   const [banningUser, setBanningUser] = useState<AdminUser | null>(null);
   const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
+  const [deleteEvents, setDeleteEvents] = useState(true);
   const [isPending, startTransition] = useTransition();
+
+  const handleResetPassword = async (userId: string) => {
+    startTransition(async () => {
+      try {
+        await sendPasswordResetAdminAction({ id: userId });
+        toast.success("Email de réinitialisation envoyé !");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Erreur lors de l'envoi");
+      }
+    });
+  };
 
   const handleToggleBan = async () => {
     if (!banningUser) {
@@ -49,7 +66,7 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
         );
         setBanningUser(null);
       } catch (error) {
-        alert(error instanceof Error ? error.message : "Erreur lors de l'opération");
+        toast.error(error instanceof Error ? error.message : "Erreur lors de l'opération");
       }
     });
   };
@@ -61,11 +78,14 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
 
     startTransition(async () => {
       try {
-        await deleteUserAdminAction({ id: deletingUser.id });
+        await deleteUserAdminAction({
+          id: deletingUser.id,
+          deleteEvents,
+        });
         setUsers((prev) => prev.filter((u) => u.id !== deletingUser.id));
         setDeletingUser(null);
       } catch (error) {
-        alert(error instanceof Error ? error.message : "Erreur lors de la suppression");
+        toast.error(error instanceof Error ? error.message : "Erreur lors de la suppression");
       }
     });
   };
@@ -164,10 +184,6 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
                     ) : (
                       <span className="text-text/40 italic">Aucun</span>
                     )}
-                    <div className="ml-1 flex items-center gap-1 border-l border-black/10 pl-2 text-[10px] text-muted-foreground/60">
-                      <HelpCircle className="h-2.5 w-2.5" />
-                      Services tiers utilisés pour se connecter (Google, Facebook, etc.)
-                    </div>
                   </div>
                 </div>
               </div>
@@ -195,6 +211,17 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
                       <span className="hidden sm:inline">Bannir</span>
                     </>
                   )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleResetPassword(user.id)}
+                  disabled={isPending || (user.linkedAccounts.length === 0 && user.email === "")}
+                  title="Envoyer un email de réinitialisation de mot de passe"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  <KeyRound className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Réinitialiser</span>
                 </Button>
                 <Button
                   variant="destructive"
@@ -263,9 +290,27 @@ export function UserList({ initialUsers }: { initialUsers: AdminUser[] }) {
             <p className="text-muted-foreground">
               Êtes-vous sûr de vouloir supprimer définitivement l&apos;utilisateur{" "}
               <strong className="text-text">{deletingUser?.name}</strong> ? Cette action est
-              irréversible. Les événements dont il est propriétaire seront conservés mais
-              n&apos;auront plus de propriétaire.
+              irréversible.
             </p>
+
+            <div className="flex items-center space-x-2 rounded-xl border border-red-100 bg-red-50/50 p-4">
+              <Checkbox
+                id="delete-events"
+                checked={deleteEvents}
+                onCheckedChange={(checked) => setDeleteEvents(checked === true)}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label
+                  htmlFor="delete-events"
+                  className="text-sm font-bold leading-none text-red-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Supprimer également ses événements
+                </Label>
+                <p className="text-xs text-red-500/80">
+                  Cette action supprimera tous les événements créés par cet utilisateur.
+                </p>
+              </div>
+            </div>
 
             <div className="flex gap-2 pt-2">
               <Button

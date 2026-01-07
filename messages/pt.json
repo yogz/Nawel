@@ -136,7 +136,10 @@
       "resend": "Reenviar",
       "sent": "Enviado!",
       "error": "Ocorreu um erro."
-    }
+    },
+    "forgotPassword": "Esqueceu a sua palavra-passe?",
+    "errorEmailRequired": "Por favor, introduza o seu endereço de e-mail.",
+    "successResetEmail": "E-mail de redefinição enviado! Verifique a sua caixa de entrada."
   },
   "FAQ": {
     "title": "Perguntas Frequentes",

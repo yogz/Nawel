@@ -137,7 +137,10 @@
       "resend": "Send igen",
       "sent": "Sendt!",
       "error": "Der opstod en fejl."
-    }
+    },
+    "forgotPassword": "Glemt adgangskode?",
+    "errorEmailRequired": "Indtast venligst din e-mailadresse.",
+    "successResetEmail": "Nulstillings-e-mail sendt! Tjek din indbakke."
   },
   "FAQ": {
     "title": "Ofte Stillede Spørgsmål",

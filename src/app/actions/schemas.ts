@@ -254,11 +254,16 @@ export const deleteUserSchema = z.object({
 
 export const deleteUserAdminSchema = z.object({
   id: z.string(),
+  deleteEvents: z.boolean(),
 });
 
 export const toggleUserBanAdminSchema = z.object({
   id: z.string(),
   banned: z.boolean(),
+});
+
+export const sendPasswordResetAdminSchema = z.object({
+  id: z.string(),
 });
 
 // Admin Cache schemas

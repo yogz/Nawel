@@ -21,8 +21,9 @@ import {
   deleteEventAdminSchema,
   deleteCacheEntrySchema,
   updateCacheEntrySchema,
-  deleteUserAdminSchema,
   toggleUserBanAdminSchema,
+  deleteUserAdminSchema,
+  sendPasswordResetAdminSchema,
   deleteCitationAdminSchema,
   updateCitationAdminSchema,
   deleteFeedbackAdminSchema,
@@ -334,11 +335,45 @@ export const toggleUserBanAdminAction = createSafeAction(
 export const deleteUserAdminAction = createSafeAction(deleteUserAdminSchema, async (input) => {
   await requireAdmin();
 
-  await db.delete(user).where(eq(user.id, input.id));
+  if (input.deleteEvents) {
+    // Delete all events owned by the user first (this will trigger cascading deletions)
+    await db.delete(events).where(eq(events.ownerId, input.id));
+  }
+
+  // Finally delete the user via Better Auth to ensure sessions and accounts are cleaned up
+  await (auth.api as any).removeUser({
+    body: {
+      userId: input.id,
+    },
+  });
 
   revalidatePath("/admin/users");
   return { success: true };
 });
+
+export const sendPasswordResetAdminAction = createSafeAction(
+  sendPasswordResetAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    const u = await db.query.user.findFirst({
+      where: eq(user.id, input.id),
+    });
+
+    if (!u) {
+      throw new Error("Utilisateur introuvable");
+    }
+
+    // Trigger the actual better-auth forget-password flow
+    await (auth.api as any).forgetPassword({
+      body: {
+        email: u.email,
+      },
+    });
+
+    return { success: true };
+  }
+);
 
 // ==========================================
 // Model Comparison Admin Actions

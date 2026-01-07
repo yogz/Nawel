@@ -137,7 +137,10 @@
       "resend": "Resend",
       "sent": "Sent!",
       "error": "An error occurred."
-    }
+    },
+    "forgotPassword": "Forgot password?",
+    "errorEmailRequired": "Please enter your email address.",
+    "successResetEmail": "Reset email sent! Check your inbox."
   },
   "FAQ": {
     "title": "Frequently Asked Questions",

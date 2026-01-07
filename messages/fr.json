@@ -138,7 +138,10 @@
       "resend": "Renvoyer",
       "sent": "Envoyé !",
       "error": "Une erreur est survenue."
-    }
+    },
+    "forgotPassword": "Mot de passe oublié ?",
+    "errorEmailRequired": "Veuillez saisir votre adresse email.",
+    "successResetEmail": "Email de réinitialisation envoyé ! Vérifiez votre boîte de réception."
   },
   "FAQ": {
     "title": "Questions Fréquentes",
