@@ -177,97 +177,125 @@ export function AdminEventList({ initialEvents }: { initialEvents: EventWithStat
             key={event.id}
             className="rounded-2xl border border-white/20 bg-white/80 p-4 shadow-lg backdrop-blur-sm sm:p-6"
           >
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-              <div className="min-w-0 flex-1">
-                <div className="mb-1 flex items-center gap-2">
-                  <h3 className="truncate text-lg font-semibold text-text">{event.name}</h3>
-                  <Link
-                    href={`/event/${event.slug}`}
-                    target="_blank"
-                    className="text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                </div>
-                <p className="mb-2 text-sm text-muted-foreground">
-                  /{event.slug} &middot; Créé le {formatDate(event.createdAt)}
-                  {event.owner && (
-                    <>
-                      {" "}
-                      &middot; Par{" "}
-                      <span className="text-text/90 font-medium" title={event.owner.email}>
-                        {event.owner.name}
-                      </span>
-                    </>
-                  )}
-                </p>
-
-                {/* URL d'édition */}
-                <div className="mb-3 flex items-center gap-2 rounded-lg bg-black/5 p-2">
-                  <code className="text-text/70 flex-1 truncate font-mono text-xs">
-                    {getEditUrl(event)}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(event)}
-                    className="shrink-0 rounded-md p-1.5 transition-colors hover:bg-black/10"
-                    title="Copier l'URL"
-                  >
-                    {copiedId === event.id ? (
-                      <Check className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <h3 className="truncate text-base font-semibold text-text sm:text-lg">
+                      {event.name}
+                    </h3>
+                    <Link
+                      href={`/event/${event.slug}`}
+                      target="_blank"
+                      className="shrink-0 text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <p className="mb-2 text-xs text-muted-foreground sm:text-sm">
+                    <span className="font-mono">/{event.slug}</span>
+                    <span className="mx-1.5">&middot;</span>
+                    <span className="hidden sm:inline">Créé le {formatDate(event.createdAt)}</span>
+                    <span className="sm:hidden">{formatDate(event.createdAt)}</span>
+                    {event.owner && (
+                      <>
+                        <span className="mx-1.5">&middot;</span>
+                        <span className="text-text/90 font-medium" title={event.owner.email}>
+                          {event.owner.name}
+                        </span>
+                      </>
                     )}
-                  </button>
-                  <Link
-                    href={getEditUrl(event)}
-                    target="_blank"
-                    className="shrink-0 rounded-md p-1.5 transition-colors hover:bg-black/10"
-                    title="Ouvrir en mode édition"
-                  >
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                  </Link>
+                  </p>
                 </div>
 
-                {event.description && (
-                  <p className="text-text/80 mb-3 line-clamp-2 text-sm">{event.description}</p>
-                )}
-                <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    {event.adults} adulte{event.adults > 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Baby className="h-4 w-4" />
-                    {event.children} enfant{event.children > 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {event.mealsCount} repas
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Utensils className="h-4 w-4" />
-                    {event.servicesCount} service{event.servicesCount > 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {event.peopleCount} convive{event.peopleCount > 1 ? "s" : ""}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Package className="h-4 w-4" />
-                    {event.itemsCount} article{event.itemsCount > 1 ? "s" : ""}
-                  </span>
+                <div className="flex shrink-0 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingEvent(event)}
+                    className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+                  >
+                    <Pencil className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Modifier</span>
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setDeletingEvent(event)}
+                    className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+                  >
+                    <Trash2 className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Supprimer</span>
+                  </Button>
                 </div>
               </div>
 
-              <div className="flex gap-2 sm:flex-col">
-                <Button variant="outline" size="sm" onClick={() => setEditingEvent(event)}>
-                  <Pencil className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Modifier</span>
-                </Button>
-                <Button variant="destructive" size="sm" onClick={() => setDeletingEvent(event)}>
-                  <Trash2 className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Supprimer</span>
-                </Button>
+              {/* URL d'édition */}
+              <div className="flex items-center gap-2 rounded-lg bg-black/5 p-2">
+                <code className="text-text/70 min-w-0 flex-1 truncate font-mono text-xs">
+                  {getEditUrl(event)}
+                </code>
+                <button
+                  onClick={() => copyToClipboard(event)}
+                  className="shrink-0 rounded-md p-1.5 transition-colors hover:bg-black/10"
+                  title="Copier l'URL"
+                >
+                  {copiedId === event.id ? (
+                    <Check className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Copy className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
+                <Link
+                  href={getEditUrl(event)}
+                  target="_blank"
+                  className="shrink-0 rounded-md p-1.5 transition-colors hover:bg-black/10"
+                  title="Ouvrir en mode édition"
+                >
+                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              </div>
+
+              {event.description && (
+                <p className="text-text/80 line-clamp-2 text-sm">{event.description}</p>
+              )}
+
+              {/* Statistiques en grille responsive */}
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-muted-foreground sm:flex sm:flex-wrap sm:gap-3 sm:text-sm">
+                <span className="flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>
+                    {event.adults} adulte{event.adults > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Baby className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>
+                    {event.children} enfant{event.children > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>{event.mealsCount} repas</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Utensils className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>
+                    {event.servicesCount} service{event.servicesCount > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>
+                    {event.peopleCount} convive{event.peopleCount > 1 ? "s" : ""}
+                  </span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>
+                    {event.itemsCount} article{event.itemsCount > 1 ? "s" : ""}
+                  </span>
+                </span>
               </div>
             </div>
           </div>
