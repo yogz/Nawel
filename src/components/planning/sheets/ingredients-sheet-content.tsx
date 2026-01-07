@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ItemIngredientsManager } from "@/features/items/components/item-ingredients-manager";
 import type { Sheet, Item, Service } from "@/lib/types";
 import { useTranslations } from "next-intl";
+import { useSession } from "@/lib/auth-client";
 
 interface IngredientsSheetContentProps {
   sheet: Extract<Sheet, { type: "item-ingredients" }>;
@@ -53,6 +54,7 @@ export function IngredientsSheetContent({
   justGenerated,
 }: IngredientsSheetContentProps) {
   const t = useTranslations("EventDashboard.Sheets");
+  const { data: session } = useSession();
 
   const itemIngredients = useMemo(() => {
     const found = findItem(sheet.itemId);
@@ -109,6 +111,7 @@ export function IngredientsSheetContent({
       onGenerateIngredients={handleGenerate}
       isGenerating={isGenerating}
       isAuthenticated={!!currentUserId}
+      isEmailVerified={!!session?.user.emailVerified}
       onRequestAuth={onAuth}
       itemNote={itemNote}
       onSaveFeedback={handleSaveFeedback}

@@ -32,6 +32,7 @@ interface ItemIngredientsManagerProps {
   onGenerateIngredients?: (name: string, note?: string) => Promise<void>;
   isGenerating?: boolean;
   isAuthenticated?: boolean;
+  isEmailVerified?: boolean;
   onRequestAuth?: () => void;
   itemNote?: string;
   readOnly?: boolean;
@@ -51,6 +52,7 @@ export function ItemIngredientsManager({
   onGenerateIngredients,
   isGenerating,
   isAuthenticated,
+  isEmailVerified,
   onRequestAuth,
   itemNote,
   readOnly,
@@ -59,6 +61,7 @@ export function ItemIngredientsManager({
 }: ItemIngredientsManagerProps) {
   const t = useTranslations("EventDashboard.ItemForm.Ingredients");
   const tShared = useTranslations("EventDashboard.Shared");
+  const tActions = useTranslations("Translations.actions");
 
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState("");
@@ -170,7 +173,30 @@ export function ItemIngredientsManager({
 
             {!readOnly && onGenerateIngredients && (
               <div className="w-full max-w-xs pt-4">
-                {isAuthenticated ? (
+                {!isAuthenticated ? (
+                  <Button
+                    onClick={onRequestAuth}
+                    variant="outline"
+                    className="h-14 w-full gap-2 rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50 font-bold text-purple-600"
+                  >
+                    <Lock size={18} />
+                    {t("authRequired")}
+                  </Button>
+                ) : !isEmailVerified ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <Button
+                      disabled
+                      variant="outline"
+                      className="h-14 w-full gap-2 rounded-2xl border-2 border-dashed border-red-200 bg-red-50 font-bold text-red-600"
+                    >
+                      <Lock size={18} />
+                      {tActions("emailNotVerifiedAI")}
+                    </Button>
+                    <p className="px-2 text-center text-[10px] font-medium text-red-400">
+                      {tActions("emailNotVerifiedAI")}
+                    </p>
+                  </div>
+                ) : (
                   <Button
                     onClick={handleGenerate}
                     disabled={isGenerating || !itemName.trim()}
@@ -187,15 +213,6 @@ export function ItemIngredientsManager({
                         {t("generateButton")}
                       </>
                     )}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={onRequestAuth}
-                    variant="outline"
-                    className="h-14 w-full gap-2 rounded-2xl border-2 border-dashed border-purple-200 bg-purple-50 font-bold text-purple-600"
-                  >
-                    <Lock size={18} />
-                    {t("authRequired")}
                   </Button>
                 )}
               </div>
