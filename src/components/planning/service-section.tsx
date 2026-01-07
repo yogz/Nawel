@@ -64,7 +64,7 @@ export const ServiceSection = memo(function ServiceSection({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative rounded-2xl border border-white/60 bg-white/70 p-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-white/80 hover:bg-white/75 hover:shadow-xl sm:p-6",
+        "relative rounded-2xl border border-white/60 bg-white/70 px-2 py-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-white/80 hover:bg-white/75 hover:shadow-xl sm:px-3 sm:py-6",
         "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-50",
         isOver && "scale-[1.01] ring-2 ring-accent/50 ring-offset-2"
       )}

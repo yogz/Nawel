@@ -95,7 +95,7 @@ function ItemRowComponent({
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.96] active:bg-gray-100 sm:px-3 sm:py-4",
+        "group relative flex w-full items-center justify-between gap-4 px-2 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.96] active:bg-gray-100 sm:px-2 sm:py-4",
         !readOnly &&
           "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
