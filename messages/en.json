@@ -124,7 +124,13 @@
     "orContinueWith": "Or continue with",
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",
-    "guestLink": "Continue without signing in"
+    "guestLink": "Continue without signing in",
+    "EmailVerification": {
+      "subject": "Verify your CoList account",
+      "body": "Welcome to CoList! Click the link below to verify your email address and activate your account:",
+      "button": "Verify my email",
+      "footer": "If you didn't create a CoList account, you can safely ignore this email."
+    }
   },
   "FAQ": {
     "title": "Frequently Asked Questions",
@@ -584,6 +590,7 @@
       "notLoggedInProfile": "You must be logged in to modify your profile.",
       "notLoggedInDelete": "You must be logged in to delete your account.",
       "notLoggedInAI": "You must be logged in to use AI generation.",
+      "emailNotVerifiedAI": "You must verify your email to use AI generation.",
       "ingredientsGenerationFailed": "No ingredients generated. Try again.",
       "confirmationRequired": "Confirmation is required.",
       "deleteError": "An error occurred while deleting your account.",

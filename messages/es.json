@@ -123,7 +123,13 @@
     "orContinueWith": "O continuar con",
     "noAccount": "¿Aún no tienes cuenta?",
     "haveAccount": "¿Ya tienes una cuenta?",
-    "guestLink": "Continuar sin identificarse"
+    "guestLink": "Continuar sin identificarse",
+    "EmailVerification": {
+      "subject": "Verifica tu cuenta de CoList",
+      "body": "¡Bienvenido a CoList! Haz clic en el enlace de abajo para verificar tu dirección de correo electrónico y activar tu cuenta:",
+      "button": "Verificar mi correo",
+      "footer": "Si no creaste una cuenta en CoList, puedes ignorar este correo con seguridad."
+    }
   },
   "FAQ": {
     "title": "Preguntas frecuentes",
@@ -573,6 +579,7 @@
       "notLoggedInProfile": "Debes estar conectado para modificar tu perfil.",
       "notLoggedInDelete": "Debes estar conectado para eliminar tu cuenta.",
       "notLoggedInAI": "Debes estar conectado para usar la generación por IA.",
+      "emailNotVerifiedAI": "Debes verificar tu correo electrónico para usar la generación por IA.",
       "ingredientsGenerationFailed": "No se generaron ingredientes. Inténtalo de nuevo.",
       "confirmationRequired": "Se requiere confirmación.",
       "deleteError": "Ocurrió un error al eliminar tu cuenta.",

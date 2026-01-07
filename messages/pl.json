@@ -124,7 +124,13 @@
     "orContinueWith": "Lub kontynuuj z",
     "noAccount": "Nie masz jeszcze konta?",
     "haveAccount": "Masz już konto?",
-    "guestLink": "Kontynuuj bez logowania"
+    "guestLink": "Kontynuuj bez logowania",
+    "EmailVerification": {
+      "subject": "Zweryfikuj swoje konto CoList",
+      "body": "Witaj w CoList! Kliknij poniższy link, aby zweryfikować swój adres e-mail i aktywować konto:",
+      "button": "Zweryfikuj mój e-mail",
+      "footer": "Jeśli nie utworzyłeś konta CoList, możesz bezpiecznie zignorować tę wiadomość."
+    }
   },
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",
@@ -581,6 +587,7 @@
       "notLoggedInProfile": "Musisz być zalogowany, aby zmodyfikować swój profil.",
       "notLoggedInDelete": "Musisz być zalogowany, aby usunąć konto.",
       "notLoggedInAI": "Musisz być zalogowany, aby używać generowania AI.",
+      "emailNotVerifiedAI": "Musisz zweryfikować swój e-mail, aby korzystać z generacji AI.",
       "ingredientsGenerationFailed": "Nie wygenerowano składników. Spróbuj ponownie.",
       "confirmationRequired": "Wymagane potwierdzenie.",
       "deleteError": "Podczas usuwania konta pojawił się błąd.",

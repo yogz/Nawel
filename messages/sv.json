@@ -124,7 +124,13 @@
     "orContinueWith": "Eller fortsätt med",
     "noAccount": "Inget konto än?",
     "haveAccount": "Har redan ett konto?",
-    "guestLink": "Fortsätt utan att logga in"
+    "guestLink": "Fortsätt utan att logga in",
+    "EmailVerification": {
+      "subject": "Verifiera ditt CoList-konto",
+      "body": "Välkommen till CoList! Klicka på länken nedan för att verifiera din e-postadress och aktivera ditt konto:",
+      "button": "Verifiera min e-post",
+      "footer": "Om du inte har skapat ett CoList-konto kan du ignorera detta e-postmeddelande."
+    }
   },
   "FAQ": {
     "title": "Vanliga Frågor",
@@ -581,6 +587,7 @@
       "notLoggedInProfile": "Du måste vara inloggad för att ändra din profil.",
       "notLoggedInDelete": "Du måste vara inloggad för att ta bort ditt konto.",
       "notLoggedInAI": "Du måste vara inloggad för att använda AI-generering.",
+      "emailNotVerifiedAI": "Du måste verifiera din e-post för att använda AI-generering.",
       "ingredientsGenerationFailed": "Inga ingredienser genererade. Försök igen.",
       "confirmationRequired": "Bekräftelse krävs.",
       "deleteError": "Ett fel uppstod när ditt konto skulle raderas.",

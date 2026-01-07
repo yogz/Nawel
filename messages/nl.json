@@ -124,7 +124,13 @@
     "orContinueWith": "Of doorgaan met",
     "noAccount": "Nog geen account?",
     "haveAccount": "Al een account?",
-    "guestLink": "Doorgaan zonder aanmelden"
+    "guestLink": "Doorgaan zonder aanmelden",
+    "EmailVerification": {
+      "subject": "Verifieer uw CoList-account",
+      "body": "Welkom bij CoList! Klik op de onderstaande link om uw e-mailadres te verifiëren en uw account te activeren:",
+      "button": "Verifieer mijn e-mail",
+      "footer": "Als u geen CoList-account heeft aangemaakt, kunt u deze e-mail veilig negeren."
+    }
   },
   "FAQ": {
     "title": "Veelgestelde Vragen",
@@ -581,6 +587,7 @@
       "notLoggedInProfile": "U moet aangemeldinvullen om uw profiel te wijzigen.",
       "notLoggedInDelete": "U moet aangemeld zijn om uw account te verwijderen.",
       "notLoggedInAI": "U moet aangemeld zijn om AI-generatie te gebruiken.",
+      "emailNotVerifiedAI": "U moet uw e-mail verifiëren om AI-generatie te gebruiken.",
       "ingredientsGenerationFailed": "Geen ingrediënten gegenereerd. Probeer opnieuw.",
       "confirmationRequired": "Bevestiging vereist.",
       "deleteError": "Er is een fout opgetreden bij het verwijderen van je account.",

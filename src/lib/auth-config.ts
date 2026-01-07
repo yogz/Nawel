@@ -4,6 +4,10 @@ import { admin } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
+import { Resend } from "resend";
+import { getTranslations } from "next-intl/server";
+
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 // Parse trusted origins from environment variable, with safe defaults for development
 const getTrustedOrigins = (): string[] => {
@@ -38,6 +42,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
+    requireEmailVerification: true,
   },
   socialProviders: {
     google: {
@@ -55,6 +60,40 @@ export const auth = betterAuth({
       adminRoles: ["admin"],
     }),
   ],
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }: { user: any; url: string }) => {
+      const locale = user.language || "fr";
+      const t = await getTranslations({
+        locale,
+        namespace: "Login.EmailVerification",
+      });
+
+      const { error } = await resend.emails.send({
+        from: "CoList <hello@colist.fr>",
+        to: user.email,
+        subject: t("subject"),
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
+            <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
+            <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
+            <div style="margin: 30px 0;">
+              <a href="${url}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
+                ${t("button")}
+              </a>
+            </div>
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eaeaea;" />
+            <p style="font-size: 14px; color: #999; line-height: 1.5;">${t("footer")}</p>
+          </div>
+        `,
+      });
+
+      if (error) {
+        console.error("[Email Verification] Failed to send email:", error);
+      }
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24 * SESSION_EXPIRE_DAYS,
     updateAge: 60 * 60 * 24 * SESSION_REFRESH_DAYS,

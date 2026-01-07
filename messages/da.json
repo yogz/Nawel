@@ -124,7 +124,13 @@
     "orContinueWith": "Eller fortsæt med",
     "noAccount": "Har du ikke en konto endnu?",
     "haveAccount": "Har du allerede en konto?",
-    "guestLink": "Fortsæt uden at logge ind"
+    "guestLink": "Fortsæt uden at logge ind",
+    "EmailVerification": {
+      "subject": "Verificer din CoList-konto",
+      "body": "Velkommen til CoList! Klik på linket nedenfor for at verificere din e-mailadresse og aktivere din konto:",
+      "button": "Verificer min e-mail",
+      "footer": "Hvis du ikke har oprettet en CoList-konto, kan du roligt ignorere denne e-mail."
+    }
   },
   "FAQ": {
     "title": "Ofte Stillede Spørgsmål",
@@ -581,6 +587,7 @@
       "notLoggedInProfile": "Du skal være logget ind for at ændre din profil.",
       "notLoggedInDelete": "Du skal være logget ind for at slette din konto.",
       "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
+      "emailNotVerifiedAI": "Du skal verificere din e-mail for at bruge AI-generering.",
       "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
       "confirmationRequired": "Bekræftelse er påkrævet.",
       "deleteError": "Der opstod en fejl under sletning af din konto.",

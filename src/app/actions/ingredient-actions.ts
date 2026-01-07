@@ -75,6 +75,13 @@ export const generateIngredientsAction = createSafeAction(
         };
       }
 
+      if (!session.user.emailVerified) {
+        return {
+          success: false,
+          error: t("actions.emailNotVerifiedAI"),
+        };
+      }
+
       await verifyEventAccess(input.slug, input.key);
 
       // First, delete existing ingredients for this item

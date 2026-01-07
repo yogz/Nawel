@@ -123,7 +123,13 @@
     "orContinueWith": "Oder fortfahren mit",
     "noAccount": "Noch kein Konto?",
     "haveAccount": "Bereits ein Konto?",
-    "guestLink": "Ohne Anmeldung fortfahren"
+    "guestLink": "Ohne Anmeldung fortfahren",
+    "EmailVerification": {
+      "subject": "Bestätigen Sie Ihr CoList-Konto",
+      "body": "Willkommen bei CoList! Klicken Sie auf den untenstehenden Link, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren:",
+      "button": "E-Mail bestätigen",
+      "footer": "Wenn Sie kein CoList-Konto erstellt haben, können Sie diese E-Mail einfach ignorieren."
+    }
   },
   "FAQ": {
     "title": "Häufig gestellte Fragen",
@@ -573,6 +579,7 @@
       "notLoggedInProfile": "Sie müssen angemeldet sein, um Ihr Profil zu ändern.",
       "notLoggedInDelete": "Sie müssen angemeldet sein, um Ihr Konto zu löschen.",
       "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
+      "emailNotVerifiedAI": "Sie müssen Ihre E-Mail verifizieren, um die KI-Generierung zu nutzen.",
       "ingredientsGenerationFailed": "Keine Zutaten generiert. Versuchen Sie es erneut.",
       "confirmationRequired": "Bestätigung ist erforderlich.",
       "deleteError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten.",
