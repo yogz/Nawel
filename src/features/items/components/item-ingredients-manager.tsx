@@ -227,17 +227,10 @@ export function ItemIngredientsManager({
                   )}
                 >
                   {ing.name}
+                  {ing.quantity && (
+                    <span className="text-sm font-normal opacity-70"> ({ing.quantity})</span>
+                  )}
                 </p>
-                {ing.quantity && (
-                  <p
-                    className={clsx(
-                      "text-xs font-medium",
-                      ing.checked ? "text-green-600/60" : "text-gray-500"
-                    )}
-                  >
-                    {ing.quantity}
-                  </p>
-                )}
               </div>
 
               {!readOnly && (

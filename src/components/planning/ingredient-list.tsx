@@ -105,12 +105,8 @@ export function IngredientList({
             />
             <span className={clsx("flex-1 text-sm", ing.checked && "text-gray-400 line-through")}>
               {ing.name}
+              {ing.quantity && <span className="opacity-70"> ({ing.quantity})</span>}
             </span>
-            {ing.quantity && (
-              <span className="rounded bg-white px-2 py-0.5 text-xs text-gray-500">
-                {ing.quantity}
-              </span>
-            )}
             {!readOnly && (
               <button
                 type="button"

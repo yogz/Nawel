@@ -428,6 +428,7 @@ export function ItemForm({
                   )}
                 >
                   {ing.name}
+                  {ing.quantity && ` (${ing.quantity})`}
                 </span>
               ))}
             </div>
