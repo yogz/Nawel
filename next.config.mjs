@@ -17,7 +17,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "2mb",
     },
-    esmExternals: "loose",
   },
   serverExternalPackages: ["jsdom", "isomorphic-dompurify"],
   async redirects() {
