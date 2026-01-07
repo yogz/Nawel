@@ -18,7 +18,7 @@ export function GuestAccessSheet({
   const t = useTranslations("EventDashboard.Sheets.GuestAccess");
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DrawerContent className="px-6">
+      <DrawerContent className="px-4 text-left">
         <DrawerHeader className="px-0 text-left">
           <DrawerTitle>{t("title")}</DrawerTitle>
         </DrawerHeader>
@@ -31,7 +31,7 @@ export function GuestAccessSheet({
             <div className="grid gap-4 px-4">
               <Button
                 variant="premium"
-                className="h-auto w-full border-accent/20 bg-accent py-4 text-white shadow-lg shadow-accent/20 active:scale-95"
+                className="h-auto w-full whitespace-normal border-accent/20 bg-accent py-4 text-white shadow-lg shadow-accent/20 active:scale-95"
                 onClick={onAuth}
                 icon={<UserCircle className="h-6 w-6" />}
                 iconClassName="bg-white/20 text-white"
@@ -45,7 +45,7 @@ export function GuestAccessSheet({
 
               <Button
                 variant="premium"
-                className="h-auto w-full border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
+                className="h-auto w-full whitespace-normal border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                 onClick={() => {
                   sendGAEvent("event", "guest_continued_without_auth");
                   onClose();
