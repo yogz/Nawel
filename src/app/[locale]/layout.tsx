@@ -11,6 +11,8 @@ import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
 import { CookieConsent } from "@/components/common/cookie-consent";
+import { AnalyticsSessionSync } from "@/components/analytics/analytics-session-sync";
+import { AnalyticsMonitor } from "@/components/analytics/analytics-monitor";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -99,6 +101,40 @@ export default async function RootLayout({
         <link rel="shortcut icon" type="image/x-icon" href="https://colist.fr/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="https://colist.fr/LogoIcon.png" />
         <link rel="apple-touch-icon" href="https://colist.fr/apple-icon.png" />
+
+        {/* Google Consent Mode v2 - Default State */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              
+              // Define default consent state based on localStorage to avoid flashes
+              var consent = 'denied';
+              try {
+                if (localStorage.getItem('analytics_consent') === 'true') {
+                  consent = 'granted';
+                }
+              } catch (e) {}
+
+              gtag('consent', 'default', {
+                'analytics_storage': consent,
+                'ad_storage': consent,
+                'ad_user_data': consent,
+                'ad_personalization': consent,
+                'wait_for_update': 500
+              });
+              
+              // Enable GA4 Debug Mode if requested
+              try {
+                if (localStorage.getItem('ga_debug') === 'true') {
+                  window['ga-disable-${process.env.NEXT_PUBLIC_GA_ID || "G-F0RFQNG8SP"}'] = false;
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -125,6 +161,8 @@ export default async function RootLayout({
             {children}
             <SnowOverlay />
             <CookieConsent />
+            <AnalyticsSessionSync />
+            <AnalyticsMonitor />
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

@@ -12,7 +12,11 @@ const IS_DEV = process.env.NODE_ENV === "development";
 const ANALYTICS_ENABLED = typeof window !== "undefined";
 
 // Consent management - GDPR compliant (opt-in required)
+// Initialize from localStorage immediately if available
 let hasConsent = false;
+if (typeof window !== "undefined") {
+  hasConsent = localStorage.getItem("analytics_consent") === "true";
+}
 
 /**
  * Set analytics consent status (for GDPR compliance)
@@ -22,6 +26,16 @@ export function setAnalyticsConsent(consent: boolean) {
   hasConsent = consent;
   if (typeof window !== "undefined") {
     localStorage.setItem("analytics_consent", consent ? "true" : "false");
+
+    // Update Google Consent Mode v2
+    if (window.gtag) {
+      window.gtag("consent", "update", {
+        analytics_storage: consent ? "granted" : "denied",
+        ad_storage: consent ? "granted" : "denied",
+        ad_user_data: consent ? "granted" : "denied",
+        ad_personalization: consent ? "granted" : "denied",
+      });
+    }
   }
 }
 
@@ -34,13 +48,18 @@ export function getAnalyticsConsent(): boolean {
     return false;
   }
   const stored = localStorage.getItem("analytics_consent");
-  // GDPR: Default to false if no explicit consent stored
   return stored === "true";
 }
 
-// Initialize consent from storage
-if (typeof window !== "undefined") {
-  hasConsent = getAnalyticsConsent();
+/**
+ * Set User ID for cross-device tracking (GDPR compliant)
+ */
+export function setAnalyticsUserId(userId: string | null) {
+  if (typeof window !== "undefined" && window.gtag && userId) {
+    window.gtag("config", process.env.NEXT_PUBLIC_GA_ID || "G-F0RFQNG8SP", {
+      user_id: userId,
+    });
+  }
 }
 
 type EventPageAction =
@@ -91,19 +110,21 @@ export function trackEvent({
   value,
   ...extra
 }: TrackEventParams) {
-  // Debug mode - log instead of sending
-  if (IS_DEV) {
-    console.log("[Analytics Debug]", {
+  // Check consent
+  const isDebugMode = typeof window !== "undefined" && localStorage.getItem("ga_debug") === "true";
+
+  if (IS_DEV || isDebugMode) {
+    console.log("%c[Analytics]", "color: #10b981; font-weight: bold", {
       action,
       category,
       label,
       value,
       ...extra,
     });
-    return;
+    if (IS_DEV) return;
   }
 
-  // Check consent
+  // Check consent - strictly block if no consent
   if (!hasConsent || !ANALYTICS_ENABLED) {
     return;
   }
