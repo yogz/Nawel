@@ -30,10 +30,10 @@ export function NewEventCard({ onClick }: NewEventCardProps) {
         </div>
 
         <div className="space-y-1">
-          <h3 className="text-sm font-bold tracking-tight text-gray-900 sm:text-base">
+          <h3 className="text-sm font-bold tracking-tight text-text sm:text-base">
             {t("newEvent")}
           </h3>
-          <p className="text-xs font-bold text-gray-600 sm:text-sm">{t("createNew")}</p>
+          <p className="text-xs font-bold text-muted-foreground sm:text-sm">{t("createNew")}</p>
         </div>
       </div>
     </motion.div>

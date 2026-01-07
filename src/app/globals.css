@@ -165,12 +165,12 @@
 
     /* Cards - Clean & crisp */
     --card-bg: #ffffff;
-    --card-border: rgba(226, 232, 240, 0.8);
-    /* Slate 200 */
+    --card-border: rgba(203, 213, 225, 0.6);
+    /* Slate 300 - Slightly clearer border */
 
-    /* Modern Diffuse Shadows */
-    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-    /* Tailwind shadow-sm */
+    /* Modern Diffuse Shadows - Enhanced for better lift */
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    /* Slightly stronger than shadow-sm */
 
     --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
     /* Tailwind shadow-lg but softer */
@@ -223,10 +223,10 @@
     transition: all 0.2s ease-out;
   }
 
-  /* Ensure text inside these is white */
+  /* Ensure text inside these is white - BUT ignore low opacity backgrounds */
   .theme-none .btn-prominent *,
-  .theme-none [class*="bg-primary"] *,
-  .theme-none [class*="bg-accent"] * {
+  .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]) *,
+  .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) * {
     color: #ffffff !important;
   }
 
