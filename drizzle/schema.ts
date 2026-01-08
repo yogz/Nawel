@@ -314,6 +314,7 @@ export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
   content: text("content").notNull(),
+  email: text("email"),
   userAgent: text("user_agent"),
   url: text("url"), // Current URL where the bug was reported
   createdAt: timestamp("created_at").notNull().defaultNow(),

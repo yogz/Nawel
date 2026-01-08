@@ -344,3 +344,9 @@ export const submitFeedbackSchema = z.object({
 export const deleteFeedbackAdminSchema = z.object({
   id: z.number().int().positive(),
 });
+
+export const submitContactSchema = z.object({
+  email: z.string().email(),
+  content: safeText(2000),
+  url: z.string().optional(),
+});

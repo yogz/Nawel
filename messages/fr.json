@@ -646,5 +646,17 @@
     "loading": "Vérification de votre email...",
     "error": "Le lien est invalide ou a expiré.",
     "success": "Vous êtes maintenant connecté."
+  },
+  "Contact": {
+    "title": "Contactez-nous",
+    "description": "Une question, une suggestion ou juste envie de dire bonjour ? Notre équipe vous répondra dans les meilleurs délais.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "votre@email.com",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+    "submit": "Envoyer le message",
+    "successTitle": "Message envoyé ! ✨",
+    "successDescription": "Merci pour votre message. Nous vous répondrons dès que possible !",
+    "errorDescription": "L'envoi a échoué. Veuillez vérifier votre connexion ou réessayer plus tard."
   }
 }

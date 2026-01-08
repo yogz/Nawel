@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 interface FooterProps {
   namespace: "Landing" | "LandingAlt";
@@ -20,9 +21,9 @@ export function Footer({ namespace }: FooterProps) {
         >
           {t("footerLinks.instagram")}
         </a>
-        <a href="mailto:contact@colist.fr" className="transition-colors hover:text-gray-900">
+        <Link href="/contact" className="transition-colors hover:text-gray-900">
           {t("footerLinks.contact")}
-        </a>
+        </Link>
       </div>
       <p>
         &copy; {new Date().getFullYear()} CoList. {t("footerText")}

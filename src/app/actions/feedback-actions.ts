@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { createSafeAction } from "@/lib/action-utils";
-import { submitFeedbackSchema } from "./schemas";
+import { submitFeedbackSchema, submitContactSchema } from "./schemas";
 import { db } from "@/lib/db";
 import { feedback } from "@drizzle/schema";
 import { getTranslations } from "next-intl/server";
@@ -39,5 +39,38 @@ export const submitFeedbackAction = createSafeAction(submitFeedbackSchema, async
   } catch (error: unknown) {
     console.error("Submit feedback error:", error);
     throw new Error(t("actions.errorSubmitFeedback"));
+  }
+});
+
+/**
+ * Submits contact form.
+ * Publicly accessible.
+ */
+export const submitContactAction = createSafeAction(submitContactSchema, async (data) => {
+  const currentHeaders = await headers();
+
+  try {
+    await db.insert(feedback).values({
+      content: data.content,
+      email: data.email,
+      url: data.url,
+      userAgent: currentHeaders.get("user-agent"),
+    });
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Submit contact error:", error);
+    // Use fallback if email column doesn't exist yet
+    try {
+      await db.insert(feedback).values({
+        content: `[Email: ${data.email}] ${data.content}`,
+        url: data.url,
+        userAgent: currentHeaders.get("user-agent"),
+      });
+      return { success: true };
+    } catch (innerError) {
+      console.error("Submit contact fallback error:", innerError);
+      throw new Error("Could not submit contact form");
+    }
   }
 });

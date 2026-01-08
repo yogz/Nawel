@@ -26,11 +26,11 @@ export function CtaFooter({
   return (
     <section
       className={`relative z-10 px-6 text-center ${
-        isAlt ? "overflow-hidden bg-white py-24 sm:py-32" : "bg-white py-20 sm:py-32"
+        isAlt ? "overflow-hidden bg-gray-50 py-24 sm:py-32" : "bg-gray-50 py-20 sm:py-32"
       }`}
     >
       {isAlt && (
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-white to-white opacity-70" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-50 via-gray-50 to-gray-50 opacity-70" />
       )}
       <div className="mx-auto max-w-4xl">
         <h2
