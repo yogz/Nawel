@@ -69,7 +69,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
             target: "#new-event-card",
             title: t("steps.dashboard.create.title"),
             content: t("steps.dashboard.create.content"),
-            placement: "right",
+            placement: "auto",
           },
           {
             target: "#event-list-container",
@@ -81,7 +81,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
             target: "#user-nav-avatar",
             title: t("steps.dashboard.profile.title"),
             content: t("steps.dashboard.profile.content"),
-            placement: "left",
+            placement: "bottom-end",
           },
         ]
       : [];
