@@ -126,7 +126,7 @@
     "magicLinkSentDescription": "Et login-link er blevet sendt til {email}. Klik på det for at logge ind med det samme.",
     "backToSignin": "Tilbage til login",
     "MagicLink": {
-      "subject": "Dit Nawel Login Link",
+      "subject": "🔮 ✨ Dit Nawel Login Link",
       "body": "Klik på knappen nedenfor for at logge ind på din Nawel-konto uden adgangskode.",
       "button": "Log ind nu",
       "footer": "Hvis du ikke har anmodet om dette link, kan du roligt ignorere denne e-mail."
@@ -149,7 +149,7 @@
     "haveAccount": "Har du allerede en konto?",
     "guestLink": "Fortsæt uden at logge ind",
     "EmailVerification": {
-      "subject": "Verificer din CoList-konto",
+      "subject": "🔮 ✅ Verificer din CoList-konto",
       "body": "Velkommen til CoList! Klik på linket nedenfor for at verificere din e-mailadresse og aktivere din konto:",
       "button": "Verificer min e-mail",
       "footer": "Hvis du ikke har oprettet en CoList-konto, kan du roligt ignorere denne e-mail."
@@ -165,7 +165,7 @@
     "errorEmailRequired": "Indtast venligst din e-mailadresse.",
     "successResetEmail": "Nulstillings-e-mail sendt! Tjek din indbakke.",
     "EmailReset": {
-      "subject": "Nulstil din adgangskode",
+      "subject": "🔮 🔑 Nulstil din adgangskode",
       "body": "Du har anmodet om at få nulstillet din adgangskode til CoList. Klik på knappen nedenfor for at fortsætte.",
       "button": "Nulstil adgangskode",
       "footer": "Hvis du ikke har anmodet om denne nulstilling, kan du roligt ignorere denne e-mail."

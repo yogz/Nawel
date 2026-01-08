@@ -126,7 +126,7 @@
     "magicLinkSentDescription": "Er is een inloglink verzonden naar {email}. Klik erop om direct in te loggen.",
     "backToSignin": "Terug naar inloggen",
     "MagicLink": {
-      "subject": "Je Nawel inloglink",
+      "subject": "🔮 ✨ Je Nawel inloglink",
       "body": "Klik op de onderstaande knop om zonder wachtwoord in te loggen op je Nawel-account.",
       "button": "Nu inloggen",
       "footer": "Als je deze link niet hebt aangevraagd, kun je deze e-mail veilig negeren."
@@ -149,7 +149,7 @@
     "haveAccount": "Al een account?",
     "guestLink": "Doorgaan zonder aanmelden",
     "EmailVerification": {
-      "subject": "Verifieer uw CoList-account",
+      "subject": "🔮 ✅ Verifieer uw CoList-account",
       "body": "Welkom bij CoList! Klik op de onderstaande link om uw e-mailadres te verifiëren en uw account te activeren:",
       "button": "Verifieer mijn e-mail",
       "footer": "Als u geen CoList-account heeft aangemaakt, kunt u deze e-mail veilig negeren."
@@ -165,7 +165,7 @@
     "errorEmailRequired": "Voer uw e-mailadres in.",
     "successResetEmail": "Reset-e-mail verzonden! Controleer uw inbox.",
     "EmailReset": {
-      "subject": "Stel je wachtwoord opnieuw in",
+      "subject": "🔮 🔑 Stel je wachtwoord opnieuw in",
       "body": "Je hebt een wachtwoordherstel aangevraagd voor je CoList-account. Klik op de onderstaande knop om door te gaan.",
       "button": "Wachtwoord herstellen",
       "footer": "Als je dit herstel niet hebt aangevraagd, kun je deze e-mail veilig negeren."

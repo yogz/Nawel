@@ -125,7 +125,7 @@
     "magicLinkSentDescription": "Ein Anmeldelink wurde an {email} gesendet. Klicken Sie darauf, um sich sofort anzumelden.",
     "backToSignin": "Zurück zur Anmeldung",
     "MagicLink": {
-      "subject": "Ihr Nawel-Anmeldelink",
+      "subject": "🔮 ✨ Ihr Nawel-Anmeldelink",
       "body": "Klicken Sie auf die Schaltfläche unten, um sich ohne Passwort bei Ihrem Nawel-Konto anzumelden.",
       "button": "Jetzt anmelden",
       "footer": "Wenn Sie diesen Link nicht angefordert haben, können Sie diese E-Mail ignorieren."
@@ -148,7 +148,7 @@
     "haveAccount": "Bereits ein Konto?",
     "guestLink": "Ohne Anmeldung fortfahren",
     "EmailVerification": {
-      "subject": "Bestätigen Sie Ihr CoList-Konto",
+      "subject": "🔮 ✅ Bestätigen Sie Ihr CoList-Konto",
       "body": "Willkommen bei CoList! Klicken Sie auf den untenstehenden Link, um Ihre E-Mail-Adresse zu bestätigen und Ihr Konto zu aktivieren:",
       "button": "E-Mail bestätigen",
       "footer": "Wenn Sie kein CoList-Konto erstellt haben, können Sie diese E-Mail einfach ignorieren."
@@ -164,7 +164,7 @@
     "errorEmailRequired": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
     "successResetEmail": "Zurücksetzungs-E-Mail gesendet! Überprüfen Sie Ihren Posteingang.",
     "EmailReset": {
-      "subject": "Passwort zurücksetzen",
+      "subject": "🔮 🔑 Passwort zurücksetzen",
       "body": "Sie haben das Zurücksetzen Ihres CoList-Passworts angefordert. Klicken Sie auf die Schaltfläche unten, um fortzufahren.",
       "button": "Passwort zurücksetzen",
       "footer": "Wenn Sie diese Zurücksetzung nicht angefordert haben, können Sie diese E-Mail ignorieren."

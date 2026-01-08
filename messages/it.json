@@ -126,7 +126,7 @@
     "magicLinkSentDescription": "Un link di accesso è stato inviato a {email}. Cliccaci sopra per accedere istantaneamente.",
     "backToSignin": "Torna all'accesso",
     "MagicLink": {
-      "subject": "Il tuo link di accesso a Nawel",
+      "subject": "🔮 ✨ Il tuo link di accesso a Nawel",
       "body": "Clicca sul pulsante qui sotto per accedere al tuo account Nawel senza password.",
       "button": "Accedi ora",
       "footer": "Se non hai richiesto questo link, puoi ignorare questa email in tutta sicurezza."
@@ -149,7 +149,7 @@
     "haveAccount": "Hai già un account?",
     "guestLink": "Continua senza accedere",
     "EmailVerification": {
-      "subject": "Verifica il tuo account CoList",
+      "subject": "🔮 ✅ Verifica il tuo account CoList",
       "body": "Benvenuto su CoList! Clicca sul link qui sotto per verificare il tuo indirizzo email e attivare il tuo account:",
       "button": "Verifica la mia email",
       "footer": "Se non hai creato un account CoList, puoi ignorare tranquillamente questa email."
@@ -165,7 +165,7 @@
     "errorEmailRequired": "Inserisci il tuo indirizzo email.",
     "successResetEmail": "Email di ripristino inviata! Controlla la tua casella di posta.",
     "EmailReset": {
-      "subject": "Reimposta la tua password",
+      "subject": "🔮 🔑 Reimposta la tua password",
       "body": "Hai richiesto la reimpostazione della password per il tuo account CoList. Clicca sul pulsante qui sotto per continuare.",
       "button": "Reimposta password",
       "footer": "Se non hai richiesto questa reimpostazione, puoi ignorare tranquillamente questa email."

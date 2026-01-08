@@ -126,7 +126,7 @@
     "magicLinkSentDescription": "Link do logowania został wysłany na adres {email}. Kliknij go, aby natychmiast się zalogować.",
     "backToSignin": "Powrót do logowania",
     "MagicLink": {
-      "subject": "Twój link logowania Nawel",
+      "subject": "🔮 ✨ Twój link logowania Nawel",
       "body": "Kliknij poniższy przycisk, aby zalogować się na swoje konto Nawel bez hasła.",
       "button": "Zaloguj się teraz",
       "footer": "Jeśli nie prosiłeś o ten link, możesz bezpiecznie zignorować tę wiadomość."
@@ -149,7 +149,7 @@
     "haveAccount": "Masz już konto?",
     "guestLink": "Kontynuuj bez logowania",
     "EmailVerification": {
-      "subject": "Zweryfikuj swoje konto CoList",
+      "subject": "🔮 ✅ Zweryfikuj swoje konto CoList",
       "body": "Witaj w CoList! Kliknij poniższy link, aby zweryfikować swój adres e-mail i aktywować konto:",
       "button": "Zweryfikuj mój e-mail",
       "footer": "Jeśli nie utworzyłeś konta CoList, możesz bezpiecznie zignorować tę wiadomość."
@@ -165,7 +165,7 @@
     "errorEmailRequired": "Proszę podać swój adres e-mail.",
     "successResetEmail": "E-mail z linkiem do resetowania został wysłany! Sprawdź swoją skrzynkę odbiorczą.",
     "EmailReset": {
-      "subject": "Zresetuj swoje hasło",
+      "subject": "🔮 🔑 Zresetuj swoje haseło",
       "body": "Poprosiłeś o zresetowanie hasła do konta CoList. Kliknij w poniższy przycisk, aby kontynuować.",
       "button": "Resetuj hasło",
       "footer": "Jeśli nie prosiłeś o zresetowanie hasła, możesz bezpiecznie zignorować tę wiadomość."
