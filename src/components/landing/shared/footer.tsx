@@ -10,7 +10,7 @@ export function Footer({ namespace }: FooterProps) {
   const t = useTranslations(namespace);
 
   return (
-    <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
+    <footer className="relative z-20 border-t border-gray-200 bg-gray-50 py-12 pb-28 text-center text-sm text-gray-500 sm:pb-12">
       <div className="mb-8 flex justify-center gap-6">
         <a
           href="https://www.instagram.com/colistfr/"

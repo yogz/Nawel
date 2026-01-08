@@ -26,7 +26,7 @@ export function Faq() {
   ];
 
   return (
-    <section className="relative z-10 bg-white py-24 sm:py-32">
+    <section className="relative z-10 bg-gray-50 py-24 sm:py-32">
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <h2 className="mb-16 text-center text-3xl font-bold leading-10 tracking-tight text-gray-900 sm:text-4xl">
           {t("title")}
