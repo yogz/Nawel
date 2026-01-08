@@ -13,7 +13,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { type PlanData, type Item } from "@/lib/types";
-import { TabBar } from "../tab-bar";
+import { TabBar } from "../layout";
 import { useThemeMode } from "../theme-provider";
 import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
