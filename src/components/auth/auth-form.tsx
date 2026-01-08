@@ -20,7 +20,7 @@ interface AuthFormProps {
   isUserMode?: boolean;
 }
 
-export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true }: AuthFormProps) {
+export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthFormProps) {
   const t = useTranslations("Login");
   const locale = useLocale();
   const router = useRouter();
@@ -29,7 +29,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authMode, setAuthMode] = useState<"signin" | "signup">("signup"); // Default to signup for new users
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [showPassword, setShowPassword] = useState(false);
   const [showMagicLink, setShowMagicLink] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
@@ -38,7 +38,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
   useEffect(() => {
     const isReturningUser = localStorage.getItem("nawel_returning_user") === "true";
-    const preferMagicLink = localStorage.getItem("nawel_prefer_magic_link") === "true";
+    const preferMagicLink = localStorage.getItem("nawel_prefer_magic_link");
 
     if (token) {
       const verifyMagicLink = async () => {
@@ -75,13 +75,19 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
       return;
     }
 
+    // Handle initialMode (forced by parent or URL)
     if (initialMode) {
       setAuthMode(initialMode);
     } else if (isReturningUser) {
       setAuthMode("signin");
-      if (preferMagicLink) {
-        setShowMagicLink(true);
-      }
+    }
+
+    // Handle showMagicLink preference
+    if (preferMagicLink !== null) {
+      setShowMagicLink(preferMagicLink === "true");
+    } else {
+      // Default for new users or if no preference saved
+      setShowMagicLink(false);
     }
   }, [initialMode, token, locale, isUserMode, onSuccess, router, t]);
 
@@ -174,7 +180,6 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
         toast.error(error.message || t("errorDefault"));
       } else {
         setMagicLinkSent(true);
-        localStorage.setItem("nawel_prefer_magic_link", "true");
         toast.success(t("successMagicLinkEmail"));
       }
     } catch {
@@ -451,9 +456,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
                       onClick={() => {
                         const newMode = !showMagicLink;
                         setShowMagicLink(newMode);
-                        if (!newMode) {
-                          localStorage.removeItem("nawel_prefer_magic_link");
-                        }
+                        localStorage.setItem("nawel_prefer_magic_link", String(newMode));
                       }}
                       className="text-xs font-bold text-gray-400 transition-colors hover:text-gray-600"
                     >
