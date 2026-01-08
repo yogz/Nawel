@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Joyride, { Step, CallBackProps, STATUS } from "react-joyride";
+import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
 import { useTranslations } from "next-intl";
 
 interface OnboardingTourProps {
@@ -11,9 +11,12 @@ interface OnboardingTourProps {
 export function OnboardingTour({ tourKey }: OnboardingTourProps) {
   const t = useTranslations("Tour");
   const [run, setRun] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
 
   useEffect(() => {
     const handleStart = () => {
+      // Force reset by setting stepIndex to 0 and run to true
+      setStepIndex(0);
       setRun(true);
       localStorage.removeItem(`has_seen_tour_${tourKey}`);
     };
@@ -25,7 +28,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
     const hasSeenTour = localStorage.getItem(`has_seen_tour_${tourKey}`);
     if (!hasSeenTour) {
       // Delay it slightly to ensure elements are rendered
-      const timer = setTimeout(() => setRun(true), 1500); // Increased delay slightly to be safe
+      const timer = setTimeout(() => setRun(true), 1500);
       return () => {
         clearTimeout(timer);
         window.removeEventListener(`start-tour-${tourKey}`, handleStart);
@@ -36,8 +39,13 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
   }, [tourKey]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
+    const { status, action, index, type } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
+
+    // Update internal state to match Joyride's progress
+    if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
+      setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1));
+    }
 
     if (finishedStatuses.includes(status)) {
       setRun(false);
@@ -82,6 +90,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
       continuous
       hideCloseButton
       run={run}
+      stepIndex={stepIndex}
       scrollToFirstStep
       showProgress
       showSkipButton
