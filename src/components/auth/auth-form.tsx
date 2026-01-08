@@ -10,6 +10,7 @@ import { GoogleIcon } from "./google-icon";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { sendGAEvent } from "@next/third-parties/google";
 import { toast } from "sonner";
 
@@ -23,6 +24,8 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
   const t = useTranslations("Login");
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +40,41 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     const isReturningUser = localStorage.getItem("nawel_returning_user") === "true";
     const preferMagicLink = localStorage.getItem("nawel_prefer_magic_link") === "true";
 
+    if (token) {
+      const verifyMagicLink = async () => {
+        setLoading(true);
+        try {
+          const { error } = await authClient.magicLink.verify({
+            query: {
+              token,
+              callbackURL: getPathname({ href: isUserMode ? "/" : "/admin", locale }),
+            },
+          });
+
+          if (error) {
+            setError(error.message || t("errorDefault"));
+            toast.error(error.message || t("errorDefault"));
+          } else {
+            toast.success(t("successSignin"));
+            localStorage.setItem("nawel_returning_user", "true");
+            if (onSuccess) {
+              onSuccess();
+            } else {
+              router.push(isUserMode ? "/" : "/admin");
+              router.refresh();
+            }
+          }
+        } catch (err) {
+          console.error("Magic link verification failed:", err);
+          setError(t("errorDefault"));
+        } finally {
+          setLoading(false);
+        }
+      };
+      verifyMagicLink();
+      return;
+    }
+
     if (initialMode) {
       setAuthMode(initialMode);
     } else if (isReturningUser) {
@@ -45,7 +83,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
         setShowMagicLink(true);
       }
     }
-  }, [initialMode]);
+  }, [initialMode, token, locale, isUserMode, onSuccess, router, t]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,13 +251,25 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={magicLinkSent ? "sent" : authMode + (showMagicLink ? "-magic" : "")}
+          key={
+            token
+              ? "verifying"
+              : magicLinkSent
+                ? "sent"
+                : authMode + (showMagicLink ? "-magic" : "")
+          }
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
         >
-          {magicLinkSent ? (
+          {token ? (
+            <div className="flex flex-col items-center justify-center space-y-4 py-8 text-center">
+              <Loader2 className="h-12 w-12 animate-spin text-accent" />
+              <h1 className="text-xl font-bold">{t("verifyingMagicLink")}</h1>
+              <p className="text-sm text-gray-500">{t("pleaseWait")}</p>
+            </div>
+          ) : magicLinkSent ? (
             <div className="flex flex-col items-center text-center">
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-500">
                 <Sparkles size={32} />
