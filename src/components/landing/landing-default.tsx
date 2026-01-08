@@ -100,12 +100,12 @@ export function LandingDefault() {
         styleVariant="default"
       />
 
+      {/* FAQ Section */}
+      <Faq />
+
       <footer className="border-t border-gray-100 py-12 text-center text-sm text-gray-500">
         <p>{t("footer")}</p>
       </footer>
-
-      {/* FAQ Section */}
-      <Faq />
 
       {/* Mobile Sticky CTA */}
       <StickyCta />
