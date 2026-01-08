@@ -151,13 +151,13 @@
   "FAQ": {
     "title": "Domande Frequenti",
     "q1": "È davvero gratuito?",
-    "a1": "Sì, CoList è attualmente gratuito al 100%. Tutte le funzionalità, inclusa l'IA e gli inviti illimitati, sono accessibili senza costi.",
+    "a1": "Sì, CoList è gratuito al 100%. Tutte le funzioni, compresa l'IA e gli inviti illimitati, sono accessibili senza costi.",
     "q2": "I miei ospiti devono creare un account?",
     "a2": "No! Questo è il nostro punto di forza. Ricevono il tuo link, cliccano e possono indicare cosa porteranno senza alcuna registrazione o installazione di app.",
     "q3": "E se qualcuno non ha uno smartphone?",
     "a3": "Il link funziona su qualsiasi browser (computer, tablet, smartphone). Puoi anche aggiungere manualmente ciò che porta la nonna se lei non è connessa.",
     "q4": "Come funziona la lista della spesa?",
-    "a4": "L'app raccoglie tutto ciò che resta da acquistare (quello che nessuno ha ancora preso) in una lista globale per l'organizzatore, e crea una lista personalizzata per ogni ospite con i propri contributi."
+    "a4": "L'app organizza tutti gli acquisti in una lista personalizzata per ogni ospite. Può essere condivisa e utilizzata come una vera lista della spesa interattiva una volta in negozio."
   },
   "Profile": {
     "settings": "Impostazioni profilo",

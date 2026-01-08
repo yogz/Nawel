@@ -151,13 +151,13 @@
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",
     "q1": "Czy to naprawdę jest darmowe?",
-    "a1": "Tak, CoList jest obecnie w 100% darmowy. Wszystkie funkcje, w tym AI i nieograniczona liczba zaproszeń, są dostępne bezpłatnie.",
+    "a1": "Tak, CoList jest w 100% darmowy. Wszystkie funkcje, w tym AI i nieograniczona liczba zaproszeń, są dostępne bezpłatnie.",
     "q2": "Czy moi goście muszą zakładać konto?",
     "a2": "Nie! To nasza mocna strona. Otrzymują Twój link, klikają i mogą wskazać, co przynoszą, bez żadnej rejestracji ani instalowania aplikacji.",
     "q3": "Co jeśli ktoś nie ma smartfona?",
     "a3": "Link działa w każdej przeglądarce (komputer, tablet, smartfon). Możesz także ręcznie dodać to, co przynosi babcia, jeśli nie jest połączona.",
     "q4": "Jak działa lista zakupów?",
-    "a4": "Aplikacja kompiluje wszystko, co pozostało do kupienia (czego nikt jeszcze nie wziął), w globalną listę dla gospodarza i tworzy spersonalizowaną listę dla każdego gościa z jego własnym wkładem."
+    "a4": "Aplikacja organizuje wszystkie zakupy w spersonalizowaną listę dla każdego gościa. Można ją udostępniać i używać jako prawdziwej interaktywnej listy zakupów w sklepie."
   },
   "Profile": {
     "settings": "Ustawienia profilu",

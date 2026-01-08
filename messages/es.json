@@ -150,13 +150,13 @@
   "FAQ": {
     "title": "Preguntas frecuentes",
     "q1": "¿Es realmente gratis?",
-    "a1": "Sí, CoList es 100% gratis por ahora. Todas las funciones, incluyendo la IA y las invitaciones ilimitadas, son accesibles sin costo.",
+    "a1": "Sí, CoList es 100% gratuito. Todas las funciones, incluyendo la IA y las invitaciones ilimitadas, son accesibles sin coste alguno.",
     "q2": "¿Mis invitados necesitan crear una cuenta?",
     "a2": "¡No! Ese es nuestro punto fuerte. Reciben tu enlace, hacen clic y pueden indicar qué van a traer sin ningún registro ni instalación de aplicación.",
     "q3": "¿Y si alguien no tiene un smartphone?",
     "a3": "El enlace funciona en cualquier navegador (ordenador, tableta, smartphone). También puedes añadir manualmente lo que trae la abuela si no está conectada.",
     "q4": "¿Cómo funciona la lista de la compra?",
-    "a4": "La aplicación recopila todo lo que queda por comprar (lo que nadie ha cogido todavía) en una lista global para el anfitrión, y crea una lista personalizada para cada invitado con sus propias contribuciones."
+    "a4": "La aplicación organiza todas las compras en una lista personalizada para cada invitado. Puede compartirse y utilizarse como una verdadera lista de la compra interactiva una vez en la tienda."
   },
   "Profile": {
     "settings": "Ajustes del perfil",

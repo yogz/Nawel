@@ -151,13 +151,13 @@
   "FAQ": {
     "title": "Frequently Asked Questions",
     "q1": "Is it really free?",
-    "a1": "Yes, CoList is 100% free for now. All features, including AI and unlimited invitations, are accessible at no cost.",
+    "a1": "Yes, CoList is 100% free. All features, including AI and unlimited invitations, are accessible at no cost.",
     "q2": "Do my guests need to create an account?",
     "a2": "No! That's our strength. They receive your link, click, and can indicate what they are bringing without any registration or app installation.",
     "q3": "What if someone doesn't have a smartphone?",
     "a3": "The link works on any browser (computer, tablet, smartphone). You can also manually add what Grandma is bringing if she's not connected.",
     "q4": "How does the shopping list work?",
-    "a4": "The app compiles everything left to buy (what no one has taken yet) into a global list for the host, and creates a personalized list for each guest with their own contributions."
+    "a4": "The app compiles everything to be purchased into a personalized shopping list for each guest. These lists can be shared and used just like a real shopping list while at the store."
   },
   "Profile": {
     "settings": "Profile settings",
