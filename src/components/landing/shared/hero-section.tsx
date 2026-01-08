@@ -90,7 +90,7 @@ export function HeroSection({
         </p>
         <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
           <Link
-            href="/login?mode=user"
+            href="/login?mode=user&view=signup"
             onClick={() => sendGAEvent("event", "cta_click", { location: "hero", variant })}
             className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
           >

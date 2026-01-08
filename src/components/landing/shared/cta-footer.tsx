@@ -48,7 +48,7 @@ export function CtaFooter({
           {description}
         </p>
         <Link
-          href="/login?mode=user"
+          href="/login?mode=user&view=signup"
           onClick={() => sendGAEvent("event", "cta_click", { location: "footer", variant })}
           className={`inline-flex w-full items-center justify-center rounded-full font-bold text-white transition-all sm:w-auto ${
             isAlt

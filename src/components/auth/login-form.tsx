@@ -16,8 +16,10 @@ export function LoginForm() {
   const t = useTranslations("Login");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const view = searchParams.get("view");
   const mode = searchParams.get("mode");
   const isUserMode = mode === "user";
+  const initialMode = view === "signup" ? "signup" : "signin";
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center px-4">
@@ -70,6 +72,7 @@ export function LoginForm() {
         <div className="relative z-20 w-full overflow-hidden rounded-3xl border border-white/50 bg-white/80 p-8 shadow-2xl backdrop-blur-2xl transition-all">
           <AuthForm
             isUserMode={isUserMode}
+            initialMode={initialMode}
             onSuccess={() => {
               router.push(isUserMode ? "/" : "/admin");
               router.refresh();

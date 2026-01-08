@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { trackFaqInteraction } from "@/lib/analytics";
 
 export function Faq() {
@@ -47,18 +47,19 @@ export function Faq() {
                   </span>
                 </button>
               </dt>
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.dd
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden pr-12"
-                  >
-                    <p className="py-4 text-base leading-7 text-gray-600">{faq.a}</p>
-                  </motion.dd>
-                )}
-              </AnimatePresence>
+              <motion.dd
+                initial={false}
+                animate={{
+                  height: openIndex === index ? "auto" : 0,
+                  opacity: openIndex === index ? 1 : 0,
+                }}
+                transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                className="overflow-hidden"
+              >
+                <div className="pb-6 pr-12">
+                  <p className="text-base leading-7 text-gray-600">{faq.a}</p>
+                </div>
+              </motion.dd>
             </div>
           ))}
         </dl>
