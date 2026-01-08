@@ -2,6 +2,7 @@ import { getMyEventsAction } from "@/app/actions";
 import { EventList } from "@/components/events/event-list";
 import { DashboardHeader, DashboardFooter } from "@/components/layout";
 import { LandingRouter } from "@/components/landing";
+import { OnboardingTour } from "@/components/common/onboarding-tour";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
@@ -38,6 +39,8 @@ export default async function Home(props: {
           <DashboardFooter />
         </main>
       </div>
+
+      <OnboardingTour tourKey="dashboard" />
     </div>
   );
 }
