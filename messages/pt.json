@@ -125,8 +125,8 @@
     "magicLinkSentDescription": "Um link de acesso foi enviado para {email}. Clique nele para entrar instantaneamente.",
     "backToSignin": "Voltar para o login",
     "MagicLink": {
-      "subject": "🔮 ✨ Seu link de acesso Nawel",
-      "body": "Clique no botão abaixo para entrar na sua conta Nawel sem senha.",
+      "subject": "🔮 ✨ Seu link de acesso CoList",
+      "body": "Clique no botão abaixo para entrar na sua conta CoList sem senha.",
       "button": "Entrar agora",
       "footer": "Se você não solicitou este link, pode ignorar este e-mail com segurança."
     },

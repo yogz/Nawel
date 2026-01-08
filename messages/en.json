@@ -126,8 +126,8 @@
     "magicLinkSentDescription": "A login link has been sent to {email}. Click it to sign in instantly.",
     "backToSignin": "Back to login",
     "MagicLink": {
-      "subject": "🔮 ✨ Your Nawel Login Link",
-      "body": "Click the button below to sign in to your Nawel account without a password.",
+      "subject": "🔮 ✨ Your CoList Login Link",
+      "body": "Click the button below to sign in to your CoList account without a password.",
       "button": "Sign in now",
       "footer": "If you didn't request this link, you can safely ignore this email."
     },

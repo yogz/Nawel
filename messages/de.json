@@ -125,8 +125,8 @@
     "magicLinkSentDescription": "Ein Anmeldelink wurde an {email} gesendet. Klicken Sie darauf, um sich sofort anzumelden.",
     "backToSignin": "Zurück zur Anmeldung",
     "MagicLink": {
-      "subject": "🔮 ✨ Ihr Nawel-Anmeldelink",
-      "body": "Klicken Sie auf die Schaltfläche unten, um sich ohne Passwort bei Ihrem Nawel-Konto anzumelden.",
+      "subject": "🔮 ✨ Ihr CoList-Anmeldelink",
+      "body": "Klicken Sie auf die Schaltfläche unten, um sich ohne Passwort bei Ihrem CoList-Konto anzumelden.",
       "button": "Jetzt anmelden",
       "footer": "Wenn Sie diesen Link nicht angefordert haben, können Sie diese E-Mail ignorieren."
     },

@@ -127,8 +127,8 @@
     "magicLinkSentDescription": "Un lien de connexion a été envoyé à {email}. Cliquez dessus pour vous connecter instantanément.",
     "backToSignin": "Retour à la connexion",
     "MagicLink": {
-      "subject": "🔮 ✨ Votre lien de connexion Nawel",
-      "body": "Cliquez sur le bouton ci-dessous pour vous connecter à votre compte Nawel sans mot de passe.",
+      "subject": "🔮 ✨ Votre lien de connexion CoList",
+      "body": "Cliquez sur le bouton ci-dessous pour vous connecter à votre compte CoList sans mot de passe.",
       "button": "Se connecter maintenant",
       "footer": "Si vous n'avez pas demandé ce lien, vous pouvez ignorer cet e-mail en toute sécurité."
     },

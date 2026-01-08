@@ -251,7 +251,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
   return (
     <div className="w-full">
       {/* Mode Toggle */}
-      <div className="mb-8 flex justify-center">
+      <div className="mb-6 flex justify-center">
         <div className="relative flex w-full max-w-[240px] rounded-2xl bg-gray-100 p-1">
           <motion.div
             className="absolute inset-y-1 rounded-xl bg-white shadow-sm"
@@ -337,7 +337,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     : t("signinTitle")
                   : t("signupTitle")}
               </h1>
-              <p className="mb-8 text-center text-sm font-medium text-gray-500">
+              <p className="mb-6 text-center text-sm font-medium text-gray-500">
                 {authMode === "signin"
                   ? showMagicLink
                     ? t("signinMagicDescription")
@@ -363,7 +363,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     {authMode === "signin" ? t("googleButton") : t("googleSignupButton")}
                   </Button>
 
-                  <div className="relative my-8">
+                  <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-gray-100" />
                     </div>
@@ -505,7 +505,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                 )}
               </form>
 
-              <div className="mt-8 text-center" />
+              <div className="mt-6 text-center" />
             </>
           )}
         </motion.div>

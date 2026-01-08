@@ -126,8 +126,8 @@
     "magicLinkSentDescription": "Link do logowania został wysłany na adres {email}. Kliknij go, aby natychmiast się zalogować.",
     "backToSignin": "Powrót do logowania",
     "MagicLink": {
-      "subject": "🔮 ✨ Twój link logowania Nawel",
-      "body": "Kliknij poniższy przycisk, aby zalogować się na swoje konto Nawel bez hasła.",
+      "subject": "🔮 ✨ Twój link logowania CoList",
+      "body": "Kliknij poniższy przycisk, aby zalogować się na swoje konto CoList bez hasła.",
       "button": "Zaloguj się teraz",
       "footer": "Jeśli nie prosiłeś o ten link, możesz bezpiecznie zignorować tę wiadomość."
     },

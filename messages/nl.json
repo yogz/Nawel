@@ -126,8 +126,8 @@
     "magicLinkSentDescription": "Er is een inloglink verzonden naar {email}. Klik erop om direct in te loggen.",
     "backToSignin": "Terug naar inloggen",
     "MagicLink": {
-      "subject": "🔮 ✨ Je Nawel inloglink",
-      "body": "Klik op de onderstaande knop om zonder wachtwoord in te loggen op je Nawel-account.",
+      "subject": "🔮 ✨ Je CoList inloglink",
+      "body": "Klik op de onderstaande knop om zonder wachtwoord in te loggen op je CoList-account.",
       "button": "Nu inloggen",
       "footer": "Als je deze link niet hebt aangevraagd, kun je deze e-mail veilig negeren."
     },
