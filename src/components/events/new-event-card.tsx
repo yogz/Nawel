@@ -13,6 +13,7 @@ export function NewEventCard({ onClick }: NewEventCardProps) {
 
   return (
     <motion.div
+      id="new-event-card"
       whileHover={{ scale: 1.02, translateY: -4 }}
       whileTap={{ scale: 0.98 }}
       initial={{ opacity: 0, y: 20 }}
