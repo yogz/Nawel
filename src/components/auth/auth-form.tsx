@@ -59,6 +59,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
             toast.success(t("successSignin"));
             localStorage.setItem("nawel_returning_user", "true");
             await refetch();
+            sendGAEvent("event", "login", { method: "magic_link" });
             if (onSuccess) {
               onSuccess();
             } else {
@@ -110,6 +111,11 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
         });
         if (error) {
           setError(error.message || t("errorSignin"));
+          sendGAEvent("event", "auth_error", {
+            error_message: error.message || t("errorSignin"),
+            auth_mode: "signin",
+            auth_method: "email",
+          });
           setLoading(false);
           return;
         }
@@ -122,6 +128,11 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
         });
         if (error) {
           setError(error.message || t("errorSignup"));
+          sendGAEvent("event", "auth_error", {
+            error_message: error.message || t("errorSignup"),
+            auth_mode: "signup",
+            auth_method: "email",
+          });
           setLoading(false);
           return;
         }
@@ -139,6 +150,11 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
       }
     } catch {
       setError(t("errorDefault"));
+      sendGAEvent("event", "auth_error", {
+        error_message: "caught_exception",
+        auth_mode: authMode,
+        auth_method: showMagicLink ? "magic_link" : "email",
+      });
       setLoading(false);
     }
   };
@@ -158,6 +174,11 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
     } catch (err) {
       console.error(err);
       setError(t("errorDefault"));
+      sendGAEvent("event", "auth_error", {
+        error_message: "google_auth_exception",
+        auth_mode: authMode,
+        auth_method: "google",
+      });
       setLoading(false);
     }
   };
@@ -183,10 +204,16 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
       } else {
         setMagicLinkSent(true);
         toast.success(t("successMagicLinkEmail"));
+        sendGAEvent("event", "magic_link_request", { success: true });
       }
     } catch {
       setError(t("errorDefault"));
       toast.error(t("errorDefault"));
+      sendGAEvent("event", "auth_error", {
+        error_message: "magic_link_exception",
+        auth_mode: "signin",
+        auth_method: "magic_link",
+      });
     } finally {
       setLoading(false);
     }
@@ -211,6 +238,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
         toast.error(error.message || t("errorDefault"));
       } else {
         toast.success(t("successResetEmail"));
+        sendGAEvent("event", "forgot_password_request", { success: true });
       }
     } catch {
       setError(t("errorDefault"));
@@ -236,7 +264,10 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
           />
           <button
             type="button"
-            onClick={() => setAuthMode("signin")}
+            onClick={() => {
+              setAuthMode("signin");
+              sendGAEvent("event", "auth_mode_toggle", { target_mode: "signin" });
+            }}
             className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
               authMode === "signin" ? "text-gray-900" : "text-gray-400"
             }`}
@@ -245,7 +276,10 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
           </button>
           <button
             type="button"
-            onClick={() => setAuthMode("signup")}
+            onClick={() => {
+              setAuthMode("signup");
+              sendGAEvent("event", "auth_mode_toggle", { target_mode: "signup" });
+            }}
             className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
               authMode === "signup" ? "text-gray-900" : "text-gray-400"
             }`}
@@ -326,7 +360,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     ) : (
                       <GoogleIcon className="h-5 w-5" />
                     )}
-                    {t("googleButton")}
+                    {authMode === "signin" ? t("googleButton") : t("googleSignupButton")}
                   </Button>
 
                   <div className="relative my-8">
@@ -459,6 +493,9 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                         const newMode = !showMagicLink;
                         setShowMagicLink(newMode);
                         localStorage.setItem("nawel_prefer_magic_link", String(newMode));
+                        sendGAEvent("event", "auth_method_toggle", {
+                          target_method: newMode ? "magic_link" : "password",
+                        });
                       }}
                       className="text-xs font-bold text-gray-400 transition-colors hover:text-gray-600"
                     >

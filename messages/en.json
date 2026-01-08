@@ -143,6 +143,7 @@
     "signingIn": "Signing in...",
     "signingUp": "Creating...",
     "googleButton": "Sign in with Google",
+    "googleSignupButton": "Sign up with Google",
     "orContinueWith": "Or continue with",
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",

@@ -144,6 +144,7 @@
     "signingIn": "Connexion...",
     "signingUp": "Création...",
     "googleButton": "S'identifier avec Google",
+    "googleSignupButton": "S'inscrire avec Google",
     "orContinueWith": "Ou continuer avec",
     "noAccount": "Pas encore de compte ?",
     "haveAccount": "Déjà un compte ?",
