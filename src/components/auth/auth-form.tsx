@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signIn, signUp, authClient, requestPasswordReset } from "@/lib/auth-client";
+import { signIn, signUp, authClient, requestPasswordReset, useSession } from "@/lib/auth-client";
 import { useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +26,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const { refetch } = useSession();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -57,6 +58,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
           } else {
             toast.success(t("successSignin"));
             localStorage.setItem("nawel_returning_user", "true");
+            await refetch();
             if (onSuccess) {
               onSuccess();
             } else {
@@ -89,7 +91,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
       // Default for new users or if no preference saved
       setShowMagicLink(false);
     }
-  }, [initialMode, token, locale, isUserMode, onSuccess, router, t]);
+  }, [initialMode, token, locale, isUserMode, onSuccess, router, t, refetch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
