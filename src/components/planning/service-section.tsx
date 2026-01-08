@@ -99,10 +99,7 @@ export const ServiceSection = memo(function ServiceSection({
 
       <div className="relative z-10 flex flex-col gap-1">
         {filteredItems.map((item, index) => (
-          <div
-            key={item.id}
-            className={index !== filteredItems.length - 1 ? "border-b border-white/30 pb-1" : ""}
-          >
+          <div key={item.id}>
             <MenuItemRow
               item={item}
               person={people.find((p) => p.id === item.personId)}
