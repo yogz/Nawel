@@ -20,7 +20,6 @@ import { useSession } from "@/lib/auth-client";
 // Lightweight components loaded immediately
 import { EventPlannerHeader } from "./event-planner-header";
 import { SuccessToast } from "../common/success-toast";
-import { AuraBackground } from "../ui/aura-background";
 
 // Heavy components loaded lazily (code-splitting)
 const EventPlannerSheets = lazy(() =>
@@ -312,7 +311,6 @@ export function EventPlanner({
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      <AuraBackground />
       <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}

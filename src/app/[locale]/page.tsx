@@ -3,7 +3,6 @@ import { EventList } from "@/components/events/event-list";
 import { DashboardHeader } from "@/components/layout";
 import { LandingRouter } from "@/components/landing";
 import { auth } from "@/lib/auth-config";
-import { AuraBackground } from "@/components/ui/aura-background";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
 
@@ -31,7 +30,6 @@ export default async function Home(props: {
 
   return (
     <div className="flex min-h-screen flex-col text-gray-900">
-      <AuraBackground />
       <DashboardHeader />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
