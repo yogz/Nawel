@@ -122,13 +122,15 @@ export function LandingVariantB() {
 
       <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
         <div className="mb-8 flex justify-center gap-6">
-          <a href="#" className="hover:text-gray-900">
+          <a
+            href="https://www.instagram.com/colistfr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-gray-900"
+          >
             {t("footerLinks.instagram")}
           </a>
-          <a href="#" className="hover:text-gray-900">
-            {t("footerLinks.twitter")}
-          </a>
-          <a href="#" className="hover:text-gray-900">
+          <a href="mailto:contact@colist.fr" className="hover:text-gray-900">
             {t("footerLinks.contact")}
           </a>
         </div>
