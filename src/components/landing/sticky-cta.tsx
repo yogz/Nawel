@@ -24,7 +24,7 @@ export function StickyCta() {
       className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/80 p-4 backdrop-blur-lg sm:hidden"
     >
       <Link
-        href="/login?mode=user&view=signup"
+        href="/login?mode=user"
         className="flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 py-3 text-base font-bold text-white shadow-lg transition-transform active:scale-95"
       >
         Créer mon événement

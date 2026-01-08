@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, signUp, authClient, requestPasswordReset } from "@/lib/auth-client";
 import { useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -26,10 +26,19 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authMode, setAuthMode] = useState<"signin" | "signup">(initialMode);
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signup"); // Default to signup for new users
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const isReturningUser = localStorage.getItem("nawel_returning_user") === "true";
+    if (initialMode) {
+      setAuthMode(initialMode);
+    } else if (isReturningUser) {
+      setAuthMode("signin");
+    }
+  }, [initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +76,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
       }
 
       sendGAEvent("event", "login", { method: "email" });
+      localStorage.setItem("nawel_returning_user", "true");
 
       if (onSuccess) {
         onSuccess();
@@ -91,6 +101,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
         callbackURL,
       });
       sendGAEvent("event", "login", { method: "google" });
+      localStorage.setItem("nawel_returning_user", "true");
     } catch (err) {
       console.error(err);
       setError(t("errorDefault"));
@@ -128,12 +139,45 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
   return (
     <div className="w-full">
+      {/* Mode Toggle */}
+      <div className="mb-8 flex justify-center">
+        <div className="relative flex w-full max-w-[240px] rounded-2xl bg-gray-100 p-1">
+          <motion.div
+            className="absolute inset-y-1 rounded-xl bg-white shadow-sm"
+            initial={false}
+            animate={{
+              x: authMode === "signin" ? 0 : "100%",
+              width: "50%",
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
+          <button
+            type="button"
+            onClick={() => setAuthMode("signin")}
+            className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
+              authMode === "signin" ? "text-gray-900" : "text-gray-400"
+            }`}
+          >
+            {t("signinButton")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setAuthMode("signup")}
+            className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
+              authMode === "signup" ? "text-gray-900" : "text-gray-400"
+            }`}
+          >
+            {t("signupButton")}
+          </button>
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
         <motion.div
           key={authMode}
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -10 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
         >
           <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
@@ -261,31 +305,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
             </Button>
           </form>
 
-          <p className="mt-8 text-center text-xs font-semibold text-gray-500">
-            {authMode === "signin" ? (
-              <>
-                {t("noAccount")}{" "}
-                <button
-                  type="button"
-                  onClick={() => setAuthMode("signup")}
-                  className="font-bold text-accent hover:underline"
-                >
-                  {t("signupButton")}
-                </button>
-              </>
-            ) : (
-              <>
-                {t("haveAccount")}{" "}
-                <button
-                  type="button"
-                  onClick={() => setAuthMode("signin")}
-                  className="font-bold text-accent hover:underline"
-                >
-                  {t("signinButton")}
-                </button>
-              </>
-            )}
-          </p>
+          <div className="mt-8 text-center" />
         </motion.div>
       </AnimatePresence>
     </div>
