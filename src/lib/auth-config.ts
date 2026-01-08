@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
@@ -98,6 +98,61 @@ export const auth = betterAuth({
   plugins: [
     admin({
       adminRoles: ["admin"],
+    }),
+    magicLink({
+      sendMagicLink: async ({
+        email,
+        url,
+        token,
+      }: {
+        email: string;
+        url: string;
+        token: string;
+      }) => {
+        // Try to find user to get their language preference
+        const user = await db.query.user.findFirst({
+          where: (u, { eq }) => eq(u.email, email),
+        });
+        const locale = user?.language || "fr";
+
+        const t = await getTranslations({
+          locale,
+          namespace: "Login.MagicLink",
+        });
+
+        let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
+        try {
+          const extracted = new URL(url).origin;
+          if (extracted && extracted.includes(".")) origin = extracted;
+        } catch (e) {
+          // use default origin
+        }
+
+        const magicUrl = `${origin}/${locale}/login?token=${token}`;
+
+        const { error } = await resend.emails.send({
+          from: "CoList <hello@colist.fr>",
+          to: email,
+          subject: t("subject"),
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
+              <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
+              <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
+              <div style="margin: 30px 0;">
+                <a href="${magicUrl}" style="display: inline-block; padding: 12px 24px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 600;">
+                  ${t("button")}
+                </a>
+              </div>
+              <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eaeaea;" />
+              <p style="font-size: 14px; color: #999; line-height: 1.5;">${t("footer")}</p>
+            </div>
+          `,
+        });
+
+        if (error) {
+          console.error("[Magic Link] Failed to send email:", error);
+        }
+      },
     }),
   ],
   emailVerification: {

@@ -77,10 +77,10 @@ export function ItemIngredients({
           ) : !isEmailVerified ? (
             <button
               disabled
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600"
+              className="flex w-full items-center justify-center gap-2 whitespace-normal rounded-xl border-2 border-dashed border-red-200 bg-red-50 px-4 py-3 text-center text-sm font-bold text-red-600"
             >
-              <Lock size={16} />
-              {tActions("emailNotVerifiedAI")}
+              <Lock size={16} className="shrink-0" />
+              <span>{tActions("emailNotVerifiedAI")}</span>
             </button>
           ) : (
             <button

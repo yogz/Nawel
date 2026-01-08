@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GoogleIcon } from "./google-icon";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
 import { toast } from "sonner";
@@ -28,15 +28,22 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
   const [password, setPassword] = useState("");
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signup"); // Default to signup for new users
   const [showPassword, setShowPassword] = useState(false);
+  const [showMagicLink, setShowMagicLink] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const isReturningUser = localStorage.getItem("nawel_returning_user") === "true";
+    const preferMagicLink = localStorage.getItem("nawel_prefer_magic_link") === "true";
+
     if (initialMode) {
       setAuthMode(initialMode);
     } else if (isReturningUser) {
       setAuthMode("signin");
+      if (preferMagicLink) {
+        setShowMagicLink(true);
+      }
     }
   }, [initialMode]);
 
@@ -109,6 +116,38 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     }
   };
 
+  const handleMagicLink = async () => {
+    if (!email) {
+      setError(t("errorEmailRequired"));
+      return;
+    }
+    setError("");
+    setLoading(true);
+    try {
+      const callbackPath = isUserMode ? "/" : "/admin";
+      const callbackURL = getPathname({ href: callbackPath, locale });
+
+      const { error } = await signIn.magicLink({
+        email,
+        callbackURL,
+      });
+
+      if (error) {
+        setError(error.message || t("errorDefault"));
+        toast.error(error.message || t("errorDefault"));
+      } else {
+        setMagicLinkSent(true);
+        localStorage.setItem("nawel_prefer_magic_link", "true");
+        toast.success(t("successMagicLinkEmail"));
+      }
+    } catch {
+      setError(t("errorDefault"));
+      toast.error(t("errorDefault"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleForgotPassword = async () => {
     if (!email) {
       setError(t("errorEmailRequired"));
@@ -174,138 +213,203 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={authMode}
+          key={magicLinkSent ? "sent" : authMode + (showMagicLink ? "-magic" : "")}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
         >
-          <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
-            {authMode === "signin" ? t("signinTitle") : t("signupTitle")}
-          </h1>
-          <p className="mb-8 text-center text-sm font-medium text-gray-500">
-            {authMode === "signin" ? t("signinDescription") : t("signupDescription")}
-          </p>
-
-          <Button
-            type="button"
-            onClick={handleGoogleAuth}
-            disabled={loading}
-            variant="outline"
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
-            shine
-          >
-            {loading ? (
-              <Loader2 size={20} className="animate-spin" />
-            ) : (
-              <GoogleIcon className="h-5 w-5" />
-            )}
-            {t("googleButton")}
-          </Button>
-
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-100" />
-            </div>
-            <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-              <span className="bg-white px-3 text-gray-400">{t("orContinueWith")}</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {t("emailLabel")}
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                inputMode="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("emailPlaceholder")}
-                required
-                disabled={loading}
-                autoComplete="email"
-                enterKeyHint="next"
-                className="h-12 border-gray-100 bg-gray-50/50 px-4 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {t("passwordLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t("passwordPlaceholder")}
-                  required
-                  disabled={loading}
-                  autoComplete={authMode === "signin" ? "current-password" : "new-password"}
-                  enterKeyHint="done"
-                  className="h-12 border-gray-100 bg-gray-50/50 px-4 pr-12 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+          {magicLinkSent ? (
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-500">
+                <Sparkles size={32} />
               </div>
-              {authMode === "signin" && (
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={handleForgotPassword}
-                    className="text-[10px] font-bold text-accent hover:underline"
-                  >
-                    {t("forgotPassword")}
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-500"
+              <h1 className="mb-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
+                {t("magicLinkSentTitle")}
+              </h1>
+              <p className="mb-8 text-sm font-medium text-gray-500">
+                {t("magicLinkSentDescription", { email })}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => setMagicLinkSent(false)}
+                className="h-11 rounded-2xl border-gray-100 text-sm font-bold"
               >
-                {error}
-              </motion.p>
-            )}
+                {t("backToSignin")}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <h1 className="mb-2 text-center text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
+                {authMode === "signin"
+                  ? showMagicLink
+                    ? t("signinMagicTitle")
+                    : t("signinTitle")
+                  : t("signupTitle")}
+              </h1>
+              <p className="mb-8 text-center text-sm font-medium text-gray-500">
+                {authMode === "signin"
+                  ? showMagicLink
+                    ? t("signinMagicDescription")
+                    : t("signinDescription")
+                  : t("signupDescription")}
+              </p>
 
-            <Button
-              type="submit"
-              className="h-12 w-full rounded-2xl bg-gray-900 font-bold text-white shadow-xl shadow-gray-900/10 transition-all hover:bg-gray-800 active:scale-95 disabled:opacity-50"
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  {authMode === "signin" ? t("signingIn") : t("signingUp")}
-                </span>
-              ) : authMode === "signin" ? (
-                t("signinButton")
-              ) : (
-                t("signupButton")
-              )}
-            </Button>
-          </form>
+              <Button
+                type="button"
+                onClick={handleGoogleAuth}
+                disabled={loading}
+                variant="outline"
+                className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-[#747775] bg-white text-sm font-medium text-[#1f1f1f] transition-all hover:bg-gray-50 active:scale-95"
+                shine
+              >
+                {loading ? (
+                  <Loader2 size={20} className="animate-spin" />
+                ) : (
+                  <GoogleIcon className="h-5 w-5" />
+                )}
+                {t("googleButton")}
+              </Button>
 
-          <div className="mt-8 text-center" />
+              <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-gray-100" />
+                </div>
+                <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
+                  <span className="bg-white px-3 text-gray-400">{t("orContinueWith")}</span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="email"
+                    className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  >
+                    {t("emailLabel")}
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    inputMode="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("emailPlaceholder")}
+                    required
+                    disabled={loading}
+                    autoComplete="email"
+                    enterKeyHint="next"
+                    className="h-12 border-gray-100 bg-gray-50/50 px-4 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
+                  />
+                </div>
+
+                {(authMode === "signup" || !showMagicLink) && (
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="password"
+                      className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    >
+                      {t("passwordLabel")}
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={t("passwordPlaceholder")}
+                        required
+                        disabled={loading}
+                        autoComplete={authMode === "signin" ? "current-password" : "new-password"}
+                        enterKeyHint="done"
+                        className="h-12 border-gray-100 bg-gray-50/50 px-4 pr-12 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                    {authMode === "signin" && (
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={handleForgotPassword}
+                          className="text-[10px] font-bold text-accent hover:underline"
+                        >
+                          {t("forgotPassword")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-xl bg-red-50 p-3 text-xs font-bold text-red-500"
+                  >
+                    {error}
+                  </motion.p>
+                )}
+
+                <Button
+                  type="submit"
+                  onClick={(e) => {
+                    if (authMode === "signin" && showMagicLink) {
+                      e.preventDefault();
+                      handleMagicLink();
+                    }
+                  }}
+                  className="h-12 w-full rounded-2xl bg-gray-900 font-bold text-white shadow-xl shadow-gray-900/10 transition-all hover:bg-gray-800 active:scale-95 disabled:opacity-50"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 size={16} className="animate-spin" />
+                      {authMode === "signin"
+                        ? showMagicLink
+                          ? t("sendingMagicLink")
+                          : t("signingIn")
+                        : t("signingUp")}
+                    </span>
+                  ) : authMode === "signin" ? (
+                    showMagicLink ? (
+                      t("signinMagicButton")
+                    ) : (
+                      t("signinButton")
+                    )
+                  ) : (
+                    t("signupButton")
+                  )}
+                </Button>
+
+                {authMode === "signin" && (
+                  <div className="flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newMode = !showMagicLink;
+                        setShowMagicLink(newMode);
+                        if (!newMode) {
+                          localStorage.removeItem("nawel_prefer_magic_link");
+                        }
+                      }}
+                      className="text-xs font-bold text-gray-400 transition-colors hover:text-gray-600"
+                    >
+                      {showMagicLink ? t("usePassword") : t("useMagicLink")}
+                    </button>
+                  </div>
+                )}
+              </form>
+
+              <div className="mt-8 text-center" />
+            </>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>

@@ -183,18 +183,15 @@ export function ItemIngredientsManager({
                     {t("authRequired")}
                   </Button>
                 ) : !isEmailVerified ? (
-                  <div className="flex flex-col items-center gap-2">
+                  <div className="flex w-full flex-col items-center gap-2">
                     <Button
                       disabled
                       variant="outline"
-                      className="h-14 w-full gap-2 rounded-2xl border-2 border-dashed border-red-200 bg-red-50 font-bold text-red-600"
+                      className="h-auto min-h-14 w-full gap-2 whitespace-normal rounded-2xl border-2 border-dashed border-red-200 bg-red-50 px-6 py-3 font-bold text-red-600"
                     >
-                      <Lock size={18} />
-                      {tActions("emailNotVerifiedAI")}
+                      <Lock size={18} className="shrink-0" />
+                      <span>{tActions("emailNotVerifiedAI")}</span>
                     </Button>
-                    <p className="px-2 text-center text-[10px] font-medium text-red-400">
-                      {tActions("emailNotVerifiedAI")}
-                    </p>
                   </div>
                 ) : (
                   <Button

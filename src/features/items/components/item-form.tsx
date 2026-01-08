@@ -447,14 +447,14 @@ export function ItemForm({
                   {t("Ingredients.authRequired")}
                 </Button>
               ) : !isEmailVerified ? (
-                <div className="flex flex-col items-center gap-1.5">
+                <div className="flex w-full flex-col items-center gap-1.5">
                   <Button
                     disabled
                     variant="outline"
-                    className="h-11 w-full gap-2 rounded-xl border border-dashed border-red-200 bg-red-50 text-[10px] font-bold uppercase tracking-tight text-red-600"
+                    className="h-auto min-h-11 w-full gap-2 whitespace-normal rounded-xl border border-dashed border-red-200 bg-red-50 px-4 py-2 text-[10px] font-bold uppercase tracking-tight text-red-600"
                   >
-                    <Lock size={12} />
-                    {tActions("emailNotVerifiedAI")}
+                    <Lock size={12} className="shrink-0" />
+                    <span>{tActions("emailNotVerifiedAI")}</span>
                   </Button>
                 </div>
               ) : (
