@@ -59,29 +59,23 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
     tourKey === "dashboard"
       ? [
           {
-            target: "#dashboard-title",
-            title: t("steps.dashboard.welcome.title"),
-            content: t("steps.dashboard.welcome.content"),
-            placement: "bottom",
-            disableBeacon: true,
-          },
-          {
             target: "#new-event-card",
             title: t("steps.dashboard.create.title"),
             content: t("steps.dashboard.create.content"),
             placement: "auto",
-          },
-          {
-            target: "#event-list-container",
-            title: t("steps.dashboard.list.title"),
-            content: t("steps.dashboard.list.content"),
-            placement: "top",
+            disableBeacon: true,
           },
           {
             target: "#user-nav-avatar",
             title: t("steps.dashboard.profile.title"),
             content: t("steps.dashboard.profile.content"),
             placement: "bottom-end",
+          },
+          {
+            target: "#feedback-button",
+            title: t("steps.dashboard.feedback.title"),
+            content: t("steps.dashboard.feedback.content"),
+            placement: "left",
           },
         ]
       : [];
