@@ -5,7 +5,14 @@ import { Link } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 
-export function StickyCta() {
+import { sendGAEvent } from "@next/third-parties/google";
+
+interface StickyCtaProps {
+  text: string;
+  variant: string;
+}
+
+export function StickyCta({ text, variant }: StickyCtaProps) {
   const { scrollY } = useScroll();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -25,9 +32,10 @@ export function StickyCta() {
     >
       <Link
         href="/login?mode=user"
+        onClick={() => sendGAEvent("event", "cta_click", { location: "sticky_mobile", variant })}
         className="flex w-full items-center justify-center gap-2 rounded-full bg-indigo-600 py-3 text-base font-bold text-white shadow-lg transition-transform active:scale-95"
       >
-        Créer mon événement
+        {text}
         <ArrowRight className="h-4 w-4" />
       </Link>
     </motion.div>

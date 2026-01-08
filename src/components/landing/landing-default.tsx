@@ -106,7 +106,7 @@ export function LandingDefault() {
       <Footer namespace="Landing" />
 
       {/* Mobile Sticky CTA */}
-      <StickyCta />
+      <StickyCta text={t("ctaFooterButton")} variant="landing" />
     </div>
   );
 }

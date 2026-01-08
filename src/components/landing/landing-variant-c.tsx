@@ -214,7 +214,7 @@ export function LandingVariantC() {
       <Footer namespace="LandingC" />
 
       {/* Mobile Sticky CTA */}
-      <StickyCta />
+      <StickyCta text={t("ctaFooterButton")} variant="landing-c" />
     </div>
   );
 }
