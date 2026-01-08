@@ -127,7 +127,8 @@
       "namePlaceholder": "Noël en famille...",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Une petite description..."
-    }
+    },
+    "replayTour": "Revoir le tutoriel"
   },
   "Login": {
     "signinTitle": "Ravi de vous revoir !",

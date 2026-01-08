@@ -126,7 +126,8 @@
       "namePlaceholder": "Family Christmas...",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "A short description..."
-    }
+    },
+    "replayTour": "Replay tutorial"
   },
   "Login": {
     "signinTitle": "Nice to see you again!",

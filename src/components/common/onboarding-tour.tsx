@@ -13,13 +13,26 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
   const [run, setRun] = useState(false);
 
   useEffect(() => {
+    const handleStart = () => {
+      setRun(true);
+      localStorage.removeItem(`has_seen_tour_${tourKey}`);
+    };
+
+    // Listen for manual trigger
+    window.addEventListener(`start-tour-${tourKey}`, handleStart);
+
     // Only run the tour if the user hasn't seen it yet
     const hasSeenTour = localStorage.getItem(`has_seen_tour_${tourKey}`);
     if (!hasSeenTour) {
       // Delay it slightly to ensure elements are rendered
       const timer = setTimeout(() => setRun(true), 1500); // Increased delay slightly to be safe
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener(`start-tour-${tourKey}`, handleStart);
+      };
     }
+
+    return () => window.removeEventListener(`start-tour-${tourKey}`, handleStart);
   }, [tourKey]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
