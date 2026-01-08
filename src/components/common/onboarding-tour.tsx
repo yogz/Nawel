@@ -12,13 +12,15 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
   const t = useTranslations("Tour");
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const [tourInstance, setTourInstance] = useState(0); // Used to force re-mount
 
   useEffect(() => {
     const handleStart = () => {
-      // Force reset by setting stepIndex to 0 and run to true
+      localStorage.removeItem(`has_seen_tour_${tourKey}`);
+      // Force a re-mount and restart
+      setTourInstance((prev) => prev + 1);
       setStepIndex(0);
       setRun(true);
-      localStorage.removeItem(`has_seen_tour_${tourKey}`);
     };
 
     // Listen for manual trigger
@@ -86,6 +88,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
 
   return (
     <Joyride
+      key={`${tourKey}-${tourInstance}`}
       callback={handleJoyrideCallback}
       continuous
       hideCloseButton
