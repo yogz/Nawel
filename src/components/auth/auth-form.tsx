@@ -47,7 +47,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
           const { error } = await authClient.magicLink.verify({
             query: {
               token,
-              callbackURL: getPathname({ href: isUserMode ? "/" : "/admin", locale }),
+              callbackURL: getPathname({ href: "/", locale }),
             },
           });
 
@@ -162,8 +162,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
     setError("");
     setLoading(true);
     try {
-      const callbackPath = isUserMode ? "/" : "/admin";
-      const callbackURL = getPathname({ href: callbackPath, locale });
+      const callbackURL = getPathname({ href: "/", locale });
 
       const { error } = await signIn.magicLink({
         email,
