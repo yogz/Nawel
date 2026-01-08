@@ -74,6 +74,29 @@
       "contact": "Contact"
     }
   },
+  "LandingC": {
+    "badge": "No more chaos from potlucks",
+    "heroTitle": "The Dinner Party,",
+    "heroTitleHighlight": "Solved.",
+    "heroDescription": "Coordinate menus, guests, and groceries with a single link. The first event planner that your friends won't hate using.",
+    "ctaStart": "Start Planning - It's Free",
+    "ctaDemo": "See an Example",
+    "trust": "No app download required for guests.",
+    "socialProofTitle": "The secret weapon for 2,000+ legendary hosts",
+    "problemTitle": "Stop Herding Cats.",
+    "problemDescription": "You love hosting. You hate the 'Who brings the wine?' group chat that pings for 3 days straight. CoList replaces the chaos with one simple, shared checklist.",
+    "feature1Title": "Lasagna for 12? Done.",
+    "feature1Description": "Type your dish. Our AI generates the exact shopping list with quantities scaled for your guest count. Math: 0, You: 1.",
+    "feature2Title": "Guests Claim Responsibilities",
+    "feature2Description": "No more 'I thought you were bringing ice.' Guests tap what they're bringing. The list updates instantly for everyone.",
+    "feature3Title": "One List to Rule the Store",
+    "feature3Description": "Ingredients are sorted by aisle. Assign items to specific people or print a master list for one brave shopper.",
+    "trustTitle": "Zero Friction for Friends",
+    "trustDescription": "Your guests click your link and pick an item. That's it. No account creation, no password, no 'Download the App' popup. Grandma proof.",
+    "ctaFooterTitle": "Ready to actually enjoy your own party?",
+    "ctaFooterButton": "Create My First Event",
+    "ctaFooterNotice": "Takes less than 60 seconds."
+  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "My Events",

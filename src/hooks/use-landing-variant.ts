@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
 
-type LandingVariant = "landing" | "landing-alt";
+type LandingVariant = "landing" | "landing-alt" | "landing-c";
 
 const STORAGE_KEY = "landing-variant";
 
@@ -12,13 +12,23 @@ function getSnapshot(): LandingVariant | null {
     return null;
   }
 
+  // Allow forcing variant via URL for testing
+  const params = new URLSearchParams(window.location.search);
+  const forcedVariant = params.get("v");
+  if (forcedVariant === "c") return "landing-c";
+  if (forcedVariant === "b") return "landing-alt";
+  if (forcedVariant === "a") return "landing";
+
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved === "landing" || saved === "landing-alt") {
-    return saved;
+  if (saved === "landing" || saved === "landing-alt" || saved === "landing-c") {
+    return saved as LandingVariant;
   }
 
-  // Assign new variant
-  const newVariant: LandingVariant = Math.random() < 0.5 ? "landing" : "landing-alt";
+  // Assign new variant (33% split)
+  const rand = Math.random();
+  let newVariant: LandingVariant = "landing";
+  if (rand > 0.66) newVariant = "landing-c";
+  else if (rand > 0.33) newVariant = "landing-alt";
   localStorage.setItem(STORAGE_KEY, newVariant);
 
   // Track the assignment in GA4

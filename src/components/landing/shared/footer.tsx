@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 interface FooterProps {
-  namespace: "Landing" | "LandingAlt";
+  namespace: "Landing" | "LandingAlt" | "LandingC";
 }
 
 export function Footer({ namespace }: FooterProps) {

@@ -74,6 +74,29 @@
       "contact": "Contact"
     }
   },
+  "LandingC": {
+    "badge": "Fini le chaos des repas partagés",
+    "heroTitle": "Le Dîner Idéal,",
+    "heroTitleHighlight": "Résolu.",
+    "heroDescription": "Coordination des menus, invités et courses avec un seul lien. Le premier planificateur d'événement que vos amis ne détesteront pas utiliser.",
+    "ctaStart": "Commencer à Planifier",
+    "ctaDemo": "Voir un Exemple",
+    "trust": "Aucun téléchargement d'app requis pour les invités.",
+    "socialProofTitle": "L'arme secrète de 2 000+ hôtes légendaires",
+    "problemTitle": "Arrêtez de courir après tout le monde.",
+    "problemDescription": "Vous aimez recevoir. Vous détestez le groupe WhatsApp 'Qui apporte le vin ?' qui sonne pendant 3 jours. CoList remplace le chaos par une liste partagée simple.",
+    "feature1Title": "Lasagnes pour 12 ? C'est fait.",
+    "feature1Description": "Tapez votre plat. Notre IA génère la liste exacte des courses avec les quantités adaptées à vos invités. Maths : 0, Vous : 1.",
+    "feature2Title": "Les invités s'impliquent",
+    "feature2Description": "Plus de 'Je pensais que tu apportais la glace'. Les invités cliquent sur ce qu'ils apportent. La liste se met à jour instantanément pour tout le monde.",
+    "feature3Title": "Une liste pour dominer le magasin",
+    "feature3Description": "Les ingrédients sont triés par rayon. Assignez des articles à des personnes spécifiques ou imprimez une liste principale pour le courageux qui fait les courses.",
+    "trustTitle": "Zéro friction pour les amis",
+    "trustDescription": "Vos invités cliquent sur votre lien et choisissent un article. C'est tout. Pas de compte, pas de mot de passe, pas de popup 'Télécharger l'app'. Validé par Mamie.",
+    "ctaFooterTitle": "Prêt à profiter de votre propre fête ?",
+    "ctaFooterButton": "Créer mon premier événement",
+    "ctaFooterNotice": "Prend moins de 60 secondes."
+  },
   "Dashboard": {
     "badge": "Tableau de bord",
     "title": "Mes Événements",
