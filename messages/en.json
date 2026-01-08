@@ -704,21 +704,17 @@
   "Tour": {
     "steps": {
       "dashboard": {
-        "welcome": {
-          "title": "Welcome to CoList!",
-          "content": "Here is your dashboard where you can find all your events."
-        },
         "create": {
           "title": "Create an Event",
           "content": "Click here to create a new event in a few seconds."
         },
-        "list": {
-          "title": "Your Events",
-          "content": "Find the list of your upcoming and past events here."
-        },
         "profile": {
           "title": "Profile",
           "content": "Manage your account, settings, and preferences here."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "Have an idea? Found a bug? Click here to share your feedback with us."
         }
       }
     },
