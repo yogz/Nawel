@@ -60,7 +60,7 @@ export function AuthForm({ initialMode = "signin", onSuccess, isUserMode = true 
             if (onSuccess) {
               onSuccess();
             } else {
-              router.push(isUserMode ? "/" : "/admin");
+              router.push("/");
               router.refresh();
             }
           }

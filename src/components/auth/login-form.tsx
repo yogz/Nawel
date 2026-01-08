@@ -18,7 +18,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const view = searchParams.get("view");
   const mode = searchParams.get("mode");
-  const isUserMode = mode === "user";
+  const isUserMode = mode !== "admin";
   const initialMode = view === "signup" ? "signup" : "signin";
 
   return (
