@@ -640,5 +640,17 @@
     "loading": "Verificando seu email...",
     "error": "O link é inválido ou expirou.",
     "success": "Você está agora conectado."
+  },
+  "Contact": {
+    "title": "Contacte-nos",
+    "description": "Uma pergunta, uma sugestão ou apenas quer dizer olá? A nossa equipa responderá o mais breve possível.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "seu@email.com",
+    "messageLabel": "Mensagem",
+    "messagePlaceholder": "Como podemos ajudar?",
+    "submit": "Enviar mensagem",
+    "successTitle": "Mensagem enviada! ✨",
+    "successDescription": "Obrigado pela sua mensagem. Responderemos o mais breve possível!",
+    "errorDescription": "O envio falhou. Verifique a sua ligação ou tente novamente mais tarde."
   }
 }

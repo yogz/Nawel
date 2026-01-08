@@ -641,5 +641,17 @@
     "loading": "Verifica in corso...",
     "error": "Il link non è valido o è scaduto.",
     "success": "Ora sei connesso."
+  },
+  "Contact": {
+    "title": "Contattaci",
+    "description": "Una domanda, un suggerimento o semplicemente voglia di salutare? Il nostro team ti risponderà il prima possibile.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "tua@email.it",
+    "messageLabel": "Messaggio",
+    "messagePlaceholder": "Come possiamo aiutarti?",
+    "submit": "Invia messaggio",
+    "successTitle": "Messaggio inviato! ✨",
+    "successDescription": "Grazie per il tuo messaggio. Ti risponderemo il prima possibile!",
+    "errorDescription": "Invio fallito. Controlla la tua connessione o riprova più tardi."
   }
 }

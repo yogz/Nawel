@@ -641,5 +641,17 @@
     "loading": "E-mail verifiëren...",
     "error": "De link is ongeldig of verlopen.",
     "success": "U bent nu ingelogd."
+  },
+  "Contact": {
+    "title": "Neem contact op",
+    "description": "Een vraag, een suggestie of gewoon even hallo zeggen? Ons team zal u zo snel mogelijk antwoorden.",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "jouw@email.nl",
+    "messageLabel": "Bericht",
+    "messagePlaceholder": "Hoe kunnen we u helpen?",
+    "submit": "Bericht verzenden",
+    "successTitle": "Bericht verzonden! ✨",
+    "successDescription": "Bedankt voor uw bericht. We nemen zo snel mogelijk contact met u op!",
+    "errorDescription": "Verzenden mislukt. Controleer uw verbinding of probeer het later opnieuw."
   }
 }

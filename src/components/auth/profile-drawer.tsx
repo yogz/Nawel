@@ -382,23 +382,31 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 variant="premium"
                 className="w-full border-gray-100 bg-gray-50/50"
                 icon={<LogOut size={16} />}
-                iconClassName="bg-gray-200 text-gray-500 group-hover:bg-red-500 group-hover:text-white"
+                iconClassName="bg-gray-200 text-gray-500 group-hover:bg-accent group-hover:text-white"
                 onClick={async () => {
                   await signOut();
                   onClose();
                   router.refresh();
                 }}
               >
-                <span className="text-xs font-black uppercase tracking-widest text-gray-400 group-hover:text-gray-600">
+                <span className="text-xs font-black uppercase tracking-widest text-gray-700 transition-colors group-hover:text-gray-900">
                   {t("profile.logout")}
                 </span>
               </Button>
+
+              {/* Danger Zone - More explicit separation */}
+              <div className="relative pb-2 pt-8">
+                <div className="absolute inset-x-0 top-4 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-100" />
+                </div>
+              </div>
 
               {/* Danger Zone - In-Place Reveal (with extra space) */}
               <div className="pt-6">
                 {!showAdvanced ? (
                   <DangerZoneTrigger
                     onClick={() => setShowAdvanced(true)}
+                    label={tProfile("dangerZone") || "Zone de danger"}
                     className="bg-transparent opacity-60 hover:bg-red-50 hover:opacity-100"
                   />
                 ) : (

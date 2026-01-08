@@ -641,5 +641,17 @@
     "loading": "Verifierar e-post...",
     "error": "Länken är ogiltig eller har gått ut.",
     "success": "Du är nu inloggad."
+  },
+  "Contact": {
+    "title": "Kontakta oss",
+    "description": "En fråga, ett förslag eller bara vill säga hej? Vårt team kommer att svara dig så snart som möjligt.",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "din@email.se",
+    "messageLabel": "Meddelande",
+    "messagePlaceholder": "Hur kan vi hjälpa dig?",
+    "submit": "Skicka meddelande",
+    "successTitle": "Meddelande skickat! ✨",
+    "successDescription": "Tack för ditt meddelande. Vi återkommer till dig så snart som möjligt!",
+    "errorDescription": "Skicket misslyckades. Kontrollera din anslutning eller försök igen senare."
   }
 }

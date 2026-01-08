@@ -633,5 +633,17 @@
     "loading": "Verificando tu email...",
     "error": "El enlace es inválido o ha expirado.",
     "success": "Ahora estás conectado."
+  },
+  "Contact": {
+    "title": "Contáctanos",
+    "description": "¿Una pregunta, una sugerencia o simplemente quieres saludar? Nuestro equipo te responderá lo antes posible.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "¿Cómo podemos ayudarte?",
+    "submit": "Enviar mensaje",
+    "successTitle": "¡Mensaje enviado! ✨",
+    "successDescription": "Gracias por tu mensaje. ¡Te responderemos lo antes posible!",
+    "errorDescription": "El envío falló. Por favor, comprueba tu conexión o inténtalo de nuevo más tarde."
   }
 }

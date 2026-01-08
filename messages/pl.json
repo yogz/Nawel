@@ -641,5 +641,17 @@
     "loading": "Weryfikacja adresu email...",
     "error": "Link jest nieprawidłowy lub wygasł.",
     "success": "Jesteś teraz zalogowany."
+  },
+  "Contact": {
+    "title": "Skontaktuj się z nami",
+    "description": "Pytanie, sugestia czy po prostu chcesz się przywitać? Nasz zespół odpowie Ci tak szybko, jak to możliwe.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "twoj@email.pl",
+    "messageLabel": "Wiadomość",
+    "messagePlaceholder": "Jak możemy Ci pomóc?",
+    "submit": "Wyślij wiadomość",
+    "successTitle": "Wiadomość wysłana! ✨",
+    "successDescription": "Dziękujemy za wiadomość. Odpowiemy Ci tak szybko, jak to możliwe!",
+    "errorDescription": "Wysyłanie nie powiodło się. Sprawdź połączenie lub spróbuj ponownie później."
   }
 }

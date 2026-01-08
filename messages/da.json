@@ -641,5 +641,17 @@
     "loading": "Verificerer din e-mail...",
     "error": "Linket er ugyldigt eller udløbet.",
     "success": "Du er nu logget ind."
+  },
+  "Contact": {
+    "title": "Kontakt os",
+    "description": "Et spørgsmål, et forslag eller blot et ønske om at sige hej? Vores team vil svare dig så hurtigt som muligt.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "din@email.dk",
+    "messageLabel": "Besked",
+    "messagePlaceholder": "Hvordan kan vi hjælpe dig?",
+    "submit": "Send besked",
+    "successTitle": "Besked sendt! ✨",
+    "successDescription": "Tak for din besked. Vi vender tilbage til dig så hurtigt som muligt!",
+    "errorDescription": "Afsendelse mislykkedes. Tjek venligst din forbindelse eller prøv igen senere."
   }
 }

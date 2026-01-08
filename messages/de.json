@@ -633,5 +633,17 @@
     "loading": "E-Mail wird verifiziert...",
     "error": "Der Link ist ungültig oder abgelaufen.",
     "success": "Sie sind jetzt angemeldet."
+  },
+  "Contact": {
+    "title": "Kontaktiere uns",
+    "description": "Eine Frage, ein Vorschlag oder einfach nur ein Hallo? Unser Team wird Ihnen so schnell wie möglich antworten.",
+    "emailLabel": "E-Mail",
+    "emailPlaceholder": "deine@email.de",
+    "messageLabel": "Nachricht",
+    "messagePlaceholder": "Wie können wir Ihnen helfen?",
+    "submit": "Nachricht senden",
+    "successTitle": "Nachricht gesendet! ✨",
+    "successDescription": "Vielen Dank für Ihre Nachricht. Wir werden uns so schnell wie möglich bei Ihnen melden!",
+    "errorDescription": "Senden fehlgeschlagen. Bitte überprüfen Sie Ihre Verbindung oder versuchen Sie es später noch einmal."
   }
 }
