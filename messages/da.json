@@ -673,5 +673,31 @@
     "successTitle": "Besked sendt! ✨",
     "successDescription": "Tak for din besked. Vi vender tilbage til dig så hurtigt som muligt!",
     "errorDescription": "Afsendelse mislykkedes. Tjek venligst din forbindelse eller prøv igen senere."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Velkommen til CoList!",
+          "content": "Her er dit dashboard, hvor du finder alle dine arrangementer."
+        },
+        "create": {
+          "title": "Opret arrangement",
+          "content": "Klik her for at oprette et nyt arrangement på få sekunder."
+        },
+        "list": {
+          "title": "Dine arrangementer",
+          "content": "Find listen over dine kommende og tidligere arrangementer her."
+        },
+        "profile": {
+          "title": "Profil",
+          "content": "Administrer din konto, indstillinger og præferencer her."
+        }
+      }
+    },
+    "back": "Tilbage",
+    "next": "Næste",
+    "skip": "Spring over",
+    "last": "Afslut"
   }
 }

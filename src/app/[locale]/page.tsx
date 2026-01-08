@@ -33,7 +33,7 @@ export default async function Home(props: {
       <DashboardHeader />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
+        <main id="event-list-container" className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
           <EventList events={events} writeEnabled writeKey={key} />
           <DashboardFooter />
         </main>

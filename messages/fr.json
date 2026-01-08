@@ -702,5 +702,31 @@
     "successTitle": "Message envoyé ! ✨",
     "successDescription": "Merci pour votre message. Nous vous répondrons dès que possible !",
     "errorDescription": "L'envoi a échoué. Veuillez vérifier votre connexion ou réessayer plus tard."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Bienvenue sur CoList !",
+          "content": "Voici votre tableau de bord où vous retrouverez tous vos événements."
+        },
+        "create": {
+          "title": "Créer un événement",
+          "content": "Cliquez ici pour créer un nouvel événement en quelques secondes."
+        },
+        "list": {
+          "title": "Vos événements",
+          "content": "Retrouvez ici la liste de vos événements à venir et passés."
+        },
+        "profile": {
+          "title": "Profil",
+          "content": "Gérez votre compte, vos paramètres et vos préférences ici."
+        }
+      }
+    },
+    "back": "Retour",
+    "next": "Suivant",
+    "skip": "Passer",
+    "last": "Terminer"
   }
 }

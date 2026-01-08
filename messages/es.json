@@ -665,5 +665,31 @@
     "successTitle": "¡Mensaje enviado! ✨",
     "successDescription": "Gracias por tu mensaje. ¡Te responderemos lo antes posible!",
     "errorDescription": "El envío falló. Por favor, comprueba tu conexión o inténtalo de nuevo más tarde."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "¡Bienvenido a CoList!",
+          "content": "Aquí está tu panel de control donde encontrarás todos tus eventos."
+        },
+        "create": {
+          "title": "Crear un evento",
+          "content": "Haz clic aquí para crear un nuevo evento en unos segundos."
+        },
+        "list": {
+          "title": "Tus eventos",
+          "content": "Encuentra aquí la lista de tus eventos próximos y pasados."
+        },
+        "profile": {
+          "title": "Perfil",
+          "content": "Gestiona tu cuenta, configuración y preferencias aquí."
+        }
+      }
+    },
+    "back": "Atrás",
+    "next": "Siguiente",
+    "skip": "Saltar",
+    "last": "Terminar"
   }
 }

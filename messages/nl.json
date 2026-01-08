@@ -673,5 +673,31 @@
     "successTitle": "Bericht verzonden! ✨",
     "successDescription": "Bedankt voor uw bericht. We nemen zo snel mogelijk contact met u op!",
     "errorDescription": "Verzenden mislukt. Controleer uw verbinding of probeer het later opnieuw."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Welkom bij CoList!",
+          "content": "Hier is je dashboard waar je al je evenementen kunt vinden."
+        },
+        "create": {
+          "title": "Evenement maken",
+          "content": "Klik hier om in een paar seconden een nieuw evenement te maken."
+        },
+        "list": {
+          "title": "Jouw evenementen",
+          "content": "Vind hier de lijst met je aankomende en afgelopen evenementen."
+        },
+        "profile": {
+          "title": "Profiel",
+          "content": "Beheer hier je account, instellingen en voorkeuren."
+        }
+      }
+    },
+    "back": "Terug",
+    "next": "Volgende",
+    "skip": "Overslaan",
+    "last": "Voltooien"
   }
 }

@@ -673,5 +673,31 @@
     "successTitle": "Wiadomość wysłana! ✨",
     "successDescription": "Dziękujemy za wiadomość. Odpowiemy Ci tak szybko, jak to możliwe!",
     "errorDescription": "Wysyłanie nie powiodło się. Sprawdź połączenie lub spróbuj ponownie później."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Witamy w CoList!",
+          "content": "Tutaj znajduje się pulpit, na którym znajdziesz wszystkie swoje wydarzenia."
+        },
+        "create": {
+          "title": "Utwórz wydarzenie",
+          "content": "Kliknij tutaj, aby utworzyć nowe wydarzenie w kilka sekund."
+        },
+        "list": {
+          "title": "Twoje wydarzenia",
+          "content": "Znajdź tutaj listę nadchodzących i minionych wydarzeń."
+        },
+        "profile": {
+          "title": "Profil",
+          "content": "Zarządzaj swoim kontem, ustawieniami i preferencjami tutaj."
+        }
+      }
+    },
+    "back": "Wstecz",
+    "next": "Dalej",
+    "skip": "Pomiń",
+    "last": "Zakończ"
   }
 }

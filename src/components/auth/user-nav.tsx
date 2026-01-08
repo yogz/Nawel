@@ -40,6 +40,7 @@ export function UserNav() {
   return (
     <>
       <button
+        id="user-nav-avatar"
         onClick={() => setShowProfileDrawer(true)}
         className="group relative h-full w-full overflow-hidden transition-all hover:opacity-90 active:scale-95"
       >

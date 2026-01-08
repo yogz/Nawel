@@ -700,5 +700,31 @@
     "successTitle": "Message sent! ✨",
     "successDescription": "Thanks for your message. We'll get back to you as soon as possible!",
     "errorDescription": "Submission failed. Please check your connection or try again later."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Welcome to CoList!",
+          "content": "Here is your dashboard where you can find all your events."
+        },
+        "create": {
+          "title": "Create an Event",
+          "content": "Click here to create a new event in a few seconds."
+        },
+        "list": {
+          "title": "Your Events",
+          "content": "Find the list of your upcoming and past events here."
+        },
+        "profile": {
+          "title": "Profile",
+          "content": "Manage your account, settings, and preferences here."
+        }
+      }
+    },
+    "back": "Back",
+    "next": "Next",
+    "skip": "Skip",
+    "last": "Finish"
   }
 }

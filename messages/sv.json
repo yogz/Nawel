@@ -673,5 +673,31 @@
     "successTitle": "Meddelande skickat! ✨",
     "successDescription": "Tack för ditt meddelande. Vi återkommer till dig så snart som möjligt!",
     "errorDescription": "Skicket misslyckades. Kontrollera din anslutning eller försök igen senare."
+  },
+  "Tour": {
+    "steps": {
+      "dashboard": {
+        "welcome": {
+          "title": "Välkommen till CoList!",
+          "content": "Här är din instrumentpanel där du hittar alla dina evenemang."
+        },
+        "create": {
+          "title": "Skapa evenemang",
+          "content": "Klicka här för att skapa ett nytt evenemang på några sekunder."
+        },
+        "list": {
+          "title": "Dina evenemang",
+          "content": "Hitta listan över dina kommande och tidigare evenemang här."
+        },
+        "profile": {
+          "title": "Profil",
+          "content": "Hantera ditt konto, inställningar och preferenser här."
+        }
+      }
+    },
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "skip": "Hoppa över",
+    "last": "Avsluta"
   }
 }
