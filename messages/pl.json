@@ -40,7 +40,11 @@
     "feature4Description": "Wspólna lista zakupów zorganizowana według osoby. Odznaczaj produkty w trakcie zakupów, nawet bez połączenia.",
     "ctaTitle": "Gotowy uprościć swoje imprezy?",
     "ctaDescription": "Dołącz do tysięcy rodzin już korzystających z CoList.",
-    "footer": "© 2025 CoList. Stworzone z ✨ dla Twoich najlepszych chwil."
+    "footerText": "Stworzone z ✨ dla Twoich najlepszych chwil.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    }
   },
   "LandingAlt": {
     "badge": "Planowanie posiłków, w końcu relaksujące.",

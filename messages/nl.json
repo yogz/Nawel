@@ -40,7 +40,11 @@
     "feature4Description": "Een gedeelde boodschappenlijst georganiseerd per persoon. Vink uw items af terwijl u winkelt, zelfs zonder verbinding.",
     "ctaTitle": "Klaar om uw feesten te vereenvoudigen?",
     "ctaDescription": "Sluit u aan bij duizenden families die al CoList gebruiken.",
-    "footer": "© 2025 CoList. Gemaakt met ✨ voor uw beste momenten."
+    "footerText": "Gemaakt met ✨ voor uw beste momenten.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    }
   },
   "LandingAlt": {
     "badge": "Maaltijdplanning, eindelijk ontspannend.",

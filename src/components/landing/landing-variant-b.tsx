@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
-import { HeroSection, FeatureCard, CtaFooter } from "./shared";
+import { HeroSection, FeatureCard, CtaFooter, Footer } from "./shared";
 
 export function LandingVariantB() {
   const t = useTranslations("LandingAlt");
@@ -120,24 +120,7 @@ export function LandingVariantB() {
       {/* FAQ Section */}
       <Faq />
 
-      <footer className="border-t border-gray-100 bg-white py-12 text-center text-sm text-gray-500">
-        <div className="mb-8 flex justify-center gap-6">
-          <a
-            href="https://www.instagram.com/colistfr/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gray-900"
-          >
-            {t("footerLinks.instagram")}
-          </a>
-          <a href="mailto:contact@colist.fr" className="hover:text-gray-900">
-            {t("footerLinks.contact")}
-          </a>
-        </div>
-        <p>
-          &copy; {new Date().getFullYear()} CoList. {t("footerText")}
-        </p>
-      </footer>
+      <Footer namespace="LandingAlt" />
 
       {/* Mobile Sticky CTA */}
       <StickyCta />

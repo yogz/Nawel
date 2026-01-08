@@ -40,7 +40,11 @@
     "feature4Description": "Una lista de la compra compartida y organizada por persona. Marca tus artículos a medida que avanzas, incluso sin conexión.",
     "ctaTitle": "¿Listo para simplificar tus fiestas?",
     "ctaDescription": "Únete a miles de familias que ya usan CoList.",
-    "footer": "© 2025 CoList. Hecho con ✨ para tus mejores momentos."
+    "footerText": "Hecho con ✨ para tus mejores momentos.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contacto"
+    }
   },
   "LandingAlt": {
     "badge": "Organización de comidas, por fin relajante.",

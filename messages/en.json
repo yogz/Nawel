@@ -40,7 +40,11 @@
     "feature4Description": "A shared shopping list organized by person. Check off your items as you go, even without a connection.",
     "ctaTitle": "Ready to simplify your parties?",
     "ctaDescription": "Join thousands of families already using CoList.",
-    "footer": "© 2025 CoList. Made with ✨ for your best moments."
+    "footerText": "Made with ✨ for your best moments.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    }
   },
   "LandingAlt": {
     "badge": "Meal planning, finally relaxing.",

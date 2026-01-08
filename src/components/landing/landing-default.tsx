@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { DemoInteractive } from "./demo-interactive";
 import { Faq } from "./faq";
 import { StickyCta } from "./sticky-cta";
-import { HeroSection, FeatureCard, CtaFooter } from "./shared";
+import { HeroSection, FeatureCard, CtaFooter, Footer } from "./shared";
 
 export function LandingDefault() {
   const t = useTranslations("Landing");
@@ -103,9 +103,7 @@ export function LandingDefault() {
       {/* FAQ Section */}
       <Faq />
 
-      <footer className="border-t border-gray-100 py-12 text-center text-sm text-gray-500">
-        <p>{t("footer")}</p>
-      </footer>
+      <Footer namespace="Landing" />
 
       {/* Mobile Sticky CTA */}
       <StickyCta />

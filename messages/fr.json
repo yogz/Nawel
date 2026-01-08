@@ -40,7 +40,11 @@
     "feature4Description": "Une liste de courses partagée et organisée par personne. Cochez vos articles au fur et à mesure, même sans connexion.",
     "ctaTitle": "Prêt à simplifier vos fêtes ?",
     "ctaDescription": "Rejoignez des milliers de familles qui utilisent déjà CoList.",
-    "footer": "© 2025 CoList. Fait avec ✨ pour vos plus beaux moments."
+    "footerText": "Fait avec ✨ pour vos plus beaux moments.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    }
   },
   "LandingAlt": {
     "badge": "L'organisation de repas partagés, simplifiée.",

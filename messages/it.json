@@ -40,7 +40,11 @@
     "feature4Description": "Una lista della spesa condivisa organizzata per persona. Spunta i tuoi articoli man mano, anche senza connessione.",
     "ctaTitle": "Pronto a semplificare le tue feste?",
     "ctaDescription": "Unisciti a migliaia di famiglie che già usano CoList.",
-    "footer": "© 2025 CoList. Fatto con ✨ per i tuoi momenti migliori."
+    "footerText": "Fatto con ✨ per i tuoi momenti migliori.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contatto"
+    }
   },
   "LandingAlt": {
     "badge": "Pianificazione dei pasti, finalmente rilassante.",

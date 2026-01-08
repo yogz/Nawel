@@ -40,7 +40,11 @@
     "feature4Description": "Eine gemeinsame Einkaufsliste, organisiert nach Person. Haken Sie Ihre Artikel nach und nach ab, auch ohne Verbindung.",
     "ctaTitle": "Bereit, Ihre Partys zu vereinfachen?",
     "ctaDescription": "Schließen Sie sich Tausenden von Familien an, die CoList bereits nutzen.",
-    "footer": "© 2025 CoList. Mit ✨ gemacht für Ihre schönsten Momente."
+    "footerText": "Mit ✨ gemacht für Ihre schönsten Momente.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    }
   },
   "LandingAlt": {
     "badge": "Essensplanung, endlich entspannend.",

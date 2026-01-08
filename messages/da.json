@@ -40,7 +40,11 @@
     "feature4Description": "En delt indkøbsliste organiseret efter person. Afkryds dine varer, mens du handler, selv uden forbindelse.",
     "ctaTitle": "Klar til at forenkle dine fester?",
     "ctaDescription": "Tilslut dig tusindvis af familier, der allerede bruger CoList.",
-    "footer": "© 2025 CoList. Lavet med ✨ til dine bedste øjeblikke."
+    "footerText": "Lavet med ✨ til dine bedste øjeblikke.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    }
   },
   "LandingAlt": {
     "badge": "Måltidsplanlægning, endelig afslappende.",

@@ -40,7 +40,11 @@
     "feature4Description": "En delad inköpslista organiserad per person. Bocka av dina artiklar medan du handlar, även utan uppkoppling.",
     "ctaTitle": "Redo att förenkla dina fester?",
     "ctaDescription": "Gå med i tusentals familjer som redan använder CoList.",
-    "footer": "© 2025 CoList. Gjord med ✨ för dina bästa stunder."
+    "footerText": "Gjord med ✨ för dina bästa stunder.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    }
   },
   "LandingAlt": {
     "badge": "Måltidsplanering, äntligen avslappnande.",
