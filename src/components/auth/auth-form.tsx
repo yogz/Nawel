@@ -345,7 +345,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                   : t("signupDescription")}
               </p>
 
-              {!showMagicLink && (
+              {(authMode === "signup" || !showMagicLink) && (
                 <>
                   <Button
                     type="button"
