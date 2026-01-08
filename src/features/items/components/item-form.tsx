@@ -231,9 +231,9 @@ export function ItemForm({
   }, []);
 
   return (
-    <div className="space-y-5 sm:space-y-4">
+    <div className="space-y-4 sm:space-y-3">
       {/* Name - always visible */}
-      <div className="space-y-2.5 sm:space-y-2">
+      <div className="space-y-1 sm:space-y-1">
         <Label
           htmlFor="item-name"
           className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
@@ -249,12 +249,12 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
-          className="h-14 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:text-base"
+          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:text-base"
         />
       </div>
 
       {/* Note - moved out of more options */}
-      <div className="space-y-2.5 sm:space-y-2">
+      <div className="space-y-1 sm:space-y-1">
         <Label
           htmlFor="item-note"
           className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
@@ -270,12 +270,12 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="done"
-          className="h-14 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:text-base"
+          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:text-base"
         />
       </div>
 
       {/* Quick details row */}
-      <div className="flex gap-3 sm:gap-2">
+      <div className="flex gap-2 sm:gap-2">
         <Input
           placeholder={t("quantityPlaceholder")}
           value={quantity}
@@ -284,7 +284,7 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="none"
           enterKeyHint="next"
-          className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-11 sm:text-sm"
+          className="h-11 flex-1 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:text-sm"
           aria-label={t("quantityLabel")}
         />
         <Input
@@ -296,7 +296,7 @@ export function ItemForm({
           onBlur={handleBlurSave}
           disabled={readOnly}
           enterKeyHint="next"
-          className="h-12 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-11 sm:w-24 sm:text-sm"
+          className="h-11 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:w-24 sm:text-sm"
           aria-label={t("priceLabel")}
         />
       </div>
@@ -323,11 +323,11 @@ export function ItemForm({
           >
             <div
               className={clsx(
-                "flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
+                "flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 sm:h-8 sm:w-8",
                 !currentPersonId ? "bg-amber-400 text-white" : "bg-amber-100 text-amber-600"
               )}
             >
-              <CircleHelp size={20} className="sm:h-[18px] sm:w-[18px]" />
+              <CircleHelp size={18} className="sm:h-4 sm:w-4" />
             </div>
             <span
               className={clsx(
@@ -350,7 +350,7 @@ export function ItemForm({
                 aria-label={t("assignToPerson", { name: getDisplayName(person) })}
                 aria-pressed={isSelected}
                 className={clsx(
-                  "flex min-w-[72px] shrink-0 touch-manipulation snap-start flex-col items-center gap-2 rounded-[20px] p-3 transition-all active:scale-95 sm:min-w-[64px] sm:gap-1.5 sm:p-2",
+                  "flex min-w-[68px] shrink-0 touch-manipulation snap-start flex-col items-center gap-2 rounded-[20px] p-2.5 transition-all active:scale-95 sm:min-w-[60px] sm:gap-1.5 sm:p-2",
                   isSelected
                     ? "bg-accent/5 ring-2 ring-accent/30"
                     : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 active:bg-gray-100"
@@ -358,7 +358,7 @@ export function ItemForm({
               >
                 <div
                   className={clsx(
-                    "flex h-11 w-11 items-center justify-center overflow-hidden rounded-full transition-all duration-300 sm:h-9 sm:w-9",
+                    "flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-all duration-300 sm:h-8 sm:w-8",
                     isSelected ? "bg-accent text-white" : "bg-accent/10 text-accent"
                   )}
                 >
@@ -372,9 +372,9 @@ export function ItemForm({
                         <Image
                           src={avatar.src}
                           alt={getDisplayName(person)}
-                          width={44}
-                          height={44}
-                          className="h-full w-full object-cover sm:h-9 sm:w-9"
+                          width={40}
+                          height={40}
+                          className="h-full w-full object-cover sm:h-8 sm:w-8"
                         />
                       );
                     }
@@ -398,7 +398,7 @@ export function ItemForm({
       {/* Expandable details */}
       {/* Ingredients Section - Simplified for Mobile First */}
       {isEditMode && (
-        <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-all hover:bg-white hover:shadow-sm">
+        <div className="space-y-2.5 rounded-2xl border border-gray-100 bg-gray-50/50 p-3.5 transition-all hover:bg-white hover:shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
