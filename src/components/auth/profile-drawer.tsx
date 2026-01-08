@@ -116,7 +116,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
       // Sign out and redirect to home
       await signOut();
       onClose();
-      router.push("/");
+      router.push("/login");
       router.refresh();
     } catch (err) {
       const error = err as Error;
@@ -386,6 +386,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 onClick={async () => {
                   await signOut();
                   onClose();
+                  router.push("/login");
                   router.refresh();
                 }}
               >
