@@ -95,7 +95,15 @@
     "trustDescription": "Your guests click your link and pick an item. That's it. No account creation, no password, no 'Download the App' popup. Grandma proof.",
     "ctaFooterTitle": "Ready to actually enjoy your own party?",
     "ctaFooterButton": "Create My First Event",
-    "ctaFooterNotice": "Takes less than 10 seconds."
+    "ctaFooterNotice": "Takes less than 10 seconds.",
+    "footerText": "Made with ✨ for your best moments.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    },
+    "chatLeft1": "Who's bringing the wine? 🍷",
+    "chatRight1": "I thought Mark was?",
+    "chatLeft2": "Mark is bringing chips. We have 5 bags of chips now. 🥔"
   },
   "Dashboard": {
     "badge": "Dashboard",

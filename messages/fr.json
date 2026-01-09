@@ -95,7 +95,15 @@
     "trustDescription": "Vos invités cliquent sur votre lien et choisissent un article. C'est tout. Pas de compte, pas de mot de passe, pas de popup 'Télécharger l'app'. Validé par Mamie.",
     "ctaFooterTitle": "Prêt à profiter de votre propre fête ?",
     "ctaFooterButton": "Créer mon premier événement",
-    "ctaFooterNotice": "Prend moins de 10 secondes."
+    "ctaFooterNotice": "Prend moins de 10 secondes.",
+    "footerText": "Fait avec ✨ pour vos plus beaux moments.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    },
+    "chatLeft1": "Qui apporte le vin ? 🍷",
+    "chatRight1": "Je croyais que c'était Mark ?",
+    "chatLeft2": "Mark apporte des chips. On a 5 paquets de chips maintenant. 🥔"
   },
   "Dashboard": {
     "badge": "Tableau de bord",
