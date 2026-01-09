@@ -36,6 +36,9 @@ export function setAnalyticsConsent(consent: boolean) {
         ad_personalization: consent ? "granted" : "denied",
       });
     }
+
+    // Dispatch custom event for reactive UI components (like PWA prompt)
+    window.dispatchEvent(new Event("analytics-consent-updated"));
   }
 }
 

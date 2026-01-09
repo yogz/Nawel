@@ -23,52 +23,71 @@ export function PWAPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [triggerCheck, setTriggerCheck] = useState(0);
 
   useEffect(() => {
-    // 0. Only show if cookie consent has been handled
-    if (localStorage.getItem("analytics_consent") === null) return;
+    const checkConditions = () => {
+      // 0. Only show if cookie consent has been handled
+      if (localStorage.getItem("analytics_consent") === null) return false;
 
-    // 1. Detect if already in standalone mode
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone ||
-      document.referrer.includes("android-app://");
+      // 1. Detect if already in standalone mode
+      const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes("android-app://");
 
-    if (isStandalone) return;
+      if (isStandalone) return false;
+      return true;
+    };
+
+    if (!checkConditions()) {
+      // If conditions aren't met, listen for storage events to re-check
+      // This handles the case where the user just accepted cookies
+      const handleStorageChange = () => {
+        if (checkConditions()) {
+          // Re-trigger the whole effect logic by some means or just run it here
+          // For simplicity, let's just use a state bit
+          setTriggerCheck((prev) => prev + 1);
+        }
+      };
+      window.addEventListener("storage", handleStorageChange);
+      // Also listen for a custom event since storage event doesn't fire in the same tab
+      window.addEventListener("analytics-consent-updated", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+        window.removeEventListener("analytics-consent-updated", handleStorageChange);
+      };
+    }
 
     // 2. Detect iOS
     const ua = window.navigator.userAgent;
     const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
     setIsIOS(ios);
 
+    let timer: NodeJS.Timeout;
+
     // 3. Handle Android/Chrome beforeinstallprompt
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
 
-      // Only show the prompt if the user is logged in
       if (!session) return;
-
-      // Wait a bit before showing the prompt to not annoy the user immediately
-      const timer = setTimeout(() => setShowPrompt(true), 10000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setShowPrompt(true), 10000);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // 4. For iOS, show the prompt if not standalone after some time
     if (ios && session) {
-      const timer = setTimeout(() => setShowPrompt(true), 15000);
-      return () => {
-        window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-        clearTimeout(timer);
-      };
+      timer = setTimeout(() => setShowPrompt(true), 15000);
     }
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      if (timer) clearTimeout(timer);
     };
-  }, []);
+  }, [session, triggerCheck]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
