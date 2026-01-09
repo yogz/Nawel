@@ -100,7 +100,10 @@
     "footerLinks": {
       "instagram": "Instagram",
       "contact": "Kontakt"
-    }
+    },
+    "chatLeft1": "Wer bringt den Wein mit? 🍷",
+    "chatRight1": "Ich dachte, Mark macht das?",
+    "chatLeft2": "Mark bringt Chips mit. Wir haben jetzt schon 5 Tüten. 🥔"
   },
   "Dashboard": {
     "badge": "Dashboard",

@@ -95,7 +95,15 @@
     "trustDescription": "Twoi goście klikają w link i wybierają przedmiot. To wszystko. Bez konta, bez hasła, bez wyskakujących okienek 'Pobierz aplikację'. Zatwierdzone przez Babcię.",
     "ctaFooterTitle": "Gotowy cieszyć się własną imprezą?",
     "ctaFooterButton": "Stwórz moje pierwsze wydarzenie",
-    "ctaFooterNotice": "Zajmuje mniej niż 10 sekund."
+    "ctaFooterNotice": "Zajmuje mniej niż 10 sekund.",
+    "footerText": "Stworzone z ✨ dla Twoich najlepszych chwil.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    },
+    "chatLeft1": "Kto przynosi wino? 🍷",
+    "chatRight1": "Myślałem, że Mark?",
+    "chatLeft2": "Mark przynosi chipsy. Mamy już 5 paczek. 🥔"
   },
   "Dashboard": {
     "badge": "Panel",

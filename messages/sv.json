@@ -95,7 +95,15 @@
     "trustDescription": "Dina gäster klickar på din länk och väljer ett föremål. Det är allt. Inget konto, inget lösenord, ingen 'Ladda ner app'-popup. Mormors-certifierad.",
     "ctaFooterTitle": "Redo att njuta av din egen fest?",
     "ctaFooterButton": "Skapa mitt första evenemang",
-    "ctaFooterNotice": "Tar mindre än 10 sekunder."
+    "ctaFooterNotice": "Tar mindre än 10 sekunder.",
+    "footerText": "Skapad med ✨ för dina finaste stunder.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    },
+    "chatLeft1": "Vem tar med vinet? 🍷",
+    "chatRight1": "Trodde att Mark skulle göra det?",
+    "chatLeft2": "Mark tar med chips. Vi har redan 5 påsar. 🥔"
   },
   "Dashboard": {
     "badge": "Instrumentpanel",

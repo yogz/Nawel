@@ -95,7 +95,15 @@
     "trustDescription": "Dine gæster klikker på dit link og vælger en vare. Det er det hele. Ingen konto, ingen adgangskode, ingen 'Download app' pop-up. Mormor-godkendt.",
     "ctaFooterTitle": "Klar til at nyde din egen fest?",
     "ctaFooterButton": "Opret min første begivenhed",
-    "ctaFooterNotice": "Tager mindre end 10 sekunder."
+    "ctaFooterNotice": "Tager mindre end 10 sekunder.",
+    "footerText": "Lavet med ✨ til dine bedste øjeblikke.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    },
+    "chatLeft1": "Hvem tager vinen med? 🍷",
+    "chatRight1": "Jeg troede, det var Mark?",
+    "chatLeft2": "Mark tager chips med. Vi har 5 poser nu. 🥔"
   },
   "Dashboard": {
     "badge": "Dashboard",

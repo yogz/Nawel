@@ -100,7 +100,10 @@
     "footerLinks": {
       "instagram": "Instagram",
       "contact": "Contacto"
-    }
+    },
+    "chatLeft1": "¿Quién trae el vino? 🍷",
+    "chatRight1": "¿No era Mark?",
+    "chatLeft2": "Mark trae patatas. Ya tenemos 5 bolsas. 🥔"
   },
   "Dashboard": {
     "badge": "Panel de control",

@@ -95,7 +95,15 @@
     "trustDescription": "I tuoi ospiti cliccano sul tuo link e scelgono un articolo. Tutto qui. Senza account, senza password, senza popup 'Scarica l'app'. A prova di nonna.",
     "ctaFooterTitle": "Pronto a goderti la tua festa?",
     "ctaFooterButton": "Crea il mio primo evento",
-    "ctaFooterNotice": "Richiede meno di 10 secondi."
+    "ctaFooterNotice": "Richiede meno di 10 secondi.",
+    "footerText": "Fatto con ✨ per i tuoi momenti migliori.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contatto"
+    },
+    "chatLeft1": "Chi porta il vino? 🍷",
+    "chatRight1": "Pensavo lo portasse Mark?",
+    "chatLeft2": "Mark porta le patatine. Ne abbiamo già 5 sacchetti. 🥔"
   },
   "Dashboard": {
     "badge": "Pannello",

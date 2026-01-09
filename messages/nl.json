@@ -95,7 +95,15 @@
     "trustDescription": "Je gasten klikken op je link en kiezen een item. Dat is alles. Geen account, geen wachtwoord, geen 'Download de app' pop-up. Oma-gecertificeerd.",
     "ctaFooterTitle": "Klaar om van je eigen feest te genieten?",
     "ctaFooterButton": "Creëer mijn eerste evenement",
-    "ctaFooterNotice": "Duurt minder dan 10 seconden."
+    "ctaFooterNotice": "Duurt minder dan 10 seconden.",
+    "footerText": "Gemaakt met ✨ voor uw beste momenten.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contact"
+    },
+    "chatLeft1": "Wie brengt de wijn mee? 🍷",
+    "chatRight1": "Ik dacht dat Mark dat deed?",
+    "chatLeft2": "Mark brengt chips mee. We hebben nu al 5 zakken. 🥔"
   },
   "Dashboard": {
     "badge": "Dashboard",
