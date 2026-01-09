@@ -95,7 +95,12 @@
     "trustDescription": "Os seus convidados clicam no seu link e escolhem um item. Só isso. Sem conta, sem senha, sem popup de 'Descarregar a app'. Validado pela vovó.",
     "ctaFooterTitle": "Pronto para desfrutar da sua própria festa?",
     "ctaFooterButton": "Criar o meu primeiro evento",
-    "ctaFooterNotice": "Leva menos de 10 segundos."
+    "ctaFooterNotice": "Leva menos de 10 segundos.",
+    "footerText": "Feito com ✨ para os seus melhores momentos.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Contacto"
+    }
   },
   "Dashboard": {
     "badge": "Painel de controlo",

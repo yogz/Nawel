@@ -95,7 +95,12 @@
     "trustDescription": "Deine Gäste klicken auf den Link und wählen einen Artikel aus. Das ist alles. Kein Konto, kein Passwort, kein 'App herunterladen' Pop-up. Von Oma geprüft.",
     "ctaFooterTitle": "Bereit, deine eigene Party zu genießen?",
     "ctaFooterButton": "Mein erstes Event erstellen",
-    "ctaFooterNotice": "Dauert weniger als 10 Sekunden."
+    "ctaFooterNotice": "Dauert weniger als 10 Sekunden.",
+    "footerText": "Mit ✨ gemacht für deine schönsten Momente.",
+    "footerLinks": {
+      "instagram": "Instagram",
+      "contact": "Kontakt"
+    }
   },
   "Dashboard": {
     "badge": "Dashboard",

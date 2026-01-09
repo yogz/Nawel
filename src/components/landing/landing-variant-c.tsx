@@ -122,29 +122,29 @@ export function LandingVariantC() {
             <p className="mt-6 text-lg leading-relaxed text-gray-600">{t("problemDescription")}</p>
           </div>
 
-          {/* Visual representation of the chaos - simplified chat UI */}
+          {/* Visual representation of the chaos - refined chat UI */}
           <div className="mt-16 flex justify-center">
-            <div className="relative w-full max-w-sm rounded-3xl border border-gray-200 bg-white p-4 shadow-xl">
-              <div className="absolute -right-4 -top-6 rotate-12 rounded-2xl bg-red-500 px-4 py-2 font-bold text-white shadow-lg">
-                STOP! 🛑
+            <div className="relative w-full max-w-sm rounded-[2rem] border border-gray-100 bg-white p-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+              <div className="absolute -right-6 -top-8 z-20 flex rotate-12 items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-red-600 px-6 py-3 font-black tracking-wider text-white shadow-[0_10px_20px_rgba(239,68,68,0.4)]">
+                STOP! <span className="text-xl">🛑</span>
               </div>
-              <div className="space-y-4">
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-blue-100" />
-                  <div className="max-w-[80%] rounded-2xl bg-gray-100 px-4 py-2 text-sm text-gray-600">
-                    Who's bringing the wine? 🍷
+              <div className="space-y-6">
+                <div className="flex items-end gap-3">
+                  <div className="h-10 w-10 flex-shrink-0 rounded-full bg-blue-100/50" />
+                  <div className="max-w-[80%] rounded-2xl rounded-bl-none bg-gray-50 px-5 py-3 text-[15px] leading-snug text-gray-700 shadow-sm">
+                    {t("chatLeft1")}
                   </div>
                 </div>
-                <div className="flex flex-row-reverse gap-3">
-                  <div className="h-8 w-8 rounded-full bg-green-100" />
-                  <div className="max-w-[80%] rounded-2xl bg-green-50 px-4 py-2 text-sm text-green-800">
-                    I thought Mark was?
+                <div className="flex flex-row-reverse items-end gap-3">
+                  <div className="h-10 w-10 flex-shrink-0 rounded-full bg-green-100/50" />
+                  <div className="max-w-[80%] rounded-2xl rounded-br-none bg-emerald-50 px-5 py-3 text-[15px] leading-snug text-emerald-900 shadow-sm">
+                    {t("chatRight1")}
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-full bg-purple-100" />
-                  <div className="max-w-[80%] rounded-2xl bg-gray-100 px-4 py-2 text-sm text-gray-600">
-                    Mark is bringing chips. We have 5 bags of chips now. 🥔
+                <div className="flex items-end gap-3">
+                  <div className="h-10 w-10 flex-shrink-0 rounded-full bg-purple-100/50" />
+                  <div className="max-w-[80%] rounded-2xl rounded-bl-none bg-gray-50 px-5 py-3 text-[15px] leading-snug text-gray-700 shadow-sm">
+                    {t("chatLeft2")}
                   </div>
                 </div>
               </div>
