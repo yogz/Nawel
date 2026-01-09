@@ -72,7 +72,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
             placement: "bottom-end",
           },
           {
-            target: ".bug-report-trigger",
+            target: "#feedback-button",
             title: t("steps.dashboard.feedback.title"),
             content: t("steps.dashboard.feedback.content"),
             placement: "top",

@@ -23,34 +23,16 @@ export function BugReportButton() {
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          className="fixed bottom-6 right-6 z-[60] hidden sm:block"
+          className="fixed bottom-24 right-4 z-[60] sm:bottom-6 sm:right-6"
         >
           <Button
-            id="feedback-button-desktop"
+            id="feedback-button"
             onClick={() => setIsOpen(true)}
             variant="premium"
             size="premium"
-            icon={<Bug className="h-5 w-5" />}
+            icon={<Bug className="h-5 w-5 sm:h-6 sm:w-6" />}
             aria-label={t("triggerLabel")}
-            className="bug-report-trigger h-14 w-14 rounded-full p-0 shadow-accent-lg hover:scale-110 active:scale-95"
-          />
-        </motion.div>
-
-        {/* Mobile version - positioned higher if there's a TabBar, but for now fixed bottom-24 or similar */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          className="fixed bottom-24 right-4 z-[60] sm:hidden"
-        >
-          <Button
-            id="feedback-button-mobile"
-            onClick={() => setIsOpen(true)}
-            variant="premium"
-            size="premium"
-            icon={<Bug className="h-5 w-5" />}
-            aria-label={t("triggerLabel")}
-            className="bug-report-trigger h-12 w-12 rounded-full p-0 shadow-accent-lg"
+            className="h-12 w-12 rounded-full p-0 shadow-accent-lg hover:scale-110 active:scale-95 sm:h-14 sm:w-14"
           />
         </motion.div>
       </AnimatePresence>
