@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { setAnalyticsConsent } from "@/lib/analytics";
-import { Cookie, Shield, ChartBar, ArrowLeft } from "lucide-react";
+import { useLandingVariant } from "@/hooks/use-landing-variant";
+import { sendGAEvent } from "@next/third-parties/google";
+import { Cookie, Shield, ChartBar, ArrowLeft, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 /**
@@ -25,6 +27,15 @@ export function CookieConsent() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [view, setView] = useState<"main" | "customize">("main");
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const variant = useLandingVariant();
+
+  // Track variant only if/when consent is given
+  useEffect(() => {
+    const consent = localStorage.getItem("analytics_consent") === "true";
+    if (consent && variant) {
+      sendGAEvent("event", "landing_variant_assigned", { variant });
+    }
+  }, [variant]);
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -40,6 +51,9 @@ export function CookieConsent() {
 
   const handleAccept = () => {
     setAnalyticsConsent(true);
+    if (variant) {
+      sendGAEvent("event", "landing_variant_assigned", { variant });
+    }
     setHasInteracted(true);
     setIsOpen(false);
   };
@@ -56,23 +70,26 @@ export function CookieConsent() {
 
   const handleSaveCustom = () => {
     setAnalyticsConsent(analyticsEnabled);
+    if (analyticsEnabled && variant) {
+      sendGAEvent("event", "landing_variant_assigned", { variant });
+    }
     setHasInteracted(true);
     setIsOpen(false);
   };
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerContent className="max-h-[90vh]">
+      <DrawerContent className="max-h-[90vh] border-t-orange-100 bg-orange-50/95 backdrop-blur-xl">
         {view === "main" ? (
           <>
             <DrawerHeader className="space-y-3 pb-2 text-left">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10">
-                  <Cookie className="h-6 w-6 text-accent" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100/50">
+                  <Cookie className="h-6 w-6 text-orange-600" />
                 </div>
-                <DrawerTitle className="text-xl">{t("title")}</DrawerTitle>
+                <DrawerTitle className="text-xl font-bold">{t("title")}</DrawerTitle>
               </div>
-              <DrawerDescription className="text-base leading-relaxed">
+              <DrawerDescription className="text-base leading-relaxed text-gray-600">
                 {t("description")}
               </DrawerDescription>
             </DrawerHeader>
@@ -80,23 +97,23 @@ export function CookieConsent() {
             <div className="space-y-4 px-4 pb-6">
               {/* Features Grid */}
               <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3 rounded-xl bg-muted/50 p-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background">
-                    <ChartBar className="h-4 w-4 text-accent" />
+                <div className="flex items-start gap-3 rounded-xl bg-white/40 p-3 ring-1 ring-orange-100/50">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                    <ChartBar className="h-4 w-4 text-orange-500" />
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">{t("usageTitle")}</p>
-                    <p className="text-xs text-muted-foreground">{t("usageDescription")}</p>
+                    <p className="text-sm font-medium text-gray-900">{t("usageTitle")}</p>
+                    <p className="text-xs text-gray-500">{t("usageDescription")}</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 rounded-xl bg-muted/50 p-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background">
-                    <Shield className="h-4 w-4 text-accent" />
+                <div className="flex items-start gap-3 rounded-xl bg-white/40 p-3 ring-1 ring-orange-100/50">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                    <Shield className="h-4 w-4 text-orange-500" />
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">{t("securityTitle")}</p>
-                    <p className="text-xs text-muted-foreground">{t("securityDescription")}</p>
+                    <p className="text-sm font-medium text-gray-900">{t("securityTitle")}</p>
+                    <p className="text-xs text-gray-500">{t("securityDescription")}</p>
                   </div>
                 </div>
               </div>
@@ -105,7 +122,7 @@ export function CookieConsent() {
               <div className="space-y-2 pt-2">
                 <Button
                   onClick={handleAccept}
-                  className="h-12 w-full text-base font-semibold"
+                  className="h-12 w-full bg-red-600 text-base font-bold text-white transition-all hover:bg-red-700 hover:shadow-lg"
                   size="lg"
                 >
                   {t("acceptAll")}

@@ -17,6 +17,13 @@ export function StickyCta({ text, variant }: StickyCtaProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Hide if cookie consent is still pending
+    const hasConsent = localStorage.getItem("analytics_consent");
+    if (!hasConsent) {
+      setIsVisible(false);
+      return;
+    }
+
     return scrollY.on("change", (latest) => {
       // Show after scrolling down 400px
       setIsVisible(latest > 400);

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Share, PlusSquare, X, Download, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -18,11 +19,15 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function PWAPrompt() {
   const t = useTranslations("PWAPrompt");
+  const { data: session } = useSession();
   const [showPrompt, setShowPrompt] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
+    // 0. Only show if cookie consent has been handled
+    if (localStorage.getItem("analytics_consent") === null) return;
+
     // 1. Detect if already in standalone mode
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -40,6 +45,10 @@ export function PWAPrompt() {
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
+
+      // Only show the prompt if the user is logged in
+      if (!session) return;
+
       // Wait a bit before showing the prompt to not annoy the user immediately
       const timer = setTimeout(() => setShowPrompt(true), 10000);
       return () => clearTimeout(timer);
@@ -48,7 +57,7 @@ export function PWAPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // 4. For iOS, show the prompt if not standalone after some time
-    if (ios) {
+    if (ios && session) {
       const timer = setTimeout(() => setShowPrompt(true), 15000);
       return () => {
         window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);

@@ -28,11 +28,6 @@ function getSnapshot(): LandingVariant | null {
   const newVariant: LandingVariant = rand > 0.5 ? "landing-c" : "landing-alt";
   localStorage.setItem(STORAGE_KEY, newVariant);
 
-  // Track the assignment in GA4
-  sendGAEvent("event", "landing_variant_assigned", {
-    variant: newVariant,
-  });
-
   return newVariant;
 }
 
