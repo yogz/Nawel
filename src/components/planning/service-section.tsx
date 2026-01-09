@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { memo } from "react";
 import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
+import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
 
 interface ServiceSectionProps {
   service: Service;
@@ -40,6 +41,8 @@ export const ServiceSection = memo(function ServiceSection({
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
   });
+
+  const translatedTitle = useTranslatedServiceTitle(service.title);
 
   const filteredItems = service.items.filter((i) => {
     if (filter.type === "all") {
@@ -79,14 +82,14 @@ export const ServiceSection = memo(function ServiceSection({
           )}
           onClick={() => !readOnly && onEdit()}
           disabled={readOnly}
-          aria-label={readOnly ? undefined : t("editService", { name: service.title })}
+          aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm transition-all duration-300 group-hover:border-accent/20 group-hover:bg-accent/10 sm:h-9 sm:w-9">
               {service.icon || getServiceIcon(service.title)}
             </div>
             <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em] sm:text-base">
-              {service.title}
+              {translatedTitle}
             </h3>
           </div>
           {!readOnly && (

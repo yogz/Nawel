@@ -102,7 +102,8 @@
       "nameLabel": "Nome Evento",
       "namePlaceholder": "Natale in famiglia...",
       "descriptionLabel": "Descrizione",
-      "descriptionPlaceholder": "Una breve descrizione..."
+      "descriptionPlaceholder": "Una breve descrizione...",
+      "createNew": "Crea un nuovo evento"
     }
   },
   "Login": {
@@ -217,8 +218,8 @@
     "modeClassicDesc": "Primo, Secondo, Dolce",
     "modeAperoLabel": "Aperitivo",
     "modeAperoDesc": "Aperitivo, Bevande",
-    "modeServiceUniqueLabel": "Servizio unico",
-    "modeServiceUniqueDesc": "Un solo servizio",
+    "modeServiceUniqueLabel": "Portata unica",
+    "modeServiceUniqueDesc": "Una sola portata",
     "summaryEvent": "Evento",
     "summaryDate": "Data",
     "summaryGuestsLabel": "Ospiti",
@@ -600,12 +601,12 @@
       "errorDelete": "Errore nell'eliminazione del pasto ❌"
     },
     "service": {
-      "added": "Servizio aggiunto! ✨",
-      "errorAdd": "Errore nell'aggiunta del servizio ❌",
-      "updated": "Servizio aggiornato ✓",
-      "errorUpdate": "Errore nell'aggiornamento del servizio ❌",
-      "deleted": "Servizio eliminato ✓",
-      "errorDelete": "Errore nell'eliminazione del servizio ❌"
+      "added": "Portata aggiunto! ✨",
+      "errorAdd": "Errore nell'aggiungere portata ❌",
+      "updated": "Portata aggiornato ✓",
+      "errorUpdate": "Errore nell'aggiornare portata ❌",
+      "deleted": "Portata eliminato ✓",
+      "errorDelete": "Errore nell'eliminare portata ❌"
     },
     "profile": {
       "fullName": "Nome completo",

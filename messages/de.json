@@ -101,7 +101,8 @@
       "nameLabel": "Name des Events",
       "namePlaceholder": "Familienweihnachten...",
       "descriptionLabel": "Beschreibung",
-      "descriptionPlaceholder": "Eine kleine Beschreibung..."
+      "descriptionPlaceholder": "Eine kleine Beschreibung...",
+      "createNew": "Neues Event erstellen"
     }
   },
   "Login": {
@@ -216,8 +217,8 @@
     "modeClassicDesc": "Vorspeise, Hauptgericht, Dessert",
     "modeAperoLabel": "Aperitif",
     "modeAperoDesc": "Aperitif, Getränke",
-    "modeServiceUniqueLabel": "Einzelner Service",
-    "modeServiceUniqueDesc": "Nur ein Service",
+    "modeServiceUniqueLabel": "Einzelner Gang",
+    "modeServiceUniqueDesc": "Nur ein Gang",
     "summaryEvent": "Event",
     "summaryDate": "Datum",
     "summaryGuestsLabel": "Gäste",
@@ -592,12 +593,12 @@
       "errorDelete": "Fehler beim Löschen der Mahlzeit ❌"
     },
     "service": {
-      "added": "Service hinzugefügt! ✨",
-      "errorAdd": "Fehler beim Hinzufügen des Services ❌",
-      "updated": "Service aktualisiert ✓",
-      "errorUpdate": "Fehler beim Aktualisieren des Services ❌",
-      "deleted": "Service gelöscht ✓",
-      "errorDelete": "Fehler beim Löschen des Services ❌"
+      "added": "Gang hinzugefügt! ✨",
+      "errorAdd": "Fehler beim Hinzufügen Gang ❌",
+      "updated": "Gang aktualisiert ✓",
+      "errorUpdate": "Fehler beim Aktualisieren Gang ❌",
+      "deleted": "Gang gelöscht ✓",
+      "errorDelete": "Fehler beim Löschen Gang ❌"
     },
     "profile": {
       "fullName": "Vollständiger Name",

@@ -102,7 +102,8 @@
       "nameLabel": "Nazwa wydarzenia",
       "namePlaceholder": "Rodzinne Boże Narodzenie...",
       "descriptionLabel": "Opis",
-      "descriptionPlaceholder": "Krótki opis..."
+      "descriptionPlaceholder": "Krótki opis...",
+      "createNew": "Utwórz nowe wydarzenie"
     }
   },
   "Login": {
@@ -217,8 +218,8 @@
     "modeClassicDesc": "Starter, danie główne, deser",
     "modeAperoLabel": "Przystawki",
     "modeAperoDesc": "Przystawki, napoje",
-    "modeServiceUniqueLabel": "Pojedyncza usługa",
-    "modeServiceUniqueDesc": "Jedna usługa",
+    "modeServiceUniqueLabel": "Pojedyncze danie",
+    "modeServiceUniqueDesc": "Jedno danie",
     "summaryEvent": "Wydarzenie",
     "summaryDate": "Data",
     "summaryGuestsLabel": "Goście",
@@ -600,12 +601,12 @@
       "errorDelete": "Błąd usuwania posiłku ❌"
     },
     "service": {
-      "added": "Usługa dodana! ✨",
-      "errorAdd": "Błąd dodawania usługi ❌",
-      "updated": "Usługa zaktualizowana ✓",
-      "errorUpdate": "Błąd aktualizacji usługi ❌",
-      "deleted": "Usługa usunięta ✓",
-      "errorDelete": "Błąd usuwania usługi ❌"
+      "added": "Danie dodane! ✨",
+      "errorAdd": "Błąd dodawania danie ❌",
+      "updated": "Danie zaktualizowane ✓",
+      "errorUpdate": "Błąd aktualizacji danie ❌",
+      "deleted": "Danie usunięte ✓",
+      "errorDelete": "Błąd usuwania danie ❌"
     },
     "profile": {
       "fullName": "Pełna nazwa",

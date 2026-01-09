@@ -102,7 +102,8 @@
       "nameLabel": "Naam Evenement",
       "namePlaceholder": "Familie Kerstmis...",
       "descriptionLabel": "Beschrijving",
-      "descriptionPlaceholder": "Een korte beschrijving..."
+      "descriptionPlaceholder": "Een korte beschrijving...",
+      "createNew": "Creëer een nieuw evenement"
     }
   },
   "Login": {
@@ -217,8 +218,8 @@
     "modeClassicDesc": "Voorgerecht, Hoofdgerecht, Nagerecht",
     "modeAperoLabel": "Aperitief",
     "modeAperoDesc": "Aperitief, Dranken",
-    "modeServiceUniqueLabel": "Enkele service",
-    "modeServiceUniqueDesc": "Eén service",
+    "modeServiceUniqueLabel": "Enkele gang",
+    "modeServiceUniqueDesc": "Eén gang",
     "summaryEvent": "Evenement",
     "summaryDate": "Datum",
     "summaryGuestsLabel": "Gasten",
@@ -600,12 +601,12 @@
       "errorDelete": "Fout bij verwijderen maaltijd ❌"
     },
     "service": {
-      "added": "Service toegevoegd! ✨",
-      "errorAdd": "Fout bij toevoegen service ❌",
-      "updated": "Service bijgewerkt ✓",
-      "errorUpdate": "Fout bij bijwerken service ❌",
-      "deleted": "Service verwijderd ✓",
-      "errorDelete": "Fout bij verwijderen service ❌"
+      "added": "Gang toegevoegd! ✨",
+      "errorAdd": "Fout bij toevoegen gang ❌",
+      "updated": "Gang bijgewerkt ✓",
+      "errorUpdate": "Fout bij bijwerken gang ❌",
+      "deleted": "Gang verwijderd ✓",
+      "errorDelete": "Fout bij verwijderen gang ❌"
     },
     "profile": {
       "fullName": "Volledige naam",
