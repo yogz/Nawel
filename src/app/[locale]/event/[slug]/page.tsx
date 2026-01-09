@@ -1,4 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
 import { Suspense } from "react";
 import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";

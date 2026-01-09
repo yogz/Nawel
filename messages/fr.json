@@ -48,8 +48,8 @@
   },
   "LandingAlt": {
     "badge": "L'organisation de repas partagés, simplifiée.",
-    "heroTitle": "Organisez vos repas",
-    "heroTitleHighlight": "sans prise de tête",
+    "heroTitle": "Organisateur de repas",
+    "heroTitleHighlight": "partagés",
     "heroDescription": "Chacun choisit ce qu'il apporte. Plus de doublons. Plus de messages perdus. Juste un repas réussi entre amis.",
     "ctaStart": "Créer mon événement",
     "ctaDemo": "Voir comment ça marche",
@@ -76,8 +76,8 @@
   },
   "LandingC": {
     "badge": "Fini le chaos des repas partagés",
-    "heroTitle": "Le Dîner Idéal,",
-    "heroTitleHighlight": "Résolu.",
+    "heroTitle": "Planificateur de soirées,",
+    "heroTitleHighlight": "Simplifié.",
     "heroDescription": "Coordination des menus, invités et courses avec un seul lien. Le premier planificateur d'événement que vos amis ne détesteront pas utiliser.",
     "ctaStart": "Commencer à Planifier",
     "ctaDemo": "Voir un Exemple",

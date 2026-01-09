@@ -68,6 +68,7 @@ export function HeroSection({
           sizes="100vw"
           className="object-cover opacity-60"
           priority
+          fetchPriority="high"
         />
         <div className={`absolute inset-0 ${gradientClasses}`} />
       </div>

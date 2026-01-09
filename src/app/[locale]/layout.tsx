@@ -62,19 +62,35 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "CoList",
   },
+  alternates: {
+    canonical: "https://colist.fr",
+    languages: {
+      fr: "https://colist.fr/fr",
+      en: "https://colist.fr/en",
+      es: "https://colist.fr/es",
+      pt: "https://colist.fr/pt",
+      de: "https://colist.fr/de",
+      el: "https://colist.fr/el",
+      it: "https://colist.fr/it",
+      nl: "https://colist.fr/nl",
+      pl: "https://colist.fr/pl",
+      sv: "https://colist.fr/sv",
+      da: "https://colist.fr/da",
+      "x-default": "https://colist.fr/fr",
+    },
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   themeColor: "#ffffff",
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";
 import { VerificationBanner } from "@/components/auth/verification-banner";
+import { JsonLd } from "@/components/seo/json-ld";
 
 export default async function RootLayout({
   children,
@@ -160,6 +176,7 @@ export default async function RootLayout({
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
+            <JsonLd locale={locale} />
             <VerificationBanner />
             {children}
             <BugReportButton />
