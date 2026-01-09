@@ -43,7 +43,16 @@ export function PWAPrompt() {
       if (visits < 2) return false;
 
       // 2. Check if dismissed persistently
-      if (localStorage.getItem("pwa-prompt-dismissed") === "true") return false;
+      if (localStorage.getItem("pwa-prompt-dismissed-permanent") === "true") return false;
+
+      // 3. Check if dismissed temporarily (e.g., hidden for 3 days)
+      const tempDismissedAt = localStorage.getItem("pwa-prompt-dismissed-temporary");
+      if (tempDismissedAt) {
+        const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+        if (Date.now() - parseInt(tempDismissedAt) < threeDaysInMs) {
+          return false;
+        }
+      }
 
       return true;
     };
@@ -117,10 +126,14 @@ export function PWAPrompt() {
     }
   };
 
-  const handleClose = () => {
+  const handlePermanentClose = () => {
     setShowPrompt(false);
-    // Don't show again persistently
-    localStorage.setItem("pwa-prompt-dismissed", "true");
+    localStorage.setItem("pwa-prompt-dismissed-permanent", "true");
+  };
+
+  const handleTemporaryClose = () => {
+    setShowPrompt(false);
+    localStorage.setItem("pwa-prompt-dismissed-temporary", Date.now().toString());
   };
 
   return (
@@ -134,7 +147,7 @@ export function PWAPrompt() {
         >
           <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/95 p-5 shadow-2xl backdrop-blur-xl dark:bg-black/90">
             <button
-              onClick={handleClose}
+              onClick={handlePermanentClose}
               className="absolute right-4 top-4 text-muted-foreground transition-colors hover:text-text"
               aria-label={t("closeButton")}
             >
@@ -168,6 +181,14 @@ export function PWAPrompt() {
                   </div>
                   <span className="text-sm font-medium">{t("iosStep2")}</span>
                 </div>
+
+                <Button
+                  onClick={handleTemporaryClose}
+                  variant="ghost"
+                  className="w-full text-muted-foreground"
+                >
+                  {t("closeButton")}
+                </Button>
               </div>
             ) : (
               <div className="mt-6 flex flex-col gap-2">
@@ -179,7 +200,7 @@ export function PWAPrompt() {
                   {t("installButton")}
                 </Button>
                 <Button
-                  onClick={handleClose}
+                  onClick={handleTemporaryClose}
                   variant="ghost"
                   className="w-full text-muted-foreground"
                 >
