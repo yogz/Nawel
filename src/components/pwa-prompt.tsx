@@ -37,8 +37,22 @@ export function PWAPrompt() {
         document.referrer.includes("android-app://");
 
       if (isStandalone) return false;
+
+      // Option C: Only show if this is at least the second session/visit
+      // We use localStorage to track visits
+      const visits = parseInt(localStorage.getItem("pwa-visit-count") || "0");
+      if (visits < 2) return false;
+
       return true;
     };
+
+    // Track visit count (only once per mount/session to be fair)
+    const hasIncremented = sessionStorage.getItem("pwa-visit-incremented");
+    if (!hasIncremented) {
+      const currentVisits = parseInt(localStorage.getItem("pwa-visit-count") || "0");
+      localStorage.setItem("pwa-visit-count", (currentVisits + 1).toString());
+      sessionStorage.setItem("pwa-visit-incremented", "true");
+    }
 
     if (!checkConditions()) {
       // If conditions aren't met, listen for storage events to re-check
@@ -73,14 +87,14 @@ export function PWAPrompt() {
       setDeferredPrompt(e);
 
       if (!session) return;
-      timer = setTimeout(() => setShowPrompt(true), 120000); // 2 minutes
+      timer = setTimeout(() => setShowPrompt(true), 15000); // Shorter delay since it's the 2nd visit
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // 4. For iOS, show the prompt if not standalone after some time
     if (ios && session) {
-      timer = setTimeout(() => setShowPrompt(true), 120000); // 2 minutes
+      timer = setTimeout(() => setShowPrompt(true), 15000); // 15 seconds
     }
 
     return () => {
