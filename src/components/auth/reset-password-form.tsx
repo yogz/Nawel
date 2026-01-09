@@ -128,6 +128,7 @@ export function ResetPasswordForm() {
               required
               disabled={loading}
               autoComplete="new-password"
+              enterKeyHint="done"
               className="h-12 border-gray-100 bg-gray-50/50 px-4 pr-12 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
             />
             <button

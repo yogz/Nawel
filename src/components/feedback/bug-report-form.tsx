@@ -81,6 +81,13 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
               onChange={(e) => setContent(e.target.value)}
               placeholder={t("placeholder")}
               className="min-h-[150px] rounded-2xl border-white/40 bg-white/50 ring-accent/20 focus-visible:ring-accent/50"
+              enterKeyHint="send"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
               required
             />
 

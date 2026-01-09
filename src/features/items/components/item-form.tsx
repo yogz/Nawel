@@ -269,7 +269,7 @@ export function ItemForm({
           onBlur={handleBlurSave}
           disabled={readOnly}
           autoCapitalize="sentences"
-          enterKeyHint="done"
+          enterKeyHint="next"
           className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:text-base"
         />
       </div>
@@ -295,7 +295,7 @@ export function ItemForm({
           onChange={(e) => setPrice(e.target.value)}
           onBlur={handleBlurSave}
           disabled={readOnly}
-          enterKeyHint="next"
+          enterKeyHint="done"
           className="h-11 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:w-24 sm:text-sm"
           aria-label={t("priceLabel")}
         />
