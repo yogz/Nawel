@@ -740,5 +740,25 @@
     "next": "Avanti",
     "skip": "Salta",
     "last": "Fine"
+  },
+  "Demo": {
+    "title": "L'esperienza <orange>senza sforzo</orange>",
+    "description": "Guarda come i tuoi ospiti partecipano in pochi secondi.",
+    "waInvite1": "Ehi ragazzi! Facciamo una cena condivisa a casa mia sabato? 🍝",
+    "waInvite2": "Ognuno porta qualcosa. Ho creato la lista qui: 👇",
+    "waEventTitle": "Cena da Nico",
+    "waLink": "nawel.app/e/cena-nico",
+    "waCta": "Tocca per aprire",
+    "appTitle": "Cena da Nico 🍝",
+    "appDate": "Sab 24 Dic • 19:30",
+    "listTitle": "Chi porta cosa",
+    "itemChampagne": "Champagne",
+    "itemSalad": "Insalata buonissima",
+    "itemReserved": "Riservato da te",
+    "itemNeeded": "1 necessario",
+    "itemTake": "Lo prendo io",
+    "itemNew": "Nuovo !",
+    "placeholder": "Porto qualcos'altro...",
+    "typingText": "Il Tiramisù della nonna 🍰"
   }
 }

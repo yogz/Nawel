@@ -747,5 +747,25 @@
     "next": "Próximo",
     "skip": "Pular",
     "last": "Terminar"
+  },
+  "Demo": {
+    "title": "A experiência <orange>sem esforço</orange>",
+    "description": "Veja como seus convidados participam em segundos.",
+    "waInvite1": "Olá pessoal! Vamos fazer um jantar compartilhado em minha casa no sábado? 🍝",
+    "waInvite2": "Cada um traz uma coisinha. Fiz a lista aqui: 👇",
+    "waEventTitle": "Jantar no Nico",
+    "waLink": "nawel.app/e/jantar-nico",
+    "waCta": "Toque para abrir",
+    "appTitle": "Jantar no Nico 🍝",
+    "appDate": "Sáb 24 Dez • 19:30",
+    "listTitle": "Quem traz o quê",
+    "itemChampagne": "Champanhe",
+    "itemSalad": "Salada muito boa",
+    "itemReserved": "Reservado por você",
+    "itemNeeded": "1 necessário",
+    "itemTake": "Eu levo",
+    "itemNew": "Novo!",
+    "placeholder": "Eu trago outra coisa...",
+    "typingText": "O Tiramisu da vovó 🍰"
   }
 }

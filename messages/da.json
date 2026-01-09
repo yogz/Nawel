@@ -740,5 +740,25 @@
     "next": "Næste",
     "skip": "Spring over",
     "last": "Afslut"
+  },
+  "Demo": {
+    "title": "Den <orange>ubesværede</orange> oplevelse",
+    "description": "Se hvordan dine gæster deltager på få sekunder.",
+    "waInvite1": "Hej venner! Skal vi holde et sammenskudsgilde hos mig på lørdag? 🍝",
+    "waInvite2": "Alle tager lidt med. Jeg har lavet listen her: 👇",
+    "waEventTitle": "Middag hos Nico",
+    "waLink": "nawel.app/e/middag-nico",
+    "waCta": "Tryck for at åbne",
+    "appTitle": "Middag hos Nico 🍝",
+    "appDate": "Lør. 24. dec. • 19:30",
+    "listTitle": "Hvem tager hvad med",
+    "itemChampagne": "Champagne",
+    "itemSalad": "Virkelig god salat",
+    "itemReserved": "Reserveret af dig",
+    "itemNeeded": "1 nødvendig",
+    "itemTake": "Jeg tager den",
+    "itemNew": "Ny!",
+    "placeholder": "Jeg tager noget andet med...",
+    "typingText": "Mormors Tiramisu 🍰"
   }
 }

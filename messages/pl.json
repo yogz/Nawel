@@ -740,5 +740,25 @@
     "next": "Dalej",
     "skip": "Pomiń",
     "last": "Zakończ"
+  },
+  "Demo": {
+    "title": "Doświadczenie <orange>bez wysiłku</orange>",
+    "description": "Zobacz, jak Twoi goście dołączają w kilka sekund.",
+    "waInvite1": "Cześć wszystkim! Robimy potluck u mnie w sobotę? 🍝",
+    "waInvite2": "Każdy przynosi coś małego. Zrobiłem listę tutaj: 👇",
+    "waEventTitle": "Kolacja u Nico",
+    "waLink": "nawel.app/e/kolacja-nico",
+    "waCta": "Dotknij, aby otworzyć",
+    "appTitle": "Kolacja u Nico 🍝",
+    "appDate": "Sob. 24 gru • 19:30",
+    "listTitle": "Kto co przynosi",
+    "itemChampagne": "Szampan",
+    "itemSalad": "Bardzo dobra sałatka",
+    "itemReserved": "Zarezerwowane przez Ciebie",
+    "itemNeeded": "1 potrzebny",
+    "itemTake": "Ja biorę",
+    "itemNew": "Nowość!",
+    "placeholder": "Przyniosę coś innego...",
+    "typingText": "Tiramisu babci 🍰"
   }
 }

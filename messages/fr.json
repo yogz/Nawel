@@ -732,5 +732,25 @@
     "next": "Suivant",
     "skip": "Passer",
     "last": "Terminer"
+  },
+  "Demo": {
+    "title": "L'expérience sans effort",
+    "description": "Voyez comment vos invités participent en quelques secondes.",
+    "waInvite1": "Salut les copains ! On fait un potluck samedi chez moi ? 🍝",
+    "waInvite2": "Chacun ramène un petit truc. J'ai fait la liste ici : 👇",
+    "waEventTitle": "Dîner chez Nico",
+    "waLink": "nawel.app/e/soiree-nico",
+    "waCta": "Appuyer pour ouvrir",
+    "appTitle": "Dîner chez Nico 🍝",
+    "appDate": "Samedi 24 Déc • 19:30",
+    "listTitle": "Ce qu'on apporte",
+    "itemChampagne": "Champagne",
+    "itemSalad": "Salade archi bonne",
+    "itemReserved": "Réservé par vous",
+    "itemNeeded": "1 nécessaire",
+    "itemTake": "Je prends",
+    "itemNew": "Nouveau !",
+    "placeholder": "J'apporte autre chose...",
+    "typingText": "Le Tiramisu de mamie 🍰"
   }
 }

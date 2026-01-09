@@ -740,5 +740,25 @@
     "next": "Weiter",
     "skip": "Überspringen",
     "last": "Fertig"
+  },
+  "Demo": {
+    "title": "Das <orange>mühelose</orange> Erlebnis",
+    "description": "Sehen Sie, wie Ihre Gäste in Sekunden teilnehmen.",
+    "waInvite1": "Hallo Leute! Wollen wir am Samstag ein Potluck bei mir machen? 🍝",
+    "waInvite2": "Jeder bringt eine Kleinigkeit mit. Ich habe die Liste hier erstellt: 👇",
+    "waEventTitle": "Abendessen bei Nico",
+    "waLink": "nawel.app/e/abendessen-nico",
+    "waCta": "Antippen zum Öffnen",
+    "appTitle": "Abendessen bei Nico 🍝",
+    "appDate": "Sa. 24. Dez. • 19:30",
+    "listTitle": "Wer bringt was mit",
+    "itemChampagne": "Champagner",
+    "itemSalad": "Richtig guter Salat",
+    "itemReserved": "Von dir reserviert",
+    "itemNeeded": "1 benötigt",
+    "itemTake": "Ich übernehme das",
+    "itemNew": "Neu!",
+    "placeholder": "Ich bringe etwas anderes mit...",
+    "typingText": "Omas Tiramisu 🍰"
   }
 }

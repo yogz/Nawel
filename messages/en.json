@@ -732,5 +732,25 @@
     "next": "Next",
     "skip": "Skip",
     "last": "Finish"
+  },
+  "Demo": {
+    "title": "The <orange>effortless</orange> experience",
+    "description": "See how your guests participate in seconds.",
+    "waInvite1": "Hey guys! Shall we do a potluck at my place this Saturday? 🍝",
+    "waInvite2": "Everyone brings a little something. I made the list here: 👇",
+    "waEventTitle": "Dinner at Nico",
+    "waLink": "nawel.app/e/dinner-nico",
+    "waCta": "Tap to open",
+    "appTitle": "Dinner at Nico's 🍝",
+    "appDate": "Sat Dec 24 • 7:30 PM",
+    "listTitle": "Who's bringing what",
+    "itemChampagne": "Champagne",
+    "itemSalad": "Really good salad",
+    "itemReserved": "Reserved by you",
+    "itemNeeded": "1 needed",
+    "itemTake": "I'll take it",
+    "itemNew": "New!",
+    "placeholder": "I'm bringing something else...",
+    "typingText": "Grandma's Tiramisu 🍰"
   }
 }

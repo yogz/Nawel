@@ -740,5 +740,25 @@
     "next": "Volgende",
     "skip": "Overslaan",
     "last": "Voltooien"
+  },
+  "Demo": {
+    "title": "De <orange>moeiteloze</orange> ervaring",
+    "description": "Zie hoe je gasten binnen enkele seconden deelnemen.",
+    "waInvite1": "Hoi lui! Zullen we zaterdag een potluck bij mij houden? 🍝",
+    "waInvite2": "Iedereen neemt een kleinigheidje mee. Ik heb de lijst hier gemaakt: 👇",
+    "waEventTitle": "Diner bij Nico",
+    "waLink": "nawel.app/e/diner-nico",
+    "waCta": "Tik om te openen",
+    "appTitle": "Diner bij Nico 🍝",
+    "appDate": "Za 24 dec • 19:30",
+    "listTitle": "Wie neemt wat mee",
+    "itemChampagne": "Champagne",
+    "itemSalad": "Hele lekkere salade",
+    "itemReserved": "Gereserveerd door jou",
+    "itemNeeded": "1 nodig",
+    "itemTake": "Ik neem het mee",
+    "itemNew": "Nieuw!",
+    "placeholder": "Ik neem iets anders mee...",
+    "typingText": "Oma's Tiramisu 🍰"
   }
 }

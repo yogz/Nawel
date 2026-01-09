@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Send } from "lucide-react";
 import { trackDemoView, trackDemoStep } from "@/lib/analytics";
 import { useTrackView } from "@/hooks/use-track-view";
+import { useTranslations } from "next-intl";
 
 export function DemoInteractive() {
+  const t = useTranslations("Demo");
   const [step, setStep] = useState(0);
   const [typedText, setTypedText] = useState("");
   const hasTrackedSteps = useRef<Set<number>>(new Set());
@@ -22,7 +24,7 @@ export function DemoInteractive() {
   // 1: App View - Initial ("Ce qu'on apporte")
   // 2: Selection - Click "Champagne"
   // 3: Input Focus - Show Keyboard/Input
-  // 4: Typing - "Mon célèbre Tiramisu"
+  // 4: Typing - Translation key: typingText
   // 5: Final - Success View
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function DemoInteractive() {
   // Typing animation for step 4
   useEffect(() => {
     if (step === 4) {
-      const text = "Le Tiramisu de mamie 🍰";
+      const text = t("typingText");
       let i = 0;
       setTypedText("");
       const typeInterval = setInterval(() => {
@@ -50,7 +52,7 @@ export function DemoInteractive() {
     } else if (step < 4) {
       setTypedText("");
     }
-  }, [step]);
+  }, [step, t]);
 
   // Track demo steps
   useEffect(() => {
@@ -71,11 +73,11 @@ export function DemoInteractive() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <h2 className="text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
-            L&apos;expérience <span className="text-orange-600">sans effort</span>
+            {t.rich("title", {
+              orange: (chunks) => <span className="text-orange-600">{chunks}</span>,
+            })}
           </h2>
-          <p className="mt-4 text-lg leading-8 text-gray-600">
-            Voyez comment vos invités participent en quelques secondes.
-          </p>
+          <p className="mt-4 text-lg leading-8 text-gray-600">{t("description")}</p>
         </div>
 
         <div className="relative mx-auto max-w-[320px]">
@@ -98,10 +100,10 @@ export function DemoInteractive() {
                   >
                     <div className="mb-4 flex flex-col gap-2">
                       <div className="max-w-[85%] self-start rounded-2xl rounded-tl-none bg-white p-3 text-[14px] shadow-sm ring-1 ring-black/5">
-                        Salut les copains ! On fait un potluck samedi chez moi ? 🍝
+                        {t("waInvite1")}
                       </div>
                       <div className="max-w-[85%] self-start rounded-2xl rounded-tl-none bg-white p-3 text-[14px] shadow-sm ring-1 ring-black/5">
-                        Chacun ramène un petit truc. J&apos;ai fait la liste ici : 👇
+                        {t("waInvite2")}
                       </div>
                       <div className="max-w-[85%] self-start overflow-hidden rounded-2xl bg-white p-2 shadow-md ring-1 ring-black/5">
                         <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 p-2">
@@ -110,15 +112,13 @@ export function DemoInteractive() {
                           </div>
                           <div className="overflow-hidden">
                             <strong className="block truncate text-sm text-slate-900">
-                              Dîner chez Nico
+                              {t("waEventTitle")}
                             </strong>
-                            <span className="text-[11px] text-slate-500">
-                              nawel.app/e/soiree-nico
-                            </span>
+                            <span className="text-[11px] text-slate-500">{t("waLink")}</span>
                           </div>
                         </div>
                         <div className="mt-2 text-center text-xs font-bold text-blue-600">
-                          Appuyer pour ouvrir
+                          {t("waCta")}
                         </div>
                       </div>
                     </div>
@@ -140,11 +140,9 @@ export function DemoInteractive() {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-xl font-black leading-tight text-gray-900">
-                            Dîner chez Nico 🍝
+                            {t("appTitle")}
                           </h3>
-                          <p className="text-xs font-semibold text-orange-600">
-                            Samedi 24 Déc • 19:30
-                          </p>
+                          <p className="text-xs font-semibold text-orange-600">{t("appDate")}</p>
                         </div>
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-lg">
                           👩‍🍳
@@ -156,7 +154,7 @@ export function DemoInteractive() {
                     <div className="flex-1 space-y-6 overflow-y-auto px-6">
                       <div className="space-y-3">
                         <h4 className="text-[11px] font-black uppercase tracking-wider text-gray-400">
-                          Ce qu&apos;on apporte
+                          {t("listTitle")}
                         </h4>
 
                         {/* Item 1: Champagne */}
@@ -166,9 +164,11 @@ export function DemoInteractive() {
                           <div className="flex items-center gap-3">
                             <span className="text-2xl">🍾</span>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">Champagne</p>
+                              <p className="text-sm font-bold text-gray-900">
+                                {t("itemChampagne")}
+                              </p>
                               <p className="text-[10px] text-gray-500">
-                                {step >= 2 ? "Réservé par vous" : "1 nécessaire"}
+                                {step >= 2 ? t("itemReserved") : t("itemNeeded")}
                               </p>
                             </div>
                           </div>
@@ -182,7 +182,7 @@ export function DemoInteractive() {
                             </motion.div>
                           ) : (
                             <button className="rounded-full border border-gray-200 bg-white px-4 py-2 text-[11px] font-bold text-gray-900 shadow-sm">
-                              Je prends
+                              {t("itemTake")}
                             </button>
                           )}
                         </div>
@@ -192,7 +192,7 @@ export function DemoInteractive() {
                           <div className="flex items-center gap-3">
                             <span className="text-2xl">🥗</span>
                             <div>
-                              <p className="text-sm font-bold text-gray-900">Salade archi bonne</p>
+                              <p className="text-sm font-bold text-gray-900">{t("itemSalad")}</p>
                             </div>
                           </div>
                           <div className="flex -space-x-2">
@@ -214,9 +214,11 @@ export function DemoInteractive() {
                                 <span className="text-2xl">🍰</span>
                                 <div>
                                   <p className="text-sm font-bold text-gray-900">
-                                    Le Tiramisu de mamie
+                                    {t("typingText")}
                                   </p>
-                                  <p className="text-[10px] font-bold text-orange-600">Nouveau !</p>
+                                  <p className="text-[10px] font-bold text-orange-600">
+                                    {t("itemNew")}
+                                  </p>
                                 </div>
                               </div>
                               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white">
@@ -243,7 +245,7 @@ export function DemoInteractive() {
                               <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-orange-500" />
                             </span>
                           ) : (
-                            "J'apporte autre chose..."
+                            t("placeholder")
                           )}
                         </div>
                         {step === 4 && (
