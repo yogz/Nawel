@@ -72,10 +72,10 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
             placement: "bottom-end",
           },
           {
-            target: "#feedback-button",
+            target: ".bug-report-trigger",
             title: t("steps.dashboard.feedback.title"),
             content: t("steps.dashboard.feedback.content"),
-            placement: "left",
+            placement: "top",
           },
         ]
       : [];
@@ -96,25 +96,45 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
         options: {
           primaryColor: "hsl(var(--accent))",
           zIndex: 10000,
+          backgroundColor: "hsl(var(--card))",
+          textColor: "hsl(var(--card-foreground))",
+          arrowColor: "hsl(var(--card))",
+        },
+        tooltip: {
+          borderRadius: "20px",
+          padding: "20px",
+          boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid hsl(var(--border) / 0.5)",
         },
         tooltipContainer: {
           textAlign: "left",
-          fontSize: "14px",
+          fontSize: "15px",
+          lineHeight: "1.6",
         },
         tooltipTitle: {
-          fontWeight: "bold",
+          fontWeight: "800",
+          fontSize: "18px",
+          marginBottom: "10px",
+          background: "linear-gradient(to right, hsl(var(--accent)), hsl(var(--primary)))",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
         },
         buttonNext: {
           backgroundColor: "hsl(var(--accent))",
-          borderRadius: "8px",
-          padding: "8px 16px",
+          borderRadius: "12px",
+          padding: "10px 20px",
           color: "#fff",
+          fontWeight: "600",
+          boxShadow: "0 4px 14px 0 hsl(var(--accent) / 0.39)",
         },
         buttonBack: {
           marginRight: "8px",
+          fontWeight: "600",
         },
         buttonSkip: {
-          color: "hsl(var(--gray-500))",
+          color: "hsl(var(--muted-foreground))",
+          fontSize: "13px",
         },
       }}
       locale={{
