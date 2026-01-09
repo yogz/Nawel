@@ -74,6 +74,29 @@
       "contact": "Contacto"
     }
   },
+  "LandingC": {
+    "badge": "Chega de caos nos jantares partilhados",
+    "heroTitle": "O Jantar Ideal,",
+    "heroTitleHighlight": "Resolvido.",
+    "heroDescription": "Coordenação de menus, convidados e compras com um único link. O primeiro planeador de eventos que os seus amigos não vão odiar usar.",
+    "ctaStart": "Começar a Planear",
+    "ctaDemo": "Ver um Exemplo",
+    "trust": "Sem necessidade de descarregar aplicação para os convidados.",
+    "socialProofTitle": "A arma secreta de mais de 2.000 anfitriões lendários",
+    "problemTitle": "Pare de correr atrás de todos.",
+    "problemDescription": "Gosta de receber pessoas. Odeia o grupo de WhatsApp 'Quem traz o vinho?' que toca durante 3 dias. CoList substitui o caos por uma lista partilhada simples.",
+    "feature1Title": "Lasanha para 12? Feito.",
+    "feature1Description": "Digite o seu prato. A nossa IA gera a lista exata de compras com as quantidades adaptadas aos seus convidados. Matemática: 0, Você: 1.",
+    "feature2Title": "Convidados envolvem-se",
+    "feature2Description": "Chega de 'Pensei que fosses tu a trazer o gelo'. Os convidados dizem ou clicam no que trazem. A lista atualiza-se instantaneamente para todos.",
+    "feature3Title": "Uma lista para dominar a loja",
+    "feature3Description": "Cada convidado obtém a sua própria lista de compras baseada no que traz. Atualiza-se em direto e partilha-se facilmente.",
+    "trustTitle": "Zero fricção para os amigos",
+    "trustDescription": "Os seus convidados clicam no seu link e escolhem um item. Só isso. Sem conta, sem senha, sem popup de 'Descarregar a app'. Validado pela vovó.",
+    "ctaFooterTitle": "Pronto para desfrutar da sua própria festa?",
+    "ctaFooterButton": "Criar o meu primeiro evento",
+    "ctaFooterNotice": "Leva menos de 10 segundos."
+  },
   "Dashboard": {
     "badge": "Painel de controlo",
     "title": "Os Meus Eventos",
@@ -90,6 +113,7 @@
       "myEvent": "Meu evento",
       "edit": "Editar",
       "delete": "Excluir",
+      "view": "Consultar",
       "deleteConfirmTitle": "Excluir evento",
       "deleteConfirmDescription": "Todos os dados serão excluídos permanentemente.",
       "deleteConfirmInstruction": "Digite \"{name}\" para confirmar:",
@@ -100,10 +124,11 @@
       "editTitle": "Editar Evento",
       "nameLabel": "Nome do evento",
       "namePlaceholder": "Natal em família...",
-      "descriptionLabel": "Descrição",
+      "descriptionLabel": "Descripción",
       "descriptionPlaceholder": "Uma pequena descrição...",
       "createNew": "Criar um novo evento"
-    }
+    },
+    "replayTour": "Rever tutorial"
   },
   "Login": {
     "signinTitle": "Bom ver-te de novo!",
@@ -272,7 +297,7 @@
       "settings": "Ajustes"
     },
     "Planning": {
-      "noShopping": "Sem compras",
+      "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
       "addService": "Adicionar tempo",
       "calendar": {
@@ -285,6 +310,7 @@
       },
       "editMeal": "Editar refeição",
       "editService": "Editar tempo",
+      "addItem": "Adicionar artigo",
       "cancel": "Cancelar"
     },
     "Service": {
@@ -336,6 +362,7 @@
       "irreversible": "Esta ação é irreversível."
     },
     "ItemForm": {
+      "editItem": "Editar item {name}",
       "label": "Artigo",
       "placeholder": "Ex: Queijo, Vinho tinto, Tronco de natal...",
       "quantityLabel": "Quantidade",
@@ -359,10 +386,13 @@
       "assignLabel": "Quem trata disto?",
       "unassigned": "A atribuir",
       "takeAction": "Eu levo!",
+      "assignToUnassigned": "Deixar por atribuir",
+      "assignToPerson": "Atribuir a {name}",
       "defaultNote": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
       "note": "Nota",
       "movePlaceholder": "Outro tempo",
       "addButton": "Adicionar artigo",
+      "adding": "Adicionando...",
       "Ingredients": {
         "generating": "Gerando...",
         "generateButton": "Gerar ingredientes (IA)",
@@ -391,8 +421,13 @@
       "newMealHeader": "Nova refeição",
       "newMealPlaceholder": "Nome da refeição (ex: Jantar)",
       "addService": "Adicionar tempo",
+      "addButton": "Adicionar tempo",
+      "adding": "Adicionando...",
       "selectMeal": "Selecionar refeição",
-      "selectMealPlaceholder": "Escolher refeição..."
+      "selectMealLabel": "Selecionar refeição",
+      "selectMealPlaceholder": "Escolher refeição...",
+      "newMealOption": "+ Nova refeição",
+      "newMealSection": "Nova refeição"
     },
     "Shared": {
       "adultsLabel": "Adultos",
@@ -444,6 +479,7 @@
       "organisationLabel": "Organização da refeição",
       "serviceSelectionLabel": "Selecione os tempos",
       "createButton": "Criar refeição",
+      "creating": "Criando...",
       "selectMeal": "Escolher refeição",
       "selectMealPlaceholder": "Selecionar uma refeição"
     },
@@ -692,6 +728,10 @@
         "profile": {
           "title": "Perfil",
           "content": "Gerencie a sua conta, configurações e preferências aqui."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "Teve uma ideia? Encontrou um bug? Clique aqui para partilhar os seus comentários connosco."
         }
       }
     },

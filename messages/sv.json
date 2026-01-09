@@ -74,6 +74,29 @@
       "contact": "Kontakt"
     }
   },
+  "LandingC": {
+    "badge": "Slut på knytkalas-kaos",
+    "heroTitle": "Den Ideala Middagen,",
+    "heroTitleHighlight": "Löst.",
+    "heroDescription": "Samordning av menyer, gäster och inköp med en enda länk. Den första eventplaneraren som dina vänner faktiskt kommer vilja använda.",
+    "ctaStart": "Börja Planera",
+    "ctaDemo": "Se ett Exempel",
+    "trust": "Ingen appnedladdning krävs för gäster.",
+    "socialProofTitle": "Det hemliga vapnet för över 2 000 legendariska värdar",
+    "problemTitle": "Sluta spring efter alla.",
+    "problemDescription": "Du älskar att vara värd. Du hatar WhatsApp-gruppen 'Vem tar med vinet?' som plingar i 3 dagar. CoList ersätter kaoset med en enkel delad lista.",
+    "feature1Title": "Lasagne för 12? Fixat.",
+    "feature1Description": "Skriv in din rätt. Vår AI genererar den exakta inköpslistan med mängder anpassade efter dina gäster. Matte: 0, Du: 1.",
+    "feature2Title": "Gästerna deltar",
+    "feature2Description": "Inget mer 'Jag trodde att du tog med isen'. Gästerna anger eller klickar helt enkelt på det de tar med sig. Listan uppdateras omedelbart för alla.",
+    "feature3Title": "En lista för att bemästra butiken",
+    "feature3Description": "Varje gäst får sin egen inköpslista baserat på vad de tar med sig. Uppdateras live och delas enkelt.",
+    "trustTitle": "Inga hinder för vänner",
+    "trustDescription": "Dina gäster klickar på din länk och väljer ett föremål. Det är allt. Inget konto, inget lösenord, ingen 'Ladda ner app'-popup. Mormors-certifierad.",
+    "ctaFooterTitle": "Redo att njuta av din egen fest?",
+    "ctaFooterButton": "Skapa mitt första evenemang",
+    "ctaFooterNotice": "Tar mindre än 10 sekunder."
+  },
   "Dashboard": {
     "badge": "Instrumentpanel",
     "title": "Mina evenemang",
@@ -94,7 +117,7 @@
       "deleteConfirmTitle": "Ta bort evenemang",
       "deleteConfirmDescription": "All data kommer att raderas permanent.",
       "deleteConfirmInstruction": "Ange \"{name}\" för att bekräfta:",
-      "deleteConfirmPlaceholder": "Evenemangsnamn",
+      "deleteConfirmPlaceholder": "Evenemangsnavn",
       "deleteConfirmButton": "Ta bort",
       "deleteCancelButton": "Avbryt",
       "errorOccurred": "Ett fel uppstod",
@@ -104,7 +127,8 @@
       "descriptionLabel": "Beskrivning",
       "descriptionPlaceholder": "En kort beskrivning...",
       "createNew": "Skapa ett nytt evenemang"
-    }
+    },
+    "replayTour": "Repetera introduktion"
   },
   "Login": {
     "signinTitle": "Trevligt att se dig igen!",
@@ -279,6 +303,7 @@
       },
       "editMeal": "Redigera måltid",
       "editService": "Redigera rätt",
+      "addItem": "Lägg till artikel",
       "cancel": "Avbryt"
     },
     "Service": {
@@ -330,6 +355,7 @@
       "irreversible": "Denna åtgärd är oåterkallelig."
     },
     "ItemForm": {
+      "editItem": "Redigera artikel {name}",
       "label": "Artikel",
       "placeholder": "Ex: Ost, Rött vin, Rulltårta...",
       "quantityLabel": "Mängd",
@@ -354,6 +380,8 @@
       "unassigned": "Att tilldela",
       "takeAction": "Jag tar den!",
       "defaultNote": "För {count} {count, plural, one {person} other {personer}}",
+      "assignToUnassigned": "Lämna otilldelad",
+      "assignToPerson": "Tilldela till {name}",
       "note": "Notering",
       "movePlaceholder": "Annan rätt",
       "addButton": "Lägg till artikel",
@@ -693,6 +721,10 @@
         "profile": {
           "title": "Profil",
           "content": "Hantera ditt konto, inställningar och preferenser här."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "En idé? En bugg? Klicka här för att dela dina kommentarer med oss."
         }
       }
     },

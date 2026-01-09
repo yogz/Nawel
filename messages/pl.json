@@ -74,6 +74,29 @@
       "contact": "Kontakt"
     }
   },
+  "LandingC": {
+    "badge": "Koniec z chaosem potlucków",
+    "heroTitle": "Idealna Kolacja,",
+    "heroTitleHighlight": "Rozwiązana.",
+    "heroDescription": "Koordynacja menu, gości i zakupów za pomocą jednego linku. Pierwszy planer wydarzeń, którego Twoi znajomi będą chcieli używać.",
+    "ctaStart": "Rozpocznij Planowanie",
+    "ctaDemo": "Zobacz Przykład",
+    "trust": "Dla gości nie jest wymagane pobieranie aplikacji.",
+    "socialProofTitle": "Tajna broń ponad 2000 legendarnych gospodarzy",
+    "problemTitle": "Przestań wszystkich gonić.",
+    "problemDescription": "Uwielbiasz gościć ludzi. Nienawidzisz grupy na WhatsApp 'Kto przynosi wino?', która brzęczy przez 3 dni. CoList zastępuje chaos prostą, wspólną listą.",
+    "feature1Title": "Lasagne dla 12 osób? Zrobione.",
+    "feature1Description": "Wpisz swoją potrawę. Nasza AI wygeneruje dokładną listę zakupów z ilościami dostosowanymi do Twoich gości. Matematyka: 0, Ty: 1.",
+    "feature2Title": "Goście biorą udział",
+    "feature2Description": "Koniec z 'Myślałem, że ty przyniesiesz lody'. Goście po prostu deklarują lub klikają to, co przynoszą. Lista jest natychmiast aktualizowana dla wszystkich.",
+    "feature3Title": "Jedna lista, by rządzić sklepem",
+    "feature3Description": "Każdy gość otrzymuje własną listę zakupów na podstawie tego, co przynosi. Aktualizacje na żywo i łatwe udostępnianie.",
+    "trustTitle": "Zero barier dla znajomych",
+    "trustDescription": "Twoi goście klikają w link i wybierają przedmiot. To wszystko. Bez konta, bez hasła, bez wyskakujących okienek 'Pobierz aplikację'. Zatwierdzone przez Babcię.",
+    "ctaFooterTitle": "Gotowy cieszyć się własną imprezą?",
+    "ctaFooterButton": "Stwórz moje pierwsze wydarzenie",
+    "ctaFooterNotice": "Zajmuje mniej niż 10 sekund."
+  },
   "Dashboard": {
     "badge": "Panel",
     "title": "Moje wydarzenia",
@@ -104,7 +127,8 @@
       "descriptionLabel": "Opis",
       "descriptionPlaceholder": "Krótki opis...",
       "createNew": "Utwórz nowe wydarzenie"
-    }
+    },
+    "replayTour": "Powtórz samouczek"
   },
   "Login": {
     "signinTitle": "Miło Cię znowu widzieć!",
@@ -279,6 +303,7 @@
       },
       "editMeal": "Edytuj posiłek",
       "editService": "Edytuj danie",
+      "addItem": "Dodaj przedmiot",
       "cancel": "Anuluj"
     },
     "Service": {
@@ -330,6 +355,7 @@
       "irreversible": "Ta akcja jest nieodwracalna."
     },
     "ItemForm": {
+      "editItem": "Edytuj przedmiot {name}",
       "label": "Przedmiot",
       "placeholder": "Np.: Ser, czerwone wino, tort...",
       "quantityLabel": "Ilość",
@@ -353,6 +379,8 @@
       "assignLabel": "Kto się tym zajmie?",
       "unassigned": "Do przypisania",
       "takeAction": "Biorę!",
+      "assignToUnassigned": "Pozostaw nieprzypisane",
+      "assignToPerson": "Przypisz do {name}",
       "defaultNote": "Dla {count} {count, plural, one {osoby} few {osób} other {osób}}",
       "note": "Uwaga",
       "movePlaceholder": "Inne danie",
@@ -693,6 +721,10 @@
         "profile": {
           "title": "Profil",
           "content": "Zarządzaj swoim kontem, ustawieniami i preferencjami tutaj."
+        },
+        "feedback": {
+          "title": "Opinie",
+          "content": "Pomysł? Błąd? Kliknij tutaj, aby podzielić się z nami swoimi uwagami."
         }
       }
     },

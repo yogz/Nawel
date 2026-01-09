@@ -74,6 +74,29 @@
       "contact": "Contact"
     }
   },
+  "LandingC": {
+    "badge": "Geen potluck-chaos meer",
+    "heroTitle": "Het Ideale Diner,",
+    "heroTitleHighlight": "Opgelost.",
+    "heroDescription": "Coördinatie van menu's, gasten en boodschappen met één link. De eerste evenementenplanner die je vrienden graag zullen gebruiken.",
+    "ctaStart": "Begin met Plannen",
+    "ctaDemo": "Bekijk een Voorbeeld",
+    "trust": "Geen app-download vereist voor gasten.",
+    "socialProofTitle": "Het geheime wapen van meer dan 2.000 legendarische gastheren",
+    "problemTitle": "Stop met achter iedereen aan te rennen.",
+    "problemDescription": "Je houdt van gastvrijheid. Je haat de WhatsApp-groar 'Wie brengt de wijn mee?' die 3 dagen lang blijft afgaan. CoList vervangt de chaos door een eenvoudige gedeelde lijst.",
+    "feature1Title": "Lasagne for 12? Klaar.",
+    "feature1Description": "Typ je gerecht. Onze AI genereert de exacte boodschappenlijst met hoeveelheden aangepast aan je gasten. Wiskunde: 0, Jij: 1.",
+    "feature2Title": "Gasten doen mee",
+    "feature2Description": "Geen 'Ik dacht dat jij het ijs meebracht' meer. Gasten zeggen of klikken aan wat ze meebrengen. De lijst wordt direct voor iedereen bijgewerkt.",
+    "feature3Title": "Eén lijst om de winkel te domineren",
+    "feature3Description": "Elke gast krijgt zijn eigen boodschappenlijst op basis van wat hij meebrengt. Wordt live bijgewerkt en is eenvoudig te delen.",
+    "trustTitle": "Geen drempels voor vrienden",
+    "trustDescription": "Je gasten klikken op je link en kiezen een item. Dat is alles. Geen account, geen wachtwoord, geen 'Download de app' pop-up. Oma-gecertificeerd.",
+    "ctaFooterTitle": "Klaar om van je eigen feest te genieten?",
+    "ctaFooterButton": "Creëer mijn eerste evenement",
+    "ctaFooterNotice": "Duurt minder dan 10 seconden."
+  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "Mijn Evenementen",
@@ -104,7 +127,8 @@
       "descriptionLabel": "Beschrijving",
       "descriptionPlaceholder": "Een korte beschrijving...",
       "createNew": "Creëer een nieuw evenement"
-    }
+    },
+    "replayTour": "Tutorial herhalen"
   },
   "Login": {
     "signinTitle": "Fijn u weer te zien!",
@@ -279,6 +303,7 @@
       },
       "editMeal": "Maaltijd bewerken",
       "editService": "Gang bewerken",
+      "addItem": "Item toevoegen",
       "cancel": "Annuleren"
     },
     "Service": {
@@ -330,6 +355,7 @@
       "irreversible": "Deze actie is onomkeerbaar."
     },
     "ItemForm": {
+      "editItem": "Artikel bewerken {name}",
       "label": "Item",
       "placeholder": "Bijv: Kaas, Rode wijn, Kerststronk...",
       "quantityLabel": "Hoeveelheid",
@@ -353,6 +379,8 @@
       "assignLabel": "Wie zorgt hiervoor?",
       "unassigned": "Toe te wijzen",
       "takeAction": "Ik neem het!",
+      "assignToUnassigned": "Niet toegewezen laten",
+      "assignToPerson": "Toewijzen aan {name}",
       "defaultNote": "Voor {count} {count, plural, one {persoon} other {personen}}",
       "note": "Notitie",
       "movePlaceholder": "Andere gang",
@@ -693,6 +721,10 @@
         "profile": {
           "title": "Profiel",
           "content": "Beheer hier je account, instellingen en voorkeuren."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "Een idee? Een bug? Klik hier om je opmerkingen met ons te delen."
         }
       }
     },

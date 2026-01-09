@@ -74,6 +74,29 @@
       "contact": "Kontakt"
     }
   },
+  "LandingC": {
+    "badge": "Slut med potluck-kaos",
+    "heroTitle": "Den ideelle middag,",
+    "heroTitleHighlight": "Løst.",
+    "heroDescription": "Koordinering af menuer, gæster og indkøb med et enkelt link. Den første eventplanlægger, som dine venner ikke vil hade at bruge.",
+    "ctaStart": "Start planlægning",
+    "ctaDemo": "Se et eksempel",
+    "trust": "Intet app-download påkrævet for gæster.",
+    "socialProofTitle": "Det hemmelige våben for over 2.000 legendariske værter",
+    "problemTitle": "Stop med at løbe efter alle.",
+    "problemDescription": "Du elsker at være vært. Du hader WhatsApp-gruppen 'Hvem tager vinen med?', der bliver ved med at bippe i 3 dage. CoList erstatter kaos med en simpel delt liste.",
+    "feature1Title": "Lasagne til 12? Klaret.",
+    "feature1Description": "Indtast din ret. Vores AI genererer den præcise indkøbsliste with mængder tilpasset dine gæster. Matematik: 0, Dig: 1.",
+    "feature2Title": "Gæsterne deltager",
+    "feature2Description": "Ikke mere 'Jeg troede, du tog isen med'. Gæsterne siger eller klikker på det, de tager med. Listen opdateres øjeblikkeligt for alle.",
+    "feature3Title": "Én liste til at mestre butikken",
+    "feature3Description": "Hver gæst får sin egen indkøbsliste baseret på det, de tager med. Opdateres live og deles nemt.",
+    "trustTitle": "Ingen barrierer for venner",
+    "trustDescription": "Dine gæster klikker på dit link og vælger en vare. Det er det hele. Ingen konto, ingen adgangskode, ingen 'Download app' pop-up. Mormor-godkendt.",
+    "ctaFooterTitle": "Klar til at nyde din egen fest?",
+    "ctaFooterButton": "Opret min første begivenhed",
+    "ctaFooterNotice": "Tager mindre end 10 sekunder."
+  },
   "Dashboard": {
     "badge": "Dashboard",
     "title": "Mine Begivenheder",
@@ -104,7 +127,8 @@
       "descriptionLabel": "Beskrivelse",
       "descriptionPlaceholder": "En kort beskrivelse...",
       "createNew": "Opret en ny begivenhed"
-    }
+    },
+    "replayTour": "Gense tutorial"
   },
   "Login": {
     "signinTitle": "Dejligt at se dig igen!",
@@ -279,6 +303,7 @@
       },
       "editMeal": "Rediger måltid",
       "editService": "Rediger ret",
+      "addItem": "Tilføj vare",
       "cancel": "Annuller"
     },
     "Service": {
@@ -330,6 +355,7 @@
       "irreversible": "Denne handling er irreversibel."
     },
     "ItemForm": {
+      "editItem": "Rediger element {name}",
       "label": "Vare",
       "placeholder": "F.eks.: Ost, Rødvin, Roulade...",
       "quantityLabel": "Mængde",
@@ -353,6 +379,8 @@
       "assignLabel": "Hvem håndterer dette?",
       "unassigned": "At tildele",
       "takeAction": "Jeg tager den!",
+      "assignToUnassigned": "Lad være utildelt",
+      "assignToPerson": "Tildel til {name}",
       "defaultNote": "Til {count} {count, plural, one {person} other {personer}}",
       "note": "Note",
       "movePlaceholder": "Anden ret",
@@ -693,6 +721,10 @@
         "profile": {
           "title": "Profil",
           "content": "Administrer din konto, indstillinger og præferencer her."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "Har du en idé? En fejl? Klik her for at dele dine kommentarer med os."
         }
       }
     },

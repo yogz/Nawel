@@ -303,6 +303,7 @@
       },
       "editMeal": "Edit meal",
       "editService": "Edit course",
+      "addItem": "Add item",
       "cancel": "Cancel"
     },
     "Service": {

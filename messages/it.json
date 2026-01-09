@@ -74,6 +74,29 @@
       "contact": "Contatto"
     }
   },
+  "LandingC": {
+    "badge": "Basta con il caos delle cene condivise",
+    "heroTitle": "La Cena Ideale,",
+    "heroTitleHighlight": "Risolta.",
+    "heroDescription": "Coordinamento di menu, ospiti e spesa con un unico link. Il primo pianificatore di eventi che i tuoi amici non odieranno usare.",
+    "ctaStart": "Inizia a Pianificare",
+    "ctaDemo": "Vedi un Esempio",
+    "trust": "Nessun download di app richiesto per gli ospiti.",
+    "socialProofTitle": "L'arma segreta di oltre 2.000 padroni di casa leggendari",
+    "problemTitle": "Smetti di rincorrere tutti.",
+    "problemDescription": "Ami ospitare. Odi il gruppo WhatsApp 'Chi porta il vino?' che suona per 3 giorni di fila. CoList sostituisce il caos con una semplice lista condivisa.",
+    "feature1Title": "Lasagne per 12? Fatto.",
+    "feature1Description": "Digita il tuo piatto. La nostra IA genera l'esatta lista della spesa con le quantità adattate ai tuoi ospiti. Matematica: 0, Tu: 1.",
+    "feature2Title": "Gli ospiti partecipano",
+    "feature2Description": "Basta con 'Pensavo portassi tu il ghiaccio'. Gli ospiti dicono o cliccano su ciò che portano. La lista si aggiorna istantaneamente per tutti.",
+    "feature3Title": "Una lista per dominare il negozio",
+    "feature3Description": "Ogni ospite ottiene la propria lista della spesa basata su ciò che porta. Si aggiorna in diretta e si condivide facilmente.",
+    "trustTitle": "Zero attrito per gli amici",
+    "trustDescription": "I tuoi ospiti cliccano sul tuo link e scelgono un articolo. Tutto qui. Senza account, senza password, senza popup 'Scarica l'app'. A prova di nonna.",
+    "ctaFooterTitle": "Pronto a goderti la tua festa?",
+    "ctaFooterButton": "Crea il mio primo evento",
+    "ctaFooterNotice": "Richiede meno di 10 secondi."
+  },
   "Dashboard": {
     "badge": "Pannello",
     "title": "I Miei Eventi",
@@ -104,7 +127,8 @@
       "descriptionLabel": "Descrizione",
       "descriptionPlaceholder": "Una breve descrizione...",
       "createNew": "Crea un nuovo evento"
-    }
+    },
+    "replayTour": "Rivedi il tutorial"
   },
   "Login": {
     "signinTitle": "Bello rivederti!",
@@ -279,6 +303,7 @@
       },
       "editMeal": "Modifica pasto",
       "editService": "Modifica portata",
+      "addItem": "Aggiungi articolo",
       "cancel": "Annulla"
     },
     "Service": {
@@ -330,6 +355,7 @@
       "irreversible": "Questa azione è irreversibile."
     },
     "ItemForm": {
+      "editItem": "Modifica articolo {name}",
       "label": "Articolo",
       "placeholder": "Es: Formaggio, Vino rosso, Tronchetto...",
       "quantityLabel": "Quantità",
@@ -353,6 +379,8 @@
       "assignLabel": "Chi se ne occupa?",
       "unassigned": "Da assegnare",
       "takeAction": "Lo prendo io!",
+      "assignToUnassigned": "Lascia non assegnato",
+      "assignToPerson": "Assegna a {name}",
       "defaultNote": "Per {count} {count, plural, one {persona} other {persone}}",
       "note": "Nota",
       "movePlaceholder": "Altra portata",
@@ -693,6 +721,10 @@
         "profile": {
           "title": "Profilo",
           "content": "Gestisci qui il tuo account, le impostazioni e le preferenze."
+        },
+        "feedback": {
+          "title": "Feedback",
+          "content": "Hai un'idea? Un bug? Clicca qui per condividere i tuoi commenti con noi."
         }
       }
     },
