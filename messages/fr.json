@@ -752,5 +752,14 @@
     "itemNew": "Nouveau !",
     "placeholder": "J'apporte autre chose...",
     "typingText": "Le Tiramisu de mamie 🍰"
+  },
+  "PWAPrompt": {
+    "title": "Installez CoList",
+    "description": "Ajoutez CoList à votre écran d'accueil pour y accéder plus rapidement.",
+    "installButton": "Installer",
+    "closeButton": "Plus tard",
+    "iosInstructions": "Pour installer CoList sur votre iPhone :",
+    "iosStep1": "Appuyez sur le menu de partage",
+    "iosStep2": "Sélectionnez \"Sur l'écran d'accueil\""
   }
 }

@@ -760,5 +760,14 @@
     "itemNew": "Neu!",
     "placeholder": "Ich bringe etwas anderes mit...",
     "typingText": "Omas Tiramisu 🍰"
+  },
+  "PWAPrompt": {
+    "title": "CoList installieren",
+    "description": "Füge CoList zu deinem Home-Bildschirm hinzu, um schneller darauf zuzugreifen.",
+    "installButton": "Installieren",
+    "closeButton": "Später",
+    "iosInstructions": "Um CoList auf deinem iPhone zu installieren:",
+    "iosStep1": "Tippe auf die Teilen-Schaltfläche",
+    "iosStep2": "Wähle \"Zum Home-Bildschirm\""
   }
 }

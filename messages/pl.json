@@ -760,5 +760,14 @@
     "itemNew": "Nowość!",
     "placeholder": "Przyniosę coś innego...",
     "typingText": "Tiramisu babci 🍰"
+  },
+  "PWAPrompt": {
+    "title": "Zainstaluj CoList",
+    "description": "Dodaj CoList do ekranu głównego, aby mieć szybszy dostęp.",
+    "installButton": "Zainstaluj",
+    "closeButton": "Później",
+    "iosInstructions": "Aby zainstalować CoList na iPhone'ie:",
+    "iosStep1": "Dotknij przycisku udostępniania",
+    "iosStep2": "Wybierz \"Dodaj do ekranu głównego\""
   }
 }

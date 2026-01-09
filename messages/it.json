@@ -760,5 +760,14 @@
     "itemNew": "Nuovo !",
     "placeholder": "Porto qualcos'altro...",
     "typingText": "Il Tiramisù della nonna 🍰"
+  },
+  "PWAPrompt": {
+    "title": "Installa CoList",
+    "description": "Aggiungi CoList alla tua schermata home per un accesso più rapido.",
+    "installButton": "Installa",
+    "closeButton": "Più tardi",
+    "iosInstructions": "Per installare CoList sul tuo iPhone:",
+    "iosStep1": "Tocca il pulsante di condivisione",
+    "iosStep2": "Seleziona \"Aggiungi alla schermata home\""
   }
 }

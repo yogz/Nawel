@@ -759,6 +759,15 @@
     "itemTake": "Jeg tager den",
     "itemNew": "Ny!",
     "placeholder": "Jeg tager noget andet med...",
-    "typingText": "Mormors Tiramisu 🍰"
+    "typingText": "Bedstemor's Tiramisu 🍰"
+  },
+  "PWAPrompt": {
+    "title": "Installer CoList",
+    "description": "Tilføj CoList til din startskärm for hurtigere adgang.",
+    "installButton": "Installer",
+    "closeButton": "Senere",
+    "iosInstructions": "For at installere CoList på din iPhone:",
+    "iosStep1": "Tryk på delningsknappen",
+    "iosStep2": "Vælg \"Føj til hjemmeskærm\""
   }
 }

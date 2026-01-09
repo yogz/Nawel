@@ -760,5 +760,14 @@
     "itemNew": "Nieuw!",
     "placeholder": "Ik neem iets anders mee...",
     "typingText": "Oma's Tiramisu 🍰"
+  },
+  "PWAPrompt": {
+    "title": "CoList installeren",
+    "description": "Voeg CoList toe aan je beginscherm voor snellere toegang.",
+    "installButton": "Installeren",
+    "closeButton": "Later",
+    "iosInstructions": "Om CoList op je iPhone te installeren:",
+    "iosStep1": "Tik op de deelknop",
+    "iosStep2": "Selecteer \"Zet op beginscherm\""
   }
 }

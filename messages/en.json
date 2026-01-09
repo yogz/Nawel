@@ -752,5 +752,14 @@
     "itemNew": "New!",
     "placeholder": "I'm bringing something else...",
     "typingText": "Grandma's Tiramisu 🍰"
+  },
+  "PWAPrompt": {
+    "title": "Install CoList",
+    "description": "Add CoList to your home screen for faster access.",
+    "installButton": "Install",
+    "closeButton": "Later",
+    "iosInstructions": "To install CoList on your iPhone:",
+    "iosStep1": "Tap the share button",
+    "iosStep2": "Select \"Add to Home Screen\""
   }
 }

@@ -91,6 +91,7 @@ export const viewport: Viewport = {
 import { BugReportButton } from "@/components/feedback/bug-report-button";
 import { VerificationBanner } from "@/components/auth/verification-banner";
 import { JsonLd } from "@/components/seo/json-ld";
+import { PWAPrompt } from "@/components/pwa-prompt";
 
 export default async function RootLayout({
   children,
@@ -172,6 +173,22 @@ export default async function RootLayout({
             `,
           }}
         />
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
@@ -184,6 +201,7 @@ export default async function RootLayout({
             <CookieConsent />
             <AnalyticsSessionSync />
             <AnalyticsMonitor />
+            <PWAPrompt />
             <Toaster position="top-center" richColors duration={2000} />
           </ThemeProvider>
         </NextIntlClientProvider>
