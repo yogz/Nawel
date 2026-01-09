@@ -39,9 +39,11 @@ export function PWAPrompt() {
       if (isStandalone) return false;
 
       // Option C: Only show if this is at least the second session/visit
-      // We use localStorage to track visits
       const visits = parseInt(localStorage.getItem("pwa-visit-count") || "0");
       if (visits < 2) return false;
+
+      // 2. Check if dismissed persistently
+      if (localStorage.getItem("pwa-prompt-dismissed") === "true") return false;
 
       return true;
     };
@@ -117,16 +119,9 @@ export function PWAPrompt() {
 
   const handleClose = () => {
     setShowPrompt(false);
-    // Don't show again in this session
-    sessionStorage.setItem("pwa-prompt-dismissed", "true");
+    // Don't show again persistently
+    localStorage.setItem("pwa-prompt-dismissed", "true");
   };
-
-  // Check if dismissed in this session
-  useEffect(() => {
-    if (sessionStorage.getItem("pwa-prompt-dismissed")) {
-      setShowPrompt(false);
-    }
-  }, []);
 
   return (
     <AnimatePresence>
