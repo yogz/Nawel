@@ -73,14 +73,14 @@ export function PWAPrompt() {
       setDeferredPrompt(e);
 
       if (!session) return;
-      timer = setTimeout(() => setShowPrompt(true), 10000);
+      timer = setTimeout(() => setShowPrompt(true), 120000); // 2 minutes
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     // 4. For iOS, show the prompt if not standalone after some time
     if (ios && session) {
-      timer = setTimeout(() => setShowPrompt(true), 15000);
+      timer = setTimeout(() => setShowPrompt(true), 120000); // 2 minutes
     }
 
     return () => {
