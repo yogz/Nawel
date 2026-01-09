@@ -61,7 +61,7 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={onOpenChange}>
+    <Drawer open={isOpen} onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent
         className="z-[70]"
         overlayClassName="z-[60]"
@@ -74,7 +74,7 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
           </DrawerTitle>
           <DrawerDescription>{t("description")}</DrawerDescription>
         </DrawerHeader>
-        <div className="scrollbar-none min-h-[40vh] overflow-y-auto overscroll-contain pb-6">
+        <div className="scrollbar-none max-h-[85vh] overflow-y-auto overscroll-contain pb-6">
           <form onSubmit={handleSubmit} className="px-4 pb-4">
             <Textarea
               value={content}

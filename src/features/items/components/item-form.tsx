@@ -107,6 +107,10 @@ export function ItemForm({
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
   const _timerRef = useRef<NodeJS.Timeout | null>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const noteRef = useRef<HTMLInputElement>(null);
+  const qtyRef = useRef<HTMLInputElement>(null);
+  const priceRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
 
   const isEditMode = !!defaultItem;
@@ -242,10 +246,17 @@ export function ItemForm({
         </Label>
         <Input
           id="item-name"
+          ref={nameRef}
           placeholder={t("placeholder")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           onBlur={handleBlurSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              noteRef.current?.focus();
+            }
+          }}
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
@@ -263,10 +274,27 @@ export function ItemForm({
         </Label>
         <Input
           id="item-note"
+          ref={noteRef}
           placeholder={t("notePlaceholder")}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           onBlur={handleBlurSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              if (isEditMode) {
+                // In edit mode, Enter on note can just blur to save or move to next
+                qtyRef.current?.focus();
+              } else {
+                // In create mode, if we have a name, Entre on note can submit
+                if (name.trim()) {
+                  handleSubmit();
+                } else {
+                  qtyRef.current?.focus();
+                }
+              }
+            }
+          }}
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
@@ -277,10 +305,17 @@ export function ItemForm({
       {/* Quick details row */}
       <div className="flex gap-2 sm:gap-2">
         <Input
+          ref={qtyRef}
           placeholder={t("quantityPlaceholder")}
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           onBlur={handleBlurSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              priceRef.current?.focus();
+            }
+          }}
           disabled={readOnly}
           autoCapitalize="none"
           enterKeyHint="next"
@@ -288,12 +323,21 @@ export function ItemForm({
           aria-label={t("quantityLabel")}
         />
         <Input
+          ref={priceRef}
           type="number"
           inputMode="decimal"
           placeholder={t("pricePlaceholder")}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           onBlur={handleBlurSave}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              if (!isEditMode && name.trim()) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }
+          }}
           disabled={readOnly}
           enterKeyHint="done"
           className="h-11 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:w-24 sm:text-sm"
