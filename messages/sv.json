@@ -102,7 +102,8 @@
       "nameLabel": "Evenemangsnamn",
       "namePlaceholder": "Familjen jul...",
       "descriptionLabel": "Beskrivning",
-      "descriptionPlaceholder": "En kort beskrivning..."
+      "descriptionPlaceholder": "En kort beskrivning...",
+      "createNew": "Skapa ett nytt evenemang"
     }
   },
   "Login": {
@@ -217,8 +218,8 @@
     "modeClassicDesc": "Förrätt, Huvudrätt, Efterrätt",
     "modeAperoLabel": "Aptitretare",
     "modeAperoDesc": "Aptitretare, Drycker",
-    "modeServiceUniqueLabel": "Enstaka service",
-    "modeServiceUniqueDesc": "En service",
+    "modeServiceUniqueLabel": "Enkel rätt",
+    "modeServiceUniqueDesc": "En rätt",
     "summaryEvent": "Evenemang",
     "summaryDate": "Datum",
     "summaryGuestsLabel": "Gäster",
@@ -600,12 +601,12 @@
       "errorDelete": "Fel vid borttagning av måltid ❌"
     },
     "service": {
-      "added": "Tjänst tillagd! ✨",
-      "errorAdd": "Fel vid tilläggning av tjänst ❌",
-      "updated": "Tjänst uppdaterad ✓",
-      "errorUpdate": "Fel vid uppdatering av tjänst ❌",
-      "deleted": "Tjänst borttagen ✓",
-      "errorDelete": "Fel vid borttagning av tjänst ❌"
+      "added": "Rätt tillagd! ✨",
+      "errorAdd": "Fel vid tillägg rätt ❌",
+      "updated": "Rätt uppdaterad ✓",
+      "errorUpdate": "Fel vid uppdatering rätt ❌",
+      "deleted": "Rätt raderad ✓",
+      "errorDelete": "Fel vid radering rätt ❌"
     },
     "profile": {
       "fullName": "Fullt namn",

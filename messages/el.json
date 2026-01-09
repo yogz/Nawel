@@ -101,7 +101,8 @@
       "nameLabel": "Όνομα εκδήλωσης",
       "namePlaceholder": "Οικογενειακά Χριστούγεννα...",
       "descriptionLabel": "Περιγραφή",
-      "descriptionPlaceholder": "Μια μικρή περιγραφή..."
+      "descriptionPlaceholder": "Μια μικρή περιγραφή...",
+      "createNew": "Δημιουργία νέου συμβάντος"
     }
   },
   "Login": {
@@ -216,8 +217,8 @@
     "modeClassicDesc": "Ορεκτικό, Κυρίως, Επιδόρπιο",
     "modeAperoLabel": "Απεριτίφ",
     "modeAperoDesc": "Απεριτίφ, Ποτά",
-    "modeServiceUniqueLabel": "Μοναδική υπηρεσία",
-    "modeServiceUniqueDesc": "Μία υπηρεσία",
+    "modeServiceUniqueLabel": "Ένα πιάτο",
+    "modeServiceUniqueDesc": "Μόνο ένα πιάτο",
     "summaryEvent": "Εκδήλωση",
     "summaryDate": "Ημερομηνία",
     "summaryGuestsLabel": "Καλεσμένοι",
@@ -599,12 +600,12 @@
       "errorDelete": "Σφάλμα κατά τη διαγραφή γευματισμού ❌"
     },
     "service": {
-      "added": "Υπηρεσία προστέθηκε! ✨",
-      "errorAdd": "Σφάλμα κατά την προσθήκη υπηρεσίας ❌",
-      "updated": "Υπηρεσία ενημερώθηκε ✓",
-      "errorUpdate": "Σφάλμα κατά την ενημέρωση υπηρεσίας ❌",
-      "deleted": "Υπηρεσία διαγράφηκε ✓",
-      "errorDelete": "Σφάλμα κατά τη διαγραφή υπηρεσίας ❌"
+      "added": "Πιάτο προστέθηκε! ✨",
+      "errorAdd": "Σφάλμα προσθήκης πιάτο ❌",
+      "updated": "Πιάτο ενημερώθηκε ✓",
+      "errorUpdate": "Σφάλμα ενημέρωσης πιάτο ❌",
+      "deleted": "Πιάτο διαγράφηκε ✓",
+      "errorDelete": "Σφάλμα διαγραφής πιάτο ❌"
     },
     "profile": {
       "fullName": "Πλήρες όνομα",

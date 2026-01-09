@@ -125,7 +125,8 @@
       "nameLabel": "Event Name",
       "namePlaceholder": "Family Christmas...",
       "descriptionLabel": "Description",
-      "descriptionPlaceholder": "A short description..."
+      "descriptionPlaceholder": "A short description...",
+      "createNew": "Create a new event"
     },
     "replayTour": "Replay tutorial"
   },
@@ -241,8 +242,8 @@
     "modeClassicDesc": "Starter, Main, Dessert",
     "modeAperoLabel": "Appetizer",
     "modeAperoDesc": "Appetizer, Drinks",
-    "modeServiceUniqueLabel": "Single service",
-    "modeServiceUniqueDesc": "One service only",
+    "modeServiceUniqueLabel": "Single course",
+    "modeServiceUniqueDesc": "One course only",
     "summaryEvent": "Event",
     "summaryDate": "Date",
     "summaryGuestsLabel": "Guests",
@@ -627,12 +628,12 @@
       "errorDelete": "Error deleting meal ❌"
     },
     "service": {
-      "added": "Service added! ✨",
-      "errorAdd": "Error adding service ❌",
-      "updated": "Service updated ✓",
-      "errorUpdate": "Error updating service ❌",
-      "deleted": "Service deleted ✓",
-      "errorDelete": "Error deleting service ❌"
+      "added": "Course added! ✨",
+      "errorAdd": "Error adding course ❌",
+      "updated": "Course updated ✓",
+      "errorUpdate": "Error updating course ❌",
+      "deleted": "Course deleted ✓",
+      "errorDelete": "Error deleting course ❌"
     },
     "profile": {
       "fullName": "Full name",

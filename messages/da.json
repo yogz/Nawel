@@ -102,7 +102,8 @@
       "nameLabel": "Begivenhedsnavn",
       "namePlaceholder": "Familiejul...",
       "descriptionLabel": "Beskrivelse",
-      "descriptionPlaceholder": "En kort beskrivelse..."
+      "descriptionPlaceholder": "En kort beskrivelse...",
+      "createNew": "Opret en ny begivenhed"
     }
   },
   "Login": {
@@ -217,8 +218,8 @@
     "modeClassicDesc": "Starter, Hovedret, Dessert",
     "modeAperoLabel": "Forret",
     "modeAperoDesc": "Forret, Drikkevarer",
-    "modeServiceUniqueLabel": "Enkelt service",
-    "modeServiceUniqueDesc": "Ét service",
+    "modeServiceUniqueLabel": "Enkelt ret",
+    "modeServiceUniqueDesc": "En ret",
     "summaryEvent": "Begivenhed",
     "summaryDate": "Dato",
     "summaryGuestsLabel": "Gæster",
@@ -600,12 +601,12 @@
       "errorDelete": "Fejl ved sletning af måltid ❌"
     },
     "service": {
-      "added": "Service tilføjet! ✨",
-      "errorAdd": "Fejl ved tilføjelse af service ❌",
-      "updated": "Service opdateret ✓",
-      "errorUpdate": "Fejl ved opdatering af service ❌",
-      "deleted": "Service slettet ✓",
-      "errorDelete": "Fejl ved sletning af service ❌"
+      "added": "Ret tilføjet! ✨",
+      "errorAdd": "Fejl ved tilføjelse ret ❌",
+      "updated": "Ret opdateret ✓",
+      "errorUpdate": "Fejl ved opdatering ret ❌",
+      "deleted": "Ret slettet ✓",
+      "errorDelete": "Fejl ved sletning ret ❌"
     },
     "profile": {
       "fullName": "Fulde navn",

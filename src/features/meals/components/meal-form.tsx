@@ -81,28 +81,28 @@ export function MealForm({
       label: tCreateEvent("modeTotalLabel"),
       desc: tCreateEvent("modeTotalDesc"),
       icon: <UtensilsCrossed size={20} />,
-      services: ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"],
+      services: ["apero", "entree", "plat", "fromage", "dessert", "boissons", "autre"],
     },
     {
       id: "classique",
       label: tCreateEvent("modeClassicLabel"),
       desc: tCreateEvent("modeClassicDesc"),
       icon: <Utensils size={20} />,
-      services: ["Entree", "Plats", "Dessert"],
+      services: ["entree", "plat", "dessert"],
     },
     {
       id: "apero",
       label: tCreateEvent("modeAperoLabel"),
       desc: tCreateEvent("modeAperoDesc"),
       icon: <GlassWater size={20} />,
-      services: ["Aperitif", "Boissons"],
+      services: ["apero", "boissons"],
     },
     {
       id: "service-unique",
       label: tCreateEvent("modeServiceUniqueLabel"),
       desc: tCreateEvent("modeServiceUniqueDesc"),
       icon: <Utensils size={20} />,
-      services: ["Le Menu"],
+      services: ["custom"],
     },
   ] as const;
 

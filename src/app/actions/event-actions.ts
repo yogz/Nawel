@@ -75,7 +75,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       .insert(people)
       .values({
         eventId: created.id,
-        name: sanitizeStrictText(user.name ?? "Utilisateur", 50),
+        name: sanitizeStrictText(user.name ?? "User", 50),
         emoji: user.emoji ?? null,
         image: user.image ?? null,
         userId: user.id,
@@ -90,13 +90,13 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
 
     switch (input.creationMode) {
       case "total":
-        services = ["Aperitif", "Entree", "Plats", "Fromage", "Dessert", "Boissons", "Autre"];
+        services = ["apero", "entree", "plat", "fromage", "dessert", "boissons", "autre"];
         break;
       case "classique":
-        services = ["Entree", "Plats", "Dessert"];
+        services = ["entree", "plat", "dessert"];
         break;
       case "apero":
-        services = ["Aperitif", "Boissons"];
+        services = ["apero", "boissons"];
         break;
     }
 
@@ -107,14 +107,14 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         date: defaultDate,
         time: input.time,
         address: input.address,
-        title: "Repas complet",
+        title: "Full meal",
         services: services,
         adults: created.adults,
         children: created.children,
       });
     }
   } else if (input.creationMode === "service-unique") {
-    // Créer un repas avec un seul service vide
+    // Create a meal with a single empty service
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
     await createMealWithServicesAction({
       slug: created.slug,
@@ -122,8 +122,8 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       date: defaultDate,
       time: input.time,
       address: input.address,
-      title: "Repas",
-      services: ["Le Menu"],
+      title: "Meal",
+      services: ["custom"],
       adults: created.adults,
       children: created.children,
     });
