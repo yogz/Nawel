@@ -196,6 +196,7 @@ export const updateEventWithMealSchema = baseInput.extend({
 export const generateIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),
   itemName: safeStrictText(100),
+  note: safeText(500).optional(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),

@@ -113,7 +113,13 @@ export const generateIngredientsAction = createSafeAction(
       }
 
       const systemPrompt = tAi("systemPrompt", { guestDescription });
-      const userPrompt = tAi("userPrompt", { itemName: input.itemName });
+
+      // Build user prompt with optional note indication
+      const noteFromInput = input.note || item?.note;
+      let userPrompt = tAi("userPrompt", { itemName: input.itemName });
+      if (noteFromInput && noteFromInput.trim()) {
+        userPrompt += `\n\n${tAi("noteIndication", { note: noteFromInput.trim() })}`;
+      }
 
       // Check cache for this dish + people count
       // (Cache remains on peopleCount for now to keep it simple, but prompt will be detailed)
@@ -141,6 +147,7 @@ export const generateIngredientsAction = createSafeAction(
             adults: input.adults,
             children: input.children,
             description: item?.quantity || undefined,
+            note: input.note || item?.note || undefined,
             systemPrompt,
             userPrompt,
           });

@@ -141,6 +141,7 @@ export async function generateIngredients(
     adults?: number;
     children?: number;
     description?: string;
+    note?: string;
     systemPrompt?: string;
     userPrompt?: string;
   }
