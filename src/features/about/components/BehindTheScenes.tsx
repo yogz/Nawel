@@ -23,6 +23,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { submitFeedbackAction } from "@/app/actions/feedback-actions";
 import { useToast } from "@/hooks/use-toast";
 import { usePathname } from "next/navigation";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 interface Cost {
   id: number;
@@ -157,12 +165,63 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     other: "bg-slate-400",
   };
 
+  // Chart config for shadcn/ui
+  const chartConfig = {
+    hosting: {
+      label: t("categories.hosting"),
+      color: "hsl(217, 91%, 60%)", // blue-500
+    },
+    domain: {
+      label: t("categories.domain"),
+      color: "hsl(189, 94%, 43%)", // cyan-500
+    },
+    ai: {
+      label: t("categories.ai"),
+      color: "hsl(271, 91%, 65%)", // purple-500
+    },
+    email: {
+      label: t("categories.email"),
+      color: "hsl(330, 81%, 60%)", // pink-500
+    },
+    dev: {
+      label: t("categories.dev"),
+      color: "hsl(25, 95%, 53%)", // orange-500
+    },
+    services: {
+      label: t("categories.services"),
+      color: "hsl(160, 84%, 39%)", // emerald-500
+    },
+    other: {
+      label: t("categories.other"),
+      color: "hsl(215, 16%, 47%)", // slate-400
+    },
+  };
+
   // Get last 6 months for the chart
   const lastMonths = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }).reverse();
+
+  // Transform data for recharts
+  const chartData = lastMonths.map((month) => {
+    const costs = monthlyCategoryCosts[month] || {};
+    const [year, m] = month.split("-");
+    const monthName = new Date(parseInt(year), parseInt(m) - 1).toLocaleDateString("fr-FR", {
+      month: "short",
+    });
+
+    const dataPoint: Record<string, string | number> = {
+      month: monthName,
+    };
+
+    CATEGORIES.forEach((cat) => {
+      dataPoint[cat] = costs[cat] || 0;
+    });
+
+    return dataPoint;
+  });
 
   const maxMonthCost = Math.max(
     ...lastMonths.map((m) => {
@@ -279,78 +338,56 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </h3>
               </div>
 
-              <div className="flex h-48 items-end gap-2 px-1 sm:gap-3 sm:px-2 md:gap-4 md:px-2">
-                {lastMonths.map((month) => {
-                  const costs = monthlyCategoryCosts[month] || {};
-                  const total = Object.values(costs).reduce((sum, a) => sum + a, 0);
-                  const [year, m] = month.split("-");
-                  const monthName = new Date(parseInt(year), parseInt(m) - 1).toLocaleDateString(
-                    "fr-FR",
-                    { month: "short" }
-                  );
-
-                  // Trouver les barres à afficher pour déterminer la plus haute
-                  const barsToDisplay = CATEGORIES.filter((cat) => (costs[cat] || 0) > 0);
-
-                  // Ne pas afficher de barre si total est 0
-                  if (total === 0) {
+              <ChartContainer config={chartConfig} className="h-[300px] w-full">
+                <BarChart accessibilityLayer data={chartData}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    tickFormatter={(value) => value}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        indicator="dot"
+                        labelFormatter={(_, payload) => {
+                          if (payload && payload[0]) {
+                            const total = CATEGORIES.reduce(
+                              (sum, cat) => sum + ((payload[0].payload[cat] as number) || 0),
+                              0
+                            );
+                            return (
+                              <div className="flex flex-col gap-1">
+                                <span className="font-bold">{payload[0].payload.month}</span>
+                                <span className="text-primary font-semibold">
+                                  {total.toFixed(2)} €
+                                </span>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                    }
+                  />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  {CATEGORIES.map((cat) => {
+                    if ((categoryTotals[cat] || 0) === 0) return null;
                     return (
-                      <div key={month} className="flex flex-1 flex-col items-center">
-                        <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5" />
-                        <span className="mt-2 text-[9px] font-bold uppercase text-muted-foreground sm:mt-3 sm:text-[10px]">
-                          {monthName}
-                        </span>
-                      </div>
+                      <Bar
+                        key={cat}
+                        dataKey={cat}
+                        stackId="a"
+                        fill={`var(--color-${cat})`}
+                        radius={cat === CATEGORIES.find((c) => (categoryTotals[c] || 0) > 0) ? [4, 4, 0, 0] : 0}
+                      />
                     );
-                  }
-
-                  return (
-                    <div key={month} className="group relative flex flex-1 flex-col items-center">
-                      {/* Stacked Bar */}
-                      <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5 transition-all group-hover:bg-black/10">
-                        {CATEGORIES.map((cat) => {
-                          const amount = costs[cat] || 0;
-                          if (amount === 0) return null;
-                          const height = (amount / maxMonthCost) * 100;
-                          // La première catégorie (dans l'ordre CATEGORIES) apparaît visuellement en haut avec flex-col
-                          const isTopBar = cat === barsToDisplay[0];
-                          return (
-                            <div
-                              key={cat}
-                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500 ${isTopBar ? "rounded-t-lg" : ""}`}
-                              style={{ height: `${height}%` }}
-                            />
-                          );
-                        })}
-
-                        {/* Tooltip */}
-                        <div className="absolute -top-12 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text px-2 py-1.5 text-[9px] text-white opacity-0 shadow-xl transition-all group-hover:-top-14 group-hover:opacity-100 sm:text-[10px]">
-                          <div className="font-bold">{monthName}</div>
-                          <div className="text-primary">{total.toFixed(2)} €</div>
-                        </div>
-                      </div>
-                      <span className="mt-2 text-[9px] font-bold uppercase text-muted-foreground sm:mt-3 sm:text-[10px]">
-                        {monthName}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Chart Legend */}
-              <div className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-2 border-t border-black/5 pt-4">
-                {CATEGORIES.map((cat) => {
-                  if ((categoryTotals[cat] || 0) === 0) return null;
-                  return (
-                    <div key={cat} className="flex items-center gap-1.5">
-                      <div className={`h-2 w-2 rounded-full ${CATEGORY_COLORS[cat]}`} />
-                      <span className="text-[10px] font-medium uppercase tracking-tight text-muted-foreground">
-                        {t(`categories.${cat}`)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                  })}
+                </BarChart>
+              </ChartContainer>
             </div>
           </div>
         </motion.section>
