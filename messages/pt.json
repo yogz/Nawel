@@ -305,6 +305,7 @@
       "settings": "Ajustes"
     },
     "Planning": {
+      "all": "Todos",
       "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
       "addService": "Adicionar tempo",

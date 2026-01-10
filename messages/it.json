@@ -298,6 +298,7 @@
       "settings": "Impostazioni"
     },
     "Planning": {
+      "all": "Tutti",
       "noMeals": "Nessun pasto per ora.",
       "addMeal": "Aggiungi un pasto",
       "addService": "Aggiungi una portata",

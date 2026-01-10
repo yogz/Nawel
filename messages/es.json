@@ -298,6 +298,7 @@
       "settings": "Ajustes"
     },
     "Planning": {
+      "all": "Todos",
       "noMeals": "No hay comidas por el momento.",
       "addMeal": "Añadir comida",
       "addService": "Añadir tiempo",

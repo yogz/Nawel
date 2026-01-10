@@ -298,6 +298,7 @@
       "settings": "Instellingen"
     },
     "Planning": {
+      "all": "Alle",
       "noMeals": "Nog geen maaltijden.",
       "addMeal": "Maaltijd toevoegen",
       "addService": "Gang toevoegen",

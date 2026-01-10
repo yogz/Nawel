@@ -298,6 +298,7 @@
       "settings": "Indstillinger"
     },
     "Planning": {
+      "all": "Alle",
       "noMeals": "Ingen måltider endnu.",
       "addMeal": "Tilføj et måltid",
       "addService": "Tilføj en ret",

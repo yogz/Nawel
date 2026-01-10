@@ -299,6 +299,7 @@
       "settings": "Ayarlar"
     },
     "Planning": {
+      "all": "Tümü",
       "noMeals": "Henüz yemek yok.",
       "addMeal": "Yemek ekle",
       "addService": "Servis ekle",

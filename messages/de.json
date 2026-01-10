@@ -298,6 +298,7 @@
       "settings": "Einstellungen"
     },
     "Planning": {
+      "all": "Alle",
       "noMeals": "Noch keine Mahlzeiten.",
       "addMeal": "Mahlzeit hinzufügen",
       "addService": "Gang hinzufügen",
