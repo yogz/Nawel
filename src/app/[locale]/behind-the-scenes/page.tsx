@@ -18,7 +18,7 @@ export default async function BehindTheScenesPage(props: { params: Promise<{ loc
           <div className="flex min-h-screen items-center justify-center">Chargement...</div>
         }
       >
-        <BehindTheScenes costs={costs} />
+        <BehindTheScenes costs={costs as any} />
       </Suspense>
     </div>
   );
