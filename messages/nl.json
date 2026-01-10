@@ -795,9 +795,11 @@
     "noCosts": "Nog geen kostengegevens beschikbaar.",
     "categories": {
       "hosting": "Hosting",
-      "domain": "Domeinnaam",
-      "api": "AI-diensten",
-      "email": "E-maildienst",
+      "domain": "Domeinen",
+      "ai": "AI-diensten",
+      "email": "E-mails",
+      "dev": "Ontwikkeling",
+      "services": "Diensten van derden",
       "other": "Andere"
     }
   }

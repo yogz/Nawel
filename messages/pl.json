@@ -795,9 +795,11 @@
     "noCosts": "Brak danych o kosztach w tej chwili.",
     "categories": {
       "hosting": "Hosting",
-      "domain": "Nazwa domeny",
-      "api": "Usługi AI",
-      "email": "Usługa e-mail",
+      "domain": "Domeny",
+      "ai": "Usługi AI",
+      "email": "E-maile",
+      "dev": "Programowanie",
+      "services": "Usługi zewnętrzne",
       "other": "Inne"
     }
   }

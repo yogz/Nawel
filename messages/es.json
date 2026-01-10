@@ -797,9 +797,11 @@
     "noCosts": "No hay datos de costes disponibles por el momento.",
     "categories": {
       "hosting": "Alojamiento",
-      "domain": "Nombre de dominio",
-      "api": "Servicios IA",
-      "email": "Envío de emails",
+      "domain": "Dominios",
+      "ai": "Servicios IA",
+      "email": "Emails",
+      "dev": "Desarrollo",
+      "services": "Servicios de terceros",
       "other": "Otro"
     }
   }

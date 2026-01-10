@@ -782,5 +782,32 @@
     "iosInstructions": "Para instalar o CoList no seu iPhone:",
     "iosStep1": "Toque no botão de partilha",
     "iosStep2": "Selecione \"Adicionar ao ecrã principal\""
+  },
+  "BehindTheScenes": {
+    "title": "Nos Bastidores",
+    "subtitle": "Humano, Transparente, Gratuito.",
+    "bioTitle": "Quem sou eu?",
+    "bioContent": "O CoList é uma aplicação web que nasceu de uma frustração muito concreta.\n\nEntre jantares de família, fins de semana com amigos ou férias para organizar, pensamos sempre que estamos sincronizados... até ao momento em que nos encontramos com 15 pacotes de batatas fritas e nada para comer. Demasiadas mensagens, listas dispersas e, finalmente, uma organização confusa.\n\nCriei o CoList para trazer ordem a isto: saber simplesmente quem traz o quê, evitar duplicados e reduzir a carga mental ligada à organização.\n\nOriginalmente, era um projeto pessoal. Hoje, é uma aplicação web desenhada para ser partilhada, na esperança de que também o ajude a facilitar a organização dos seus momentos de convívio ✨",
+    "costsTitle": "Quanto é que custa?",
+    "costsSubtitle": "A transparência é um dos meus valores. Aqui está o detalhe do que me custa manter este site online sem publicidade.",
+    "monthlyView": "Vista mensal",
+    "totalSinceStart": "Total desde o lançamento",
+    "totalYear": "Total este ano",
+    "supportTitle": "Apoiar o projeto",
+    "supportDescription": "Se o CoList o ajuda no seu dia a dia, pode oferecer-me um café ou ajudar-me a cobrir os custos de alojamento. Cada gesto conta!",
+    "buyMeACoffee": "Oferecer-me um café",
+    "revolut": "Via Revolut",
+    "changelogTitle": "O que há de novo?",
+    "changelogSubtitle": "As últimas funcionalidades adicionadas com amor.",
+    "noCosts": "Ainda não existem dados de custos disponíveis.",
+    "categories": {
+      "hosting": "Hospedagem",
+      "domain": "Domínios",
+      "ai": "Serviços de IA",
+      "email": "E-mails",
+      "dev": "Desenvolvimento",
+      "services": "Serviços de terceiros",
+      "other": "Outros"
+    }
   }
 }

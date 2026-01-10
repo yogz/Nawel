@@ -112,12 +112,20 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="category">Catégorie</Label>
-              <Input
-                id="category"
-                name="category"
-                placeholder="ex: hosting, domain, api"
-                required
-              />
+              <Select name="category" required>
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hosting">Hébergement</SelectItem>
+                  <SelectItem value="domain">Domaines</SelectItem>
+                  <SelectItem value="ai">Services IA</SelectItem>
+                  <SelectItem value="email">E-mails</SelectItem>
+                  <SelectItem value="dev">Développement</SelectItem>
+                  <SelectItem value="services">Services tiers</SelectItem>
+                  <SelectItem value="other">Autre</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="date">Date de début</Label>

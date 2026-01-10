@@ -795,9 +795,11 @@
     "noCosts": "Ingen omkostningsdata tilgængelige endnu.",
     "categories": {
       "hosting": "Hosting",
-      "domain": "Domænenavn",
-      "api": "AI-tjenester",
-      "email": "E-mail-tjeneste",
+      "domain": "Domæner",
+      "ai": "AI-tjenester",
+      "email": "E-mails",
+      "dev": "Udvikling",
+      "services": "Tredjepartstjenester",
       "other": "Andet"
     }
   }

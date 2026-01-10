@@ -795,9 +795,11 @@
     "noCosts": "Noch keine Kostendaten verfügbar.",
     "categories": {
       "hosting": "Hosting",
-      "domain": "Domain-Name",
-      "api": "KI-Dienste",
-      "email": "E-Mail-Dienst",
+      "domain": "Domänen",
+      "ai": "KI-Dienste",
+      "email": "E-Mails",
+      "dev": "Entwicklung",
+      "services": "Dittanbieter-Dienste",
       "other": "Anderes"
     }
   }

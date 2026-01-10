@@ -788,9 +788,11 @@
     "noCosts": "Şu anda maliyet verisi bulunmamaktadır.",
     "categories": {
       "hosting": "Barındırma",
-      "domain": "Alan adı",
-      "api": "Yapay Zeka Hizmetleri",
-      "email": "E-posta gönderimi",
+      "domain": "Alan Adları",
+      "ai": "Yapay Zeka Hizmetleri",
+      "email": "E-postalar",
+      "dev": "Geliştirme",
+      "services": "Üçüncü Taraf Hizmetleri",
       "other": "Diğer"
     }
   }

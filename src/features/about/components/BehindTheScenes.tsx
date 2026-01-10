@@ -237,16 +237,16 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
           {/* Categories breakdown if costs exist */}
           {Object.keys(categoryTotals).length > 0 && (
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {["hosting", "domain", "api", "email"].map((cat) => {
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
+              {["hosting", "domain", "ai", "email", "dev", "services", "other"].map((cat) => {
                 const amount = categoryTotals[cat] || 0;
                 if (amount === 0) return null;
                 return (
                   <div key={cat} className="rounded-xl border border-white/20 bg-white/40 p-4">
-                    <p className="mb-1 text-xs font-bold uppercase text-muted-foreground">
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                       {t(`categories.${cat}`)}
                     </p>
-                    <p className="text-xl font-bold text-text">{amount.toFixed(2)} €</p>
+                    <p className="text-lg font-bold text-text">{amount.toFixed(2)} €</p>
                   </div>
                 );
               })}
@@ -269,7 +269,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
               <Button
-                className="group h-12 rounded-2xl border-none bg-[#FFDD00] px-8 text-black shadow-lg hover:bg-[#FFDD00]/90"
+                className="group h-12 rounded-2xl border-none bg-[#FFDD00] px-8 text-black shadow-lg transition-transform hover:scale-[1.02] hover:bg-[#FFDD00]/95 active:scale-[0.98]"
                 asChild
               >
                 <a
@@ -281,14 +281,16 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   <img
                     src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg"
                     alt="Buy Me a Coffee"
-                    className="mr-2 h-5 w-5"
+                    className="mr-3 h-6 w-6"
                   />
-                  <span className="font-bold">{t("buyMeACoffee")}</span>
+                  <span className="text-base font-bold uppercase tracking-tight">
+                    {t("buyMeACoffee")}
+                  </span>
                   <ArrowUpRight className="ml-2 h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
                 </a>
               </Button>
               <Button
-                className="h-12 rounded-2xl border-none bg-[#0075eb] px-8 text-white shadow-lg hover:bg-[#0075eb]/90"
+                className="group h-12 rounded-2xl border-none bg-white px-8 text-black shadow-lg transition-transform hover:scale-[1.02] hover:bg-gray-50 active:scale-[0.98]"
                 asChild
               >
                 <a
@@ -297,8 +299,22 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   rel="noopener noreferrer"
                   className="flex items-center"
                 >
-                  <CreditCard className="mr-2 h-5 w-5" />
-                  <span className="font-bold">{t("revolut")}</span>
+                  <svg
+                    viewBox="0 0 100 100"
+                    className="mr-3 h-6 w-6"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M0 20C0 8.95431 8.95431 0 20 0H80C91.0457 0 100 8.95431 100 20V80C100 91.0457 91.0457 100 80 100H20C8.95431 100 0 91.0457 0 80V20Z"
+                      fill="black"
+                    />
+                    <path d="M25 35H75V43H53V75H45V43H25V35Z" fill="white" />
+                  </svg>
+                  <span className="text-base font-bold uppercase tracking-tight">
+                    {t("revolut")}
+                  </span>
+                  <ArrowUpRight className="ml-2 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
                 </a>
               </Button>
             </div>

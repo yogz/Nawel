@@ -798,9 +798,11 @@
     "noCosts": "No cost data available yet.",
     "categories": {
       "hosting": "Hosting",
-      "domain": "Domain name",
-      "api": "AI Services",
-      "email": "Email service",
+      "domain": "Domains",
+      "ai": "AI Services",
+      "email": "Emails",
+      "dev": "Development",
+      "services": "Third-party Services",
       "other": "Other"
     }
   }

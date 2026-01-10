@@ -794,10 +794,12 @@
     "changelogSubtitle": "De senaste funktionerna tillagda med kärlek.",
     "noCosts": "Ingen kostnadsdata tillgänglig än.",
     "categories": {
-      "hosting": "Webbhotell",
-      "domain": "Domännamn",
-      "api": "AI-tjänster",
-      "email": "E-posttjänst",
+      "hosting": "Hosting",
+      "domain": "Domäner",
+      "ai": "AI-tjänster",
+      "email": "E-post",
+      "dev": "Utveckling",
+      "services": "Tredjepartstjänster",
       "other": "Annat"
     }
   }
