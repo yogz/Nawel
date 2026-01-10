@@ -60,7 +60,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       siteName: "CoList",
       images: [
         {
-          url: "/og-image.png",
+          url: "https://colist.fr/og-image.png",
           width: 1024,
           height: 1024,
           alt: title,
@@ -71,7 +71,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png"],
+      images: ["https://colist.fr/og-image.png"],
     },
   };
 }
