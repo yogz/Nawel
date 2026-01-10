@@ -34,9 +34,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: appTitle,
     description: "Coordonnez vos repas de fêtes simplement.",
+    url: "https://colist.fr",
     type: "website",
     locale: "fr_FR",
-    images: ["/og-image.png"],
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1024,
+        height: 1024,
+        alt: appTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

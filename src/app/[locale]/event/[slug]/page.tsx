@@ -25,10 +25,35 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params;
   const t = await getTranslations({ locale: params.locale, namespace: "EventDashboard.Header" });
   const plan = await fetchPlan(params.slug);
+
+  const title = plan.event?.name || params.slug;
+  const description = plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug });
+  const url = `https://colist.fr/${params.locale}/event/${params.slug}`;
+
   return {
-    title: plan.event?.name || params.slug,
-    description:
-      plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug }),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      locale: params.locale,
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1024,
+          height: 1024,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/og-image.png"],
+    },
   };
 }
 
