@@ -330,16 +330,16 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
             </div>
 
             {/* Monthly Chart */}
-            <div className="rounded-2xl border border-white/20 bg-white/60 p-6 shadow-md backdrop-blur-sm md:col-span-2">
-              <div className="mb-8 flex items-center justify-between">
-                <h3 className="flex items-center gap-2 text-lg font-bold">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+            <div className="rounded-2xl border border-white/20 bg-white/60 p-3 shadow-md backdrop-blur-sm sm:p-6 md:col-span-2">
+              <div className="mb-4 flex items-center justify-between sm:mb-8">
+                <h3 className="flex items-center gap-2 text-base font-bold sm:text-lg">
+                  <TrendingUp className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
                   {t("monthlyView")}
                 </h3>
               </div>
 
-              <ChartContainer config={chartConfig} className="h-[300px] w-full">
-                <BarChart accessibilityLayer data={chartData}>
+              <ChartContainer config={chartConfig} className="h-[250px] w-full sm:h-[300px]">
+                <BarChart accessibilityLayer data={chartData} margin={{ left: -20, right: 0 }}>
                   <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
                   <XAxis
                     dataKey="month"
@@ -347,6 +347,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     tickMargin={10}
                     axisLine={false}
                     tickFormatter={(value) => value}
+                    tick={{ fontSize: 12 }}
                   />
                   <ChartTooltip
                     cursor={false}
@@ -374,18 +375,25 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     }
                   />
                   <ChartLegend content={<ChartLegendContent />} />
-                  {CATEGORIES.map((cat) => {
-                    if ((categoryTotals[cat] || 0) === 0) return null;
-                    return (
-                      <Bar
-                        key={cat}
-                        dataKey={cat}
-                        stackId="a"
-                        fill={`var(--color-${cat})`}
-                        radius={cat === CATEGORIES.find((c) => (categoryTotals[c] || 0) > 0) ? [4, 4, 0, 0] : 0}
-                      />
-                    );
-                  })}
+                  {(() => {
+                    // Find the last category (top of stack) that has data
+                    const lastCategoryWithData = [...CATEGORIES]
+                      .reverse()
+                      .find((c) => (categoryTotals[c] || 0) > 0);
+
+                    return CATEGORIES.map((cat) => {
+                      if ((categoryTotals[cat] || 0) === 0) return null;
+                      return (
+                        <Bar
+                          key={cat}
+                          dataKey={cat}
+                          stackId="a"
+                          fill={`var(--color-${cat})`}
+                          radius={cat === lastCategoryWithData ? [4, 4, 0, 0] : 0}
+                        />
+                      );
+                    });
+                  })()}
                 </BarChart>
               </ChartContainer>
             </div>
