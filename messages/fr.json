@@ -356,7 +356,13 @@
       "noItemsFor": "Aucun article à acheter pour {name}",
       "viewAllList": "Voir la liste complète",
       "allListTitle": "Liste de courses globale",
-      "allListDescription": "Tous les articles à acheter par l'ensemble des convives"
+      "allListDescription": "Tous les articles à acheter par l'ensemble des convives",
+      "back": "Retour",
+      "shareList": "Partager cette liste",
+      "readOnlyNotice": "Mode lecture seule. Demandez le lien d'édition pour cocher les articles.",
+      "in": "Dans",
+      "seeLess": "Voir moins",
+      "seeSources": "Voir les sources"
     },
     "Settings": {
       "ambiance": "Ambiance",

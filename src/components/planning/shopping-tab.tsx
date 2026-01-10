@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { ShoppingCart, ExternalLink, Check, UserX, Users, List, X } from "lucide-react";
+import { ShoppingCart, ExternalLink, Check, UserX, Users, X } from "lucide-react";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
@@ -19,13 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+
 import { useTranslations } from "next-intl";
 
 interface ShoppingTabProps {
@@ -63,9 +57,6 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
   const [selectedPersonId, setSelectedPersonId] = useState<string>(
     isOwner ? "all" : currentPerson?.id.toString() || ""
   );
-
-  // State for showing the all shopping list dialog
-  const [showAllListDialog, setShowAllListDialog] = useState(false);
 
   // Determine which person(s) to show
   const displayPerson = useMemo((): Person | null => {
@@ -351,98 +342,51 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               style={{ transform: `scaleX(${progressAll / 100})` }}
             />
           </div>
-          {/* Button to view all shopping list */}
-          <button
-            onClick={() => setShowAllListDialog(true)}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95"
-          >
-            <List size={18} />
-            {t("viewAllList")}
-          </button>
         </div>
 
-        {/* Dialog for all shopping list */}
-        <Dialog open={showAllListDialog} onOpenChange={setShowAllListDialog}>
-          <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <List size={20} className="text-accent" />
-                {t("allListTitle")}
-              </DialogTitle>
-              <DialogDescription>{t("allListDescription")}</DialogDescription>
-            </DialogHeader>
-            <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
-              {shoppingList.length === 0 ? (
-                <div className="py-8 text-center">
-                  <ShoppingCart className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-                  <p className="text-sm text-muted-foreground">{t("noShopping")}</p>
+        {/* Global shopping list card */}
+        <Link
+          href={
+            writeKey ? `/event/${slug}/shopping/all?key=${writeKey}` : `/event/${slug}/shopping/all`
+          }
+          className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
+        >
+          {/* Decorative background gradient */}
+          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+          <div className="relative">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10">
+                <Users size={24} className="text-accent" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-text">{t("allListTitle")}</h3>
+                  {progressAll === 100 && (
+                    <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+                      <Check size={10} />
+                      {t("completed")}
+                    </span>
+                  )}
                 </div>
-              ) : (
-                shoppingList.map((aggregatedItem) => {
-                  const isChecked = getEffectiveChecked(aggregatedItem);
-                  return (
+                <div className="mt-1 flex items-center gap-3">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
                     <div
-                      key={aggregatedItem.id}
-                      className={clsx(
-                        "flex items-start gap-3 rounded-xl border p-3 transition-all",
-                        isChecked ? "border-green-200 bg-green-50" : "border-gray-100 bg-white"
-                      )}
-                    >
-                      <div
-                        className={clsx(
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2",
-                          isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
-                        )}
-                      >
-                        {isChecked && <Check size={12} strokeWidth={3} />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <span
-                            className={clsx(
-                              "font-medium",
-                              isChecked ? "text-green-700 line-through" : "text-text"
-                            )}
-                          >
-                            {aggregatedItem.name}
-                          </span>
-                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                            <span className="text-sm text-muted-foreground">
-                              {formatAggregatedQuantity(
-                                aggregatedItem.quantity,
-                                aggregatedItem.unit
-                              )}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {aggregatedItem.sources.length > 1 ? (
-                            <span className="font-medium text-accent">
-                              {t("sources", { count: aggregatedItem.sources.length })}
-                            </span>
-                          ) : (
-                            <>
-                              {aggregatedItem.sources[0].type === "ingredient" && (
-                                <>
-                                  <span className="font-medium">
-                                    {aggregatedItem.sources[0].item.name}
-                                  </span>
-                                  {" · "}
-                                </>
-                              )}
-                              {aggregatedItem.sources[0].mealTitle} ·{" "}
-                              {aggregatedItem.sources[0].serviceTitle}
-                            </>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                      className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${progressAll === 100 ? "bg-green-500" : "bg-accent"}`}
+                      style={{ transform: `scaleX(${progressAll / 100})` }}
+                    />
+                  </div>
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {checkedAll}/{totalAll}
+                  </span>
+                </div>
+              </div>
+              <ExternalLink
+                size={18}
+                className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
+              />
             </div>
-          </DialogContent>
-        </Dialog>
+          </div>
+        </Link>
 
         {/* Per-person cards */}
         <div className="space-y-3">

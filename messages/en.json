@@ -356,7 +356,13 @@
       "noItemsFor": "No items to buy for {name}",
       "viewAllList": "View complete list",
       "allListTitle": "Global shopping list",
-      "allListDescription": "All items to buy by all guests"
+      "allListDescription": "All items to buy by all guests",
+      "back": "Back",
+      "shareList": "Share this list",
+      "readOnlyNotice": "Read-only mode. Ask for the edit link to check items.",
+      "in": "In",
+      "seeLess": "See less",
+      "seeSources": "See sources"
     },
     "Settings": {
       "ambiance": "Ambiance",
