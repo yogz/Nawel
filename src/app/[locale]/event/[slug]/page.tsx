@@ -12,6 +12,7 @@ import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventPlanner } from "@/components/planning/event-planner";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { toOpenGraphLocale, getAlternateOpenGraphLocales } from "@/lib/locale-utils";
 
 // ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
 export const revalidate = 30;
@@ -33,12 +34,30 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title,
     description,
+    alternates: {
+      canonical: url,
+      languages: {
+        fr: `https://colist.fr/fr/event/${params.slug}`,
+        en: `https://colist.fr/en/event/${params.slug}`,
+        es: `https://colist.fr/es/event/${params.slug}`,
+        pt: `https://colist.fr/pt/event/${params.slug}`,
+        de: `https://colist.fr/de/event/${params.slug}`,
+        el: `https://colist.fr/el/event/${params.slug}`,
+        it: `https://colist.fr/it/event/${params.slug}`,
+        nl: `https://colist.fr/nl/event/${params.slug}`,
+        pl: `https://colist.fr/pl/event/${params.slug}`,
+        sv: `https://colist.fr/sv/event/${params.slug}`,
+        da: `https://colist.fr/da/event/${params.slug}`,
+      },
+    },
     openGraph: {
       title,
       description,
       url,
       type: "website",
-      locale: params.locale,
+      locale: toOpenGraphLocale(params.locale),
+      alternateLocale: getAlternateOpenGraphLocales(params.locale),
+      siteName: "CoList",
       images: [
         {
           url: "/og-image.png",
