@@ -1,7 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, MapPin, Calendar, Edit3, ExternalLink, Download, PlusIcon } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  Calendar,
+  Edit3,
+  ExternalLink,
+  Download,
+  PlusIcon,
+  Package,
+} from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { ServiceSection } from "./service-section";
@@ -95,8 +104,9 @@ export function MealContainer({
             disabled={readOnly}
             aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
           >
-            <h2 className="text-gradient-header truncate text-lg font-black tracking-tight">
-              {meal.title || meal.date}
+            <h2 className="text-gradient-header flex items-center gap-2 truncate text-lg font-black tracking-tight">
+              {meal.date === "common" && <Package className="h-5 w-5" />}
+              {meal.date === "common" ? t("common") : meal.title || meal.date}
             </h2>
             {!readOnly && (
               <span className="shrink-0 text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">

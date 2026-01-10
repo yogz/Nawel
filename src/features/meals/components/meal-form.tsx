@@ -185,7 +185,7 @@ export function MealForm({
       return;
     }
     const formattedDate = isCommon ? "common" : format(date!, "yyyy-MM-dd");
-    const finalTitle = title || (isCommon ? t("common") : "");
+    const finalTitle = isCommon && !title ? "" : title;
 
     // Pour la création, ne pas utiliser startTransition pour que le state se mette à jour immédiatement
     if (isEditMode) {

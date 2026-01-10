@@ -347,9 +347,7 @@ export function EventPlanner({
                 }
                 onDelete={handleDelete}
                 onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
-                onCreateService={() =>
-                  setSheet({ type: "service", mealId: plan.meals[0]?.id ?? -1 })
-                }
+                onCreateService={(mealId) => setSheet({ type: "service", mealId })}
                 setSheet={setSheet}
                 sheet={sheet}
                 slug={slug}
