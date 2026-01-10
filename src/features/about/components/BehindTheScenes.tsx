@@ -279,7 +279,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </h3>
               </div>
 
-              <div className="flex h-48 items-end gap-3 px-2 sm:gap-4 md:gap-6">
+              <div className="flex h-48 items-end gap-2 px-1 sm:gap-3 sm:px-2 md:gap-4 md:px-2">
                 {lastMonths.map((month) => {
                   const costs = monthlyCategoryCosts[month] || {};
                   const total = Object.values(costs).reduce((sum, a) => sum + a, 0);
@@ -289,12 +289,15 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     { month: "short" }
                   );
 
+                  // Trouver les barres à afficher pour déterminer la dernière
+                  const barsToDisplay = CATEGORIES.filter((cat) => (costs[cat] || 0) > 0);
+
                   // Ne pas afficher de barre si total est 0
                   if (total === 0) {
                     return (
                       <div key={month} className="flex flex-1 flex-col items-center">
                         <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5" />
-                        <span className="mt-3 text-[10px] font-bold uppercase text-muted-foreground">
+                        <span className="mt-2 text-[9px] font-bold uppercase text-muted-foreground sm:mt-3 sm:text-[10px]">
                           {monthName}
                         </span>
                       </div>
@@ -305,26 +308,27 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     <div key={month} className="group relative flex flex-1 flex-col items-center">
                       {/* Stacked Bar */}
                       <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5 transition-all group-hover:bg-black/10">
-                        {CATEGORIES.map((cat) => {
+                        {CATEGORIES.map((cat, index) => {
                           const amount = costs[cat] || 0;
                           if (amount === 0) return null;
                           const height = (amount / maxMonthCost) * 100;
+                          const isLastBar = cat === barsToDisplay[barsToDisplay.length - 1];
                           return (
                             <div
                               key={cat}
-                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500`}
+                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500 ${isLastBar ? "rounded-t-lg" : ""}`}
                               style={{ height: `${height}%` }}
                             />
                           );
                         })}
 
                         {/* Tooltip */}
-                        <div className="absolute -top-12 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text p-2 text-[10px] text-white opacity-0 shadow-xl transition-all group-hover:-top-14 group-hover:opacity-100">
+                        <div className="absolute -top-12 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text px-2 py-1.5 text-[9px] text-white opacity-0 shadow-xl transition-all group-hover:-top-14 group-hover:opacity-100 sm:text-[10px]">
                           <div className="font-bold">{monthName}</div>
                           <div className="text-primary">{total.toFixed(2)} €</div>
                         </div>
                       </div>
-                      <span className="mt-3 text-[10px] font-bold uppercase text-muted-foreground">
+                      <span className="mt-2 text-[9px] font-bold uppercase text-muted-foreground sm:mt-3 sm:text-[10px]">
                         {monthName}
                       </span>
                     </div>
