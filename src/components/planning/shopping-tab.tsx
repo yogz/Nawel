@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
+import { ShoppingCart, ExternalLink, Check, UserX, Users, List, X } from "lucide-react";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import clsx from "clsx";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
@@ -19,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 
 interface ShoppingTabProps {
@@ -56,6 +63,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
   const [selectedPersonId, setSelectedPersonId] = useState<string>(
     isOwner ? "all" : currentPerson?.id.toString() || ""
   );
+
+  // State for showing the all shopping list dialog
+  const [showAllListDialog, setShowAllListDialog] = useState(false);
 
   // Determine which person(s) to show
   const displayPerson = useMemo((): Person | null => {
@@ -341,7 +351,98 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               style={{ transform: `scaleX(${progressAll / 100})` }}
             />
           </div>
+          {/* Button to view all shopping list */}
+          <button
+            onClick={() => setShowAllListDialog(true)}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95"
+          >
+            <List size={18} />
+            {t("viewAllList")}
+          </button>
         </div>
+
+        {/* Dialog for all shopping list */}
+        <Dialog open={showAllListDialog} onOpenChange={setShowAllListDialog}>
+          <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <List size={20} className="text-accent" />
+                {t("allListTitle")}
+              </DialogTitle>
+              <DialogDescription>{t("allListDescription")}</DialogDescription>
+            </DialogHeader>
+            <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-2">
+              {shoppingList.length === 0 ? (
+                <div className="py-8 text-center">
+                  <ShoppingCart className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                  <p className="text-sm text-muted-foreground">{t("noShopping")}</p>
+                </div>
+              ) : (
+                shoppingList.map((aggregatedItem) => {
+                  const isChecked = getEffectiveChecked(aggregatedItem);
+                  return (
+                    <div
+                      key={aggregatedItem.id}
+                      className={clsx(
+                        "flex items-start gap-3 rounded-xl border p-3 transition-all",
+                        isChecked ? "border-green-200 bg-green-50" : "border-gray-100 bg-white"
+                      )}
+                    >
+                      <div
+                        className={clsx(
+                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2",
+                          isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
+                        )}
+                      >
+                        {isChecked && <Check size={12} strokeWidth={3} />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-baseline gap-2">
+                          <span
+                            className={clsx(
+                              "font-medium",
+                              isChecked ? "text-green-700 line-through" : "text-text"
+                            )}
+                          >
+                            {aggregatedItem.name}
+                          </span>
+                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                            <span className="text-sm text-muted-foreground">
+                              {formatAggregatedQuantity(
+                                aggregatedItem.quantity,
+                                aggregatedItem.unit
+                              )}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {aggregatedItem.sources.length > 1 ? (
+                            <span className="font-medium text-accent">
+                              {t("sources", { count: aggregatedItem.sources.length })}
+                            </span>
+                          ) : (
+                            <>
+                              {aggregatedItem.sources[0].type === "ingredient" && (
+                                <>
+                                  <span className="font-medium">
+                                    {aggregatedItem.sources[0].item.name}
+                                  </span>
+                                  {" · "}
+                                </>
+                              )}
+                              {aggregatedItem.sources[0].mealTitle} ·{" "}
+                              {aggregatedItem.sources[0].serviceTitle}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Per-person cards */}
         <div className="space-y-3">

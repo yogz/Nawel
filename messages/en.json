@@ -353,7 +353,10 @@
       "check": "Check",
       "uncheck": "Uncheck",
       "sources": "{count} sources",
-      "noItemsFor": "No items to buy for {name}"
+      "noItemsFor": "No items to buy for {name}",
+      "viewAllList": "View complete list",
+      "allListTitle": "Global shopping list",
+      "allListDescription": "All items to buy by all guests"
     },
     "Settings": {
       "ambiance": "Ambiance",

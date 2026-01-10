@@ -353,7 +353,10 @@
       "check": "Cocher",
       "uncheck": "Décocher",
       "sources": "{count} sources",
-      "noItemsFor": "Aucun article à acheter pour {name}"
+      "noItemsFor": "Aucun article à acheter pour {name}",
+      "viewAllList": "Voir la liste complète",
+      "allListTitle": "Liste de courses globale",
+      "allListDescription": "Tous les articles à acheter par l'ensemble des convives"
     },
     "Settings": {
       "ambiance": "Ambiance",
