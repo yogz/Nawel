@@ -357,6 +357,12 @@ export const createCostSchema = z.object({
   category: z.string().min(1).max(50),
   description: z.string().max(500).optional(),
   date: z.date().optional(),
+  frequency: z.enum(["once", "monthly", "yearly"]).default("once"),
+});
+
+export const toggleCostActiveAdminSchema = z.object({
+  id: z.number().int().positive(),
+  isActive: z.boolean(),
 });
 
 export const deleteCostAdminSchema = z.object({

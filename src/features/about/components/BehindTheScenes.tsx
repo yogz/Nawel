@@ -21,7 +21,10 @@ interface Cost {
   amount: number;
   category: string;
   description: string | null;
-  date: Date;
+  date: Date | string; // Handle both Date objects and string timestamps
+  frequency: "once" | "monthly" | "yearly";
+  isActive: boolean;
+  stoppedAt: Date | string | null;
 }
 
 interface BehindTheScenesProps {
@@ -31,22 +34,70 @@ interface BehindTheScenesProps {
 export function BehindTheScenes({ costs }: BehindTheScenesProps) {
   const t = useTranslations("BehindTheScenes");
 
-  // Group costs by month
-  const monthlyCosts = costs.reduce(
-    (acc, cost) => {
-      const date = new Date(cost.date);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-      acc[monthKey] = (acc[monthKey] || 0) + cost.amount;
+  const today = new Date();
+  const currentYear = today.getFullYear();
+
+  // Helper to expand recurring costs into flat list of occurrences
+  const expandedOccurrences = costs.flatMap((cost) => {
+    const startDate = new Date(cost.date);
+    const endDate = cost.isActive ? today : cost.stoppedAt ? new Date(cost.stoppedAt) : today;
+    const occurrences: { amount: number; date: Date; category: string }[] = [];
+
+    if (cost.frequency === "once") {
+      occurrences.push({ amount: cost.amount, date: startDate, category: cost.category });
+    } else if (cost.frequency === "monthly") {
+      const current = new Date(startDate);
+      // Ensure we don't go past today even if stoppedAt is in future
+      const actualEnd = endDate > today ? today : endDate;
+
+      while (current <= actualEnd) {
+        occurrences.push({
+          amount: cost.amount,
+          date: new Date(current),
+          category: cost.category,
+        });
+        current.setMonth(current.getMonth() + 1);
+      }
+    } else if (cost.frequency === "yearly") {
+      const current = new Date(startDate);
+      const actualEnd = endDate > today ? today : endDate;
+
+      while (current <= actualEnd) {
+        occurrences.push({
+          amount: cost.amount,
+          date: new Date(current),
+          category: cost.category,
+        });
+        current.setFullYear(current.getFullYear() + 1);
+      }
+    }
+
+    return occurrences;
+  });
+
+  // Then use these occurrences for all calculations
+  const monthlyCosts = expandedOccurrences.reduce(
+    (acc, occ) => {
+      const monthKey = `${occ.date.getFullYear()}-${String(occ.date.getMonth() + 1).padStart(2, "0")}`;
+      acc[monthKey] = (acc[monthKey] || 0) + occ.amount;
       return acc;
     },
     {} as Record<string, number>
   );
 
-  const totalSinceStart = costs.reduce((sum, cost) => sum + cost.amount, 0);
-  const currentYear = new Date().getFullYear();
-  const totalThisYear = costs
-    .filter((c) => new Date(c.date).getFullYear() === currentYear)
-    .reduce((sum, cost) => sum + cost.amount, 0);
+  const totalSinceStart = expandedOccurrences.reduce((sum, occ) => sum + occ.amount, 0);
+  const totalThisYear = expandedOccurrences
+    .filter((occ) => occ.date.getFullYear() === currentYear)
+    .reduce((sum, occ) => sum + occ.amount, 0);
+
+  // Group by category for the breakdown
+  const categoryTotals = expandedOccurrences.reduce(
+    (acc, occ) => {
+      acc[occ.category] = (acc[occ.category] || 0) + occ.amount;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Get last 6 months for the chart
   const lastMonths = Array.from({ length: 6 }, (_, i) => {
@@ -99,15 +150,15 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
         {/* Bio Section */}
         <motion.section variants={itemVariants} className="relative">
-          <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-xl backdrop-blur-md sm:p-12">
-            <div className="absolute right-0 top-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-            <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row">
-              <div className="flex-1 space-y-6">
-                <h2 className="flex items-center gap-3 text-2xl font-bold">
-                  <Heart className="h-6 w-6 fill-red-500 text-red-500" />
+          <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-lg backdrop-blur-md sm:p-10">
+            <div className="absolute right-0 top-0 -mr-20 -mt-20 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
+            <div className="relative z-10 flex flex-col items-center gap-6 md:flex-row">
+              <div className="flex-1 space-y-4">
+                <h2 className="flex items-center gap-2 text-xl font-bold">
+                  <Heart className="h-5 w-5 fill-red-500 text-red-500" />
                   {t("bioTitle")}
                 </h2>
-                <p className="text-text/80 whitespace-pre-line text-lg font-medium leading-relaxed">
+                <p className="text-text/80 whitespace-pre-line text-base font-medium leading-relaxed">
                   {t("bioContent")}
                 </p>
               </div>
@@ -185,12 +236,10 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
           </div>
 
           {/* Categories breakdown if costs exist */}
-          {costs.length > 0 && (
+          {Object.keys(categoryTotals).length > 0 && (
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
               {["hosting", "domain", "api", "email"].map((cat) => {
-                const amount = costs
-                  .filter((c) => c.category === cat)
-                  .reduce((s, c) => s + c.amount, 0);
+                const amount = categoryTotals[cat] || 0;
                 if (amount === 0) return null;
                 return (
                   <div key={cat} className="rounded-xl border border-white/20 bg-white/40 p-4">
@@ -211,8 +260,8 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
           className="rounded-3xl border border-primary/10 bg-primary/5 p-8 sm:p-12"
         >
           <div className="flex flex-col items-center gap-8 md:flex-row">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
-              <Coffee className="h-10 w-10 text-primary" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+              <Coffee className="h-8 w-8 text-primary" />
             </div>
             <div className="flex-1 space-y-4 text-center md:text-left">
               <h2 className="text-2xl font-bold text-text">{t("supportTitle")}</h2>
@@ -220,24 +269,36 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
               <Button
-                variant="premium"
-                className="group h-12 rounded-2xl px-8 shadow-accent-lg"
+                className="group h-12 rounded-2xl border-none bg-[#FFDD00] px-8 text-black shadow-lg hover:bg-[#FFDD00]/90"
                 asChild
               >
                 <a
                   href="https://www.buymeacoffee.com/colist"
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="flex items-center"
                 >
-                  <Coffee className="mr-2 h-5 w-5" />
-                  {t("buyMeACoffee")}
-                  <ArrowUpRight className="ml-2 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <img
+                    src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg"
+                    alt="Buy Me a Coffee"
+                    className="mr-2 h-5 w-5"
+                  />
+                  <span className="font-bold">{t("buyMeACoffee")}</span>
+                  <ArrowUpRight className="ml-2 h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
                 </a>
               </Button>
-              <Button variant="outline" className="h-12 rounded-2xl bg-white/50 px-8" asChild>
-                <a href="https://revolut.me/yogzgo" target="_blank" rel="noopener noreferrer">
+              <Button
+                className="h-12 rounded-2xl border-none bg-[#0075eb] px-8 text-white shadow-lg hover:bg-[#0075eb]/90"
+                asChild
+              >
+                <a
+                  href="https://revolut.me/yogzgo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center"
+                >
                   <CreditCard className="mr-2 h-5 w-5" />
-                  {t("revolut")}
+                  <span className="font-bold">{t("revolut")}</span>
                 </a>
               </Button>
             </div>

@@ -333,5 +333,8 @@ export const costs = pgTable("costs", {
   category: varchar("category", { length: 50 }).notNull(), // 'hosting', 'domain', 'api', etc.
   description: text("description"),
   date: timestamp("date").notNull().defaultNow(),
+  frequency: varchar("frequency", { length: 20 }).notNull().default("once"), // 'once', 'monthly', 'yearly'
+  isActive: boolean("is_active").notNull().default(true),
+  stoppedAt: timestamp("stopped_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

@@ -30,6 +30,7 @@ import {
   deleteFeedbackAdminSchema,
   createCostSchema,
   deleteCostAdminSchema,
+  toggleCostActiveAdminSchema,
 } from "./schemas";
 import fs from "fs";
 import path from "path";
@@ -620,12 +621,33 @@ export const createCostAction = createSafeAction(createCostSchema, async (input)
     category: input.category,
     description: input.description,
     date: input.date || new Date(),
+    frequency: input.frequency,
+    isActive: true,
   });
 
   revalidatePath("/admin/costs");
   revalidatePath("/behind-the-scenes");
   return { success: true };
 });
+
+export const toggleCostActiveAction = createSafeAction(
+  toggleCostActiveAdminSchema,
+  async (input) => {
+    await requireAdmin();
+
+    await db
+      .update(costs)
+      .set({
+        isActive: input.isActive,
+        stoppedAt: input.isActive ? null : new Date(),
+      })
+      .where(eq(costs.id, input.id));
+
+    revalidatePath("/admin/costs");
+    revalidatePath("/behind-the-scenes");
+    return { success: true };
+  }
+);
 
 export const getCostsAction = withErrorThrower(async () => {
   await requireAdmin();
