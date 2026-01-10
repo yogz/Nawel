@@ -298,6 +298,7 @@
       "settings": "Settings"
     },
     "Planning": {
+      "all": "All",
       "noMeals": "No meals for now.",
       "addMeal": "Add a meal",
       "addService": "Add a course",

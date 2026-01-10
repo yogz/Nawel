@@ -5,8 +5,9 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./event-planner-header";
-import { PlusIcon, Calendar } from "lucide-react";
+import { PlusIcon, Calendar, Filter } from "lucide-react";
 import { MealContainer } from "./meal-container";
+import { DayTabs } from "./day-tabs";
 import { DangerZoneTrigger, DangerZoneContent } from "../common/destructive-actions";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
@@ -86,6 +87,24 @@ export function PlanningTab({
   const [isDeleteRevealed, setIsDeleteRevealed] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Extract unique sorted dates from meals
+  const uniqueDates = useMemo(() => {
+    const dates = new Set<string>();
+    plan.meals.forEach((m) => {
+      if (m.date) dates.add(m.date);
+    });
+    return Array.from(dates).sort();
+  }, [plan.meals]);
+
+  const [selectedDate, setSelectedDate] = useState<string>("all");
+
+  // Reset selected date if it's not in the list anymore (unless it's 'all')
+  useEffect(() => {
+    if (selectedDate !== "all" && !uniqueDates.includes(selectedDate)) {
+      setSelectedDate("all");
+    }
+  }, [uniqueDates, selectedDate]);
+
   const handleDeleteWrapper = async () => {
     if (!onDeleteEvent) {
       return;
@@ -149,6 +168,8 @@ export function PlanningTab({
               readOnly={!!readOnly}
             />
           </div>
+
+          <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
 
         {plan.meals
@@ -174,6 +195,10 @@ export function PlanningTab({
               })
             );
             return hasMatch;
+          })
+          .filter((meal) => {
+            if (selectedDate === "all") return true;
+            return meal.date === selectedDate;
           })
           .map((meal) => {
             return (
