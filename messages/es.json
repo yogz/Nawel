@@ -317,7 +317,9 @@
       "editMeal": "Editar comida",
       "editService": "Editar tiempo",
       "addItem": "Añadir artículo",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "expand": "Expandir",
+      "collapse": "Contraer"
     },
     "Service": {
       "editService": "Editar tiempo {name}",

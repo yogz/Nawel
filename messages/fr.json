@@ -317,7 +317,9 @@
       "editMeal": "Modifier le repas",
       "editService": "Modifier le service",
       "addItem": "Ajouter un article",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "expand": "Développer",
+      "collapse": "Réduire"
     },
     "Service": {
       "editService": "Modifier le service {name}",
@@ -785,7 +787,7 @@
     "bioTitle": "Qui suis-je ?",
     "bioContent": "CoList est une web app née d’une frustration très concrète.\n\nEntre les dîners en famille, les week-ends entre amis ou les vacances à organiser, on pense toujours être synchronisés… jusqu’au moment où l’on se retrouve avec 15 paquets de chips et rien à manger. Trop de messages, des listes éparpillées, et au final une organisation floue.\n\nJ’ai créé CoList pour remettre un peu d’ordre là-dedans : savoir simplement qui apporte quoi, éviter les doublons et réduire la charge mentale liée à l’organisation.\n\nÀ l’origine, c’était un projet personnel. Aujourd’hui, c’est une web app pensée pour être partagée, en espérant qu’elle vous facilite, à vous aussi, l’organisation de vos moments conviviaux ✨",
     "costsTitle": "Combien ça me coûte ?",
-    "costsSubtitle": "La transparence fait partie de mes valeurs. Voici le détail de ce qu'il me coûte de maintenir ce site en ligne sans publicité.",
+    "costsSubtitle": "Voici le détail de ce que me coûte de maintenir ce site en ligne:",
     "monthlyView": "Vue mensuelle",
     "totalSinceStart": "Total depuis le lancement",
     "totalYear": "Total cette année",
@@ -803,6 +805,8 @@
       "email": "E-mails",
       "dev": "Développement",
       "services": "Services tiers",
+      "database": "Base de données",
+      "api": "Services API",
       "other": "Autre"
     }
   }

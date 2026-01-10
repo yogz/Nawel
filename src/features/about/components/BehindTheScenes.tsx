@@ -4,19 +4,26 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
-  Heart,
-  Euro,
-  Coffee,
-  Sparkles,
-  ChevronRight,
-  CheckCircle2,
-  ArrowUpRight,
-  TrendingUp,
-  CreditCard,
-  Target,
-  Send,
-  Loader2,
   Mail,
+  Loader2,
+  Send,
+  Target,
+  CreditCard,
+  TrendingUp,
+  ArrowUpRight,
+  CheckCircle2,
+  ChevronRight,
+  Sparkles,
+  Coffee,
+  Euro,
+  Heart,
+  Server,
+  Globe,
+  Database,
+  Webhook,
+  Code2,
+  Puzzle,
+  CircleEllipsis,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -154,15 +161,39 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     {} as Record<string, number>
   );
 
-  const CATEGORIES = ["hosting", "domain", "ai", "email", "dev", "services", "other"] as const;
+  const CATEGORIES = [
+    "hosting",
+    "domain",
+    "database",
+    "api",
+    "ai",
+    "email",
+    "dev",
+    "services",
+    "other",
+  ] as const;
   const CATEGORY_COLORS: Record<string, string> = {
     hosting: "bg-blue-500",
     domain: "bg-cyan-500",
+    database: "bg-indigo-500",
+    api: "bg-violet-500",
     ai: "bg-purple-500",
     email: "bg-pink-500",
     dev: "bg-orange-500",
     services: "bg-emerald-500",
     other: "bg-slate-400",
+  };
+
+  const CATEGORY_ICONS: Record<string, any> = {
+    hosting: Server,
+    domain: Globe,
+    database: Database,
+    api: Webhook,
+    ai: Sparkles,
+    email: Mail,
+    dev: Code2,
+    services: Puzzle,
+    other: CircleEllipsis,
   };
 
   // Chart config for shadcn/ui
@@ -190,6 +221,14 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     services: {
       label: t("categories.services"),
       color: "hsl(160, 84%, 39%)", // emerald-500
+    },
+    database: {
+      label: t("categories.database"),
+      color: "hsl(226, 70%, 55%)", // indigo-500
+    },
+    api: {
+      label: t("categories.api"),
+      color: "hsl(262, 83%, 58%)", // violet-500
     },
     other: {
       label: t("categories.other"),
@@ -361,15 +400,29 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                               0
                             );
                             return (
-                              <div className="flex flex-col gap-1">
+                              <div className="flex flex-col gap-2">
                                 <span className="font-bold">{payload[0].payload.month}</span>
-                                <span className="text-primary font-semibold">
-                                  {total.toFixed(2)} €
+                                <span className="text-sm font-semibold text-primary">
+                                  Total: {total.toFixed(2)} €
                                 </span>
                               </div>
                             );
                           }
                           return null;
+                        }}
+                        formatter={(value, name) => {
+                          const Icon = CATEGORY_ICONS[name as string];
+                          return (
+                            <div className="flex w-full items-center justify-between gap-4">
+                              <div className="flex items-center gap-2">
+                                {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
+                                <span className="text-muted-foreground">
+                                  {chartConfig[name as keyof typeof chartConfig]?.label || name}
+                                </span>
+                              </div>
+                              <span className="font-mono font-medium">{value} €</span>
+                            </div>
+                          );
                         }}
                       />
                     }
@@ -436,7 +489,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </a>
               </Button>
               <Button
-                className="group h-12 rounded-2xl border-none bg-white px-8 text-black shadow-lg transition-transform hover:scale-[1.02] hover:bg-gray-50 active:scale-[0.98]"
+                className="group h-12 rounded-2xl border-none bg-black px-8 text-white shadow-lg transition-transform hover:scale-[1.02] hover:bg-black/90 active:scale-[0.98]"
                 asChild
               >
                 <a
@@ -446,21 +499,17 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   className="flex items-center"
                 >
                   <svg
-                    viewBox="0 0 100 100"
-                    className="mr-3 h-6 w-6"
-                    fill="none"
+                    viewBox="0 0 25 32"
+                    className="mr-3 h-5 w-auto"
+                    fill="currentColor"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path
-                      d="M0 20C0 8.95431 8.95431 0 20 0H80C91.0457 0 100 8.95431 100 20V80C100 91.0457 91.0457 100 80 100H20C8.95431 100 0 91.0457 0 80V20Z"
-                      fill="black"
-                    />
-                    <path d="M25 35H75V43H53V75H45V43H25V35Z" fill="white" />
+                    <path d="M0 7.831h5.835v23.9H0v-23.9Zm24.131 1.366C24.131 4.126 20.055 0 15.043 0H0v5.104h14.328c2.268 0 4.146 1.805 4.188 4.023a4.103 4.103 0 0 1-1.159 2.952 3.996 3.996 0 0 1-2.89 1.23H8.886a.362.362 0 0 0-.362.364v4.536c0 .077.024.151.068.213l9.47 13.31h6.932l-9.492-13.346c4.78-.244 8.627-4.312 8.627-9.188Z" />
                   </svg>
                   <span className="text-base font-bold uppercase tracking-tight">
                     {t("revolut")}
                   </span>
-                  <ArrowUpRight className="ml-2 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <ArrowUpRight className="ml-2 h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
                 </a>
               </Button>
             </div>
@@ -550,7 +599,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
         <motion.footer variants={itemVariants} className="border-t border-black/5 pt-8 text-center">
           <p className="text-text/40 flex items-center justify-center gap-2 text-sm">
-            Fait avec <Heart className="h-3 w-3 fill-current" /> par un indépendant en France.
+            Fait avec ❤️ par un 🐻 indépendant en 🇪🇺
           </p>
         </motion.footer>
       </motion.div>

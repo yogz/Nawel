@@ -315,7 +315,9 @@
       "editMeal": "Modifica pasto",
       "editService": "Modifica portata",
       "addItem": "Aggiungi articolo",
-      "cancel": "Annulla"
+      "cancel": "Annulla",
+      "expand": "Espandi",
+      "collapse": "Riduci"
     },
     "Service": {
       "editService": "Modifica portata {name}",

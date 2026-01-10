@@ -123,6 +123,8 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
                   <SelectItem value="email">E-mails</SelectItem>
                   <SelectItem value="dev">Développement</SelectItem>
                   <SelectItem value="services">Services tiers</SelectItem>
+                  <SelectItem value="database">Base de données</SelectItem>
+                  <SelectItem value="api">Services API</SelectItem>
                   <SelectItem value="other">Autre</SelectItem>
                 </SelectContent>
               </Select>

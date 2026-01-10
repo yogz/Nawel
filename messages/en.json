@@ -317,7 +317,9 @@
       "editMeal": "Edit meal",
       "editService": "Edit course",
       "addItem": "Add item",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "expand": "Expand",
+      "collapse": "Collapse"
     },
     "Service": {
       "editService": "Edit course {name}",
@@ -803,6 +805,8 @@
       "email": "Emails",
       "dev": "Development",
       "services": "Third-party Services",
+      "database": "Database",
+      "api": "API Services",
       "other": "Other"
     }
   }

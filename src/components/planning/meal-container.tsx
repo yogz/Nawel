@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock,
   MapPin,
@@ -10,6 +11,7 @@ import {
   Download,
   PlusIcon,
   Package,
+  ChevronRight,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
@@ -52,6 +54,7 @@ export function MealContainer({
   handleAssign,
   currentUserId,
 }: MealContainerProps) {
+  const [isExpanded, setIsExpanded] = React.useState(true);
   const t = useTranslations("EventDashboard.Planning");
   const locale = useLocale();
   const format = useFormatter();
@@ -104,6 +107,22 @@ export function MealContainer({
             disabled={readOnly}
             aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
           >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="mr-1 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-black/5"
+              aria-label={isExpanded ? t("collapse") : t("expand")}
+            >
+              <motion.div
+                animate={{ rotate: isExpanded ? 90 : 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <ChevronRight className="h-5 w-5 text-accent" />
+              </motion.div>
+            </button>
             <h2 className="text-gradient-header flex items-center gap-2 truncate text-lg font-black tracking-tight">
               {meal.date === "common" && <Package className="h-5 w-5" />}
               {meal.date === "common" ? t("common") : meal.title || meal.date}
@@ -180,38 +199,50 @@ export function MealContainer({
       </div>
 
       {/* Service Cards */}
-      <div className="space-y-6 px-0 pb-4">
-        {meal.services.map((service) => (
-          <ServiceSection
-            key={service.id}
-            service={service}
-            people={plan.people}
-            readOnly={readOnly}
-            onAssign={(item) => onAssign(item, service.id)}
-            onDelete={onDelete}
-            onCreate={() => onCreateItem(service.id)}
-            onEdit={() => setSheet({ type: "service-edit", service })}
-            filter={planningFilter}
-            activeItemId={activeItemId}
-            handleAssign={handleAssign}
-            currentUserId={currentUserId}
-          />
-        ))}
-        {!readOnly && onCreateService && (
-          <Button
-            variant="premium"
-            className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-accent backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-accent-lg focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95"
-            icon={<PlusIcon size={20} />}
-            shine
-            onClick={() => onCreateService(meal.id)}
-            aria-label={t("addService")}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="overflow-hidden"
           >
-            <span className="text-xs font-black uppercase tracking-widest text-accent">
-              {t("addService")}
-            </span>
-          </Button>
+            <div className="space-y-6 px-0 pb-4">
+              {meal.services.map((service) => (
+                <ServiceSection
+                  key={service.id}
+                  service={service}
+                  people={plan.people}
+                  readOnly={readOnly}
+                  onAssign={(item) => onAssign(item, service.id)}
+                  onDelete={onDelete}
+                  onCreate={() => onCreateItem(service.id)}
+                  onEdit={() => setSheet({ type: "service-edit", service })}
+                  filter={planningFilter}
+                  activeItemId={activeItemId}
+                  handleAssign={handleAssign}
+                  currentUserId={currentUserId}
+                />
+              ))}
+              {!readOnly && onCreateService && (
+                <Button
+                  variant="premium"
+                  className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-accent backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-accent-lg focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95"
+                  icon={<PlusIcon size={20} />}
+                  shine
+                  onClick={() => onCreateService(meal.id)}
+                  aria-label={t("addService")}
+                >
+                  <span className="text-xs font-black uppercase tracking-widest text-accent">
+                    {t("addService")}
+                  </span>
+                </Button>
+              )}
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </motion.div>
   );
 }

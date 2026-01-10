@@ -1,14 +1,15 @@
 "use client";
 
+import React, { useState, memo } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { PlusIcon, Edit3 } from "lucide-react";
+import { PlusIcon, Edit3, ChevronRight } from "lucide-react";
 import { type PlanningFilter, type Service, type Person, type Item } from "@/lib/types";
 import { MenuItemRow } from "./menu-item-row";
 import { Button } from "../ui/button";
-import { memo } from "react";
 import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ServiceSectionProps {
   service: Service;
@@ -37,6 +38,7 @@ export const ServiceSection = memo(function ServiceSection({
   handleAssign,
   currentUserId,
 }: ServiceSectionProps) {
+  const [isExpanded, setIsExpanded] = useState(true);
   const t = useTranslations("EventDashboard.Planning");
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
@@ -85,6 +87,22 @@ export const ServiceSection = memo(function ServiceSection({
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 transition-all hover:bg-black/5"
+              aria-label={isExpanded ? t("collapse") : t("expand")}
+            >
+              <motion.div
+                animate={{ rotate: isExpanded ? 90 : 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <ChevronRight className="h-5 w-5 text-accent" />
+              </motion.div>
+            </button>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm transition-all duration-300 group-hover:border-accent/20 group-hover:bg-accent/10 sm:h-9 sm:w-9">
               {service.icon || getServiceIcon(service.title)}
             </div>
@@ -100,44 +118,56 @@ export const ServiceSection = memo(function ServiceSection({
         </button>
       </div>
 
-      <div className="relative z-10 flex flex-col gap-1">
-        {filteredItems.map((item, index) => (
-          <div key={item.id}>
-            <MenuItemRow
-              item={item}
-              person={people.find((p) => p.id === item.personId)}
-              readOnly={readOnly}
-              onAssign={() => onAssign(item)}
-              onDelete={() => onDelete(item)}
-              allPeopleNames={allPeopleNames}
-              peopleCount={service.peopleCount || 0}
-              handleAssign={handleAssign}
-              currentUserId={currentUserId}
-              people={people}
-            />
-          </div>
-        ))}
-
-        {!readOnly && (
-          <Button
-            variant="premium"
-            className="mt-4 h-14 w-full touch-manipulation rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.98] sm:mt-3 sm:h-11"
-            icon={<PlusIcon size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />}
-            onClick={() => {
-              // Haptic feedback on mobile
-              if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-                navigator.vibrate(10);
-              }
-              onCreate();
-            }}
-            aria-label={t("addItem")}
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="relative z-10 overflow-hidden"
           >
-            <span className="text-xs font-black uppercase tracking-wider sm:text-[10px]">
-              {t("addItem")}
-            </span>
-          </Button>
+            <div className="flex flex-col gap-1">
+              {filteredItems.map((item, index) => (
+                <div key={item.id}>
+                  <MenuItemRow
+                    item={item}
+                    person={people.find((p) => p.id === item.personId)}
+                    readOnly={readOnly}
+                    onAssign={() => onAssign(item)}
+                    onDelete={() => onDelete(item)}
+                    allPeopleNames={allPeopleNames}
+                    peopleCount={service.peopleCount || 0}
+                    handleAssign={handleAssign}
+                    currentUserId={currentUserId}
+                    people={people}
+                  />
+                </div>
+              ))}
+
+              {!readOnly && (
+                <Button
+                  variant="premium"
+                  className="mt-4 h-14 w-full touch-manipulation rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.98] sm:mt-3 sm:h-11"
+                  icon={<PlusIcon size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />}
+                  onClick={() => {
+                    // Haptic feedback on mobile
+                    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                      navigator.vibrate(10);
+                    }
+                    onCreate();
+                  }}
+                  aria-label={t("addItem")}
+                >
+                  <span className="text-xs font-black uppercase tracking-wider sm:text-[10px]">
+                    {t("addItem")}
+                  </span>
+                </Button>
+              )}
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </div>
   );
 });

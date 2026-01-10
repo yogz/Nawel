@@ -315,7 +315,9 @@
       "editMeal": "Maaltijd bewerken",
       "editService": "Gang bewerken",
       "addItem": "Item toevoegen",
-      "cancel": "Annuleren"
+      "cancel": "Annuleren",
+      "expand": "Uitklappen",
+      "collapse": "Inklappen"
     },
     "Service": {
       "editService": "Gang bewerken {name}",
