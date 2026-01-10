@@ -289,7 +289,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     { month: "short" }
                   );
 
-                  // Trouver les barres à afficher pour déterminer la dernière
+                  // Trouver les barres à afficher pour déterminer la plus haute
                   const barsToDisplay = CATEGORIES.filter((cat) => (costs[cat] || 0) > 0);
 
                   // Ne pas afficher de barre si total est 0
@@ -308,15 +308,16 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     <div key={month} className="group relative flex flex-1 flex-col items-center">
                       {/* Stacked Bar */}
                       <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5 transition-all group-hover:bg-black/10">
-                        {CATEGORIES.map((cat, index) => {
+                        {CATEGORIES.map((cat) => {
                           const amount = costs[cat] || 0;
                           if (amount === 0) return null;
                           const height = (amount / maxMonthCost) * 100;
-                          const isLastBar = cat === barsToDisplay[barsToDisplay.length - 1];
+                          // La première catégorie (dans l'ordre CATEGORIES) apparaît visuellement en haut avec flex-col
+                          const isTopBar = cat === barsToDisplay[0];
                           return (
                             <div
                               key={cat}
-                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500 ${isLastBar ? "rounded-t-lg" : ""}`}
+                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500 ${isTopBar ? "rounded-t-lg" : ""}`}
                               style={{ height: `${height}%` }}
                             />
                           );
