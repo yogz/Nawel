@@ -234,7 +234,7 @@ export function MealForm({
               </div>
               <div>
                 <span className="block text-sm font-bold text-gray-900">{t("common")}</span>
-                <span className="text-[10px] text-gray-500">Papier toilette, petit déj, etc.</span>
+                <span className="text-[10px] text-gray-500">{t("commonDesc")}</span>
               </div>
             </div>
             <button

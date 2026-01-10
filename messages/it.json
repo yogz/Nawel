@@ -459,6 +459,8 @@
       "eventDeleted": "Evento eliminato ✓"
     },
     "Meal": {
+      "common": "Comuni",
+      "commonDesc": "Articoli da bagno, colazione o forniture condivise.",
       "serviceTypes": {
         "apero": "Aperitivo",
         "entree": "Primo",

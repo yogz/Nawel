@@ -459,6 +459,8 @@
       "eventDeleted": "Event deleted ✓"
     },
     "Meal": {
+      "common": "Common items",
+      "commonDesc": "Toiletries, breakfast, or shared supplies.",
       "serviceTypes": {
         "apero": "Appetizer",
         "entree": "Starter",

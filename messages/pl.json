@@ -459,6 +459,8 @@
       "eventDeleted": "Wydarzenie usunięte ✓"
     },
     "Meal": {
+      "common": "Wspólne",
+      "commonDesc": "Przybory toaletowe, śniadanie lub wspólne zapasy.",
       "serviceTypes": {
         "apero": "Przystawki",
         "entree": "Starter",

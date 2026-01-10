@@ -459,6 +459,8 @@
       "eventDeleted": "Événement supprimé ✓"
     },
     "Meal": {
+      "common": "Communs",
+      "commonDesc": "Papier toilette, produits d'hygiène, etc.",
       "serviceTypes": {
         "apero": "Apéro",
         "entree": "Entrée",

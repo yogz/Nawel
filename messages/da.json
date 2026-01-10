@@ -459,6 +459,8 @@
       "eventDeleted": "Begivenhed slettet ✓"
     },
     "Meal": {
+      "common": "Fælles",
+      "commonDesc": "Toiletartikler, morgenmad eller fælles forsyninger.",
       "serviceTypes": {
         "apero": "Forret",
         "entree": "Starter",

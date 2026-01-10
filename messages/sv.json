@@ -459,6 +459,8 @@
       "eventDeleted": "Evenemang borttaget ✓"
     },
     "Meal": {
+      "common": "Gemensamt",
+      "commonDesc": "Toalettartiklar, frukost eller gemensamma förnödenheter.",
       "serviceTypes": {
         "apero": "Aptitretare",
         "entree": "Förrätt",

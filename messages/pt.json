@@ -466,6 +466,8 @@
       "eventDeleted": "Evento eliminado ✓"
     },
     "Meal": {
+      "common": "Comuns",
+      "commonDesc": "Artigos de higiene, pequeno-almoço ou suprimentos partilhados.",
       "serviceTypes": {
         "apero": "Aperitivo",
         "entree": "Entrada",

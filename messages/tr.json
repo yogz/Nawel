@@ -460,6 +460,8 @@
       "eventDeleted": "Etkinlik silindi ✓"
     },
     "Meal": {
+      "common": "Ortak",
+      "commonDesc": "Tuvalet eşyaları, kahvaltı veya ortak malzemeler.",
       "serviceTypes": {
         "apero": "Aperatif",
         "entree": "Başlangıç",

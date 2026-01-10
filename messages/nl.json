@@ -459,6 +459,8 @@
       "eventDeleted": "Evenement verwijderd ✓"
     },
     "Meal": {
+      "common": "Gemeenschappelijk",
+      "commonDesc": "Toiletartikelen, ontbijt of gedeelde benodigdheden.",
       "serviceTypes": {
         "apero": "Aperitief",
         "entree": "Voorgerecht",

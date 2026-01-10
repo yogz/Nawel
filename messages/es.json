@@ -459,6 +459,8 @@
       "eventDeleted": "Evento eliminado ✓"
     },
     "Meal": {
+      "common": "Comunes",
+      "commonDesc": "Artículos de aseo, desayuno o suministros compartidos.",
       "serviceTypes": {
         "apero": "Aperitivo",
         "entree": "Entrada",

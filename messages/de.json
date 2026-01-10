@@ -459,6 +459,8 @@
       "eventDeleted": "Veranstaltung gelöscht ✓"
     },
     "Meal": {
+      "common": "Gemeinsam",
+      "commonDesc": "Toilettenartikel, Frühstück oder gemeinsame Vorräte.",
       "serviceTypes": {
         "apero": "Aperitif",
         "entree": "Vorspeise",

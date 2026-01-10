@@ -52,7 +52,7 @@ export function MealContainer({
   const calendarUrl = generateGoogleCalendarUrl(meal, eventName, calendarDescription);
 
   const getFullDateDisplay = () => {
-    if (!meal.date) {
+    if (!meal.date || meal.date === "common") {
       return null;
     }
     try {
@@ -121,50 +121,52 @@ export function MealContainer({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="premium"
-                className="h-11 w-11 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:w-10"
-                icon={<Calendar className="h-4 w-4 sm:h-3.5 sm:w-3.5" />}
-                iconClassName="h-full w-full"
-                aria-label={t("calendar.addToCalendar")}
-              />
-            </PopoverTrigger>
-            <PopoverContent className="glass w-56 p-2" align="end">
-              <div className="flex flex-col gap-1">
-                <button
-                  onClick={() => window.open(calendarUrl, "_blank")}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  {t("calendar.google")}
-                </button>
-                <button
-                  onClick={() =>
-                    window.open(
-                      generateOutlookCalendarUrl(meal, eventName, calendarDescription),
-                      "_blank"
-                    )
-                  }
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  {t("calendar.outlook")}
-                </button>
-                <div className="my-1 border-t border-black/[0.05]" />
-                <button
-                  onClick={() => downloadIcsFile(meal, eventName, calendarDescription)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  {t("calendar.download")}
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
+        {meal.date !== "common" && (
+          <div className="flex shrink-0 items-center">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="premium"
+                  className="h-11 w-11 rounded-full border border-black/[0.05] bg-white p-0 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:w-10"
+                  icon={<Calendar className="h-4 w-4 sm:h-3.5 sm:w-3.5" />}
+                  iconClassName="h-full w-full"
+                  aria-label={t("calendar.addToCalendar")}
+                />
+              </PopoverTrigger>
+              <PopoverContent className="glass w-56 p-2" align="end">
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => window.open(calendarUrl, "_blank")}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {t("calendar.google")}
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.open(
+                        generateOutlookCalendarUrl(meal, eventName, calendarDescription),
+                        "_blank"
+                      )
+                    }
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {t("calendar.outlook")}
+                  </button>
+                  <div className="my-1 border-t border-black/[0.05]" />
+                  <button
+                    onClick={() => downloadIcsFile(meal, eventName, calendarDescription)}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    {t("calendar.download")}
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </div>
 
       {/* Service Cards */}
