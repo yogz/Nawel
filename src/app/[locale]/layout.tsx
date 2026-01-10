@@ -149,10 +149,10 @@ export default async function RootLayout({
     <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <head>
         {/* Favicons explicites pour forcer le chargement */}
-        <link rel="icon" type="image/x-icon" href="https://colist.fr/favicon.ico" />
-        <link rel="shortcut icon" type="image/x-icon" href="https://colist.fr/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="https://colist.fr/LogoIcon.png" />
-        <link rel="apple-touch-icon" href="https://colist.fr/apple-icon.png" />
+        <link rel="icon" type="image/x-icon" href="https://www.colist.fr/favicon.ico" />
+        <link rel="shortcut icon" type="image/x-icon" href="https://www.colist.fr/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="https://www.colist.fr/LogoIcon.png" />
+        <link rel="apple-touch-icon" href="https://www.colist.fr/apple-icon.png" />
 
         {/* Google Consent Mode v2 - Default State */}
         <script
