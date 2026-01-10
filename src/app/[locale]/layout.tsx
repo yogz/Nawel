@@ -1,5 +1,3 @@
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import type { Metadata, Viewport } from "next";
@@ -14,6 +12,9 @@ import { CookieConsent } from "@/components/common/cookie-consent";
 import { AnalyticsSessionSync } from "@/components/analytics/analytics-session-sync";
 import { AnalyticsMonitor } from "@/components/analytics/analytics-monitor";
 import { Toaster } from "sonner";
+import { NextIntlClientProvider } from "next-intl";
+import { getTranslations, getMessages, setRequestLocale } from "next-intl/server";
+import { toOpenGraphLocale, getAlternateOpenGraphLocales } from "@/lib/locale-utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -21,73 +22,85 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-const appTitle = "CoList - Organisateur de fêtes";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Landing" });
+  const appTitle = t("title") || "CoList";
+  const appDescription = t("heroDescription") || "Coordonnez vos repas de fêtes simplement.";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | CoList",
-    default: "CoList",
-  },
-  description:
-    "Coordonnez vos repas de fêtes simplement. Partagez le lien avec votre famille pour que chacun puisse choisir ce qu'il apporte !",
-  metadataBase: new URL("https://colist.fr"),
-  openGraph: {
-    title: appTitle,
-    description: "Coordonnez vos repas de fêtes simplement.",
-    url: "https://colist.fr",
-    type: "website",
-    locale: "fr_FR",
-    images: [
-      {
-        url: "https://colist.fr/og-image.jpg",
-        width: 1024,
-        height: 1024,
-        alt: appTitle,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: appTitle,
-    description: "Coordonnez vos repas de fêtes simplement.",
-    images: ["https://colist.fr/og-image.jpg"],
-  },
-  icons: {
-    icon: [
-      // URLs absolues pour éviter les problèmes de proxy/cache
-      { url: new URL("/favicon.ico", "https://colist.fr"), sizes: "any" },
-      { url: new URL("/LogoIcon.png", "https://colist.fr"), type: "image/png", sizes: "32x32" },
-      // Fallback avec chemins relatifs
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/LogoIcon.png", type: "image/png", sizes: "32x32" },
-    ],
-    shortcut: [{ url: new URL("/favicon.ico", "https://colist.fr") }, { url: "/favicon.ico" }],
-    apple: [{ url: new URL("/apple-icon.png", "https://colist.fr") }, "/apple-icon.png"],
-  },
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "CoList",
-  },
-  alternates: {
-    canonical: "https://colist.fr",
-    languages: {
-      fr: "https://colist.fr/fr",
-      en: "https://colist.fr/en",
-      es: "https://colist.fr/es",
-      pt: "https://colist.fr/pt",
-      de: "https://colist.fr/de",
-      el: "https://colist.fr/el",
-      it: "https://colist.fr/it",
-      nl: "https://colist.fr/nl",
-      pl: "https://colist.fr/pl",
-      sv: "https://colist.fr/sv",
-      da: "https://colist.fr/da",
-      "x-default": "https://colist.fr/fr",
+  return {
+    title: {
+      template: "%s | CoList",
+      default: appTitle,
     },
-  },
-};
+    description: appDescription,
+    metadataBase: new URL("https://colist.fr"),
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      title: appTitle,
+      description: appDescription,
+      url: `https://colist.fr/${locale}`,
+      type: "website",
+      locale: toOpenGraphLocale(locale),
+      alternateLocale: getAlternateOpenGraphLocales(locale),
+      siteName: "CoList",
+      images: [
+        {
+          url: "https://colist.fr/og-image.jpg",
+          width: 1024,
+          height: 1024,
+          alt: appTitle,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: appTitle,
+      description: appDescription,
+      images: ["https://colist.fr/og-image.jpg"],
+    },
+    icons: {
+      icon: [
+        { url: new URL("/favicon.ico", "https://colist.fr"), sizes: "any" },
+        { url: new URL("/LogoIcon.png", "https://colist.fr"), type: "image/png", sizes: "32x32" },
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/LogoIcon.png", type: "image/png", sizes: "32x32" },
+      ],
+      shortcut: [{ url: new URL("/favicon.ico", "https://colist.fr") }, { url: "/favicon.ico" }],
+      apple: [{ url: new URL("/apple-icon.png", "https://colist.fr") }, "/apple-icon.png"],
+    },
+    manifest: "/manifest.json",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "CoList",
+    },
+    alternates: {
+      canonical: `https://colist.fr/${locale}`,
+      languages: {
+        fr: "https://colist.fr/fr",
+        en: "https://colist.fr/en",
+        es: "https://colist.fr/es",
+        pt: "https://colist.fr/pt",
+        de: "https://colist.fr/de",
+        el: "https://colist.fr/el",
+        it: "https://colist.fr/it",
+        nl: "https://colist.fr/nl",
+        pl: "https://colist.fr/pl",
+        sv: "https://colist.fr/sv",
+        da: "https://colist.fr/da",
+        "x-default": "https://colist.fr/fr",
+      },
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
