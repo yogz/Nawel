@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://colist.fr";
+  const baseUrl = "https://www.colist.fr";
   const locales = routing.locales;
 
   const routes = ["", "/login", "/contact"];

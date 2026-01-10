@@ -28,8 +28,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const plan = await fetchPlan(params.slug);
 
   const title = plan.event?.name || params.slug;
-  const description = plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug });
-  const url = `https://colist.fr/${params.locale}/event/${params.slug}`;
+  const description =
+    plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug });
+  const url = `https://www.colist.fr/${params.locale}/event/${params.slug}`;
 
   return {
     title,
@@ -37,17 +38,17 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     alternates: {
       canonical: url,
       languages: {
-        fr: `https://colist.fr/fr/event/${params.slug}`,
-        en: `https://colist.fr/en/event/${params.slug}`,
-        es: `https://colist.fr/es/event/${params.slug}`,
-        pt: `https://colist.fr/pt/event/${params.slug}`,
-        de: `https://colist.fr/de/event/${params.slug}`,
-        el: `https://colist.fr/el/event/${params.slug}`,
-        it: `https://colist.fr/it/event/${params.slug}`,
-        nl: `https://colist.fr/nl/event/${params.slug}`,
-        pl: `https://colist.fr/pl/event/${params.slug}`,
-        sv: `https://colist.fr/sv/event/${params.slug}`,
-        da: `https://colist.fr/da/event/${params.slug}`,
+        fr: `https://www.colist.fr/fr/event/${params.slug}`,
+        en: `https://www.colist.fr/en/event/${params.slug}`,
+        es: `https://www.colist.fr/es/event/${params.slug}`,
+        pt: `https://www.colist.fr/pt/event/${params.slug}`,
+        de: `https://www.colist.fr/de/event/${params.slug}`,
+        el: `https://www.colist.fr/el/event/${params.slug}`,
+        it: `https://www.colist.fr/it/event/${params.slug}`,
+        nl: `https://www.colist.fr/nl/event/${params.slug}`,
+        pl: `https://www.colist.fr/pl/event/${params.slug}`,
+        sv: `https://www.colist.fr/sv/event/${params.slug}`,
+        da: `https://www.colist.fr/da/event/${params.slug}`,
       },
     },
     openGraph: {
@@ -60,7 +61,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       siteName: "CoList",
       images: [
         {
-          url: "https://colist.fr/og-image.jpg",
+          url: "https://www.colist.fr/og-image.jpg",
           width: 1024,
           height: 1024,
           alt: title,
@@ -71,7 +72,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://colist.fr/og-image.jpg"],
+      images: ["https://www.colist.fr/og-image.jpg"],
     },
   };
 }
