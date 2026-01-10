@@ -53,9 +53,9 @@ export async function generateMetadata({
       siteName: "CoList",
       images: [
         {
-          url: "https://www.colist.fr/og-image.jpg",
-          width: 1024,
-          height: 1024,
+          url: "https://www.colist.fr/og-image.png",
+          width: 1200,
+          height: 630,
           alt: appTitle,
         },
       ],
@@ -67,7 +67,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: appTitle,
       description: appDescription,
-      images: ["https://www.colist.fr/og-image.jpg"],
+      images: ["https://www.colist.fr/og-image.png"],
     },
     icons: {
       icon: [
