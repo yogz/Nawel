@@ -308,10 +308,11 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     <div key={month} className="group relative flex flex-1 flex-col items-center">
                       {/* Stacked Bar */}
                       <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-t-lg bg-black/5 transition-all group-hover:bg-black/10">
-                        {CATEGORIES.map((cat, index) => {
+                        {CATEGORIES.map((cat) => {
                           const amount = costs[cat] || 0;
                           if (amount === 0) return null;
                           const height = (amount / maxMonthCost) * 100;
+                          // La première catégorie (dans l'ordre CATEGORIES) apparaît visuellement en haut avec flex-col
                           const isTopBar = cat === barsToDisplay[0];
                           return (
                             <div
