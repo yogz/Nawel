@@ -306,6 +306,7 @@
     },
     "Planning": {
       "all": "Todos",
+      "common": "Comuns",
       "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
       "addService": "Adicionar tempo",

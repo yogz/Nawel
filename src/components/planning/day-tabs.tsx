@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
-import { CalendarDays, Stars } from "lucide-react";
+import { CalendarDays, Stars, Package } from "lucide-react";
 
 interface DayTabsProps {
   days: string[]; // Format: 'YYYY-MM-DD'
@@ -20,6 +20,12 @@ export function DayTabs({ days, selectedDate, onSelect }: DayTabsProps) {
     if (dateStr === "all") {
       return {
         label: t("all"),
+        sublabel: null,
+      };
+    }
+    if (dateStr === "common") {
+      return {
+        label: t("common"),
         sublabel: null,
       };
     }
@@ -61,6 +67,7 @@ export function DayTabs({ days, selectedDate, onSelect }: DayTabsProps) {
             selected={selectedDate === day}
             onClick={() => onSelect(day)}
             display={getDayDisplay(day)}
+            icon={day === "common" ? <Package size={14} /> : undefined}
           />
         ))}
       </div>

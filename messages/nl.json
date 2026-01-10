@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Alle",
+      "common": "Gemeenschappelijk",
       "noMeals": "Nog geen maaltijden.",
       "addMeal": "Maaltijd toevoegen",
       "addService": "Gang toevoegen",

@@ -115,6 +115,7 @@ export function MealForm({
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [time, setTime] = useState(meal?.time || "");
   const [address, setAddress] = useState(meal?.address || defaultAddress || "");
+  const [isCommon, setIsCommon] = useState(meal?.date === "common");
 
   const addressRef = useRef<HTMLInputElement>(null);
   const dateRef = useRef<HTMLInputElement>(null);
@@ -145,11 +146,11 @@ export function MealForm({
       time: currTime,
       address: currAddress,
     } = stateRef.current;
-    if (!currDate) {
+    if (!isCommon && !currDate) {
       return;
     }
 
-    const formattedDate = format(currDate, "yyyy-MM-dd");
+    const formattedDate = isCommon ? "common" : format(currDate!, "yyyy-MM-dd");
     const hasChanged =
       formattedDate !== (meal?.date || "") ||
       currTitle !== (meal?.title || "") ||
@@ -180,21 +181,22 @@ export function MealForm({
   }, [isEditMode, meal, onSubmit, defaultAdults, defaultChildren]);
 
   const handleSubmit = async () => {
-    if (!date || isPending) {
+    if (!isCommon && !date) {
       return;
     }
-    const formattedDate = format(date, "yyyy-MM-dd");
+    const formattedDate = isCommon ? "common" : format(date!, "yyyy-MM-dd");
+    const finalTitle = title || (isCommon ? t("common") : "");
 
     // Pour la création, ne pas utiliser startTransition pour que le state se mette à jour immédiatement
     if (isEditMode) {
       startTransition(async () => {
-        await onSubmit(formattedDate, title, undefined, adults, children, time, address);
+        await onSubmit(formattedDate, finalTitle, undefined, adults, children, time, address);
       });
     } else {
       // Pour la création, appeler directement sans startTransition pour mise à jour immédiate
       const mode = CREATION_MODES.find((m) => m.id === creationMode);
       const servicesToCreate = mode ? [...mode.services] : [];
-      await onSubmit(formattedDate, title, servicesToCreate, adults, children, time, address);
+      await onSubmit(formattedDate, finalTitle, servicesToCreate, adults, children, time, address);
       // Fermer le drawer après la création pour que le state se mette à jour
       onClose();
     }
@@ -202,7 +204,7 @@ export function MealForm({
 
   const canGoNext = () => {
     if (step === 1) {
-      return !!date;
+      return isCommon || !!date;
     }
     return true;
   };
@@ -225,6 +227,33 @@ export function MealForm({
 
       {step === 1 && (
         <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-2xl border-2 border-gray-50 bg-gray-50/30 p-3 transition-colors hover:border-accent/10">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <span className="block text-sm font-bold text-gray-900">{t("common")}</span>
+                <span className="text-[10px] text-gray-500">Papier toilette, petit déj, etc.</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsCommon(!isCommon)}
+              className={clsx(
+                "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+                isCommon ? "bg-accent" : "bg-gray-200"
+              )}
+            >
+              <span
+                className={clsx(
+                  "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
+                  isCommon ? "translate-x-5" : "translate-x-0"
+                )}
+              />
+            </button>
+          </div>
+
           <div className="space-y-2">
             <Label
               htmlFor="title"
@@ -280,69 +309,71 @@ export function MealForm({
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div className="flex-[3] space-y-2">
-              <Label
-                htmlFor="date"
-                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
-              >
-                {t("dateLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="date"
-                  ref={dateRef}
-                  type="date"
-                  value={date ? format(date, "yyyy-MM-dd") : ""}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setDate(val ? new Date(val) : undefined);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      timeRef.current?.focus();
-                    }
-                  }}
-                  onBlur={handleBlurSave}
-                  className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
-                />
-                <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
-              </div>
-            </div>
-
-            <div className="flex-[2] space-y-2">
-              <Label
-                htmlFor="time"
-                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
-              >
-                {t("timeLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  id="time"
-                  ref={timeRef}
-                  type="time"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      if (isEditMode) {
-                        handleSubmit();
-                      } else if (canGoNext()) {
-                        setStep(2);
+          {!isCommon && (
+            <div className="flex gap-4">
+              <div className="flex-[3] space-y-2">
+                <Label
+                  htmlFor="date"
+                  className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                >
+                  {t("dateLabel")}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="date"
+                    ref={dateRef}
+                    type="date"
+                    value={date ? format(date, "yyyy-MM-dd") : ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setDate(val ? new Date(val) : undefined);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        timeRef.current?.focus();
                       }
-                    }
-                  }}
-                  enterKeyHint="next"
-                  onBlur={handleBlurSave}
-                  className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
-                />
-                <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                    }}
+                    onBlur={handleBlurSave}
+                    className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                  />
+                  <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                </div>
+              </div>
+
+              <div className="flex-[2] space-y-2">
+                <Label
+                  htmlFor="time"
+                  className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                >
+                  {t("timeLabel")}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="time"
+                    ref={timeRef}
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (isEditMode) {
+                          handleSubmit();
+                        } else if (canGoNext()) {
+                          setStep(2);
+                        }
+                      }
+                    }}
+                    enterKeyHint="next"
+                    onBlur={handleBlurSave}
+                    className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                  />
+                  <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">

@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Alla",
+      "common": "Gemensamt",
       "noMeals": "Inga måltider än.",
       "addMeal": "Lägg till måltid",
       "addService": "Lägg till rätt",

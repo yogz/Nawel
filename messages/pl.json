@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Wszystkie",
+      "common": "Wspólne",
       "noMeals": "Brak posiłków na razie.",
       "addMeal": "Dodaj posiłek",
       "addService": "Dodaj danie",

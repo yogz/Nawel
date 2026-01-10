@@ -93,7 +93,13 @@ export function PlanningTab({
     plan.meals.forEach((m) => {
       if (m.date) dates.add(m.date);
     });
-    return Array.from(dates).sort();
+    const sorted = Array.from(dates)
+      .filter((d) => d !== "common")
+      .sort();
+    if (dates.has("common")) {
+      return ["common", ...sorted];
+    }
+    return sorted;
   }, [plan.meals]);
 
   const [selectedDate, setSelectedDate] = useState<string>("all");
@@ -199,6 +205,12 @@ export function PlanningTab({
           .filter((meal) => {
             if (selectedDate === "all") return true;
             return meal.date === selectedDate;
+          })
+          .sort((a, b) => {
+            // Toujours mettre 'common' en premier dans la vue 'all'
+            if (a.date === "common") return -1;
+            if (b.date === "common") return 1;
+            return (a.date || "").localeCompare(b.date || "");
           })
           .map((meal) => {
             return (

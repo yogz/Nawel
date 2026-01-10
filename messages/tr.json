@@ -300,6 +300,7 @@
     },
     "Planning": {
       "all": "Tümü",
+      "common": "Ortak",
       "noMeals": "Henüz yemek yok.",
       "addMeal": "Yemek ekle",
       "addService": "Servis ekle",

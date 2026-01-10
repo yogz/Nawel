@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Tous",
+      "common": "Communs",
       "noMeals": "Aucun repas pour le moment.",
       "addMeal": "Ajouter un repas",
       "addService": "Ajouter un service",

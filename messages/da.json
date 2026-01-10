@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Alle",
+      "common": "Fælles",
       "noMeals": "Ingen måltider endnu.",
       "addMeal": "Tilføj et måltid",
       "addService": "Tilføj en ret",

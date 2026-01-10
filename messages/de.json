@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "Alle",
+      "common": "Gemeinsam",
       "noMeals": "Noch keine Mahlzeiten.",
       "addMeal": "Mahlzeit hinzufügen",
       "addService": "Gang hinzufügen",

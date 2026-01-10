@@ -299,6 +299,7 @@
     },
     "Planning": {
       "all": "All",
+      "common": "Common",
       "noMeals": "No meals for now.",
       "addMeal": "Add a meal",
       "addService": "Add a course",

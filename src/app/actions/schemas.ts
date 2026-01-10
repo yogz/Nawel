@@ -23,7 +23,7 @@ const dateSchema = z
     }
     return val;
   })
-  .refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" });
+  .refine((val) => val === "common" || !isNaN(Date.parse(val)), { message: "Invalid date format" });
 
 export const baseInput = z.object({
   key: safeKey.optional(),
