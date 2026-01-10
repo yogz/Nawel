@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -23,6 +23,7 @@ export function IngredientForm({
   const tShared = useTranslations("EventDashboard.Shared");
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
+  const quantityRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
     if (name.trim()) {
@@ -40,16 +41,29 @@ export function IngredientForm({
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="h-12 rounded-xl"
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            quantityRef.current?.focus();
+          }
+        }}
         autoFocus={autoFocus}
+        enterKeyHint="next"
       />
       <Input
+        id="quantity"
+        ref={quantityRef}
         placeholder={t("quantityPlaceholder")}
         aria-label={t("quantityLabel")}
         value={quantity}
         onChange={(e) => setQuantity(e.target.value)}
         className="h-12 rounded-xl"
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSubmit();
+          }
+        }}
+        enterKeyHint="done"
       />
       <div className="flex gap-2">
         <button

@@ -84,8 +84,7 @@ export function ItemForm({
   const locale = params.locale as string;
   const tActions = useTranslations("Translations.actions");
 
-  const defaultNote =
-    !defaultItem && servicePeopleCount ? t("defaultNote", { count: servicePeopleCount }) : "";
+  const defaultNote = "";
 
   // Detect if stored note is a translation key and re-translate it
   const getDisplayNote = (storedNote: string | null | undefined) => {

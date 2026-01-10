@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import { Mail, Send, Loader2, ArrowLeft } from "lucide-react";
 import { submitContactAction } from "@/app/actions/feedback-actions";
 import { toast } from "sonner";
+import { useRef } from "react";
 
 export default function ContactForm() {
   const t = useTranslations("Contact");
@@ -20,6 +21,7 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +45,26 @@ export default function ContactForm() {
       toast.error(error instanceof Error ? error.message : t("errorDescription"));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  const handleFormSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    handleSubmit(new Event("submit") as any);
+  };
+
+  const handleKeyDownEmail = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      contentRef.current?.focus();
+    }
+  };
+
+  const handleKeyDownContent = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (email.trim() && content.trim()) {
+        handleSubmit(new Event("submit") as any);
+      }
     }
   };
 
@@ -105,9 +127,11 @@ export default function ContactForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDownEmail}
                 placeholder={t("emailPlaceholder")}
                 required
                 disabled={isSubmitting}
+                enterKeyHint="next"
                 className="h-12 border-gray-100 bg-gray-50/50 px-4 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
               />
             </div>
@@ -121,11 +145,14 @@ export default function ContactForm() {
               </Label>
               <Textarea
                 id="content"
+                ref={contentRef}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                onKeyDown={handleKeyDownContent}
                 placeholder={t("messagePlaceholder")}
                 required
                 disabled={isSubmitting}
+                enterKeyHint="send"
                 className="min-h-[120px] border-gray-100 bg-gray-50/50 px-4 py-3 transition-all focus:bg-white focus:ring-2 focus:ring-accent/20"
               />
             </div>

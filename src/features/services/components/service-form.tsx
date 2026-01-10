@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { type Meal } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,6 +86,11 @@ export function ServiceForm({
   const [newMealTime, setNewMealTime] = useState("");
   const [newMealAddress, setNewMealAddress] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  const mealTimeRef = useRef<HTMLInputElement>(null);
+  const mealTitleRef = useRef<HTMLInputElement>(null);
+  const mealAddressRef = useRef<HTMLInputElement>(null);
+  const serviceTitleRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
     if (isPending) {
@@ -181,6 +186,12 @@ export function ServiceForm({
                     setNewMealDate(val ? new Date(val) : undefined);
                   }}
                   className="h-14 w-full touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:pl-9"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      mealTimeRef.current?.focus();
+                    }
+                  }}
                 />
                 <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-2.5 sm:h-4 sm:w-4" />
               </div>
@@ -194,10 +205,17 @@ export function ServiceForm({
               </Label>
               <div className="relative">
                 <Input
+                  ref={mealTimeRef}
                   id="meal-time"
                   type="time"
                   value={newMealTime}
                   onChange={(e) => setNewMealTime(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      mealTitleRef.current?.focus();
+                    }
+                  }}
                   disabled={readOnly}
                   enterKeyHint="next"
                   className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:pl-9"
@@ -214,10 +232,17 @@ export function ServiceForm({
               {tMeal("titleLabel")}
             </Label>
             <Input
+              ref={mealTitleRef}
               id="meal-title"
               placeholder={tMeal("titlePlaceholder")}
               value={newMealTitle}
               onChange={(e) => setNewMealTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  mealAddressRef.current?.focus();
+                }
+              }}
               disabled={readOnly}
               autoCapitalize="sentences"
               enterKeyHint="next"
@@ -233,10 +258,17 @@ export function ServiceForm({
             </Label>
             <div className="relative">
               <Input
+                ref={mealAddressRef}
                 id="meal-address"
                 placeholder={tMeal("addressPlaceholder")}
                 value={newMealAddress}
                 onChange={(e) => setNewMealAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    serviceTitleRef.current?.focus();
+                  }
+                }}
                 disabled={readOnly}
                 autoComplete="street-address"
                 autoCapitalize="sentences"
@@ -257,10 +289,20 @@ export function ServiceForm({
           {t("label")}
         </Label>
         <Input
+          ref={serviceTitleRef}
           id="service-title"
           placeholder={t("placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const skip = (mealId === "new" || forceNewMeal) && !newMealDate;
+              if (!skip && title.trim()) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }
+          }}
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="done"

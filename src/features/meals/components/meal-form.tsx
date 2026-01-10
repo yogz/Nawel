@@ -115,6 +115,10 @@ export function MealForm({
   const [children, setChildren] = useState(meal?.children ?? defaultChildren);
   const [time, setTime] = useState(meal?.time || "");
   const [address, setAddress] = useState(meal?.address || defaultAddress || "");
+
+  const addressRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLInputElement>(null);
   const [creationMode, setCreationMode] = useState<
     "total" | "classique" | "apero" | "service-unique"
   >("total");
@@ -232,6 +236,12 @@ export function MealForm({
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addressRef.current?.focus();
+                }
+              }}
               onBlur={handleBlurSave}
               placeholder={t("titlePlaceholder")}
               autoCapitalize="sentences"
@@ -250,8 +260,15 @@ export function MealForm({
             <div className="relative">
               <Input
                 id="address"
+                ref={addressRef}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    dateRef.current?.focus();
+                  }
+                }}
                 onBlur={handleBlurSave}
                 placeholder={t("addressPlaceholder")}
                 autoComplete="street-address"
@@ -274,11 +291,18 @@ export function MealForm({
               <div className="relative">
                 <Input
                   id="date"
+                  ref={dateRef}
                   type="date"
                   value={date ? format(date, "yyyy-MM-dd") : ""}
                   onChange={(e) => {
                     const val = e.target.value;
                     setDate(val ? new Date(val) : undefined);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      timeRef.current?.focus();
+                    }
                   }}
                   onBlur={handleBlurSave}
                   className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
@@ -297,9 +321,20 @@ export function MealForm({
               <div className="relative">
                 <Input
                   id="time"
+                  ref={timeRef}
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (isEditMode) {
+                        handleSubmit();
+                      } else if (canGoNext()) {
+                        setStep(2);
+                      }
+                    }
+                  }}
                   enterKeyHint="next"
                   onBlur={handleBlurSave}
                   className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"

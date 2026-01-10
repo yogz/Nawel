@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signIn, signUp, authClient, requestPasswordReset, useSession } from "@/lib/auth-client";
 import { useRouter, getPathname } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const isReturningUser = localStorage.getItem("nawel_returning_user") === "true";
@@ -388,6 +389,12 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     inputMode="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !showMagicLink) {
+                        e.preventDefault();
+                        passwordRef.current?.focus();
+                      }
+                    }}
                     placeholder={t("emailPlaceholder")}
                     required
                     disabled={loading}
@@ -408,6 +415,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     <div className="relative">
                       <Input
                         id="password"
+                        ref={passwordRef}
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

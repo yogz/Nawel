@@ -113,8 +113,15 @@ export function PersonEditForm({
             id="edit-person-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleBlurSave();
+              }
+            }}
             onBlur={handleBlurSave}
             disabled={readOnly}
+            enterKeyHint="done"
             className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
           />
         </div>
