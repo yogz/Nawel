@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import {
@@ -13,8 +14,15 @@ import {
   TrendingUp,
   CreditCard,
   Target,
+  Send,
+  Loader2,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { submitFeedbackAction } from "@/app/actions/feedback-actions";
+import { useToast } from "@/hooks/use-toast";
+import { usePathname } from "next/navigation";
 
 interface Cost {
   id: number;
@@ -33,6 +41,41 @@ interface BehindTheScenesProps {
 
 export function BehindTheScenes({ costs }: BehindTheScenesProps) {
   const t = useTranslations("BehindTheScenes");
+  const feedbackT = useTranslations("Feedback");
+  const commonT = useTranslations("common");
+  const { showToast } = useToast();
+  const pathname = usePathname();
+
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await submitFeedbackAction({
+        content: content.trim(),
+        url: typeof window !== "undefined" ? window.location.href : pathname,
+      });
+
+      if (result.success) {
+        showToast({
+          text: feedbackT("successDescription"),
+          type: "success",
+        });
+        setContent("");
+      }
+    } catch (error) {
+      showToast({
+        text: error instanceof Error ? error.message : feedbackT("errorDescription"),
+        type: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -152,7 +195,17 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
         <motion.section variants={itemVariants} className="relative">
           <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-lg backdrop-blur-md sm:p-10">
             <div className="absolute right-0 top-0 -mr-20 -mt-20 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
-            <div className="relative z-10 flex flex-col items-center gap-6 md:flex-row">
+            <div className="relative z-10 flex flex-col items-start gap-6 md:flex-row md:items-center">
+              <div className="relative shrink-0 self-center md:self-auto">
+                <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary to-accent opacity-20 blur" />
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-white/50 shadow-inner sm:h-28 sm:w-28">
+                  <img
+                    src="/me.jpg"
+                    alt="Nicolas"
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                  />
+                </div>
+              </div>
               <div className="flex-1 space-y-4">
                 <h2 className="flex items-center gap-2 text-xl font-bold">
                   <Heart className="h-5 w-5 fill-red-500 text-red-500" />
@@ -360,6 +413,45 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </div>
               </div>
             ))}
+          </div>
+        </motion.section>
+
+        {/* Contact Section */}
+        <motion.section
+          variants={itemVariants}
+          className="rounded-3xl border border-white/40 bg-white/60 p-8 shadow-sm backdrop-blur-sm sm:p-10"
+        >
+          <div className="mx-auto max-w-2xl space-y-8">
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                <Mail className="h-6 w-6 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-text">{feedbackT("title")}</h2>
+              <p className="mt-2 text-muted-foreground">{feedbackT("description")}</p>
+            </div>
+
+            <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+              <Textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder={feedbackT("placeholder")}
+                className="min-h-[150px] rounded-2xl border-white/60 bg-white/80 transition-all focus:bg-white"
+                required
+              />
+              <Button
+                type="submit"
+                disabled={isSubmitting || !content.trim()}
+                variant="premium"
+                className="shadow-accent-sm h-12 w-full rounded-2xl"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="mr-2 h-4 w-4" />
+                )}
+                {isSubmitting ? commonT("loading") : feedbackT("submit")}
+              </Button>
+            </form>
           </div>
         </motion.section>
 
