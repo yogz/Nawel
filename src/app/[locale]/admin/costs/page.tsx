@@ -34,7 +34,7 @@ export default async function AdminCostsPage(props: { params: Promise<{ locale: 
           </div>
         </div>
         <Suspense fallback={<div>Chargement des coûts...</div>}>
-          <AdminCostList initialCosts={costs} />
+          <AdminCostList initialCosts={costs as any} />
         </Suspense>
       </main>
     </div>
