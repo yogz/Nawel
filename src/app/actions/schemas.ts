@@ -351,3 +351,14 @@ export const submitContactSchema = z.object({
   content: safeText(2000),
   url: z.string().optional(),
 });
+
+export const createCostSchema = z.object({
+  amount: z.number().min(0).max(1000000),
+  category: z.string().min(1).max(50),
+  description: z.string().max(500).optional(),
+  date: z.date().optional(),
+});
+
+export const deleteCostAdminSchema = z.object({
+  id: z.number().int().positive(),
+});

@@ -10,6 +10,7 @@ import {
   ingredientCache,
   user,
   feedback,
+  costs,
 } from "@drizzle/schema";
 import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
@@ -27,6 +28,8 @@ import {
   deleteCitationAdminSchema,
   updateCitationAdminSchema,
   deleteFeedbackAdminSchema,
+  createCostSchema,
+  deleteCostAdminSchema,
 } from "./schemas";
 import fs from "fs";
 import path from "path";
@@ -604,3 +607,42 @@ export const deleteFeedbackAdminAction = createSafeAction(
     return { success: true };
   }
 );
+
+// ==========================================
+// Cost Admin Actions
+// ==========================================
+
+export const createCostAction = createSafeAction(createCostSchema, async (input) => {
+  await requireAdmin();
+
+  await db.insert(costs).values({
+    amount: input.amount,
+    category: input.category,
+    description: input.description,
+    date: input.date || new Date(),
+  });
+
+  revalidatePath("/admin/costs");
+  revalidatePath("/behind-the-scenes");
+  return { success: true };
+});
+
+export const getCostsAction = withErrorThrower(async () => {
+  await requireAdmin();
+
+  const allCosts = await db.query.costs.findMany({
+    orderBy: (costs, { desc }) => [desc(costs.date)],
+  });
+
+  return allCosts;
+});
+
+export const deleteCostAction = createSafeAction(deleteCostAdminSchema, async (input) => {
+  await requireAdmin();
+
+  await db.delete(costs).where(eq(costs.id, input.id));
+
+  revalidatePath("/admin/costs");
+  revalidatePath("/behind-the-scenes");
+  return { success: true };
+});

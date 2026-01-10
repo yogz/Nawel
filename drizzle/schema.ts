@@ -326,3 +326,12 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const costs = pgTable("costs", {
+  id: serial("id").primaryKey(),
+  amount: real("amount").notNull(),
+  category: varchar("category", { length: 50 }).notNull(), // 'hosting', 'domain', 'api', etc.
+  description: text("description"),
+  date: timestamp("date").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

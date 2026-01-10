@@ -43,7 +43,8 @@
     "footerText": "Made with ✨ for your best moments.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Behind the Scenes"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Made with ❤️ for bon vivants.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Behind the Scenes"
     }
   },
   "LandingC": {
@@ -99,7 +101,8 @@
     "footerText": "Made with ✨ for your best moments.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Behind the Scenes"
     },
     "chatLeft1": "Who's bringing the wine? 🍷",
     "chatRight1": "I thought Mark was?",
@@ -775,5 +778,30 @@
     "iosInstructions": "To install CoList on your iPhone:",
     "iosStep1": "Tap the share button",
     "iosStep2": "Select \"Add to Home Screen\""
+  },
+  "BehindTheScenes": {
+    "title": "Behind the Scenes",
+    "subtitle": "Human, Transparent, Free.",
+    "bioTitle": "Who am I?",
+    "bioContent": "CoList was born from a simple observation: organizing meals with friends and vacation groceries shouldn't be a headache. Based in France, convinced that the magic happens when everyone contributes. This personal project is now yours. If it simplifies your gatherings, don't hesitate to let me know and talk about it with your friends ✨",
+    "costsTitle": "How much does it cost?",
+    "costsSubtitle": "Transparency is one of my values. Here is the detail of what it costs me to keep this site online without advertising.",
+    "monthlyView": "Monthly view",
+    "totalSinceStart": "Total since launch",
+    "totalYear": "Total this year",
+    "supportTitle": "Support the project",
+    "supportDescription": "If CoList helps you in your daily life, you can buy me a coffee or help me cover the hosting costs. Every gesture counts!",
+    "buyMeACoffee": "Buy me a coffee",
+    "revolut": "Via Revolut",
+    "changelogTitle": "What's new?",
+    "changelogSubtitle": "The latest features added with love.",
+    "noCosts": "No cost data available yet.",
+    "categories": {
+      "hosting": "Hosting",
+      "domain": "Domain name",
+      "api": "AI Services",
+      "email": "Email service",
+      "other": "Other"
+    }
   }
 }

@@ -3,7 +3,17 @@
 import { useRouter, usePathname, Link } from "@/i18n/navigation";
 import { signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield, Calendar, Database, Users, FlaskConical, Quote, Bug } from "lucide-react";
+import {
+  LogOut,
+  Shield,
+  Calendar,
+  Database,
+  Users,
+  FlaskConical,
+  Quote,
+  Bug,
+  Package,
+} from "lucide-react";
 import clsx from "clsx";
 
 type User = {
@@ -16,7 +26,8 @@ type User = {
 const navItems = [
   { href: "/admin", label: "Événements CoList", icon: Calendar },
   { href: "/admin/citations", label: "Citations", icon: Quote },
-  { href: "/admin/cache", label: "Cache IA", icon: Database },
+  { href: "/admin/costs", label: "Coûts", icon: Database }, // Shared Database icon for now
+  { href: "/admin/cache", label: "Cache IA", icon: Package }, // Changed Database to Package to free up icon
   { href: "/admin/models", label: "Modèles", icon: FlaskConical },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: Bug },
@@ -54,7 +65,7 @@ export function AdminHeader({ user }: { user: User }) {
         </div>
 
         {/* Navigation tabs */}
-        <nav className="-mb-px flex gap-1 overflow-x-auto pb-px scrollbar-hide">
+        <nav className="scrollbar-hide -mb-px flex gap-1 overflow-x-auto pb-px">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;

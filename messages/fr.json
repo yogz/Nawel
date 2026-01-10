@@ -43,7 +43,8 @@
     "footerText": "Fait avec ✨ pour vos plus beaux moments.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "En coulisses"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Fait avec ❤️ pour les bons vivants.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "En coulisses"
     }
   },
   "LandingC": {
@@ -99,7 +101,8 @@
     "footerText": "Fait avec ✨ pour vos plus beaux moments.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "En coulisses"
     },
     "chatLeft1": "Qui apporte le vin ? 🍷",
     "chatRight1": "Je croyais que c'était Mark ?",
@@ -775,5 +778,30 @@
     "iosInstructions": "Pour installer CoList sur votre iPhone :",
     "iosStep1": "Appuyez sur le menu de partage",
     "iosStep2": "Sélectionnez \"Sur l'écran d'accueil\""
+  },
+  "BehindTheScenes": {
+    "title": "En Coulisses",
+    "subtitle": "Humain, Transparent, Libre.",
+    "bioTitle": "Qui suis-je ?",
+    "bioContent": "CoList est né d'un constat simple : l'organisation des repas entre amis et des courses pour les vacances ne devrait pas être un casse-tête. Basé en France, convaincu que la magie opère quand tout le monde met la main à la pâte. Ce projet personnel, est maintenant à vous. S'il simplifie vos retrouvailles n'hésitez pas à me le dire et à en parler à vos amis ✨",
+    "costsTitle": "Combien ça coûte ?",
+    "costsSubtitle": "La transparence fait partie de mes valeurs. Voici le détail de ce qu'il me coûte de maintenir ce site en ligne sans publicité.",
+    "monthlyView": "Vue mensuelle",
+    "totalSinceStart": "Total depuis le lancement",
+    "totalYear": "Total cette année",
+    "supportTitle": "Soutenir le projet",
+    "supportDescription": "Si CoList vous aide dans votre quotidien, vous pouvez m'offrir un café ou m'aider à couvrir les frais d'hébergement. Chaque geste compte !",
+    "buyMeACoffee": "M'offrir un café",
+    "revolut": "Via Revolut",
+    "changelogTitle": "Quoi de neuf ?",
+    "changelogSubtitle": "Les dernières fonctionnalités ajoutées avec amour.",
+    "noCosts": "Aucune donnée de coût disponible pour le moment.",
+    "categories": {
+      "hosting": "Hébergement",
+      "domain": "Nom de domaine",
+      "api": "Services IA",
+      "email": "Envoi d'emails",
+      "other": "Autre"
+    }
   }
 }

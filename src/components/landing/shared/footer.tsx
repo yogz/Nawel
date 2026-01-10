@@ -24,6 +24,9 @@ export function Footer({ namespace }: FooterProps) {
         <Link href="/contact" className="transition-colors hover:text-gray-900">
           {t("footerLinks.contact")}
         </Link>
+        <Link href="/behind-the-scenes" className="transition-colors hover:text-gray-900">
+          {t("footerLinks.behindTheScenes")}
+        </Link>
       </div>
       <p>
         &copy; {new Date().getFullYear()} CoList. {t("footerText")}
