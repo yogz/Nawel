@@ -12,6 +12,7 @@ export function JsonLd({ locale }: { locale: string }) {
         : "Coordinate your holiday meals simply. Share the link with your family so everyone can choose what they bring!",
     applicationCategory: "LifestyleApplication",
     operatingSystem: "Web",
+    logo: "https://www.colist.fr/LogoIcon.png",
     offers: {
       "@type": "Offer",
       price: "0",

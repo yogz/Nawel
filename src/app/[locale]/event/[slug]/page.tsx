@@ -68,6 +68,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
         },
       ],
     },
+    other: {
+      "og:logo": "https://www.colist.fr/LogoIcon.png",
+    },
     twitter: {
       card: "summary_large_image",
       title,

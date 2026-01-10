@@ -60,6 +60,9 @@ export async function generateMetadata({
         },
       ],
     },
+    other: {
+      "og:logo": "https://www.colist.fr/LogoIcon.png",
+    },
     twitter: {
       card: "summary_large_image",
       title: appTitle,
