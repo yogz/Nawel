@@ -163,10 +163,11 @@ export default async function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               
               // Define default consent state based on localStorage to avoid flashes
-              var consent = 'denied';
+              // DEFAULT TO GRANTED: set it to true by default for now
+              var consent = 'granted';
               try {
-                if (localStorage.getItem('analytics_consent') === 'true') {
-                  consent = 'granted';
+                if (localStorage.getItem('analytics_consent') === 'false') {
+                  consent = 'denied';
                 }
               } catch (e) {}
 
@@ -230,7 +231,7 @@ export default async function RootLayout({
             {children}
             <BugReportButton />
             <SnowOverlay />
-            <CookieConsent />
+            {/* <CookieConsent /> - Disabled: set it to true by default for now */}
             <AnalyticsSessionSync />
             <AnalyticsMonitor />
             <PWAPrompt />

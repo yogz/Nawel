@@ -25,6 +25,7 @@ const LANGUAGE_META: Record<string, { flag: string; nativeName: string; region: 
   pl: { flag: "🇵🇱", nativeName: "Polski", region: "Eastern Europe" },
   sv: { flag: "🇸🇪", nativeName: "Svenska", region: "Northern Europe" },
   da: { flag: "🇩🇰", nativeName: "Dansk", region: "Northern Europe" },
+  tr: { flag: "🇹🇷", nativeName: "Türkçe", region: "Western Asia" },
 };
 
 interface LanguageSelectorProps {

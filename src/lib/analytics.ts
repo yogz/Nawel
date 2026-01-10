@@ -13,9 +13,13 @@ const ANALYTICS_ENABLED = typeof window !== "undefined";
 
 // Consent management - GDPR compliant (opt-in required)
 // Initialize from localStorage immediately if available
-let hasConsent = false;
+// DEFAULT TO TRUE: set it to true by default for now
+let hasConsent = true;
 if (typeof window !== "undefined") {
-  hasConsent = localStorage.getItem("analytics_consent") === "true";
+  const storedConsent = localStorage.getItem("analytics_consent");
+  if (storedConsent === "false") {
+    hasConsent = false;
+  }
 }
 
 /**
@@ -48,10 +52,10 @@ export function setAnalyticsConsent(consent: boolean) {
  */
 export function getAnalyticsConsent(): boolean {
   if (typeof window === "undefined") {
-    return false;
+    return true; // Default to true
   }
   const stored = localStorage.getItem("analytics_consent");
-  return stored === "true";
+  return stored !== "false"; // Only false if explicitly set to "false"
 }
 
 /**
