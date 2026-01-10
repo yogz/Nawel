@@ -57,6 +57,7 @@ export async function generateMetadata({
           width: 800,
           height: 800,
           alt: appTitle,
+          type: "image/png",
         },
       ],
     },

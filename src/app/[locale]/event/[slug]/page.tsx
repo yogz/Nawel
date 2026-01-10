@@ -65,6 +65,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
           width: 800,
           height: 800,
           alt: title,
+          type: "image/png",
         },
       ],
     },
