@@ -118,14 +118,18 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     return occurrences;
   });
 
-  // Then use these occurrences for all calculations
-  const monthlyCosts = expandedOccurrences.reduce(
+  // Group by month and category for the chart
+  const monthlyCategoryCosts = expandedOccurrences.reduce(
     (acc, occ) => {
-      const monthKey = `${occ.date.getFullYear()}-${String(occ.date.getMonth() + 1).padStart(2, "0")}`;
-      acc[monthKey] = (acc[monthKey] || 0) + occ.amount;
+      const monthKey = `${occ.date.getFullYear()}-${String(occ.date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      if (!acc[monthKey]) acc[monthKey] = {};
+      acc[monthKey][occ.category] = (acc[monthKey][occ.category] || 0) + occ.amount;
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<string, Record<string, number>>
   );
 
   const totalSinceStart = expandedOccurrences.reduce((sum, occ) => sum + occ.amount, 0);
@@ -142,6 +146,17 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     {} as Record<string, number>
   );
 
+  const CATEGORIES = ["hosting", "domain", "ai", "email", "dev", "services", "other"] as const;
+  const CATEGORY_COLORS: Record<string, string> = {
+    hosting: "bg-blue-500",
+    domain: "bg-cyan-500",
+    ai: "bg-purple-500",
+    email: "bg-pink-500",
+    dev: "bg-orange-500",
+    services: "bg-emerald-500",
+    other: "bg-slate-400",
+  };
+
   // Get last 6 months for the chart
   const lastMonths = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
@@ -149,7 +164,13 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   }).reverse();
 
-  const maxMonthCost = Math.max(...lastMonths.map((m) => monthlyCosts[m] || 0), 10);
+  const maxMonthCost = Math.max(
+    ...lastMonths.map((m) => {
+      const costs = monthlyCategoryCosts[m] || {};
+      return Object.values(costs).reduce((sum, a) => sum + a, 0);
+    }),
+    10
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -195,18 +216,20 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
         <motion.section variants={itemVariants} className="relative">
           <div className="overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-lg backdrop-blur-md sm:p-10">
             <div className="absolute right-0 top-0 -mr-20 -mt-20 h-48 w-48 rounded-full bg-primary/5 blur-3xl" />
-            <div className="relative z-10 flex flex-col items-start gap-6 md:flex-row md:items-center">
-              <div className="relative shrink-0 self-center md:self-auto">
-                <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary to-accent opacity-20 blur" />
-                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-white/50 shadow-inner sm:h-28 sm:w-28">
-                  <img
-                    src="/me.jpg"
-                    alt="Nicolas"
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
+            <div className="relative z-10">
+              <div className="absolute -right-4 -top-4 md:-right-6 md:-top-6">
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary to-accent opacity-20 blur" />
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border-2 border-white/50 shadow-lg sm:h-24 sm:w-24">
+                    <img
+                      src="/me.jpg"
+                      alt="Nicolas"
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="flex-1 space-y-4">
+              <div className="flex-1 space-y-4 md:pr-24">
                 <h2 className="flex items-center gap-2 text-xl font-bold">
                   <Heart className="h-5 w-5 fill-red-500 text-red-500" />
                   {t("bioTitle")}
@@ -256,10 +279,10 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </h3>
               </div>
 
-              <div className="flex h-48 items-end gap-3 px-2 sm:gap-6">
+              <div className="flex h-48 items-end gap-3 px-2 sm:gap-4 md:gap-6">
                 {lastMonths.map((month) => {
-                  const amount = monthlyCosts[month] || 0;
-                  const height = (amount / maxMonthCost) * 100;
+                  const costs = monthlyCategoryCosts[month] || {};
+                  const total = Object.values(costs).reduce((sum, a) => sum + a, 0);
                   const [year, m] = month.split("-");
                   const monthName = new Date(parseInt(year), parseInt(m) - 1).toLocaleDateString(
                     "fr-FR",
@@ -267,19 +290,45 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   );
 
                   return (
-                    <div key={month} className="flex flex-1 flex-col items-center gap-3">
-                      <div className="group relative flex h-32 w-full flex-col justify-end">
-                        <div
-                          className="w-full rounded-t-lg bg-primary/20 transition-all duration-500 hover:bg-primary/40"
-                          style={{ height: `${height}%` }}
-                        >
-                          <div className="absolute -top-10 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded bg-text px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
-                            {amount.toFixed(2)} €
-                          </div>
+                    <div key={month} className="group relative flex flex-1 flex-col items-center">
+                      {/* Stacked Bar */}
+                      <div className="relative flex h-32 w-full flex-col justify-end overflow-hidden rounded-lg bg-black/5 transition-all group-hover:bg-black/10">
+                        {CATEGORIES.map((cat) => {
+                          const amount = costs[cat] || 0;
+                          if (amount === 0) return null;
+                          const height = (amount / maxMonthCost) * 100;
+                          return (
+                            <div
+                              key={cat}
+                              className={`w-full ${CATEGORY_COLORS[cat]} transition-all duration-500`}
+                              style={{ height: `${height}%` }}
+                            />
+                          );
+                        })}
+
+                        {/* Tooltip */}
+                        <div className="absolute -top-12 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text p-2 text-[10px] text-white opacity-0 shadow-xl transition-all group-hover:-top-14 group-hover:opacity-100">
+                          <div className="font-bold">{monthName}</div>
+                          <div className="text-primary">{total.toFixed(2)} €</div>
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold uppercase text-muted-foreground sm:text-xs">
+                      <span className="mt-3 text-[10px] font-bold uppercase text-muted-foreground">
                         {monthName}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Chart Legend */}
+              <div className="mt-8 flex flex-wrap justify-center gap-x-4 gap-y-2 border-t border-black/5 pt-4">
+                {CATEGORIES.map((cat) => {
+                  if ((categoryTotals[cat] || 0) === 0) return null;
+                  return (
+                    <div key={cat} className="flex items-center gap-1.5">
+                      <div className={`h-2 w-2 rounded-full ${CATEGORY_COLORS[cat]}`} />
+                      <span className="text-[10px] font-medium uppercase tracking-tight text-muted-foreground">
+                        {t(`categories.${cat}`)}
                       </span>
                     </div>
                   );
