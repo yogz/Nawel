@@ -142,6 +142,13 @@ export function PlanningTab({
     [plan.meals]
   );
 
+  // Reset filter to "all" when no more unassigned items
+  useEffect(() => {
+    if (planningFilter.type === "unassigned" && unassignedItemsCount === 0) {
+      setPlanningFilter({ type: "all" });
+    }
+  }, [unassignedItemsCount, planningFilter.type, setPlanningFilter]);
+
   // Early return after all hooks are called
   if (!hasMounted) {
     return null;
@@ -161,19 +168,21 @@ export function PlanningTab({
         className="space-y-2 pt-0"
       >
         <div className="flex flex-col gap-3">
-          <div className="px-0">
-            <PlanningFilters
-              plan={plan}
-              planningFilter={planningFilter}
-              setPlanningFilter={setPlanningFilter}
-              setSheet={setSheet}
-              sheet={sheet}
-              unassignedItemsCount={unassignedItemsCount}
-              slug={slug}
-              writeKey={writeKey}
-              readOnly={!!readOnly}
-            />
-          </div>
+          {unassignedItemsCount > 0 && (
+            <div className="px-0">
+              <PlanningFilters
+                plan={plan}
+                planningFilter={planningFilter}
+                setPlanningFilter={setPlanningFilter}
+                setSheet={setSheet}
+                sheet={sheet}
+                unassignedItemsCount={unassignedItemsCount}
+                slug={slug}
+                writeKey={writeKey}
+                readOnly={!!readOnly}
+              />
+            </div>
+          )}
 
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
