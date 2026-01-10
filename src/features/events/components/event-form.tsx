@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
   UtensilsCrossed,
@@ -79,6 +79,22 @@ export function EventForm({
   const [address, setAddress] = useState(initialData?.address ?? "");
   const [adults, setAdults] = useState(initialData?.adults ?? 2);
   const [children, setChildren] = useState(initialData?.children ?? 0);
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLInputElement>(null);
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (step === 3) {
+      // Small timeout to ensure the transition is finished and keyboard is ready
+      const timer = setTimeout(() => {
+        descriptionRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
   const CREATION_MODES = [
     {
@@ -181,9 +197,16 @@ export function EventForm({
             </Label>
             <div className="group relative">
               <Input
+                ref={nameRef}
                 className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200 sm:h-12"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addressRef.current?.focus();
+                  }
+                }}
                 placeholder={t("eventNamePlaceholder")}
                 autoFocus
                 autoCapitalize="sentences"
@@ -198,9 +221,16 @@ export function EventForm({
             </Label>
             <div className="relative">
               <Input
+                ref={addressRef}
                 className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    dateRef.current?.focus();
+                  }
+                }}
                 placeholder={t("addressPlaceholder")}
                 autoComplete="street-address"
                 autoCapitalize="sentences"
@@ -220,10 +250,17 @@ export function EventForm({
               </Label>
               <div className="relative">
                 <Input
+                  ref={dateRef}
                   type="date"
                   className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      timeRef.current?.focus();
+                    }
+                  }}
                   enterKeyHint="next"
                 />
                 <Calendar
@@ -238,10 +275,23 @@ export function EventForm({
               </Label>
               <div className="relative">
                 <Input
+                  ref={timeRef}
                   type="time"
                   className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (canGoNext()) {
+                        if (initialData) {
+                          handleSubmit();
+                        } else {
+                          goNext();
+                        }
+                      }
+                    }
+                  }}
                   enterKeyHint="next"
                 />
                 <Clock
@@ -471,11 +521,21 @@ export function EventForm({
             </Label>
             <div className="relative">
               <Textarea
+                ref={descriptionRef}
                 className="min-h-[100px] w-full touch-manipulation resize-none rounded-2xl border border-gray-100 bg-gray-50/50 p-4 pl-12 text-base outline-none transition-all focus:border-accent focus:bg-white focus:ring-2 focus:ring-accent/20 sm:min-h-[80px] sm:pl-10"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    if (name.trim()) {
+                      handleSubmit();
+                    }
+                  }
+                }}
                 placeholder={t("descriptionPlaceholder")}
                 autoCapitalize="sentences"
+                enterKeyHint="send"
               />
               <MessageSquare
                 size={20}
