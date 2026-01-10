@@ -688,13 +688,13 @@
     }
   },
   "Feedback": {
-    "triggerLabel": "Signaler un bug",
-    "title": "Signaler un bug",
-    "description": "Expliquez-nous ce qui ne va pas, nous allons regarder ça de près ! 🐞",
-    "placeholder": "Décrivez le problème ici...",
-    "submit": "Envoyer le rapport",
+    "triggerLabel": "Envoyer moi un message",
+    "title": "Envoyer moi un message",
+    "description": "Une question, une suggestion ou juste pour dire bonjour ? Je lis tous vos messages ! 💌",
+    "placeholder": "Votre message ici...",
+    "submit": "Envoyer le message",
     "successTitle": "Merci ! ✨",
-    "successDescription": "Votre rapport a été bien reçu. Merci de nous aider à améliorer CoList !",
+    "successDescription": "Votre message a été bien reçu. Je vous répondrai dès que possible !",
     "errorDescription": "L'envoi a échoué. Réessayez plus tard."
   },
   "ResetPassword": {
