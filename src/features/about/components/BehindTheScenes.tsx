@@ -107,7 +107,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   <Heart className="h-6 w-6 fill-red-500 text-red-500" />
                   {t("bioTitle")}
                 </h2>
-                <p className="text-text/80 text-lg font-medium leading-relaxed">
+                <p className="text-text/80 whitespace-pre-line text-lg font-medium leading-relaxed">
                   {t("bioContent")}
                 </p>
               </div>
@@ -225,7 +225,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 asChild
               >
                 <a
-                  href="https://www.buymeacoffee.com/nicolasperez"
+                  href="https://www.buymeacoffee.com/colist"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -235,7 +235,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </a>
               </Button>
               <Button variant="outline" className="h-12 rounded-2xl bg-white/50 px-8" asChild>
-                <a href="https://revolut.me/nicolasperez" target="_blank" rel="noopener noreferrer">
+                <a href="https://revolut.me/yogzgo" target="_blank" rel="noopener noreferrer">
                   <CreditCard className="mr-2 h-5 w-5" />
                   {t("revolut")}
                 </a>

@@ -99,7 +99,8 @@
     "footerText": "Skapad med ✨ för dina finaste stunder.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bakom kulisserna"
     },
     "chatLeft1": "Vem tar med vinet? 🍷",
     "chatRight1": "Trodde att Mark skulle göra det?",
@@ -774,5 +775,30 @@
     "iosInstructions": "För att installera CoList på din iPhone:",
     "iosStep1": "Tryck på delningsknappen",
     "iosStep2": "Välj \"Lägg till på hemskärmen\""
+  },
+  "BehindTheScenes": {
+    "title": "Bakom kulisserna",
+    "subtitle": "Mänsklig, Transparent, Fri.",
+    "bioTitle": "Vem är jag?",
+    "bioContent": "CoList är en webbapp född ur en mycket konkret frustration.\n\nMellan familjemiddagar, helger med vänner eller semestrar som ska organiseras, tror vi alltid att vi är synkroniserade... fram till det ögonblick då vi står där med 15 påsar chips och ingenting att äta. För många meddelanden, spridda listor och i slutändan en otydlig organisation.\n\nJag skapade CoList för att få lite ordning i det hela: att helt enkelt veta vem som tar med vad, undvika dubbletter och minska den mentala belastningen kopplad till organisation.\n\nUrsprungligen var det ett personligt projekt. Idag är det en webbapp som är tänkt att delas, i hopp om att den också ska underlätta för dig att organisera dina gemenskapliga stunder ✨",
+    "costsTitle": "Vad kostar det mig?",
+    "costsSubtitle": "Transparens är en av mina värderingar. Här är detaljerna om vad det kostar mig att hålla den här webbplatsen online utan reklam.",
+    "monthlyView": "Månadsvisning",
+    "totalSinceStart": "Totalt sedan start",
+    "totalYear": "Totalt i år",
+    "supportTitle": "Stöd projektet",
+    "supportDescription": "Om CoList hjälper dig i din vardag kan du bjuda mig på en kaffe eller hjälpa mig att täcka hostingkostnaderna. Varje gest räknas!",
+    "buyMeACoffee": "Bjud mig på en kaffe",
+    "revolut": "Via Revolut",
+    "changelogTitle": "Vad är nytt?",
+    "changelogSubtitle": "De senaste funktionerna tillagda med kärlek.",
+    "noCosts": "Ingen kostnadsdata tillgänglig än.",
+    "categories": {
+      "hosting": "Webbhotell",
+      "domain": "Domännamn",
+      "api": "AI-tjänster",
+      "email": "E-posttjänst",
+      "other": "Annat"
+    }
   }
 }

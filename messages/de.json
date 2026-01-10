@@ -99,7 +99,8 @@
     "footerText": "Mit ✨ gemacht für deine schönsten Momente.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Hinter den Kulissen"
     },
     "chatLeft1": "Wer bringt den Wein mit? 🍷",
     "chatRight1": "Ich dachte, Mark macht das?",
@@ -774,5 +775,30 @@
     "iosInstructions": "Um CoList auf deinem iPhone zu installieren:",
     "iosStep1": "Tippe auf die Teilen-Schaltfläche",
     "iosStep2": "Wähle \"Zum Home-Bildschirm\""
+  },
+  "BehindTheScenes": {
+    "title": "Hinter den Kulissen",
+    "subtitle": "Menschlich, Transparent, Frei.",
+    "bioTitle": "Wer bin ich?",
+    "bioContent": "CoList ist eine Web-App, die aus einer sehr konkreten Frustration heraus entstanden ist.\n\nOb Familienessen, Wochenenden mit Freunden oder die Urlaubsplanung – man denkt immer, man ist synchronisiert... bis zu dem Moment, an dem man mit 15 Tüten Chips und nichts zu essen dasteht. Zu viele Nachrichten, verstreute Listen und am Ende eine unklare Organisation.\n\nIch habe CoList erstellt, um etwas Ordnung in das Chaos zu bringen: einfach wissen, wer was mitbringt, Duplikate vermeiden und die mentale Last der Organisation reduzieren.\n\nUrsprünglich war es ein persönliches Projekt. Heute ist es eine Web-App, die darauf ausgelegt ist, geteilt zu werden, in der Hoffnung, dass sie auch Ihnen die Organisation Ihrer geselligen Momente erleichtert ✨",
+    "costsTitle": "Was kostet es mich?",
+    "costsSubtitle": "Transparenz gehört zu meinen Werten. Hier ist das Detail dessen, was mich der Betrieb dieser Website ohne Werbung kostet.",
+    "monthlyView": "Monatliche Ansicht",
+    "totalSinceStart": "Gesamt seit dem Start",
+    "totalYear": "Gesamt in diesem Jahr",
+    "supportTitle": "Unterstütze das Projekt",
+    "supportDescription": "Wenn CoList dir im Alltag hilft, kannst du mir einen Kaffee ausgeben oder mir helfen, die Hosting-Kosten zu decken. Jede Geste zählt!",
+    "buyMeACoffee": "Gib mir einen Kaffee aus",
+    "revolut": "Über Revolut",
+    "changelogTitle": "Was gibt's Neues?",
+    "changelogSubtitle": "Die neuesten Funktionen mit Liebe hinzugefügt.",
+    "noCosts": "Noch keine Kostendaten verfügbar.",
+    "categories": {
+      "hosting": "Hosting",
+      "domain": "Domain-Name",
+      "api": "KI-Dienste",
+      "email": "E-Mail-Dienst",
+      "other": "Anderes"
+    }
   }
 }

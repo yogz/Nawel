@@ -99,7 +99,8 @@
     "footerText": "Stworzone z ✨ dla Twoich najlepszych chwil.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Za kulisami"
     },
     "chatLeft1": "Kto przynosi wino? 🍷",
     "chatRight1": "Myślałem, że Mark?",
@@ -774,5 +775,30 @@
     "iosInstructions": "Aby zainstalować CoList na iPhone'ie:",
     "iosStep1": "Dotknij przycisku udostępniania",
     "iosStep2": "Wybierz \"Dodaj do ekranu głównego\""
+  },
+  "BehindTheScenes": {
+    "title": "Za kulisami",
+    "subtitle": "Ludzki, Przejrzysty, Wolny.",
+    "bioTitle": "Kim jestem?",
+    "bioContent": "CoList to aplikacja webowa zrodzona z bardzo konkretnej frustracji.\n\nPomiędzy rodzinnymi obiadami, weekendami z przyjaciółmi czy wakacjami do zorganizowania, zawsze myślimy, że jesteśmy zsynchronizowani... aż do momentu, gdy zostajemy z 15 paczkami chipsów i niczym do jedzenia. Za dużo wiadomości, rozproszone listy i ostatecznie niejasna organizacja.\n\nStworzyłem CoList, aby wprowadzić w to trochę porządku: po prostu wiedzieć, kto co przynosi, unikać duplikatów i zmniejszyć obciążenie psychiczne związane z organizacją.\n\nPierwotnie był to projekt osobisty. Dziś jest to aplikacja webowa stworzona z myślą o dzieleniu się, z nadzieją, że również Wam ułatwi organizację Waszych wspólnych chwil ✨",
+    "costsTitle": "Ile mnie to kosztuje?",
+    "costsSubtitle": "Przejrzystość jest jedną z moich wartości. Oto szczegóły tego, ile kosztuje mnie utrzymanie tej strony online bez reklam.",
+    "monthlyView": "Widok miesięczny",
+    "totalSinceStart": "Łącznie od początku",
+    "totalYear": "Łącznie w tym roku",
+    "supportTitle": "Wesprzyj projekt",
+    "supportDescription": "Jeśli CoList pomaga Ci w codziennym życiu, możesz postawić mi kawę lub pomóc w pokryciu kosztów hostingu. Każdy gest się liczy!",
+    "buyMeACoffee": "Postaw mi kawę",
+    "revolut": "Przez Revolut",
+    "changelogTitle": "Co nowego?",
+    "changelogSubtitle": "Najnowsze funkcje dodane z miłością.",
+    "noCosts": "Brak danych o kosztach w tej chwili.",
+    "categories": {
+      "hosting": "Hosting",
+      "domain": "Nazwa domeny",
+      "api": "Usługi AI",
+      "email": "Usługa e-mail",
+      "other": "Inne"
+    }
   }
 }

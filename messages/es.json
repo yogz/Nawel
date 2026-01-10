@@ -43,7 +43,8 @@
     "footerText": "Hecho con ✨ para tus mejores momentos.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "behindTheScenes": "Entre bastidores"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Hecho con ❤️ para los bon vivants.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "behindTheScenes": "Entre bastidores"
     }
   },
   "LandingC": {
@@ -99,7 +101,8 @@
     "footerText": "Hecho con ✨ para tus mejores momentos.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "behindTheScenes": "Entre bastidores"
     },
     "chatLeft1": "¿Quién trae el vino? 🍷",
     "chatRight1": "¿No era Mark?",
@@ -774,5 +777,30 @@
     "iosInstructions": "Para instalar CoList en tu iPhone:",
     "iosStep1": "Pulsa el botón de compartir",
     "iosStep2": "Selecciona \"Añadir a la pantalla de inicio\""
+  },
+  "BehindTheScenes": {
+    "title": "Entre bastidores",
+    "subtitle": "Humano, Transparente, Libre.",
+    "bioTitle": "¿Quién soy?",
+    "bioContent": "CoList es una web app nacida de una frustración muy concreta.\n\nEntre las cenas en familia, los fines de semana con amigos o las vacaciones a organizar, siempre pensamos que estamos sincronizados… hasta el momento en que nos encontramos con 15 bolsas de patatas fritas y nada de comer. Demasiados mensajes, listas dispersas y, al final, una organización confusa.\n\nCreé CoList para poner un poco de orden en todo esto: saber simplemente quién trae qué, evitar duplicados y reducir la carga mental ligada a la organización.\n\nAl principio era un proyecto personal. Hoy es una web app pensada para ser compartida, con la esperanza de que también a vosotros os facilite la organización de vuestros momentos de convivencia ✨",
+    "costsTitle": "¿Cuánto me cuesta?",
+    "costsSubtitle": "La transparencia forma parte de mis valores. Aquí tenéis el detalle de lo que me cuesta mantener este sitio en línea sin publicidad.",
+    "monthlyView": "Vista mensual",
+    "totalSinceStart": "Total desde el lanzamiento",
+    "totalYear": "Total este año",
+    "supportTitle": "Apoyar el proyecto",
+    "supportDescription": "Si CoList os ayuda en vuestro día a día, podéis invitarme a un café o ayudarme a cubrir los gastos de mantenimiento. ¡Cada gesto cuenta!",
+    "buyMeACoffee": "Invitarme a un café",
+    "revolut": "Vía Revolut",
+    "changelogTitle": "¿Qué hay de nuevo?",
+    "changelogSubtitle": "Las últimas funcionalidades añadidas con amor.",
+    "noCosts": "No hay datos de costes disponibles por el momento.",
+    "categories": {
+      "hosting": "Alojamiento",
+      "domain": "Nombre de dominio",
+      "api": "Servicios IA",
+      "email": "Envío de emails",
+      "other": "Otro"
+    }
   }
 }

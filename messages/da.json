@@ -99,7 +99,8 @@
     "footerText": "Lavet med ✨ til dine bedste øjeblikke.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bag kulisserne"
     },
     "chatLeft1": "Hvem tager vinen med? 🍷",
     "chatRight1": "Jeg troede, det var Mark?",
@@ -774,5 +775,30 @@
     "iosInstructions": "For at installere CoList på din iPhone:",
     "iosStep1": "Tryk på delningsknappen",
     "iosStep2": "Vælg \"Føj til hjemmeskærm\""
+  },
+  "BehindTheScenes": {
+    "title": "Bag kulisserne",
+    "subtitle": "Menneskelig, Gennemsigtig, Fri.",
+    "bioTitle": "Hvem er jeg?",
+    "bioContent": "CoList er en webapp født ud af en meget konkret frustration.\n\nMellem familiemiddage, weekender med venner eller ferier, der skal organiseres, tror man altid, at man er synkroniseret... indtil det øjeblik, hvor man står med 15 poser chips og intet at spise. For mange beskeder, spredte lister og i sidste ende en uklar organisation.\n\nJeg skabte CoList for at få lidt orden i det: simpelthen at vide, hvem der tager hvad med, undgå dubletter og mindske den mentale byrde forbundet med organisation.\n\nOprindeligt var det et personligt projekt. I dag er det en webapp, der er tænkt til at blive delt, i håbet om at den også vil gøre det lettere for dig at organisere dine hyggelige stunder ✨",
+    "costsTitle": "Hvad koster det mig?",
+    "costsSubtitle": "Gennemsigtighed er en af mine værdier. Her er detaljerne om, hvad det koster mig at holde denne side online uden reklamer.",
+    "monthlyView": "Månedlig visning",
+    "totalSinceStart": "I alt siden start",
+    "totalYear": "I alt i år",
+    "supportTitle": "Støt projektet",
+    "supportDescription": "Hvis CoList hjælper dig i din hverdag, kan du købe mig en kop kaffe eller hjælpe mig med at dække hostingomkostningerne. Hver gestus tæller!",
+    "buyMeACoffee": "Køb mig en kop kaffe",
+    "revolut": "Via Revolut",
+    "changelogTitle": "Hvad er nyt?",
+    "changelogSubtitle": "De seneste funktioner tilføjet med kærlighed.",
+    "noCosts": "Ingen omkostningsdata tilgængelige endnu.",
+    "categories": {
+      "hosting": "Hosting",
+      "domain": "Domænenavn",
+      "api": "AI-tjenester",
+      "email": "E-mail-tjeneste",
+      "other": "Andet"
+    }
   }
 }

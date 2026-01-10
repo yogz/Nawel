@@ -100,7 +100,8 @@
     "footerText": "En güzel anlarınız için ✨ ile yapıldı.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "İletişim"
+      "contact": "İletişim",
+      "behindTheScenes": "Sahne Arkası"
     },
     "chatLeft1": "Şarabı kim getiriyor? 🍷",
     "chatRight1": "Mark getirecek sanıyordum?",
@@ -767,5 +768,30 @@
     "iosInstructions": "CoList'i iPhone'unuza yüklemek için :",
     "iosStep1": "Paylaş menüsüne dokunun",
     "iosStep2": "\"Ana Ekrana Ekle\"yi seçin"
+  },
+  "BehindTheScenes": {
+    "title": "Sahne Arkası",
+    "subtitle": "İnsani, Şeffaf, Özgür.",
+    "bioTitle": "Ben kimim ?",
+    "bioContent": "CoList, çok somut bir hayal kırıklığından doğan bir web uygulamasıdır.\n\nAile yemekleri, arkadaşlarla hafta sonları veya organize edilecek tatiller arasında her zaman senkronize olduğumuzu düşünürüz... ta ki kendimizi 15 paket cipsle ve yiyecek hiçbir şeyimiz olmadan bulana kadar. Çok fazla mesaj, dağınık listeler ve sonuçta belirsiz bir organizasyon.\n\nCoList'i buna biraz çekidüzen vermek için oluşturdum: sadece kimin ne getirdiğini bilmek, mükerrerlerden kaçınmak ve organizasyonla ilgili zihinsel yükü azaltmak.\n\nBaşlangıçta bu kişisel bir projeydi. Bugün, sizin de samimi anlarınızın organizasyonunu kolaylaştırması umuduyla paylaşılması amaçlanan bir web uygulamasıdır ✨",
+    "costsTitle": "Bana ne kadara mal oluyor ?",
+    "costsSubtitle": "Şeffaflık değerlerimin bir parçasıdır. İşte bu siteyi reklam olmadan yayında tutmanın bana maliyetinin detayları.",
+    "monthlyView": "Aylık görünüm",
+    "totalSinceStart": "Başlangıçtan bu yana toplam",
+    "totalYear": "Bu yıl toplam",
+    "supportTitle": "Projeyi destekle",
+    "supportDescription": "CoList günlük hayatınızda size yardımcı oluyorsa, bana bir kahve ısmarlayabilir veya barındırma masraflarını karşılamama yardımcı olabilirsiniz. Her jest önemlidir !",
+    "buyMeACoffee": "Bana bir kahve ısmarla",
+    "revolut": "Revolut Aracılığıyla",
+    "changelogTitle": "Yenilikler ?",
+    "changelogSubtitle": "Sevgiyle eklenen en son özellikler.",
+    "noCosts": "Şu anda maliyet verisi bulunmamaktadır.",
+    "categories": {
+      "hosting": "Barındırma",
+      "domain": "Alan adı",
+      "api": "Yapay Zeka Hizmetleri",
+      "email": "E-posta gönderimi",
+      "other": "Diğer"
+    }
   }
 }

@@ -99,7 +99,8 @@
     "footerText": "Gemaakt met ✨ voor uw beste momenten.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Achter de schermen"
     },
     "chatLeft1": "Wie brengt de wijn mee? 🍷",
     "chatRight1": "Ik dacht dat Mark dat deed?",
@@ -774,5 +775,30 @@
     "iosInstructions": "Om CoList op je iPhone te installeren:",
     "iosStep1": "Tik op de deelknop",
     "iosStep2": "Selecteer \"Zet op beginscherm\""
+  },
+  "BehindTheScenes": {
+    "title": "Achter de schermen",
+    "subtitle": "Menselijk, Transparant, Gratis.",
+    "bioTitle": "Wie ben ik?",
+    "bioContent": "CoList is een web-app die is ontstaan uit een heel concrete frustratie.\n\nTussen familiediners, weekenden met vrienden of te organiseren vakanties door denken we altijd dat we gesynchroniseerd zijn... tot het moment dat we met 15 zakken chips staan en niets te eten hebben. Te veel berichten, verspreide lijsten en uiteindelijk een vage organisatie.\n\nIk heb CoList gemaakt om daar wat orde in te scheppen: simpelweg weten wie wat meebrengt, dubbel werk voorkomen en de mentale belasting van het organiseren verminderen.\n\nOorspronkelijk was het een persoonlijk project. Tegenwoordig is het een web-app die bedoeld is om gedeeld te worden, in de hoop dat het ook de organisatie van uw gezellige momenten vergemakkelijkt ✨",
+    "costsTitle": "Wat kost het mij?",
+    "costsSubtitle": "Transparantie maakt deel uit van mijn waarden. Hier zijn de details van wat het mij kost om deze site online te houden zonder reclame.",
+    "monthlyView": "Maandelijkse weergave",
+    "totalSinceStart": "Totaal sinds de start",
+    "totalYear": "Totaal dit jaar",
+    "supportTitle": "Ondersteun het project",
+    "supportDescription": "Als CoList u helpt in uw dagelijks leven, kunt u mij op een kopje koffie trakteren of mij helpen de hostingkosten te deken. Elk gebaar telt!",
+    "buyMeACoffee": "Trakteer mij op een kopje koffie",
+    "revolut": "Via Revolut",
+    "changelogTitle": "Wat is er nieuw?",
+    "changelogSubtitle": "De nieuwste functies met liefde toegevoegd.",
+    "noCosts": "Nog geen kostengegevens beschikbaar.",
+    "categories": {
+      "hosting": "Hosting",
+      "domain": "Domeinnaam",
+      "api": "AI-diensten",
+      "email": "E-maildienst",
+      "other": "Andere"
+    }
   }
 }

@@ -783,7 +783,7 @@
     "title": "En Coulisses",
     "subtitle": "Humain, Transparent, Libre.",
     "bioTitle": "Qui suis-je ?",
-    "bioContent": "CoList est né d'un besoin personnel : celui de résoudre un problème récurrent que j'avais avec ma famille pour organiser les dîners, ou la gestion de la liste des courses pour les vacances avec mes amis. J'ai développé cet outil pour nous simplifier la vie, et comme il fonctionne aujourd'hui à merveille, j'ai décidé de le mettre à disposition de tous. C'est mon petit projet personnel, maintenant à vous, pour que la magie opère sans la charge mentale ! ✨",
+    "bioContent": "CoList est une web app née d’une frustration très concrète.\n\nEntre les dîners en famille, les week-ends entre amis ou les vacances à organiser, on pense toujours être synchronisés… jusqu’au moment où l’on se retrouve avec 15 paquets de chips et rien à manger. Trop de messages, des listes éparpillées, et au final une organisation floue.\n\nJ’ai créé CoList pour remettre un peu d’ordre là-dedans : savoir simplement qui apporte quoi, éviter les doublons et réduire la charge mentale liée à l’organisation.\n\nÀ l’origine, c’était un projet personnel. Aujourd’hui, c’est une web app pensée pour être partagée, en espérant qu’elle vous facilite, à vous aussi, l’organisation de vos moments conviviaux ✨",
     "costsTitle": "Combien ça me coûte ?",
     "costsSubtitle": "La transparence fait partie de mes valeurs. Voici le détail de ce qu'il me coûte de maintenir ce site en ligne sans publicité.",
     "monthlyView": "Vue mensuelle",
