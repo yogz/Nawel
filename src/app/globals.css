@@ -280,6 +280,73 @@
     box-shadow: none;
   }
 
+  /* ===== MOBILE-FIRST: Condensed spacing ===== */
+  .theme-none .premium-card {
+    padding: 12px;
+  }
+
+  .theme-none button,
+  .theme-none [role="button"] {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+  .theme-none input,
+  .theme-none textarea,
+  .theme-none select {
+    padding: 8px 10px;
+    font-size: 16px;
+    /* Prevent iOS zoom */
+    min-height: 40px;
+  }
+
+  /* Tighter gaps between items */
+  .theme-none .gap-4 {
+    gap: 12px;
+  }
+
+  .theme-none .gap-3 {
+    gap: 8px;
+  }
+
+  .theme-none .space-y-4 > * + * {
+    margin-top: 12px;
+  }
+
+  .theme-none .space-y-3 > * + * {
+    margin-top: 8px;
+  }
+
+  /* Compact list items */
+  .theme-none .py-4 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .theme-none .py-3 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .theme-none .px-4 {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  /* Desktop: slightly more breathing room */
+  @media (min-width: 640px) {
+    .theme-none .premium-card {
+      padding: 16px;
+    }
+
+    .theme-none button,
+    .theme-none [role="button"] {
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+  }
+
   /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */
   .theme-readable {
     /* Base Colors Overrides */
