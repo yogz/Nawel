@@ -335,6 +335,11 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 <p className="text-text/80 whitespace-pre-line text-base font-medium leading-relaxed">
                   {t("bioContent")}
                 </p>
+                <div className="flex justify-end pt-4">
+                  <span className="font-handwriting text-2xl font-bold italic text-primary opacity-70">
+                    Nicolas
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -581,7 +586,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
         <motion.footer variants={itemVariants} className="border-t border-black/5 pt-8 text-center">
           <p className="text-text/40 flex items-center justify-center gap-2 text-sm">
-            Fait avec ❤️ par un 🐻 indépendant en 🇪🇺
+            Fait avec 🇪🇺❤️🐻 par un indépendant
           </p>
         </motion.footer>
       </motion.div>

@@ -818,6 +818,11 @@
         },
         {
           "date": "Jan 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Interface Overhaul and Dashboard",
           "description": "An even smoother interface and a new dashboard for your events."
         },

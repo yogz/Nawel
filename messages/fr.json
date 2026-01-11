@@ -818,6 +818,11 @@
         },
         {
           "date": "Jan 2026",
+          "title": "En coulisses",
+          "description": "Lancement de cette page pour plus de transparence sur le projet et ses coûts."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Refonte de l'interface et Dashboard",
           "description": "Une interface encore plus fluide et un nouveau tableau de bord pour vos événements."
         },
