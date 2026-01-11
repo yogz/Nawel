@@ -402,54 +402,72 @@ export function EventForm({
             <h4 className="text-sm font-bold text-gray-900 sm:text-sm">{t("menuDescription")}</h4>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:gap-2.5">
-            {CREATION_MODES.map((mode) => (
-              <button
-                key={mode.id}
-                type="button"
-                onClick={() => setCreationMode(mode.id)}
-                className={cn(
-                  "group flex touch-manipulation items-center gap-3 rounded-xl border-2 p-3 text-left transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:rounded-2xl sm:p-2.5",
-                  creationMode === mode.id
-                    ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/5"
-                    : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
-                )}
-              >
-                <div
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-2">
+            {[
+              { id: "group_standard", label: t("modeGroupStandard") },
+              ...CREATION_MODES.filter((m) => !["vacation", "empty"].includes(m.id)),
+              { id: "group_special", label: t("modeGroupSpecial") },
+              ...CREATION_MODES.filter((m) => ["vacation", "empty"].includes(m.id)),
+            ].map((item) => {
+              if (item.id.startsWith("group_")) {
+                return (
+                  <div key={item.id} className="pb-1 pt-3 first:pt-0 sm:pb-0.5 sm:pt-2">
+                    <h5 className="ml-1 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">
+                      {item.label}
+                    </h5>
+                  </div>
+                );
+              }
+
+              const mode = item as (typeof CREATION_MODES)[number];
+              return (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setCreationMode(mode.id)}
                   className={cn(
-                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 sm:h-10 sm:w-10 sm:rounded-[18px]",
+                    "group flex touch-manipulation items-center gap-3 rounded-xl border-2 p-3 text-left transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:rounded-2xl sm:p-2.5",
                     creationMode === mode.id
-                      ? "bg-accent text-white"
-                      : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
+                      ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/5"
+                      : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
                   )}
                 >
-                  <div className="h-5 w-5 sm:h-4 sm:w-4">{mode.icon}</div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <span
+                  <div
                     className={cn(
-                      "block text-sm font-bold transition-colors sm:text-sm",
-                      creationMode === mode.id ? "text-accent" : "text-gray-900"
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 sm:h-10 sm:w-10 sm:rounded-[18px]",
+                      creationMode === mode.id
+                        ? "bg-accent text-white"
+                        : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
                     )}
                   >
-                    {mode.label}
-                  </span>
-                  <span className="block truncate text-xs text-gray-500 sm:text-xs">
-                    {mode.desc}
-                  </span>
-                </div>
-                <div
-                  className={cn(
-                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 sm:h-5 sm:w-5",
-                    creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
-                  )}
-                >
-                  {creationMode === mode.id && (
-                    <div className="h-2 w-2 rounded-full bg-white sm:h-1.5 sm:w-1.5" />
-                  )}
-                </div>
-              </button>
-            ))}
+                    <div className="h-5 w-5 sm:h-4 sm:w-4">{mode.icon}</div>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span
+                      className={cn(
+                        "block text-sm font-bold transition-colors sm:text-sm",
+                        creationMode === mode.id ? "text-accent" : "text-gray-900"
+                      )}
+                    >
+                      {mode.label}
+                    </span>
+                    <span className="block truncate text-xs text-gray-500 sm:text-xs">
+                      {mode.desc}
+                    </span>
+                  </div>
+                  <div
+                    className={cn(
+                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 sm:h-5 sm:w-5",
+                      creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
+                    )}
+                  >
+                    {creationMode === mode.id && (
+                      <div className="h-2 w-2 rounded-full bg-white sm:h-1.5 sm:w-1.5" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
           {creationMode === "vacation" && (

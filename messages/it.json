@@ -248,6 +248,8 @@
     "nextButton": "Avanti",
     "backButton": "Indietro",
     "menuDescription": "Scegli il tipo di pasto",
+    "modeGroupStandard": "Pasti standard",
+    "modeGroupSpecial": "Pianificazione e Soggiorni",
     "modeTotalLabel": "Il Pacchetto Completo",
     "modeTotalDesc": "Antipasto, Primo, Secondo, Formaggio, Dolce, Bevande, Altro",
     "modeClassicLabel": "Classico",

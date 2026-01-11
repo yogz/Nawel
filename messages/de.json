@@ -248,6 +248,8 @@
     "nextButton": "Weiter",
     "backButton": "Zurück",
     "menuDescription": "Wählen Sie die Art des Essens",
+    "modeGroupStandard": "Standard-Mahlzeiten",
+    "modeGroupSpecial": "Planung & Aufenthalt",
     "modeTotalLabel": "Komplett",
     "modeTotalDesc": "Aperitif, Vorspeise, Hauptgericht, Käse, Dessert, Getränke, Sonstiges",
     "modeClassicLabel": "Klassisch",

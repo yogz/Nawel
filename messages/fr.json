@@ -248,6 +248,8 @@
     "nextButton": "Suivant",
     "backButton": "Retour",
     "menuDescription": "Choisissez le type de repas",
+    "modeGroupStandard": "Repas classiques",
+    "modeGroupSpecial": "Organisation & Séjours",
     "modeTotalLabel": "La totale",
     "modeTotalDesc": "Apéro, Entrée, Plat, Fromage, Dessert, Boissons, Autre",
     "modeClassicLabel": "Le classique",

@@ -248,6 +248,8 @@
     "nextButton": "Next",
     "backButton": "Back",
     "menuDescription": "Choose the type of meal",
+    "modeGroupStandard": "Standard Meals",
+    "modeGroupSpecial": "Planning & Stays",
     "modeTotalLabel": "The Full Deal",
     "modeTotalDesc": "Appetizer, Starter, Main, Cheese, Dessert, Drinks, Other",
     "modeClassicLabel": "Classic",

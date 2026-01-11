@@ -248,6 +248,8 @@
     "nextButton": "Siguiente",
     "backButton": "Volver",
     "menuDescription": "Elija el tipo de comida",
+    "modeGroupStandard": "Comidas estándar",
+    "modeGroupSpecial": "Planificación y estancias",
     "modeTotalLabel": "Completo",
     "modeTotalDesc": "Aperitivo, Entrante, Plato Principal, Queso, Postre, Bebidas, Otros",
     "modeClassicLabel": "Clásico",

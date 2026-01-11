@@ -248,6 +248,8 @@
     "nextButton": "Seguinte",
     "backButton": "Voltar",
     "menuDescription": "Escolha as categorias iniciais",
+    "modeGroupStandard": "Refeições Padrão",
+    "modeGroupSpecial": "Planeamento e Estadias",
     "modeTotalLabel": "Completo",
     "modeTotalDesc": "Aperitivo, Entrada, Prato principal, Queijo, Sobremesa, Bebidas, Outros",
     "modeClassicLabel": "Clássico",
