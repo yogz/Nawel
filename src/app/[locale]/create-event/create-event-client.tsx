@@ -21,12 +21,13 @@ export default function CreateEventClient() {
   const handleCreateEvent = async (
     name: string,
     description?: string,
-    creationMode?: "total" | "classique" | "apero" | "service-unique",
+    creationMode?: "total" | "classique" | "apero" | "service-unique" | "vacation" | "empty",
     date?: string,
     adults?: number,
     children?: number,
     time?: string,
-    address?: string
+    address?: string,
+    duration?: number
   ) => {
     setError(null);
     startTransition(async () => {
@@ -40,6 +41,15 @@ export default function CreateEventClient() {
           address,
           adults: adults ?? 0,
           children: children ?? 0,
+          duration: duration ?? 7,
+          mealTitles:
+            creationMode === "vacation"
+              ? {
+                  common: "📦 Communs",
+                  lunch: t("lunch"),
+                  dinner: t("dinner"),
+                }
+              : undefined,
         });
 
         sendGAEvent("event", "event_created", {

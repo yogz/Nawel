@@ -162,12 +162,22 @@ export const getChangeLogsSchema = z.object({
 export const createEventSchema = z.object({
   name: safeText(100),
   description: safeText(500).optional(),
-  creationMode: z.enum(["total", "classique", "apero", "service-unique"]).optional(),
+  creationMode: z
+    .enum(["total", "classique", "apero", "service-unique", "vacation", "empty"])
+    .optional(),
   date: z.string().optional(),
   time: z.string().optional(),
   address: safeText(500).optional(),
   adults: z.number().int().min(0).max(1000).optional().default(0),
   children: z.number().int().min(0).max(1000).optional().default(0),
+  duration: z.number().int().min(1).max(31).optional().default(7),
+  mealTitles: z
+    .object({
+      common: safeStrictText(100).optional(),
+      lunch: safeStrictText(100).optional(),
+      dinner: safeStrictText(100).optional(),
+    })
+    .optional(),
 });
 
 export const deleteEventSchema = baseInput;

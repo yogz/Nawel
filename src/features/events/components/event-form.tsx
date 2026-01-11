@@ -14,6 +14,8 @@ import {
   Users,
   MessageSquare,
   Sparkles,
+  Palmtree,
+  Eraser,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -42,12 +44,13 @@ export function EventForm({
   onSubmit: (
     name: string,
     description?: string,
-    creationMode?: "total" | "classique" | "apero" | "service-unique",
+    creationMode?: "total" | "classique" | "apero" | "service-unique" | "vacation" | "empty",
     date?: string,
     adults?: number,
     children?: number,
     time?: string,
-    address?: string
+    address?: string,
+    duration?: number
   ) => void;
   onClose: () => void;
   isPending: boolean;
@@ -72,8 +75,9 @@ export function EventForm({
   const [name, setName] = useState(initialData?.name ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
   const [creationMode, setCreationMode] = useState<
-    "total" | "classique" | "apero" | "service-unique"
+    "total" | "classique" | "apero" | "service-unique" | "vacation" | "empty"
   >("total");
+  const [duration, setDuration] = useState(7);
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState(initialData?.time ?? "20:00");
   const [address, setAddress] = useState(initialData?.address ?? "");
@@ -121,6 +125,18 @@ export function EventForm({
       desc: t("modeServiceUniqueDesc"),
       icon: <FilePlus size={20} />,
     },
+    {
+      id: "vacation",
+      label: t("modeVacationLabel"),
+      desc: t("modeVacationDesc"),
+      icon: <Palmtree size={20} />,
+    },
+    {
+      id: "empty",
+      label: t("modeEmptyLabel"),
+      desc: t("modeEmptyDesc"),
+      icon: <Eraser size={20} />,
+    },
   ] as const;
 
   const handleSubmit = () => {
@@ -136,7 +152,8 @@ export function EventForm({
       adults,
       children,
       time,
-      address
+      address,
+      duration
     );
   };
 
@@ -434,6 +451,31 @@ export function EventForm({
               </button>
             ))}
           </div>
+
+          {creationMode === "vacation" && (
+            <div className="space-y-2 pt-2">
+              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
+                {t("durationLabel")}
+              </Label>
+              <div className="grid grid-cols-5 gap-2">
+                {[3, 5, 7, 10, 14].map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDuration(d)}
+                    className={cn(
+                      "flex h-12 items-center justify-center rounded-xl border-2 font-bold transition-all active:scale-95 sm:h-10",
+                      duration === d
+                        ? "border-accent bg-accent text-white"
+                        : "border-gray-100 bg-gray-50/50 text-gray-500 hover:border-gray-200"
+                    )}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-3 sm:pt-2">
             <Button

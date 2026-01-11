@@ -84,7 +84,62 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     await logChange("create", "people", person.id, null, person);
   }
 
-  if (input.creationMode && input.creationMode !== "service-unique") {
+  if (input.creationMode === "empty") {
+    // Just create event, no meals
+  } else if (input.creationMode === "vacation") {
+    const startDate = input.date || new Date().toISOString().split("T")[0];
+    const duration = input.duration ?? 7;
+    const mealTitles = input.mealTitles || {
+      common: "Communs",
+      lunch: "Déjeuner",
+      dinner: "Dîner",
+    };
+
+    // 1. Create Common meal
+    await createMealWithServicesAction({
+      slug: created.slug,
+      key: adminKey,
+      date: "common",
+      title: mealTitles.common,
+      services: ["divers"],
+      adults: created.adults,
+      children: created.children,
+    });
+
+    // 2. Create meals for each day
+    const start = new Date(startDate);
+    for (let i = 0; i < duration; i++) {
+      const currentDate = new Date(start);
+      currentDate.setDate(start.getDate() + i);
+      const dateStr = currentDate.toISOString().split("T")[0];
+
+      // Lunch
+      await createMealWithServicesAction({
+        slug: created.slug,
+        key: adminKey,
+        date: dateStr,
+        time: "12:30",
+        address: input.address,
+        title: mealTitles.lunch,
+        services: ["entree", "plat", "dessert"],
+        adults: created.adults,
+        children: created.children,
+      });
+
+      // Dinner
+      await createMealWithServicesAction({
+        slug: created.slug,
+        key: adminKey,
+        date: dateStr,
+        time: "20:00",
+        address: input.address,
+        title: mealTitles.dinner,
+        services: ["entree", "plat", "dessert"],
+        adults: created.adults,
+        children: created.children,
+      });
+    }
+  } else if (input.creationMode && input.creationMode !== "service-unique") {
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
     let services: string[] = [];
 
