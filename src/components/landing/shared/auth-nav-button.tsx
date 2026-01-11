@@ -21,10 +21,10 @@ export function AuthNavButton() {
   return (
     <Link
       href="/event"
-      className="flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-lg"
+      className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95"
     >
-      <LayoutDashboard className="h-4 w-4" />
-      <span className="hidden sm:inline">{t("myEvents")}</span>
+      <LayoutDashboard size={16} />
+      <span>{t("myEvents")}</span>
     </Link>
   );
 }
