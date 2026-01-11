@@ -131,7 +131,7 @@ export function EventPlannerHeader({
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 flex-1 items-center gap-2.5">
                 <Link
-                  href="/"
+                  href="/event"
                   aria-label="Retour à l'accueil"
                   className="relative block shrink-0 rounded-lg transition-all duration-300 hover:bg-accent/10"
                   onMouseEnter={() => setHovered(true)}
