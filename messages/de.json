@@ -826,6 +826,11 @@
         },
         {
           "date": "Jan 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Überholung der Benutzeroberfläche und Dashboard",
           "description": "Eine noch flüssigere Benutzeroberfläche und ein neues Dashboard für Ihre Ereignisse."
         },

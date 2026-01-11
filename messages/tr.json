@@ -813,6 +813,11 @@
     "changelog": {
       "items": [
         {
+          "date": "Jan 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
           "date": "Oca 2026",
           "title": "Büyük Etkinliklerin Basitleştirilmesi",
           "description": "Öğünler ve hizmetler için kompakt mod ve daha iyi okunabilirlik için gün be gün navigasyon eklendi."

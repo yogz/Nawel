@@ -826,6 +826,11 @@
         },
         {
           "date": "Jan 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Gennemgang af brugerflade og dashboard",
           "description": "En endnu mere flydende brugerflade og et nyt dashboard til dine begivenheder."
         },

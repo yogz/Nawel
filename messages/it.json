@@ -826,6 +826,11 @@
         },
         {
           "date": "Gen 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
+          "date": "Gen 2026",
           "title": "Revisione dell'interfaccia e Dashboard",
           "description": "Un'interfaccia ancora più fluida e una nuova dashboard per i tuoi eventi."
         },

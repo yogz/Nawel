@@ -832,6 +832,11 @@
           "description": "Προστέθηκε συμπαγής λειτουργία για γεύματα και υπηρεσίες, καθώς και πλοήγηση ανά ημέρα για καλύτερη αναγνωσιμότητα."
         },
         {
+          "date": "Jan 2026",
+          "title": "Behind the Scenes",
+          "description": "Launch of this page for more transparency about the project and its costs."
+        },
+        {
           "date": "Ιαν 2026",
           "title": "Ανανέωση διεπαφής και Dashboard",
           "description": "Μια ακόμη πιο ομαλή διεπαφή και ένας νέος πίνακας ελέγχου για τις εκδηλώσεις σας."
