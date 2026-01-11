@@ -77,7 +77,7 @@ export default function CreateEventClient() {
       </div>
 
       <Link
-        href={session ? "/" : "/login?mode=user"}
+        href={session ? "/event" : "/login?mode=user"}
         className="mb-6 flex min-h-[44px] touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8 sm:min-h-0"
       >
         <ArrowLeft size={20} className="sm:h-4 sm:w-4" />
@@ -91,7 +91,7 @@ export default function CreateEventClient() {
       <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
         <EventForm
           onSubmit={handleCreateEvent}
-          onClose={() => router.push(session ? "/" : "/login?mode=user")}
+          onClose={() => router.push(session ? "/event" : "/login?mode=user")}
           isPending={isPending}
           error={error}
           inline
