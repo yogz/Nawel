@@ -493,7 +493,9 @@
         "boissons": "Bevande",
         "autre": "Altro",
         "divers": "Varie",
-        "custom": "Personalizzato"
+        "custom": "Personalizzato",
+        "midi": "Pranzo",
+        "soir": "Cena"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Scegli una data",

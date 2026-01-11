@@ -493,7 +493,9 @@
         "boissons": "Getränke",
         "autre": "Sonstiges",
         "divers": "Diverses",
-        "custom": "Maßgeschneidert"
+        "custom": "Maßgeschneidert",
+        "midi": "Mittagessen",
+        "soir": "Abendessen"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Datum wählen",

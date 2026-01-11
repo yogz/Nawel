@@ -5,7 +5,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { sendGAEvent } from "@next/third-parties/google";
 import { AppBranding } from "@/components/common/app-branding";
 import { useSession } from "@/lib/auth-client";
@@ -13,6 +13,7 @@ import { useSession } from "@/lib/auth-client";
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
   const tDashboard = useTranslations("Dashboard");
+  const locale = useLocale();
   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +51,7 @@ export default function CreateEventClient() {
                   dinner: t("dinner"),
                 }
               : undefined,
+          locale,
         });
 
         sendGAEvent("event", "event_created", {

@@ -494,7 +494,9 @@
         "boissons": "Bebidas",
         "autre": "Otro",
         "divers": "Varios",
-        "custom": "A medida"
+        "custom": "A medida",
+        "midi": "Almuerzo",
+        "soir": "Cena"
       },
       "dateLabel": "Fecha",
       "datePlaceholder": "Elegir una fecha",

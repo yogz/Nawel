@@ -494,7 +494,9 @@
         "boissons": "Drinks",
         "autre": "Other",
         "divers": "Misc",
-        "custom": "Custom"
+        "custom": "Custom",
+        "midi": "Lunch",
+        "soir": "Dinner"
       },
       "dateLabel": "Date",
       "datePlaceholder": "Choose a date",

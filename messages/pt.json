@@ -500,7 +500,9 @@
         "boissons": "Bebidas",
         "autre": "Outro",
         "divers": "Diversos",
-        "custom": "Sob medida"
+        "custom": "Sob medida",
+        "midi": "Almoço",
+        "soir": "Jantar"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Escolher uma data",

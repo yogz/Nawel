@@ -113,28 +113,18 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       currentDate.setDate(start.getDate() + i);
       const dateStr = currentDate.toISOString().split("T")[0];
 
-      // Lunch
+      // Get localized day name for the title
+      const dayName = currentDate.toLocaleDateString(input.locale || "fr", { weekday: "long" });
+      const capitalizedDayName = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
         date: dateStr,
         time: "12:30",
         address: input.address,
-        title: mealTitles.lunch,
-        services: ["entree", "plat", "dessert"],
-        adults: created.adults,
-        children: created.children,
-      });
-
-      // Dinner
-      await createMealWithServicesAction({
-        slug: created.slug,
-        key: adminKey,
-        date: dateStr,
-        time: "20:00",
-        address: input.address,
-        title: mealTitles.dinner,
-        services: ["entree", "plat", "dessert"],
+        title: capitalizedDayName,
+        services: ["midi", "soir"],
         adults: created.adults,
         children: created.children,
       });

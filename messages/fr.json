@@ -494,7 +494,9 @@
         "boissons": "Boissons",
         "autre": "Autre",
         "divers": "Divers",
-        "custom": "Sur mesure"
+        "custom": "Sur mesure",
+        "midi": "Midi",
+        "soir": "Soir"
       },
       "dateLabel": "Date",
       "datePlaceholder": "Choisir une date",

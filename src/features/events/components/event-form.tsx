@@ -453,26 +453,39 @@ export function EventForm({
           </div>
 
           {creationMode === "vacation" && (
-            <div className="space-y-2 pt-2">
+            <div className="space-y-3 pt-2">
               <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
                 {t("durationLabel")}
               </Label>
-              <div className="grid grid-cols-5 gap-2">
-                {[3, 5, 7, 10, 14].map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setDuration(d)}
-                    className={cn(
-                      "flex h-12 items-center justify-center rounded-xl border-2 font-bold transition-all active:scale-95 sm:h-10",
-                      duration === d
-                        ? "border-accent bg-accent text-white"
-                        : "border-gray-100 bg-gray-50/50 text-gray-500 hover:border-gray-200"
-                    )}
-                  >
-                    {d}
-                  </button>
-                ))}
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {[2, 3, 5, 7, 10, 14].map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => setDuration(d)}
+                      className={cn(
+                        "flex h-9 items-center justify-center rounded-full border px-4 text-sm font-medium transition-all active:scale-95",
+                        duration === d
+                          ? "border-accent bg-accent text-white"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-accent hover:bg-accent/5"
+                      )}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+                <div className="relative flex items-center gap-3">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={31}
+                    value={duration}
+                    onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
+                    className="h-10 w-24 rounded-xl border-gray-100 bg-gray-50/50 px-3 text-center text-sm font-bold focus:bg-white"
+                  />
+                  <span className="text-sm font-medium text-gray-500">{t("durationLabel")}</span>
+                </div>
               </div>
             </div>
           )}

@@ -178,6 +178,7 @@ export const createEventSchema = z.object({
       dinner: safeStrictText(100).optional(),
     })
     .optional(),
+  locale: z.string().optional(),
 });
 
 export const deleteEventSchema = baseInput;
