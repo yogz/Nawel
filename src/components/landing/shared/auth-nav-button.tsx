@@ -21,10 +21,10 @@ export function AuthNavButton() {
   return (
     <Link
       href="/event"
-      className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95"
+      className="flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-bold text-white shadow-lg shadow-accent/25 transition-all hover:scale-105 hover:brightness-110 active:scale-95"
     >
-      <LayoutDashboard size={16} />
-      <span>{t("myEvents")}</span>
+      <LayoutDashboard size={18} />
+      <span className="whitespace-nowrap">{t("myEvents")}</span>
     </Link>
   );
 }
