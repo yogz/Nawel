@@ -143,141 +143,141 @@
     transform: scale(1.05);
   }
 
-  /* Theme Modern Classic - Sober, Friendly, Air du temps */
+  /* Theme Todo-List Minimal - Sobre, Net, Utilitaire */
   .theme-none {
-    /* Base Foundations - Inspired by Linear/Stripe/Airbnb */
-    --surface: #f9fafb;
-    /* Cool Grey 50 - Softer than white */
-    --muted: #f1f5f9;
-    /* Slate 100 */
-    --muted-foreground: #64748b;
-    /* Slate 500 */
+    /* Monochrome Base - Ultra minimal */
+    --surface: #fafafa;
+    --muted: #f5f5f5;
+    --muted-foreground: #6b7280;
 
-    /* Primary Accent - Modern Indigo */
-    --accent: 236 72% 51%;
-    /* #4f46e5 - Indigo 600 */
+    /* Single Accent - Blue for actions only */
+    --accent: 217 91% 60%;
+    /* #2563eb - Blue 600 */
     --accent-foreground: #ffffff;
 
-    /* Typography - Deep & Sharp */
-    --text: #0f172a;
-    /* Slate 900 - High contrast but not harsh black */
-    --header-fade: #f9fafb;
+    /* Typography - High contrast, readable */
+    --text: #111827;
+    /* Gray 900 - Sharp black */
+    --header-fade: #fafafa;
 
-    /* Cards - Clean & crisp */
+    /* Cards - Flat, minimal, no shadows */
     --card-bg: #ffffff;
-    --card-border: rgba(203, 213, 225, 0.6);
-    /* Slate 300 - Slightly clearer border */
+    --card-border: #e5e7eb;
+    /* Gray 200 - Solid border */
+    --card-shadow: none;
+    --card-shadow-hover: none;
 
-    /* Modern Diffuse Shadows - Enhanced for better lift */
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    /* Slightly stronger than shadow-sm */
+    /* Glass Effect - Disabled */
+    --glass-bg: #ffffff;
+    --glass-border: #e5e7eb;
+    --glass-shadow: none;
 
-    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
-    /* Tailwind shadow-lg but softer */
-
-    /* Glass Effect (minimalist) */
-    --glass-bg: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(226, 232, 240, 0.6);
-    --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-
-    background: #f9fafb;
+    background: #fafafa;
     background-attachment: fixed;
-    color: #0f172a;
+    color: #111827;
   }
 
-  /* No background texture for improved clarity and modern look */
+  /* No background effects */
   .theme-none::before {
     display: none;
   }
 
-  /* Components Overrides - Clean UI Style */
+  /* ===== CARDS - Flat list style ===== */
   .theme-none .premium-card {
-    border: 1px solid var(--card-border);
+    border: 1px solid #e5e7eb;
     background: #ffffff;
-    box-shadow: var(--card-shadow);
-    border-radius: 12px;
-    /* Slightly tighter radius for modern feel */
+    box-shadow: none;
+    border-radius: 6px;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
   }
 
   .theme-none .premium-card:hover {
-    border-color: #cbd5e1;
-    /* Slate 300 */
-    box-shadow: var(--card-shadow-hover);
-    transform: translateY(-2px);
+    border-color: #d1d5db;
+    box-shadow: none;
+    transform: none;
+    background: #fafafa;
   }
 
-  /* Buttons - Flat & Modern */
+  /* ===== BUTTONS - Outline/text style ===== */
   .theme-none .btn-prominent,
   .theme-none button[class*="bg-primary"],
   .theme-none button[class*="bg-accent"],
   .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]),
   .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) {
-    background: #4f46e5;
-    /* Indigo 600 */
-    color: #ffffff !important;
-    border: none;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    /* Standard modern radius */
+    background: transparent;
+    color: #2563eb !important;
+    border: 1px solid #2563eb;
+    box-shadow: none;
+    border-radius: 6px;
     font-weight: 600;
-    transition: all 0.2s ease-out;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
 
-  /* Ensure text inside these is white - BUT ignore low opacity backgrounds */
+  /* Text inside outline buttons */
   .theme-none .btn-prominent *,
   .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]) *,
   .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) * {
-    color: #ffffff !important;
+    color: #2563eb !important;
   }
 
   .theme-none .btn-prominent:hover,
   .theme-none button[class*="bg-primary"]:hover,
   .theme-none button[class*="bg-accent"]:hover {
-    background: #4338ca;
-    /* Indigo 700 */
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+    background: #2563eb;
+    color: #ffffff !important;
+    transform: none;
+    box-shadow: none;
   }
 
-  /* Disable gradient headers for readability */
+  .theme-none .btn-prominent:hover *,
+  .theme-none button[class*="bg-primary"]:hover *,
+  .theme-none button[class*="bg-accent"]:hover * {
+    color: #ffffff !important;
+  }
+
+  /* ===== HEADERS - Plain text, no gradients ===== */
   .theme-none .text-gradient-header {
     background: none !important;
     -webkit-background-clip: unset !important;
     background-clip: unset !important;
-    color: #0f172a !important;
+    color: #111827 !important;
     -webkit-text-fill-color: currentColor !important;
   }
 
-  /* Contrast Improvements */
+  /* ===== CONTRAST - Muted text ===== */
   .theme-none .text-muted-foreground,
   .theme-none .text-gray-500,
   .theme-none .text-gray-600 {
-    color: #64748b;
-    /* Slate 500 - Accessible on light backgrounds */
-    font-weight: 500;
+    color: #6b7280;
+    font-weight: 400;
   }
 
-  /* Accent Text - Use Indigo */
+  /* Accent Text */
   .theme-none .text-accent {
-    color: #4f46e5;
+    color: #2563eb;
   }
 
-  /* Input fields - Clean borders */
+  /* ===== INPUTS - Minimal borders ===== */
   .theme-none input,
   .theme-none textarea,
   .theme-none select {
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    color: #0f172a;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    color: #111827;
     transition: border-color 0.15s ease;
   }
 
   .theme-none input:focus,
   .theme-none textarea:focus,
   .theme-none select:focus {
-    border-color: #4f46e5;
-    outline: 2px solid rgba(79, 70, 229, 0.1);
-    outline-offset: 1px;
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: none;
   }
 
   /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */
