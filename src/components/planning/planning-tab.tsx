@@ -290,6 +290,17 @@ export function PlanningTab({
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button
                 variant="outline"
+                className="h-10 rounded-2xl border-none bg-accent px-6 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent/90 active:scale-95"
+                asChild
+              >
+                <Link href="/behind-the-scenes" className="flex items-center gap-2">
+                  <ArrowUpRight size={14} />
+                  {tSettings("behindTheScenes") || "Behind the Scenes"}
+                </Link>
+              </Button>
+
+              <Button
+                variant="outline"
                 className="h-10 rounded-2xl border-none bg-[#FFDD00] px-6 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] hover:bg-[#FFDD00]/90 active:scale-95"
                 asChild
               >
@@ -302,17 +313,6 @@ export function PlanningTab({
                   <Coffee size={14} />
                   Buy Me a Coffee
                 </a>
-              </Button>
-
-              <Button
-                variant="outline"
-                className="text-text/60 h-10 rounded-2xl border-none bg-black/5 px-6 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/5 transition-all hover:scale-[1.02] hover:bg-black/10 active:scale-95"
-                asChild
-              >
-                <Link href="/behind-the-scenes" className="flex items-center gap-2">
-                  <ArrowUpRight size={14} />
-                  {tSettings("behindTheScenes") || "Behind the Scenes"}
-                </Link>
               </Button>
             </div>
 
