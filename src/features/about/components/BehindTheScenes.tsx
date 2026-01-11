@@ -336,7 +336,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   {t("bioContent")}
                 </p>
                 <div className="flex justify-end pt-4">
-                  <span className="font-handwriting text-lg font-bold italic text-primary opacity-70">
+                  <span className="font-handwriting text-sm font-bold italic text-primary opacity-70">
                     Nicolas
                   </span>
                 </div>
@@ -375,7 +375,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 <p className="mb-1 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                   {t("developmentTime")}
                 </p>
-                <div className="flex items-baseline gap-2 text-3xl font-black text-violet-500">
+                <div className="flex items-baseline gap-2 text-3xl font-black text-primary">
                   ~250 Hours
                 </div>
               </div>
