@@ -123,10 +123,6 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
 
               <LanguageSelector variant="compact" />
             </div>
-
-            <p className="text-text/20 text-[10px] font-medium italic">
-              Fait avec ❤️ par un indépendant
-            </p>
           </div>
         </div>
       )}
