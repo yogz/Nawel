@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Ποιος φέρνει το κρασί; 🍷",
     "chatRight1": "Νόμιζα ο Mark;",
-    "chatLeft2": "Ο Mark φέρνει πατατάκια. Έχουμε ήδη 5 σακούλες. 🥔"
+    "chatLeft2": "Ο Mark φέρνει πατατάκια. Έχουμε ήδη 5 σακούλες. 🥔",
+    "feature1Tag": "Μαγικό",
+    "trustFeature1": "Χωρίς λήψη εφαρμογής",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Άμεσος συγχρονισμός"
   },
   "Dashboard": {
     "badge": "Πίνακας ελέγχου",
@@ -248,6 +252,8 @@
     "nextButton": "Επόμενο",
     "backButton": "Επιστροφή",
     "menuDescription": "Επιλέξτε τις αρχικές κατηγορίες",
+    "modeGroupStandard": "Κλασικά γεύματα",
+    "modeGroupSpecial": "Οργάνωση & Διαμονή",
     "modeTotalLabel": "Πλήρες",
     "modeTotalDesc": "Απεριτίφ, Ορεκτικό, Κυρίως, Τυρί, Επιδόρπιο, Ποτά, Άλλα",
     "modeClassicLabel": "Κλασικό",
@@ -256,6 +262,13 @@
     "modeAperoDesc": "Απεριτίφ, Ποτά",
     "modeServiceUniqueLabel": "Ένα πιάτο",
     "modeServiceUniqueDesc": "Μόνο ένα πιάτο",
+    "modeVacationLabel": "Διακοπές",
+    "modeVacationDesc": "Όλη την εβδομάδα (Μεσημεριανό/Βραδινό + Κοινά)",
+    "modeEmptyLabel": "Κενό",
+    "modeEmptyDesc": "Θα τα διαμορφώσω όλα μόνος μου",
+    "durationLabel": "Διάρκεια (ημέρες)",
+    "lunch": "Μεσημεριανό",
+    "dinner": "Βραδινό",
     "summaryEvent": "Εκδήλωση",
     "summaryDate": "Ημερομηνία",
     "summaryGuestsLabel": "Καλεσμένοι",
@@ -384,7 +397,8 @@
       "noChanges": "Δεν υπάρχουν πρόσφατες αλλαγές",
       "dangerZone": "Επικίνδυνη ζώνη",
       "deleteEvent": "Διαγραφή εκδήλωσης",
-      "irreversible": "Αυτή η ενέργεια είναι μη αναστρέψιμη."
+      "irreversible": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "behindTheScenes": "Παρασκήνια"
     },
     "ItemForm": {
       "editItem": "Επεξεργασία είδους {name}",
@@ -493,7 +507,9 @@
         "boissons": "Ποτά",
         "autre": "Άλλο",
         "divers": "Διάφορα",
-        "custom": "Εξατομικευμένο"
+        "custom": "Εξατομικευμένο",
+        "midi": "Μεσημεριανό",
+        "soir": "Βραδινό"
       },
       "dateLabel": "Ημερομηνία",
       "datePlaceholder": "Επιλέξτε ημερομηνία",

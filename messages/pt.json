@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Quem traz o vinho? 🍷",
     "chatRight1": "Achei que era o Mark?",
-    "chatLeft2": "Mark traz batatas. Já temos 5 sacos agora. 🥔"
+    "chatLeft2": "Mark traz batatas. Já temos 5 sacos agora. 🥔",
+    "feature1Tag": "Mágico",
+    "trustFeature1": "Sem download de app",
+    "trustFeature2": "iPhone e Android",
+    "trustFeature3": "Sincronização instantânea"
   },
   "Dashboard": {
     "badge": "Painel de controlo",
@@ -393,7 +397,8 @@
       "noChanges": "Sem alterações recentes",
       "dangerZone": "Zona de perigo",
       "deleteEvent": "Eliminar evento",
-      "irreversible": "Esta ação é irreversível."
+      "irreversible": "Esta ação é irreversível.",
+      "behindTheScenes": "Nos Bastidores"
     },
     "ItemForm": {
       "editItem": "Editar item {name}",

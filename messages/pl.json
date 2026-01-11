@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Kto przynosi wino? 🍷",
     "chatRight1": "Myślałem, że Mark?",
-    "chatLeft2": "Mark przynosi chipsy. Mamy już 5 paczek. 🥔"
+    "chatLeft2": "Mark przynosi chipsy. Mamy już 5 paczek. 🥔",
+    "feature1Tag": "Magiczny",
+    "trustFeature1": "Bez pobierania aplikacji",
+    "trustFeature2": "iPhone i Android",
+    "trustFeature3": "Natychmiastowa synchronizacja"
   },
   "Dashboard": {
     "badge": "Panel",
@@ -248,6 +252,8 @@
     "nextButton": "Dalej",
     "backButton": "Wstecz",
     "menuDescription": "Wybierz typ posiłku",
+    "modeGroupStandard": "Standardowe posiłki",
+    "modeGroupSpecial": "Planowanie i Pobyt",
     "modeTotalLabel": "Pełen zestaw",
     "modeTotalDesc": "Przystawka, starter, danie główne, ser, deser, napoje, inne",
     "modeClassicLabel": "Klasyczny",
@@ -256,6 +262,13 @@
     "modeAperoDesc": "Przystawki, napoje",
     "modeServiceUniqueLabel": "Pojedyncze danie",
     "modeServiceUniqueDesc": "Jedno danie",
+    "modeVacationLabel": "Wakacje",
+    "modeVacationDesc": "Cały tydzień (Obiad/Kolacja + Wspólne)",
+    "modeEmptyLabel": "Puste",
+    "modeEmptyDesc": "Sam wszystko skonfiguruję",
+    "durationLabel": "Czas trwania (dni)",
+    "lunch": "Obiad",
+    "dinner": "Kolacja",
     "summaryEvent": "Wydarzenie",
     "summaryDate": "Data",
     "summaryGuestsLabel": "Goście",
@@ -377,7 +390,8 @@
       "noChanges": "Brak ostatnich zmian",
       "dangerZone": "Strefa niebezpieczna",
       "deleteEvent": "Usuń wydarzenie",
-      "irreversible": "Ta akcja jest nieodwracalna."
+      "irreversible": "Ta akcja jest nieodwracalna.",
+      "behindTheScenes": "Za kulisami"
     },
     "ItemForm": {
       "editItem": "Edytuj przedmiot {name}",
@@ -486,7 +500,9 @@
         "boissons": "Napoje",
         "autre": "Inne",
         "divers": "Różne",
-        "custom": "Niestandardowe"
+        "custom": "Niestandardowe",
+        "midi": "Obiad",
+        "soir": "Kolacja"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Wybierz datę",

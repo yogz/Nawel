@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Hvem tager vinen med? 🍷",
     "chatRight1": "Jeg troede, det var Mark?",
-    "chatLeft2": "Mark tager chips med. Vi har 5 poser nu. 🥔"
+    "chatLeft2": "Mark tager chips med. Vi har 5 poser nu. 🥔",
+    "feature1Tag": "Magisk",
+    "trustFeature1": "Ingen app-download",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Øjeblikkelig synkronisering"
   },
   "Dashboard": {
     "badge": "Dashboard",
@@ -248,6 +252,8 @@
     "nextButton": "Næste",
     "backButton": "Tilbage",
     "menuDescription": "Vælg typen af måltid",
+    "modeGroupStandard": "Standardmåltider",
+    "modeGroupSpecial": "Planlægning & Ophold",
     "modeTotalLabel": "Det Fulde Program",
     "modeTotalDesc": "Forret, Starter, Hovedret, Ost, Dessert, Drikkevarer, Andet",
     "modeClassicLabel": "Klassisk",
@@ -256,6 +262,13 @@
     "modeAperoDesc": "Forret, Drikkevarer",
     "modeServiceUniqueLabel": "Enkelt ret",
     "modeServiceUniqueDesc": "En ret",
+    "modeVacationLabel": "Ferie",
+    "modeVacationDesc": "Hele ugen (Frokost/Aftensmad + Fælles)",
+    "modeEmptyLabel": "Tom",
+    "modeEmptyDesc": "Jeg konfigurerer alt selv",
+    "durationLabel": "Varighed (dage)",
+    "lunch": "Frokost",
+    "dinner": "Aftensmad",
     "summaryEvent": "Begivenhed",
     "summaryDate": "Dato",
     "summaryGuestsLabel": "Gæster",
@@ -377,7 +390,8 @@
       "noChanges": "Ingen nylige ændringer",
       "dangerZone": "Farezone",
       "deleteEvent": "Slet begivenhed",
-      "irreversible": "Denne handling er irreversibel."
+      "irreversible": "Denne handling er irreversibel.",
+      "behindTheScenes": "Bag kulisserne"
     },
     "ItemForm": {
       "editItem": "Rediger element {name}",
@@ -486,7 +500,9 @@
         "boissons": "Drikkevarer",
         "autre": "Andet",
         "divers": "Diverse",
-        "custom": "Tilpasset"
+        "custom": "Tilpasset",
+        "midi": "Frokost",
+        "soir": "Aftensmad"
       },
       "dateLabel": "Dato",
       "datePlaceholder": "Vælg en dato",

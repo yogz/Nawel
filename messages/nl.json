@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Wie brengt de wijn mee? 🍷",
     "chatRight1": "Ik dacht dat Mark dat deed?",
-    "chatLeft2": "Mark brengt chips mee. We hebben nu al 5 zakken. 🥔"
+    "chatLeft2": "Mark brengt chips mee. We hebben nu al 5 zakken. 🥔",
+    "feature1Tag": "Magisch",
+    "trustFeature1": "Geen app te downloaden",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Directe synchronisatie"
   },
   "Dashboard": {
     "badge": "Dashboard",
@@ -248,6 +252,8 @@
     "nextButton": "Volgende",
     "backButton": "Terug",
     "menuDescription": "Kies het type maaltijd",
+    "modeGroupStandard": "Standaardmaaltijden",
+    "modeGroupSpecial": "Planning & Verblijven",
     "modeTotalLabel": "Het Complete Pakket",
     "modeTotalDesc": "Aperitief, Voorgerecht, Hoofdgerecht, Kaas, Nagerecht, Dranken, Overig",
     "modeClassicLabel": "Klassiek",
@@ -256,6 +262,13 @@
     "modeAperoDesc": "Aperitief, Dranken",
     "modeServiceUniqueLabel": "Enkele gang",
     "modeServiceUniqueDesc": "Eén gang",
+    "modeVacationLabel": "Vakantie",
+    "modeVacationDesc": "Hele week (Lunch/Diner + Gemeenschappelijk)",
+    "modeEmptyLabel": "Leeg",
+    "modeEmptyDesc": "Ik configureer alles zelf",
+    "durationLabel": "Duur (dagen)",
+    "lunch": "Lunch",
+    "dinner": "Diner",
     "summaryEvent": "Evenement",
     "summaryDate": "Datum",
     "summaryGuestsLabel": "Gasten",
@@ -377,7 +390,8 @@
       "noChanges": "Geen recente wijzigingen",
       "dangerZone": "Gevarenzone",
       "deleteEvent": "Evenement verwijderen",
-      "irreversible": "Deze actie is onomkeerbaar."
+      "irreversible": "Deze actie is onomkeerbaar.",
+      "behindTheScenes": "Achter de schermen"
     },
     "ItemForm": {
       "editItem": "Artikel bewerken {name}",
@@ -486,7 +500,9 @@
         "boissons": "Dranken",
         "autre": "Overig",
         "divers": "Diversen",
-        "custom": "Aangepast"
+        "custom": "Aangepast",
+        "midi": "Lunch",
+        "soir": "Diner"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Kies een datum",

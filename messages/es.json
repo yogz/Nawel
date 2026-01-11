@@ -107,7 +107,11 @@
     },
     "chatLeft1": "¿Quién trae el vino? 🍷",
     "chatRight1": "¿No era Mark?",
-    "chatLeft2": "Mark trae patatas. Ya tenemos 5 bolsas. 🥔"
+    "chatLeft2": "Mark trae patatas. Ya tenemos 5 bolsas. 🥔",
+    "feature1Tag": "Mágico",
+    "trustFeature1": "Sin descarga de app",
+    "trustFeature2": "iPhone y Android",
+    "trustFeature3": "Sincronización instantánea"
   },
   "Dashboard": {
     "badge": "Panel de control",

@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Qui apporte le vin ? 🍷",
     "chatRight1": "Je croyais que c'était Mark ?",
-    "chatLeft2": "Mark apporte des chips. On a 5 paquets de chips maintenant. 🥔"
+    "chatLeft2": "Mark apporte des chips. On a 5 paquets de chips maintenant. 🥔",
+    "feature1Tag": "Magique",
+    "trustFeature1": "Pas d'app à télécharger",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Synchro instantanée"
   },
   "Dashboard": {
     "badge": "Tableau de bord",

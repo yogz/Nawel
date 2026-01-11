@@ -162,9 +162,7 @@ export const getChangeLogsSchema = z.object({
 export const createEventSchema = z.object({
   name: safeText(100),
   description: safeText(500).optional(),
-  creationMode: z
-    .enum(["total", "classique", "apero", "service-unique", "vacation", "empty"])
-    .optional(),
+  creationMode: z.enum(["total", "classique", "apero", "vacation"]).optional(),
   date: z.string().optional(),
   time: z.string().optional(),
   address: safeText(500).optional(),

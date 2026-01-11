@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Who's bringing the wine? 🍷",
     "chatRight1": "I thought Mark was?",
-    "chatLeft2": "Mark is bringing chips. We have 5 bags of chips now. 🥔"
+    "chatLeft2": "Mark is bringing chips. We have 5 bags of chips now. 🥔",
+    "feature1Tag": "Magic",
+    "trustFeature1": "No App Download",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Instant Sync"
   },
   "Dashboard": {
     "badge": "Dashboard",

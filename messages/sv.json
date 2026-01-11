@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Vem tar med vinet? 🍷",
     "chatRight1": "Trodde att Mark skulle göra det?",
-    "chatLeft2": "Mark tar med chips. Vi har redan 5 påsar. 🥔"
+    "chatLeft2": "Mark tar med chips. Vi har redan 5 påsar. 🥔",
+    "feature1Tag": "Magiskt",
+    "trustFeature1": "Ingen app-nedladdning",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Omedelbar synkronisering"
   },
   "Dashboard": {
     "badge": "Instrumentpanel",
@@ -248,6 +252,8 @@
     "nextButton": "Nästa",
     "backButton": "Tillbaka",
     "menuDescription": "Välj typ av måltid",
+    "modeGroupStandard": "Standardmåltider",
+    "modeGroupSpecial": "Planering & Vistelser",
     "modeTotalLabel": "Hela paketet",
     "modeTotalDesc": "Aptitretare, Förrätt, Huvudrätt, Ost, Efterrätt, Drycker, Övrigt",
     "modeClassicLabel": "Klassisk",
@@ -256,6 +262,13 @@
     "modeAperoDesc": "Aptitretare, Drycker",
     "modeServiceUniqueLabel": "Enkel rätt",
     "modeServiceUniqueDesc": "En rätt",
+    "modeVacationLabel": "Semester",
+    "modeVacationDesc": "Hela veckan (Lunch/Middag + Gemensamt)",
+    "modeEmptyLabel": "Tom",
+    "modeEmptyDesc": "Jag konfigurerar allt själv",
+    "durationLabel": "Varaktighet (dage)",
+    "lunch": "Lunch",
+    "dinner": "Middag",
     "summaryEvent": "Evenemang",
     "summaryDate": "Datum",
     "summaryGuestsLabel": "Gäster",
@@ -377,7 +390,8 @@
       "noChanges": "Inga senaste ändringar",
       "dangerZone": "Farozonen",
       "deleteEvent": "Ta bort evenemang",
-      "irreversible": "Denna åtgärd är oåterkallelig."
+      "irreversible": "Denna åtgärd är oåterkallelig.",
+      "behindTheScenes": "Bakom kulisserna"
     },
     "ItemForm": {
       "editItem": "Redigera artikel {name}",
@@ -486,7 +500,9 @@
         "boissons": "Drycker",
         "autre": "Övrigt",
         "divers": "Diverse",
-        "custom": "Anpassad"
+        "custom": "Anpassad",
+        "midi": "Lunch",
+        "soir": "Middag"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Välj ett datum",

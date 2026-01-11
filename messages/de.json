@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Wer bringt den Wein mit? 🍷",
     "chatRight1": "Ich dachte, Mark macht das?",
-    "chatLeft2": "Mark bringt Chips mit. Wir haben jetzt schon 5 Tüten. 🥔"
+    "chatLeft2": "Mark bringt Chips mit. Wir haben jetzt schon 5 Tüten. 🥔",
+    "feature1Tag": "Magisch",
+    "trustFeature1": "Kein App-Download erforderlich",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Sofortige Synchronisierung"
   },
   "Dashboard": {
     "badge": "Dashboard",
@@ -386,7 +390,8 @@
       "noChanges": "Keine letzten Änderungen",
       "dangerZone": "Gefahrenzone",
       "deleteEvent": "Event löschen",
-      "irreversible": "Diese Aktion ist unwiderruflich."
+      "irreversible": "Diese Aktion ist unwiderruflich.",
+      "behindTheScenes": "Hinter den Kulissen"
     },
     "ItemForm": {
       "editItem": "Artikel bearbeiten {name}",
@@ -826,9 +831,9 @@
       "email": "E-Mails",
       "dev": "Entwicklung",
       "services": "Dittanbieter-Dienste",
-      "other": "Anderes",
       "database": "Datenbank",
-      "api": "API-Dienste"
+      "api": "API-Dienste",
+      "other": "Anderes"
     },
     "changelog": {
       "items": [
@@ -839,8 +844,8 @@
         },
         {
           "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Hinter den Kulissen",
+          "description": "Start dieser Seite für mehr Transparenz über das Projekt und seine Kosten."
         },
         {
           "date": "Jan 2026",

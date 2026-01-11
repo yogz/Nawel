@@ -108,7 +108,11 @@
     },
     "chatLeft1": "Şarabı kim getiriyor? 🍷",
     "chatRight1": "Mark getirecek sanıyordum?",
-    "chatLeft2": "Mark cips getiriyor. Şimdi 5 paket cipsimiz var. 🥔"
+    "chatLeft2": "Mark cips getiriyor. Şimdi 5 paket cipsimiz var. 🥔",
+    "feature1Tag": "Sihirli",
+    "trustFeature1": "Uygulama indirmeye gerek yok",
+    "trustFeature2": "iPhone & Android",
+    "trustFeature3": "Anında senkronizasyon"
   },
   "Dashboard": {
     "badge": "Panel",
@@ -249,6 +253,8 @@
     "nextButton": "Sonraki",
     "backButton": "Geri",
     "menuDescription": "Yemek türünü seçin",
+    "modeGroupStandard": "Standart Yemekler",
+    "modeGroupSpecial": "Planlama & Konaklama",
     "modeTotalLabel": "Hepsi",
     "modeTotalDesc": "Aperatif, Başlangıç, Ana Yemek, Peynir, Tatlı, İçecekler, Diğer",
     "modeClassicLabel": "Klasik",
@@ -257,6 +263,13 @@
     "modeAperoDesc": "Aperatif, İçecekler",
     "modeServiceUniqueLabel": "Tek servis",
     "modeServiceUniqueDesc": "Sadece bir servis",
+    "modeVacationLabel": "Tatil",
+    "modeVacationDesc": "Tüm hafta (Öğle/Akşam Yemeği + Ortak)",
+    "modeEmptyLabel": "Boş",
+    "modeEmptyDesc": "Her şeyi kendim yapılandırırım",
+    "durationLabel": "Süre (gün)",
+    "lunch": "Öğle Yemeği",
+    "dinner": "Akşam Yemeği",
     "summaryEvent": "Etkinlik",
     "summaryDate": "Tarih",
     "summaryGuestsLabel": "Davetliler",
@@ -378,7 +391,8 @@
       "noChanges": "Yakın zamanda değişiklik yok",
       "dangerZone": "Tehlike bölgesi",
       "deleteEvent": "Etkinliği sil",
-      "irreversible": "Bu işlem geri alınamaz."
+      "irreversible": "Bu işlem geri alınamaz.",
+      "behindTheScenes": "Sahne Arkası"
     },
     "ItemForm": {
       "editItem": "{name} ürününü düzenle",
@@ -487,7 +501,9 @@
         "boissons": "İçecekler",
         "autre": "Diğer",
         "divers": "Çeşitli",
-        "custom": "Özel"
+        "custom": "Özel",
+        "midi": "Öğle Yemeği",
+        "soir": "Akşam Yemeği"
       },
       "dateLabel": "Tarih",
       "datePlaceholder": "Bir tarih seçin",

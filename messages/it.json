@@ -107,7 +107,11 @@
     },
     "chatLeft1": "Chi porta il vino? 🍷",
     "chatRight1": "Pensavo lo portasse Mark?",
-    "chatLeft2": "Mark porta le patatine. Ne abbiamo già 5 sacchetti. 🥔"
+    "chatLeft2": "Mark porta le patatine. Ne abbiamo già 5 sacchetti. 🔍",
+    "feature1Tag": "Magico",
+    "trustFeature1": "Nessuna app da scaricare",
+    "trustFeature2": "iPhone e Android",
+    "trustFeature3": "Sincronizzazione istantanea"
   },
   "Dashboard": {
     "badge": "Pannello",
@@ -386,7 +390,8 @@
       "noChanges": "Nessuna modifica recente",
       "dangerZone": "Zona Pericolosa",
       "deleteEvent": "Elimina evento",
-      "irreversible": "Questa azione è irreversibile."
+      "irreversible": "Questa azione è irreversibile.",
+      "behindTheScenes": "Dietro le quinte"
     },
     "ItemForm": {
       "editItem": "Modifica articolo {name}",

@@ -6,7 +6,6 @@ import {
   UtensilsCrossed,
   Utensils,
   GlassWater,
-  FilePlus,
   Loader2,
   Calendar,
   Clock,
@@ -15,7 +14,6 @@ import {
   MessageSquare,
   Sparkles,
   Palmtree,
-  Eraser,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {
@@ -44,7 +42,7 @@ export function EventForm({
   onSubmit: (
     name: string,
     description?: string,
-    creationMode?: "total" | "classique" | "apero" | "service-unique" | "vacation" | "empty",
+    creationMode?: "total" | "classique" | "apero" | "vacation",
     date?: string,
     adults?: number,
     children?: number,
@@ -74,9 +72,9 @@ export function EventForm({
   const [step, setStep] = useState(1);
   const [name, setName] = useState(initialData?.name ?? "");
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [creationMode, setCreationMode] = useState<
-    "total" | "classique" | "apero" | "service-unique" | "vacation" | "empty"
-  >("total");
+  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "vacation">(
+    "total"
+  );
   const [duration, setDuration] = useState(7);
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState(initialData?.time ?? "20:00");
@@ -120,22 +118,10 @@ export function EventForm({
       icon: <GlassWater size={20} />,
     },
     {
-      id: "service-unique",
-      label: t("modeServiceUniqueLabel"),
-      desc: t("modeServiceUniqueDesc"),
-      icon: <FilePlus size={20} />,
-    },
-    {
       id: "vacation",
       label: t("modeVacationLabel"),
       desc: t("modeVacationDesc"),
       icon: <Palmtree size={20} />,
-    },
-    {
-      id: "empty",
-      label: t("modeEmptyLabel"),
-      desc: t("modeEmptyDesc"),
-      icon: <Eraser size={20} />,
     },
   ] as const;
 
@@ -405,9 +391,9 @@ export function EventForm({
           <div className="grid grid-cols-1 gap-2.5 sm:gap-2">
             {[
               { id: "group_standard", label: t("modeGroupStandard") },
-              ...CREATION_MODES.filter((m) => !["vacation", "empty"].includes(m.id)),
+              ...CREATION_MODES.filter((m) => !["vacation"].includes(m.id)),
               { id: "group_special", label: t("modeGroupSpecial") },
-              ...CREATION_MODES.filter((m) => ["vacation", "empty"].includes(m.id)),
+              ...CREATION_MODES.filter((m) => ["vacation"].includes(m.id)),
             ].map((item) => {
               if (item.id.startsWith("group_")) {
                 return (

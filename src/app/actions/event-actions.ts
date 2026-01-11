@@ -84,9 +84,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     await logChange("create", "people", person.id, null, person);
   }
 
-  if (input.creationMode === "empty") {
-    // Just create event, no meals
-  } else if (input.creationMode === "vacation") {
+  if (input.creationMode === "vacation") {
     const startDate = input.date || new Date().toISOString().split("T")[0];
     const duration = input.duration ?? 7;
     const mealTitles = input.mealTitles || {
@@ -129,7 +127,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         children: created.children,
       });
     }
-  } else if (input.creationMode && input.creationMode !== "service-unique") {
+  } else if (input.creationMode) {
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
     let services: string[] = [];
 
@@ -158,20 +156,6 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         children: created.children,
       });
     }
-  } else if (input.creationMode === "service-unique") {
-    // Create a meal with a single empty service
-    const defaultDate = input.date || new Date().toISOString().split("T")[0];
-    await createMealWithServicesAction({
-      slug: created.slug,
-      key: adminKey,
-      date: defaultDate,
-      time: input.time,
-      address: input.address,
-      title: "Meal",
-      services: ["custom"],
-      adults: created.adults,
-      children: created.children,
-    });
   }
 
   revalidatePath("/");

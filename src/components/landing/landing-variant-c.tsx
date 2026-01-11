@@ -37,7 +37,7 @@ export function LandingVariantC() {
       description: t("feature1Description"),
       icon: <Wand2 className="h-6 w-6" />,
       image: "/alt_ai_chef.png",
-      tag: "Magic",
+      tag: t("feature1Tag"),
     },
     {
       id: "guests",
@@ -186,13 +186,13 @@ export function LandingVariantC() {
             <p className="mx-auto max-w-2xl text-xl text-gray-600">{t("trustDescription")}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-500">
               <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500" /> No App Download
+                <CheckCircle2 className="h-4 w-4 text-green-500" /> {t("trustFeature1")}
               </span>
               <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500" /> Works on iPhone/Android
+                <CheckCircle2 className="h-4 w-4 text-green-500" /> {t("trustFeature2")}
               </span>
               <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2">
-                <CheckCircle2 className="h-4 w-4 text-green-500" /> Instant Sync
+                <CheckCircle2 className="h-4 w-4 text-green-500" /> {t("trustFeature3")}
               </span>
             </div>
           </div>
