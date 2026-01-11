@@ -336,7 +336,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   {t("bioContent")}
                 </p>
                 <div className="flex justify-end pt-4">
-                  <span className="font-handwriting text-2xl font-bold italic text-primary opacity-70">
+                  <span className="font-handwriting text-lg font-bold italic text-primary opacity-70">
                     Nicolas
                   </span>
                 </div>
