@@ -117,10 +117,10 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
 
               <Link
                 href="/behind-the-scenes"
-                className="text-text/40 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transition-colors hover:text-accent"
+                className="text-text/60 flex items-center gap-2 rounded-2xl bg-black/5 p-2 px-4 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/5 transition-all hover:scale-[1.02] active:scale-95"
               >
+                <ArrowUpRight size={14} />
                 {t("behindTheScenes") || "Behind the Scenes"}
-                <ArrowUpRight size={12} />
               </Link>
             </div>
 

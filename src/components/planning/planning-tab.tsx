@@ -304,13 +304,16 @@ export function PlanningTab({
                 </a>
               </Button>
 
-              <Link
-                href="/behind-the-scenes"
-                className="text-text/40 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transition-colors hover:text-accent"
+              <Button
+                variant="outline"
+                className="text-text/60 h-10 rounded-2xl border-none bg-black/5 px-6 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/5 transition-all hover:scale-[1.02] hover:bg-black/10 active:scale-95"
+                asChild
               >
-                {tSettings("behindTheScenes") || "Behind the Scenes"}
-                <ArrowUpRight size={12} />
-              </Link>
+                <Link href="/behind-the-scenes" className="flex items-center gap-2">
+                  <ArrowUpRight size={14} />
+                  {tSettings("behindTheScenes") || "Behind the Scenes"}
+                </Link>
+              </Button>
             </div>
 
             <p className="text-text/20 text-[10px] font-medium italic">
