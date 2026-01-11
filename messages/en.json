@@ -377,7 +377,8 @@
       "noChanges": "No recent changes",
       "dangerZone": "Danger Zone",
       "deleteEvent": "Delete event",
-      "irreversible": "This action is irreversible."
+      "irreversible": "This action is irreversible.",
+      "behindTheScenes": "Behind the Scenes"
     },
     "ItemForm": {
       "editItem": "Edit item {name}",

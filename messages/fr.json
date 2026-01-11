@@ -377,7 +377,8 @@
       "noChanges": "Pas de modifs récentes",
       "dangerZone": "Zone de danger",
       "deleteEvent": "Supprimer l'événement",
-      "irreversible": "Cette action est irréversible."
+      "irreversible": "Cette action est irréversible.",
+      "behindTheScenes": "En coulisses"
     },
     "ItemForm": {
       "editItem": "Modifier l'article {name}",

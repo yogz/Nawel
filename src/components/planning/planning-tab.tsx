@@ -5,10 +5,10 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
 import { PlanningFilters } from "./event-planner-header";
-import { PlusIcon, Calendar, Filter } from "lucide-react";
+import { PlusIcon, Calendar, Coffee, ArrowUpRight } from "lucide-react";
 import { MealContainer } from "./meal-container";
 import { DayTabs } from "./day-tabs";
-import { DangerZoneTrigger, DangerZoneContent } from "../common/destructive-actions";
+import { Link } from "@/i18n/navigation";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
 import {
@@ -285,38 +285,38 @@ export function PlanningTab({
             </Button>
           </div>
 
-          {/* Danger Zone - Two-step process */}
-          {isOwner && onDeleteEvent && (
-            <div className="mt-4 flex w-full flex-col items-center gap-4">
-              {!isDeleteRevealed ? (
-                <div className="w-full max-w-sm">
-                  <DangerZoneTrigger
-                    onClick={() => setIsDeleteRevealed(true)}
-                    label={`${tSettings("dangerZone")} / ${tSettings("deleteEvent")}`}
-                    className="bg-transparent opacity-60 hover:bg-red-50 hover:opacity-100"
-                  />
-                </div>
-              ) : (
-                <div className="w-full animate-in fade-in slide-in-from-bottom-2">
-                  <DangerZoneContent
-                    onDelete={handleDeleteWrapper}
-                    onCancel={() => setIsDeleteRevealed(false)}
-                    isDeleting={isDeleting}
-                    title={tSettings("deleteEvent")}
-                    warningMessage="Attention : Cette action est irréversible. Toutes les données de l'événement seront définitivement supprimées."
-                    deleteButtonLabel={tSettings("deleteEvent")}
-                    confirmationConfig={{
-                      title: tSettings("deleteEvent"),
-                      description:
-                        "Cette action est irréversible. Veuillez taper le nom de l'événement pour confirmer.",
-                      confirmationInput: plan.event?.name,
-                      confirmLabel: tSettings("deleteEvent"),
-                    }}
-                  />
-                </div>
-              )}
+          {/* Premium Footer Actions */}
+          <div className="mt-8 flex w-full flex-col items-center justify-center gap-6 border-t border-black/5 pt-12">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                className="h-10 rounded-2xl border-none bg-[#FFDD00] px-6 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] hover:bg-[#FFDD00]/90 active:scale-95"
+                asChild
+              >
+                <a
+                  href="https://www.buymeacoffee.com/colist"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Coffee size={14} />
+                  Buy Me a Coffee
+                </a>
+              </Button>
+
+              <Link
+                href="/behind-the-scenes"
+                className="text-text/40 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transition-colors hover:text-accent"
+              >
+                {tSettings("behindTheScenes") || "Behind the Scenes"}
+                <ArrowUpRight size={12} />
+              </Link>
             </div>
-          )}
+
+            <p className="text-text/20 text-[10px] font-medium italic">
+              Fait avec ❤️ par un indépendant
+            </p>
+          </div>
         </div>
       )}
     </DndContext>

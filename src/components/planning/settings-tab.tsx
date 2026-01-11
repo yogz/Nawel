@@ -9,10 +9,13 @@ import {
   ChevronRight,
   ChevronDown,
   ShieldAlert,
+  Coffee,
+  ArrowUpRight,
 } from "lucide-react";
 import { useThemeMode } from "@/components/theme-provider";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/common/language-selector";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 interface SettingsTabProps {
@@ -69,43 +72,62 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
       </div>
 
       {!readOnly && isOwner && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setShowDangerZone(!showDangerZone)}
-            className={cn(
-              "flex w-full items-center justify-between rounded-2xl border px-6 py-4 text-sm font-bold transition-all",
-              showDangerZone
-                ? "border-red-200 bg-red-50/50 text-red-600"
-                : "border-gray-100 bg-white/50 text-gray-400 hover:bg-white"
-            )}
-          >
-            <div className="flex items-center gap-2">
-              <Trash2 size={14} />
+        <div className="space-y-6 pt-4">
+          <div className="flex flex-col items-center gap-4">
+            <button
+              onClick={() => setShowDangerZone(!showDangerZone)}
+              className="text-text/20 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transition-colors hover:text-red-400"
+            >
+              <Trash2 size={12} />
               {t("dangerZone")}
-            </div>
-            {showDangerZone ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-          </button>
+            </button>
 
-          {showDangerZone && (
-            <div className="premium-card border-red-100 bg-red-50/10 p-6 duration-300 animate-in fade-in slide-in-from-top-2">
-              <div className="mb-4 rounded-xl bg-red-50 p-3 text-[10px] font-medium text-red-800">
-                <p className="flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 shrink-0" />
-                  Attention : Cette action est irréversible. Toutes les données de l&apos;événement
-                  seront définitivement supprimées.
-                </p>
+            {showDangerZone && (
+              <div className="premium-card border-red-100 bg-red-50/10 p-6 duration-300 animate-in fade-in slide-in-from-top-2">
+                <div className="mb-4 rounded-xl bg-red-50 p-3 text-[10px] font-medium text-red-800">
+                  <p className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 shrink-0" />
+                    Attention : Cette action est irréversible. Toutes les données de
+                    l&apos;événement seront définitivement supprimées.
+                  </p>
+                </div>
+                <button
+                  onClick={onDeleteEvent}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 hover:shadow-red-300 active:scale-[0.98]"
+                >
+                  <Trash2 size={16} /> {t("deleteEvent")}
+                </button>
               </div>
-              <button
-                onClick={onDeleteEvent}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-600 px-4 py-4 text-sm font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition-all hover:bg-red-700 hover:shadow-red-300 active:scale-[0.98]"
+            )}
+          </div>
+
+          <div className="mt-8 flex w-full flex-col items-center justify-center gap-6 border-t border-black/5 pt-12">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="https://www.buymeacoffee.com/colist"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-2xl bg-[#FFDD00] p-2 px-4 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] active:scale-95"
               >
-                <Trash2 size={16} /> {t("deleteEvent")}
-              </button>
-              <p className="mt-3 text-center text-[10px] font-medium text-red-900/40">
-                {t("irreversible")}
-              </p>
+                <Coffee size={14} />
+                Buy Me a Coffee
+              </a>
+
+              <LanguageSelector variant="compact" />
+
+              <Link
+                href="/behind-the-scenes"
+                className="text-text/40 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest transition-colors hover:text-accent"
+              >
+                {t("behindTheScenes") || "Behind the Scenes"}
+                <ArrowUpRight size={12} />
+              </Link>
             </div>
-          )}
+
+            <p className="text-text/20 text-[10px] font-medium italic">
+              Fait avec ❤️ par un indépendant
+            </p>
+          </div>
         </div>
       )}
     </div>
