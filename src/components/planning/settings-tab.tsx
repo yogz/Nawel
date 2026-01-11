@@ -105,7 +105,7 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/behind-the-scenes"
-                className="flex items-center gap-2 rounded-2xl bg-accent p-2 px-4 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] active:scale-95"
+                className="flex h-10 w-44 items-center justify-center gap-2 rounded-2xl bg-accent text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] active:scale-95"
               >
                 <ArrowUpRight size={14} />
                 {t("behindTheScenes") || "Behind the Scenes"}
@@ -115,7 +115,7 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
                 href="https://www.buymeacoffee.com/colist"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-2xl bg-[#FFDD00] p-2 px-4 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] active:scale-95"
+                className="flex h-10 w-44 items-center justify-center gap-2 rounded-2xl bg-[#FFDD00] text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] active:scale-95"
               >
                 <Coffee size={14} />
                 Buy Me a Coffee

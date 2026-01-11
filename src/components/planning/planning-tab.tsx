@@ -290,10 +290,10 @@ export function PlanningTab({
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border-none bg-accent px-6 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent/90 active:scale-95"
+                className="h-10 w-44 rounded-2xl border-none bg-accent text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent/90 active:scale-95"
                 asChild
               >
-                <Link href="/behind-the-scenes" className="flex items-center gap-2">
+                <Link href="/behind-the-scenes" className="flex items-center justify-center gap-2">
                   <ArrowUpRight size={14} />
                   {tSettings("behindTheScenes") || "Behind the Scenes"}
                 </Link>
@@ -301,24 +301,20 @@ export function PlanningTab({
 
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border-none bg-[#FFDD00] px-6 text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] hover:bg-[#FFDD00]/90 active:scale-95"
+                className="h-10 w-44 rounded-2xl border-none bg-[#FFDD00] text-[10px] font-black uppercase tracking-widest text-black shadow-lg shadow-yellow-200/50 transition-all hover:scale-[1.02] hover:bg-[#FFDD00]/90 active:scale-95"
                 asChild
               >
                 <a
                   href="https://www.buymeacoffee.com/colist"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2"
+                  className="flex items-center justify-center gap-2"
                 >
                   <Coffee size={14} />
                   Buy Me a Coffee
                 </a>
               </Button>
             </div>
-
-            <p className="text-text/20 text-[10px] font-medium italic">
-              Fait avec ❤️ par un indépendant
-            </p>
           </div>
         </div>
       )}
