@@ -371,6 +371,14 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   {totalThisYear.toFixed(2)} €
                 </div>
               </div>
+              <div className="rounded-2xl border border-white/20 bg-white/60 p-6 shadow-md backdrop-blur-sm">
+                <p className="mb-1 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t("developmentTime")}
+                </p>
+                <div className="flex items-baseline gap-2 text-3xl font-black text-violet-500">
+                  ~250 Hours
+                </div>
+              </div>
             </div>
 
             {/* Monthly Chart */}
