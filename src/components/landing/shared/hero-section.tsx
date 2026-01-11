@@ -7,6 +7,7 @@ import Image from "next/image";
 import { LanguageSelector } from "@/components/common/language-selector";
 import { sendGAEvent } from "@next/third-parties/google";
 import { trackDiscoverClick } from "@/lib/analytics";
+import { AuthNavButton } from "./auth-nav-button";
 
 interface HeroSectionProps {
   heroOpacity: MotionValue<number>;
@@ -57,7 +58,8 @@ export function HeroSection({
       style={{ opacity: heroOpacity, scale: heroScale }}
       className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
     >
-      <div className="absolute right-6 top-6 z-50">
+      <div className="absolute right-6 top-6 z-50 flex items-center gap-3">
+        <AuthNavButton />
         <LanguageSelector variant="compact" showSearch />
       </div>
       <div className="absolute inset-0 -z-10">

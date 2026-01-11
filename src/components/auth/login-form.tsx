@@ -31,7 +31,7 @@ export function LoginForm() {
             isUserMode={isUserMode}
             initialMode={initialMode}
             onSuccess={() => {
-              router.push(isUserMode ? "/" : "/admin");
+              router.push(isUserMode ? "/event" : "/admin");
               router.refresh();
             }}
           />
