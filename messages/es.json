@@ -302,7 +302,7 @@
     },
     "Planning": {
       "all": "Todos",
-      "common": "Comunes",
+      "common": "📦 Comunes",
       "noMeals": "No hay comidas por el momento.",
       "addMeal": "Añadir comida",
       "addService": "Añadir tiempo",
@@ -358,7 +358,16 @@
       "check": "Marcar",
       "uncheck": "Desmarcar",
       "sources": "{count} fuentes",
-      "noItemsFor": "No hay artículos para comprar para {name}"
+      "noItemsFor": "No hay artículos para comprar para {name}",
+      "viewAllList": "Ver la lista completa",
+      "allListTitle": "Lista de compras global",
+      "allListDescription": "Todos los artículos para comprar por todos los invitados",
+      "back": "Volver",
+      "shareList": "Compartir esta lista",
+      "readOnlyNotice": "Modo de solo lectura. Solicita el enlace de edición para marcar artículos.",
+      "in": "En",
+      "seeLess": "Ver menos",
+      "seeSources": "Ver fuentes"
     },
     "Settings": {
       "ambiance": "Ambiente",
@@ -464,7 +473,7 @@
       "eventDeleted": "Evento eliminado ✓"
     },
     "Meal": {
-      "common": "Comunes",
+      "common": "📦 Comunes",
       "commonDesc": "Artículos de aseo, desayuno o suministros compartidos.",
       "serviceTypes": {
         "apero": "Aperitivo",
@@ -804,7 +813,33 @@
       "email": "Emails",
       "dev": "Desarrollo",
       "services": "Servicios de terceros",
+      "database": "Base de datos",
+      "api": "Servicios API",
       "other": "Otro"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Ene 2026",
+          "title": "Simplificación de Grandes Eventos",
+          "description": "Se ha añadido el modo compacto para las comidas y servicios, y navegación día a día para una mejor legibilidad."
+        },
+        {
+          "date": "Ene 2026",
+          "title": "Revisión de la Interfaz y Dashboard",
+          "description": "Una interfaz aún más fluida y un nuevo panel de control para tus eventos."
+        },
+        {
+          "date": "Dic 2025",
+          "title": "Compras con IA",
+          "description": "Generación automática de ingredientes y cantidades adaptadas al número de invitados."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "Lanzamiento de CoList",
+          "description": "Primera versión pública para compartir tus listas sin necesidad de cuenta."
+        }
+      ]
     }
   }
 }

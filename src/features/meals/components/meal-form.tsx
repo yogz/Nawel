@@ -187,6 +187,13 @@ export function MealForm({
     const formattedDate = isCommon ? "common" : format(date!, "yyyy-MM-dd");
     const finalTitle = isCommon && !title ? "" : title;
 
+    if (isCommon && !isEditMode) {
+      // Pour un repas commun en création, on crée un service par défaut
+      await onSubmit(formattedDate, finalTitle, ["divers"], adults, children, time, address);
+      onClose();
+      return;
+    }
+
     // Pour la création, ne pas utiliser startTransition pour que le state se mette à jour immédiatement
     if (isEditMode) {
       startTransition(async () => {
@@ -254,169 +261,182 @@ export function MealForm({
             </button>
           </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="title"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {t("titleLabel")}
-            </Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addressRef.current?.focus();
-                }
-              }}
-              onBlur={handleBlurSave}
-              placeholder={t("titlePlaceholder")}
-              autoCapitalize="sentences"
-              enterKeyHint="next"
-              className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor="address"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-            >
-              {t("addressLabel")}
-            </Label>
-            <div className="relative">
-              <Input
-                id="address"
-                ref={addressRef}
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    dateRef.current?.focus();
-                  }
-                }}
-                onBlur={handleBlurSave}
-                placeholder={t("addressPlaceholder")}
-                autoComplete="street-address"
-                autoCapitalize="sentences"
-                enterKeyHint="next"
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
-              />
-              <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            </div>
-          </div>
-
-          {!isCommon && (
-            <div className="flex gap-4">
-              <div className="flex-[3] space-y-2">
+          {!isCommon ? (
+            <>
+              <div className="space-y-2">
                 <Label
-                  htmlFor="date"
-                  className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                  htmlFor="title"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
                 >
-                  {t("dateLabel")}
+                  {t("titleLabel")}
+                </Label>
+                <Input
+                  id="title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addressRef.current?.focus();
+                    }
+                  }}
+                  onBlur={handleBlurSave}
+                  placeholder={t("titlePlaceholder")}
+                  autoCapitalize="sentences"
+                  enterKeyHint="next"
+                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="address"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                >
+                  {t("addressLabel")}
                 </Label>
                 <div className="relative">
                   <Input
-                    id="date"
-                    ref={dateRef}
-                    type="date"
-                    value={date ? format(date, "yyyy-MM-dd") : ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setDate(val ? new Date(val) : undefined);
-                    }}
+                    id="address"
+                    ref={addressRef}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        timeRef.current?.focus();
+                        dateRef.current?.focus();
                       }
                     }}
                     onBlur={handleBlurSave}
-                    className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
-                  />
-                  <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
-                </div>
-              </div>
-
-              <div className="flex-[2] space-y-2">
-                <Label
-                  htmlFor="time"
-                  className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
-                >
-                  {t("timeLabel")}
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="time"
-                    ref={timeRef}
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        if (isEditMode) {
-                          handleSubmit();
-                        } else if (canGoNext()) {
-                          setStep(2);
-                        }
-                      }
-                    }}
+                    placeholder={t("addressPlaceholder")}
+                    autoComplete="street-address"
+                    autoCapitalize="sentences"
                     enterKeyHint="next"
-                    onBlur={handleBlurSave}
-                    className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                    className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
                   />
-                  <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                  <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 </div>
               </div>
+
+              <div className="flex gap-4">
+                <div className="flex-[3] space-y-2">
+                  <Label
+                    htmlFor="date"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                  >
+                    {t("dateLabel")}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="date"
+                      ref={dateRef}
+                      type="date"
+                      value={date ? format(date, "yyyy-MM-dd") : ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDate(val ? new Date(val) : undefined);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          timeRef.current?.focus();
+                        }
+                      }}
+                      onBlur={handleBlurSave}
+                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                    />
+                    <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                  </div>
+                </div>
+
+                <div className="flex-[2] space-y-2">
+                  <Label
+                    htmlFor="time"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                  >
+                    {t("timeLabel")}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="time"
+                      ref={timeRef}
+                      type="time"
+                      value={time}
+                      onChange={(e) => setTime(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          if (isEditMode) {
+                            handleSubmit();
+                          } else if (canGoNext()) {
+                            setStep(2);
+                          }
+                        }
+                      }}
+                      enterKeyHint="next"
+                      onBlur={handleBlurSave}
+                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                    />
+                    <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="adults"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  >
+                    {tCommon("adultsLabel")}
+                  </Label>
+                  <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                      <SelectValue placeholder={tCommon("adultsLabel")} />
+                    </SelectTrigger>
+                    <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                      {Array.from({ length: 51 }, (_, i) => (
+                        <SelectItem key={i} value={String(i)} className="rounded-xl">
+                          {i} {tCommon("adultsCount", { count: i })}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="children"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  >
+                    {tCommon("childrenLabel")}
+                  </Label>
+                  <Select
+                    value={String(children)}
+                    onValueChange={(val) => setChildren(parseInt(val))}
+                  >
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                      <SelectValue placeholder={tCommon("childrenLabel")} />
+                    </SelectTrigger>
+                    <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
+                      {Array.from({ length: 51 }, (_, i) => (
+                        <SelectItem key={i} value={String(i)} className="rounded-xl">
+                          {i} {tCommon("childrenCount", { count: i })}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-gray-200 p-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/5 text-accent">
+                <Sparkles size={24} />
+              </div>
+              <h3 className="mt-4 text-sm font-bold text-gray-900">{t("common")}</h3>
+              <p className="mt-2 text-xs leading-relaxed text-gray-500">{t("commonDesc")}</p>
             </div>
           )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="adults"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {tCommon("adultsLabel")}
-              </Label>
-              <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder={tCommon("adultsLabel")} />
-                </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-                  {Array.from({ length: 51 }, (_, i) => (
-                    <SelectItem key={i} value={String(i)} className="rounded-xl">
-                      {i} {tCommon("adultsCount", { count: i })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="children"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {tCommon("childrenLabel")}
-              </Label>
-              <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-                <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-                  <SelectValue placeholder={tCommon("childrenLabel")} />
-                </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-                  {Array.from({ length: 51 }, (_, i) => (
-                    <SelectItem key={i} value={String(i)} className="rounded-xl">
-                      {i} {tCommon("childrenCount", { count: i })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
           <div
             className={clsx(
@@ -440,14 +460,14 @@ export function MealForm({
                 <Button
                   type="button"
                   variant="premium"
-                  onClick={() => setStep(2)}
-                  disabled={!canGoNext()}
+                  onClick={() => (isCommon ? handleSubmit() : setStep(2))}
+                  disabled={!canGoNext() || isPending}
                   className="flex-[2] py-6 pr-8 shadow-md"
-                  icon={<Sparkles size={18} />}
-                  shine
+                  icon={isPending ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />}
+                  shine={!isPending}
                 >
                   <span className="text-sm font-black uppercase tracking-widest text-gray-700">
-                    {tCommon("next")}
+                    {isCommon ? (isPending ? t("creating") : t("createButton")) : tCommon("next")}
                   </span>
                 </Button>
               </div>

@@ -43,7 +43,8 @@
     "footerText": "Stworzone z ✨ dla Twoich najlepszych chwil.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Kulisy"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Stworzone z ❤️ dla smakoszów życia.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Kulisy"
     }
   },
   "LandingC": {
@@ -315,7 +317,9 @@
       "editMeal": "Edytuj posiłek",
       "editService": "Edytuj danie",
       "addItem": "Dodaj przedmiot",
-      "cancel": "Anuluj"
+      "cancel": "Anuluj",
+      "expand": "Rozwiń",
+      "collapse": "Zwiń"
     },
     "Service": {
       "editService": "Edytuj danie {name}",
@@ -354,7 +358,16 @@
       "check": "Zaznacz",
       "uncheck": "Odznacz",
       "sources": "{count} źródeł",
-      "noItemsFor": "Brak przedmiotów do kupienia dla {name}"
+      "noItemsFor": "Brak przedmiotów do kupienia dla {name}",
+      "viewAllList": "Zobacz pełną listę",
+      "allListTitle": "Globalna lista zakupów",
+      "allListDescription": "Wszystkie przedmioty do kupienia przez wszystkich gości",
+      "back": "Wstecz",
+      "shareList": "Udostępnij tę listę",
+      "readOnlyNotice": "Tryb tylko do odczytu. Poproś o link do edycji, aby odznaczać przedmioty.",
+      "in": "W",
+      "seeLess": "Zobacz mniej",
+      "seeSources": "Zobacz źródła"
     },
     "Settings": {
       "ambiance": "Atmosfera",
@@ -800,7 +813,33 @@
       "email": "E-maile",
       "dev": "Programowanie",
       "services": "Usługi zewnętrzne",
-      "other": "Inne"
+      "other": "Inne",
+      "database": "Baza danych",
+      "api": "Usługi API"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Sty 2026",
+          "title": "Uproszczenie dużych wydarzeń",
+          "description": "Dodano tryb kompaktowy dla posiłków i usług oraz nawigację dzień po dniu dla lepszej czytelności."
+        },
+        {
+          "date": "Sty 2026",
+          "title": "Remont interfejsu i Dashboardu",
+          "description": "Jeszcze płynniejszy interfejs i nowy panel kontrolny dla Twoich wydarzeń."
+        },
+        {
+          "date": "Gru 2025",
+          "title": "Zakupy napędzane przez AI",
+          "description": "Automatyczne generowanie składników i ilości dostosowanych do liczby gości."
+        },
+        {
+          "date": "Lis 2025",
+          "title": "Premiera CoList",
+          "description": "Pierwsza publiczna wersja umożliwiająca udostępnianie list bez konta."
+        }
+      ]
     }
   }
 }

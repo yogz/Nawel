@@ -124,7 +124,6 @@ export function MealContainer({
               </motion.div>
             </button>
             <h2 className="text-gradient-header flex items-center gap-2 truncate text-lg font-black tracking-tight">
-              {meal.date === "common" && <Package className="h-5 w-5" />}
               {meal.date === "common" ? t("common") : meal.title || meal.date}
             </h2>
             {!readOnly && (

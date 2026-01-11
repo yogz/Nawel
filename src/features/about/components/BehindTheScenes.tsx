@@ -524,25 +524,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
           </div>
 
           <div className="space-y-4">
-            {[
-              {
-                date: "Jan 2026",
-                title: "Refonte de l'interface et Dashboard",
-                description:
-                  "Une interface encore plus fluide et un nouveau tableau de bord pour vos événements.",
-              },
-              {
-                date: "Dec 2025",
-                title: "L'IA au service de vos courses",
-                description:
-                  "Génération automatique des ingrédients et quantités adaptées au nombre d'invités.",
-              },
-              {
-                date: "Nov 2025",
-                title: "Lancement de CoList",
-                description: "Première version publique pour partager vos listes sans compte.",
-              },
-            ].map((item, i) => (
+            {t.raw("changelog.items").map((item: any, i: number) => (
               <div key={i} className="group flex gap-6">
                 <div className="flex flex-col items-center">
                   <div className="mt-2 h-3 w-3 rounded-full bg-primary" />

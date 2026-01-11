@@ -43,7 +43,8 @@
     "footerText": "Feito com ✨ para os seus melhores momentos.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "behindTheScenes": "Nos Bastidores"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Feito com ❤️ para os bon vivants.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "behindTheScenes": "Nos Bastidores"
     }
   },
   "LandingC": {
@@ -307,7 +309,7 @@
     },
     "Planning": {
       "all": "Todos",
-      "common": "Comuns",
+      "common": "📦 Comuns",
       "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
       "addService": "Adicionar tempo",
@@ -322,7 +324,9 @@
       "editMeal": "Editar refeição",
       "editService": "Editar tempo",
       "addItem": "Adicionar artigo",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "expand": "Expandir",
+      "collapse": "Recolher"
     },
     "Service": {
       "editService": "Editar tempo {name}",
@@ -361,7 +365,16 @@
       "check": "Marcar",
       "uncheck": "Desmarcar",
       "sources": "{count} fontes",
-      "noItemsFor": "Nenhum artigo para comprar para {name}"
+      "noItemsFor": "Nenhum artigo para comprar para {name}",
+      "viewAllList": "Ver a lista completa",
+      "allListTitle": "Lista de compras global",
+      "allListDescription": "Todos os artigos para comprar por todos os convidados",
+      "back": "Voltar",
+      "shareList": "Partilhar esta lista",
+      "readOnlyNotice": "Modo de leitura apenas. Peça o link de edição para marcar artigos.",
+      "in": "Em",
+      "seeLess": "Ver menos",
+      "seeSources": "Ver as fontes"
     },
     "Settings": {
       "ambiance": "Ambiente",
@@ -467,7 +480,7 @@
       "eventDeleted": "Evento eliminado ✓"
     },
     "Meal": {
-      "common": "Comuns",
+      "common": "📦 Comuns",
       "commonDesc": "Artigos de higiene, pequeno-almoço ou suprimentos partilhados.",
       "serviceTypes": {
         "apero": "Aperitivo",
@@ -807,7 +820,33 @@
       "email": "E-mails",
       "dev": "Desenvolvimento",
       "services": "Serviços de terceiros",
+      "database": "Base de dados",
+      "api": "Serviços de API",
       "other": "Outros"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Simplificando Grandes Eventos",
+          "description": "Adicionado o modo compacto para refeições e serviços, e navegação dia-a-dia para melhor legibilidade."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Revisão da Interface e Painel",
+          "description": "Uma interface ainda mais fluida e um novo painel para os seus eventos."
+        },
+        {
+          "date": "Dez 2025",
+          "title": "Compras com IA",
+          "description": "Geração automática de ingredientes e quantidades adaptadas ao número de convidados."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "Lançamento do CoList",
+          "description": "Primeira versão pública para partilhar as suas listas sem necessidade de conta."
+        }
+      ]
     }
   }
 }

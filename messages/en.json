@@ -473,7 +473,7 @@
       "eventDeleted": "Event deleted ✓"
     },
     "Meal": {
-      "common": "Common items",
+      "common": "📦 Common items",
       "commonDesc": "Toiletries, breakfast, or shared supplies.",
       "serviceTypes": {
         "apero": "Appetizer",
@@ -808,6 +808,30 @@
       "database": "Database",
       "api": "API Services",
       "other": "Other"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Simplifying Large Events",
+          "description": "Added compact mode for meals and services, and day-by-day navigation for better readability."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Interface Overhaul and Dashboard",
+          "description": "An even smoother interface and a new dashboard for your events."
+        },
+        {
+          "date": "Dec 2025",
+          "title": "AI-Powered Shopping",
+          "description": "Automatic generation of ingredients and quantities adapted to the number of guests."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "CoList Launch",
+          "description": "First public version to share your lists without an account."
+        }
+      ]
     }
   }
 }

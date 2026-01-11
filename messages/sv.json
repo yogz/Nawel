@@ -43,7 +43,8 @@
     "footerText": "Gjord med ✨ för dina bästa stunder.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bakom kulisserna"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Gjord med ❤️ för livsnjutare.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bakom kulisserna"
     }
   },
   "LandingC": {
@@ -315,7 +317,9 @@
       "editMeal": "Redigera måltid",
       "editService": "Redigera rätt",
       "addItem": "Lägg till artikel",
-      "cancel": "Avbryt"
+      "cancel": "Avbryt",
+      "expand": "Expandera",
+      "collapse": "Minimera"
     },
     "Service": {
       "editService": "Redigera rätt {name}",
@@ -354,7 +358,16 @@
       "check": "Bocka av",
       "uncheck": "Avmarkera",
       "sources": "{count} källor",
-      "noItemsFor": "Inga artiklar att köpa för {name}"
+      "noItemsFor": "Inga artiklar att köpa för {name}",
+      "viewAllList": "Visa hela listan",
+      "allListTitle": "Global inköpslista",
+      "allListDescription": "Alla artiklar som ska köpas av alla gäster",
+      "back": "Bakåt",
+      "shareList": "Dela denna lista",
+      "readOnlyNotice": "Skrivskyddat läge. Be om redigeringslänken för att checka av artiklar.",
+      "in": "I",
+      "seeLess": "Visa mindre",
+      "seeSources": "Visa källor"
     },
     "Settings": {
       "ambiance": "Atmosfär",
@@ -800,7 +813,33 @@
       "email": "E-post",
       "dev": "Utveckling",
       "services": "Tredjepartstjänster",
-      "other": "Annat"
+      "other": "Annat",
+      "database": "Databas",
+      "api": "API-tjänster"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Förenkling av stora evenemang",
+          "description": "Lag till kompakt läge för måltider och tjänster, och dag-för-dag-navigering för bättre läsbarhet."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Gränssnittsöversyn och Dashboard",
+          "description": "Ett ännu smidigare gränssnitt och en ny instrumentpanel för dina evenemang."
+        },
+        {
+          "date": "Dec 2025",
+          "title": "AI-driven shopping",
+          "description": "Automatisk generering av ingredienser och mängder anpassade till antalet gäster."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "CoList-lansering",
+          "description": "Första offentliga versionen för att dela dina listor utan konto."
+        }
+      ]
     }
   }
 }

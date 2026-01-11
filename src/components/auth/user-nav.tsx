@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { AuthModal } from "./auth-modal";
@@ -15,8 +15,13 @@ export function UserNav() {
   const { data: session, isPending } = useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileDrawer, setShowProfileDrawer] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (isPending) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || isPending) {
     return <div className="h-full w-full animate-pulse bg-gray-100" />;
   }
 

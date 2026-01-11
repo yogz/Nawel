@@ -43,7 +43,8 @@
     "footerText": "Fatto con ✨ per i tuoi momenti migliori.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "behindTheScenes": "Dietro le quinte"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Fatto con ❤️ per i buongustai.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "behindTheScenes": "Dietro le quinte"
     }
   },
   "LandingC": {
@@ -300,7 +302,7 @@
     },
     "Planning": {
       "all": "Tutti",
-      "common": "Comuni",
+      "common": "📦 Comuni",
       "noMeals": "Nessun pasto per ora.",
       "addMeal": "Aggiungi un pasto",
       "addService": "Aggiungi una portata",
@@ -356,7 +358,16 @@
       "check": "Spunta",
       "uncheck": "Deseleziona",
       "sources": "{count} fonti",
-      "noItemsFor": "Nessun articolo da comprare per {name}"
+      "noItemsFor": "Nessun articolo da comprare per {name}",
+      "viewAllList": "Visualizza l'elenco completo",
+      "allListTitle": "Lista della spesa globale",
+      "allListDescription": "Tutti gli articoli da acquistare da parte di tutti gli ospiti",
+      "back": "Indietro",
+      "shareList": "Condividi questa lista",
+      "readOnlyNotice": "Modalità sola lettura. Richiedi il link di modifica per spuntare gli articoli.",
+      "in": "In",
+      "seeLess": "Mostra meno",
+      "seeSources": "Vedi le fonti"
     },
     "Settings": {
       "ambiance": "Atmosfera",
@@ -462,7 +473,7 @@
       "eventDeleted": "Evento eliminato ✓"
     },
     "Meal": {
-      "common": "Comuni",
+      "common": "📦 Comuni",
       "commonDesc": "Articoli da bagno, colazione o forniture condivise.",
       "serviceTypes": {
         "apero": "Aperitivo",
@@ -802,7 +813,33 @@
       "email": "Email",
       "dev": "Sviluppo",
       "services": "Servizi di terze parti",
-      "other": "Altro"
+      "other": "Altro",
+      "database": "Database",
+      "api": "Servizi API"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Gen 2026",
+          "title": "Semplificazione dei grandi eventi",
+          "description": "Aggiunta la modalità compatta per pasti e servizi e la navigazione giorno per giorno per una migliore leggibilità."
+        },
+        {
+          "date": "Gen 2026",
+          "title": "Revisione dell'interfaccia e Dashboard",
+          "description": "Un'interfaccia ancora più fluida e una nuova dashboard per i tuoi eventi."
+        },
+        {
+          "date": "Dic 2025",
+          "title": "Shopping basato sull'IA",
+          "description": "Generazione automatica di ingredienti e quantità adattate al numero di ospiti."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "Lancio di CoList",
+          "description": "Prima versione pubblica per condividere le tue liste senza un account."
+        }
+      ]
     }
   }
 }

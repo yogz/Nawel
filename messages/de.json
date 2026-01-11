@@ -43,7 +43,8 @@
     "footerText": "Mit ✨ gemacht für Ihre schönsten Momente.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Hinter den Kulissen"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Mit ❤️ für Genießer gemacht.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Hinter den Kulissen"
     }
   },
   "LandingC": {
@@ -300,7 +302,7 @@
     },
     "Planning": {
       "all": "Alle",
-      "common": "Gemeinsam",
+      "common": "📦 Gemeinsam",
       "noMeals": "Noch keine Mahlzeiten.",
       "addMeal": "Mahlzeit hinzufügen",
       "addService": "Gang hinzufügen",
@@ -356,7 +358,16 @@
       "check": "Abhaken",
       "uncheck": "Haken entfernen",
       "sources": "{count} Quellen",
-      "noItemsFor": "Keine Artikel zum Kaufen für {name}"
+      "noItemsFor": "Keine Artikel zum Kaufen für {name}",
+      "viewAllList": "Vollständige Liste anzeigen",
+      "allListTitle": "Globale Einkaufsliste",
+      "allListDescription": "Alle Artikel, die von allen Gästen gekauft werden müssen",
+      "back": "Zurück",
+      "shareList": "Diese Liste teilen",
+      "readOnlyNotice": "Schreibgeschützter Modus. Fordern Sie den Bearbeitungslink an, um Artikel abzuhaken.",
+      "in": "In",
+      "seeLess": "Weniger anzeigen",
+      "seeSources": "Quellen anzeigen"
     },
     "Settings": {
       "ambiance": "Ambiente",
@@ -462,7 +473,7 @@
       "eventDeleted": "Veranstaltung gelöscht ✓"
     },
     "Meal": {
-      "common": "Gemeinsam",
+      "common": "📦 Gemeinsam",
       "commonDesc": "Toilettenartikel, Frühstück oder gemeinsame Vorräte.",
       "serviceTypes": {
         "apero": "Aperitif",
@@ -802,7 +813,33 @@
       "email": "E-Mails",
       "dev": "Entwicklung",
       "services": "Dittanbieter-Dienste",
-      "other": "Anderes"
+      "other": "Anderes",
+      "database": "Datenbank",
+      "api": "API-Dienste"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Vereinfachung großer Ereignisse",
+          "description": "Kompakter Modus für Mahlzeiten und Dienste sowie Navigation Tag für Tag für bessere Lesbarkeit hinzugefügt."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Überholung der Benutzeroberfläche und Dashboard",
+          "description": "Eine noch flüssigere Benutzeroberfläche und ein neues Dashboard für Ihre Ereignisse."
+        },
+        {
+          "date": "Dez 2025",
+          "title": "KI-gestütztes Einkaufen",
+          "description": "Automatische Generierung von Zutaten und Mengen, angepasst an die Anzahl der Gäste."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "CoList-Start",
+          "description": "Erste öffentliche Version, um Ihre Listen ohne Konto zu teilen."
+        }
+      ]
     }
   }
 }

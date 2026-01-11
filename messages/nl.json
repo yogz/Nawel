@@ -43,7 +43,8 @@
     "footerText": "Gemaakt met ✨ voor uw beste momenten.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Achter de schermen"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Gemaakt met ❤️ voor levensgenieters.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Contact"
+      "contact": "Contact",
+      "behindTheScenes": "Achter de schermen"
     }
   },
   "LandingC": {
@@ -300,7 +302,7 @@
     },
     "Planning": {
       "all": "Alle",
-      "common": "Gemeenschappelijk",
+      "common": "📦 Gemeenschappelijk",
       "noMeals": "Nog geen maaltijden.",
       "addMeal": "Maaltijd toevoegen",
       "addService": "Gang toevoegen",
@@ -356,7 +358,16 @@
       "check": "Aanvinken",
       "uncheck": "Uitvinken",
       "sources": "{count} bronnen",
-      "noItemsFor": "Geen items om te kopen voor {name}"
+      "noItemsFor": "Geen items om te kopen voor {name}",
+      "viewAllList": "Bekijk volledige lijst",
+      "allListTitle": "Globale boodschappenlijst",
+      "allListDescription": "Alle artikelen die door alle gasten gekocht moeten worden",
+      "back": "Terug",
+      "shareList": "Deel deze lijst",
+      "readOnlyNotice": "Alleen-lezen modus. Vraag om de bewerkingslink om artikelen af te vinken.",
+      "in": "In",
+      "seeLess": "Minder weergeven",
+      "seeSources": "Bron bekijken"
     },
     "Settings": {
       "ambiance": "Sfeer",
@@ -462,7 +473,7 @@
       "eventDeleted": "Evenement verwijderd ✓"
     },
     "Meal": {
-      "common": "Gemeenschappelijk",
+      "common": "📦 Gemeenschappelijk",
       "commonDesc": "Toiletartikelen, ontbijt of gedeelde benodigdheden.",
       "serviceTypes": {
         "apero": "Aperitief",
@@ -802,7 +813,33 @@
       "email": "E-mails",
       "dev": "Ontwikkeling",
       "services": "Diensten van derden",
-      "other": "Andere"
+      "other": "Andere",
+      "database": "Database",
+      "api": "API-diensten"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Vereenvoudiging van grote evenementen",
+          "description": "Compacte modus toegevoegd voor maaltijden en diensten, en dag-tot-dag navigatie voor betere leesbaarheid."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Interface-revisie en Dashboard",
+          "description": "Een nog soepelere interface en een nieuw dashboard voor uw evenementen."
+        },
+        {
+          "date": "Dec 2025",
+          "title": "AI-gestuurd winkelen",
+          "description": "Automatische generatie van ingrediënten en hoeveelheden aangepast aan het aantal gasten."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "Lancering van CoList",
+          "description": "Eerste publieke versie om uw lijsten te delen zonder account."
+        }
+      ]
     }
   }
 }

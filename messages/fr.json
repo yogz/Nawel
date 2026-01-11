@@ -473,7 +473,7 @@
       "eventDeleted": "Événement supprimé ✓"
     },
     "Meal": {
-      "common": "Communs",
+      "common": "📦 Communs",
       "commonDesc": "Papier toilette, produits d'hygiène, etc.",
       "serviceTypes": {
         "apero": "Apéro",
@@ -808,6 +808,30 @@
       "database": "Base de données",
       "api": "Services API",
       "other": "Autre"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Simplification des grands événements",
+          "description": "Ajout du mode compact pour les repas et services, et de la navigation par jour pour une meilleure lisibilité."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Refonte de l'interface et Dashboard",
+          "description": "Une interface encore plus fluide et un nouveau tableau de bord pour vos événements."
+        },
+        {
+          "date": "Dec 2025",
+          "title": "L'IA au service de vos courses",
+          "description": "Génération automatique des ingrédients et quantités adaptées au nombre d'invités."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "Lancement de CoList",
+          "description": "Première version publique pour partager vos listes sans compte."
+        }
+      ]
     }
   }
 }

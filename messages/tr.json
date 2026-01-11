@@ -44,7 +44,8 @@
     "footerText": "En güzel anlarınız için ✨ ile yapıldı.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "İletişim"
+      "contact": "İletişim",
+      "behindTheScenes": "Sahne arkası"
     }
   },
   "LandingAlt": {
@@ -72,7 +73,8 @@
     "footerText": "Yaşamayı sevenler için ❤️ ile yapıldı.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "İletişim"
+      "contact": "İletişim",
+      "behindTheScenes": "Sahne arkası"
     }
   },
   "LandingC": {
@@ -316,7 +318,9 @@
       "editMeal": "Yemeği düzenle",
       "editService": "Servisi düzenle",
       "addItem": "Ürün ekle",
-      "cancel": "İptal"
+      "cancel": "İptal",
+      "expand": "Genişlet",
+      "collapse": "Daralt"
     },
     "Service": {
       "editService": "{name} servisini düzenle",
@@ -355,7 +359,16 @@
       "check": "İşaretle",
       "uncheck": "İşareti kaldır",
       "sources": "{count} kaynak",
-      "noItemsFor": "{name} için alınacak ürün yok"
+      "noItemsFor": "{name} için alınacak ürün yok",
+      "viewAllList": "Tam listeyi gör",
+      "allListTitle": "Genel alışveriş listesi",
+      "allListDescription": "Tüm davetliler tarafından alınacak tüm ürünler",
+      "back": "Geri",
+      "shareList": "Bu listeyi paylaş",
+      "readOnlyNotice": "Salt okunur mod. Ürünleri işaretlemek için düzenleme bağlantısını isteyin.",
+      "in": "İçinde",
+      "seeLess": "Daha az gör",
+      "seeSources": "Kaynakları gör"
     },
     "Settings": {
       "ambiance": "Ambiyans",
@@ -793,7 +806,33 @@
       "email": "E-postalar",
       "dev": "Geliştirme",
       "services": "Üçüncü Taraf Hizmetleri",
+      "database": "Veritabanı",
+      "api": "API Hizmetleri",
       "other": "Diğer"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Oca 2026",
+          "title": "Büyük Etkinliklerin Basitleştirilmesi",
+          "description": "Öğünler ve hizmetler için kompakt mod ve daha iyi okunabilirlik için gün be gün navigasyon eklendi."
+        },
+        {
+          "date": "Oca 2026",
+          "title": "Arayüz Yenilemesi ve Kontrol Paneli",
+          "description": "Daha da pürüzsüz bir arayüz ve etkinlikleriniz için yeni bir kontrol paneli."
+        },
+        {
+          "date": "Ara 2025",
+          "title": "Yapay Zeka Destekli Alışveriş",
+          "description": "Davetli sayısına göre uyarlanmış malzemelerin ve miktarların otomatik oluşturulması."
+        },
+        {
+          "date": "Kas 2025",
+          "title": "CoList Lansmanı",
+          "description": "Hesap açmadan listelerinizi paylaşabileceğiniz ilk halka açık sürüm."
+        }
+      ]
     }
   }
 }

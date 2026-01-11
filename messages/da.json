@@ -43,7 +43,8 @@
     "footerText": "Lavet med ✨ til dine bedste øjeblikke.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bag kulisserne"
     }
   },
   "LandingAlt": {
@@ -71,7 +72,8 @@
     "footerText": "Lavet med ❤️ til bon vivants.",
     "footerLinks": {
       "instagram": "Instagram",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "behindTheScenes": "Bag kulisserne"
     }
   },
   "LandingC": {
@@ -315,7 +317,9 @@
       "editMeal": "Rediger måltid",
       "editService": "Rediger ret",
       "addItem": "Tilføj vare",
-      "cancel": "Annuller"
+      "cancel": "Annuller",
+      "expand": "Udfold",
+      "collapse": "Skjul"
     },
     "Service": {
       "editService": "Rediger ret {name}",
@@ -354,7 +358,16 @@
       "check": "Afkryds",
       "uncheck": "Fjern afkrydsning",
       "sources": "{count} kilder",
-      "noItemsFor": "Ingen varer at købe til {name}"
+      "noItemsFor": "Ingen varer at købe til {name}",
+      "viewAllList": "Se hele listen",
+      "allListTitle": "Global indkøbsliste",
+      "allListDescription": "Alle varer der skal købes af alle gæster",
+      "back": "Tilbage",
+      "shareList": "Del denne liste",
+      "readOnlyNotice": "Skrivebeskyttet tilstand. Bed om redigeringslinket for at afkrydse varer.",
+      "in": "I",
+      "seeLess": "Se mindre",
+      "seeSources": "Se kilder"
     },
     "Settings": {
       "ambiance": "Stemning",
@@ -800,7 +813,33 @@
       "email": "E-mails",
       "dev": "Udvikling",
       "services": "Tredjepartstjenester",
+      "database": "Database",
+      "api": "API-tjenester",
       "other": "Andet"
+    },
+    "changelog": {
+      "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Forenkling af store begivenheder",
+          "description": "Tilføjet kompakt tilstand for måltider og tjenester, og dag-til-dag navigation for bedre læsbarhed."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Gennemgang af brugerflade og dashboard",
+          "description": "En endnu mere flydende brugerflade og et nyt dashboard til dine begivenheder."
+        },
+        {
+          "date": "Dec 2025",
+          "title": "AI-drevet shopping",
+          "description": "Automatisk generering af ingredienser og mængder tilpasset antallet af gæster."
+        },
+        {
+          "date": "Nov 2025",
+          "title": "CoList lancering",
+          "description": "Første offentlige version til at dele dine lister uden en konto."
+        }
+      ]
     }
   }
 }
