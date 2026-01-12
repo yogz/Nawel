@@ -166,7 +166,7 @@ export function EventForm({
   const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
 
   const content = (
-    <div className="flex flex-col gap-5 overscroll-contain sm:gap-4">
+    <div className="flex flex-col gap-4 overscroll-contain sm:gap-4">
       {/* Progress indicator */}
       {!initialData && (
         <div className="flex gap-2">
@@ -174,7 +174,7 @@ export function EventForm({
             <div
               key={s}
               className={cn(
-                "h-2 flex-1 rounded-full transition-all duration-500 sm:h-1.5",
+                "h-1.5 flex-1 rounded-full transition-all duration-500 sm:h-1.5",
                 s <= step ? "bg-accent shadow-[0_0_8px_rgba(var(--accent-rgb),0.4)]" : "bg-gray-100"
               )}
             />
@@ -183,25 +183,25 @@ export function EventForm({
       )}
 
       {showWarnings && step === 1 && !isAuthenticated && (
-        <div className="space-y-3 rounded-2xl border border-accent/10 bg-accent/5 p-4 sm:rounded-[24px]">
-          <div className="flex gap-3 text-accent">
-            <Sparkles size={20} className="shrink-0 sm:h-[18px] sm:w-[18px]" />
-            <p className="text-sm font-medium leading-relaxed sm:text-xs">{t("warningAccount")}</p>
+        <div className="space-y-2 rounded-2xl border border-accent/10 bg-accent/5 p-3 sm:rounded-[24px]">
+          <div className="flex gap-2 text-accent">
+            <Sparkles size={18} className="shrink-0 sm:h-[18px] sm:w-[18px]" />
+            <p className="text-xs font-medium leading-relaxed sm:text-xs">{t("warningAccount")}</p>
           </div>
         </div>
       )}
 
       {/* Step 1: L'Essentiel */}
       {step === 1 && (
-        <div className="space-y-5 sm:space-y-4">
-          <div className="space-y-2.5 sm:space-y-2">
+        <div className="space-y-4 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-2">
             <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
               {t("eventNameLabel")}
             </Label>
             <div className="group relative">
               <Input
                 ref={nameRef}
-                className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200 sm:h-12"
+                className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200 sm:h-12"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => {
@@ -225,7 +225,7 @@ export function EventForm({
             <div className="relative">
               <Input
                 ref={addressRef}
-                className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 onKeyDown={(e) => {
@@ -240,7 +240,7 @@ export function EventForm({
                 enterKeyHint="next"
               />
               <MapPin
-                size={20}
+                size={18}
                 className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
               />
             </div>
@@ -267,7 +267,7 @@ export function EventForm({
                   enterKeyHint="next"
                 />
                 <Calendar
-                  size={20}
+                  size={18}
                   className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
                 />
               </div>
@@ -298,7 +298,7 @@ export function EventForm({
                   enterKeyHint="next"
                 />
                 <Clock
-                  size={20}
+                  size={18}
                   className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
                 />
               </div>
@@ -306,14 +306,14 @@ export function EventForm({
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2.5 sm:space-y-2">
+            <div className="space-y-2 sm:space-y-2">
               <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
                 {tShared("adultsLabel")}
               </Label>
               <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                <SelectTrigger className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
+                <SelectTrigger className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
                   <div className="flex items-center gap-2">
-                    <Users size={20} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
+                    <Users size={18} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
                     <SelectValue />
                   </div>
                 </SelectTrigger>
@@ -330,14 +330,14 @@ export function EventForm({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2.5 sm:space-y-2">
+            <div className="space-y-2 sm:space-y-2">
               <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
                 {tShared("childrenLabel")}
               </Label>
               <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-                <SelectTrigger className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
+                <SelectTrigger className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
                   <div className="flex items-center gap-2">
-                    <Users size={20} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
+                    <Users size={18} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
                     <SelectValue />
                   </div>
                 </SelectTrigger>
@@ -360,14 +360,14 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={onClose}
-              className="h-14 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 hover:bg-gray-50 active:scale-95 sm:h-12"
+              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 hover:bg-gray-50 active:scale-95 sm:h-12"
             >
               {t("cancelButton")}
             </Button>
             <Button
               onClick={initialData ? handleSubmit : goNext}
               disabled={!canGoNext() || isPending}
-              className="h-14 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90 active:scale-95 sm:h-12"
+              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90 active:scale-95 sm:h-12"
             >
               {isPending ? (
                 <Loader2 size={20} className="animate-spin sm:h-[18px] sm:w-[18px]" />
@@ -498,13 +498,13 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={goBack}
-              className="h-14 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
+              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
             >
               {t("backButton")}
             </Button>
             <Button
               onClick={goNext}
-              className="h-14 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
+              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
             >
               {t("nextButton")}
             </Button>
@@ -615,14 +615,14 @@ export function EventForm({
             <Button
               variant="outline"
               onClick={goBack}
-              className="h-14 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
+              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
             >
               {t("backButton")}
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={isPending || !name.trim()}
-              className="h-14 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
+              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
             >
               {isPending ? (
                 <Loader2 size={20} className="animate-spin sm:h-[18px] sm:w-[18px]" />
