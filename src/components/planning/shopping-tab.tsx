@@ -113,19 +113,36 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       });
     });
 
-    return aggregateShoppingList(flatList);
+    const aggregated = aggregateShoppingList(flatList);
+
+    // Group by category
+    const grouped: Record<string, AggregatedShoppingItem[]> = {};
+    aggregated.forEach((item) => {
+      // For ingredients, use the category from the first source
+      // For items (manual), default to "misc"
+      const category = (item.sources[0].ingredient as any)?.category || "misc";
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(item);
+    });
+
+    return grouped;
   }, [plan.meals, selectedPersonId, displayPerson, peopleWithItems]);
 
   // Calculate checked count with optimistic state
   const checkedCount = useMemo(() => {
-    return shoppingList.filter((item) => {
+    const allAggregated = Object.values(shoppingList).flat();
+    return allAggregated.filter((item) => {
       const isOptimisticallyToggled = optimisticToggles.has(item.id);
       return isOptimisticallyToggled ? !item.checked : item.checked;
     }).length;
   }, [shoppingList, optimisticToggles]);
 
+  const allItems = useMemo(() => Object.values(shoppingList).flat(), [shoppingList]);
+
   const progressPercent =
-    shoppingList.length > 0 ? Math.round((checkedCount / shoppingList.length) * 100) : 0;
+    allItems.length > 0 ? Math.round((checkedCount / allItems.length) * 100) : 0;
 
   // Optimistic toggle: update UI instantly, sync with server in background
   const handleToggle = useCallback(
@@ -536,8 +553,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               {displayPerson ? getDisplayName(displayPerson) : t("myList")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {checkedCount}/{shoppingList.length} {t("items")}{" "}
-              {t("bought", { count: checkedCount })}
+              {checkedCount}/{allItems.length} {t("items")} {t("bought", { count: checkedCount })}
             </p>
           </div>
           <div className="text-3xl font-black text-accent">{progressPercent}%</div>
@@ -561,83 +577,105 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         </Link>
       )}
 
-      {/* Shopping list */}
-      <div className="space-y-2">
-        {shoppingList.map((aggregatedItem) => {
-          // Use optimistic state for instant feedback
-          const isChecked = getEffectiveChecked(aggregatedItem);
-          const itemName = aggregatedItem.name;
+      {/* Shopping list grouped by category */}
+      <div className="space-y-6">
+        {Object.entries(shoppingList)
+          .sort(([catA], [catB]) => {
+            // Put 'misc' at the end
+            if (catA === "misc") return 1;
+            if (catB === "misc") return -1;
+            return catA.localeCompare(catB);
+          })
+          .map(([category, items]) => (
+            <div key={category} className="space-y-3">
+              <h3 className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
+                <span className="h-px flex-1 bg-gray-100" />
+                {t(`aisles.${category}` as any)}
+                <span className="h-px flex-1 bg-gray-100" />
+              </h3>
+              <div className="space-y-2">
+                {items.map((aggregatedItem) => {
+                  const isChecked = getEffectiveChecked(aggregatedItem);
+                  const itemName = aggregatedItem.name;
 
-          return (
-            <button
-              key={aggregatedItem.id}
-              type="button"
-              onClick={() => handleToggle(aggregatedItem)}
-              disabled={isPending}
-              aria-label={`${t(isChecked ? "uncheck" : "check")} ${itemName}`}
-              aria-pressed={isChecked}
-              className={clsx(
-                "group relative flex w-full items-start gap-4 overflow-hidden rounded-[24px] border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:p-4",
-                isChecked
-                  ? "border-green-200 bg-green-50 shadow-sm"
-                  : "border border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5"
-              )}
-            >
-              {/* Decorative background gradient */}
-              {!isChecked && (
-                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
-              )}
-              {/* Checkbox */}
-              <div
-                className={clsx(
-                  "relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 transition-all sm:h-6 sm:w-6",
-                  isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
-                )}
-              >
-                {isChecked && (
-                  <Check size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="relative z-10 min-w-0 flex-1">
-                <div className="flex items-baseline gap-2">
-                  <span
-                    className={clsx(
-                      "text-base font-semibold transition-all sm:text-base",
-                      isChecked ? "text-green-700 line-through" : "text-text"
-                    )}
-                  >
-                    {itemName}
-                  </span>
-                  {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                    <span className="text-sm text-muted-foreground sm:text-sm">
-                      {formatAggregatedQuantity(aggregatedItem.quantity, aggregatedItem.unit)}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 text-xs text-muted-foreground sm:text-xs">
-                  {aggregatedItem.sources.length > 1 ? (
-                    <span className="font-medium text-accent">
-                      {t("sources", { count: aggregatedItem.sources.length })}
-                    </span>
-                  ) : (
-                    <>
-                      {aggregatedItem.sources[0].type === "ingredient" && (
-                        <>
-                          <span className="font-medium">{aggregatedItem.sources[0].item.name}</span>
-                          {" · "}
-                        </>
+                  return (
+                    <button
+                      key={aggregatedItem.id}
+                      type="button"
+                      onClick={() => handleToggle(aggregatedItem)}
+                      disabled={isPending}
+                      aria-label={`${t(isChecked ? "uncheck" : "check") as string} ${itemName}`}
+                      aria-pressed={isChecked}
+                      className={clsx(
+                        "group relative flex w-full items-start gap-4 overflow-hidden rounded-[24px] border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:p-4",
+                        isChecked
+                          ? "border-green-200 bg-green-50 shadow-sm"
+                          : "border border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5"
                       )}
-                      {aggregatedItem.sources[0].mealTitle} ·{" "}
-                      {aggregatedItem.sources[0].serviceTitle}
-                    </>
-                  )}
-                </p>
+                    >
+                      {/* Decorative background gradient */}
+                      {!isChecked && (
+                        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+                      )}
+                      {/* Checkbox */}
+                      <div
+                        className={clsx(
+                          "relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 transition-all sm:h-6 sm:w-6",
+                          isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
+                        )}
+                      >
+                        {isChecked && (
+                          <Check size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="relative z-10 min-w-0 flex-1">
+                        <div className="flex items-baseline gap-2">
+                          <span
+                            className={clsx(
+                              "text-base font-semibold transition-all sm:text-base",
+                              isChecked ? "text-green-700 line-through" : "text-text"
+                            )}
+                          >
+                            {itemName}
+                          </span>
+                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                            <span className="text-sm text-muted-foreground sm:text-sm">
+                              {formatAggregatedQuantity(
+                                aggregatedItem.quantity,
+                                aggregatedItem.unit
+                              )}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-0.5 text-xs text-muted-foreground sm:text-xs">
+                          {aggregatedItem.sources.length > 1 ? (
+                            <span className="font-medium text-accent">
+                              {t("sources", { count: aggregatedItem.sources.length })}
+                            </span>
+                          ) : (
+                            <>
+                              {aggregatedItem.sources[0].type === "ingredient" && (
+                                <>
+                                  <span className="font-medium">
+                                    {aggregatedItem.sources[0].item.name}
+                                  </span>
+                                  {" · "}
+                                </>
+                              )}
+                              {aggregatedItem.sources[0].mealTitle} ·{" "}
+                              {aggregatedItem.sources[0].serviceTitle}
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-            </button>
-          );
-        })}
+            </div>
+          ))}
       </div>
     </div>
   );

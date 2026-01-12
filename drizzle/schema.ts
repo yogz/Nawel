@@ -212,6 +212,7 @@ export const ingredients = pgTable(
     quantity: text("quantity"),
     checked: boolean("checked").notNull().default(false),
     order: integer("order_index").notNull().default(0),
+    category: text("category"),
   },
   (table) => ({
     itemIdIdx: index("ingredients_item_id_idx").on(table.itemId),

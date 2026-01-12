@@ -230,6 +230,7 @@ export const generateIngredientsAction = createSafeAction(
               itemId: input.itemId,
               name: ing.name,
               quantity: ing.quantity || null,
+              category: ing.category || "misc",
               order: i,
             })
             .returning();

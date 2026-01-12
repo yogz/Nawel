@@ -28,9 +28,28 @@ const INGREDIENTS_SCHEMA = {
             type: "object",
             properties: {
               name: { type: "string", description: "Nom de l'ingrédient" },
-              quantity: { type: "string", description: "Quantité avec unité (ex: 200g, 2 pièces)" },
+              quantity: {
+                type: "string",
+                description: "Quantité avec unité (ex: 200g, 2 pièces)",
+              },
+              category: {
+                type: "string",
+                description: "Catégorie (slug)",
+                enum: [
+                  "fruits-vegetables",
+                  "meat-fish",
+                  "dairy-eggs",
+                  "bakery",
+                  "pantry-savory",
+                  "pantry-sweet",
+                  "beverages",
+                  "frozen",
+                  "household-cleaning",
+                  "misc",
+                ],
+              },
             },
-            required: ["name", "quantity"],
+            required: ["name", "quantity", "category"],
             additionalProperties: false,
           },
         },
@@ -97,6 +116,7 @@ async function callWithFallback(
 export interface GeneratedIngredient {
   name: string;
   quantity?: string;
+  category?: string;
 }
 
 // Sanitize user input to prevent prompt injection
@@ -123,13 +143,14 @@ function validateIngredients(data: unknown): GeneratedIngredient[] {
   }
   return data
     .filter(
-      (item): item is { name: string; quantity?: string } =>
+      (item): item is { name: string; quantity?: string; category?: string } =>
         typeof item === "object" &&
         item !== null &&
         typeof item.name === "string" &&
         item.name.length > 0 &&
         item.name.length < 100 &&
-        (item.quantity === undefined || typeof item.quantity === "string")
+        (item.quantity === undefined || typeof item.quantity === "string") &&
+        (item.category === undefined || typeof item.category === "string")
     )
     .slice(0, 15); // Max 15 ingredients
 }
