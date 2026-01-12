@@ -47,6 +47,7 @@ type IngredientData = {
   quantity: string | null;
   itemId: number;
   checked: boolean;
+  category: string | null;
 };
 
 type GenerateResult = { success: true; data: IngredientData[] } | { success: false; error: string };
