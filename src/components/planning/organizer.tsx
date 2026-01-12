@@ -310,6 +310,8 @@ export function Organizer({
             {tab === "people" && (
               <PeopleTab
                 plan={plan}
+                slug={slug}
+                writeKey={effectiveWriteKey}
                 selectedPerson={selectedPerson}
                 setSelectedPerson={setSelectedPerson}
                 setSheet={setSheet}

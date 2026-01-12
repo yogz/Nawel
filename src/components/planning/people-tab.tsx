@@ -7,10 +7,13 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { PersonAvatar } from "../common/person-avatar";
 
 interface PeopleTabProps {
   plan: PlanData;
+  slug: string;
+  writeKey?: string;
   selectedPerson: number | null;
   setSelectedPerson: (id: number | null) => void;
   setSheet: (sheet: Sheet) => void;
@@ -28,6 +31,8 @@ interface PersonItem {
 
 export function PeopleTab({
   plan,
+  slug,
+  writeKey,
   selectedPerson,
   setSelectedPerson,
   setSheet,
@@ -201,15 +206,18 @@ export function PeopleTab({
                       </p>
                     </div>
                     {personItems.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setSheet({ type: "shopping-list", person })}
+                      <Link
+                        href={
+                          writeKey
+                            ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
+                            : `/event/${slug}/shopping/${person.id}`
+                        }
                         aria-label={t("shoppingList")}
                         className="flex h-11 items-center gap-1.5 rounded-full bg-accent/10 px-3 py-2 text-xs font-semibold text-accent transition-colors hover:bg-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:h-auto sm:py-1.5"
                       >
                         <ShoppingCart size={16} className="sm:h-[14px] sm:w-[14px]" />
                         <span className="hidden sm:inline">{t("shoppingList")}</span>
-                      </button>
+                      </Link>
                     )}
                   </div>
                 </div>
