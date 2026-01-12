@@ -857,6 +857,16 @@
       "items": [
         {
           "date": "Jan 2026",
+          "title": "Classification par rayon",
+          "description": "La liste de courses s'organise désormais automatiquement par rayon pour vous faire gagner du temps en magasin."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Lancement public de CoList",
+          "description": "Après quelques mois de tests, CoList devient officiellement accessible à tous."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Simplification des grands événements",
           "description": "Ajout du mode compact pour les repas et services, et de la navigation par jour pour une meilleure lisibilité."
         },
@@ -866,19 +876,14 @@
           "description": "Lancement de cette page pour plus de transparence sur le projet et ses coûts."
         },
         {
-          "date": "Jan 2026",
-          "title": "Refonte de l'interface et Dashboard",
-          "description": "Une interface encore plus fluide et un nouveau tableau de bord pour vos événements."
-        },
-        {
           "date": "Dec 2025",
           "title": "L'IA au service de vos courses",
           "description": "Génération automatique des ingrédients et quantités adaptées au nombre d'invités."
         },
         {
           "date": "Nov 2025",
-          "title": "Lancement de CoList",
-          "description": "Première version publique pour partager vos listes sans compte."
+          "title": "Naissance de Nawel",
+          "description": "Création du site pour une utilisation familiale (Noël) et entre amis (31 décembre). L'application s'appelait alors Nawel."
         }
       ]
     }

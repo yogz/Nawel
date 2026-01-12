@@ -857,6 +857,16 @@
       "items": [
         {
           "date": "Jan 2026",
+          "title": "Aisle classification",
+          "description": "The shopping list is now automatically organized by aisle to save you time in the store."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Public launch of CoList",
+          "description": "After a few months of testing, CoList is now officially open to everyone."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Simplifying Large Events",
           "description": "Added compact mode for meals and services, and day-by-day navigation for better readability."
         },
@@ -866,19 +876,14 @@
           "description": "Launch of this page for more transparency about the project and its costs."
         },
         {
-          "date": "Jan 2026",
-          "title": "Interface Overhaul and Dashboard",
-          "description": "An even smoother interface and a new dashboard for your events."
-        },
-        {
           "date": "Dec 2025",
           "title": "AI-Powered Shopping",
           "description": "Automatic generation of ingredients and quantities adapted to the number of guests."
         },
         {
           "date": "Nov 2025",
-          "title": "CoList Launch",
-          "description": "First public version to share your lists without an account."
+          "title": "Birth of Nawel",
+          "description": "Creation of the site for family use (Christmas) and with friends (New Year's Eve). The app was then named Nawel."
         }
       ]
     }
