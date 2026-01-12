@@ -99,6 +99,44 @@
     }
   }
 
+  /* Reduced motion: disable expensive animations for accessibility + performance */
+  @media (prefers-reduced-motion: reduce) {
+    .theme-aurora::before,
+    .theme-aurora::after,
+    .theme-christmas::before,
+    .theme-christmas::after {
+      animation: none !important;
+      filter: blur(20px) !important;
+    }
+
+    .premium-card,
+    .premium-card:hover {
+      transition: none !important;
+      transform: none !important;
+    }
+
+    .btn-shine::after,
+    .btn-shine-attention::after,
+    .btn-festive::before {
+      animation: none !important;
+    }
+
+    @keyframes aurora-mesh {
+      0%,
+      100% {
+        transform: none;
+      }
+    }
+
+    @keyframes aurora-floats {
+      0%,
+      100% {
+        opacity: 0.6;
+        filter: blur(20px);
+      }
+    }
+  }
+
   /* Shared Interactive Components Logic */
   .premium-card {
     background: var(--card-bg, white);

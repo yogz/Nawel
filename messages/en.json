@@ -3,6 +3,7 @@
     "title": "CoList",
     "loading": "Loading...",
     "save": "Save",
+    "back": "Back",
     "languages": {
       "fr": "Français",
       "en": "English",
