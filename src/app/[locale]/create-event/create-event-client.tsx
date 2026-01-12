@@ -68,25 +68,25 @@ export default function CreateEventClient() {
 
   return (
     <main
-      className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-4 sm:px-6 sm:py-12"
+      className="mx-auto flex min-h-[100dvh] max-w-2xl flex-col justify-center px-4 py-4 sm:px-6 sm:py-12"
       style={{
-        paddingTop: `calc(1rem + env(safe-area-inset-top, 0px))`,
-        paddingBottom: `calc(1rem + env(safe-area-inset-bottom, 0px))`,
+        paddingTop: `calc(0.5rem + env(safe-area-inset-top, 0px))`,
+        paddingBottom: `calc(0.5rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      <div className="mb-4 sm:mb-8">
+      <div className="mb-2 sm:mb-8">
         <AppBranding logoSize={32} textSize="md" />
       </div>
 
       <Link
         href={session ? "/event" : "/login?mode=user"}
-        className="mb-4 flex min-h-[44px] touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8 sm:min-h-0"
+        className="mb-2 flex min-h-[44px] touch-manipulation items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-accent active:scale-95 sm:mb-8 sm:min-h-0"
       >
         <ArrowLeft size={18} className="sm:h-4 sm:w-4" />
         {session ? tDashboard("title") : t("backToLogin")}
       </Link>
 
-      <div className="mb-4 space-y-2 sm:mb-10 sm:space-y-4">
+      <div className="mb-3 space-y-1 sm:mb-10 sm:space-y-4">
         <h1 className="text-xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
       </div>
 
