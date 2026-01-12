@@ -255,7 +255,7 @@ export function EventForm({
                 <Input
                   ref={dateRef}
                   type="date"
-                  className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                  className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   onKeyDown={(e) => {
@@ -280,7 +280,7 @@ export function EventForm({
                 <Input
                   ref={timeRef}
                   type="time"
-                  className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                  className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   onKeyDown={(e) => {
