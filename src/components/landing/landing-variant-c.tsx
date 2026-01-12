@@ -57,17 +57,38 @@ export function LandingVariantC() {
 
   const rotationVariants = [
     {
-      title: t("heroOptionATitle"),
+      title: (
+        <>
+          {t("heroOptionATitle")} <br />
+          <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+            {t("heroOptionAHighlight")}
+          </span>
+        </>
+      ),
       description: t("heroOptionASubhead"),
       primaryCtaText: t("heroOptionACTA"),
     },
     {
-      title: t("heroOptionBTitle"),
+      title: (
+        <>
+          {t("heroOptionBTitle")} <br />
+          <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+            {t("heroOptionBHighlight")}
+          </span>
+        </>
+      ),
       description: t("heroOptionBSubhead"),
       primaryCtaText: t("heroOptionBCTA"),
     },
     {
-      title: t("heroOptionCTitle"),
+      title: (
+        <>
+          {t("heroOptionCTitle")} <br />
+          <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+            {t("heroOptionCHighlight")}
+          </span>
+        </>
+      ),
       description: t("heroOptionCSubhead"),
       primaryCtaText: t("heroOptionCCTA"),
     },
@@ -102,7 +123,7 @@ export function LandingVariantC() {
         badgeColor="red" // Using red/orange theme
         gradientStyle="default"
         rotationVariants={rotationVariants}
-        rotationInterval={5000}
+        rotationInterval={8000}
       />
 
       {/* 2. Social Proof Bar: Trust */}
