@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, Share2, ShoppingBag, CheckCircle, ChevronDown } from "lucide-react";
 import clsx from "clsx";
@@ -14,24 +15,6 @@ import {
   formatAggregatedQuantity,
   type AggregatedShoppingItem,
 } from "@/lib/shopping-utils";
-
-// Category labels mapping (fallback for when translations aren't available)
-const CATEGORY_LABELS: Record<string, string> = {
-  "fruits-vegetables": "Fruits & Vegetables",
-  "meat-fish": "Meat & Fish",
-  "dairy-eggs": "Dairy & Eggs",
-  bakery: "Bakery",
-  "pantry-savory": "Pantry (Savory)",
-  "pantry-sweet": "Pantry (Sweet)",
-  beverages: "Beverages",
-  frozen: "Frozen",
-  "household-cleaning": "Household & Cleaning",
-  misc: "Miscellaneous",
-};
-
-function getCategoryLabel(category: string): string {
-  return CATEGORY_LABELS[category] || category;
-}
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -49,6 +32,8 @@ export function ShoppingPage({
   writeEnabled,
 }: ShoppingPageProps) {
   const _router = useRouter();
+  const t = useTranslations("EventDashboard.Shopping");
+  const tPlanning = useTranslations("EventDashboard.Planning");
   const [plan, setPlan] = useState(initialPlan);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
@@ -256,7 +241,7 @@ export function ShoppingPage({
             className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-text"
           >
             <ArrowLeft size={18} />
-            <span className="hidden sm:inline">Retour</span>
+            <span className="hidden sm:inline">{t("back")}</span>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -280,11 +265,11 @@ export function ShoppingPage({
             </div>
             <div>
               <h1 className="text-sm font-semibold text-text">{getDisplayName(person)}</h1>
-              <p className="text-xs text-muted-foreground">Liste de courses</p>
+              <p className="text-xs text-muted-foreground">{t("allListTitle")}</p>
             </div>
           </div>
 
-          <Button variant="ghost" size="sm" onClick={handleShare} aria-label="Partager cette liste">
+          <Button variant="ghost" size="sm" onClick={handleShare} aria-label={t("shareList")}>
             {copied ? <CheckCircle size={18} className="text-green-500" /> : <Share2 size={18} />}
           </Button>
         </div>
@@ -295,12 +280,10 @@ export function ShoppingPage({
         <div className="mb-6 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-lg backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Progression</p>
+              <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
               <p className="text-2xl font-bold text-text">
                 {checkedCount}/{allItems.length}
-                <span className="ml-2 text-sm font-normal text-muted-foreground">
-                  article{allItems.length > 1 ? "s" : ""}
-                </span>
+                <span className="ml-2 text-sm font-normal text-muted-foreground">{t("items")}</span>
               </p>
             </div>
             <div className="text-right">
@@ -338,7 +321,7 @@ export function ShoppingPage({
                 />
               )}
               <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-                Tout ({checkedCount}/{allItems.length})
+                {tPlanning("all")} ({checkedCount}/{allItems.length})
               </span>
               {activeCategory === "all" && (
                 <motion.div
@@ -365,7 +348,7 @@ export function ShoppingPage({
                   />
                 )}
                 <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-                  {getCategoryLabel(cat)} ({categoryStats[cat]?.checked || 0}/
+                  {t(`aisles.${cat}`)} ({categoryStats[cat]?.checked || 0}/
                   {categoryStats[cat]?.total || 0})
                 </span>
                 {activeCategory === cat && (
@@ -383,7 +366,7 @@ export function ShoppingPage({
         {allItems.length === 0 ? (
           <div className="rounded-2xl border border-white/20 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm">
             <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-            <p className="text-muted-foreground">Aucun article assigné</p>
+            <p className="text-muted-foreground">{t("noShoppingUserDesc")}</p>
           </div>
         ) : (
           <div className="space-y-6">
@@ -405,7 +388,7 @@ export function ShoppingPage({
                     >
                       <span className="h-px flex-1 bg-gray-200" />
                       <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/70 transition-colors hover:text-accent">
-                        {getCategoryLabel(category)} ({categoryStats[category]?.checked || 0}/
+                        {t(`aisles.${category}`)} ({categoryStats[category]?.checked || 0}/
                         {categoryStats[category]?.total || 0})
                         <motion.div animate={{ rotate: isCollapsed ? -90 : 0 }}>
                           <ChevronDown size={14} />
@@ -443,7 +426,7 @@ export function ShoppingPage({
                               <button
                                 onClick={() => handleToggle(aggregatedItem)}
                                 disabled={isPending || !writeEnabled}
-                                aria-label={`${isChecked ? "Décocher" : "Cocher"} ${aggregatedItem.name}`}
+                                aria-label={`${isChecked ? t("uncheck") : t("check")} ${aggregatedItem.name}`}
                                 aria-pressed={isChecked}
                                 className={clsx(
                                   "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
@@ -482,7 +465,7 @@ export function ShoppingPage({
                                     <button
                                       onClick={() => toggleExpanded(aggregatedItem.id)}
                                       className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
-                                      aria-label={isExpanded ? "Voir moins" : "Voir les sources"}
+                                      aria-label={isExpanded ? t("seeLess") : t("seeSources")}
                                     >
                                       <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
                                         <ChevronDown size={14} className="text-muted-foreground" />
@@ -495,7 +478,7 @@ export function ShoppingPage({
                                   <p className="mt-0.5 truncate text-xs text-muted-foreground">
                                     {hasMultipleSources ? (
                                       <span className="font-medium text-accent">
-                                        {aggregatedItem.sources.length} sources
+                                        {t("sources", { count: aggregatedItem.sources.length })}
                                       </span>
                                     ) : (
                                       <>
@@ -530,7 +513,9 @@ export function ShoppingPage({
                                           <p className="truncate text-xs font-medium text-text">
                                             {source.type === "ingredient" ? (
                                               <>
-                                                <span className="text-muted-foreground">Dans</span>{" "}
+                                                <span className="text-muted-foreground">
+                                                  {t("in")}
+                                                </span>{" "}
                                                 {source.item.name}
                                               </>
                                             ) : (
@@ -565,7 +550,7 @@ export function ShoppingPage({
         {/* Read-only notice */}
         {!writeEnabled && allItems.length > 0 && (
           <div className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-700">
-            Mode lecture seule. Demandez le lien d&apos;édition pour cocher les articles.
+            {t("readOnlyNotice")}
           </div>
         )}
       </main>
