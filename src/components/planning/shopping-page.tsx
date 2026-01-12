@@ -15,6 +15,24 @@ import {
   type AggregatedShoppingItem,
 } from "@/lib/shopping-utils";
 
+// Category labels mapping (fallback for when translations aren't available)
+const CATEGORY_LABELS: Record<string, string> = {
+  "fruits-vegetables": "Fruits & Vegetables",
+  "meat-fish": "Meat & Fish",
+  "dairy-eggs": "Dairy & Eggs",
+  bakery: "Bakery",
+  "pantry-savory": "Pantry (Savory)",
+  "pantry-sweet": "Pantry (Sweet)",
+  beverages: "Beverages",
+  frozen: "Frozen",
+  "household-cleaning": "Household & Cleaning",
+  misc: "Miscellaneous",
+};
+
+function getCategoryLabel(category: string): string {
+  return CATEGORY_LABELS[category] || category;
+}
+
 interface ShoppingPageProps {
   initialPlan: PlanData;
   person: Person;
@@ -36,7 +54,7 @@ export function ShoppingPage({
   const [copied, setCopied] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  // Build shopping list from person's assigned items
+  // Build shopping list from person's assigned items, grouped by category
   const shoppingList = useMemo(() => {
     const flatList: {
       type: "ingredient" | "item";
@@ -78,13 +96,28 @@ export function ShoppingPage({
       });
     });
 
-    return aggregateShoppingList(flatList);
+    const aggregated = aggregateShoppingList(flatList);
+
+    // Group by category
+    const grouped: Record<string, AggregatedShoppingItem[]> = {};
+    aggregated.forEach((item) => {
+      // For ingredients, use the category from the first source
+      // For items (manual), default to "misc"
+      const category = (item.sources[0].ingredient as any)?.category || "misc";
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(item);
+    });
+
+    return grouped;
   }, [plan.meals, person.id]);
 
-  const checkedCount = shoppingList.filter((item) => item.checked).length;
+  const allItems = useMemo(() => Object.values(shoppingList).flat(), [shoppingList]);
+  const checkedCount = allItems.filter((item) => item.checked).length;
 
   const progressPercent =
-    shoppingList.length > 0 ? Math.round((checkedCount / shoppingList.length) * 100) : 0;
+    allItems.length > 0 ? Math.round((checkedCount / allItems.length) * 100) : 0;
 
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => {
@@ -232,9 +265,9 @@ export function ShoppingPage({
             <div>
               <p className="text-sm font-medium text-muted-foreground">Progression</p>
               <p className="text-2xl font-bold text-text">
-                {checkedCount}/{shoppingList.length}
+                {checkedCount}/{allItems.length}
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
-                  article{shoppingList.length > 1 ? "s" : ""}
+                  article{allItems.length > 1 ? "s" : ""}
                 </span>
               </p>
             </div>
@@ -254,149 +287,172 @@ export function ShoppingPage({
           </div>
         </div>
 
-        {/* Shopping list */}
-        {shoppingList.length === 0 ? (
+        {/* Shopping list grouped by category */}
+        {allItems.length === 0 ? (
           <div className="rounded-2xl border border-white/20 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm">
             <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-gray-300" />
             <p className="text-muted-foreground">Aucun article assigné</p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {shoppingList.map((aggregatedItem, idx) => {
-              const isChecked = aggregatedItem.checked;
-              const isExpanded = expandedItems.has(aggregatedItem.id);
-              const hasMultipleSources = aggregatedItem.sources.length > 1;
+          <div className="space-y-6">
+            {Object.entries(shoppingList)
+              .sort(([catA], [catB]) => {
+                // Put 'misc' at the end
+                if (catA === "misc") return 1;
+                if (catB === "misc") return -1;
+                return catA.localeCompare(catB);
+              })
+              .map(([category, items]) => (
+                <div key={category} className="space-y-3">
+                  <h3 className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
+                    <span className="h-px flex-1 bg-gray-200" />
+                    {getCategoryLabel(category)}
+                    <span className="h-px flex-1 bg-gray-200" />
+                  </h3>
+                  <div className="space-y-3">
+                    {items.map((aggregatedItem, idx) => {
+                      const isChecked = aggregatedItem.checked;
+                      const isExpanded = expandedItems.has(aggregatedItem.id);
+                      const hasMultipleSources = aggregatedItem.sources.length > 1;
 
-              return (
-                <div key={aggregatedItem.id} className="space-y-2">
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.02 }}
-                    className={clsx(
-                      "group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
-                      isChecked
-                        ? "border-green-200 bg-green-50 shadow-sm"
-                        : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
-                      !writeEnabled && "cursor-default"
-                    )}
-                  >
-                    {/* Checkbox */}
-                    <button
-                      onClick={() => handleToggle(aggregatedItem)}
-                      disabled={isPending || !writeEnabled}
-                      aria-label={`${isChecked ? "Décocher" : "Cocher"} ${aggregatedItem.name}`}
-                      aria-pressed={isChecked}
-                      className={clsx(
-                        "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
-                        isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300",
-                        !writeEnabled && "cursor-default"
-                      )}
-                    >
-                      {isChecked && <Check size={14} strokeWidth={3} />}
-                    </button>
-
-                    {/* Content */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <div className="flex items-baseline gap-2 overflow-hidden">
-                          <span
+                      return (
+                        <div key={aggregatedItem.id} className="space-y-2">
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.02 }}
                             className={clsx(
-                              "truncate text-base font-semibold",
-                              isChecked ? "text-green-700 line-through" : "text-text"
+                              "group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
+                              isChecked
+                                ? "border-green-200 bg-green-50 shadow-sm"
+                                : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
+                              !writeEnabled && "cursor-default"
                             )}
                           >
-                            {aggregatedItem.name}
-                          </span>
-                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                            <span className="shrink-0 text-sm font-medium text-muted-foreground">
-                              {formatAggregatedQuantity(
-                                aggregatedItem.quantity,
-                                aggregatedItem.unit
+                            {/* Checkbox */}
+                            <button
+                              onClick={() => handleToggle(aggregatedItem)}
+                              disabled={isPending || !writeEnabled}
+                              aria-label={`${isChecked ? "Décocher" : "Cocher"} ${aggregatedItem.name}`}
+                              aria-pressed={isChecked}
+                              className={clsx(
+                                "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
+                                isChecked
+                                  ? "border-green-500 bg-green-500 text-white"
+                                  : "border-gray-300",
+                                !writeEnabled && "cursor-default"
                               )}
-                            </span>
-                          )}
-                        </div>
+                            >
+                              {isChecked && <Check size={14} strokeWidth={3} />}
+                            </button>
 
-                        {hasMultipleSources && (
-                          <button
-                            onClick={() => toggleExpanded(aggregatedItem.id)}
-                            className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
-                            aria-label={isExpanded ? "Voir moins" : "Voir les sources"}
-                          >
-                            <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
-                              <ChevronDown size={14} className="text-muted-foreground" />
-                            </motion.div>
-                          </button>
-                        )}
-                      </div>
-
-                      {!isExpanded && (
-                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          {hasMultipleSources ? (
-                            <span className="font-medium text-accent">
-                              {aggregatedItem.sources.length} sources
-                            </span>
-                          ) : (
-                            <>
-                              {aggregatedItem.sources[0].type === "ingredient" && (
-                                <>
-                                  <span className="font-medium">
-                                    {aggregatedItem.sources[0].item.name}
+                            {/* Content */}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-baseline justify-between gap-2">
+                                <div className="flex items-baseline gap-2 overflow-hidden">
+                                  <span
+                                    className={clsx(
+                                      "truncate text-base font-semibold",
+                                      isChecked ? "text-green-700 line-through" : "text-text"
+                                    )}
+                                  >
+                                    {aggregatedItem.name}
                                   </span>
-                                  {" · "}
-                                </>
-                              )}
-                              {aggregatedItem.sources[0].mealTitle} ·{" "}
-                              {aggregatedItem.sources[0].serviceTitle}
-                            </>
-                          )}
-                        </p>
-                      )}
+                                  {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                                    <span className="shrink-0 text-sm font-medium text-muted-foreground">
+                                      {formatAggregatedQuantity(
+                                        aggregatedItem.quantity,
+                                        aggregatedItem.unit
+                                      )}
+                                    </span>
+                                  )}
+                                </div>
 
-                      {/* Expanded View */}
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          className="mt-3 space-y-2 border-t border-black/5 pt-3"
-                        >
-                          {aggregatedItem.sources.map((source, sIdx) => (
-                            <div key={sIdx} className="flex items-center justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-xs font-medium text-text">
-                                  {source.type === "ingredient" ? (
-                                    <>
-                                      <span className="text-muted-foreground">Dans</span>{" "}
-                                      {source.item.name}
-                                    </>
+                                {hasMultipleSources && (
+                                  <button
+                                    onClick={() => toggleExpanded(aggregatedItem.id)}
+                                    className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
+                                    aria-label={isExpanded ? "Voir moins" : "Voir les sources"}
+                                  >
+                                    <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
+                                      <ChevronDown size={14} className="text-muted-foreground" />
+                                    </motion.div>
+                                  </button>
+                                )}
+                              </div>
+
+                              {!isExpanded && (
+                                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                                  {hasMultipleSources ? (
+                                    <span className="font-medium text-accent">
+                                      {aggregatedItem.sources.length} sources
+                                    </span>
                                   ) : (
-                                    source.mealTitle
+                                    <>
+                                      {aggregatedItem.sources[0].type === "ingredient" && (
+                                        <>
+                                          <span className="font-medium">
+                                            {aggregatedItem.sources[0].item.name}
+                                          </span>
+                                          {" · "}
+                                        </>
+                                      )}
+                                      {aggregatedItem.sources[0].mealTitle} ·{" "}
+                                      {aggregatedItem.sources[0].serviceTitle}
+                                    </>
                                   )}
                                 </p>
-                                <p className="truncate text-[10px] text-muted-foreground">
-                                  {source.mealTitle} · {source.serviceTitle}
-                                </p>
-                              </div>
-                              {source.originalQuantity && (
-                                <span className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                                  {source.originalQuantity}
-                                </span>
+                              )}
+
+                              {/* Expanded View */}
+                              {isExpanded && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  className="mt-3 space-y-2 border-t border-black/5 pt-3"
+                                >
+                                  {aggregatedItem.sources.map((source, sIdx) => (
+                                    <div
+                                      key={sIdx}
+                                      className="flex items-center justify-between gap-2"
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <p className="truncate text-xs font-medium text-text">
+                                          {source.type === "ingredient" ? (
+                                            <>
+                                              <span className="text-muted-foreground">Dans</span>{" "}
+                                              {source.item.name}
+                                            </>
+                                          ) : (
+                                            source.mealTitle
+                                          )}
+                                        </p>
+                                        <p className="truncate text-[10px] text-muted-foreground">
+                                          {source.mealTitle} · {source.serviceTitle}
+                                        </p>
+                                      </div>
+                                      {source.originalQuantity && (
+                                        <span className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                                          {source.originalQuantity}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </motion.div>
                               )}
                             </div>
-                          ))}
-                        </motion.div>
-                      )}
-                    </div>
-                  </motion.div>
+                          </motion.div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              );
-            })}
+              ))}
           </div>
         )}
 
         {/* Read-only notice */}
-        {!writeEnabled && shoppingList.length > 0 && (
+        {!writeEnabled && allItems.length > 0 && (
           <div className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-700">
             Mode lecture seule. Demandez le lien d&apos;édition pour cocher les articles.
           </div>
