@@ -45,14 +45,8 @@ const nextConfig = {
             process.cwd(),
             "node_modules/@floating-ui/react-dom"
           ),
-          "@floating-ui/dom": path.resolve(
-            process.cwd(),
-            "node_modules/@floating-ui/dom"
-          ),
-          "@floating-ui/core": path.resolve(
-            process.cwd(),
-            "node_modules/@floating-ui/core"
-          ),
+          "@floating-ui/dom": path.resolve(process.cwd(), "node_modules/@floating-ui/dom"),
+          "@floating-ui/core": path.resolve(process.cwd(), "node_modules/@floating-ui/core"),
         };
       } catch (e) {
         // If resolve fails, continue without alias

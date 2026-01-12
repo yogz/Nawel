@@ -32,9 +32,11 @@ async function convertToWebP({ file, maxWidth, quality }) {
     fs.writeFileSync(webpPath, buffer);
 
     const webpSize = buffer.length;
-    const savings = ((originalSize - webpSize) / originalSize * 100).toFixed(1);
+    const savings = (((originalSize - webpSize) / originalSize) * 100).toFixed(1);
 
-    console.log(`✅ ${file} → ${file.replace('.png', '.webp')}: ${(originalSize/1024).toFixed(0)}KB → ${(webpSize/1024).toFixed(0)}KB (-${savings}%)`);
+    console.log(
+      `✅ ${file} → ${file.replace(".png", ".webp")}: ${(originalSize / 1024).toFixed(0)}KB → ${(webpSize / 1024).toFixed(0)}KB (-${savings}%)`
+    );
   } catch (error) {
     console.error(`❌ Error converting ${file}:`, error.message);
   }
@@ -56,7 +58,7 @@ async function removeDuplicates() {
     if (fs.existsSync(filePath)) {
       const size = fs.statSync(filePath).size;
       fs.unlinkSync(filePath);
-      console.log(`🗑️  Removed ${file} (${(size/1024).toFixed(0)}KB)`);
+      console.log(`🗑️  Removed ${file} (${(size / 1024).toFixed(0)}KB)`);
     }
   }
 }
@@ -72,8 +74,9 @@ async function main() {
 
   // Summary
   console.log("\n📊 Final sizes in /public:");
-  const files = fs.readdirSync(PUBLIC_DIR)
-    .filter(f => f.endsWith('.png') || f.endsWith('.webp') || f.endsWith('.ico'))
+  const files = fs
+    .readdirSync(PUBLIC_DIR)
+    .filter((f) => f.endsWith(".png") || f.endsWith(".webp") || f.endsWith(".ico"))
     .sort();
 
   let totalSize = 0;
@@ -81,7 +84,7 @@ async function main() {
     const size = fs.statSync(path.join(PUBLIC_DIR, file)).size;
     totalSize += size;
   }
-  console.log(`\n📦 Total image assets: ${(totalSize/1024/1024).toFixed(2)}MB\n`);
+  console.log(`\n📦 Total image assets: ${(totalSize / 1024 / 1024).toFixed(2)}MB\n`);
 }
 
 main().catch(console.error);

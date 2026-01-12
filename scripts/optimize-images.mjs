@@ -50,7 +50,7 @@ async function optimizeImage({ file, maxWidth, quality }) {
     if (shouldResize) {
       pipeline = pipeline.resize(maxWidth, null, {
         withoutEnlargement: true,
-        fit: "inside"
+        fit: "inside",
       });
     }
 
@@ -59,16 +59,18 @@ async function optimizeImage({ file, maxWidth, quality }) {
       .png({
         quality,
         compressionLevel: 9,
-        palette: true // Use palette-based PNG when possible
+        palette: true, // Use palette-based PNG when possible
       })
       .toBuffer();
 
     fs.writeFileSync(outputPath, buffer);
 
     const newSize = buffer.length;
-    const savings = ((originalSize - newSize) / originalSize * 100).toFixed(1);
+    const savings = (((originalSize - newSize) / originalSize) * 100).toFixed(1);
 
-    console.log(`✅ ${file}: ${(originalSize/1024).toFixed(0)}KB → ${(newSize/1024).toFixed(0)}KB (-${savings}%)`);
+    console.log(
+      `✅ ${file}: ${(originalSize / 1024).toFixed(0)}KB → ${(newSize / 1024).toFixed(0)}KB (-${savings}%)`
+    );
   } catch (error) {
     console.error(`❌ Error optimizing ${file}:`, error.message);
   }
@@ -96,7 +98,9 @@ async function createOptimizedFavicon() {
     fs.writeFileSync(favicon32Path, buffer);
 
     const originalSize = fs.existsSync(faviconPath) ? fs.statSync(faviconPath).size : 0;
-    console.log(`✅ favicon-32x32.png created: ${(buffer.length/1024).toFixed(0)}KB (original ico was ${(originalSize/1024).toFixed(0)}KB)`);
+    console.log(
+      `✅ favicon-32x32.png created: ${(buffer.length / 1024).toFixed(0)}KB (original ico was ${(originalSize / 1024).toFixed(0)}KB)`
+    );
   } catch (error) {
     console.error("❌ Error creating favicon:", error.message);
   }
@@ -121,7 +125,7 @@ async function createPWAIcons() {
 
       const outputPath = path.join(PUBLIC_DIR, `icon-${size}.png`);
       fs.writeFileSync(outputPath, buffer);
-      console.log(`✅ icon-${size}.png: ${(buffer.length/1024).toFixed(0)}KB`);
+      console.log(`✅ icon-${size}.png: ${(buffer.length / 1024).toFixed(0)}KB`);
     } catch (error) {
       console.error(`❌ Error creating icon-${size}.png:`, error.message);
     }

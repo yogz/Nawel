@@ -10,6 +10,8 @@ import { trackDiscoverClick } from "@/lib/analytics";
 import { AuthNavButton } from "./auth-nav-button";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
+import { authClient } from "@/lib/auth-client";
 
 interface HeroSectionProps {
   heroOpacity: MotionValue<number>;
@@ -55,6 +57,7 @@ export function HeroSection({
   rotationInterval = 5000,
 }: HeroSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { data: session } = authClient.useSession();
 
   useEffect(() => {
     if (!rotationVariants || rotationVariants.length <= 1) return;
@@ -89,6 +92,14 @@ export function HeroSection({
     >
       <div className="absolute right-6 top-6 z-50 flex items-center gap-3">
         <AuthNavButton />
+        {!session && (
+          <Link
+            href="/login"
+            className="flex h-10 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-900 transition-all hover:bg-gray-50 active:scale-95"
+          >
+            {useTranslations("Login")("signinButton")}
+          </Link>
+        )}
         <LanguageSelector variant="compact" showSearch />
       </div>
       <div className="absolute inset-0 -z-10">

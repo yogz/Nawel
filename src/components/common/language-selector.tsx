@@ -191,14 +191,12 @@ export function LanguageSelector({
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "flex h-10 items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95",
+              "flex h-10 items-center justify-center rounded-xl border border-gray-200 bg-white px-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 active:scale-95",
               className
             )}
             aria-label="Changer la langue"
           >
-            <Globe size={16} />
-            <span className="text-lg">{LANGUAGE_META[locale]?.flag}</span>
-            <span className="hidden sm:inline">{LANGUAGE_META[locale]?.nativeName}</span>
+            <span className="text-xl leading-none">{LANGUAGE_META[locale]?.flag}</span>
           </button>
         </PopoverTrigger>
 
