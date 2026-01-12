@@ -26,21 +26,21 @@ export function LandingVariantB() {
       title: t("feature3Title"),
       description: t("feature3Description"),
       icon: <CheckCircle2 className="h-6 w-6" />,
-      image: "/alt_guests.png",
+      image: "/alt_guests.webp",
     },
     {
       id: "shopping",
       title: t("feature2Title"),
       description: t("feature2Description"),
       icon: <ShoppingBasket className="h-6 w-6" />,
-      image: "/alt_shopping.png",
+      image: "/alt_shopping.webp",
     },
     {
       id: "ai-chef",
       title: t("feature1Title"),
       description: t("feature1Description"),
       icon: <Wand2 className="h-6 w-6" />,
-      image: "/alt_ai_chef.png",
+      image: "/alt_ai_chef.webp",
       tag: t("feature1Tag"),
     },
     {
@@ -58,7 +58,7 @@ export function LandingVariantB() {
         heroOpacity={heroOpacity}
         heroScale={heroScale}
         variant="landing-alt"
-        heroImage="/alt_hero.png"
+        heroImage="/alt_hero.webp"
         badge={t("badge")}
         title={
           <>
