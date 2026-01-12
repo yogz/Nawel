@@ -865,18 +865,23 @@
       "items": [
         {
           "date": "Jan 2026",
+          "title": "Classificatie per gangpad",
+          "description": "De boodschappenlijst wordt nu automatisch georganiseerd per gangpad om tijd te besparen in de winkel."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Vereenvoudiging van grote evenementen",
           "description": "Compacte modus toegevoegd voor maaltijden en diensten, en dag-tot-dag navigatie voor betere leesbaarheid."
         },
         {
           "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Achter de schermen",
+          "description": "Lancering van deze pagina voor meer transparantie over het project en de kosten."
         },
         {
           "date": "Jan 2026",
-          "title": "Interface-revisie en Dashboard",
-          "description": "Een nog soepelere interface en een nieuw dashboard voor uw evenementen."
+          "title": "Publieke lancering van CoList",
+          "description": "Na een paar maanden testen is CoList nu officieel open voor iedereen."
         },
         {
           "date": "Dec 2025",
@@ -885,8 +890,8 @@
         },
         {
           "date": "Nov 2025",
-          "title": "Lancering van CoList",
-          "description": "Eerste publieke versie om uw lijsten te delen zonder account."
+          "title": "Geboorte van Nawel",
+          "description": "Creatie van de site voor familiegebruik (Kerst) en met vrienden (Oud en Nieuw). De app heette toen Nawel."
         }
       ]
     }

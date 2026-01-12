@@ -865,18 +865,23 @@
       "items": [
         {
           "date": "Ene 2026",
+          "title": "Clasificación por pasillos",
+          "description": "La lista de la compra ahora se organiza automáticamente por pasillos para ahorrarte tiempo en el supermercado."
+        },
+        {
+          "date": "Ene 2026",
           "title": "Simplificación de Grandes Eventos",
           "description": "Se ha añadido el modo compacto para las comidas y servicios, y navegación día a día para una mejor legibilidad."
         },
         {
           "date": "Ene 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "En bastidores",
+          "description": "Lanzamiento de esta página para ofrecer más transparencia sobre el proyecto y sus costes."
         },
         {
           "date": "Ene 2026",
-          "title": "Revisión de la Interfaz y Dashboard",
-          "description": "Una interfaz aún más fluida y un nuevo panel de control para tus eventos."
+          "title": "Lanzamiento público de CoList",
+          "description": "Después de unos meses de pruebas, CoList ya está oficialmente abierto a todo el mundo."
         },
         {
           "date": "Dic 2025",
@@ -885,8 +890,8 @@
         },
         {
           "date": "Nov 2025",
-          "title": "Lanzamiento de CoList",
-          "description": "Primera versión pública para compartir tus listas sin necesidad de cuenta."
+          "title": "Nacimiento de Nawel",
+          "description": "Creación del sitio para uso familiar (Navidad) y con amigos (Nochevieja). La aplicación se llamaba entonces Nawel."
         }
       ]
     }

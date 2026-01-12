@@ -865,8 +865,13 @@
       "items": [
         {
           "date": "Jan 2026",
-          "title": "Vereinfachung großer Ereignisse",
-          "description": "Kompakter Modus für Mahlzeiten und Dienste sowie Navigation Tag für Tag für bessere Lesbarkeit hinzugefügt."
+          "title": "Regalsortierung",
+          "description": "Die Einkaufsliste wird jetzt automatisch nach Abteilungen sortiert, um Zeit im Laden zu sparen."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Vereinfachung großer Events",
+          "description": "Kompaktmodus für Mahlzeiten und Services sowie tagesgenaue Navigation für bessere Lesbarkeit hinzugefügt."
         },
         {
           "date": "Jan 2026",
@@ -875,18 +880,18 @@
         },
         {
           "date": "Jan 2026",
-          "title": "Überholung der Benutzeroberfläche und Dashboard",
-          "description": "Eine noch flüssigere Benutzeroberfläche und ein neues Dashboard für Ihre Ereignisse."
+          "title": "Öffentlicher Start von CoList",
+          "description": "Nach einigen Monaten Testzeit ist CoList nun offiziell für alle zugänglich."
         },
         {
           "date": "Dez 2025",
-          "title": "KI-gestütztes Einkaufen",
+          "title": "KI-gestützter Einkauf",
           "description": "Automatische Generierung von Zutaten und Mengen, angepasst an die Anzahl der Gäste."
         },
         {
           "date": "Nov 2025",
-          "title": "CoList-Start",
-          "description": "Erste öffentliche Version, um Ihre Listen ohne Konto zu teilen."
+          "title": "Geburt von Nawel",
+          "description": "Erstellung der Website für die private Nutzung (Weihnachten) und mit Freunden (Silvester). Die App hieß damals Nawel."
         }
       ]
     }

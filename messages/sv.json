@@ -865,28 +865,33 @@
       "items": [
         {
           "date": "Jan 2026",
+          "title": "Klassificering efter avdelning",
+          "description": "Inköpslistan organiseras nu automatiskt efter avdelning för att spara tid i butiken."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Förenkling av stora evenemang",
-          "description": "Lag till kompakt läge för måltider och tjänster, och dag-för-dag-navigering för bättre läsbarhet."
+          "description": "Lagt till kompakt läge för måltider och tjänster, och dag-för-dag-navigering för bättre läsbarhet."
         },
         {
           "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Bakom kulisserna",
+          "description": "Lansering av denna sida för mer transparens om projektet och dess kostnader."
         },
         {
           "date": "Jan 2026",
-          "title": "Gränssnittsöversyn och Dashboard",
-          "description": "Ett ännu smidigare gränssnitt och en ny instrumentpanel för dina evenemang."
+          "title": "Offentlig lansering av CoList",
+          "description": "Efter några månaders testning är CoList nu officiellt öppen för alla."
         },
         {
           "date": "Dec 2025",
-          "title": "AI-driven shopping",
-          "description": "Automatisk generering av ingredienser och mängder anpassade till antalet gäster."
+          "title": "AI-drivna inköp",
+          "description": "Automatisk generering av ingredienser och mängder anpassade efter antal gäster."
         },
         {
           "date": "Nov 2025",
-          "title": "CoList-lansering",
-          "description": "Första offentliga versionen för att dela dina listor utan konto."
+          "title": "Födelsen av Nawel",
+          "description": "Skapande av webbplatsen för familjeanvändning (jul) och med vänner (nyårsafton). Appen hette då Nawel."
         }
       ]
     }

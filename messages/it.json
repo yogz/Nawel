@@ -865,28 +865,33 @@
       "items": [
         {
           "date": "Gen 2026",
-          "title": "Semplificazione dei grandi eventi",
+          "title": "Classificazione per corsia",
+          "description": "La lista della spesa è ora organizzata automaticamente per corsia per risparmiare tempo in negozio."
+        },
+        {
+          "date": "Gen 2026",
+          "title": "Semplificazione Grandi Eventi",
           "description": "Aggiunta la modalità compatta per pasti e servizi e la navigazione giorno per giorno per una migliore leggibilità."
         },
         {
           "date": "Gen 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Dietro le Quinte",
+          "description": "Lancio di questa pagina per maggiore trasparenza sul progetto e i suoi costi."
         },
         {
           "date": "Gen 2026",
-          "title": "Revisione dell'interfaccia e Dashboard",
-          "description": "Un'interfaccia ancora più fluida e una nuova dashboard per i tuoi eventi."
+          "title": "Lancio pubblico di CoList",
+          "description": "Dopo alcuni mesi di test, CoList è ora ufficialmente aperto a tutti."
         },
         {
           "date": "Dic 2025",
-          "title": "Shopping basato sull'IA",
+          "title": "Spesa con IA",
           "description": "Generazione automatica di ingredienti e quantità adattate al numero di ospiti."
         },
         {
           "date": "Nov 2025",
-          "title": "Lancio di CoList",
-          "description": "Prima versione pubblica per condividere le tue liste senza un account."
+          "title": "Nascita di Nawel",
+          "description": "Creazione del sito per uso familiare (Natale) e con gli amici (Capodanno). L'app si chiamava allora Nawel."
         }
       ]
     }

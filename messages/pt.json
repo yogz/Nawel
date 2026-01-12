@@ -872,18 +872,23 @@
       "items": [
         {
           "date": "Jan 2026",
+          "title": "Classificação por corredor",
+          "description": "A lista de compras agora é organizada automaticamente por corredor para poupar tempo no supermercado."
+        },
+        {
+          "date": "Jan 2026",
           "title": "Simplificando Grandes Eventos",
-          "description": "Adicionado o modo compacto para refeições e serviços, e navegação dia-a-dia para melhor legibilidade."
+          "description": "Adicionado modo compacto para refeições e serviços, e navegação dia a dia para melhor leitura."
         },
         {
           "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Nos Bastidores",
+          "description": "Lançamento desta página para mais transparência sobre o projeto e os seus custos."
         },
         {
           "date": "Jan 2026",
-          "title": "Revisão da Interface e Painel",
-          "description": "Uma interface ainda mais fluida e um novo painel para os seus eventos."
+          "title": "Lançamento público do CoList",
+          "description": "Após alguns meses de testes, o CoList está agora oficialmente aberto a todos."
         },
         {
           "date": "Dez 2025",
@@ -892,8 +897,8 @@
         },
         {
           "date": "Nov 2025",
-          "title": "Lançamento do CoList",
-          "description": "Primeira versão pública para partilhar as suas listas sem necessidade de conta."
+          "title": "Nascimento do Nawel",
+          "description": "Criação do site para uso familiar (Natal) e com amigos (Passagem de Ano). A aplicação chamava-se então Nawel."
         }
       ]
     }

@@ -862,11 +862,6 @@
         },
         {
           "date": "Jan 2026",
-          "title": "Lancement public de CoList",
-          "description": "Après quelques mois de tests, CoList devient officiellement accessible à tous."
-        },
-        {
-          "date": "Jan 2026",
           "title": "Simplification des grands événements",
           "description": "Ajout du mode compact pour les repas et services, et de la navigation par jour pour une meilleure lisibilité."
         },
@@ -874,6 +869,11 @@
           "date": "Jan 2026",
           "title": "En coulisses",
           "description": "Lancement de cette page pour plus de transparence sur le projet et ses coûts."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Lancement public de CoList",
+          "description": "Après quelques mois de tests, CoList devient officiellement accessible à tous."
         },
         {
           "date": "Dec 2025",

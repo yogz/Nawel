@@ -856,19 +856,24 @@
     "changelog": {
       "items": [
         {
-          "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "date": "Oca 2026",
+          "title": "Reyon sınıflandırması",
+          "description": "Alışveriş listesi artık mağazada zaman kazanmanız için otomatik olarak reyonlara göre düzenleniyor."
         },
         {
           "date": "Oca 2026",
           "title": "Büyük Etkinliklerin Basitleştirilmesi",
-          "description": "Öğünler ve hizmetler için kompakt mod ve daha iyi okunabilirlik için gün be gün navigasyon eklendi."
+          "description": "Öğünler ve servisler için kompakt mod ve daha iyi okunabilirlik için günlük navigasyon eklendi."
         },
         {
           "date": "Oca 2026",
-          "title": "Arayüz Yenilemesi ve Kontrol Paneli",
-          "description": "Daha da pürüzsüz bir arayüz ve etkinlikleriniz için yeni bir kontrol paneli."
+          "title": "Sahne Arkası",
+          "description": "Proje ve maliyetleri hakkında daha fazla şeffaflık için bu sayfa yayına girdi."
+        },
+        {
+          "date": "Oca 2026",
+          "title": "CoList'in Halka Arzı",
+          "description": "Birkaç aylık test sürecinden sonra, CoList artık resmi olarak herkese açık."
         },
         {
           "date": "Ara 2025",
@@ -877,8 +882,8 @@
         },
         {
           "date": "Kas 2025",
-          "title": "CoList Lansmanı",
-          "description": "Hesap açmadan listelerinizi paylaşabileceğiniz ilk halka açık sürüm."
+          "title": "Nawel'in Doğuşu",
+          "description": "Sitenin aile içi kullanım (Noel) ve arkadaşlarla (Yılbaşı Gecesi) kullanım için oluşturulması. Uygulamanın adı o zamanlar Nawel idi."
         }
       ]
     }

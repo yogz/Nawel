@@ -865,28 +865,33 @@
       "items": [
         {
           "date": "Sty 2026",
+          "title": "Klasyfikacja według działów",
+          "description": "Lista zakupów jest teraz automatycznie organizowana według działów, aby zaoszczędzić czas w sklepie."
+        },
+        {
+          "date": "Sty 2026",
           "title": "Uproszczenie dużych wydarzeń",
           "description": "Dodano tryb kompaktowy dla posiłków i usług oraz nawigację dzień po dniu dla lepszej czytelności."
         },
         {
           "date": "Sty 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Za kulisami",
+          "description": "Uruchomienie tej strony dla większej przejrzystości projektu i jego kosztów."
         },
         {
           "date": "Sty 2026",
-          "title": "Remont interfejsu i Dashboardu",
-          "description": "Jeszcze płynniejszy interfejs i nowy panel kontrolny dla Twoich wydarzeń."
+          "title": "Publiczne uruchomienie CoList",
+          "description": "Po kilku miesiącach testów CoList jest teraz oficjalnie dostępny dla wszystkich."
         },
         {
           "date": "Gru 2025",
-          "title": "Zakupy napędzane przez AI",
+          "title": "Zakupy wspierane przez AI",
           "description": "Automatyczne generowanie składników i ilości dostosowanych do liczby gości."
         },
         {
           "date": "Lis 2025",
-          "title": "Premiera CoList",
-          "description": "Pierwsza publiczna wersja umożliwiająca udostępnianie list bez konta."
+          "title": "Narodziny Nawel",
+          "description": "Utworzenie strony do użytku rodzinnego (Boże Narodzenie) i ze znajomymi (Sylwester). Aplikacja nazywała się wtedy Nawel."
         }
       ]
     }

@@ -865,28 +865,33 @@
       "items": [
         {
           "date": "Jan 2026",
-          "title": "Forenkling af store begivenheder",
+          "title": "Klassificering efter afdeling",
+          "description": "Indkøbslisten er nu automatisk organiseret efter afdeling for at spare dig tid i butikken."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Forenkling af store arrangementer",
           "description": "Tilføjet kompakt tilstand for måltider og tjenester, og dag-til-dag navigation for bedre læsbarhed."
         },
         {
           "date": "Jan 2026",
-          "title": "Behind the Scenes",
-          "description": "Launch of this page for more transparency about the project and its costs."
+          "title": "Bag kulisserne",
+          "description": "Lancering af denne side for mere gennemsigtighed om projektet og dets omkostninger."
         },
         {
           "date": "Jan 2026",
-          "title": "Gennemgang af brugerflade og dashboard",
-          "description": "En endnu mere flydende brugerflade og et nyt dashboard til dine begivenheder."
+          "title": "Offentlig lancering af CoList",
+          "description": "Efter et par måneders test er CoList nu officielt åben for alle."
         },
         {
           "date": "Dec 2025",
-          "title": "AI-drevet shopping",
+          "title": "AI-drevet indkøb",
           "description": "Automatisk generering af ingredienser og mængder tilpasset antallet af gæster."
         },
         {
           "date": "Nov 2025",
-          "title": "CoList lancering",
-          "description": "Første offentlige version til at dele dine lister uden en konto."
+          "title": "Nawels fødsel",
+          "description": "Oprettelse af siden til familiebrug (jul) og med venner (nytårsaften). Appen hed dengang Nawel."
         }
       ]
     }
