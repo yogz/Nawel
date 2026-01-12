@@ -55,6 +55,24 @@ export function LandingVariantC() {
     },
   ];
 
+  const rotationVariants = [
+    {
+      title: t("heroOptionATitle"),
+      description: t("heroOptionASubhead"),
+      primaryCtaText: t("heroOptionACTA"),
+    },
+    {
+      title: t("heroOptionBTitle"),
+      description: t("heroOptionBSubhead"),
+      primaryCtaText: t("heroOptionBCTA"),
+    },
+    {
+      title: t("heroOptionCTitle"),
+      description: t("heroOptionCSubhead"),
+      primaryCtaText: t("heroOptionCCTA"),
+    },
+  ];
+
   return (
     <div
       ref={containerRef}
@@ -83,6 +101,8 @@ export function LandingVariantC() {
         secondaryCta={{ text: t("ctaDemo") }}
         badgeColor="red" // Using red/orange theme
         gradientStyle="default"
+        rotationVariants={rotationVariants}
+        rotationInterval={5000}
       />
 
       {/* 2. Social Proof Bar: Trust */}

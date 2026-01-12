@@ -8,6 +8,8 @@ import { LanguageSelector } from "@/components/common/language-selector";
 import { sendGAEvent } from "@next/third-parties/google";
 import { trackDiscoverClick } from "@/lib/analytics";
 import { AuthNavButton } from "./auth-nav-button";
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 
 interface HeroSectionProps {
   heroOpacity: MotionValue<number>;
@@ -28,6 +30,13 @@ interface HeroSectionProps {
   badgeColor?: "red" | "indigo";
   /** Gradient overlay style */
   gradientStyle?: "default" | "alt";
+  /** Optional rotation variants */
+  rotationVariants?: {
+    title: React.ReactNode;
+    description: string;
+    primaryCtaText: string;
+  }[];
+  rotationInterval?: number;
 }
 
 export function HeroSection({
@@ -42,7 +51,27 @@ export function HeroSection({
   secondaryCta,
   badgeColor = "red",
   gradientStyle = "default",
+  rotationVariants,
+  rotationInterval = 5000,
 }: HeroSectionProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    if (!rotationVariants || rotationVariants.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % rotationVariants.length);
+    }, rotationInterval);
+
+    return () => clearInterval(timer);
+  }, [rotationVariants, rotationInterval]);
+
+  const currentVariant = rotationVariants ? rotationVariants[activeIndex] : null;
+
+  const displayTitle = currentVariant?.title || title;
+  const displayDescription = currentVariant?.description || description;
+  const displayCtaText = currentVariant?.primaryCtaText || primaryCta.text;
+
   const badgeClasses =
     badgeColor === "indigo"
       ? "border border-indigo-100 bg-indigo-50 text-indigo-600"
@@ -79,7 +108,7 @@ export function HeroSection({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="max-w-4xl"
+        className="relative z-10 max-w-4xl"
       >
         <span
           className={`mb-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium sm:mb-6 ${badgeClasses}`}
@@ -87,27 +116,40 @@ export function HeroSection({
           <Sparkles className="h-4 w-4" />
           {badge}
         </span>
-        <h1 className="mb-4 text-4xl font-bold tracking-tight sm:mb-6 sm:text-7xl">{title}</h1>
-        <p className="mx-auto mb-8 max-w-2xl px-4 text-lg leading-relaxed text-gray-600 sm:mb-10 sm:text-2xl">
-          {description}
-        </p>
-        <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
-          <Link
-            href="/login?mode=user"
-            onClick={() => sendGAEvent("event", "cta_click", { location: "hero", variant })}
-            className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            {primaryCta.text}
-            {primaryCta.icon}
-          </Link>
-          <Link
-            href="#discover"
-            onClick={() => trackDiscoverClick(variant)}
-            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
-          >
-            {secondaryCta.text}
-          </Link>
-        </div>
+            <h1 className="mb-4 text-4xl font-bold tracking-tight sm:mb-6 sm:text-7xl">
+              {displayTitle}
+            </h1>
+            <p className="mx-auto mb-8 max-w-2xl px-4 text-lg leading-relaxed text-gray-600 sm:mb-10 sm:text-2xl">
+              {displayDescription}
+            </p>
+            <div className="flex flex-col items-center justify-center gap-3 px-6 sm:flex-row sm:gap-4">
+              <Link
+                href="/login?mode=user"
+                onClick={() => sendGAEvent("event", "cta_click", { location: "hero", variant })}
+                className="group flex w-full items-center justify-center gap-2 rounded-full bg-gray-900 px-6 py-3.5 text-base font-semibold text-white transition-all hover:scale-105 hover:bg-gray-800 hover:shadow-xl sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
+              >
+                {displayCtaText}
+                {primaryCta.icon}
+              </Link>
+              <Link
+                href="#discover"
+                onClick={() => trackDiscoverClick(variant)}
+                className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
+              >
+                {secondaryCta.text}
+              </Link>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
 
       <motion.div
