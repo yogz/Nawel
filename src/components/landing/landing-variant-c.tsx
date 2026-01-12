@@ -123,7 +123,7 @@ export function LandingVariantC() {
         badgeColor="red" // Using red/orange theme
         gradientStyle="default"
         rotationVariants={rotationVariants}
-        rotationInterval={8000}
+        rotationInterval={12000}
       />
 
       {/* 2. Social Proof Bar: Trust */}
