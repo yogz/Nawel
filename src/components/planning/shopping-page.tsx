@@ -311,7 +311,7 @@ export function ShoppingPage({
                 "relative flex shrink-0 flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95",
                 activeCategory === "all"
                   ? "text-accent"
-                  : "text-gray-400 hover:bg-gray-100/50 hover:text-gray-600"
+                  : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-600"
               )}
             >
               {activeCategory === "all" && (
@@ -338,7 +338,7 @@ export function ShoppingPage({
                   "relative flex shrink-0 flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95",
                   activeCategory === cat
                     ? "text-accent"
-                    : "text-gray-400 hover:bg-gray-100/50 hover:text-gray-600"
+                    : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-600"
                 )}
               >
                 {activeCategory === cat && (
@@ -387,7 +387,7 @@ export function ShoppingPage({
                       className="flex w-full items-center gap-2 px-1 focus:outline-none"
                     >
                       <span className="h-px flex-1 bg-gray-200" />
-                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/70 transition-colors hover:text-accent">
+                      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-accent">
                         {t(`aisles.${category}`)} ({categoryStats[category]?.checked || 0}/
                         {categoryStats[category]?.total || 0})
                         <motion.div animate={{ rotate: isCollapsed ? -90 : 0 }}>
