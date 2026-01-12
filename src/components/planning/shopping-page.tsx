@@ -121,6 +121,15 @@ export function ShoppingPage({
   const progressPercent =
     allItems.length > 0 ? Math.round((checkedCount / allItems.length) * 100) : 0;
 
+  const categoryStats = useMemo(() => {
+    const stats: Record<string, { checked: number; total: number }> = {};
+    Object.entries(shoppingList).forEach(([category, items]) => {
+      const checked = items.filter((item) => item.checked).length;
+      stats[category] = { checked, total: items.length };
+    });
+    return stats;
+  }, [shoppingList]);
+
   const toggleExpanded = (id: string) => {
     setExpandedItems((prev) => {
       const next = new Set(prev);
@@ -328,8 +337,8 @@ export function ShoppingPage({
                   className="absolute inset-0 rounded-2xl bg-white shadow-md shadow-accent/5 ring-1 ring-black/[0.05]"
                 />
               )}
-              <span className="relative text-[10px] font-black uppercase tracking-widest">
-                Tout
+              <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                Tout ({checkedCount}/{allItems.length})
               </span>
               {activeCategory === "all" && (
                 <motion.div
@@ -355,8 +364,9 @@ export function ShoppingPage({
                     className="absolute inset-0 rounded-2xl bg-white shadow-md shadow-accent/5 ring-1 ring-black/[0.05]"
                   />
                 )}
-                <span className="relative text-[10px] font-black uppercase tracking-widest">
-                  {getCategoryLabel(cat)}
+                <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                  {getCategoryLabel(cat)} ({categoryStats[cat]?.checked || 0}/
+                  {categoryStats[cat]?.total || 0})
                 </span>
                 {activeCategory === cat && (
                   <motion.div
@@ -395,7 +405,8 @@ export function ShoppingPage({
                     >
                       <span className="h-px flex-1 bg-gray-200" />
                       <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground/70 transition-colors hover:text-accent">
-                        {getCategoryLabel(category)}
+                        {getCategoryLabel(category)} ({categoryStats[category]?.checked || 0}/
+                        {categoryStats[category]?.total || 0})
                         <motion.div animate={{ rotate: isCollapsed ? -90 : 0 }}>
                           <ChevronDown size={14} />
                         </motion.div>
