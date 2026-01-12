@@ -12,7 +12,7 @@
       "de": "Almanca",
       "el": "Yunanca",
       "it": "İtalyanca",
-      "nl": "Flemenkçe",
+      "nl": "Felemenkçe",
       "pl": "Lehçe",
       "ja": "Japonca",
       "la": "Latince",
@@ -333,7 +333,7 @@
       "common": "Ortak",
       "noMeals": "Henüz yemek yok.",
       "addMeal": "Yemek ekle",
-      "addService": "Servis ekle",
+      "addService": "Bölüm ekle",
       "calendar": {
         "options": "Takvim seçenekleri",
         "addToCalendar": "Takvime ekle",
@@ -343,14 +343,14 @@
         "description": "CoList'teki \"{title}\" için bize katıl !"
       },
       "editMeal": "Yemeği düzenle",
-      "editService": "Servisi düzenle",
+      "editService": "Bölümü düzenle",
       "addItem": "Ürün ekle",
       "cancel": "İptal",
       "expand": "Genişlet",
       "collapse": "Daralt"
     },
     "Service": {
-      "editService": "{name} servisini düzenle",
+      "editService": "{name} bölümünü düzenle",
       "add": "Ekle",
       "dropHere": "Ürünü taşımak için buraya bırakın",
       "noItems": "Henüz malzeme yok."
@@ -422,7 +422,7 @@
       "noteLabel": "Not",
       "notePlaceholder": "Marka, alerjiler, porsiyonlar...",
       "moveLabel": "Taşı",
-      "otherService": "Diğer servis",
+      "otherService": "Diğer bölüm",
       "deleteItem": "Ürünü sil",
       "addItem": "Ürünü ekle",
       "generating": "Oluşturuluyor...",
@@ -436,7 +436,7 @@
       "assignToPerson": "{name} kişisine ata",
       "defaultNote": "{count} kişi{count, plural, one {} other {}} için",
       "note": "Not",
-      "movePlaceholder": "Diğer servis",
+      "movePlaceholder": "Diğer bölüm",
       "addButton": "Ürünü ekle",
       "adding": "Ekleniyor...",
       "Ingredients": {
@@ -461,13 +461,13 @@
       }
     },
     "ServiceForm": {
-      "label": "Servis adı",
+      "label": "Bölüm adı",
       "placeholder": "Başlangıç, Ana Yemek, Tatlı...",
-      "deleteButton": "Servisi sil",
+      "deleteButton": "Bölümü sil",
       "newMealHeader": "Yeni yemek",
       "newMealPlaceholder": "Yemek adı (örn: Akşam Yemeği)",
-      "addService": "Servis ekle",
-      "addButton": "Servis ekle",
+      "addService": "Bölüm ekle",
+      "addButton": "Bölüm ekle",
       "adding": "Ekleniyor...",
       "selectMeal": "Yemek seç",
       "selectMealLabel": "Yemek seç",
@@ -527,7 +527,7 @@
       "addressPlaceholder": "Örn: Kutlama Sokak No:123, İstanbul",
       "deleteButton": "Yemeği sil",
       "organisationLabel": "Yemek organizasyonu",
-      "serviceSelectionLabel": "Servisleri seçin",
+      "serviceSelectionLabel": "Bölümleri seçin",
       "createButton": "Yemek oluştur",
       "creating": "Oluşturuluyor...",
       "selectMeal": "Yemek seç",
@@ -548,8 +548,8 @@
     "Sheets": {
       "addItem": "Ürün ekle",
       "editItem": "Ürünü düzenle",
-      "addService": "Servis ekle",
-      "editService": "Servisi düzenle",
+      "addService": "Bölüm ekle",
+      "editService": "Bölümü düzenle",
       "editMeal": "Yemeği düzenle",
       "addMeal": "Yemek ekle",
       "addGuest": "Davetli ekle",
@@ -687,12 +687,12 @@
       "errorDelete": "Silme hatası ❌"
     },
     "service": {
-      "added": "Servis eklendi ! ✨",
-      "errorAdd": "Ekleme hatası ❌",
-      "updated": "Servis güncellendi ✓",
-      "errorUpdate": "Güncelleme hatası ❌",
-      "deleted": "Servis silindi ✓",
-      "errorDelete": "Silme hatası ❌"
+      "added": "Bölüm eklendi! ✨",
+      "errorAdd": "Bölüm eklenirken hata ❌",
+      "updated": "Bölüm güncellendi ✓",
+      "errorUpdate": "Bölüm güncellenirken hata ❌",
+      "deleted": "Bölüm silindi ✓",
+      "errorDelete": "Bölüm silinirken hata ❌"
     },
     "profile": {
       "fullName": "Tam ad",

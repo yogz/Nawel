@@ -5,19 +5,20 @@
     "save": "Guardar",
     "back": "Voltar",
     "languages": {
-      "fr": "Français",
-      "en": "English",
-      "es": "Español",
+      "fr": "Francês",
+      "en": "Inglês",
+      "es": "Espanhol",
       "pt": "Português",
-      "de": "Deutsch",
-      "el": "Ελληνικά",
+      "de": "Alemão",
+      "el": "Grego",
       "it": "Italiano",
       "nl": "Holandês",
       "pl": "Polaco",
       "ja": "Japonês",
       "la": "Latim",
       "sv": "Sueco",
-      "da": "Dinamarquês"
+      "da": "Dinamarquês",
+      "tr": "Turco"
     },
     "cancel": "Cancelar",
     "close": "Fechar",
@@ -339,7 +340,7 @@
       "common": "📦 Comuns",
       "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
-      "addService": "Adicionar tempo",
+      "addService": "Adicionar prato",
       "calendar": {
         "options": "Opções de calendário",
         "addToCalendar": "Adicionar ao calendário",
@@ -349,14 +350,14 @@
         "description": "Junte-se a nós para \"{title}\" no CoList!"
       },
       "editMeal": "Editar refeição",
-      "editService": "Editar tempo",
+      "editService": "Editar prato",
       "addItem": "Adicionar artigo",
       "cancel": "Cancelar",
       "expand": "Expandir",
       "collapse": "Recolher"
     },
     "Service": {
-      "editService": "Editar tempo {name}",
+      "editService": "Editar prato {name}",
       "add": "Adicionar",
       "dropHere": "Largar aqui para mover o artigo",
       "noItems": "Sem ingredientes por enquanto."
@@ -428,7 +429,7 @@
       "noteLabel": "Nota",
       "notePlaceholder": "Marca, alergias, porções...",
       "moveLabel": "Mover",
-      "otherService": "Outro tempo",
+      "otherService": "Outro prato",
       "deleteItem": "Eliminar artigo",
       "addItem": "Adicionar artigo",
       "generating": "Gerando...",
@@ -442,7 +443,7 @@
       "assignToPerson": "Atribuir a {name}",
       "defaultNote": "Para {count} {count, plural, one {pessoa} other {pessoas}}",
       "note": "Nota",
-      "movePlaceholder": "Outro tempo",
+      "movePlaceholder": "Outro prato",
       "addButton": "Adicionar artigo",
       "adding": "Adicionando...",
       "Ingredients": {
@@ -467,13 +468,13 @@
       }
     },
     "ServiceForm": {
-      "label": "Nome do tempo",
+      "label": "Nome do prato",
       "placeholder": "Entrada, Prato principal, Sobremesa...",
-      "deleteButton": "Eliminar tempo",
+      "deleteButton": "Eliminar prato",
       "newMealHeader": "Nova refeição",
       "newMealPlaceholder": "Nome da refeição (ex: Jantar)",
-      "addService": "Adicionar tempo",
-      "addButton": "Adicionar tempo",
+      "addService": "Adicionar prato",
+      "addButton": "Adicionar prato",
       "adding": "Adicionando...",
       "selectMeal": "Selecionar refeição",
       "selectMealLabel": "Selecionar refeição",
@@ -533,7 +534,7 @@
       "addressPlaceholder": "Ex: 123 Rua da Festa, Lisboa",
       "deleteButton": "Eliminar refeição",
       "organisationLabel": "Organização da refeição",
-      "serviceSelectionLabel": "Selecione os tempos",
+      "serviceSelectionLabel": "Selecione os pratos",
       "createButton": "Criar refeição",
       "creating": "Criando...",
       "selectMeal": "Escolher refeição",
@@ -554,8 +555,8 @@
     "Sheets": {
       "addItem": "Adicionar um artigo",
       "editItem": "Modificar o artigo",
-      "addService": "Adicionar um tempo",
-      "editService": "Modificar o tempo",
+      "addService": "Adicionar um prato",
+      "editService": "Modificar o prato",
       "editMeal": "Modificar a refeição",
       "addMeal": "Adicionar uma refeição",
       "addGuest": "Adicionar um convidado",
@@ -693,12 +694,12 @@
       "errorDelete": "Erro ao deletar refeição ❌"
     },
     "service": {
-      "added": "Tempo adicionado! ✨",
-      "errorAdd": "Erro ao adicionar tempo ❌",
-      "updated": "Tempo atualizado ✓",
-      "errorUpdate": "Erro ao atualizar tempo ❌",
-      "deleted": "Tempo eliminado ✓",
-      "errorDelete": "Erro ao eliminar tempo ❌"
+      "added": "¡Prato adicionado! ✨",
+      "errorAdd": "Erro ao adicionar prato ❌",
+      "updated": "Prato atualizado ✓",
+      "errorUpdate": "Erro ao atualizar prato ❌",
+      "deleted": "Prato eliminado ✓",
+      "errorDelete": "Erro ao eliminar prato ❌"
     },
     "profile": {
       "fullName": "Nome completo",
