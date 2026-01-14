@@ -4,11 +4,15 @@ import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { setRequestLocale } from "next-intl/server";
 import { Megaphone } from "lucide-react";
-import { MarketingPhase1 } from "@/components/admin/marketing/marketing-phase1";
-import { MarketingInstagramIdentity } from "@/components/admin/marketing/marketing-instagram-identity";
-import { MarketingEditorialCalendar } from "@/components/admin/marketing/marketing-editorial-calendar";
-import { MarketingContentScripts } from "@/components/admin/marketing/marketing-content-scripts";
-import { MarketingStories } from "@/components/admin/marketing/marketing-stories";
+import { MarketingContext } from "@/components/admin/marketing/marketing-context";
+import { MarketingFoundations } from "@/components/admin/marketing/marketing-foundations";
+import { MarketingPLG } from "@/components/admin/marketing/marketing-plg";
+import { MarketingAcquisition } from "@/components/admin/marketing/marketing-acquisition";
+import { MarketingContentStrategy } from "@/components/admin/marketing/marketing-content-strategy";
+import { MarketingPartnerships } from "@/components/admin/marketing/marketing-partnerships";
+import { MarketingMetrics } from "@/components/admin/marketing/marketing-metrics";
+import { MarketingBudget } from "@/components/admin/marketing/marketing-budget";
+import { MarketingRisks } from "@/components/admin/marketing/marketing-risks";
 
 export const dynamic = "force-dynamic";
 
@@ -38,24 +42,28 @@ export default async function MarketingPlanPage(props: { params: Promise<{ local
   return (
     <div className="min-h-screen bg-surface">
       <AdminHeader user={session.user} />
-      <main className="mx-auto max-w-6xl p-4 sm:p-6 pb-20">
+      <main className="mx-auto max-w-6xl p-4 sm:p-6 pb-20 space-y-12">
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-xl bg-primary/10">
               <Megaphone className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-text">Plan Marketing</h1>
+            <h1 className="text-2xl font-bold text-text">Plan Marketing Global (12 Mois)</h1>
           </div>
           <p className="text-muted-foreground">
-            Document vivant de la stratégie marketing de CoList.
+            Feuille de route stratégique pour l&apos;acquisition et la croissance de CoList.
           </p>
         </div>
 
-        <MarketingPhase1 />
-        <MarketingInstagramIdentity />
-        <MarketingEditorialCalendar />
-        <MarketingContentScripts />
-        <MarketingStories />
+        <MarketingContext />
+        <MarketingFoundations />
+        <MarketingPLG />
+        <MarketingAcquisition />
+        <MarketingContentStrategy />
+        <MarketingPartnerships />
+        <MarketingMetrics />
+        <MarketingBudget />
+        <MarketingRisks />
       </main>
     </div>
   );
