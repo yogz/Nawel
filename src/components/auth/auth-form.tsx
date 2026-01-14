@@ -143,11 +143,14 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
       sendGAEvent("event", "login", { method: "email" });
       localStorage.setItem("nawel_returning_user", "true");
 
+      // Refetch session to ensure client-side state is synced before navigation
+      await refetch();
+
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push(isUserMode ? "/" : "/admin");
         router.refresh();
+        router.push(isUserMode ? "/" : "/admin");
       }
     } catch {
       setError(t("errorDefault"));

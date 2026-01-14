@@ -31,8 +31,9 @@ export function LoginForm() {
             isUserMode={isUserMode}
             initialMode={initialMode}
             onSuccess={() => {
-              router.push(isUserMode ? "/event" : "/admin");
+              // Refresh first to ensure server-side session is recognized, then navigate
               router.refresh();
+              router.push(isUserMode ? "/event" : "/admin");
             }}
           />
         </div>
