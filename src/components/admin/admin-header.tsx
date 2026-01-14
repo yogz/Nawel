@@ -13,6 +13,7 @@ import {
   Quote,
   Bug,
   Package,
+  Megaphone,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/admin/models", label: "Modèles", icon: FlaskConical },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: Bug },
+  { href: "/admin/marketing", label: "Plan Marketing", icon: Megaphone },
   { href: "/admin/logs", label: "Audit Logs", icon: Shield },
 ];
 
