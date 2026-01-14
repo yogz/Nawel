@@ -14,6 +14,8 @@ import { MarketingMetrics } from "@/components/admin/marketing/marketing-metrics
 import { MarketingBudget } from "@/components/admin/marketing/marketing-budget";
 import { MarketingRisks } from "@/components/admin/marketing/marketing-risks";
 
+import { MarketingInstagramPosts } from "@/components/admin/marketing/marketing-instagram-posts";
+
 export const dynamic = "force-dynamic";
 
 export default async function MarketingPlanPage(props: { params: Promise<{ locale: string }> }) {
@@ -60,6 +62,7 @@ export default async function MarketingPlanPage(props: { params: Promise<{ local
         <MarketingPLG />
         <MarketingAcquisition />
         <MarketingContentStrategy />
+        <MarketingInstagramPosts />
         <MarketingPartnerships />
         <MarketingMetrics />
         <MarketingBudget />
