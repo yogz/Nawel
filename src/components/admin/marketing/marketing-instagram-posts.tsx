@@ -2,8 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, Layers, Copy, Check } from "lucide-react";
+import { Image, Layers, Copy, Check } from "lucide-react";
 import { useState } from "react";
 
 export function MarketingInstagramPosts() {
@@ -14,159 +13,142 @@ export function MarketingInstagramPosts() {
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-100 text-pink-700 text-sm font-bold">
             Bonus
           </span>
-          5 Scripts Instagram Prêts à Poster
+          5 Scripts Instagram (1 Carousel + 4 Posts Simples)
         </h2>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Post Simple 1 - Remplace Reel POV */}
         <InstaPost
-          type="Reel"
-          title="POV: Le chaos du Potluck"
+          type="Post Simple"
+          title="Mème : Le Chaos du Potluck"
           pillar="Humour / Viralité"
-          hook="POV : T'es le seul à avoir ramené un plat fait maison..."
-          script={`VISUEL:
-Toi arrivant tout fier avec tes lasagnes.
-Plan suivant : La table remplie uniquement de paquets de chips et de bouteilles de soda.
-Toi : Regard désespéré caméra.
+          hook="Quand t'es le seul à avoir fait un effort..."
+          script={`VISUEL (Photo unique/Mème):
+Une photo divisée en deux (Split) :
+Haut : "Ce que j'apporte" -> Une magnifique lasagne maison.
+Bas : "Ce que les autres apportent" -> Une montagne de paquets de chips 1er prix.
 
-TEXTE ÉCRAN:
-"Quand tu n'as pas utilisé CoList pour organiser."
-
-AUDIO:
-Music drôle / Trend "Oh no no no"
+TEXTE SUR L'IMAGE:
+"La définition du 'Potluck' sans CoList."
 
 CAPTION:
-On a tous connu ça. 😅
-3 quiches, 12 paquets de chips, 0 boisson.
-Arrêtez le massacre. Organisez qui amène quoi avec CoList.
-Lien en bio pour sauver votre prochain dîner ! 🍝
-#potluck #fail #repasentreamis #colist`}
+On a tous ce pote qui croit que 3 paquets de chips = un repas complet. 😭
+Arrêtez le massacre.
+Sur CoList, vous voyez qui apporte quoi en temps réel.
+Fini les dîners 100% féculents.
+
+Lien en bio pour organiser un vrai repas ! 🍝
+#potluck #humour #repasentreamis #foodfail #colist`}
         />
 
+        {/* Post Simple 2 - Remplace Reel Tuto */}
         <InstaPost
-          type="Reel"
-          title="Tuto: Dîner pour 12 en 30s"
+          type="Post Simple"
+          title="Avant/Après : L'Organisation"
           pillar="Product Education"
-          hook="Organiser une raclette pour 12 personnes ? Challenge accepté."
-          script={`VISUEL:
-Split screen. 
-Haut : Chronomètre.
-Bas : Screen recording de l'app.
+          hook="La différence est violente."
+          script={`VISUEL (Photo unique):
+Un comparatif graphique simple sur fond uni.
 
-1. (0s-5s) Click "Créer événement" -> "Raclette Party"
-2. (5s-15s) Ajout plat "Raclette". L'IA génère TOUT (fromage, charcut, patates) pour 12 pers.
-3. (15s-20s) Partage du Magic Link sur WhatsApp.
-4. (20s-30s) Les invités rejoignent et valident ce qu'ils amènent.
+Gauche (Rouge ❌) : "Avant"
+- 50 notifs WhatsApp
+- "Qui a pris le pain ?"
+- 3 Excels différents
+- Stress
 
-AUDIO:
-Voix off rapide et dynamique + Beat lo-fi.
+Droite (Vert ✅) : "Avec CoList"
+- 1 Lien Unique
+- Liste auto-générée
+- 0 Compte à créer
+- Zen
 
 CAPTION:
-Moins de temps à organiser, plus de temps à manger du fromage. 🧀
-L'IA CoList calcule les quantités pour vous. C'est magique, c'est gratuit.
-Essayez maintenant !
-#raclette #organisation #hack #app`}
+Pourquoi faire compliqué (et stressant) quand on peut faire simple ?
+Une app. Un lien. Tout le monde est synchro.
+Testez pour votre prochain dîner (c'est gratuit).
+#organisation #productivité #lifehacks #app #repas`}
         />
 
+        {/* Carousel - Conservé mais adapté */}
         <InstaPost
           type="Carousel"
           title="Vacances : Les Red Flags"
           pillar="Valeur / Tips"
           hook="5 signes que l'orga de vos vacances va être un enfer."
-          script={`SLIDE 1:
+          script={`SLIDE 1 (Couverture):
 Titre : 5 signes que vos vacances entre potes vont mal finir 🚩
+(Et comment les éviter)
 
 SLIDE 2:
-🚩 Le groupe WhatsApp s'appelle "Vacances 2026" et il y a déjà 450 messages non lus sur le menu.
+🚩 Le groupe WhatsApp "Vacances 2026" a déjà 450 messages et aucune décision prise.
 
 SLIDE 3:
-🚩 Quelqu'un a dit "Tkt on verra sur place pour les courses" (Spoiler: vous allez manger des pâtes 7j/7).
+🚩 Quelqu'un a dit "Tkt on verra sur place pour les courses".
+(Spoiler: vous allez manger des pâtes au beurre 7j/7).
 
 SLIDE 4:
-🚩 Vous avez acheté tout en double parce que personne ne savait ce qu'il y avait dans le frigo.
+🚩 Vous avez acheté tout en double le premier jour.
+(3 bouteilles d'huile d'olive, 0 sel).
 
 SLIDE 5:
-🚩 Le fichier Excel de compte fait 12 onglets et personne ne le remplit.
+🚩 Le fichier Excel des comptes a planté et personne ne veut le refaire.
 
-SLIDE 6:
-La solution ? CoList.
+SLIDE 6 (Conclusion):
+La solution ? Un lien CoList.
 ✅ Menus partagés
 ✅ Liste de courses auto
-✅ Zéro compte requis
+✅ Zéro prise de tête
 
 CAPTION:
 Identifie le pote qui dit toujours "on verra sur place" 👇
-Ne laissez pas l'intendance gâcher les vacances.
-#vacances #potes #organisation #voyage`}
+Ne laissez pas l'intendance gâcher les vacances cet été.
+#vacances #potes #voyage #checklist #redflags`}
         />
 
+        {/* Post Simple 3 - Remplace Reel Charge Mentale */}
         <InstaPost
-          type="Reel"
-          title="La Charge Mentale"
-          pillar="Empathie / Pain Point"
-          hook="Ce que 'je gère les courses' veut vraiment dire..."
-          script={`VISUEL:
-Plan séquence rapide (Fast cuts).
-1. Ouvrir le frigo vide. S'énerver.
-2. Faire une liste sur un papier.
-3. Se rendre compte qu'on a oublié si y'a du beurre.
-4. SMS au conjoint "Tu peux regarder si..."
-5. Au supermarché, rayon bondé.
-6. Retour maison, on a oublié le sel.
+          type="Post Simple"
+          title="Citation : La Charge Mentale"
+          pillar="Empathie"
+          hook="Pour ceux qui portent tout sur leurs épaules."
+          script={`VISUEL (Photo unique):
+Un fond épuré, couleur douce, avec une citation en typographie élégante.
 
-TEXTE ÉCRAN:
-"STOP."
+CITATION AU CENTRE :
+"La charge mentale, c'est d'avoir préparé la liste des courses dans sa tête alors qu'on est sous la douche."
 
-Cut sur l'app CoList :
-Tout est là. Trié par rayon. Coché en temps réel.
-
-AUDIO:
-Son stressant (bruit ville, horloge) -> Silence apaisant quand on passe sur l'app.
+Petit logo CoList en bas.
 
 CAPTION:
-La charge mentale des courses, c'est fini.
-Libérez-vous l'esprit. 🧘‍♀️
-#chargementale #stress #courses #colist`}
+On la connaît tous, cette petite voix qui n'arrête jamais.
+Et si on la mettait sur pause ?
+CoList permet de déléguer sans avoir à "manager".
+Partagez la liste. Laissez les autres cocher. Respirez. 🧘‍♀️
+#chargementale #bienetre #famille #couple #colist`}
         />
 
+        {/* Post Simple 4 - Remplace Carousel Brunch */}
         <InstaPost
-          type="Carousel"
-          title="Checklist Brunch"
+          type="Post Simple"
+          title="Infographie : Le Brunch Parfait"
           pillar="Inspiration"
-          hook="La checklist ultime pour un Brunch sans faute."
-          script={`SLIDE 1:
-La Checklist Brunch Parfait 🥞
-(Save ce post pour dimanche !)
+          hook="La checklist ultime en une image."
+          script={`VISUEL (Infographie):
+Une belle illustration "Flat Lay" d'une table de brunch vue du dessus, avec des étiquettes (flèches) pointant sur les essentiels.
 
-SLIDE 2:
-Le Salé 🥓
-- Oeufs (compter 2/pers)
-- Bacon / Saumon (l'option végé !)
-- Avocats (beaucoup)
-- Fromage frais
-
-SLIDE 3:
-Le Sucré 🍓
-- Pancakes (la base)
-- Sirop d'érable
-- Fruits ROUGES (pour la couleur)
-
-SLIDE 4:
-Les Boissons ☕️
-- Jus d'orange (pressé, svp)
-- Café (en quantité industrielle)
-- Mimosas (si c'est festif 🥂)
-
-SLIDE 5:
-L'astuce Pro :
-Ne faites pas tout seul !
-Créez une liste "Brunch Dimanche" sur CoList et envoyez le lien.
-Chacun ramène un truc.
+TITRE EN HAUT : "L'Anatomie du Brunch Parfait"
+Flèche 1 -> "Protéines" (Oeufs/Bacon)
+Flèche 2 -> "Vitamines" (Avocat/Fruits)
+Flèche 3 -> "Douceur" (Pancakes/Sirop)
+Flèche 4 -> "Hydratation" (Jus frais/Café/Mimosas)
 
 CAPTION:
-Team Salé ou Team Sucré ? 🥓🍓
-Organisez votre prochain brunch en 2 clics avec CoList.
-#brunch #dimanche #foodie #recette`}
+Savez-vous qu'on oublie toujours un truc au brunch ? (Souvent le beurre pour les tartines).
+Enregistrez ce post pour dimanche prochain ! 📌
+
+Ou mieux : créez votre événement "Brunch" sur CoList et laissez l'IA générer la liste complète.
+#brunch #sundaymood #foodie #infographie #checklist`}
         />
       </div>
     </div>
@@ -199,11 +181,11 @@ function InstaPost({
     <Card className="flex flex-col h-full">
       <CardHeader className="pb-3 space-y-2">
         <div className="flex justify-between items-start">
-          <Badge variant={type === "Reel" ? "default" : "secondary"} className="mb-2">
-            {type === "Reel" ? (
-              <Video className="w-3 h-3 mr-1" />
-            ) : (
+          <Badge variant={type === "Carousel" ? "default" : "secondary"} className="mb-2">
+            {type === "Carousel" ? (
               <Layers className="w-3 h-3 mr-1" />
+            ) : (
+              <Image className="w-3 h-3 mr-1" />
             )}
             {type}
           </Badge>
