@@ -5,6 +5,10 @@ import { AdminHeader } from "@/components/admin/admin-header";
 import { setRequestLocale } from "next-intl/server";
 import { Megaphone } from "lucide-react";
 import { MarketingPhase1 } from "@/components/admin/marketing/marketing-phase1";
+import { MarketingInstagramIdentity } from "@/components/admin/marketing/marketing-instagram-identity";
+import { MarketingEditorialCalendar } from "@/components/admin/marketing/marketing-editorial-calendar";
+import { MarketingContentScripts } from "@/components/admin/marketing/marketing-content-scripts";
+import { MarketingStories } from "@/components/admin/marketing/marketing-stories";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +52,10 @@ export default async function MarketingPlanPage(props: { params: Promise<{ local
         </div>
 
         <MarketingPhase1 />
+        <MarketingInstagramIdentity />
+        <MarketingEditorialCalendar />
+        <MarketingContentScripts />
+        <MarketingStories />
       </main>
     </div>
   );
