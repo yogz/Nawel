@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
 import { LayoutDashboard } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
@@ -12,9 +13,14 @@ import { useTranslations } from "next-intl";
 export function AuthNavButton() {
   const { data: session, isPending } = authClient.useSession();
   const t = useTranslations("Landing");
+  const [mounted, setMounted] = useState(false);
 
-  // Don't show anything while loading or if not authenticated
-  if (isPending || !session) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't show anything while loading, if not authenticated, or before hydration
+  if (!mounted || isPending || !session) {
     return null;
   }
 
