@@ -13,7 +13,7 @@ import {
   Users,
   MessageSquare,
   Sparkles,
-  Palmtree,
+  Luggage,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
@@ -28,6 +28,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AutoSizeInput } from "@/components/common/auto-size-input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -84,10 +85,19 @@ export function EventForm({
     "total"
   );
   const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(
+    new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+  );
   const [time, setTime] = useState(initialData?.time ?? "20:00");
   const [address, setAddress] = useState(initialData?.address ?? "");
   const [adults, setAdults] = useState(initialData?.adults ?? 2);
   const [children, setChildren] = useState(initialData?.children ?? 0);
+
+  // Computed duration from dates
+  const computedDuration = Math.max(
+    1,
+    Math.round((new Date(endDate).getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24))
+  );
 
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -117,6 +127,9 @@ export function EventForm({
     );
   };
 
+  // Use computed duration for vacation mode
+  const effectiveDuration = isVacation ? computedDuration : duration;
+
   const content = (
     <div className="flex flex-col gap-8 px-1 pb-32 pt-2 sm:gap-10 sm:pb-36">
       {/* 1. Hero Input: The Name */}
@@ -125,7 +138,7 @@ export function EventForm({
           {t("eventNameLabel")}
         </Label>
         <div className="relative">
-          <Input
+          <AutoSizeInput
             ref={nameRef}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -133,7 +146,9 @@ export function EventForm({
               if (e.key === "Enter" && name.trim()) handleSubmit();
             }}
             placeholder={t("eventNamePlaceholder")}
-            className="h-auto border-none bg-transparent p-0 text-4xl font-black tracking-tighter placeholder:text-gray-300 focus-visible:ring-0 sm:text-5xl"
+            maxSize={48}
+            minSize={20}
+            className="h-auto border-none bg-transparent p-0 font-black tracking-tighter placeholder:text-gray-300 focus-visible:ring-0"
           />
           {name.trim().length === 0 && (
             <div className="pointer-events-none absolute bottom-1 left-0 h-[3px] w-8 animate-pulse bg-accent" />
@@ -201,7 +216,7 @@ export function EventForm({
                   : "bg-gray-50 text-gray-300 group-hover:text-gray-400"
               )}
             >
-              <Palmtree size={24} />
+              <Luggage size={24} />
             </div>
             <div className="text-center">
               <span
@@ -210,7 +225,7 @@ export function EventForm({
                   isVacation ? "text-accent" : "text-gray-400 group-hover:text-gray-600"
                 )}
               >
-                Vacances
+                Séjour
               </span>
               <span className="text-[10px] font-medium uppercase tracking-wider text-gray-300">
                 Plusieurs jours
@@ -223,38 +238,54 @@ export function EventForm({
         </div>
       </div>
 
-      {/* 3. Duration Selector (Conditional) */}
+      {/* 3. Date Range Selector (Conditional) */}
       {isVacation && (
         <div className="animate-in fade-in slide-in-from-top-4 space-y-4 duration-500">
-          <Label className="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-            {t("durationLabel")}
-          </Label>
-          <div className="flex flex-wrap gap-2.5">
-            {[2, 3, 5, 7, 10, 14].map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDuration(d)}
-                className={cn(
-                  "flex h-12 min-w-[3.5rem] items-center justify-center rounded-2xl border-2 text-sm font-bold transition-all duration-300 active:scale-90 sm:h-12",
-                  duration === d
-                    ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
-                    : "border-gray-50 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-600"
-                )}
-              >
-                {d}j
-              </button>
-            ))}
-            <div className="relative flex items-center">
-              <Input
-                type="number"
-                min={1}
-                max={31}
-                value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                className="h-12 w-20 rounded-2xl border-2 border-gray-50 bg-white text-center font-black text-gray-600 focus:border-accent focus:text-accent focus:ring-0 sm:h-12"
-              />
+          <div className="grid grid-cols-2 gap-4">
+            {/* Start Date */}
+            <div className="space-y-2">
+              <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                Du
+              </Label>
+              <div className="relative group">
+                <Input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="h-14 touch-wrapper rounded-2xl border-gray-200 bg-white pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
+                />
+                <Calendar
+                  size={18}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-accent"
+                />
+              </div>
             </div>
+            {/* End Date */}
+            <div className="space-y-2">
+              <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                Au
+              </Label>
+              <div className="relative group">
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min={date}
+                  className="h-14 touch-wrapper rounded-2xl border-gray-200 bg-white pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
+                />
+                <Calendar
+                  size={18}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-accent"
+                />
+              </div>
+            </div>
+          </div>
+          {/* Duration badge */}
+          <div className="text-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/5 px-4 py-2 text-sm font-bold text-accent">
+              <Sparkles size={14} />
+              {computedDuration} {computedDuration > 1 ? "jours" : "jour"} de séjour
+            </span>
           </div>
         </div>
       )}
