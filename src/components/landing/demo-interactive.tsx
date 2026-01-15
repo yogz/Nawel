@@ -46,7 +46,9 @@ export function DemoInteractive() {
       const typeInterval = setInterval(() => {
         setTypedText(text.slice(0, i + 1));
         i++;
-        if (i >= text.length) clearInterval(typeInterval);
+        if (i >= text.length) {
+          clearInterval(typeInterval);
+        }
       }, 70);
       return () => clearInterval(typeInterval);
     } else if (step < 4) {

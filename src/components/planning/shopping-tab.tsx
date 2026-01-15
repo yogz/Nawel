@@ -582,8 +582,12 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         {Object.entries(shoppingList)
           .sort(([catA], [catB]) => {
             // Put 'misc' at the end
-            if (catA === "misc") return 1;
-            if (catB === "misc") return -1;
+            if (catA === "misc") {
+              return 1;
+            }
+            if (catB === "misc") {
+              return -1;
+            }
             return catA.localeCompare(catB);
           })
           .map(([category, items]) => (

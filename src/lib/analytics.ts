@@ -128,7 +128,9 @@ export function trackEvent({
       value,
       ...extra,
     });
-    if (IS_DEV) return;
+    if (IS_DEV) {
+      return;
+    }
   }
 
   // Check consent - strictly block if no consent

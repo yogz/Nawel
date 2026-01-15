@@ -12,7 +12,9 @@ export function AdminFeedbackList({ initialFeedback }: { initialFeedback: AdminF
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = async () => {
-    if (!deletingFeedback) return;
+    if (!deletingFeedback) {
+      return;
+    }
 
     startTransition(async () => {
       try {

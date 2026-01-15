@@ -106,7 +106,9 @@ export function MealContainer({
             )}
             onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
             onKeyDown={(e) => {
-              if (readOnly) return;
+              if (readOnly) {
+                return;
+              }
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 setSheet({ type: "meal-edit", meal });

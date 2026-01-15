@@ -64,7 +64,9 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Supprimer ce coût ?")) return;
+    if (!confirm("Supprimer ce coût ?")) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await deleteCostAction({ id });
@@ -77,7 +79,9 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
 
   const handleToggleActive = async (id: number, currentActive: boolean) => {
     const action = currentActive ? "arrêter" : "redémarrer";
-    if (!confirm(`Voulez-vous ${action} ce coût récurrent ?`)) return;
+    if (!confirm(`Voulez-vous ${action} ce coût récurrent ?`)) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await toggleCostActiveAction({ id, isActive: !currentActive });

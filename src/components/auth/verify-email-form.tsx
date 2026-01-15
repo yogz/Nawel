@@ -23,7 +23,9 @@ export function VerifyEmailForm() {
       return;
     }
 
-    if (verificationStarted.current) return;
+    if (verificationStarted.current) {
+      return;
+    }
     verificationStarted.current = true;
 
     const performVerification = async () => {

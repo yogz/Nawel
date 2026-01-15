@@ -83,7 +83,9 @@ function ItemRowComponent({
 
   // Handle click: if user has a person and item is not assigned, assign directly
   const handleClick = () => {
-    if (readOnly) return;
+    if (readOnly) {
+      return;
+    }
 
     triggerHaptic();
 

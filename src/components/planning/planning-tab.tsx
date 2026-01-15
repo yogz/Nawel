@@ -91,7 +91,9 @@ export function PlanningTab({
   const uniqueDates = useMemo(() => {
     const dates = new Set<string>();
     plan.meals.forEach((m) => {
-      if (m.date) dates.add(m.date);
+      if (m.date) {
+        dates.add(m.date);
+      }
     });
     const sorted = Array.from(dates)
       .filter((d) => d !== "common")
@@ -212,13 +214,19 @@ export function PlanningTab({
             return hasMatch;
           })
           .filter((meal) => {
-            if (selectedDate === "all") return true;
+            if (selectedDate === "all") {
+              return true;
+            }
             return meal.date === selectedDate;
           })
           .sort((a, b) => {
             // Toujours mettre 'common' en premier dans la vue 'all'
-            if (a.date === "common") return -1;
-            if (b.date === "common") return 1;
+            if (a.date === "common") {
+              return -1;
+            }
+            if (b.date === "common") {
+              return 1;
+            }
             return (a.date || "").localeCompare(b.date || "");
           })
           .map((meal) => {

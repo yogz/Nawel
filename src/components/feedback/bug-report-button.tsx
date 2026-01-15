@@ -14,7 +14,9 @@ export function BugReportButton() {
   const t = useTranslations("Feedback");
 
   // Don't show anything if pending or not logged in
-  if (isPending || !session) return null;
+  if (isPending || !session) {
+    return null;
+  }
 
   return (
     <>
