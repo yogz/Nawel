@@ -90,16 +90,18 @@ export default function CreateEventClient() {
         <h1 className="text-xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
       </div>
 
-      <div className="mb-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
-        <EventForm
-          onSubmit={handleCreateEvent}
-          onClose={() => router.push(session ? "/event" : "/login?mode=user")}
-          isPending={isPending}
-          error={error}
-          inline
-          showWarnings
-          isAuthenticated={!!session}
-        />
+      <div className="mb-4 sm:mb-0">
+        <div className="premium-card p-4 sm:p-8">
+          <EventForm
+            onSubmit={handleCreateEvent}
+            onClose={() => router.push(session ? "/event" : "/login?mode=user")}
+            isPending={isPending}
+            error={error}
+            inline
+            showWarnings
+            isAuthenticated={!!session}
+          />
+        </div>
       </div>
     </main>
   );
