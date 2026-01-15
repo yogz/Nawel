@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
+// import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
 import { useTranslations } from "next-intl";
 
 interface OnboardingTourProps {
@@ -40,6 +40,8 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
     return () => window.removeEventListener(`start-tour-${tourKey}`, handleStart);
   }, [tourKey]);
 
+  // Commented out to fix React 19 compatibility
+  /*
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status, action, index, type } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
@@ -79,9 +81,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
           },
         ]
       : [];
+  */
 
   return null;
-  /*
-  return null;
-  */
 }
