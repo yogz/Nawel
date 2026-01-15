@@ -24,6 +24,7 @@ import { CitationDisplay } from "../common/citation-display";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
+import { AutoSizeText } from "@/components/common/auto-size-text";
 
 interface EventPlannerHeaderProps {
   readOnly: boolean;
@@ -212,9 +213,13 @@ export function EventPlannerHeader({
 
               {/* Middle Row: Event Title (Massive) */}
               <div className="px-1">
-                <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent drop-shadow-sm sm:text-5xl">
+                <AutoSizeText
+                  maxSize={48}
+                  minSize={20}
+                  className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                >
                   {plan.event?.name || tShared("defaultEventName")}
-                </h1>
+                </AutoSizeText>
               </div>
 
               {/* Bottom Row: Logistic Pills (Glassmorphic) */}

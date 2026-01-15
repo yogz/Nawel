@@ -133,7 +133,7 @@ export function EventForm({
               if (e.key === "Enter" && name.trim()) handleSubmit();
             }}
             placeholder={t("eventNamePlaceholder")}
-            className="h-auto border-none bg-transparent p-0 text-4xl font-black tracking-tighter placeholder:text-gray-200 focus-visible:ring-0 sm:text-5xl"
+            className="h-auto border-none bg-transparent p-0 text-4xl font-black tracking-tighter placeholder:text-gray-300 focus-visible:ring-0 sm:text-5xl"
           />
           {name.trim().length === 0 && (
             <div className="pointer-events-none absolute bottom-1 left-0 h-[3px] w-8 animate-pulse bg-accent" />
@@ -152,7 +152,7 @@ export function EventForm({
             className={cn(
               "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border-2 p-6 transition-all duration-300 active:scale-[0.98]",
               !isVacation
-                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/10 ring-1 ring-accent/10"
                 : "border-gray-50 bg-white hover:border-gray-100"
             )}
           >
@@ -189,7 +189,7 @@ export function EventForm({
             className={cn(
               "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border-2 p-6 transition-all duration-300 active:scale-[0.98]",
               isVacation
-                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/10 ring-1 ring-accent/10"
                 : "border-gray-50 bg-white hover:border-gray-100"
             )}
           >
@@ -265,8 +265,8 @@ export function EventForm({
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="group flex w-full items-center justify-between rounded-xl p-2 text-left transition-colors hover:bg-gray-50"
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-accent">
-            Plus d'options
+          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-accent">
+            Plus d'options {!showAdvanced && <span className="text-gray-300">(3)</span>}
           </span>
           <div
             className={cn(
@@ -417,7 +417,7 @@ export function EventForm({
               className={cn(
                 "h-16 w-full rounded-[2rem] text-lg font-black tracking-tight transition-all duration-300 active:scale-[0.98]",
                 name.trim()
-                  ? "bg-accent text-white shadow-[0_4px_20px_rgba(var(--accent-rgb),0.4)] hover:shadow-[0_8px_30px_rgba(var(--accent-rgb),0.5)] hover:bg-accent hover:-translate-y-0.5"
+                  ? "bg-gradient-to-br from-accent via-accent to-[hsl(var(--accent)/0.85)] text-white shadow-[0_4px_24px_rgba(var(--accent-rgb),0.45)] hover:shadow-[0_8px_32px_rgba(var(--accent-rgb),0.55)] hover:-translate-y-0.5"
                   : "bg-gray-100 text-gray-300"
               )}
             >
