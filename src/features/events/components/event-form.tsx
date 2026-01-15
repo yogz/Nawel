@@ -91,11 +91,11 @@ export function EventForm({
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // Auto-focus name on mount
+  // Focus management
   useEffect(() => {
     const timer = setTimeout(() => {
       nameRef.current?.focus();
-    }, 300);
+    }, 400); // Slightly longer delay for entering the drawer
     return () => clearTimeout(timer);
   }, []);
 
@@ -118,53 +118,107 @@ export function EventForm({
   };
 
   const content = (
-    <div className="flex flex-col gap-6 px-1 pb-8 sm:gap-8">
+    <div className="flex flex-col gap-8 px-1 pb-32 pt-2 sm:gap-10 sm:pb-36">
       {/* 1. Hero Input: The Name */}
-      <div className="space-y-3">
-        <Label className="ml-1 text-[11px] font-black uppercase tracking-[0.2em] text-accent/60">
+      <div className="space-y-4">
+        <Label className="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-accent/60">
           {t("eventNameLabel")}
         </Label>
-        <Input
-          ref={nameRef}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && name.trim()) handleSubmit();
-          }}
-          placeholder={t("eventNamePlaceholder")}
-          className="h-auto border-none bg-transparent p-0 text-3xl font-black tracking-tight placeholder:text-gray-200 focus-visible:ring-0 sm:text-4xl"
-        />
+        <div className="relative">
+          <Input
+            ref={nameRef}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && name.trim()) handleSubmit();
+            }}
+            placeholder={t("eventNamePlaceholder")}
+            className="h-auto border-none bg-transparent p-0 text-4xl font-black tracking-tighter placeholder:text-gray-200 focus-visible:ring-0 sm:text-5xl"
+          />
+          {name.trim().length === 0 && (
+            <div className="pointer-events-none absolute bottom-1 left-0 h-[3px] w-8 animate-pulse bg-accent" />
+          )}
+        </div>
       </div>
 
-      {/* 2. Type Switch: Repas vs Vacances */}
+      {/* 2. Type Selection Cards */}
       <div className="space-y-4">
-        <Label className="ml-1 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+        <Label className="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
           Type d'événement
         </Label>
-        <div className="grid grid-cols-2 gap-3 p-1">
+        <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => setIsVacation(false)}
             className={cn(
-              "flex h-14 items-center justify-center gap-3 rounded-2xl border-2 transition-all active:scale-95",
+              "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border-2 p-6 transition-all duration-300 active:scale-[0.98]",
               !isVacation
-                ? "border-accent bg-accent/5 font-bold text-accent shadow-sm"
-                : "border-gray-50 bg-gray-50/50 text-gray-500 hover:border-gray-100"
+                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                : "border-gray-50 bg-white hover:border-gray-100"
             )}
           >
-            <Utensils size={20} className={!isVacation ? "text-accent" : "text-gray-400"} />
-            <span>1 Repas</span>
+            <div
+              className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors duration-300",
+                !isVacation
+                  ? "bg-accent text-white"
+                  : "bg-gray-50 text-gray-300 group-hover:text-gray-400"
+              )}
+            >
+              <Utensils size={24} />
+            </div>
+            <div className="text-center">
+              <span
+                className={cn(
+                  "block text-lg font-bold tracking-tight transition-colors duration-300",
+                  !isVacation ? "text-accent" : "text-gray-400 group-hover:text-gray-600"
+                )}
+              >
+                1 Repas
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-gray-300">
+                Classique
+              </span>
+            </div>
+            {!isVacation && (
+              <div className="absolute right-4 top-4 h-2 w-2 rounded-full bg-accent" />
+            )}
           </button>
+
           <button
             onClick={() => setIsVacation(true)}
             className={cn(
-              "flex h-14 items-center justify-center gap-3 rounded-2xl border-2 transition-all active:scale-95",
+              "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-3xl border-2 p-6 transition-all duration-300 active:scale-[0.98]",
               isVacation
-                ? "border-accent bg-accent/5 font-bold text-accent shadow-sm"
-                : "border-gray-50 bg-gray-50/50 text-gray-500 hover:border-gray-100"
+                ? "border-accent bg-accent/[0.03] shadow-lg shadow-accent/5"
+                : "border-gray-50 bg-white hover:border-gray-100"
             )}
           >
-            <Palmtree size={20} className={isVacation ? "text-accent" : "text-gray-400"} />
-            <span>Vacances</span>
+            <div
+              className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors duration-300",
+                isVacation
+                  ? "bg-accent text-white"
+                  : "bg-gray-50 text-gray-300 group-hover:text-gray-400"
+              )}
+            >
+              <Palmtree size={24} />
+            </div>
+            <div className="text-center">
+              <span
+                className={cn(
+                  "block text-lg font-bold tracking-tight transition-colors duration-300",
+                  isVacation ? "text-accent" : "text-gray-400 group-hover:text-gray-600"
+                )}
+              >
+                Vacances
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-wider text-gray-300">
+                Plusieurs jours
+              </span>
+            </div>
+            {isVacation && (
+              <div className="absolute right-4 top-4 h-2 w-2 rounded-full bg-accent" />
+            )}
           </button>
         </div>
       </div>
@@ -172,23 +226,23 @@ export function EventForm({
       {/* 3. Duration Selector (Conditional) */}
       {isVacation && (
         <div className="animate-in fade-in slide-in-from-top-4 space-y-4 duration-500">
-          <Label className="ml-1 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+          <Label className="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
             {t("durationLabel")}
           </Label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {[2, 3, 5, 7, 10, 14].map((d) => (
               <button
                 key={d}
                 type="button"
                 onClick={() => setDuration(d)}
                 className={cn(
-                  "flex h-11 min-w-[3.5rem] items-center justify-center rounded-xl border-2 px-3 text-sm font-bold transition-all active:scale-90",
+                  "flex h-12 min-w-[3.5rem] items-center justify-center rounded-2xl border-2 text-sm font-bold transition-all duration-300 active:scale-90 sm:h-12",
                   duration === d
                     ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
-                    : "border-gray-50 bg-white text-gray-600 hover:border-gray-200"
+                    : "border-gray-50 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-600"
                 )}
               >
-                {d}
+                {d}j
               </button>
             ))}
             <div className="relative flex items-center">
@@ -198,7 +252,7 @@ export function EventForm({
                 max={31}
                 value={duration}
                 onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                className="h-11 w-20 rounded-xl border-2 border-gray-50 bg-white text-center font-black focus:border-accent"
+                className="h-12 w-20 rounded-2xl border-2 border-gray-50 bg-white text-center font-black text-gray-600 focus:border-accent focus:text-accent focus:ring-0 sm:h-12"
               />
             </div>
           </div>
@@ -206,50 +260,62 @@ export function EventForm({
       )}
 
       {/* 4. Advanced Section Toggle */}
-      <div className="pt-2">
+      <div className="pt-4">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-accent"
+          className="group flex w-full items-center justify-between rounded-xl p-2 text-left transition-colors hover:bg-gray-50"
         >
-          {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          Peaufiner les détails...
+          <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-accent">
+            Plus d'options
+          </span>
+          <div
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all group-hover:bg-accent/10 group-hover:text-accent",
+              showAdvanced ? "rotate-90" : "-rotate-90"
+            )}
+          >
+            <ChevronDown
+              size={16}
+              className={cn("transition-transform", showAdvanced && "rotate-180")}
+            />
+          </div>
         </button>
 
         {showAdvanced && (
-          <div className="animate-in fade-in zoom-in-95 mt-6 space-y-5 rounded-3xl border border-dashed border-gray-100 p-4 duration-300">
+          <div className="animate-in fade-in zoom-in-95 slide-in-from-top-2 mt-4 space-y-6 rounded-[2rem] border border-gray-100 bg-gray-50/30 p-6 duration-300">
             {/* Date & Time */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {t("dateLabel")}
                 </Label>
-                <div className="relative">
+                <div className="relative group">
                   <Input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10"
+                    className="h-14 touch-wrapper rounded-2xl border-gray-200 bg-white pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
                   />
                   <Calendar
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-accent"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {t("timeLabel")}
                 </Label>
-                <div className="relative">
+                <div className="relative group">
                   <Input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10"
+                    className="h-14 touch-wrapper rounded-2xl border-gray-200 bg-white pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
                   />
                   <Clock
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-accent"
                   />
                 </div>
               </div>
@@ -257,39 +323,39 @@ export function EventForm({
 
             {/* Address */}
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 {t("addressLabel")}
               </Label>
-              <div className="relative">
+              <div className="relative group">
                 <Input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder={t("addressPlaceholder")}
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10"
+                  className="h-14 touch-wrapper rounded-2xl border-gray-200 bg-white pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
                 />
                 <MapPin
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={18}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-colors group-hover:text-accent"
                 />
               </div>
             </div>
 
             {/* Guests */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {tShared("adultsLabel")}
                 </Label>
                 <Select value={String(adults)} onValueChange={(v) => setAdults(parseInt(v))}>
-                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50">
-                    <div className="flex items-center gap-2">
-                      <Users size={16} className="text-gray-400" />
+                  <SelectTrigger className="h-14 rounded-2xl border-gray-200 bg-white font-medium focus:border-accent focus:ring-0">
+                    <div className="flex items-center gap-3">
+                      <Users size={18} className="text-gray-400" />
                       <SelectValue />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-gray-100">
+                  <SelectContent className="max-h-[300px] rounded-2xl border-gray-100 shadow-xl">
                     {Array.from({ length: 51 }, (_, i) => (
-                      <SelectItem key={i} value={String(i)}>
+                      <SelectItem key={i} value={String(i)} className="rounded-xl py-3">
                         {i} {tShared("adultsCount", { count: i })}
                       </SelectItem>
                     ))}
@@ -297,19 +363,19 @@ export function EventForm({
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                   {tShared("childrenLabel")}
                 </Label>
                 <Select value={String(children)} onValueChange={(v) => setChildren(parseInt(v))}>
-                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50">
-                    <div className="flex items-center gap-2">
-                      <Users size={16} className="text-gray-400" />
+                  <SelectTrigger className="h-14 rounded-2xl border-gray-200 bg-white font-medium focus:border-accent focus:ring-0">
+                    <div className="flex items-center gap-3">
+                      <Users size={18} className="text-gray-400" />
                       <SelectValue />
                     </div>
                   </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-gray-100">
+                  <SelectContent className="max-h-[300px] rounded-2xl border-gray-100 shadow-xl">
                     {Array.from({ length: 51 }, (_, i) => (
-                      <SelectItem key={i} value={String(i)}>
+                      <SelectItem key={i} value={String(i)} className="rounded-xl py-3">
                         {i} {tShared("childrenCount", { count: i })}
                       </SelectItem>
                     ))}
@@ -320,48 +386,60 @@ export function EventForm({
 
             {/* Description */}
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <Label className="ml-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 {t("descriptionLabel")}
               </Label>
-              <div className="relative">
+              <div className="relative group">
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={t("descriptionPlaceholder")}
-                  className="min-h-[80px] rounded-2xl border-gray-100 bg-gray-50/50 pl-10 pt-3"
+                  className="min-h-[100px] resize-none rounded-3xl border-gray-200 bg-white p-4 pl-11 font-medium transition-colors focus:border-accent focus:ring-0 group-hover:border-accent/50"
+                  style={{ fontSize: "16px" }} // Prevent zoom on iOS
                 />
-                <MessageSquare size={16} className="absolute left-3 top-4 text-gray-400" />
+                <MessageSquare
+                  size={18}
+                  className="absolute left-4 top-5 text-gray-400 transition-colors group-hover:text-accent"
+                />
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* 5. Magic Button */}
-      <div className="sticky bottom-0 bg-white/80 pb-2 pt-4 backdrop-blur-md">
-        <Button
-          onClick={handleSubmit}
-          disabled={!name.trim() || isPending}
-          className={cn(
-            "h-16 w-full rounded-[2rem] text-lg font-black transition-all active:scale-[0.98]",
-            name.trim()
-              ? "bg-accent text-white shadow-[0_20px_40px_-12px_rgba(var(--accent-rgb),0.4)] hover:bg-accent/90"
-              : "bg-gray-100 text-gray-300"
+      {/* 5. Magic Floating Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6">
+        <div className="mx-auto max-w-2xl">
+          <div className="rounded-[2.5rem] bg-white/80 p-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-xl border border-white/40">
+            <Button
+              onClick={handleSubmit}
+              disabled={!name.trim() || isPending}
+              className={cn(
+                "h-16 w-full rounded-[2rem] text-lg font-black tracking-tight transition-all duration-300 active:scale-[0.98]",
+                name.trim()
+                  ? "bg-accent text-white shadow-[0_4px_20px_rgba(var(--accent-rgb),0.4)] hover:shadow-[0_8px_30px_rgba(var(--accent-rgb),0.5)] hover:bg-accent hover:-translate-y-0.5"
+                  : "bg-gray-100 text-gray-300"
+              )}
+            >
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>C'est parti !</span>
+                  <Sparkles
+                    size={20}
+                    className={cn("transition-transform", name.trim() && "animate-pulse")}
+                  />
+                </div>
+              )}
+            </Button>
+          </div>
+          {error && (
+            <p className="mt-3 text-center text-xs font-bold text-red-500 animate-in fade-in slide-in-from-bottom-2 bg-white/80 backdrop-blur-sm py-1 rounded-full inline-block px-4 mx-auto left-0 right-0 absolute w-fit">
+              {error}
+            </p>
           )}
-        >
-          {isPending ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <>
-              C'est parti ! <Sparkles size={18} className="ml-2" />
-            </>
-          )}
-        </Button>
-        {error && (
-          <p className="mt-3 text-center text-xs font-bold text-red-500 animate-in fade-in slide-in-from-bottom-2">
-            {error}
-          </p>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -372,13 +450,13 @@ export function EventForm({
 
   return (
     <Drawer open onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="px-6">
-        <DrawerHeader className="px-0 pb-4 text-left">
-          <DrawerTitle className="text-xl font-black tracking-tight">{t("title")}</DrawerTitle>
+      <DrawerContent className="max-h-[96vh] px-4 sm:px-6">
+        <DrawerHeader className="px-0 pb-6 pt-4 text-left">
+          <DrawerTitle className="text-xl font-black tracking-tight text-gray-900">
+            {t("title")}
+          </DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none max-h-[85vh] overflow-y-auto overscroll-contain">
-          {content}
-        </div>
+        <div className="scrollbar-hide overflow-y-auto overscroll-contain">{content}</div>
       </DrawerContent>
     </Drawer>
   );
