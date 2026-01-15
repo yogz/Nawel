@@ -57,7 +57,7 @@ export function HeroSection({
   rotationInterval = 5000,
 }: HeroSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const tLogin = useTranslations("Login");
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export function HeroSection({
     >
       <div className="absolute right-6 top-6 z-50 flex items-center gap-3">
         <AuthNavButton />
-        {!session && (
+        {!isPending && !session && (
           <Link
             href="/login"
             className="flex h-10 items-center justify-center rounded-xl border border-gray-200 bg-white px-4 text-sm font-bold text-gray-900 transition-all hover:bg-gray-50 active:scale-95"
