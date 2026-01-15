@@ -1,7 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShieldAlert, Share, CheckCircle, CircleHelp, Stars } from "lucide-react";
+import {
+  ShieldAlert,
+  Share,
+  CheckCircle,
+  CircleHelp,
+  Stars,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+} from "lucide-react";
 import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
@@ -128,130 +138,137 @@ export function EventPlannerHeader({
           className="w-full px-2 pb-8 pt-5 backdrop-blur-sm transition-all sm:px-2 sm:pb-6 sm:pt-4"
         >
           <div className="mx-auto max-w-3xl">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                <Link
-                  href="/event"
-                  aria-label="Retour à l'accueil"
-                  className="relative block shrink-0 rounded-lg transition-all duration-300 hover:bg-accent/10"
-                  onMouseEnter={() => setHovered(true)}
-                  onMouseLeave={() => setHovered(false)}
-                >
-                  <div className="relative h-9 w-9 sm:h-9 sm:w-9">
-                    <AnimatePresence mode="wait">
-                      {hovered && animationComplete ? (
-                        // Hover effect: show home icon with smooth fade (seulement après la fin de l'animation)
-                        <motion.div
-                          key="hover-home"
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.4, ease: "easeInOut" }}
-                          className="absolute inset-0 flex items-center justify-center"
-                        >
-                          <Home className="h-7 w-7 text-accent" />
-                        </motion.div>
-                      ) : showLogoHint ? (
-                        // Animation sequence during page load - douce et subtile
-                        animationStep === "logo" ? (
+            <div className="flex flex-col gap-6">
+              {/* Top Row: Navigation & Actions */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <Link
+                    href="/event"
+                    aria-label="Retour à l'accueil"
+                    className="relative block shrink-0 rounded-full bg-white/40 p-2 shadow-sm backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/60 active:scale-95"
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                  >
+                    <div className="relative h-5 w-5 sm:h-6 sm:w-6">
+                      <AnimatePresence mode="wait">
+                        {hovered ? (
                           <motion.div
-                            key="logo-anim"
-                            initial={{ opacity: 0, scale: 0.9 }}
+                            key="home"
+                            initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                            exit={{ opacity: 0, scale: 0.8 }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <AppBranding logoSize={36} className="shrink-0" variant="icon" noLink />
-                          </motion.div>
-                        ) : animationStep === "home" ? (
-                          <motion.div
-                            key="home-anim"
-                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 4 }}
-                            transition={{ duration: 0.6, ease: "easeInOut" }}
-                            className="absolute inset-0 flex items-center justify-center"
-                          >
-                            <Home className="h-8 w-8 text-accent" />
+                            <Home className="h-full w-full text-accent" />
                           </motion.div>
                         ) : (
                           <motion.div
-                            key="arrow-anim"
-                            initial={{ opacity: 0, scale: 0.9, x: -4 }}
-                            animate={{ opacity: 1, scale: 1, x: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, x: 4 }}
-                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                            key="arrow"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
                             className="absolute inset-0 flex items-center justify-center"
                           >
-                            <ArrowLeft className="h-8 w-8 text-accent" />
+                            <ArrowLeft className="h-full w-full text-gray-700" />
                           </motion.div>
-                        )
-                      ) : (
-                        // Default: show logo
-                        <motion.div
-                          key="logo-default"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.4, ease: "easeInOut" }}
-                          className="absolute inset-0 flex items-center justify-center"
-                        >
-                          <AppBranding logoSize={36} className="shrink-0" variant="icon" noLink />
-                        </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </Link>
+                  <AppBranding
+                    logoSize={24}
+                    textSize="sm"
+                    className="opacity-80 mix-blend-multiply"
+                  />
+                </div>
+
+                <div className="flex shrink-0 items-center gap-3">
+                  {!readOnly && (
+                    <Button
+                      variant="premium"
+                      onClick={handleShare}
+                      className={cn(
+                        "h-10 w-10 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95",
+                        showAttention && "btn-shine-attention"
                       )}
-                    </AnimatePresence>
+                      icon={
+                        copied ? (
+                          <CheckCircle
+                            size={16}
+                            className="text-green-500 duration-300 animate-in zoom-in spin-in-12"
+                          />
+                        ) : (
+                          <Share size={16} className="text-gray-700" />
+                        )
+                      }
+                      title={t("shareTitle")}
+                    />
+                  )}
+                  <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10">
+                    <UserNav />
                   </div>
-                </Link>
-                <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
+                </div>
+              </div>
+
+              {/* Middle Row: Event Title (Massive) */}
+              <div className="px-1">
+                <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-4xl font-black tracking-tighter text-transparent drop-shadow-sm sm:text-5xl">
                   {plan.event?.name || tShared("defaultEventName")}
                 </h1>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                {readOnly && (
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-sm sm:h-8 sm:w-8">
-                    <ShieldAlert size={16} className="sm:h-[14px] sm:w-[14px]" />
-                  </span>
-                )}
-                {!readOnly && (
-                  <Button
-                    variant="premium"
-                    onClick={handleShare}
-                    className={cn(
-                      "h-11 w-11 rounded-full border border-white/50 p-0 shadow-lg shadow-accent/5 backdrop-blur-sm transition-all hover:scale-110 hover:shadow-accent/20 active:scale-95 sm:h-8 sm:w-8",
-                      showAttention && "btn-shine-attention"
-                    )}
-                    icon={
-                      copied ? (
-                        <CheckCircle
-                          size={16}
-                          className="text-green-500 duration-300 animate-in zoom-in spin-in-12 group-hover:text-white"
-                        />
-                      ) : (
-                        <Share size={16} className="text-gray-700 group-hover:text-white" />
-                      )
-                    }
-                    iconClassName="h-full w-full group-hover:bg-accent"
-                    title={t("shareTitle")}
-                  />
-                )}
-                <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10 sm:h-8 sm:w-8">
-                  <UserNav />
-                </div>
-              </div>
-            </div>
+              {/* Bottom Row: Logistic Pills (Glassmorphic) */}
+              {plan.meals.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 px-1 text-sm font-medium">
+                  {/* Date Pill */}
+                  <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
+                    <Calendar size={14} className="text-accent" />
+                    <span>
+                      {new Date(plan.meals[0].date).toLocaleDateString(undefined, {
+                        weekday: "short",
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </span>
+                  </div>
 
-            {tab === "planning" && (
-              <div className="mt-1">
-                <div className="px-0.5 pb-0.5">
-                  <CitationDisplay
-                    seed={plan.event?.name || slug}
-                    className="text-xs sm:text-[10px]"
-                  />
+                  {/* Time Pill (if distinct) */}
+                  {plan.meals[0].time && (
+                    <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
+                      <Clock size={14} className="text-accent" />
+                      <span>{plan.meals[0].time}</span>
+                    </div>
+                  )}
+
+                  {/* Address Pill */}
+                  {plan.meals[0].address && (
+                    <div className="flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700 sm:max-w-[200px]">
+                      <MapPin size={14} className="shrink-0 text-accent" />
+                      <span className="truncate">{plan.meals[0].address}</span>
+                    </div>
+                  )}
+
+                  {/* Guests Pill */}
+                  <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
+                    <Users size={14} className="text-accent" />
+                    <span>
+                      <span className="font-bold text-gray-900">{plan.people.length}</span>
+                      <span className="text-gray-500">
+                        {" "}
+                        / {(plan.event?.adults || 0) + (plan.event?.children || 0)}
+                      </span>
+                    </span>
+                  </div>
+
+                  {/* Vacation Count (if multiple meals) */}
+                  {plan.meals.length > 1 && (
+                    <div className="flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 text-accent font-bold shadow-sm backdrop-blur-md">
+                      <span className="text-xs">{plan.meals.length} jours</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </header>
       </div>
