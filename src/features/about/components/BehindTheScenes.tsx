@@ -66,9 +66,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) {
-      return;
-    }
+    if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -142,9 +140,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
         2,
         "0"
       )}`;
-      if (!acc[monthKey]) {
-        acc[monthKey] = {};
-      }
+      if (!acc[monthKey]) acc[monthKey] = {};
       acc[monthKey][occ.category] = (acc[monthKey][occ.category] || 0) + occ.amount;
       return acc;
     },
@@ -452,9 +448,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                       .find((c) => (categoryTotals[c] || 0) > 0);
 
                     return CATEGORIES.map((cat) => {
-                      if ((categoryTotals[cat] || 0) === 0) {
-                        return null;
-                      }
+                      if ((categoryTotals[cat] || 0) === 0) return null;
                       return (
                         <Bar
                           key={cat}

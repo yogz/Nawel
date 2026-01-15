@@ -53,9 +53,7 @@ export const auth = betterAuth({
       let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
       try {
         const extracted = new URL(url).origin;
-        if (extracted && extracted.includes(".")) {
-          origin = extracted;
-        }
+        if (extracted && extracted.includes(".")) origin = extracted;
       } catch (e) {
         // use default origin
       }
@@ -125,9 +123,7 @@ export const auth = betterAuth({
         let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
         try {
           const extracted = new URL(url).origin;
-          if (extracted && extracted.includes(".")) {
-            origin = extracted;
-          }
+          if (extracted && extracted.includes(".")) origin = extracted;
         } catch (e) {
           // use default origin
         }
@@ -180,9 +176,7 @@ export const auth = betterAuth({
       let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
       try {
         const extracted = new URL(url).origin;
-        if (extracted && extracted.includes(".")) {
-          origin = extracted;
-        }
+        if (extracted && extracted.includes(".")) origin = extracted;
       } catch (e) {
         // use default origin
       }

@@ -27,9 +27,7 @@ export function ResetPasswordForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     setError("");
     setLoading(true);

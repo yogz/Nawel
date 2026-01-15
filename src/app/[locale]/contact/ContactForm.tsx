@@ -25,9 +25,7 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !content.trim() || isSubmitting) {
-      return;
-    }
+    if (!email.trim() || !content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -50,9 +48,7 @@ export default function ContactForm() {
     }
   };
   const handleFormSubmit = (e?: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
+    if (e) e.preventDefault();
     handleSubmit(new Event("submit") as any);
   };
 

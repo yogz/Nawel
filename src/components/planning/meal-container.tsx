@@ -96,24 +96,15 @@ export function MealContainer({
       {/* Meal Info Row - Premium & Compact */}
       <div className="mx-0 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
         <div className="flex min-w-0 flex-1 flex-col">
-          <div
-            role="button"
-            tabIndex={readOnly ? -1 : 0}
+          <button
+            type="button"
             className={cn(
               "group flex items-center gap-2 text-left",
               !readOnly &&
                 "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
             )}
             onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
-            onKeyDown={(e) => {
-              if (readOnly) {
-                return;
-              }
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setSheet({ type: "meal-edit", meal });
-              }
-            }}
+            disabled={readOnly}
             aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
           >
             <button
@@ -140,7 +131,7 @@ export function MealContainer({
                 <Edit3 className="h-3.5 w-3.5" />
               </span>
             )}
-          </div>
+          </button>
 
           <div className="mt-2 flex flex-col gap-1.5 text-[11px]">
             {fullDate && (

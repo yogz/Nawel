@@ -66,9 +66,7 @@ export function HeroSection({
   }, []);
 
   useEffect(() => {
-    if (!rotationVariants || rotationVariants.length <= 1) {
-      return;
-    }
+    if (!rotationVariants || rotationVariants.length <= 1) return;
 
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % rotationVariants.length);

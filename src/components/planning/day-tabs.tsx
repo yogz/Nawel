@@ -47,9 +47,7 @@ export function DayTabs({ days, selectedDate, onSelect }: DayTabsProps) {
     }
   };
 
-  if (days.length <= 1) {
-    return null;
-  }
+  if (days.length <= 1) return null;
 
   return (
     <div className="relative mb-6">

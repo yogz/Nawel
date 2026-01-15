@@ -141,12 +141,8 @@ export function ShoppingPage({
 
   const categories = useMemo(() => {
     const cats = Object.keys(shoppingList).sort((a, b) => {
-      if (a === "misc") {
-        return 1;
-      }
-      if (b === "misc") {
-        return -1;
-      }
+      if (a === "misc") return 1;
+      if (b === "misc") return -1;
       return a.localeCompare(b);
     });
     return cats;
@@ -378,12 +374,8 @@ export function ShoppingPage({
               .filter(([category]) => activeCategory === "all" || activeCategory === category)
               .sort(([catA], [catB]) => {
                 // Put 'misc' at the end
-                if (catA === "misc") {
-                  return 1;
-                }
-                if (catB === "misc") {
-                  return -1;
-                }
+                if (catA === "misc") return 1;
+                if (catB === "misc") return -1;
                 return catA.localeCompare(catB);
               })
               .map(([category, items]) => {

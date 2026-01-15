@@ -135,9 +135,7 @@ export function OrganizerSheets({
   }, [currentServiceId, plan.meals]);
 
   const itemIngredients = useMemo(() => {
-    if (!sheet) {
-      return undefined;
-    }
+    if (!sheet) return undefined;
 
     if (sheet.type === "item" && sheet.item) {
       const found = findItem(sheet.item.id);
@@ -551,9 +549,7 @@ export function OrganizerSheets({
                         let finalPeopleCount = peopleCount;
                         if (note) {
                           const match = note.match(/Pour (\d+) personne/i);
-                          if (match) {
-                            finalPeopleCount = parseInt(match[1]);
-                          }
+                          if (match) finalPeopleCount = parseInt(match[1]);
                         }
 
                         await handleGenerateIngredients(

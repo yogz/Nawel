@@ -15,12 +15,8 @@ function getSnapshot(): LandingVariant | null {
   // Allow forcing variant via URL for testing
   const params = new URLSearchParams(window.location.search);
   const forcedVariant = params.get("v");
-  if (forcedVariant === "c") {
-    return "landing-c";
-  }
-  if (forcedVariant === "b" || forcedVariant === "a") {
-    return "landing-alt";
-  }
+  if (forcedVariant === "c") return "landing-c";
+  if (forcedVariant === "b" || forcedVariant === "a") return "landing-alt";
 
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved === "landing-alt" || saved === "landing-c") {

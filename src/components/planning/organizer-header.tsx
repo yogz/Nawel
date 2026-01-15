@@ -57,9 +57,7 @@ export function OrganizerHeader({
 
   // Animation sequence: Logo -> Home -> Arrow -> Logo (douce et subtile)
   useEffect(() => {
-    if (!showLogoHint) {
-      return;
-    }
+    if (!showLogoHint) return;
 
     const timers: NodeJS.Timeout[] = [];
 
@@ -306,8 +304,8 @@ export function PlanningFilters({
               <CircleHelp size={12} className="shrink-0" />
               {unassignedItemsCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500"></span>
                 </span>
               )}
             </div>

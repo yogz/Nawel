@@ -49,9 +49,7 @@ export function AdminEventList({ initialEvents }: { initialEvents: EventWithStat
 
   const filteredEvents = events.filter((event) => {
     const searchLower = searchQuery.toLowerCase().trim();
-    if (!searchLower) {
-      return true;
-    }
+    if (!searchLower) return true;
 
     return (
       event.name.toLowerCase().includes(searchLower) ||

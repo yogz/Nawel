@@ -33,9 +33,7 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) {
-      return;
-    }
+    if (!content.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
