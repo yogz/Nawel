@@ -35,6 +35,14 @@ import { Home, ArrowLeft, Pencil } from "lucide-react";
 import { AutoSizeText } from "@/components/common/auto-size-text";
 import { AutoSizeInput } from "@/components/common/auto-size-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
 import { TimePicker } from "@/components/ui/time-picker";
 
@@ -67,6 +75,7 @@ export function EventPlannerHeader({
   writeKey,
   handlers,
 }: EventPlannerHeaderProps) {
+  const isMobile = useIsMobile();
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const tShared = useTranslations("EventDashboard.Shared");
@@ -344,7 +353,7 @@ export function EventPlannerHeader({
                   {/* Left edge gradient fade */}
                   <div
                     className={cn(
-                      "pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-12 bg-gradient-to-r from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
+                      "pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-4 bg-gradient-to-r from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
                       showLeftFade ? "opacity-100" : "opacity-0"
                     )}
                   />
@@ -435,50 +444,115 @@ export function EventPlannerHeader({
                     {/* Address Pill */}
                     {firstMeal.address &&
                       (!readOnly ? (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[240px]">
-                              <MapPin
-                                size={14}
-                                className="shrink-0 text-accent"
-                                strokeWidth={1.8}
-                              />
-                              <span className="truncate">{firstMeal.address}</span>
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-80 p-3" align="start">
-                            <div className="flex flex-col gap-2">
-                              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                                Modifier l'adresse
-                              </h4>
-                              <Input
-                                defaultValue={firstMeal.address}
-                                autoFocus
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    const val = (e.target as HTMLInputElement).value;
-                                    handlers.handleUpdateMeal?.(
-                                      firstMeal.id,
-                                      firstMeal.date,
-                                      firstMeal.title,
-                                      firstMeal.adults,
-                                      firstMeal.children,
-                                      firstMeal.time,
-                                      val
-                                    );
-                                    // Popover closes automatically if we use an open state,
-                                    // but shadcn Popover usually needs manual close or click outside.
-                                    // We'll rely on global state update to refresh UI.
-                                  }
-                                }}
-                                className="h-9"
-                              />
-                              <p className="text-[10px] text-gray-400">
-                                Appuyez auf Entrée pour sauvegarder
-                              </p>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                        <>
+                          {isMobile ? (
+                            <Drawer>
+                              <DrawerTrigger asChild>
+                                <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
+                                  <MapPin
+                                    size={14}
+                                    className="shrink-0 text-accent"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{firstMeal.address}</span>
+                                </button>
+                              </DrawerTrigger>
+                              <DrawerContent className="px-4 pb-8">
+                                <DrawerHeader className="px-0 text-left">
+                                  <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
+                                    Modifier l'adresse
+                                  </DrawerTitle>
+                                </DrawerHeader>
+                                <div className="flex flex-col gap-3 py-4">
+                                  <Input
+                                    defaultValue={firstMeal.address}
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        const val = (e.target as HTMLInputElement).value;
+                                        handlers.handleUpdateMeal?.(
+                                          firstMeal.id,
+                                          firstMeal.date,
+                                          firstMeal.title,
+                                          firstMeal.adults,
+                                          firstMeal.children,
+                                          firstMeal.time,
+                                          val
+                                        );
+                                      }
+                                    }}
+                                    className="h-12 text-base" // Larger input on mobile
+                                  />
+                                  <p className="text-xs text-muted-foreground">
+                                    Appuyez sur Entrée pour sauvegarder
+                                  </p>
+                                  <Button
+                                    onClick={(e) => {
+                                      const input = e.currentTarget.previousElementSibling
+                                        ?.previousElementSibling as HTMLInputElement;
+                                      if (input) {
+                                        handlers.handleUpdateMeal?.(
+                                          firstMeal.id,
+                                          firstMeal.date,
+                                          firstMeal.title,
+                                          firstMeal.adults,
+                                          firstMeal.children,
+                                          firstMeal.time,
+                                          input.value
+                                        );
+                                      }
+                                    }}
+                                    className="w-full bg-accent text-white"
+                                  >
+                                    Sauvegarder
+                                  </Button>
+                                </div>
+                              </DrawerContent>
+                            </Drawer>
+                          ) : (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[240px]">
+                                  <MapPin
+                                    size={14}
+                                    className="shrink-0 text-accent"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{firstMeal.address}</span>
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-80 p-3" align="start">
+                                <div className="flex flex-col gap-2">
+                                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                    Modifier l'adresse
+                                  </h4>
+                                  <Input
+                                    defaultValue={firstMeal.address}
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        const val = (e.target as HTMLInputElement).value;
+                                        handlers.handleUpdateMeal?.(
+                                          firstMeal.id,
+                                          firstMeal.date,
+                                          firstMeal.title,
+                                          firstMeal.adults,
+                                          firstMeal.children,
+                                          firstMeal.time,
+                                          val
+                                        );
+                                      }
+                                    }}
+                                    className="h-9"
+                                  />
+                                  <p className="text-[10px] text-gray-400">
+                                    Appuyez sur Entrée pour sauvegarder
+                                  </p>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </>
                       ) : (
                         <div className="flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[240px]">
                           <MapPin size={14} className="shrink-0 text-accent" strokeWidth={1.8} />
@@ -496,7 +570,7 @@ export function EventPlannerHeader({
                   {/* Right edge gradient fade */}
                   <div
                     className={cn(
-                      "pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
+                      "pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-4 bg-gradient-to-l from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
                       showRightFade ? "opacity-100" : "opacity-0"
                     )}
                   />
