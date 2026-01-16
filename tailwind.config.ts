@@ -98,6 +98,15 @@ const config: Config = {
         slow: "500ms",
         slower: "800ms",
       },
+      keyframes: {
+        gradient: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+      },
+      animation: {
+        "gradient-slow": "gradient 6s ease infinite",
+      },
     },
   },
   plugins: [tailwindcssAnimate],

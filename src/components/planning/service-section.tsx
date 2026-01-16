@@ -69,19 +69,18 @@ export const ServiceSection = memo(function ServiceSection({
     <div
       ref={setNodeRef}
       className={cn(
-        "relative rounded-2xl border border-white/60 bg-white/70 px-2 py-5 shadow-lg backdrop-blur-md transition-all duration-300 hover:border-white/80 hover:bg-white/75 hover:shadow-xl sm:px-3 sm:py-6",
-        "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-50",
-        isOver && "scale-[1.01] ring-2 ring-accent/50 ring-offset-2"
+        "relative overflow-hidden rounded-[32px] border border-white/40 bg-white/90 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/5",
+        isOver && "bg-accent/5 ring-1 ring-accent/20"
       )}
     >
-      <div className="relative z-10 mb-5 flex items-center justify-between border-b border-white/40 pb-3">
+      <div className="relative z-10 flex items-center justify-between border-b border-gray-100 px-6 py-5 sm:px-7">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
           className={cn(
-            "group flex items-center gap-2 text-left",
+            "group flex items-center gap-4 text-left",
             !readOnly &&
-              "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+              "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
           )}
           onClick={() => !readOnly && onEdit()}
           onKeyDown={(e) => {
@@ -92,33 +91,40 @@ export const ServiceSection = memo(function ServiceSection({
           }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 transition-all hover:bg-black/5"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/5 text-accent transition-all hover:bg-accent/10 sm:h-10 sm:w-10"
               aria-label={isExpanded ? t("collapse") : t("expand")}
             >
               <motion.div
                 animate={{ rotate: isExpanded ? 90 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <ChevronRight className="h-5 w-5 text-accent" />
+                <ChevronRight className="h-6 w-6" />
               </motion.div>
             </button>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-accent/10 bg-accent/5 text-base shadow-sm transition-all duration-300 group-hover:border-accent/20 group-hover:bg-accent/10 sm:h-9 sm:w-9">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-[20px] shadow-lg shadow-accent/20 ring-4 ring-white transition-all duration-300 group-hover:scale-110 sm:h-12 sm:w-12 sm:text-[22px]">
               {service.icon || getServiceIcon(service.title)}
             </div>
-            <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.15em] sm:text-base">
-              {translatedTitle}
-            </h3>
+            <div>
+              <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.2em] sm:text-base">
+                {translatedTitle}
+              </h3>
+              {filteredItems.length > 0 && (
+                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-accent/40">
+                  {filteredItems.length} {t("items")}
+                </p>
+              )}
+            </div>
           </div>
           {!readOnly && (
             <span className="text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
-              <Edit3 size={12} />
+              <Edit3 size={14} />
             </span>
           )}
         </div>
@@ -133,9 +139,9 @@ export const ServiceSection = memo(function ServiceSection({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="relative z-10 overflow-hidden"
           >
-            <div className="flex flex-col gap-1">
-              {filteredItems.map((item, index) => (
-                <div key={item.id}>
+            <div className="flex flex-col">
+              {filteredItems.map((item) => (
+                <div key={item.id} className="group-item relative">
                   <MenuItemRow
                     item={item}
                     person={people.find((p) => p.id === item.personId)}
@@ -152,23 +158,24 @@ export const ServiceSection = memo(function ServiceSection({
               ))}
 
               {!readOnly && (
-                <Button
-                  variant="premium"
-                  className="mt-4 h-14 w-full touch-manipulation rounded-xl transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.98] sm:mt-3 sm:h-11"
-                  icon={<PlusIcon size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />}
-                  onClick={() => {
-                    // Haptic feedback on mobile
-                    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-                      navigator.vibrate(10);
-                    }
-                    onCreate();
-                  }}
-                  aria-label={t("addItem")}
-                >
-                  <span className="text-xs font-black uppercase tracking-wider sm:text-[10px]">
-                    {t("addItem")}
-                  </span>
-                </Button>
+                <div className="p-3 sm:p-4">
+                  <Button
+                    variant="premium"
+                    className="h-12 w-full touch-manipulation rounded-[20px] border border-dashed border-gray-200 bg-white/50 text-gray-500 shadow-sm transition-all duration-300 hover:border-accent hover:bg-accent/5 hover:text-accent active:scale-[0.98]"
+                    icon={<PlusIcon size={18} strokeWidth={3} />}
+                    onClick={() => {
+                      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                        navigator.vibrate(10);
+                      }
+                      onCreate();
+                    }}
+                    aria-label={t("addItem")}
+                  >
+                    <span className="text-xs font-black uppercase tracking-[0.2em]">
+                      {t("addItem")}
+                    </span>
+                  </Button>
+                </div>
               )}
             </div>
           </motion.div>

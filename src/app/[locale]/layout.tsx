@@ -117,7 +117,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#e9d5ff", // Light violet to match header gradient
+  themeColor: "#e8e4ed", // Premium violet to match header
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";

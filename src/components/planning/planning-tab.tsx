@@ -165,9 +165,9 @@ export function PlanningTab({
         variants={isMobile ? {} : containerVariants}
         initial={isMobile ? false : "hidden"}
         animate={isMobile ? false : "show"}
-        className="space-y-2 pt-0"
+        className="space-y-6 pt-0 sm:space-y-8"
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-6">
           {unassignedItemsCount > 0 && (
             <div className="px-0">
               <PlanningFilters
@@ -243,26 +243,46 @@ export function PlanningTab({
       </motion.div>
       {plan.meals.length === 0 && planningFilter.type === "all" && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-4 py-12 text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto flex max-w-lg flex-col items-center justify-center px-6 py-20 text-center"
         >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="mb-6 flex justify-center"
-          >
-            <Calendar className="h-20 w-20 text-gray-300" />
-          </motion.div>
-          <h3 className="mb-2 text-lg font-bold text-gray-900">{t("noMeals")}</h3>
-          <p className="mx-auto mb-6 max-w-sm text-sm text-gray-500">
-            Créez votre premier repas pour commencer à organiser votre événement
+          <div className="group relative mb-8">
+            <div className="absolute -inset-8 animate-pulse rounded-full bg-accent/5 blur-2xl transition-all group-hover:bg-accent/10" />
+            <motion.div
+              animate={{
+                y: [0, -8, 0],
+                rotate: [0, -2, 2, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative rounded-3xl bg-white/50 p-6 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl"
+            >
+              <Calendar className="h-20 w-20 text-accent/20" strokeWidth={1.5} />
+              <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 shadow-lg ring-1 ring-accent/20">
+                <PlusIcon className="h-5 w-5 text-accent" strokeWidth={2.5} />
+              </div>
+            </motion.div>
+          </div>
+
+          <h3 className="mb-3 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
+            {t("noMeals")}
+          </h3>
+          <p className="mb-10 max-w-sm text-base font-medium leading-relaxed text-gray-500">
+            {t("noMealsDesc") ||
+              "Donnez vie à votre événement ! Ajoutez votre premier repas pour commencer à vous organiser en toute simplicité."}
           </p>
+
           {!readOnly && (
             <Button
               variant="premium"
-              className="h-14 w-full max-w-xs text-base font-bold sm:h-12 sm:text-sm"
-              icon={<PlusIcon size={24} className="sm:h-5 sm:w-5" />}
+              size="lg"
+              className="h-14 w-full max-w-xs rounded-full bg-accent text-lg font-black uppercase tracking-widest text-white shadow-[0_20px_40px_-15px_rgba(var(--accent-rgb),0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_25px_45px_-15px_rgba(var(--accent-rgb),0.4)] active:scale-95"
+              icon={<PlusIcon size={24} />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
               {t("addMeal")}

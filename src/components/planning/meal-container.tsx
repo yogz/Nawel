@@ -91,70 +91,76 @@ export function MealContainer({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
-      className="relative flex flex-col gap-6 pt-2"
+      className={cn("relative flex flex-col gap-6 pt-2", plan.meals.length === 1 && "gap-0 pt-0")}
     >
       {/* Meal Info Row - Premium & Compact */}
-      <div className="mx-0 flex items-center gap-4 rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-md backdrop-blur-sm transition-all duration-300 hover:shadow-lg sm:p-6">
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div
-            className={cn(
-              "group flex items-center gap-2 text-left",
-              !readOnly &&
-                "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
-            )}
-            onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
-            role={readOnly ? undefined : "button"}
-            tabIndex={readOnly ? undefined : 0}
-            onKeyDown={(e) => {
-              if (!readOnly && (e.key === "Enter" || e.key === " ")) {
-                e.preventDefault();
-                setSheet({ type: "meal-edit", meal });
-              }
-            }}
-            aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
-          >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(!isExpanded);
-              }}
-              className="mr-1 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-black/5"
-              aria-label={isExpanded ? t("collapse") : t("expand")}
-            >
-              <motion.div
-                animate={{ rotate: isExpanded ? 90 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <ChevronRight className="h-5 w-5 text-accent" />
-              </motion.div>
-            </button>
-            <h2 className="text-gradient-header flex items-center gap-2 truncate text-lg font-black tracking-tight">
-              {meal.date === "common" ? t("common") : meal.title || meal.date}
-            </h2>
-            {!readOnly && (
-              <span className="shrink-0 text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
-                <Edit3 className="h-3.5 w-3.5" />
-              </span>
-            )}
-          </div>
+      {plan.meals.length > 1 && (
+        <div className="group/meal-card relative mx-0 overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-5 shadow-lg backdrop-blur-xl transition-all duration-500 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/5 sm:p-6">
+          {/* Decorative background accent */}
+          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover/meal-card:bg-accent/10" />
 
-          <div className="mt-2 flex flex-col gap-1.5 text-[11px]">
-            {fullDate && (
-              <div className="flex items-center gap-1.5 font-bold text-accent">
-                <Clock className="h-3 w-3" aria-hidden="true" />
-                {fullDate}
+          <div className="relative flex min-w-0 flex-1 flex-col">
+            <div
+              className={cn(
+                "group flex items-center gap-3 text-left",
+                !readOnly &&
+                  "cursor-pointer rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+              )}
+              onClick={() => !readOnly && setSheet({ type: "meal-edit", meal })}
+              role={readOnly ? undefined : "button"}
+              tabIndex={readOnly ? undefined : 0}
+              onKeyDown={(e) => {
+                if (!readOnly && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  setSheet({ type: "meal-edit", meal });
+                }
+              }}
+              aria-label={readOnly ? undefined : t("editMeal", { name: meal.title || meal.date })}
+            >
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent/5 text-accent transition-all hover:bg-accent/10 active:scale-90"
+                aria-label={isExpanded ? t("collapse") : t("expand")}
+              >
+                <motion.div
+                  animate={{ rotate: isExpanded ? 90 : 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </motion.div>
+              </button>
+              <div className="flex min-w-0 flex-1 flex-col">
+                <h2 className="text-gradient-header truncate text-xl font-black tracking-tight sm:text-2xl">
+                  {meal.date === "common" ? t("common") : meal.title || meal.date}
+                </h2>
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
+                  {fullDate && (
+                    <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent">
+                      <Clock className="h-3 w-3" aria-hidden="true" />
+                      {fullDate}
+                    </div>
+                  )}
+                  {meal.address && (
+                    <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-gray-500">
+                      <MapPin className="h-3 w-3 text-gray-400" aria-hidden="true" />
+                      <span className="truncate">{meal.address}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-            {meal.address && (
-              <div className="flex items-center gap-1.5 font-medium text-gray-600">
-                <MapPin className="h-3 w-3 text-gray-500" aria-hidden="true" />
-                <span className="truncate">{meal.address}</span>
-              </div>
-            )}
+              {!readOnly && (
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-accent/20 opacity-0 transition-all group-hover:bg-accent/5 group-hover:text-accent group-hover:opacity-100">
+                  <Edit3 className="h-4 w-4" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Service Cards */}
       <AnimatePresence initial={false}>

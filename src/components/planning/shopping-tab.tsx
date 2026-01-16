@@ -2,9 +2,10 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { ShoppingCart, ExternalLink, Check, UserX, Users, X } from "lucide-react";
-import { renderAvatar, getDisplayName } from "@/lib/utils";
+import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
+import { renderAvatar, getDisplayName, cn } from "@/lib/utils";
 import clsx from "clsx";
+import { motion, AnimatePresence } from "framer-motion";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
@@ -120,7 +121,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     aggregated.forEach((item) => {
       // For ingredients, use the category from the first source
       // For items (manual), default to "misc"
-      const category = (item.sources[0].ingredient as any)?.category || "misc";
+      const category = (item.sources[0].ingredient as Ingredient | undefined)?.category || "misc";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -342,21 +343,32 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         </Select>
 
         {/* Global progress */}
-        <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
-          <div className="mb-3 flex items-center justify-between">
+        <div className="group/progress relative overflow-hidden rounded-[32px] border border-white/40 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/5">
+          {/* Decorative background flare */}
+          <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/5 blur-[80px] transition-all group-hover/progress:bg-accent/10" />
+
+          <div className="relative mb-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
-              <p className="text-2xl font-bold text-text">
-                {checkedAll}/{totalAll}
-                <span className="ml-2 text-sm font-normal text-muted-foreground">{t("items")}</span>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/60">
+                {t("totalProgress")}
+              </p>
+              <p className="mt-1 text-4xl font-black tracking-tight text-gray-900">
+                {checkedAll}
+                <span className="mx-1 text-accent/30">/</span>
+                <span className="text-gray-300">{totalAll}</span>
               </p>
             </div>
-            <div className="text-3xl font-black text-accent">{progressAll}%</div>
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/5 text-4xl font-black text-accent ring-1 ring-accent/10">
+              {progressAll}
+              <span className="text-sm opacity-50">%</span>
+            </div>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-            <div
-              className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
-              style={{ transform: `scaleX(${progressAll / 100})` }}
+          <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-100 ring-4 ring-white shadow-inner">
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: progressAll / 100 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 origin-left bg-gradient-to-r from-accent via-primary to-accent bg-[length:200%_auto] animate-gradient-slow"
             />
           </div>
         </div>
@@ -526,42 +538,55 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       )}
 
       {/* Header with progress */}
-      <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
-        <div className="mb-3 flex items-center gap-4">
+      <div className="group/progress relative overflow-hidden rounded-[32px] border border-white/40 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/5">
+        {/* Decorative background flare */}
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/5 blur-[80px] transition-all group-hover/progress:bg-accent/10" />
+
+        <div className="relative mb-6 flex items-center gap-5">
           {displayPerson && (
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-3xl">
-              {(() => {
-                const avatar = renderAvatar(
-                  displayPerson,
-                  plan.people.map((p) => p.name)
-                );
-                if (avatar.type === "image") {
-                  return (
-                    <img
-                      src={avatar.src}
-                      alt={displayPerson ? getDisplayName(displayPerson) : ""}
-                      className="h-full w-full object-cover"
-                    />
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-accent shadow-xl shadow-accent/20 text-3xl ring-4 ring-white">
+                {(() => {
+                  const avatar = renderAvatar(
+                    displayPerson,
+                    plan.people.map((p) => p.name)
                   );
-                }
-                return avatar.value;
-              })()}
+                  if (avatar.type === "image") {
+                    return (
+                      <img
+                        src={avatar.src}
+                        alt={displayPerson ? getDisplayName(displayPerson) : ""}
+                        className="h-full w-full object-cover"
+                      />
+                    );
+                  }
+                  return <span className="text-white font-black">{avatar.value}</span>;
+                })()}
+              </div>
+              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-xl bg-white shadow-lg ring-1 ring-black/5">
+                <ShoppingCart size={14} className="text-accent" />
+              </div>
             </div>
           )}
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-text">
+            <h2 className="text-2xl font-black tracking-tight text-gray-900">
               {displayPerson ? getDisplayName(displayPerson) : t("myList")}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {checkedCount}/{allItems.length} {t("items")} {t("bought", { count: checkedCount })}
+            <p className="mt-1 text-sm font-bold uppercase tracking-widest text-accent/60">
+              {checkedCount}/{allItems.length} {t("items")}
             </p>
           </div>
-          <div className="text-3xl font-black text-accent">{progressPercent}%</div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/5 text-2xl font-black text-accent ring-1 ring-accent/10">
+            {progressPercent}%
+          </div>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-          <div
-            className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
-            style={{ transform: `scaleX(${progressPercent / 100})` }}
+
+        <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-gray-100 ring-2 ring-white shadow-inner">
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: progressPercent / 100 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute inset-0 origin-left bg-gradient-to-r from-accent to-primary"
           />
         </div>
       </div>
@@ -582,97 +607,134 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         {Object.entries(shoppingList)
           .sort(([catA], [catB]) => {
             // Put 'misc' at the end
-            if (catA === "misc") return 1;
-            if (catB === "misc") return -1;
+            if (catA === "misc") {
+              return 1;
+            }
+            if (catB === "misc") {
+              return -1;
+            }
             return catA.localeCompare(catB);
           })
           .map(([category, items]) => (
-            <div key={category} className="space-y-3">
-              <h3 className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
-                <span className="h-px flex-1 bg-gray-100" />
-                {t(`aisles.${category}` as any)}
-                <span className="h-px flex-1 bg-gray-100" />
-              </h3>
-              <div className="space-y-2">
-                {items.map((aggregatedItem) => {
-                  const isChecked = getEffectiveChecked(aggregatedItem);
-                  const itemName = aggregatedItem.name;
+            <div key={category} className="space-y-4">
+              <div className="flex items-center gap-4 px-2">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-accent/40">
+                  {t(`aisles.${category}` as Parameters<typeof t>[0])}
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-black/[0.05] to-transparent" />
+              </div>
+              <div className="overflow-hidden rounded-[32px] border border-white/40 bg-white/90 shadow-2xl backdrop-blur-xl">
+                <div className="flex flex-col">
+                  {items.map((aggregatedItem) => {
+                    const isChecked = getEffectiveChecked(aggregatedItem);
+                    const itemName = aggregatedItem.name;
 
-                  return (
-                    <button
-                      key={aggregatedItem.id}
-                      type="button"
-                      onClick={() => handleToggle(aggregatedItem)}
-                      disabled={isPending}
-                      aria-label={`${t(isChecked ? "uncheck" : "check") as string} ${itemName}`}
-                      aria-pressed={isChecked}
-                      className={clsx(
-                        "group relative flex w-full items-start gap-4 overflow-hidden rounded-[24px] border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:p-4",
-                        isChecked
-                          ? "border-green-200 bg-green-50 shadow-sm"
-                          : "border border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5"
-                      )}
-                    >
-                      {/* Decorative background gradient */}
-                      {!isChecked && (
-                        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
-                      )}
-                      {/* Checkbox */}
-                      <div
+                    return (
+                      <motion.button
+                        key={aggregatedItem.id}
+                        type="button"
+                        whileTap={{ scale: 0.99 }}
+                        onClick={() => handleToggle(aggregatedItem)}
+                        disabled={isPending}
+                        aria-label={`${t(isChecked ? "uncheck" : "check") as string} ${itemName}`}
+                        aria-pressed={isChecked}
                         className={clsx(
-                          "relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 transition-all sm:h-6 sm:w-6",
-                          isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
+                          "group relative flex w-full items-center gap-5 px-6 py-5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:px-7",
+                          isChecked ? "bg-green-50/20" : "hover:bg-accent/[0.03]"
                         )}
                       >
-                        {isChecked && (
-                          <Check size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />
+                        {/* Interactive background accent */}
+                        {!isChecked && (
+                          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent/0 blur-3xl transition-all duration-500 group-hover:bg-accent/5" />
                         )}
-                      </div>
+                        {/* Checkbox */}
+                        <div
+                          className={clsx(
+                            "relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border-2 transition-all duration-500",
+                            isChecked
+                              ? "border-green-500 bg-green-500 text-white shadow-lg shadow-green-200"
+                              : "border-gray-200 bg-white group-hover:border-accent/40"
+                          )}
+                        >
+                          <AnimatePresence mode="wait">
+                            {isChecked ? (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -45 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                key="check"
+                              >
+                                <Check size={20} strokeWidth={4} className="sm:h-5 sm:w-5" />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                key="empty"
+                              />
+                            )}
+                          </AnimatePresence>
+                        </div>
 
-                      {/* Content */}
-                      <div className="relative z-10 min-w-0 flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <span
-                            className={clsx(
-                              "text-base font-semibold transition-all sm:text-base",
-                              isChecked ? "text-green-700 line-through" : "text-text"
+                        {/* Content */}
+                        <div className="relative z-10 min-w-0 flex-1">
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={clsx(
+                                "truncate text-lg font-black tracking-tight transition-all sm:text-lg",
+                                isChecked ? "text-green-800/40 line-through" : "text-gray-900"
+                              )}
+                            >
+                              {itemName}
+                            </span>
+                            {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                              <span
+                                className={cn(
+                                  "rounded-lg bg-gray-50 px-2 py-0.5 text-xs font-bold text-gray-500 ring-1 ring-gray-100",
+                                  isChecked && "opacity-30"
+                                )}
+                              >
+                                {formatAggregatedQuantity(
+                                  aggregatedItem.quantity,
+                                  aggregatedItem.unit
+                                )}
+                              </span>
+                            )}
+                          </div>
+                          <p
+                            className={cn(
+                              "mt-1 text-[11px] font-bold uppercase tracking-widest text-gray-400 sm:text-[11px]",
+                              isChecked && "opacity-30"
                             )}
                           >
-                            {itemName}
-                          </span>
-                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                            <span className="text-sm text-muted-foreground sm:text-sm">
-                              {formatAggregatedQuantity(
-                                aggregatedItem.quantity,
-                                aggregatedItem.unit
-                              )}
-                            </span>
-                          )}
+                            {aggregatedItem.sources.length > 1 ? (
+                              <span className="text-accent/60">
+                                {t("sources", { count: aggregatedItem.sources.length })}
+                              </span>
+                            ) : (
+                              <span className="truncate block">
+                                {aggregatedItem.sources[0].type === "ingredient" && (
+                                  <>
+                                    <span className="text-gray-500">
+                                      {aggregatedItem.sources[0].item.name}
+                                    </span>
+                                    {" • "}
+                                  </>
+                                )}
+                                {plan.meals.length > 1 && (
+                                  <>{aggregatedItem.sources[0].mealTitle} • </>
+                                )}
+                                {aggregatedItem.sources[0].serviceTitle}
+                              </span>
+                            )}
+                          </p>
                         </div>
-                        <p className="mt-0.5 text-xs text-muted-foreground sm:text-xs">
-                          {aggregatedItem.sources.length > 1 ? (
-                            <span className="font-medium text-accent">
-                              {t("sources", { count: aggregatedItem.sources.length })}
-                            </span>
-                          ) : (
-                            <>
-                              {aggregatedItem.sources[0].type === "ingredient" && (
-                                <>
-                                  <span className="font-medium">
-                                    {aggregatedItem.sources[0].item.name}
-                                  </span>
-                                  {" · "}
-                                </>
-                              )}
-                              {aggregatedItem.sources[0].mealTitle} ·{" "}
-                              {aggregatedItem.sources[0].serviceTitle}
-                            </>
-                          )}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+
+                        {/* Subtle separator */}
+                        <div className="absolute bottom-0 left-6 right-6 h-px bg-gray-100 group-last:hidden" />
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ))}

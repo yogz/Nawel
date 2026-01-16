@@ -95,20 +95,21 @@ function ItemRowComponent({
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-4 px-2 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.96] active:bg-gray-100 sm:px-2 sm:py-4",
+        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 active:scale-[0.99] sm:px-5 sm:py-4",
+        "hover:bg-accent/[0.03]",
         !readOnly &&
-          "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+          "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
     >
       {/* Main Content Container */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-col gap-2">
           {/* Header row: Item Name */}
-          <div className="group flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <p
               className={cn(
-                "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
-                "text-text",
+                "text-base font-bold leading-tight transition-colors sm:text-base",
+                "text-gray-900",
                 person && "opacity-100"
               )}
             >
@@ -116,7 +117,7 @@ function ItemRowComponent({
             </p>
             {!readOnly && (
               <Edit3
-                className="h-4 w-4 shrink-0 text-accent/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:h-3.5 sm:w-3.5"
+                className="h-3.5 w-3.5 shrink-0 text-accent/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 aria-hidden="true"
               />
             )}
@@ -139,22 +140,14 @@ function ItemRowComponent({
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 sm:text-[10px]">
-                  <Euro
-                    size={13}
-                    className="text-green-600 sm:h-[11px] sm:w-[11px]"
-                    aria-hidden="true"
-                  />
+                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-green-700 ring-1 ring-green-500/10">
+                  <Euro size={10} className="text-green-600" aria-hidden="true" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 sm:text-[10px]">
-                  <ChefHat
-                    size={13}
-                    className="text-purple-600 sm:h-[11px] sm:w-[11px]"
-                    aria-hidden="true"
-                  />
+                <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-accent ring-1 ring-accent/10">
+                  <ChefHat size={10} className="text-accent" aria-hidden="true" />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
@@ -178,21 +171,41 @@ function ItemRowComponent({
       </div>
 
       {/* Person & Avatar / Take Action - Always on the right */}
-      <div
-        className={cn(
-          "flex shrink-0 items-center gap-2",
-          person ? "rounded-lg border border-accent/20 bg-accent/10 px-2 py-1" : "gap-3"
-        )}
-      >
+      <div className="flex shrink-0 items-center">
         <div className="flex flex-col items-end">
           {person ? (
-            <span className="text-xs font-semibold text-accent sm:text-[10px]">
-              {getDisplayName(person)}
-            </span>
+            <div className="group/avatar relative flex items-center gap-2 rounded-xl border border-accent/10 bg-accent/5 px-2.5 py-1.5 transition-all hover:bg-accent/10 sm:px-3">
+              <span className="text-[10px] font-black uppercase tracking-widest text-accent">
+                {getDisplayName(person)}
+              </span>
+              <div className="shrink-0">
+                {(() => {
+                  const avatar = renderAvatar(person, allPeopleNames);
+                  if (avatar.type === "image") {
+                    return (
+                      <div className="h-5 w-5 overflow-hidden rounded-md shadow-sm ring-1 ring-white">
+                        <img
+                          src={avatar.src}
+                          alt={getDisplayName(person)}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    );
+                  }
+                  return (
+                    <span className="text-xs font-black text-accent" aria-hidden="true">
+                      {avatar.value}
+                    </span>
+                  );
+                })()}
+              </div>
+            </div>
           ) : (
             <button
               type="button"
-              className="group relative flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-9"
+              className="group relative flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-2.5 py-1 transition-all duration-300 hover:border-accent hover:bg-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:px-3"
               onClick={(e) => {
                 e.stopPropagation();
                 if (currentPerson && handleAssign) {
@@ -204,43 +217,19 @@ function ItemRowComponent({
               }}
               aria-label={t("takeAction")}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-all duration-300 group-hover:text-accent sm:h-8 sm:w-8">
-                <Plus size={18} className="transition-colors duration-300 sm:h-4 sm:w-4" />
+              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-accent/5 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
+                <Plus size={14} strokeWidth={3} />
               </div>
-              <span className="text-xs font-black uppercase tracking-wider text-muted-foreground transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors duration-300 group-hover:text-accent">
                 {t("takeAction")}
               </span>
             </button>
           )}
         </div>
-
-        {person && (
-          <div className="shrink-0">
-            {(() => {
-              const avatar = renderAvatar(person, allPeopleNames);
-              if (avatar.type === "image") {
-                return (
-                  <img
-                    src={avatar.src}
-                    alt={getDisplayName(person)}
-                    className="h-6 w-6 rounded object-cover sm:h-5 sm:w-5"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                );
-              }
-              return (
-                <span className="text-base font-black text-accent sm:text-sm" aria-hidden="true">
-                  {avatar.value}
-                </span>
-              );
-            })()}
-          </div>
-        )}
       </div>
 
       {/* Subtle bottom line for separation */}
-      <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-black/10" />
+      <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-100 group-last:hidden" />
 
       {/* Swipe hint for mobile */}
       {!readOnly && isMobile && !hasSeenSwipeHint && (

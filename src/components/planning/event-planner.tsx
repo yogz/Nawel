@@ -311,7 +311,7 @@ export function EventPlanner({
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
         paddingTop: `env(safe-area-inset-top, 0px)`,
-        background: `linear-gradient(to bottom, hsl(270 45% 94%) 0%, hsl(270 35% 96%) 200px, white 400px)`,
+        background: `linear-gradient(to bottom, hsl(270 20% 96%) 0%, hsl(270 15% 98%) 200px, white 400px)`,
       }}
     >
       <EventPlannerHeader

@@ -187,7 +187,7 @@ export function EventPlannerHeader({
       {/* Row 1: Navigation & Actions (moves with scroll) */}
       <div
         style={{
-          background: `hsl(270 50% 90%)`,
+          background: `hsl(270 25% 92%)`,
         }}
         className="relative z-30 mx-auto w-full max-w-3xl px-4 pt-5 sm:pt-4"
       >
@@ -243,7 +243,7 @@ export function EventPlannerHeader({
       {/* Row 2: Event Title & Pills (Sticky) */}
       <div
         style={{
-          background: `linear-gradient(to bottom, hsl(270 50% 90%) 0%, hsl(270 50% 90%) 70%, transparent 100%)`,
+          background: `linear-gradient(to bottom, hsl(270 25% 92%) 0%, hsl(270 25% 92%) 70%, transparent 100%)`,
         }}
         className="sticky top-0 z-30 w-full px-2 pb-8 pt-2 backdrop-blur-sm transition-all sm:pb-6"
       >
@@ -395,7 +395,34 @@ export function EventPlannerHeader({
                     )
                   )}
 
-                  {/* Add to Calendar Button (Moved next to date/time) */}
+                  {/* Address Pill */}
+                  {firstMeal.address &&
+                    (!readOnly ? (
+                      <button
+                        onClick={() => setSheet({ type: "event-edit" })}
+                        className="group flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[200px]"
+                      >
+                        <MapPin size={14} className="shrink-0 text-accent" />
+                        <span className="truncate">{firstMeal.address}</span>
+                      </button>
+                    ) : (
+                      <div className="flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[200px]">
+                        <MapPin size={14} className="shrink-0 text-accent" />
+                        <span className="truncate">{firstMeal.address}</span>
+                      </div>
+                    ))}
+
+                  {/* Vacation Count (if multiple meals) */}
+                  {plan.meals.length > 1 && (
+                    <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
+                      <span className="text-xs">{plan.meals.length} jours</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons (End - All the way to the right) */}
+                <div className="ml-auto flex shrink-0 items-center gap-2">
+                  {/* Add to Calendar Button */}
                   {firstMeal && firstMeal.date !== "common" && (
                     <Popover>
                       <PopoverTrigger asChild>
@@ -406,7 +433,7 @@ export function EventPlannerHeader({
                           <Calendar size={18} className="text-accent" />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent className="glass w-56 p-2" align="start">
+                      <PopoverContent className="glass w-56 p-2" align="end">
                         <div className="flex flex-col gap-1">
                           <button
                             onClick={() => window.open(calendarUrl, "_blank")}
@@ -446,35 +473,7 @@ export function EventPlannerHeader({
                     </Popover>
                   )}
 
-                  {/* Address Pill */}
-                  {firstMeal.address &&
-                    (!readOnly ? (
-                      <button
-                        onClick={() => setSheet({ type: "event-edit" })}
-                        className="group flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[200px]"
-                      >
-                        <MapPin size={14} className="shrink-0 text-accent" />
-                        <span className="truncate">{firstMeal.address}</span>
-                      </button>
-                    ) : (
-                      <div className="flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[200px]">
-                        <MapPin size={14} className="shrink-0 text-accent" />
-                        <span className="truncate">{firstMeal.address}</span>
-                      </div>
-                    ))}
-
-                  {/* Vacation Count (if multiple meals) */}
-                  {plan.meals.length > 1 && (
-                    <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
-                      <span className="text-xs">{plan.meals.length} jours</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons (End - All the way to the right) */}
-                {!readOnly && (
-                  <div className="ml-auto flex shrink-0 items-center gap-2">
-                    {/* Share Button (Keep fixed on the right) */}
+                  {!readOnly && (
                     <button
                       onClick={handleShare}
                       className={cn(
@@ -489,8 +488,8 @@ export function EventPlannerHeader({
                         <Share size={18} className="text-accent" />
                       )}
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
           </div>
