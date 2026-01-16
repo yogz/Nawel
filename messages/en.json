@@ -577,6 +577,7 @@
       "addService": "Add course",
       "editService": "Edit course",
       "editMeal": "Edit meal",
+      "editEvent": "Edit event",
       "addMeal": "Add meal",
       "addGuest": "Add guest",
       "editGuest": "Edit guest",

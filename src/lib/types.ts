@@ -57,7 +57,8 @@ export type Sheet =
   | { type: "guest-access" }
   | { type: "claim-person"; unclaimed: Person[] }
   | { type: "shopping-list"; person: Person }
-  | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] };
+  | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] }
+  | { type: "event-edit" };
 
 // Basic item data for creation/updates
 export type ItemData = {

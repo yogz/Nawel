@@ -314,6 +314,7 @@ export function EventPlanner({
       <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}
+        setTab={setTab}
         plan={plan}
         planningFilter={planningFilter}
         setPlanningFilter={setPlanningFilter}
@@ -322,6 +323,7 @@ export function EventPlanner({
         unassignedItemsCount={unassignedItemsCount}
         slug={slug}
         writeKey={effectiveWriteKey}
+        handlers={handlers}
       />
 
       <SuccessToast

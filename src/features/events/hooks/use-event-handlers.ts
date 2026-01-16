@@ -2,11 +2,16 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { deleteEventAction } from "@/app/actions";
+import { deleteEventAction, updateEventAction } from "@/app/actions";
 import type { BaseHandlerParams } from "@/features/shared/types";
 
-export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHandlerParams) {
-  const [, _startTransition] = useTransition();
+export function useEventHandlers({
+  setSuccessMessage,
+  slug,
+  writeKey,
+  setPlan,
+}: BaseHandlerParams & { setPlan: (updater: (prev: any) => any) => void }) {
+  const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
   const tShared = useTranslations("EventDashboard.Shared");
 
@@ -25,7 +30,29 @@ export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHand
     }
   };
 
+  const handleUpdateEvent = (name: string) => {
+    startTransition(async () => {
+      try {
+        await updateEventAction({
+          slug,
+          key: writeKey,
+          name,
+        });
+
+        setPlan((prev) => ({
+          ...prev,
+          event: prev.event ? { ...prev.event, name } : null,
+        }));
+        setSuccessMessage({ text: tShared("eventUpdated"), type: "success" });
+      } catch (error) {
+        console.error("Failed to update event:", error);
+        setSuccessMessage({ text: tShared("eventUpdateError"), type: "error" });
+      }
+    });
+  };
+
   return {
     handleDeleteEvent,
+    handleUpdateEvent,
   };
 }

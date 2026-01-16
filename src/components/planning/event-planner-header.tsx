@@ -17,13 +17,13 @@ import { UserNav } from "@/components/auth/user-nav";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslations } from "next-intl";
+import { useTranslations, useFormatter } from "next-intl";
 import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { CitationDisplay } from "../common/citation-display";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home, ArrowLeft, Pencil } from "lucide-react";
 import { AutoSizeText } from "@/components/common/auto-size-text";
 
 interface EventPlannerHeaderProps {
@@ -45,7 +45,7 @@ export function EventPlannerHeader({
   plan,
   planningFilter: _planningFilter,
   setPlanningFilter: _setPlanningFilter,
-  setSheet: _setSheet,
+  setSheet,
   sheet: _sheet,
   unassignedItemsCount: _unassignedItemsCount,
   slug,
@@ -54,6 +54,7 @@ export function EventPlannerHeader({
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
   const tShared = useTranslations("EventDashboard.Shared");
+  const format = useFormatter();
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
   const [showLogoHint, setShowLogoHint] = useState(true);
@@ -139,7 +140,7 @@ export function EventPlannerHeader({
           className="w-full px-2 pb-8 pt-5 backdrop-blur-sm transition-all sm:px-2 sm:pb-6 sm:pt-4"
         >
           <div className="mx-auto max-w-3xl">
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               {/* Top Row: Navigation & Actions */}
               <div className="flex items-center justify-between gap-4">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -211,68 +212,156 @@ export function EventPlannerHeader({
                 </div>
               </div>
 
-              {/* Middle Row: Event Title (Massive) */}
-              <div className="px-1">
-                <AutoSizeText
-                  maxSize={48}
-                  minSize={20}
-                  className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
-                >
-                  {plan.event?.name || tShared("defaultEventName")}
-                </AutoSizeText>
+              {/* Event Info Block: Title + Pills (grouped tighter) */}
+              <div className="flex flex-col gap-2">
+                {/* Event Title */}
+                {!readOnly ? (
+                  <button
+                    onClick={() => setSheet({ type: "event-edit" })}
+                    className="group flex w-full items-center gap-2 px-1 text-left transition-opacity hover:opacity-80"
+                  >
+                    <AutoSizeText
+                      maxSize={48}
+                      minSize={20}
+                      className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                    >
+                      {plan.event?.name || tShared("defaultEventName")}
+                    </AutoSizeText>
+                    <Pencil
+                      size={16}
+                      className="shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                    />
+                  </button>
+                ) : (
+                  <div className="px-1">
+                    <AutoSizeText
+                      maxSize={48}
+                      minSize={20}
+                      className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                    >
+                      {plan.event?.name || tShared("defaultEventName")}
+                    </AutoSizeText>
+                  </div>
+                )}
+
+                {/* Logistic Pills (Glassmorphic) */}
+                {plan.meals.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 px-1 text-sm font-medium">
+                    {/* Date Pill */}
+                    {!readOnly ? (
+                      <button
+                        onClick={() => setSheet({ type: "event-edit" })}
+                        className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
+                      >
+                        <Calendar size={14} className="text-accent" />
+                        <span>
+                          {format.dateTime(new Date(plan.meals[0].date), {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
+                        <Pencil
+                          size={10}
+                          className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                        />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
+                        <Calendar size={14} className="text-accent" />
+                        <span>
+                          {format.dateTime(new Date(plan.meals[0].date), {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Time Pill (if distinct) */}
+                    {plan.meals[0].time &&
+                      (!readOnly ? (
+                        <button
+                          onClick={() => setSheet({ type: "event-edit" })}
+                          className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
+                        >
+                          <Clock size={14} className="text-accent" />
+                          <span>{plan.meals[0].time}</span>
+                          <Pencil
+                            size={10}
+                            className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                          />
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
+                          <Clock size={14} className="text-accent" />
+                          <span>{plan.meals[0].time}</span>
+                        </div>
+                      ))}
+
+                    {/* Address Pill */}
+                    {plan.meals[0].address &&
+                      (!readOnly ? (
+                        <button
+                          onClick={() => setSheet({ type: "event-edit" })}
+                          className="group flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[200px]"
+                        >
+                          <MapPin size={14} className="shrink-0 text-accent" />
+                          <span className="truncate">{plan.meals[0].address}</span>
+                          <Pencil
+                            size={10}
+                            className="shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                          />
+                        </button>
+                      ) : (
+                        <div className="flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[200px]">
+                          <MapPin size={14} className="shrink-0 text-accent" />
+                          <span className="truncate">{plan.meals[0].address}</span>
+                        </div>
+                      ))}
+
+                    {/* Guests Pill */}
+                    {!readOnly ? (
+                      <button
+                        onClick={() => setSheet({ type: "event-edit" })}
+                        className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
+                      >
+                        <Users size={14} className="text-accent" />
+                        <span>
+                          <span className="font-bold text-gray-900">{plan.people.length}</span>
+                          <span className="text-gray-500">
+                            {" "}
+                            / {(plan.event?.adults || 0) + (plan.event?.children || 0)}
+                          </span>
+                        </span>
+                        <Pencil
+                          size={10}
+                          className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                        />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
+                        <Users size={14} className="text-accent" />
+                        <span>
+                          <span className="font-bold text-gray-900">{plan.people.length}</span>
+                          <span className="text-gray-500">
+                            {" "}
+                            / {(plan.event?.adults || 0) + (plan.event?.children || 0)}
+                          </span>
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Vacation Count (if multiple meals) */}
+                    {plan.meals.length > 1 && (
+                      <div className="flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
+                        <span className="text-xs">{plan.meals.length} jours</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-
-              {/* Bottom Row: Logistic Pills (Glassmorphic) */}
-              {plan.meals.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 px-1 text-sm font-medium">
-                  {/* Date Pill */}
-                  <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
-                    <Calendar size={14} className="text-accent" />
-                    <span>
-                      {new Date(plan.meals[0].date).toLocaleDateString(undefined, {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </span>
-                  </div>
-
-                  {/* Time Pill (if distinct) */}
-                  {plan.meals[0].time && (
-                    <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
-                      <Clock size={14} className="text-accent" />
-                      <span>{plan.meals[0].time}</span>
-                    </div>
-                  )}
-
-                  {/* Address Pill */}
-                  {plan.meals[0].address && (
-                    <div className="flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700 sm:max-w-[200px]">
-                      <MapPin size={14} className="shrink-0 text-accent" />
-                      <span className="truncate">{plan.meals[0].address}</span>
-                    </div>
-                  )}
-
-                  {/* Guests Pill */}
-                  <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 shadow-sm backdrop-blur-md transition-transform hover:scale-105 text-gray-700">
-                    <Users size={14} className="text-accent" />
-                    <span>
-                      <span className="font-bold text-gray-900">{plan.people.length}</span>
-                      <span className="text-gray-500">
-                        {" "}
-                        / {(plan.event?.adults || 0) + (plan.event?.children || 0)}
-                      </span>
-                    </span>
-                  </div>
-
-                  {/* Vacation Count (if multiple meals) */}
-                  {plan.meals.length > 1 && (
-                    <div className="flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 text-accent font-bold shadow-sm backdrop-blur-md">
-                      <span className="text-xs">{plan.meals.length} jours</span>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </header>

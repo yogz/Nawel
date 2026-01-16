@@ -1,12 +1,15 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
 import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
+import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
 import { useSearchParams, useParams } from "next/navigation";
+import { updateEventWithMealAction } from "@/app/actions/event-actions";
 import { useTranslations } from "next-intl";
 
 import {
@@ -70,6 +73,7 @@ export function EventPlannerSheets({
   const searchParams = useSearchParams();
   const params = useParams();
   const locale = params.locale as string;
+  const [isEventPending, startEventTransition] = useTransition();
 
   const getTitle = () => {
     switch (sheet?.type) {
@@ -95,6 +99,8 @@ export function EventPlannerSheets({
         return t("guestAccess");
       case "claim-person":
         return t("claimPerson");
+      case "event-edit":
+        return t("editEvent");
       default:
         return "";
     }
@@ -257,7 +263,7 @@ export function EventPlannerSheets({
   return (
     <>
       <Drawer
-        open={!!sheet && sheet.type !== "item-ingredients"}
+        open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
         onOpenChange={(open) => !open && setSheet(null)}
       >
         <DrawerContent className="px-4 sm:px-6">
@@ -305,6 +311,41 @@ export function EventPlannerSheets({
           handleDeleteAllIngredients={handlers.handleDeleteAllIngredients}
           handleSaveFeedback={handlers.handleSaveFeedback}
           justGenerated={handlers.justGenerated}
+        />
+      )}
+
+      {sheet?.type === "event-edit" && plan.event && (
+        <EditEventSheet
+          open
+          onClose={() => setSheet(null)}
+          initialData={{
+            name: plan.event.name,
+            description: plan.event.description,
+            adults: plan.event.adults,
+            children: plan.event.children,
+            date: plan.meals[0]?.date,
+            time: plan.meals[0]?.time,
+            address: plan.meals[0]?.address,
+            mealId: plan.meals[0]?.id,
+          }}
+          onSubmit={(data) => {
+            startEventTransition(async () => {
+              await updateEventWithMealAction({
+                slug,
+                key: writeKey,
+                name: data.name,
+                description: data.description,
+                adults: data.adults,
+                children: data.children,
+                mealId: data.mealId,
+                date: data.date,
+                time: data.time,
+                address: data.address,
+              });
+              setSheet(null);
+            });
+          }}
+          isPending={isEventPending}
         />
       )}
     </>
