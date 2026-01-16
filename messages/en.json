@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "A small message for your guests...",
     "errorDefault": "An error occurred",
     "createButton": "Let's go!",
-    "creatingButton": "Creating..."
+    "creatingButton": "Creating...",
+    "eventType": "Event type",
+    "singleMeal": "1 Meal",
+    "meal": "Meal",
+    "singleMealSubtitle": "Classic",
+    "stay": "Stay",
+    "staySubtitle": "Multiple days",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "stayDuration": "{count, plural, one {# day} other {# days}} stay",
+    "moreOptions": "More options",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Start date",
+    "endDatePlaceholder": "End date",
+    "datePlaceholder": "Date"
   },
   "EventDashboard": {
     "Organizer": {

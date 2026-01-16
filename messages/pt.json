@@ -300,7 +300,21 @@
     "descriptionPlaceholder": "Uma pequena descrição...",
     "errorDefault": "Ocorreu um erro",
     "createButton": "Criar",
-    "creatingButton": "Criação..."
+    "creatingButton": "Criação...",
+    "eventType": "Tipo de evento",
+    "singleMeal": "1 Refeição",
+    "meal": "Refeição",
+    "singleMealSubtitle": "Clássico",
+    "stay": "Estadia",
+    "staySubtitle": "Vários dias",
+    "dateFrom": "De",
+    "dateTo": "Até",
+    "stayDuration": "{count, plural, one {# dia} other {# dias}} de estadia",
+    "moreOptions": "Mais opções",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Data de início",
+    "endDatePlaceholder": "Data de fim",
+    "datePlaceholder": "Data"
   },
   "EventDashboard": {
     "Organizer": {

@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Krótka wiadomość dla gości...",
     "errorDefault": "Wystąpił błąd",
     "createButton": "Zaczynamy!",
-    "creatingButton": "Tworzenie..."
+    "creatingButton": "Tworzenie...",
+    "eventType": "Typ wydarzenia",
+    "singleMeal": "1 Posiłek",
+    "meal": "Posiłek",
+    "singleMealSubtitle": "Klasyczny",
+    "stay": "Pobyt",
+    "staySubtitle": "Kilka dni",
+    "dateFrom": "Od",
+    "dateTo": "Do",
+    "stayDuration": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dni}} pobytu",
+    "moreOptions": "Więcej opcji",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Data rozpoczęcia",
+    "endDatePlaceholder": "Data zakończenia",
+    "datePlaceholder": "Data"
   },
   "EventDashboard": {
     "Organizer": {

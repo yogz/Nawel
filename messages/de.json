@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Ein paar Worte für Ihre Gäste...",
     "errorDefault": "Ein Fehler ist aufgetreten",
     "createButton": "Los geht's!",
-    "creatingButton": "Erstellung..."
+    "creatingButton": "Erstellung...",
+    "eventType": "Veranstaltungstyp",
+    "singleMeal": "1 Mahlzeit",
+    "meal": "Mahlzeit",
+    "singleMealSubtitle": "Klassisch",
+    "stay": "Aufenthalt",
+    "staySubtitle": "Mehrere Tage",
+    "dateFrom": "Von",
+    "dateTo": "Bis",
+    "stayDuration": "{count, plural, one {# Tag} other {# Tage}} Aufenthalt",
+    "moreOptions": "Weitere Optionen",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Startdatum",
+    "endDatePlaceholder": "Enddatum",
+    "datePlaceholder": "Datum"
   },
   "EventDashboard": {
     "Organizer": {

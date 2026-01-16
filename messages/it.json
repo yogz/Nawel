@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Un piccolo messaggio per i tuoi ospiti...",
     "errorDefault": "Si è verificato un errore",
     "createButton": "Andiamo!",
-    "creatingButton": "Creazione in corso..."
+    "creatingButton": "Creazione in corso...",
+    "eventType": "Tipo di evento",
+    "singleMeal": "1 Pasto",
+    "meal": "Pasto",
+    "singleMealSubtitle": "Classico",
+    "stay": "Soggiorno",
+    "staySubtitle": "Più giorni",
+    "dateFrom": "Da",
+    "dateTo": "A",
+    "stayDuration": "{count, plural, one {# giorno} other {# giorni}} di soggiorno",
+    "moreOptions": "Altre opzioni",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Data di inizio",
+    "endDatePlaceholder": "Data di fine",
+    "datePlaceholder": "Data"
   },
   "EventDashboard": {
     "Organizer": {

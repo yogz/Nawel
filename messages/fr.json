@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Un petit mot pour vos invités...",
     "errorDefault": "Une erreur est survenue",
     "createButton": "C'est parti !",
-    "creatingButton": "Création..."
+    "creatingButton": "Création...",
+    "eventType": "Type d'événement",
+    "singleMeal": "1 Repas",
+    "meal": "Repas",
+    "singleMealSubtitle": "Classique",
+    "stay": "Séjour",
+    "staySubtitle": "Plusieurs jours",
+    "dateFrom": "Du",
+    "dateTo": "Au",
+    "stayDuration": "{count, plural, one {# jour} other {# jours}} de séjour",
+    "moreOptions": "Plus d'options",
+    "commonItems": "📦 Communs",
+    "startDatePlaceholder": "Date de début",
+    "endDatePlaceholder": "Date de fin",
+    "datePlaceholder": "Date"
   },
   "EventDashboard": {
     "Organizer": {
@@ -493,7 +507,7 @@
       "peopleCountLabel": "Nombre de personnes",
       "items": "articles",
       "adultsCount": "{count, plural, =0 {aucune personne} one {adulte} other {adultes}}",
-      "childrenCount": "{count, plural, =0 {aucun enfant} one {enfant} other {enfants}}",
+      "childrenCount": "{count, plural, =0 {enfant} one {enfant} other {enfants}}",
       "cancel": "Annuler",
       "create": "Créer",
       "update": "Modifier",

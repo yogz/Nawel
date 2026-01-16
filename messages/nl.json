@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Een klein bericht voor uw gasten...",
     "errorDefault": "Er is een fout opgetreden",
     "createButton": "Laten we gaan!",
-    "creatingButton": "Aanmaken..."
+    "creatingButton": "Aanmaken...",
+    "eventType": "Type evenement",
+    "singleMeal": "1 Maaltijd",
+    "meal": "Maaltijd",
+    "singleMealSubtitle": "Klassiek",
+    "stay": "Verblijf",
+    "staySubtitle": "Meerdere dagen",
+    "dateFrom": "Van",
+    "dateTo": "Tot",
+    "stayDuration": "{count, plural, one {# dag} other {# dagen}} verblijf",
+    "moreOptions": "Meer opties",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Startdatum",
+    "endDatePlaceholder": "Einddatum",
+    "datePlaceholder": "Datum"
   },
   "EventDashboard": {
     "Organizer": {

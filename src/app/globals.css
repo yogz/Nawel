@@ -9,7 +9,8 @@
     /* Lighter, more premium palette */
     --surface: #fdfcff;
     --muted: #f3e8ff;
-    --accent: 270 70% 60%; /* Slightly more refined purple */
+    --accent: 270 70% 60%;
+    /* Slightly more refined purple */
     --text: #2e1065;
     --header-fade: #fdfcff;
 
@@ -59,6 +60,7 @@
     0% {
       transform: translate(0, 0) rotate(0deg) scale(1);
     }
+
     100% {
       transform: translate(2%, 2%) rotate(2deg) scale(1.05);
     }
@@ -1098,5 +1100,26 @@
       left: 150%;
       opacity: 0;
     }
+  }
+
+  /* Fix for date inputs on mobile - prevent overflow */
+  input[type="date"],
+  input[type="time"] {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* WebKit (Safari, Chrome) specific fix */
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.75rem;
+    opacity: 0.5;
   }
 }

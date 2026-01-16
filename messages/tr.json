@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Davetlileriniz için kısa bir not...",
     "errorDefault": "Bir hata oluştu",
     "createButton": "Başlayalım !",
-    "creatingButton": "Oluşturuluyor..."
+    "creatingButton": "Oluşturuluyor...",
+    "eventType": "Etkinlik türü",
+    "singleMeal": "1 Yemek",
+    "meal": "Yemek",
+    "singleMealSubtitle": "Klasik",
+    "stay": "Konaklama",
+    "staySubtitle": "Birden fazla gün",
+    "dateFrom": "Başlangıç",
+    "dateTo": "Bitiş",
+    "stayDuration": "{count, plural, one {# gün} other {# gün}} konaklama",
+    "moreOptions": "Daha fazla seçenek",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Başlangıç tarihi",
+    "endDatePlaceholder": "Bitiş tarihi",
+    "datePlaceholder": "Tarih"
   },
   "EventDashboard": {
     "Organizer": {

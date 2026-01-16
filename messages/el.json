@@ -300,7 +300,21 @@
     "descriptionPlaceholder": "Μια μικρή περιγραφή...",
     "errorDefault": "Προέκυψε σφάλμα",
     "createButton": "Δημιουργία",
-    "creatingButton": "Δημιουργία..."
+    "creatingButton": "Δημιουργία...",
+    "eventType": "Τύπος εκδήλωσης",
+    "singleMeal": "1 Γεύμα",
+    "meal": "Γεύμα",
+    "singleMealSubtitle": "Κλασικό",
+    "stay": "Διαμονή",
+    "staySubtitle": "Πολλές ημέρες",
+    "dateFrom": "Από",
+    "dateTo": "Έως",
+    "stayDuration": "{count, plural, one {# ημέρα} other {# ημέρες}} διαμονή",
+    "moreOptions": "Περισσότερες επιλογές",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Ημερομηνία έναρξης",
+    "endDatePlaceholder": "Ημερομηνία λήξης",
+    "datePlaceholder": "Ημερομηνία"
   },
   "EventDashboard": {
     "Organizer": {

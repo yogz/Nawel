@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "Ett litet meddelande till dina gäster...",
     "errorDefault": "Ett fel uppstod",
     "createButton": "Kör!",
-    "creatingButton": "Skapar..."
+    "creatingButton": "Skapar...",
+    "eventType": "Evenemangstyp",
+    "singleMeal": "1 Måltid",
+    "meal": "Måltid",
+    "singleMealSubtitle": "Klassisk",
+    "stay": "Vistelse",
+    "staySubtitle": "Flera dagar",
+    "dateFrom": "Från",
+    "dateTo": "Till",
+    "stayDuration": "{count, plural, one {# dag} other {# dagar}} vistelse",
+    "moreOptions": "Fler alternativ",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Startdatum",
+    "endDatePlaceholder": "Slutdatum",
+    "datePlaceholder": "Datum"
   },
   "EventDashboard": {
     "Organizer": {

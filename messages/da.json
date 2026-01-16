@@ -293,7 +293,21 @@
     "descriptionPlaceholder": "En lille besked til dine gæster...",
     "errorDefault": "Der opstod en fejl",
     "createButton": "Lad os komme i gang!",
-    "creatingButton": "Opretter..."
+    "creatingButton": "Opretter...",
+    "eventType": "Begivenhedstype",
+    "singleMeal": "1 Måltid",
+    "meal": "Måltid",
+    "singleMealSubtitle": "Klassisk",
+    "stay": "Ophold",
+    "staySubtitle": "Flere dage",
+    "dateFrom": "Fra",
+    "dateTo": "Til",
+    "stayDuration": "{count, plural, one {# dag} other {# dage}} ophold",
+    "moreOptions": "Flere muligheder",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Startdato",
+    "endDatePlaceholder": "Slutdato",
+    "datePlaceholder": "Dato"
   },
   "EventDashboard": {
     "Organizer": {
