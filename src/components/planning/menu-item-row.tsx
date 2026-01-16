@@ -134,6 +134,7 @@ function ItemRowComponent({
                   <Scale
                     size={13}
                     className="text-muted-foreground sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   {item.quantity}
@@ -141,13 +142,13 @@ function ItemRowComponent({
               )}
               {item.price && (
                 <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-green-700 ring-1 ring-green-500/10">
-                  <Euro size={10} className="text-green-600" aria-hidden="true" />
+                  <Euro size={10} className="text-green-600" strokeWidth={1.8} aria-hidden="true" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
                 <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-accent ring-1 ring-accent/10">
-                  <ChefHat size={10} className="text-accent" aria-hidden="true" />
+                  <ChefHat size={10} className="text-accent" strokeWidth={1.8} aria-hidden="true" />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
@@ -156,6 +157,7 @@ function ItemRowComponent({
                   <MessageSquare
                     size={13}
                     className="text-blue-600 sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   <span className="max-w-[140px] truncate">

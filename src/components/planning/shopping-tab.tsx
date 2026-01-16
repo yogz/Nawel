@@ -618,7 +618,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           .map(([category, items]) => (
             <div key={category} className="space-y-4">
               <div className="flex items-center gap-4 px-2">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-accent/40">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent/40">
                   {t(`aisles.${category}` as Parameters<typeof t>[0])}
                 </h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-black/[0.05] to-transparent" />

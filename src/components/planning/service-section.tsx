@@ -112,7 +112,7 @@ export const ServiceSection = memo(function ServiceSection({
               {service.icon || getServiceIcon(service.title)}
             </div>
             <div>
-              <h3 className="text-gradient-header text-sm font-black uppercase tracking-[0.2em] sm:text-base">
+              <h3 className="text-gradient-header text-sm font-bold uppercase tracking-[0.15em] sm:text-base">
                 {translatedTitle}
               </h3>
               {filteredItems.length > 0 && (
@@ -124,7 +124,7 @@ export const ServiceSection = memo(function ServiceSection({
           </div>
           {!readOnly && (
             <span className="text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
-              <Edit3 size={14} />
+              <Edit3 size={14} strokeWidth={1.8} />
             </span>
           )}
         </div>

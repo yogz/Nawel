@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ShieldAlert,
   Share,
@@ -14,7 +14,8 @@ import {
   ExternalLink,
   Download,
 } from "lucide-react";
-import { type PlanData, type PlanningFilter, type Sheet } from "@/lib/types";
+import { Input } from "../ui/input";
+import { type Meal, type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
 import {
   cn,
@@ -75,6 +76,30 @@ export function EventPlannerHeader({
   const [showAttention, setShowAttention] = useState(true);
   const [showLogoHint, setShowLogoHint] = useState(true);
   const [hovered, setHovered] = useState(false);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftFade(scrollLeft > 0);
+      setShowRightFade(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      checkScroll();
+      container.addEventListener("scroll", checkScroll);
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        container.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, []);
   const [animationStep, setAnimationStep] = useState<"logo" | "home" | "arrow">("logo");
   const [animationComplete, setAnimationComplete] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -315,109 +340,166 @@ export function EventPlannerHeader({
             {/* Logistic Pills & Share (Glassmorphic) */}
             {plan.meals.length > 0 && (
               <div className="flex items-center justify-between gap-2 px-1">
-                <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium">
-                  {/* Date Pill */}
-                  {!readOnly ? (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
-                          <Calendar size={14} className="text-accent" />
-                          <span>
-                            {format.dateTime(new Date(firstMeal.date), {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "short",
-                            })}
-                          </span>
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <CalendarUI
-                          mode="single"
-                          selected={new Date(firstMeal.date)}
-                          onSelect={(date) => {
-                            if (date) {
-                              handlers.handleUpdateMeal?.(
-                                firstMeal.id,
-                                date.toISOString().split("T")[0],
-                                firstMeal.title,
-                                firstMeal.adults,
-                                firstMeal.children,
-                                firstMeal.time,
-                                firstMeal.address
-                              );
-                            }
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  ) : (
-                    <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
-                      <Calendar size={14} className="text-accent" />
-                      <span>
-                        {format.dateTime(new Date(firstMeal.date), {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}
-                      </span>
-                    </div>
-                  )}
+                <div className="relative flex flex-1 min-w-0 overflow-hidden">
+                  {/* Left edge gradient fade */}
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-12 bg-gradient-to-r from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
+                      showLeftFade ? "opacity-100" : "opacity-0"
+                    )}
+                  />
 
-                  {/* Time Pill (if distinct) */}
-                  {!readOnly ? (
-                    <TimePicker
-                      value={firstMeal.time || ""}
-                      onChange={(time) => {
-                        handlers.handleUpdateMeal?.(
-                          firstMeal.id,
-                          firstMeal.date,
-                          firstMeal.title,
-                          firstMeal.adults,
-                          firstMeal.children,
-                          time,
-                          firstMeal.address
-                        );
-                      }}
-                    >
-                      <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
-                        <Clock size={14} className="text-accent" />
-                        <span>{firstMeal.time || "--:--"}</span>
-                      </button>
-                    </TimePicker>
-                  ) : (
-                    firstMeal.time && (
-                      <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
-                        <Clock size={14} className="text-accent" />
-                        <span>{firstMeal.time}</span>
-                      </div>
-                    )
-                  )}
-
-                  {/* Address Pill */}
-                  {firstMeal.address &&
-                    (!readOnly ? (
-                      <button
-                        onClick={() => setSheet({ type: "event-edit" })}
-                        className="group flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[200px]"
-                      >
-                        <MapPin size={14} className="shrink-0 text-accent" />
-                        <span className="truncate">{firstMeal.address}</span>
-                      </button>
+                  <div
+                    ref={scrollContainerRef}
+                    className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium"
+                  >
+                    {/* Date Pill */}
+                    {!readOnly ? (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
+                            <Calendar size={14} className="text-accent" strokeWidth={1.8} />
+                            <span>
+                              {format.dateTime(new Date(firstMeal.date), {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                              })}
+                            </span>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarUI
+                            mode="single"
+                            selected={new Date(firstMeal.date)}
+                            onSelect={(date) => {
+                              if (date) {
+                                handlers.handleUpdateMeal?.(
+                                  firstMeal.id,
+                                  date.toISOString().split("T")[0],
+                                  firstMeal.title,
+                                  firstMeal.adults,
+                                  firstMeal.children,
+                                  firstMeal.time,
+                                  firstMeal.address
+                                );
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     ) : (
-                      <div className="flex max-w-[150px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[200px]">
-                        <MapPin size={14} className="shrink-0 text-accent" />
-                        <span className="truncate">{firstMeal.address}</span>
+                      <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md">
+                        <Calendar size={14} className="text-accent" strokeWidth={1.8} />
+                        <span>
+                          {format.dateTime(new Date(firstMeal.date), {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                          })}
+                        </span>
                       </div>
-                    ))}
+                    )}
 
-                  {/* Vacation Count (if multiple meals) */}
-                  {plan.meals.length > 1 && (
-                    <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
-                      <span className="text-xs">{plan.meals.length} jours</span>
-                    </div>
-                  )}
+                    {/* Time Pill (if distinct) */}
+                    {!readOnly ? (
+                      <TimePicker
+                        value={firstMeal.time || ""}
+                        onChange={(time) => {
+                          handlers.handleUpdateMeal?.(
+                            firstMeal.id,
+                            firstMeal.date,
+                            firstMeal.title,
+                            firstMeal.adults,
+                            firstMeal.children,
+                            time,
+                            firstMeal.address
+                          );
+                        }}
+                      >
+                        <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
+                          <Clock size={14} className="text-accent" strokeWidth={1.8} />
+                          <span>{firstMeal.time || "--:--"}</span>
+                        </button>
+                      </TimePicker>
+                    ) : (
+                      firstMeal.time && (
+                        <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md">
+                          <Clock size={14} className="text-accent" strokeWidth={1.8} />
+                          <span>{firstMeal.time}</span>
+                        </div>
+                      )
+                    )}
+
+                    {/* Address Pill */}
+                    {firstMeal.address &&
+                      (!readOnly ? (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[240px]">
+                              <MapPin
+                                size={14}
+                                className="shrink-0 text-accent"
+                                strokeWidth={1.8}
+                              />
+                              <span className="truncate">{firstMeal.address}</span>
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80 p-3" align="start">
+                            <div className="flex flex-col gap-2">
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                Modifier l'adresse
+                              </h4>
+                              <Input
+                                defaultValue={firstMeal.address}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    const val = (e.target as HTMLInputElement).value;
+                                    handlers.handleUpdateMeal?.(
+                                      firstMeal.id,
+                                      firstMeal.date,
+                                      firstMeal.title,
+                                      firstMeal.adults,
+                                      firstMeal.children,
+                                      firstMeal.time,
+                                      val
+                                    );
+                                    // Popover closes automatically if we use an open state,
+                                    // but shadcn Popover usually needs manual close or click outside.
+                                    // We'll rely on global state update to refresh UI.
+                                  }
+                                }}
+                                className="h-9"
+                              />
+                              <p className="text-[10px] text-gray-400">
+                                Appuyez auf Entrée pour sauvegarder
+                              </p>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <div className="flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[240px]">
+                          <MapPin size={14} className="shrink-0 text-accent" strokeWidth={1.8} />
+                          <span className="truncate">{firstMeal.address}</span>
+                        </div>
+                      ))}
+
+                    {/* Vacation Count (if multiple meals) */}
+                    {plan.meals.length > 1 && (
+                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
+                        <span className="text-xs">{plan.meals.length} jours</span>
+                      </div>
+                    )}
+                  </div>
+                  {/* Right edge gradient fade */}
+                  <div
+                    className={cn(
+                      "pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
+                      showRightFade ? "opacity-100" : "opacity-0"
+                    )}
+                  />
                 </div>
 
                 {/* Action Buttons (End - All the way to the right) */}

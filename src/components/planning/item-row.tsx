@@ -139,6 +139,7 @@ function ItemRowComponent({
                   <Scale
                     size={13}
                     className="text-gray-600 sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   {item.quantity}
@@ -149,6 +150,7 @@ function ItemRowComponent({
                   <Euro
                     size={13}
                     className="text-green-600 sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   {item.price.toFixed(2)}
@@ -159,6 +161,7 @@ function ItemRowComponent({
                   <ChefHat
                     size={13}
                     className="text-purple-600 sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
@@ -169,6 +172,7 @@ function ItemRowComponent({
                   <MessageSquare
                     size={13}
                     className="text-blue-600 sm:h-[11px] sm:w-[11px]"
+                    strokeWidth={1.8}
                     aria-hidden="true"
                   />
                   <span className="max-w-[140px] truncate">
