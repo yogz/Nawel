@@ -75,15 +75,21 @@ export const ServiceSection = memo(function ServiceSection({
       )}
     >
       <div className="relative z-10 mb-5 flex items-center justify-between border-b border-white/40 pb-3">
-        <button
-          type="button"
+        <div
+          role={readOnly ? undefined : "button"}
+          tabIndex={readOnly ? undefined : 0}
           className={cn(
             "group flex items-center gap-2 text-left",
             !readOnly &&
               "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
           )}
           onClick={() => !readOnly && onEdit()}
-          disabled={readOnly}
+          onKeyDown={(e) => {
+            if (!readOnly && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              onEdit();
+            }
+          }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
           <div className="flex items-center gap-3">
@@ -115,7 +121,7 @@ export const ServiceSection = memo(function ServiceSection({
               <Edit3 size={12} />
             </span>
           )}
-        </button>
+        </div>
       </div>
 
       <AnimatePresence initial={false}>
