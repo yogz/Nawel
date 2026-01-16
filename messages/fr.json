@@ -525,7 +525,9 @@
       "showLess": "Moins d'options",
       "defaultEventName": "Événement",
       "thisEvent": "cet événement",
-      "eventDeleted": "Événement supprimé ✓"
+      "eventDeleted": "Événement supprimé ✓",
+      "eventUpdated": "Événement modifié ✓",
+      "eventUpdateError": "Erreur lors de la modification"
     },
     "Meal": {
       "common": "📦 Communs",

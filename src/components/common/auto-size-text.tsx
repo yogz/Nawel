@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useCallback, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface AutoSizeTextProps {
@@ -10,60 +10,43 @@ interface AutoSizeTextProps {
   maxSize?: number;
   /** Minimum font size in pixels (default: 16) */
   minSize?: number;
-  /** Step size for font adjustment (default: 1) */
-  step?: number;
+  /** Character threshold where scaling starts (default: 15) */
+  scaleThreshold?: number;
 }
 
 /**
- * A component that automatically adjusts font size to fit text on a single line.
- * Uses ResizeObserver for responsive sizing.
+ * A component that automatically adjusts font size based on text length.
+ * Uses a simple character-count heuristic for reliable sizing.
  */
 export function AutoSizeText({
   children,
   className,
   maxSize = 48,
   minSize = 16,
-  step = 1,
+  scaleThreshold = 15,
 }: AutoSizeTextProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
+  const fontSize = useMemo(() => {
+    const text = typeof children === "string" ? children : "";
+    const length = text.length;
 
-  const resize = useCallback(() => {
-    const container = containerRef.current;
-    const text = textRef.current;
-    if (!container || !text) return;
-
-    // Reset to max size
-    text.style.fontSize = `${maxSize}px`;
-
-    // Shrink until it fits or hits minimum
-    let currentSize = maxSize;
-    while (text.scrollWidth > container.clientWidth && currentSize > minSize) {
-      currentSize -= step;
-      text.style.fontSize = `${currentSize}px`;
-    }
-  }, [maxSize, minSize, step]);
-
-  useEffect(() => {
-    resize();
-
-    const observer = new ResizeObserver(resize);
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
+    if (length <= scaleThreshold) {
+      return maxSize;
     }
 
-    return () => observer.disconnect();
-  }, [resize, children]);
+    // Linear interpolation: scale down as text gets longer
+    // At 2x threshold, we hit minSize
+    const scaleFactor = Math.max(0, 1 - (length - scaleThreshold) / (scaleThreshold * 1.5));
+    const size = minSize + (maxSize - minSize) * scaleFactor;
+
+    return Math.max(minSize, Math.round(size));
+  }, [children, maxSize, minSize, scaleThreshold]);
 
   return (
-    <div ref={containerRef} className={cn("w-full overflow-hidden", className)}>
-      <span
-        ref={textRef}
-        className="inline-block whitespace-nowrap"
-        style={{ fontSize: `${maxSize}px` }}
-      >
-        {children}
-      </span>
-    </div>
+    <span
+      className={cn("inline-block whitespace-nowrap", className)}
+      style={{ fontSize: `${fontSize}px` }}
+    >
+      {children}
+    </span>
   );
 }

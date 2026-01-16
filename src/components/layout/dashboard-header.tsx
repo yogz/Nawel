@@ -39,9 +39,7 @@ export function DashboardHeader() {
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white/60 shadow-lg shadow-accent/10 transition-all duration-300 hover:shadow-xl hover:shadow-accent/15 sm:h-10 sm:w-10">
-                  <UserNav />
-                </div>
+                <UserNav showLabel={true} />
               </div>
             </div>
           </div>
