@@ -74,8 +74,11 @@ export function TimePicker({
 
   // Scroll to selected time when popover opens
   React.useEffect(() => {
-    if (open && value && scrollRef.current) {
-      const selectedIndex = timeOptions.indexOf(value);
+    if (open && scrollRef.current) {
+      // Use provided value or default to 19:00 for the scroll target
+      const scrollTarget = value || "19:00";
+      const selectedIndex = timeOptions.indexOf(scrollTarget);
+
       if (selectedIndex !== -1) {
         // Delay to ensure the scroll area is rendered
         setTimeout(() => {

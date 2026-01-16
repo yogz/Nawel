@@ -87,6 +87,8 @@ export function EventPlannerHeader({
   const [hovered, setHovered] = useState(false);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(true);
+  const [isAddressDrawerOpen, setIsAddressDrawerOpen] = useState(false);
+  const [isAddressPopoverOpen, setIsAddressPopoverOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const checkScroll = () => {
@@ -446,7 +448,10 @@ export function EventPlannerHeader({
                       (!readOnly ? (
                         <>
                           {isMobile ? (
-                            <Drawer>
+                            <Drawer
+                              open={isAddressDrawerOpen}
+                              onOpenChange={setIsAddressDrawerOpen}
+                            >
                               <DrawerTrigger asChild>
                                 <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
                                   <MapPin
@@ -479,6 +484,7 @@ export function EventPlannerHeader({
                                           firstMeal.time,
                                           val
                                         );
+                                        setIsAddressDrawerOpen(false);
                                       }
                                     }}
                                     className="h-12 text-base" // Larger input on mobile
@@ -500,6 +506,7 @@ export function EventPlannerHeader({
                                           firstMeal.time,
                                           input.value
                                         );
+                                        setIsAddressDrawerOpen(false);
                                       }
                                     }}
                                     className="w-full bg-accent text-white"
@@ -510,7 +517,10 @@ export function EventPlannerHeader({
                               </DrawerContent>
                             </Drawer>
                           ) : (
-                            <Popover>
+                            <Popover
+                              open={isAddressPopoverOpen}
+                              onOpenChange={setIsAddressPopoverOpen}
+                            >
                               <PopoverTrigger asChild>
                                 <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[240px]">
                                   <MapPin
@@ -541,6 +551,7 @@ export function EventPlannerHeader({
                                           firstMeal.time,
                                           val
                                         );
+                                        setIsAddressPopoverOpen(false);
                                       }
                                     }}
                                     className="h-9"
