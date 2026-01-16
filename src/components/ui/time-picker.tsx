@@ -22,6 +22,8 @@ export interface TimePickerProps {
   disabled?: boolean;
   /** Minute interval (default: 15) */
   minuteInterval?: number;
+  /** Optional custom trigger */
+  children?: React.ReactNode;
 }
 
 // Generate time options
@@ -39,6 +41,7 @@ function generateTimeOptions(minuteInterval: number = 15): string[] {
 
 // Format time for display using locale
 function formatTimeDisplay(time: string, locale: string): string {
+  if (!time) return "";
   const [hours, minutes] = time.split(":");
   const date = new Date();
   date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
@@ -57,6 +60,7 @@ export function TimePicker({
   className,
   disabled,
   minuteInterval = 15,
+  children,
 }: TimePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -76,17 +80,22 @@ export function TimePicker({
         // Delay to ensure the scroll area is rendered
         setTimeout(() => {
           const itemHeight = 40; // Approximate height of each item
-          scrollRef.current?.scrollTo({
-            top: selectedIndex * itemHeight - 80,
-            behavior: "instant",
-          });
+          if (scrollRef.current) {
+            const viewport = scrollRef.current.querySelector("[data-radix-scroll-area-viewport]");
+            if (viewport) {
+              viewport.scrollTo({
+                top: selectedIndex * itemHeight - 80,
+                behavior: "instant",
+              });
+            }
+          }
         }, 0);
       }
     }
   }, [open, value, timeOptions]);
 
   // Render a static button during SSR to avoid hydration mismatch
-  if (!mounted) {
+  if (!mounted && !children) {
     return (
       <Button
         variant="outline"
@@ -106,18 +115,20 @@ export function TimePicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={disabled}
-          className={cn(
-            "w-full justify-start text-left font-medium",
-            !value && "text-muted-foreground",
-            className
-          )}
-        >
-          <Clock className="mr-2 h-4 w-4 shrink-0" />
-          {value ? formatTimeDisplay(value, locale) : <span>{placeholder}</span>}
-        </Button>
+        {children || (
+          <Button
+            variant="outline"
+            disabled={disabled}
+            className={cn(
+              "w-full justify-start text-left font-medium",
+              !value && "text-muted-foreground",
+              className
+            )}
+          >
+            <Clock className="mr-2 h-4 w-4 shrink-0" />
+            {value ? formatTimeDisplay(value, locale) : <span>{placeholder}</span>}
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
         <ScrollArea className="h-[280px]" ref={scrollRef}>

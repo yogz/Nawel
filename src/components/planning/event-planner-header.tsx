@@ -25,10 +25,15 @@ import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, ArrowLeft, Pencil } from "lucide-react";
 import { AutoSizeText } from "@/components/common/auto-size-text";
+import { AutoSizeInput } from "@/components/common/auto-size-input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { TimePicker } from "@/components/ui/time-picker";
 
 interface EventPlannerHeaderProps {
   readOnly: boolean;
   tab: string;
+  setTab: (tab: any) => void;
   plan: PlanData;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
@@ -37,11 +42,13 @@ interface EventPlannerHeaderProps {
   unassignedItemsCount: number;
   slug: string;
   writeKey?: string;
+  handlers: any;
 }
 
 export function EventPlannerHeader({
   readOnly,
-  tab,
+  tab: _tab,
+  setTab,
   plan,
   planningFilter: _planningFilter,
   setPlanningFilter: _setPlanningFilter,
@@ -50,6 +57,7 @@ export function EventPlannerHeader({
   unassignedItemsCount: _unassignedItemsCount,
   slug,
   writeKey,
+  handlers,
 }: EventPlannerHeaderProps) {
   const { theme } = useThemeMode();
   const t = useTranslations("EventDashboard.Header");
@@ -61,6 +69,14 @@ export function EventPlannerHeader({
   const [hovered, setHovered] = useState(false);
   const [animationStep, setAnimationStep] = useState<"logo" | "home" | "arrow">("logo");
   const [animationComplete, setAnimationComplete] = useState(false);
+
+  // States for inline editing
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(plan.event?.name || "");
+
+  useEffect(() => {
+    setEditedTitle(plan.event?.name || "");
+  }, [plan.event?.name]);
 
   // Stop the attention-grabbing effect after 2 minutes
   useEffect(() => {
@@ -114,6 +130,15 @@ export function EventPlannerHeader({
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  const handleTitleSubmit = () => {
+    if (editedTitle.trim() && editedTitle !== plan.event?.name) {
+      handlers.handleUpdateEvent?.(editedTitle);
+    }
+    setIsEditingTitle(false);
+  };
+
+  const firstMeal = plan.meals[0];
 
   return (
     <>
@@ -216,22 +241,37 @@ export function EventPlannerHeader({
               <div className="flex flex-col gap-2">
                 {/* Event Title */}
                 {!readOnly ? (
-                  <button
-                    onClick={() => setSheet({ type: "event-edit" })}
-                    className="group flex w-full items-center gap-2 px-1 text-left transition-opacity hover:opacity-80"
-                  >
-                    <AutoSizeText
-                      maxSize={48}
-                      minSize={20}
-                      className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                  isEditingTitle ? (
+                    <div className="flex w-full items-center gap-2 px-1">
+                      <AutoSizeInput
+                        autoFocus
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        onBlur={handleTitleSubmit}
+                        onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
+                        maxSize={48}
+                        minSize={20}
+                        className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm focus-visible:ring-0"
+                      />
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditingTitle(true)}
+                      className="group flex w-full items-center gap-2 px-1 text-left transition-opacity hover:opacity-80"
                     >
-                      {plan.event?.name || tShared("defaultEventName")}
-                    </AutoSizeText>
-                    <Pencil
-                      size={16}
-                      className="shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
-                    />
-                  </button>
+                      <AutoSizeText
+                        maxSize={48}
+                        minSize={20}
+                        className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                      >
+                        {plan.event?.name || tShared("defaultEventName")}
+                      </AutoSizeText>
+                      <Pencil
+                        size={16}
+                        className="shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
+                      />
+                    </button>
+                  )
                 ) : (
                   <div className="px-1">
                     <AutoSizeText
@@ -249,28 +289,45 @@ export function EventPlannerHeader({
                   <div className="flex flex-wrap items-center gap-2 px-1 text-sm font-medium">
                     {/* Date Pill */}
                     {!readOnly ? (
-                      <button
-                        onClick={() => setSheet({ type: "event-edit" })}
-                        className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
-                      >
-                        <Calendar size={14} className="text-accent" />
-                        <span>
-                          {format.dateTime(new Date(plan.meals[0].date), {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                        <Pencil
-                          size={10}
-                          className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
-                        />
-                      </button>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
+                            <Calendar size={14} className="text-accent" />
+                            <span>
+                              {format.dateTime(new Date(firstMeal.date), {
+                                weekday: "short",
+                                day: "numeric",
+                                month: "short",
+                              })}
+                            </span>
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarUI
+                            mode="single"
+                            selected={new Date(firstMeal.date)}
+                            onSelect={(date) => {
+                              if (date) {
+                                handlers.handleUpdateMeal?.(
+                                  firstMeal.id,
+                                  date.toISOString().split("T")[0],
+                                  firstMeal.title,
+                                  firstMeal.adults,
+                                  firstMeal.children,
+                                  firstMeal.time,
+                                  firstMeal.address
+                                );
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     ) : (
                       <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
                         <Calendar size={14} className="text-accent" />
                         <span>
-                          {format.dateTime(new Date(plan.meals[0].date), {
+                          {format.dateTime(new Date(firstMeal.date), {
                             weekday: "short",
                             day: "numeric",
                             month: "short",
@@ -280,35 +337,44 @@ export function EventPlannerHeader({
                     )}
 
                     {/* Time Pill (if distinct) */}
-                    {plan.meals[0].time &&
-                      (!readOnly ? (
-                        <button
-                          onClick={() => setSheet({ type: "event-edit" })}
-                          className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
-                        >
+                    {!readOnly ? (
+                      <TimePicker
+                        value={firstMeal.time || ""}
+                        onChange={(time) => {
+                          handlers.handleUpdateMeal?.(
+                            firstMeal.id,
+                            firstMeal.date,
+                            firstMeal.title,
+                            firstMeal.adults,
+                            firstMeal.children,
+                            time,
+                            firstMeal.address
+                          );
+                        }}
+                      >
+                        <button className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
                           <Clock size={14} className="text-accent" />
-                          <span>{plan.meals[0].time}</span>
-                          <Pencil
-                            size={10}
-                            className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
-                          />
+                          <span>{firstMeal.time || "--:--"}</span>
                         </button>
-                      ) : (
+                      </TimePicker>
+                    ) : (
+                      firstMeal.time && (
                         <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
                           <Clock size={14} className="text-accent" />
-                          <span>{plan.meals[0].time}</span>
+                          <span>{firstMeal.time}</span>
                         </div>
-                      ))}
+                      )
+                    )}
 
                     {/* Address Pill */}
-                    {plan.meals[0].address &&
+                    {firstMeal.address &&
                       (!readOnly ? (
                         <button
                           onClick={() => setSheet({ type: "event-edit" })}
                           className="group flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[200px]"
                         >
                           <MapPin size={14} className="shrink-0 text-accent" />
-                          <span className="truncate">{plan.meals[0].address}</span>
+                          <span className="truncate">{firstMeal.address}</span>
                           <Pencil
                             size={10}
                             className="shrink-0 text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
@@ -317,14 +383,14 @@ export function EventPlannerHeader({
                       ) : (
                         <div className="flex max-w-[150px] items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[200px]">
                           <MapPin size={14} className="shrink-0 text-accent" />
-                          <span className="truncate">{plan.meals[0].address}</span>
+                          <span className="truncate">{firstMeal.address}</span>
                         </div>
                       ))}
 
                     {/* Guests Pill */}
                     {!readOnly ? (
                       <button
-                        onClick={() => setSheet({ type: "event-edit" })}
+                        onClick={() => setTab("people")}
                         className="group flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60"
                       >
                         <Users size={14} className="text-accent" />
@@ -335,10 +401,6 @@ export function EventPlannerHeader({
                             / {(plan.event?.adults || 0) + (plan.event?.children || 0)}
                           </span>
                         </span>
-                        <Pencil
-                          size={10}
-                          className="text-gray-400 opacity-0 transition-opacity group-hover:opacity-100"
-                        />
                       </button>
                     ) : (
                       <div className="flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-1.5 text-gray-700 shadow-sm backdrop-blur-md">
