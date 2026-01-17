@@ -596,8 +596,10 @@
         "description": "Votre événement est en ligne. Partagez ce lien magique avec vos co-organisateurs.",
         "adminLinkLabel": "Lien d'administration",
         "accessKeyLabel": "Clé secrète",
-        "closeButton": "C'est parti !",
+        "closeButton": "Fermer",
         "copySuccess": "Copié !",
+        "copyLink": "Copier le lien",
+        "shareButton": "Partager",
         "shareWhatsApp": "Partager sur WhatsApp",
         "shareMessage": "Rejoins-moi pour organiser {name} sur CoList ! 🎁 {url}"
       },

@@ -81,10 +81,10 @@ export function ShareModal({
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <h3 className="text-xl font-black leading-none tracking-tight text-gray-900">
+          <h3 className="text-xl font-black leading-none tracking-tight text-white">
             {isNew ? t("eventCreated") : t("title")}
           </h3>
-          <p className="mx-auto mt-2 max-w-[240px] text-xs font-medium leading-relaxed text-gray-500">
+          <p className="mx-auto mt-3 max-w-[280px] text-sm font-medium leading-relaxed text-gray-200">
             {t("description")}
           </p>
         </motion.div>
@@ -116,47 +116,7 @@ export function ShareModal({
             onClick={handleNativeShare}
           >
             <Share2 className="mr-3" size={24} />
-            <span className="text-lg font-black">{t("title")}</span>
-          </Button>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="pt-1"
-        >
-          <Button
-            variant="ghost"
-            className={cn(
-              "h-10 w-full rounded-xl font-bold transition-all",
-              copiedLink ? "bg-green-50 text-green-600" : "text-gray-400 hover:bg-gray-50"
-            )}
-            onClick={copyToClipboard}
-          >
-            <AnimatePresence mode="wait">
-              {copiedLink ? (
-                <motion.div
-                  key="check"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center gap-2"
-                >
-                  <Check size={18} strokeWidth={3} />
-                  <span>{t("copySuccess")}</span>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="copy"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className="flex items-center gap-2"
-                >
-                  <Copy size={18} strokeWidth={2} />
-                  <span>Copier le lien</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <span className="text-lg font-black">{t("shareButton")}</span>
           </Button>
         </motion.div>
       </div>

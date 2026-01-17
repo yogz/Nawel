@@ -594,8 +594,10 @@
         "description": "Your event is live. Share this magic link with your co-organizers.",
         "adminLinkLabel": "Admin Link",
         "accessKeyLabel": "Secret Key",
-        "closeButton": "Let's go!",
+        "closeButton": "OK",
         "copySuccess": "Copied!",
+        "copyLink": "Copy link",
+        "shareButton": "Share",
         "shareWhatsApp": "Share on WhatsApp",
         "shareMessage": "Join me in organizing {name} on CoList! 🎁 {url}"
       },
