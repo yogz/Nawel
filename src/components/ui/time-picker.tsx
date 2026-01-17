@@ -75,8 +75,19 @@ export function TimePicker({
   // Scroll to selected time when popover opens
   React.useEffect(() => {
     if (open && scrollRef.current) {
-      // Use provided value or default to 19:00 for the scroll target
-      const scrollTarget = value || "19:00";
+      // Use provided value, or current time rounded to nearest interval
+      let scrollTarget = value;
+      if (!scrollTarget) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        // Round to nearest interval
+        const roundedMinute = Math.round(currentMinute / minuteInterval) * minuteInterval;
+        const adjustedHour = roundedMinute >= 60 ? currentHour + 1 : currentHour;
+        const finalHour = adjustedHour % 24;
+        const finalMinute = roundedMinute % 60;
+        scrollTarget = `${String(finalHour).padStart(2, "0")}:${String(finalMinute).padStart(2, "0")}`;
+      }
       const selectedIndex = timeOptions.indexOf(scrollTarget);
 
       if (selectedIndex !== -1) {
@@ -95,7 +106,7 @@ export function TimePicker({
         }, 0);
       }
     }
-  }, [open, value, timeOptions]);
+  }, [open, value, timeOptions, minuteInterval]);
 
   // Render a static button during SSR to avoid hydration mismatch
   if (!mounted && !children) {

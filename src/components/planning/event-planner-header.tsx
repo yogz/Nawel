@@ -330,7 +330,11 @@ export function EventPlannerHeader({
                               value={firstMeal.date ? new Date(firstMeal.date) : undefined}
                               onChange={(newDate) => {
                                 if (newDate) {
-                                  const dateStr = newDate.toISOString().split("T")[0];
+                                  // Use local date methods to avoid timezone issues with toISOString()
+                                  const year = newDate.getFullYear();
+                                  const month = String(newDate.getMonth() + 1).padStart(2, "0");
+                                  const day = String(newDate.getDate()).padStart(2, "0");
+                                  const dateStr = `${year}-${month}-${day}`;
                                   handlers.handleUpdateMeal?.(
                                     firstMeal.id,
                                     dateStr,
