@@ -281,8 +281,6 @@ export function Organizer({
             {tab === "planning" && (
               <PlanningTab
                 plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 sensors={sensors}
