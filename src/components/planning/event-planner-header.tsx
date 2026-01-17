@@ -14,6 +14,7 @@ import {
 import { Input } from "../ui/input";
 import { type Meal, type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
 import { UserNav } from "@/components/auth/user-nav";
+import { ProfileDrawer } from "@/components/auth/profile-drawer";
 import {
   cn,
   generateGoogleCalendarUrl,
@@ -28,7 +29,7 @@ import { AppBranding } from "@/components/common/app-branding";
 import { CitationDisplay } from "../common/citation-display";
 import { Link } from "@/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, ArrowLeft, Pencil } from "lucide-react";
+import { Home, ChevronLeft, Pencil, MoreHorizontal } from "lucide-react";
 import { AutoSizeText } from "@/components/common/auto-size-text";
 import { AutoSizeInput } from "@/components/common/auto-size-input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -78,6 +79,7 @@ export function EventPlannerHeader({
   const [showRightFade, setShowRightFade] = useState(true);
   const [isAddressDrawerOpen, setIsAddressDrawerOpen] = useState(false);
   const [isAddressPopoverOpen, setIsAddressPopoverOpen] = useState(false);
+  const [showProfileDrawer, setShowProfileDrawer] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const checkScroll = () => {
@@ -178,7 +180,7 @@ export function EventPlannerHeader({
         className={cn(
           "sticky top-0 z-30 w-full",
           "rounded-b-[32px] shadow-lg overflow-hidden",
-          "bg-gradient-to-br from-[#6366f1] via-[#a855f7] to-[#ec4899]" // Vibrant Indigo -> Purple -> Pink
+          "bg-gradient-to-b from-[#ec4899] via-[#a855f7] to-[#6366f1]" // Pink -> Purple -> Indigo (matches iOS status bar)
         )}
         style={{
           paddingTop: `env(safe-area-inset-top, 0px)`,
@@ -213,13 +215,16 @@ export function EventPlannerHeader({
                 className="overflow-hidden"
               >
                 <div className="flex items-center justify-between gap-4 py-1">
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <Link
-                      href="/event"
-                      className="relative block shrink-0 rounded-[32px] bg-white/30 p-2 shadow-sm backdrop-blur-md transition-all hover:scale-105 active:scale-95 border border-white/20"
-                    >
-                      <ArrowLeft className="h-5 w-5 text-white" />
-                    </Link>
+                  {/* Back button - more transparent */}
+                  <Link
+                    href="/event"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
+                  >
+                    <ChevronLeft className="h-5 w-5 text-white" />
+                  </Link>
+
+                  {/* Centered CoList branding */}
+                  <div className="absolute left-1/2 -translate-x-1/2">
                     <AppBranding
                       href="/event"
                       logoSize={24}
@@ -227,7 +232,14 @@ export function EventPlannerHeader({
                       className="opacity-95 text-white filter brightness-0 invert"
                     />
                   </div>
-                  <UserNav showLabel={true} />
+
+                  {/* Menu pill with "..." - opens profile */}
+                  <button
+                    onClick={() => setShowProfileDrawer(true)}
+                    className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
+                  >
+                    <MoreHorizontal className="h-5 w-5 text-white" />
+                  </button>
                 </div>
               </motion.div>
 
@@ -331,7 +343,7 @@ export function EventPlannerHeader({
                                 }
                               }}
                             >
-                              <button className="group flex shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                              <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
                                 <Calendar
                                   size={14}
                                   className="shrink-0 text-white/90"
@@ -341,7 +353,7 @@ export function EventPlannerHeader({
                               </button>
                             </DatePicker>
                           ) : (
-                            <div className="flex shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md">
+                            <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
                               <Calendar
                                 size={14}
                                 className="shrink-0 text-white/90"
@@ -366,7 +378,7 @@ export function EventPlannerHeader({
                                 );
                               }}
                             >
-                              <button className="group flex shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                              <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
                                 <Clock
                                   size={14}
                                   className="shrink-0 text-white/90"
@@ -377,7 +389,7 @@ export function EventPlannerHeader({
                             </TimePicker>
                           ) : (
                             firstMeal.time && (
-                              <div className="flex shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md">
+                              <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
                                 <Clock
                                   size={14}
                                   className="shrink-0 text-white/90"
@@ -397,7 +409,7 @@ export function EventPlannerHeader({
                                     onOpenChange={setIsAddressDrawerOpen}
                                   >
                                     <DrawerTrigger asChild>
-                                      <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
+                                      <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
                                         <MapPin
                                           size={14}
                                           className="shrink-0 text-white/90"
@@ -460,7 +472,7 @@ export function EventPlannerHeader({
                                     onOpenChange={setIsAddressPopoverOpen}
                                   >
                                     <PopoverTrigger asChild>
-                                      <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 sm:max-w-[240px]">
+                                      <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 sm:max-w-[240px]">
                                         <MapPin
                                           size={14}
                                           className="shrink-0 text-white/90"
@@ -499,7 +511,7 @@ export function EventPlannerHeader({
                                 )}
                               </div>
                             ) : (
-                              <div className="flex max-w-[180px] shrink-0 items-center gap-2 rounded-[32px] border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md sm:max-w-[240px]">
+                              <div className="flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md sm:max-w-[240px]">
                                 <MapPin
                                   size={14}
                                   className="shrink-0 text-white/90"
@@ -510,7 +522,7 @@ export function EventPlannerHeader({
                             ))}
 
                           {plan.meals.length > 1 && (
-                            <div className="flex shrink-0 items-center gap-2 rounded-[32px] bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
+                            <div className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 font-bold text-white shadow-sm backdrop-blur-md border border-white/20">
                               <span className="text-xs">{plan.meals.length} jours</span>
                             </div>
                           )}
@@ -521,7 +533,7 @@ export function EventPlannerHeader({
                         {firstMeal && firstMeal.date !== "common" && (
                           <Popover>
                             <PopoverTrigger asChild>
-                              <button className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[32px] border border-white/30 bg-white/20 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                              <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
                                 <Calendar size={18} className="text-white/90" />
                               </button>
                             </PopoverTrigger>
@@ -567,17 +579,13 @@ export function EventPlannerHeader({
 
                         {!readOnly && (
                           <button
-                            onClick={handleShare}
+                            onClick={() => setSheet({ type: "share" })}
                             className={cn(
-                              "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[32px] border border-white/30 bg-white/20 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-white/40 hover:bg-white/30 active:scale-95",
+                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95",
                               showAttention && "btn-shine-attention"
                             )}
                           >
-                            {copied ? (
-                              <CheckCircle size={18} className="text-green-300" />
-                            ) : (
-                              <Share size={18} className="text-white/90" />
-                            )}
+                            <Share size={18} className="text-white/90" />
                           </button>
                         )}
                       </div>
@@ -588,6 +596,7 @@ export function EventPlannerHeader({
           </motion.div>
         </div>
       </div>
+      <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
     </>
   );
 }
