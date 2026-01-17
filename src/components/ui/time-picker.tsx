@@ -91,19 +91,21 @@ export function TimePicker({
       const selectedIndex = timeOptions.indexOf(scrollTarget);
 
       if (selectedIndex !== -1) {
-        // Delay to ensure the scroll area is rendered
-        setTimeout(() => {
+        // Use requestAnimationFrame + timeout to ensure popover is fully rendered
+        const scrollToTime = () => {
           const itemHeight = 40; // Approximate height of each item
           if (scrollRef.current) {
             const viewport = scrollRef.current.querySelector("[data-radix-scroll-area-viewport]");
             if (viewport) {
-              viewport.scrollTo({
-                top: selectedIndex * itemHeight - 80,
-                behavior: "instant",
-              });
+              viewport.scrollTop = Math.max(0, selectedIndex * itemHeight - 80);
             }
           }
-        }, 0);
+        };
+
+        // Try multiple times to ensure the scroll works
+        requestAnimationFrame(() => {
+          setTimeout(scrollToTime, 50);
+        });
       }
     }
   }, [open, value, timeOptions, minuteInterval]);
