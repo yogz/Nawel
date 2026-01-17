@@ -7,12 +7,12 @@
   /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
   .theme-aurora {
     /* Lighter, more premium palette */
-    --surface: #fdfcff;
-    --muted: #f3e8ff;
-    --accent: 259 90% 66%;
-    /* Midnight Lavender Accent: #8D5CF6 */
-    --text: #2e1065;
-    --header-fade: #fdfcff;
+    /* Vibrant violet immersion */
+    --surface: #bc63e9;
+    --muted: rgba(255, 255, 255, 0.1);
+    --accent: 280 75% 65%;
+    --text: #1a0a33;
+    --header-fade: #bc63e9;
 
     --card-bg: rgba(255, 255, 255, 0.75);
     --card-border: rgba(255, 255, 255, 0.6);
@@ -25,12 +25,12 @@
     --glass-blur: 12px;
     /* Base blur */
 
-    /* Subtle background with noise */
-    background: linear-gradient(180deg, #fdfdff 0%, #f3e8ff 100%);
+    /* Light blue-grey background for the content area */
+    background: #f5f7fb;
     background-image:
-      radial-gradient(at 0% 0%, rgba(200, 180, 255, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(230, 200, 255, 0.1) 0px, transparent 50%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+      radial-gradient(at 0% 0%, rgba(188, 99, 233, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(230, 200, 255, 0.03) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
@@ -352,6 +352,34 @@
       padding: 10px 16px;
       font-size: 14px;
     }
+  }
+
+  /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
+  .theme-aurora {
+    --background: 270 20% 98%;
+    --foreground: 280 40% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 280 40% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 280 40% 12%;
+    --primary: 280 75% 65%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 270 30% 96%;
+    --secondary-foreground: 280 40% 12%;
+    --muted: 270 20% 94%;
+    --muted-foreground: 270 10% 45%;
+    --accent: 280 75% 65%;
+    --accent-foreground: 280 40% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 270 20% 90%;
+    --input: 270 20% 90%;
+    --ring: 280 75% 65%;
+    --radius: 1rem;
+    --surface: 210 20% 98%;
+    /* Light grey/blue surface */
+    --text: 280 50% 10%;
+    --header-fade: #bc63e9;
   }
 
   /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */

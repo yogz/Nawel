@@ -71,8 +71,6 @@ export function EventPlanner({
     setPlan,
     tab,
     setTab,
-    planningFilter,
-    setPlanningFilter,
     sheet,
     setSheet,
     selectedPerson,
@@ -83,7 +81,6 @@ export function EventPlanner({
     setActiveItemId,
     successMessage,
     setSuccessMessage,
-    unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
@@ -311,7 +308,7 @@ export function EventPlanner({
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
         paddingTop: `env(safe-area-inset-top, 0px)`,
-        background: `linear-gradient(to bottom, hsl(270 20% 96%) 0%, hsl(270 15% 98%) 200px, white 400px)`,
+        background: `transparent`,
       }}
     >
       <EventPlannerHeader
@@ -319,11 +316,8 @@ export function EventPlanner({
         tab={tab}
         setTab={setTab}
         plan={plan}
-        planningFilter={planningFilter}
-        setPlanningFilter={setPlanningFilter}
         setSheet={setSheet}
         sheet={sheet}
-        unassignedItemsCount={unassignedItemsCount}
         slug={slug}
         writeKey={effectiveWriteKey}
         handlers={handlers}
@@ -340,8 +334,6 @@ export function EventPlanner({
             {tab === "planning" && (
               <PlanningTab
                 plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 sensors={sensors}
@@ -407,8 +399,6 @@ export function EventPlanner({
           setIsGenerating={setIsGenerating}
           successMessage={successMessage}
           setSuccessMessage={setSuccessMessage}
-          planningFilter={planningFilter}
-          setPlanningFilter={setPlanningFilter}
           currentUserId={session?.user?.id}
           currentUserImage={session?.user?.image}
           onAuth={() => {

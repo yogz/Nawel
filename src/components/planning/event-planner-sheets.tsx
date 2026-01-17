@@ -23,12 +23,7 @@ import {
   IngredientsSheetContent,
 } from "./sheets";
 
-import {
-  type PlanData,
-  type OrganizerHandlers,
-  type Sheet,
-  type PlanningFilter,
-} from "@/lib/types";
+import { type PlanData, type OrganizerHandlers, type Sheet } from "@/lib/types";
 
 interface EventPlannerSheetsProps {
   sheet: Sheet | null;
@@ -42,8 +37,6 @@ interface EventPlannerSheetsProps {
   setIsGenerating: (isGenerating: boolean) => void;
   successMessage: { text: string; type?: "success" | "error" } | null;
   setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
   currentUserImage?: string | null;
   onAuth: () => void;
@@ -61,6 +54,7 @@ export function EventPlannerSheets({
   handlers,
   isGenerating,
   setIsGenerating,
+  successMessage,
   setSuccessMessage,
   currentUserId,
   currentUserImage,

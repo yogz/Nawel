@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
-import { PlanningFilters } from "./event-planner-header";
 import { PlusIcon, Calendar, Coffee, ArrowUpRight } from "lucide-react";
 import { MealContainer } from "./meal-container";
 import { DayTabs } from "./day-tabs";
@@ -17,15 +16,12 @@ import {
   type SensorDescriptor,
   type SensorOptions,
 } from "@dnd-kit/core";
-import { type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
+import { type PlanData, type Item, type Sheet } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 
 interface PlanningTabProps {
   plan: PlanData;
-  planningFilter: PlanningFilter;
-
-  setPlanningFilter: (filter: PlanningFilter) => void;
   activeItemId: number | null;
   readOnly?: boolean;
   sensors: SensorDescriptor<SensorOptions>[];
@@ -58,8 +54,6 @@ const containerVariants: Variants = {
 
 export function PlanningTab({
   plan,
-  planningFilter,
-  setPlanningFilter,
   activeItemId,
   readOnly,
   sensors,
@@ -127,28 +121,6 @@ export function PlanningTab({
     setHasMounted(true);
   }, []);
 
-  // All hooks must be called before any conditional returns
-  const unassignedItemsCount = useMemo(
-    () =>
-      plan.meals.reduce(
-        (acc, meal) =>
-          acc +
-          meal.services.reduce(
-            (acc2, service) => acc2 + service.items.filter((i) => !i.personId).length,
-            0
-          ),
-        0
-      ),
-    [plan.meals]
-  );
-
-  // Reset filter to "all" when no more unassigned items
-  useEffect(() => {
-    if (planningFilter.type === "unassigned" && unassignedItemsCount === 0) {
-      setPlanningFilter({ type: "all" });
-    }
-  }, [unassignedItemsCount, planningFilter.type, setPlanningFilter]);
-
   // Early return after all hooks are called
   if (!hasMounted) {
     return null;
@@ -168,49 +140,10 @@ export function PlanningTab({
         className="space-y-6 pt-0 sm:space-y-8"
       >
         <div className="flex flex-col gap-6">
-          {unassignedItemsCount > 0 && (
-            <div className="px-0">
-              <PlanningFilters
-                plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
-                setSheet={setSheet}
-                sheet={sheet}
-                unassignedItemsCount={unassignedItemsCount}
-                slug={slug}
-                writeKey={writeKey}
-                readOnly={!!readOnly}
-              />
-            </div>
-          )}
-
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
 
         {plan.meals
-          .filter((meal) => {
-            // Afficher tous les repas (même vides) pour le filtre "all"
-            if (planningFilter.type === "all") {
-              return true;
-            }
-            // Pour les autres filtres, vérifier s'il y a des correspondances
-            // Si le repas n'a pas de services, il n'y a pas de correspondance
-            if (!meal.services || meal.services.length === 0) {
-              return false;
-            }
-            const hasMatch = meal.services.some((s) =>
-              s.items.some((i) => {
-                if (planningFilter.type === "unassigned") {
-                  return !i.personId;
-                }
-                if (planningFilter.type === "person") {
-                  return i.personId === planningFilter.personId;
-                }
-                return false;
-              })
-            );
-            return hasMatch;
-          })
           .filter((meal) => {
             if (selectedDate === "all") return true;
             return meal.date === selectedDate;
@@ -227,7 +160,6 @@ export function PlanningTab({
                 key={meal.id}
                 meal={meal}
                 plan={plan}
-                planningFilter={planningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 onAssign={onAssign}
@@ -241,7 +173,7 @@ export function PlanningTab({
             );
           })}
       </motion.div>
-      {plan.meals.length === 0 && planningFilter.type === "all" && (
+      {plan.meals.length === 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -290,7 +222,7 @@ export function PlanningTab({
           )}
         </motion.div>
       )}
-      {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
+      {!readOnly && plan.meals.length > 0 && (
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
           {/* Main Actions Stack - Glassmorphism style */}
           <div className="flex w-full flex-col gap-3">

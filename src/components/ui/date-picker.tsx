@@ -41,6 +41,8 @@ export interface DatePickerProps {
   className?: string;
   /** Whether the picker is disabled */
   disabled?: boolean;
+  /** Optional custom trigger */
+  children?: React.ReactNode;
 }
 
 export function DatePicker({
@@ -51,6 +53,7 @@ export function DatePicker({
   toDate,
   className,
   disabled,
+  children,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -62,7 +65,7 @@ export function DatePicker({
   }, []);
 
   // Render a static button during SSR to avoid hydration mismatch
-  if (!mounted) {
+  if (!mounted && !children) {
     return (
       <Button
         variant="outline"
@@ -86,22 +89,26 @@ export function DatePicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={disabled}
-          className={cn(
-            "w-full justify-start text-left font-medium",
-            !value && "text-muted-foreground",
-            className
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-          {value ? (
-            <span className="truncate">{format(value, "d MMM yyyy", { locale: dateLocale })}</span>
-          ) : (
-            <span className="truncate">{placeholder}</span>
-          )}
-        </Button>
+        {children || (
+          <Button
+            variant="outline"
+            disabled={disabled}
+            className={cn(
+              "w-full justify-start text-left font-medium",
+              !value && "text-muted-foreground",
+              className
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+            {value ? (
+              <span className="truncate">
+                {format(value, "d MMM yyyy", { locale: dateLocale })}
+              </span>
+            ) : (
+              <span className="truncate">{placeholder}</span>
+            )}
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar

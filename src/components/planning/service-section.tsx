@@ -3,7 +3,7 @@
 import React, { useState, memo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { PlusIcon, Edit3, ChevronRight } from "lucide-react";
-import { type PlanningFilter, type Service, type Person, type Item } from "@/lib/types";
+import { type Service, type Person, type Item } from "@/lib/types";
 import { MenuItemRow } from "./menu-item-row";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
@@ -19,7 +19,6 @@ interface ServiceSectionProps {
   onDelete: (item: Item) => void;
   onCreate: () => void;
   onEdit: () => void;
-  filter: PlanningFilter;
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
@@ -33,7 +32,6 @@ export const ServiceSection = memo(function ServiceSection({
   onDelete,
   onCreate,
   onEdit,
-  filter,
   activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
@@ -46,22 +44,7 @@ export const ServiceSection = memo(function ServiceSection({
 
   const translatedTitle = useTranslatedServiceTitle(service.title);
 
-  const filteredItems = service.items.filter((i) => {
-    if (filter.type === "all") {
-      return true;
-    }
-    if (filter.type === "unassigned") {
-      return !i.personId;
-    }
-    if (filter.type === "person") {
-      return i.personId === filter.personId;
-    }
-    return true;
-  });
-
-  if (filter.type !== "all" && filteredItems.length === 0) {
-    return null;
-  }
+  const filteredItems = service.items;
 
   const allPeopleNames = people.map((p) => p.name);
 
@@ -78,7 +61,7 @@ export const ServiceSection = memo(function ServiceSection({
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
           className={cn(
-            "group flex items-center gap-4 text-left",
+            "group flex flex-1 items-center gap-4 text-left",
             !readOnly &&
               "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
           )}
@@ -91,36 +74,18 @@ export const ServiceSection = memo(function ServiceSection({
           }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(!isExpanded);
-              }}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/5 text-accent transition-all hover:bg-accent/10 sm:h-10 sm:w-10"
-              aria-label={isExpanded ? t("collapse") : t("expand")}
-            >
-              <motion.div
-                animate={{ rotate: isExpanded ? 90 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <ChevronRight className="h-6 w-6" />
-              </motion.div>
-            </button>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-[20px] shadow-lg shadow-accent/20 ring-4 ring-white transition-all duration-300 group-hover:scale-110 sm:h-12 sm:w-12 sm:text-[22px]">
-              {service.icon || getServiceIcon(service.title)}
-            </div>
-            <div>
-              <h3 className="text-gradient-header text-sm font-bold uppercase tracking-[0.15em] sm:text-base">
-                {translatedTitle}
-              </h3>
-              {filteredItems.length > 0 && (
-                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-accent/40">
-                  {filteredItems.length} {t("items")}
-                </p>
-              )}
-            </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-[20px] shadow-lg shadow-accent/20 ring-4 ring-white transition-all duration-300 group-hover:scale-110 sm:h-12 sm:w-12 sm:text-[22px]">
+            {service.icon || getServiceIcon(service.title)}
+          </div>
+          <div className="flex-1">
+            <h3 className="text-gradient-header text-sm font-bold uppercase tracking-[0.15em] sm:text-base">
+              {translatedTitle}
+            </h3>
+            {filteredItems.length > 0 && (
+              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-accent/40">
+                {filteredItems.length} {t("items")}
+              </p>
+            )}
           </div>
           {!readOnly && (
             <span className="text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
@@ -128,6 +93,23 @@ export const ServiceSection = memo(function ServiceSection({
             </span>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="ml-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/5 text-accent transition-all hover:bg-accent/10 sm:h-10 sm:w-10"
+          aria-label={isExpanded ? t("collapse") : t("expand")}
+        >
+          <motion.div
+            animate={{ rotate: isExpanded ? 90 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </motion.div>
+        </button>
       </div>
 
       <AnimatePresence initial={false}>

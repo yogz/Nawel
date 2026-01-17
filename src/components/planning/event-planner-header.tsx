@@ -5,14 +5,11 @@ import {
   ShieldAlert,
   Share,
   CheckCircle,
-  CircleHelp,
-  Stars,
-  Calendar,
-  Clock,
   MapPin,
-  Users,
   ExternalLink,
   Download,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import { Input } from "../ui/input";
 import { type Meal, type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
@@ -43,7 +40,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
 
 interface EventPlannerHeaderProps {
@@ -51,11 +48,8 @@ interface EventPlannerHeaderProps {
   tab: string;
   setTab: (tab: any) => void;
   plan: PlanData;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
   setSheet: (sheet: Sheet) => void;
   sheet: Sheet | null;
-  unassignedItemsCount: number;
   slug: string;
   writeKey?: string;
   handlers: any;
@@ -66,11 +60,8 @@ export function EventPlannerHeader({
   tab: _tab,
   setTab,
   plan,
-  planningFilter: _planningFilter,
-  setPlanningFilter: _setPlanningFilter,
   setSheet,
   sheet: _sheet,
-  unassignedItemsCount: _unassignedItemsCount,
   slug,
   writeKey,
   handlers,
@@ -83,8 +74,6 @@ export function EventPlannerHeader({
   const format = useFormatter();
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
-  const [showLogoHint, setShowLogoHint] = useState(true);
-  const [hovered, setHovered] = useState(false);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(true);
   const [isAddressDrawerOpen, setIsAddressDrawerOpen] = useState(false);
@@ -111,9 +100,9 @@ export function EventPlannerHeader({
       };
     }
   }, []);
-  const [animationStep, setAnimationStep] = useState<"logo" | "home" | "arrow">("logo");
-  const [animationComplete, setAnimationComplete] = useState(false);
+
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   // States for inline editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -137,32 +126,6 @@ export function EventPlannerHeader({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Animation sequence: Logo -> Home -> Arrow -> Logo (douce et subtile)
-  useEffect(() => {
-    if (!showLogoHint) {
-      return;
-    }
-
-    const timers: NodeJS.Timeout[] = [];
-
-    timers.push(
-      setTimeout(() => setAnimationStep("home"), 1200),
-      setTimeout(() => setAnimationStep("arrow"), 2400),
-      setTimeout(() => {
-        setAnimationStep("logo");
-        // Attendre la fin de la transition du logo avant de désactiver
-        setTimeout(() => {
-          setShowLogoHint(false);
-          setAnimationComplete(true);
-        }, 700);
-      }, 3600)
-    );
-
-    return () => {
-      timers.forEach((timer) => clearTimeout(timer));
-    };
-  }, [showLogoHint]);
 
   const handleShare = async () => {
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
@@ -188,20 +151,10 @@ export function EventPlannerHeader({
   const handleTitleSubmit = () => {
     const trimmedTitle = editedTitle.trim();
     if (trimmedTitle && trimmedTitle !== plan.event?.name) {
-      // Optimistic update: immediately update local plan state
       handlers.handleUpdateEvent?.(trimmedTitle);
     }
     setIsEditingTitle(false);
   };
-
-  const firstMeal = plan.meals[0];
-  const eventName = plan.event?.name || "Event";
-  const calendarTitle = firstMeal?.title ? `${eventName} - ${firstMeal.title}` : eventName;
-  const calendarDescription = tPlanning("calendar.description", { title: calendarTitle });
-
-  const calendarUrl = firstMeal
-    ? generateGoogleCalendarUrl(firstMeal, eventName, calendarDescription)
-    : "";
 
   return (
     <>
@@ -220,513 +173,421 @@ export function EventPlannerHeader({
         </div>
       )}
 
-      {/* Row 1: Navigation & Actions (moves with scroll) */}
+      {/* Unified Rounded Header Container with Gradient */}
       <div
+        className={cn(
+          "sticky top-0 z-30 w-full",
+          "rounded-b-[40px] shadow-lg overflow-hidden",
+          "bg-gradient-to-br from-[#6366f1] via-[#a855f7] to-[#ec4899]" // Vibrant Indigo -> Purple -> Pink
+        )}
         style={{
-          background: `hsl(270 25% 92%)`,
+          paddingTop: `env(safe-area-inset-top, 0px)`,
         }}
-        className="relative z-30 mx-auto w-full max-w-3xl px-4 pt-5 sm:pt-4"
-      >
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <Link
-              href="/event"
-              aria-label="Retour à l'accueil"
-              className="relative block shrink-0 rounded-full bg-white/40 p-2 shadow-sm backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/60 active:scale-95"
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
-            >
-              <div className="relative h-5 w-5 sm:h-6 sm:w-6">
-                <AnimatePresence mode="wait">
-                  {hovered ? (
-                    <motion.div
-                      key="home"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <Home className="h-full w-full text-accent" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="arrow"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      <ArrowLeft className="h-full w-full text-gray-700" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </Link>
-            <AppBranding
-              href="/event"
-              logoSize={24}
-              textSize="sm"
-              className="opacity-80 mix-blend-multiply"
-            />
-          </div>
-
-          <div className="flex shrink-0 items-center gap-3 pr-3">
-            <UserNav showLabel={true} />
-          </div>
-        </div>
-      </div>
-
-      {/* Row 2: Event Title & Pills (Sticky) */}
-      <div
-        style={{
-          background: `linear-gradient(to bottom, hsl(270 25% 92%) 0%, hsl(270 25% 92%) 70%, transparent 100%)`,
-        }}
-        className="sticky top-0 z-30 w-full px-2 pb-8 pt-2 backdrop-blur-sm transition-all sm:pb-6"
       >
         <div className="mx-auto max-w-3xl">
-          <div className="flex flex-col gap-0">
-            {/* Event Title Row */}
-            <div className="flex items-center gap-2 px-1">
-              <AnimatePresence>
-                {isScrolled && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10, scale: 0.8 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: -10, scale: 0.8 }}
-                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                    className="shrink-0"
-                  >
+          <motion.div
+            initial={false}
+            animate={{
+              paddingTop: isScrolled ? "1.25rem" : "1.25rem",
+              paddingBottom: isScrolled ? "1.5rem" : "2rem",
+            }}
+            transition={{
+              duration: 0.4,
+              ease: [0.32, 0.72, 0, 1],
+            }}
+            className="relative px-4"
+          >
+            <div className="flex flex-col gap-1">
+              <motion.div
+                initial={false}
+                animate={{
+                  height: isScrolled ? 0 : "auto",
+                  opacity: isScrolled ? 0 : 1,
+                  y: isScrolled ? -20 : 0,
+                  marginBottom: isScrolled ? 0 : 12,
+                }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.32, 0.72, 0, 1],
+                }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center justify-between gap-4 py-1">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <Link
+                      href="/event"
+                      className="relative block shrink-0 rounded-full bg-white/30 p-2 shadow-sm backdrop-blur-md transition-all hover:scale-105 active:scale-95 border border-white/20"
+                    >
+                      <ArrowLeft className="h-5 w-5 text-white" />
+                    </Link>
                     <AppBranding
-                      variant="icon"
-                      logoSize={28}
-                      className="opacity-90"
-                      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                      href="/event"
+                      logoSize={24}
+                      textSize="sm"
+                      className="opacity-95 text-white filter brightness-0 invert"
                     />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                  <UserNav showLabel={true} />
+                </div>
+              </motion.div>
 
-              {!readOnly ? (
-                isEditingTitle ? (
-                  <div className="flex flex-1 items-center">
+              <div className="flex items-center gap-2">
+                {!readOnly ? (
+                  isEditingTitle ? (
                     <AutoSizeInput
                       autoFocus
                       value={editedTitle}
                       onChange={(e) => setEditedTitle(e.target.value)}
                       onBlur={handleTitleSubmit}
                       onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
-                      maxSize={48}
+                      maxSize={isScrolled ? 34 : 48}
                       minSize={14}
-                      className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm focus-visible:ring-0"
+                      className="bg-transparent font-black tracking-tighter text-white border-none focus-visible:ring-0 caret-white"
                     />
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setIsEditingTitle(true)}
-                    className="flex flex-1 items-center text-left transition-opacity hover:opacity-80"
-                  >
-                    <AutoSizeText
-                      maxSize={48}
-                      minSize={14}
-                      scaleThreshold={12}
-                      className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                  ) : (
+                    <button
+                      onClick={() => setIsEditingTitle(true)}
+                      className="group flex flex-1 items-center gap-2 text-left"
                     >
-                      {plan.event?.name || tShared("defaultEventName")}
-                    </AutoSizeText>
-                  </button>
-                )
-              ) : (
-                <div className="flex-1">
+                      <AutoSizeText
+                        maxSize={isScrolled ? 34 : 48}
+                        minSize={14}
+                        className="font-black tracking-tighter text-white drop-shadow-md"
+                      >
+                        {plan.event?.name || tShared("defaultEventName")}
+                      </AutoSizeText>
+                      <Pencil
+                        size={18}
+                        className="opacity-0 transition-opacity group-hover:opacity-100 text-white/50"
+                      />
+                    </button>
+                  )
+                ) : (
                   <AutoSizeText
-                    maxSize={48}
+                    maxSize={isScrolled ? 34 : 48}
                     minSize={20}
-                    className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text font-black tracking-tighter text-transparent drop-shadow-sm"
+                    className="font-black tracking-tighter text-white drop-shadow-md"
                   >
                     {plan.event?.name || tShared("defaultEventName")}
                   </AutoSizeText>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            {/* Logistic Pills & Share (Glassmorphic) */}
-            {plan.meals.length > 0 && (
-              <div className="flex items-center justify-between gap-2 px-1">
-                <div className="relative flex flex-1 min-w-0 overflow-hidden">
-                  {/* Left edge gradient fade */}
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-4 bg-gradient-to-r from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
-                      showLeftFade ? "opacity-100" : "opacity-0"
-                    )}
-                  />
+              {plan.meals.length > 0 &&
+                (() => {
+                  const firstMeal = plan.meals[0];
+                  const shortDate = format.dateTime(new Date(firstMeal.date), {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short",
+                  });
+                  const eventName = plan.event?.name || "Event";
+                  const calendarTitle = firstMeal.title
+                    ? `${eventName} - ${firstMeal.title}`
+                    : eventName;
+                  const calendarDescription = tPlanning("calendar.description", {
+                    title: calendarTitle,
+                  });
+                  const calendarUrl = generateGoogleCalendarUrl(
+                    firstMeal,
+                    eventName,
+                    calendarDescription
+                  );
 
-                  <div
-                    ref={scrollContainerRef}
-                    className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium"
-                  >
-                    {/* Date Pill */}
-                    {!readOnly ? (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
-                            <Calendar size={14} className="text-accent" strokeWidth={1.8} />
-                            <span>
-                              {format.dateTime(new Date(firstMeal.date), {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              })}
-                            </span>
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <CalendarUI
-                            mode="single"
-                            selected={new Date(firstMeal.date)}
-                            onSelect={(date) => {
-                              if (date) {
+                  return (
+                    <div className="flex items-center justify-between gap-2 px-1">
+                      <div className="relative flex flex-1 min-w-0 overflow-hidden">
+                        <div
+                          className={cn(
+                            "pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-4 bg-gradient-to-r from-[#8b5cf6] to-transparent transition-opacity duration-300",
+                            showLeftFade ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <div
+                          ref={scrollContainerRef}
+                          className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium"
+                        >
+                          {!readOnly ? (
+                            <DatePicker
+                              value={firstMeal.date ? new Date(firstMeal.date) : undefined}
+                              onChange={(newDate) => {
+                                if (newDate) {
+                                  const dateStr = newDate.toISOString().split("T")[0];
+                                  handlers.handleUpdateMeal?.(
+                                    firstMeal.id,
+                                    dateStr,
+                                    firstMeal.title,
+                                    firstMeal.adults,
+                                    firstMeal.children,
+                                    firstMeal.time,
+                                    firstMeal.address
+                                  );
+                                }
+                              }}
+                            >
+                              <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                                <Calendar
+                                  size={14}
+                                  className="shrink-0 text-white/90"
+                                  strokeWidth={1.8}
+                                />
+                                <span className="truncate">{shortDate}</span>
+                              </button>
+                            </DatePicker>
+                          ) : (
+                            <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md">
+                              <Calendar
+                                size={14}
+                                className="shrink-0 text-white/90"
+                                strokeWidth={1.8}
+                              />
+                              <span className="truncate">{shortDate}</span>
+                            </div>
+                          )}
+
+                          {!readOnly ? (
+                            <TimePicker
+                              value={firstMeal.time || ""}
+                              onChange={(time) => {
                                 handlers.handleUpdateMeal?.(
                                   firstMeal.id,
-                                  date.toISOString().split("T")[0],
+                                  firstMeal.date,
                                   firstMeal.title,
                                   firstMeal.adults,
                                   firstMeal.children,
-                                  firstMeal.time,
+                                  time,
                                   firstMeal.address
                                 );
-                              }
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    ) : (
-                      <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md">
-                        <Calendar size={14} className="text-accent" strokeWidth={1.8} />
-                        <span>
-                          {format.dateTime(new Date(firstMeal.date), {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Time Pill (if distinct) */}
-                    {!readOnly ? (
-                      <TimePicker
-                        value={firstMeal.time || ""}
-                        onChange={(time) => {
-                          handlers.handleUpdateMeal?.(
-                            firstMeal.id,
-                            firstMeal.date,
-                            firstMeal.title,
-                            firstMeal.adults,
-                            firstMeal.children,
-                            time,
-                            firstMeal.address
-                          );
-                        }}
-                      >
-                        <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60">
-                          <Clock size={14} className="text-accent" strokeWidth={1.8} />
-                          <span>{firstMeal.time || "--:--"}</span>
-                        </button>
-                      </TimePicker>
-                    ) : (
-                      firstMeal.time && (
-                        <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md">
-                          <Clock size={14} className="text-accent" strokeWidth={1.8} />
-                          <span>{firstMeal.time}</span>
-                        </div>
-                      )
-                    )}
-
-                    {/* Address Pill */}
-                    {firstMeal.address &&
-                      (!readOnly ? (
-                        <>
-                          {isMobile ? (
-                            <Drawer
-                              open={isAddressDrawerOpen}
-                              onOpenChange={setIsAddressDrawerOpen}
+                              }}
                             >
-                              <DrawerTrigger asChild>
-                                <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
-                                  <MapPin
-                                    size={14}
-                                    className="shrink-0 text-accent"
-                                    strokeWidth={1.8}
-                                  />
-                                  <span className="truncate">{firstMeal.address}</span>
-                                </button>
-                              </DrawerTrigger>
-                              <DrawerContent className="px-4 pb-8">
-                                <DrawerHeader className="px-0 text-left">
-                                  <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
-                                    Modifier l'adresse
-                                  </DrawerTitle>
-                                </DrawerHeader>
-                                <div className="flex flex-col gap-3 py-4">
-                                  <Input
-                                    defaultValue={firstMeal.address}
-                                    autoFocus
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        const val = (e.target as HTMLInputElement).value;
-                                        handlers.handleUpdateMeal?.(
-                                          firstMeal.id,
-                                          firstMeal.date,
-                                          firstMeal.title,
-                                          firstMeal.adults,
-                                          firstMeal.children,
-                                          firstMeal.time,
-                                          val
-                                        );
-                                        setIsAddressDrawerOpen(false);
-                                      }
-                                    }}
-                                    className="h-12 text-base" // Larger input on mobile
-                                  />
-                                  <p className="text-xs text-muted-foreground">
-                                    Appuyez sur Entrée pour sauvegarder
-                                  </p>
-                                  <Button
-                                    onClick={(e) => {
-                                      const input = e.currentTarget.previousElementSibling
-                                        ?.previousElementSibling as HTMLInputElement;
-                                      if (input) {
-                                        handlers.handleUpdateMeal?.(
-                                          firstMeal.id,
-                                          firstMeal.date,
-                                          firstMeal.title,
-                                          firstMeal.adults,
-                                          firstMeal.children,
-                                          firstMeal.time,
-                                          input.value
-                                        );
-                                        setIsAddressDrawerOpen(false);
-                                      }
-                                    }}
-                                    className="w-full bg-accent text-white"
-                                  >
-                                    Sauvegarder
-                                  </Button>
-                                </div>
-                              </DrawerContent>
-                            </Drawer>
+                              <button className="group flex shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                                <Clock
+                                  size={14}
+                                  className="shrink-0 text-white/90"
+                                  strokeWidth={1.8}
+                                />
+                                <span className="truncate">{firstMeal.time || "--:--"}</span>
+                              </button>
+                            </TimePicker>
                           ) : (
-                            <Popover
-                              open={isAddressPopoverOpen}
-                              onOpenChange={setIsAddressPopoverOpen}
-                            >
-                              <PopoverTrigger asChild>
-                                <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-accent/30 hover:bg-white/60 sm:max-w-[240px]">
-                                  <MapPin
-                                    size={14}
-                                    className="shrink-0 text-accent"
-                                    strokeWidth={1.8}
-                                  />
-                                  <span className="truncate">{firstMeal.address}</span>
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-80 p-3" align="start">
-                                <div className="flex flex-col gap-2">
-                                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                                    Modifier l'adresse
-                                  </h4>
-                                  <Input
-                                    defaultValue={firstMeal.address}
-                                    autoFocus
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        const val = (e.target as HTMLInputElement).value;
-                                        handlers.handleUpdateMeal?.(
-                                          firstMeal.id,
-                                          firstMeal.date,
-                                          firstMeal.title,
-                                          firstMeal.adults,
-                                          firstMeal.children,
-                                          firstMeal.time,
-                                          val
-                                        );
-                                        setIsAddressPopoverOpen(false);
-                                      }
-                                    }}
-                                    className="h-9"
-                                  />
-                                  <p className="text-[10px] text-gray-400">
-                                    Appuyez sur Entrée pour sauvegarder
-                                  </p>
-                                </div>
-                              </PopoverContent>
-                            </Popover>
+                            firstMeal.time && (
+                              <div className="flex shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md">
+                                <Clock
+                                  size={14}
+                                  className="shrink-0 text-white/90"
+                                  strokeWidth={1.8}
+                                />
+                                <span className="truncate">{firstMeal.time}</span>
+                              </div>
+                            )
                           )}
-                        </>
-                      ) : (
-                        <div className="flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3.5 py-1.5 mx-0.5 text-gray-700 shadow-sm backdrop-blur-md sm:max-w-[240px]">
-                          <MapPin size={14} className="shrink-0 text-accent" strokeWidth={1.8} />
-                          <span className="truncate">{firstMeal.address}</span>
-                        </div>
-                      ))}
 
-                    {/* Vacation Count (if multiple meals) */}
-                    {plan.meals.length > 1 && (
-                      <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
-                        <span className="text-xs">{plan.meals.length} jours</span>
+                          {firstMeal.address &&
+                            (!readOnly ? (
+                              <div className="flex items-center">
+                                {isMobile ? (
+                                  <Drawer
+                                    open={isAddressDrawerOpen}
+                                    onOpenChange={setIsAddressDrawerOpen}
+                                  >
+                                    <DrawerTrigger asChild>
+                                      <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
+                                        <MapPin
+                                          size={14}
+                                          className="shrink-0 text-white/90"
+                                          strokeWidth={1.8}
+                                        />
+                                        <span className="truncate">{firstMeal.address}</span>
+                                      </button>
+                                    </DrawerTrigger>
+                                    <DrawerContent className="px-4 pb-8">
+                                      <DrawerHeader className="px-0 text-left">
+                                        <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
+                                          Modifier l'adresse
+                                        </DrawerTitle>
+                                      </DrawerHeader>
+                                      <div className="flex flex-col gap-3 py-4">
+                                        <Input
+                                          defaultValue={firstMeal.address}
+                                          autoFocus
+                                          onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                              handlers.handleUpdateMeal?.(
+                                                firstMeal.id,
+                                                firstMeal.date,
+                                                firstMeal.title,
+                                                firstMeal.adults,
+                                                firstMeal.children,
+                                                firstMeal.time,
+                                                (e.target as HTMLInputElement).value
+                                              );
+                                              setIsAddressDrawerOpen(false);
+                                            }
+                                          }}
+                                          className="h-12 text-base"
+                                        />
+                                        <Button
+                                          onClick={(e) => {
+                                            const input = e.currentTarget
+                                              .previousElementSibling as HTMLInputElement;
+                                            handlers.handleUpdateMeal?.(
+                                              firstMeal.id,
+                                              firstMeal.date,
+                                              firstMeal.title,
+                                              firstMeal.adults,
+                                              firstMeal.children,
+                                              firstMeal.time,
+                                              input.value
+                                            );
+                                            setIsAddressDrawerOpen(false);
+                                          }}
+                                          className="w-full bg-accent text-white"
+                                        >
+                                          Sauvegarder
+                                        </Button>
+                                      </div>
+                                    </DrawerContent>
+                                  </Drawer>
+                                ) : (
+                                  <Popover
+                                    open={isAddressPopoverOpen}
+                                    onOpenChange={setIsAddressPopoverOpen}
+                                  >
+                                    <PopoverTrigger asChild>
+                                      <button className="group flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:border-white/40 hover:bg-white/30 sm:max-w-[240px]">
+                                        <MapPin
+                                          size={14}
+                                          className="shrink-0 text-white/90"
+                                          strokeWidth={1.8}
+                                        />
+                                        <span className="truncate">{firstMeal.address}</span>
+                                      </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-80 p-3" align="start">
+                                      <div className="flex flex-col gap-2">
+                                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                          Modifier l'adresse
+                                        </h4>
+                                        <Input
+                                          defaultValue={firstMeal.address}
+                                          autoFocus
+                                          onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                              handlers.handleUpdateMeal?.(
+                                                firstMeal.id,
+                                                firstMeal.date,
+                                                firstMeal.title,
+                                                firstMeal.adults,
+                                                firstMeal.children,
+                                                firstMeal.time,
+                                                (e.target as HTMLInputElement).value
+                                              );
+                                              setIsAddressPopoverOpen(false);
+                                            }
+                                          }}
+                                          className="h-9"
+                                        />
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/30 bg-white/20 px-3.5 py-1.5 mx-0.5 text-white shadow-sm backdrop-blur-md sm:max-w-[240px]">
+                                <MapPin
+                                  size={14}
+                                  className="shrink-0 text-white/90"
+                                  strokeWidth={1.8}
+                                />
+                                <span className="truncate">{firstMeal.address}</span>
+                              </div>
+                            ))}
+
+                          {plan.meals.length > 1 && (
+                            <div className="flex shrink-0 items-center gap-2 rounded-full bg-accent/10 px-3 py-1.5 font-bold text-accent shadow-sm backdrop-blur-md">
+                              <span className="text-xs">{plan.meals.length} jours</span>
+                            </div>
+                          )}
+                        </div>
+                        <div
+                          className={cn(
+                            "pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-4 bg-gradient-to-l from-[#a855f7] to-transparent transition-opacity duration-300",
+                            showRightFade ? "opacity-100" : "opacity-0"
+                          )}
+                        />
                       </div>
-                    )}
-                  </div>
-                  {/* Right edge gradient fade */}
-                  <div
-                    className={cn(
-                      "pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-4 bg-gradient-to-l from-[hsl(270_25%_92%)] to-transparent transition-opacity duration-300",
-                      showRightFade ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </div>
 
-                {/* Action Buttons (End - All the way to the right) */}
-                <div className="ml-auto flex shrink-0 items-center gap-2">
-                  {/* Add to Calendar Button */}
-                  {firstMeal && firstMeal.date !== "common" && (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <button
-                          className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/40 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-accent/30 hover:bg-white/60 active:scale-95"
-                          title={tPlanning("calendar.addToCalendar")}
-                        >
-                          <Calendar size={18} className="text-accent" />
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent className="glass w-56 p-2" align="end">
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => window.open(calendarUrl, "_blank")}
-                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            {tPlanning("calendar.google")}
-                          </button>
-                          <button
-                            onClick={() =>
-                              window.open(
-                                generateOutlookCalendarUrl(
-                                  firstMeal,
-                                  eventName,
-                                  calendarDescription
-                                ),
-                                "_blank"
-                              )
-                            }
-                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            {tPlanning("calendar.outlook")}
-                          </button>
-                          <div className="my-1 border-t border-black/[0.05]" />
-                          <button
-                            onClick={() =>
-                              downloadIcsFile(firstMeal, eventName, calendarDescription)
-                            }
-                            className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                          >
-                            <Download className="h-3.5 w-3.5" />
-                            {tPlanning("calendar.download")}
-                          </button>
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  )}
+                      <div className="ml-auto flex shrink-0 items-center gap-2">
+                        {firstMeal && firstMeal.date !== "common" && (
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/20 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-white/40 hover:bg-white/30 active:scale-95">
+                                <Calendar size={18} className="text-white/90" />
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="glass w-56 p-2" align="end">
+                              <div className="flex flex-col gap-1">
+                                <button
+                                  onClick={() => window.open(calendarUrl, "_blank")}
+                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                  {tPlanning("calendar.google")}
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    window.open(
+                                      generateOutlookCalendarUrl(
+                                        firstMeal,
+                                        eventName,
+                                        calendarDescription
+                                      ),
+                                      "_blank"
+                                    )
+                                  }
+                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                  {tPlanning("calendar.outlook")}
+                                </button>
+                                <div className="my-1 border-t border-black/[0.05]" />
+                                <button
+                                  onClick={() =>
+                                    downloadIcsFile(firstMeal, eventName, calendarDescription)
+                                  }
+                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                >
+                                  <Download className="h-3.5 w-3.5" />
+                                  {tPlanning("calendar.download")}
+                                </button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        )}
 
-                  {!readOnly && (
-                    <button
-                      onClick={handleShare}
-                      className={cn(
-                        "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/40 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-accent/30 hover:bg-white/60 active:scale-95",
-                        showAttention && "btn-shine-attention"
-                      )}
-                      title={t("shareTitle")}
-                    >
-                      {copied ? (
-                        <CheckCircle size={18} className="text-green-500" />
-                      ) : (
-                        <Share size={18} className="text-accent" />
-                      )}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+                        {!readOnly && (
+                          <button
+                            onClick={handleShare}
+                            className={cn(
+                              "flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/20 shadow-sm backdrop-blur-md transition-all hover:scale-110 hover:border-white/40 hover:bg-white/30 active:scale-95",
+                              showAttention && "btn-shine-attention"
+                            )}
+                          >
+                            {copied ? (
+                              <CheckCircle size={18} className="text-green-300" />
+                            ) : (
+                              <Share size={18} className="text-white/90" />
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+            </div>
+          </motion.div>
         </div>
       </div>
     </>
-  );
-}
-
-export interface PlanningFiltersProps {
-  plan: PlanData;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
-  setSheet: (set: Sheet) => void;
-  sheet: Sheet | null;
-  unassignedItemsCount: number;
-  slug: string;
-  writeKey?: string;
-  readOnly: boolean;
-}
-
-export function PlanningFilters({
-  plan: _plan,
-  planningFilter,
-  setPlanningFilter,
-  setSheet: _setSheet,
-  sheet: _sheet,
-  unassignedItemsCount,
-  slug: _slug,
-  writeKey: _writeKey,
-  readOnly: _readOnly,
-}: PlanningFiltersProps) {
-  const t = useTranslations("EventDashboard.Header.filter");
-
-  return (
-    <div className="mb-2 flex w-full items-center justify-center">
-      <Tabs
-        value={planningFilter.type}
-        onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
-        className="w-full max-w-[280px]"
-      >
-        <TabsList className="h-9 w-full rounded-full border border-white/20 bg-gray-200/30 p-1 backdrop-blur-md">
-          <TabsTrigger
-            value="all"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
-          >
-            <Stars size={12} className="shrink-0" />
-            <span className="truncate">{t("all")}</span>
-          </TabsTrigger>
-          <TabsTrigger
-            value="unassigned"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
-          >
-            <div className="relative">
-              <CircleHelp size={12} className="shrink-0" />
-              {unassignedItemsCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
-                </span>
-              )}
-            </div>
-            <span className="truncate">
-              {t("unassigned", {
-                count: unassignedItemsCount,
-              })}
-            </span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </div>
   );
 }

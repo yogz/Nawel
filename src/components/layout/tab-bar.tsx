@@ -75,7 +75,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/70 p-2 ring-1 ring-black/5 transition-all duration-300 shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.4)]"
+        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-gray-100 bg-white p-2 shadow-xl ring-1 ring-black/[0.03] transition-all duration-300"
         style={{
           marginBottom: "env(safe-area-inset-bottom, 0px)",
           backdropFilter: `blur(${blurRadius}px)`,

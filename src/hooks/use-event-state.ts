@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useMemo } from "react";
-import type { PlanData, PlanningFilter, Sheet } from "@/lib/types";
+import type { PlanData, Sheet } from "@/lib/types";
 import { useToast } from "./use-toast";
 
 export interface ChangeLog {
@@ -21,7 +21,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [plan, setPlan] = useState(initialPlan);
   const [tab, setTab] = useState<"planning" | "people" | "shopping">("planning");
   const [logs, setLogs] = useState<ChangeLog[]>([]);
-  const [planningFilter, setPlanningFilter] = useState<PlanningFilter>({ type: "all" });
   const [sheet, setSheet] = useState<Sheet | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
   const [readOnly, setReadOnly] = useState(!writeEnabled);
@@ -31,20 +30,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const { message: successMessage, setMessage: setSuccessMessage } = useToast();
   const [logsLoading, setLogsLoading] = useState(false);
 
-  const unassignedItemsCount = useMemo(() => {
-    let count = 0;
-    plan.meals.forEach((meal) => {
-      meal.services.forEach((service) => {
-        service.items.forEach((item) => {
-          if (!item.personId) {
-            count++;
-          }
-        });
-      });
-    });
-    return count;
-  }, [plan.meals]);
-
   return {
     plan,
     setPlan,
@@ -52,8 +37,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     setTab,
     logs,
     setLogs,
-    planningFilter,
-    setPlanningFilter,
     sheet,
     setSheet,
     selectedPerson,
@@ -68,6 +51,5 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     setSuccessMessage,
     logsLoading,
     setLogsLoading,
-    unassignedItemsCount,
   };
 }

@@ -22,13 +22,12 @@ import {
   downloadIcsFile,
   cn,
 } from "@/lib/utils";
-import { type Meal, type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
+import { type Meal, type PlanData, type Item, type Sheet } from "@/lib/types";
 import { useTranslations, useLocale, useFormatter } from "next-intl";
 
 interface MealContainerProps {
   meal: Meal;
   plan: PlanData;
-  planningFilter: PlanningFilter;
   activeItemId: number | null;
   readOnly?: boolean;
   onAssign: (item: Item, serviceId?: number) => void;
@@ -43,7 +42,6 @@ interface MealContainerProps {
 export function MealContainer({
   meal,
   plan,
-  planningFilter,
   activeItemId,
   readOnly,
   onAssign,
@@ -183,7 +181,6 @@ export function MealContainer({
                   onDelete={onDelete}
                   onCreate={() => onCreateItem(service.id)}
                   onEdit={() => setSheet({ type: "service-edit", service })}
-                  filter={planningFilter}
                   activeItemId={activeItemId}
                   handleAssign={handleAssign}
                   currentUserId={currentUserId}
