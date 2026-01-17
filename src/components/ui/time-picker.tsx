@@ -74,7 +74,7 @@ export function TimePicker({
 
   // Scroll to selected time when popover opens
   React.useEffect(() => {
-    if (open && scrollRef.current) {
+    if (open) {
       // Use provided value, or current time rounded to nearest interval
       let scrollTarget = value;
       if (!scrollTarget) {
@@ -88,27 +88,23 @@ export function TimePicker({
         const finalMinute = roundedMinute % 60;
         scrollTarget = `${String(finalHour).padStart(2, "0")}:${String(finalMinute).padStart(2, "0")}`;
       }
-      const selectedIndex = timeOptions.indexOf(scrollTarget);
 
-      if (selectedIndex !== -1) {
-        // Use requestAnimationFrame + timeout to ensure popover is fully rendered
-        const scrollToTime = () => {
-          const itemHeight = 40; // Approximate height of each item
-          if (scrollRef.current) {
-            const viewport = scrollRef.current.querySelector("[data-radix-scroll-area-viewport]");
-            if (viewport) {
-              viewport.scrollTop = Math.max(0, selectedIndex * itemHeight - 80);
-            }
+      // Use requestAnimationFrame + timeout to ensure popover is fully rendered
+      const scrollToTime = () => {
+        if (scrollRef.current) {
+          const targetButton = scrollRef.current.querySelector(`[data-time="${scrollTarget}"]`);
+          if (targetButton) {
+            targetButton.scrollIntoView({ block: "center", behavior: "instant" });
           }
-        };
+        }
+      };
 
-        // Try multiple times to ensure the scroll works
-        requestAnimationFrame(() => {
-          setTimeout(scrollToTime, 50);
-        });
-      }
+      // Try with increasing delays to ensure the popover is mounted
+      requestAnimationFrame(() => {
+        setTimeout(scrollToTime, 100);
+      });
     }
-  }, [open, value, timeOptions, minuteInterval]);
+  }, [open, value, minuteInterval]);
 
   // Render a static button during SSR to avoid hydration mismatch
   if (!mounted && !children) {
@@ -152,6 +148,7 @@ export function TimePicker({
             {timeOptions.map((time) => (
               <Button
                 key={time}
+                data-time={time}
                 variant={value === time ? "default" : "ghost"}
                 className={cn(
                   "w-full justify-start font-medium mb-1",
