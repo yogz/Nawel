@@ -90,7 +90,7 @@ export async function generateMetadata({
     manifest: "/manifest.json",
     appleWebApp: {
       capable: true,
-      statusBarStyle: "default",
+      statusBarStyle: "black-translucent",
       title: "CoList",
     },
     alternates: {
@@ -117,7 +117,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#6366f1", // Vibrant Indigo to match new header
+  themeColor: "#ec4899", // Pink/Fuchsia to match header gradient top
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";

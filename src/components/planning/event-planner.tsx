@@ -307,7 +307,6 @@ export function EventPlanner({
       className="flex min-h-screen flex-col text-gray-900"
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
-        paddingTop: `env(safe-area-inset-top, 0px)`,
         background: `transparent`,
       }}
     >

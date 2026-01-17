@@ -40,11 +40,11 @@ export function UserNav({ showLabel }: UserNavProps) {
           className={cn(
             "group flex h-10 items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-95",
             showLabel
-              ? "rounded-full bg-white/60 pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5"
-              : "w-10 rounded-full"
+              ? "rounded-[32px] bg-white/60 pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5"
+              : "w-10 rounded-[32px]"
           )}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white shadow-md transition-all group-hover:scale-110">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[32px] bg-accent text-white shadow-md transition-all group-hover:scale-110">
             <LogIn size={14} />
           </div>
           {showLabel && (
@@ -67,7 +67,7 @@ export function UserNav({ showLabel }: UserNavProps) {
         onClick={() => setShowProfileDrawer(true)}
         className={cn(
           "group flex h-10 items-center gap-2 transition-all hover:opacity-90 active:scale-95",
-          showLabel ? "rounded-full pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5" : "w-10"
+          showLabel ? "rounded-[32px] pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5" : "w-10"
         )}
         style={
           showLabel
@@ -79,7 +79,7 @@ export function UserNav({ showLabel }: UserNavProps) {
             : undefined
         }
       >
-        <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/50 shadow-sm transition-all group-hover:scale-110">
+        <div className="relative h-8 w-8 overflow-hidden rounded-[32px] border border-white/50 shadow-sm transition-all group-hover:scale-110">
           {(() => {
             const avatar = renderAvatar(
               {
