@@ -176,12 +176,11 @@ export function EventPlannerHeader({
       )}
 
       {/* Unified Rounded Header Container with Gradient */}
-      <div className="sticky top-0 z-30 w-full px-0 sm:px-4 lg:px-0">
+      <div className="sticky top-0 z-30 w-full transition-all duration-300">
         <div
           className={cn(
             "mx-auto w-full lg:max-w-4xl transition-all duration-300",
             "rounded-b-[32px] shadow-lg overflow-hidden",
-            "sm:mt-2 sm:rounded-[32px]", // Add slight margin and full rounding on larger screens for better aesthetics
             "bg-gradient-to-b from-[#ec4899] via-[#a855f7] to-[#6366f1]" // Pink -> Purple -> Indigo (matches iOS status bar)
           )}
           style={{
