@@ -314,9 +314,9 @@ export function EventPlanner({
         className="fixed inset-x-0 top-0 h-[400px] pointer-events-none z-0"
         style={{
           background: `linear-gradient(to bottom, #ec4899 0%, #a855f7 40%, #6366f1 80%, transparent 100%)`,
-          opacity: 0.8,
-          filter: "blur(100px)",
-          transform: "translateY(-200px)",
+          opacity: 0.6,
+          filter: "blur(120px)",
+          transform: "translateY(-150px)",
         }}
       />
       <EventPlannerHeader
@@ -337,7 +337,7 @@ export function EventPlanner({
       />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-2 py-6 sm:px-2 sm:py-4">
+        <main className="space-y-4 px-2 pt-0 pb-6 sm:px-2 sm:pt-0 sm:pb-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab

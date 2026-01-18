@@ -53,7 +53,7 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="sticky top-[72px] lg:top-[84px] z-20 flex items-center justify-between px-4 py-3 backdrop-blur-md bg-white/60 border-y border-black/[0.03]">
+      <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-4">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}

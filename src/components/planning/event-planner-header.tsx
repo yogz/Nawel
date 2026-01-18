@@ -176,14 +176,16 @@ export function EventPlannerHeader({
       )}
 
       {/* Unified Rounded Header Container with Gradient */}
-      <div className="sticky top-0 z-30 w-full transition-all duration-300">
+      <header
+        className={cn(
+          "sticky top-0 z-[100] w-full transition-all duration-500 overflow-visible",
+          isScrolled
+            ? "bg-white/80 backdrop-blur-xl border-b border-black/[0.03] shadow-sm"
+            : "bg-transparent"
+        )}
+      >
         <div
-          className={cn(
-            "mx-auto w-full lg:max-w-4xl transition-all duration-500",
-            isScrolled
-              ? "bg-white/80 backdrop-blur-xl border-b border-black/[0.03] shadow-sm rounded-none"
-              : "bg-transparent rounded-none"
-          )}
+          className="mx-auto w-full lg:max-w-4xl transition-all duration-500"
           style={{
             paddingTop: `env(safe-area-inset-top, 0px)`,
           }}
@@ -224,17 +226,17 @@ export function EventPlannerHeader({
                         "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border",
                         isScrolled
                           ? "bg-black/[0.03] border-black/[0.05] text-gray-900"
-                          : "bg-white/15 border-white/15 text-white backdrop-blur-md"
+                          : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                       )}
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-5 w-5" strokeWidth={2} />
                     </Link>
 
                     {/* Centered CoList branding */}
                     <div className="absolute left-1/2 -translate-x-1/2">
                       <AppBranding
                         href="/event"
-                        logoSize={24}
+                        logoSize={16}
                         className={cn(
                           "opacity-95 transition-all outline-none",
                           isScrolled ? "text-gray-900" : "text-white filter brightness-0 invert"
@@ -246,13 +248,13 @@ export function EventPlannerHeader({
                     <button
                       onClick={() => setShowProfileDrawer(true)}
                       className={cn(
-                        "flex h-10 shrink-0 items-center gap-2 rounded-full px-4 transition-all hover:scale-105 active:scale-95 border",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border",
                         isScrolled
                           ? "bg-black/[0.03] border-black/[0.05] text-gray-900"
-                          : "bg-white/15 border-white/15 text-white backdrop-blur-md"
+                          : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                       )}
                     >
-                      <MoreHorizontal className="h-5 w-5" />
+                      <MoreHorizontal className="h-5 w-5" strokeWidth={2} />
                     </button>
                   </div>
                 </motion.div>
@@ -269,7 +271,7 @@ export function EventPlannerHeader({
                         maxSize={isScrolled ? 34 : 48}
                         minSize={14}
                         className={cn(
-                          "bg-transparent font-black tracking-tighter border-none focus-visible:ring-0 transition-colors",
+                          "bg-transparent font-black tracking-tighter border-none focus-visible:ring-0 transition-colors drop-shadow-sm",
                           isScrolled ? "text-gray-900 caret-gray-900" : "text-white caret-white"
                         )}
                       />
@@ -375,35 +377,35 @@ export function EventPlannerHeader({
                               >
                                 <button
                                   className={cn(
-                                    "group flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95",
+                                    "group flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95",
                                     isScrolled
                                       ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                   )}
                                 >
                                   <Calendar
-                                    size={14}
+                                    size={12}
                                     className={isScrolled ? "text-gray-400" : "text-white/90"}
-                                    strokeWidth={1.8}
+                                    strokeWidth={2}
                                   />
-                                  <span className="truncate">{shortDate}</span>
+                                  <span className="truncate text-xs font-medium">{shortDate}</span>
                                 </button>
                               </DatePicker>
                             ) : (
                               <div
                                 className={cn(
-                                  "flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all",
+                                  "flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                   isScrolled
                                     ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                    : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                    : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                 )}
                               >
                                 <Calendar
-                                  size={14}
+                                  size={12}
                                   className={isScrolled ? "text-gray-400" : "text-white/90"}
-                                  strokeWidth={1.8}
+                                  strokeWidth={2}
                                 />
-                                <span className="truncate">{shortDate}</span>
+                                <span className="truncate text-xs font-medium">{shortDate}</span>
                               </div>
                             )}
 
@@ -424,36 +426,40 @@ export function EventPlannerHeader({
                               >
                                 <button
                                   className={cn(
-                                    "group flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95",
+                                    "group flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95",
                                     isScrolled
                                       ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                   )}
                                 >
                                   <Clock
-                                    size={14}
+                                    size={12}
                                     className={isScrolled ? "text-gray-400" : "text-white/90"}
-                                    strokeWidth={1.8}
+                                    strokeWidth={2}
                                   />
-                                  <span className="truncate">{firstMeal.time || "--:--"}</span>
+                                  <span className="truncate text-xs font-medium">
+                                    {firstMeal.time || "--:--"}
+                                  </span>
                                 </button>
                               </TimePicker>
                             ) : (
                               firstMeal.time && (
                                 <div
                                   className={cn(
-                                    "flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all",
+                                    "flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                     isScrolled
                                       ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                   )}
                                 >
                                   <Clock
-                                    size={14}
+                                    size={12}
                                     className={isScrolled ? "text-gray-400" : "text-white/90"}
-                                    strokeWidth={1.8}
+                                    strokeWidth={2}
                                   />
-                                  <span className="truncate">{firstMeal.time}</span>
+                                  <span className="truncate text-xs font-medium">
+                                    {firstMeal.time}
+                                  </span>
                                 </div>
                               )
                             )}
@@ -469,25 +475,27 @@ export function EventPlannerHeader({
                                       <DrawerTrigger asChild>
                                         <button
                                           className={cn(
-                                            "group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all active:scale-95 sm:max-w-[240px]",
+                                            "group flex h-7 max-w-[180px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all active:scale-95 sm:max-w-[240px]",
                                             isScrolled
                                               ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                              : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                              : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                           )}
                                         >
                                           <MapPin
-                                            size={14}
+                                            size={12}
                                             className={
                                               isScrolled ? "text-gray-400" : "text-white/90"
                                             }
-                                            strokeWidth={1.8}
+                                            strokeWidth={2}
                                           />
-                                          <span className="truncate">{firstMeal.address}</span>
+                                          <span className="truncate text-xs font-medium">
+                                            {firstMeal.address}
+                                          </span>
                                         </button>
                                       </DrawerTrigger>
                                       <DrawerContent className="px-4 pb-8">
                                         <DrawerHeader className="px-0 text-left">
-                                          <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
+                                          <DrawerTitle className="text-xs font-bold uppercase tracking-wider text-gray-500">
                                             Modifier l'adresse
                                           </DrawerTitle>
                                         </DrawerHeader>
@@ -541,25 +549,27 @@ export function EventPlannerHeader({
                                       <PopoverTrigger asChild>
                                         <button
                                           className={cn(
-                                            "group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95 sm:max-w-[240px]",
+                                            "group flex h-7 max-w-[180px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all hover:scale-105 active:scale-95 sm:max-w-[240px]",
                                             isScrolled
                                               ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                              : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                              : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                           )}
                                         >
                                           <MapPin
-                                            size={14}
+                                            size={12}
                                             className={
                                               isScrolled ? "text-gray-400" : "text-white/90"
                                             }
-                                            strokeWidth={1.8}
+                                            strokeWidth={2}
                                           />
-                                          <span className="truncate">{firstMeal.address}</span>
+                                          <span className="truncate text-xs font-medium">
+                                            {firstMeal.address}
+                                          </span>
                                         </button>
                                       </PopoverTrigger>
                                       <PopoverContent className="w-80 p-3" align="start">
                                         <div className="flex flex-col gap-2">
-                                          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                          <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                                             Modifier l'adresse
                                           </h4>
                                           <Input
@@ -589,52 +599,56 @@ export function EventPlannerHeader({
                               ) : (
                                 <div
                                   className={cn(
-                                    "flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border px-4 mx-0.5 shadow-sm transition-all",
+                                    "flex h-7 max-w-[180px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                     isScrolled
                                       ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
                                   )}
                                 >
                                   <MapPin
-                                    size={14}
+                                    size={12}
                                     className={isScrolled ? "text-gray-400" : "text-white/90"}
-                                    strokeWidth={1.8}
+                                    strokeWidth={2}
                                   />
-                                  <span className="truncate">{firstMeal.address}</span>
+                                  <span className="truncate text-xs font-medium">
+                                    {firstMeal.address}
+                                  </span>
                                 </div>
                               ))}
 
-                            {plan.meals.length > 1 && (
-                              <div
-                                className={cn(
-                                  "flex h-10 shrink-0 items-center gap-2 rounded-full px-4 font-bold shadow-sm transition-all border",
-                                  isScrolled
-                                    ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                    : "bg-white/15 border-white/20 text-white backdrop-blur-md"
-                                )}
-                              >
-                                <span className="text-xs">{plan.meals.length} jours</span>
-                              </div>
-                            )}
+                            <div
+                              className={cn(
+                                "flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 font-medium shadow-sm transition-all border",
+                                isScrolled
+                                  ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
+                                  : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                              )}
+                            >
+                              <span className="text-[10px] uppercase font-bold tracking-wider">
+                                {plan.meals.length} jours
+                              </span>
+                            </div>
                           </div>
                         </div>
 
-                        <div className="ml-auto flex shrink-0 items-center gap-2">
+                        <div
+                          className={cn(
+                            "flex h-7 items-center rounded-full border px-1 shadow-sm transition-all gap-0.5",
+                            isScrolled
+                              ? "bg-black/[0.03] border-black/[0.05]"
+                              : "bg-white/10 border-white/20 backdrop-blur-lg"
+                          )}
+                        >
                           {firstMeal && firstMeal.date !== "common" && (
                             <Popover>
                               <PopoverTrigger asChild>
                                 <button
                                   className={cn(
-                                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm transition-all hover:scale-105 active:scale-95",
-                                    isScrolled
-                                      ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/15 border-white/20 text-white backdrop-blur-md"
+                                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all hover:bg-white/20 active:scale-90",
+                                    isScrolled ? "text-gray-500" : "text-white/90"
                                   )}
                                 >
-                                  <Calendar
-                                    size={18}
-                                    className={isScrolled ? "text-gray-500" : "text-white/90"}
-                                  />
+                                  <Calendar size={12} strokeWidth={2} />
                                 </button>
                               </PopoverTrigger>
                               <PopoverContent className="glass w-56 p-2" align="end">
@@ -681,17 +695,12 @@ export function EventPlannerHeader({
                             <button
                               onClick={() => setSheet({ type: "share" })}
                               className={cn(
-                                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm transition-all hover:scale-105 active:scale-95",
-                                isScrolled
-                                  ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                  : "bg-white/15 border-white/20 text-white backdrop-blur-md",
+                                "flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all hover:bg-white/20 active:scale-90",
+                                isScrolled ? "text-gray-500" : "text-white/90",
                                 showAttention && "btn-shine-attention"
                               )}
                             >
-                              <Share
-                                size={18}
-                                className={isScrolled ? "text-gray-500" : "text-white/90"}
-                              />
+                              <Share size={12} strokeWidth={2} />
                             </button>
                           )}
                         </div>
@@ -702,7 +711,7 @@ export function EventPlannerHeader({
             </motion.div>
           </div>
         </div>
-      </div>
+      </header>
       <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
     </>
   );

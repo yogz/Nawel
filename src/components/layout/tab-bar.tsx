@@ -29,7 +29,13 @@ interface TabBarProps {
 
 export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
-  const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const tabs = mounted && isAuthenticated ? authenticatedTabs : guestTabs;
   const [visibleLabel, setVisibleLabel] = useState<TabKey | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 

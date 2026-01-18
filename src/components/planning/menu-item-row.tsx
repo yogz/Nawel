@@ -227,7 +227,8 @@ function ItemRowComponent({
       </div>
 
       {/* Subtle bottom line for separation */}
-      <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-100 group-last:hidden" />
+      {/* Subtle bottom line for separation - non-full width */}
+      <div className="absolute bottom-0 left-12 right-4 h-px bg-slate-100 group-last:hidden" />
 
       {/* Swipe hint for mobile */}
       {!readOnly && isMobile && !hasSeenSwipeHint && (

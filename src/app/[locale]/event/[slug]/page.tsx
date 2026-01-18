@@ -6,7 +6,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#6366f1", // Match header indigo
+  themeColor: "#ec4899", // Match header pink (top of gradient)
 };
 import { Suspense } from "react";
 import { fetchPlan } from "@/lib/queries";
