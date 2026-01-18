@@ -309,14 +309,18 @@ export function EventPlanner({
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      {/* Immersive background at the top */}
+      {/* Premium gradient final: Vibrant Purple > Lavender > Transparent, short height */}
       <div
-        className="fixed inset-x-0 top-0 h-[400px] pointer-events-none z-0"
+        className="fixed inset-x-0 top-0 h-[200px] pointer-events-none z-0"
         style={{
-          background: `linear-gradient(to bottom, #ec4899 0%, #a855f7 40%, #6366f1 80%, transparent 100%)`,
-          opacity: 0.6,
-          filter: "blur(120px)",
-          transform: "translateY(-150px)",
+          background: `
+            linear-gradient(to bottom, 
+              #9333ea 0%, 
+              #9333ea 15%, 
+              #d8b4fe 60%, 
+              rgba(255,255,255,0) 100%
+            )
+          `,
         }}
       />
       <EventPlannerHeader

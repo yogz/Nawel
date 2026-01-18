@@ -223,10 +223,10 @@ export function EventPlannerHeader({
                     <Link
                       href="/event"
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border shadow-sm",
                         isScrolled
-                          ? "bg-black/[0.03] border-black/[0.05] text-gray-900"
-                          : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                          ? "bg-black/[0.03] border-black/[0.1] text-gray-900"
+                          : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                       )}
                     >
                       <ChevronLeft className="h-5 w-5" strokeWidth={2} />
@@ -248,10 +248,10 @@ export function EventPlannerHeader({
                     <button
                       onClick={() => setShowProfileDrawer(true)}
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border shadow-sm",
                         isScrolled
-                          ? "bg-black/[0.03] border-black/[0.05] text-gray-900"
-                          : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                          ? "bg-black/[0.03] border-black/[0.1] text-gray-900"
+                          : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                       )}
                     >
                       <MoreHorizontal className="h-5 w-5" strokeWidth={2} />
@@ -396,8 +396,8 @@ export function EventPlannerHeader({
                                 className={cn(
                                   "flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                   isScrolled
-                                    ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                    : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                                    ? "bg-black/[0.03] border-black/[0.1] text-gray-800"
+                                    : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                                 )}
                               >
                                 <Calendar
@@ -448,8 +448,8 @@ export function EventPlannerHeader({
                                   className={cn(
                                     "flex h-7 shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                     isScrolled
-                                      ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                                      ? "bg-black/[0.03] border-black/[0.1] text-gray-800"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                                   )}
                                 >
                                   <Clock
@@ -601,8 +601,8 @@ export function EventPlannerHeader({
                                   className={cn(
                                     "flex h-7 max-w-[180px] shrink-0 items-center gap-1.5 rounded-full border px-2.5 mx-0.5 shadow-sm transition-all",
                                     isScrolled
-                                      ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                      : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                                      ? "bg-black/[0.03] border-black/[0.1] text-gray-800"
+                                      : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                                   )}
                                 >
                                   <MapPin
@@ -620,8 +620,8 @@ export function EventPlannerHeader({
                               className={cn(
                                 "flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 font-medium shadow-sm transition-all border",
                                 isScrolled
-                                  ? "bg-black/[0.03] border-black/[0.05] text-gray-700"
-                                  : "bg-white/10 border-white/20 text-white backdrop-blur-lg"
+                                  ? "bg-black/[0.03] border-black/[0.1] text-gray-800"
+                                  : "bg-white/10 border-white/20 text-white backdrop-blur-xl"
                               )}
                             >
                               <span className="text-[10px] uppercase font-bold tracking-wider">
@@ -635,8 +635,8 @@ export function EventPlannerHeader({
                           className={cn(
                             "flex h-7 items-center rounded-full border px-1 shadow-sm transition-all gap-0.5",
                             isScrolled
-                              ? "bg-black/[0.03] border-black/[0.05]"
-                              : "bg-white/10 border-white/20 backdrop-blur-lg"
+                              ? "bg-black/[0.03] border-black/[0.08]"
+                              : "bg-white/10 border-white/20 backdrop-blur-xl"
                           )}
                         >
                           {firstMeal && firstMeal.date !== "common" && (

@@ -71,7 +71,7 @@ export const ServiceSection = memo(function ServiceSection({
           }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 text-[16px] shadow-sm ring-1 ring-accent/10 transition-all duration-300 group-hover:scale-110">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-[16px] shadow-sm transition-all duration-300 group-hover:scale-110">
             {service.icon || getServiceIcon(service.title)}
           </div>
           <div className="flex-1">
@@ -95,7 +95,7 @@ export const ServiceSection = memo(function ServiceSection({
             e.stopPropagation();
             setIsExpanded(!isExpanded);
           }}
-          className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 transition-all hover:bg-black/[0.06] active:scale-95"
+          className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/[0.03] border border-black/[0.05] text-gray-400 transition-all hover:bg-black/[0.06] active:scale-95"
           aria-label={isExpanded ? t("collapse") : t("expand")}
         >
           <motion.div
