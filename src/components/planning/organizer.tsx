@@ -331,7 +331,31 @@ export function Organizer({
           </Suspense>
         </main>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar
+          active={tab}
+          onChange={setTab}
+          isAuthenticated={!!session?.user}
+          onQuickAdd={() => {
+            // Logic to determine which service to add to
+            // 1. Try to find from planningFilter
+            // 2. Fallback to the first service of the first meal
+            // 3. If no meals, trigger meal creation
+            let defaultServiceId = -1;
+
+            if (plan.meals.length > 0) {
+              const firstMeal = plan.meals[0];
+              if (firstMeal.services.length > 0) {
+                defaultServiceId = firstMeal.services[0].id;
+              }
+            }
+
+            if (defaultServiceId !== -1) {
+              setSheet({ type: "quick-add", serviceId: defaultServiceId });
+            } else {
+              setSheet({ type: "meal-create" });
+            }
+          }}
+        />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}

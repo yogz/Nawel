@@ -176,264 +176,284 @@ export function EventPlannerHeader({
       )}
 
       {/* Unified Rounded Header Container with Gradient */}
-      <div
-        className={cn(
-          "sticky top-0 z-30 w-full",
-          "rounded-b-[32px] shadow-lg overflow-hidden",
-          "bg-gradient-to-b from-[#ec4899] via-[#a855f7] to-[#6366f1]" // Pink -> Purple -> Indigo (matches iOS status bar)
-        )}
-        style={{
-          paddingTop: `env(safe-area-inset-top, 0px)`,
-        }}
-      >
-        <div className="mx-auto max-w-3xl">
-          <motion.div
-            initial={false}
-            animate={{
-              paddingTop: isScrolled ? "1.1rem" : "1.25rem",
-              paddingBottom: isScrolled ? "0.85rem" : "1.1rem",
-            }}
-            transition={{
-              duration: 0.4,
-              ease: [0.32, 0.72, 0, 1],
-            }}
-            className="relative px-4"
-          >
-            <div className="flex flex-col gap-0.5">
-              <motion.div
-                initial={false}
-                animate={{
-                  height: isScrolled ? 0 : "auto",
-                  opacity: isScrolled ? 0 : 1,
-                  y: isScrolled ? -20 : 0,
-                  marginBottom: isScrolled ? 0 : 4,
-                }}
-                transition={{
-                  duration: 0.4,
-                  ease: [0.32, 0.72, 0, 1],
-                }}
-                className="overflow-hidden"
-              >
-                <div className="flex items-center justify-between gap-4 py-1">
-                  {/* Back button - more transparent */}
-                  <Link
-                    href="/event"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
-                  >
-                    <ChevronLeft className="h-5 w-5 text-white" />
-                  </Link>
-
-                  {/* Centered CoList branding */}
-                  <div className="absolute left-1/2 -translate-x-1/2">
-                    <AppBranding
+      <div className="sticky top-0 z-30 w-full px-0 sm:px-4 lg:px-0">
+        <div
+          className={cn(
+            "mx-auto w-full lg:max-w-4xl transition-all duration-300",
+            "rounded-b-[32px] shadow-lg overflow-hidden",
+            "sm:mt-2 sm:rounded-[32px]", // Add slight margin and full rounding on larger screens for better aesthetics
+            "bg-gradient-to-b from-[#ec4899] via-[#a855f7] to-[#6366f1]" // Pink -> Purple -> Indigo (matches iOS status bar)
+          )}
+          style={{
+            paddingTop: `env(safe-area-inset-top, 0px)`,
+          }}
+        >
+          <div className="mx-auto max-w-3xl">
+            <motion.div
+              initial={false}
+              animate={{
+                paddingTop: isScrolled ? "1.1rem" : "1.25rem",
+                paddingBottom: isScrolled ? "0.85rem" : "1.1rem",
+              }}
+              transition={{
+                duration: 0.4,
+                ease: [0.32, 0.72, 0, 1],
+              }}
+              className="relative px-4"
+            >
+              <div className="flex flex-col gap-0.5">
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: isScrolled ? 0 : "auto",
+                    opacity: isScrolled ? 0 : 1,
+                    y: isScrolled ? -20 : 0,
+                    marginBottom: isScrolled ? 0 : 4,
+                  }}
+                  transition={{
+                    duration: 0.4,
+                    ease: [0.32, 0.72, 0, 1],
+                  }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex items-center justify-between gap-4 py-1">
+                    {/* Back button - more transparent */}
+                    <Link
                       href="/event"
-                      logoSize={24}
-                      textSize="sm"
-                      className="opacity-95 text-white filter brightness-0 invert"
-                    />
-                  </div>
-
-                  {/* Menu pill with "..." - opens profile */}
-                  <button
-                    onClick={() => setShowProfileDrawer(true)}
-                    className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
-                  >
-                    <MoreHorizontal className="h-5 w-5 text-white" />
-                  </button>
-                </div>
-              </motion.div>
-
-              <div className="flex items-center gap-2">
-                {!readOnly ? (
-                  isEditingTitle ? (
-                    <AutoSizeInput
-                      autoFocus
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      onBlur={handleTitleSubmit}
-                      onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
-                      maxSize={isScrolled ? 34 : 48}
-                      minSize={14}
-                      className="bg-transparent font-black tracking-tighter text-white border-none focus-visible:ring-0 caret-white"
-                    />
-                  ) : (
-                    <button
-                      onClick={() => setIsEditingTitle(true)}
-                      className="group flex flex-1 items-center gap-2 text-left"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
                     >
-                      <AutoSizeText
+                      <ChevronLeft className="h-5 w-5 text-white" />
+                    </Link>
+
+                    {/* Centered CoList branding */}
+                    <div className="absolute left-1/2 -translate-x-1/2">
+                      <AppBranding
+                        href="/event"
+                        logoSize={24}
+                        textSize="sm"
+                        className="opacity-95 text-white filter brightness-0 invert"
+                      />
+                    </div>
+
+                    {/* Menu pill with "..." - opens profile */}
+                    <button
+                      onClick={() => setShowProfileDrawer(true)}
+                      className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95 border border-white/15"
+                    >
+                      <MoreHorizontal className="h-5 w-5 text-white" />
+                    </button>
+                  </div>
+                </motion.div>
+
+                <div className="flex items-center gap-2">
+                  {!readOnly ? (
+                    isEditingTitle ? (
+                      <AutoSizeInput
+                        autoFocus
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        onBlur={handleTitleSubmit}
+                        onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
                         maxSize={isScrolled ? 34 : 48}
                         minSize={14}
-                        className="font-black tracking-tighter text-white drop-shadow-md"
-                      >
-                        {plan.event?.name || tShared("defaultEventName")}
-                      </AutoSizeText>
-                      <Pencil
-                        size={18}
-                        className="opacity-0 transition-opacity group-hover:opacity-100 text-white/50"
+                        className="bg-transparent font-black tracking-tighter text-white border-none focus-visible:ring-0 caret-white"
                       />
-                    </button>
-                  )
-                ) : (
-                  <AutoSizeText
-                    maxSize={isScrolled ? 34 : 48}
-                    minSize={20}
-                    className="font-black tracking-tighter text-white drop-shadow-md"
-                  >
-                    {plan.event?.name || tShared("defaultEventName")}
-                  </AutoSizeText>
-                )}
-              </div>
-
-              {plan.meals.length > 0 &&
-                (() => {
-                  const firstMeal = plan.meals[0];
-                  const shortDate = format.dateTime(new Date(firstMeal.date), {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
-                  });
-                  const eventName = plan.event?.name || "Event";
-                  const calendarTitle = firstMeal.title
-                    ? `${eventName} - ${firstMeal.title}`
-                    : eventName;
-                  const calendarDescription = tPlanning("calendar.description", {
-                    title: calendarTitle,
-                  });
-                  const calendarUrl = generateGoogleCalendarUrl(
-                    firstMeal,
-                    eventName,
-                    calendarDescription
-                  );
-
-                  return (
-                    <div className="flex items-center justify-between gap-2 px-1">
-                      <div className="relative flex flex-1 min-w-0 overflow-hidden">
-                        <div
-                          ref={scrollContainerRef}
-                          className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium transition-all"
-                          style={{
-                            WebkitMaskImage: `linear-gradient(to right, 
-                              ${showLeftFade ? "transparent 0%" : "black 0%"}, 
-                              black ${showLeftFade ? "64px" : "0%"}, 
-                              black calc(100% - ${showRightFade ? "64px" : "0%"}), 
-                              ${showRightFade ? "transparent 100%" : "black 100%"})`,
-                            maskImage: `linear-gradient(to right, 
-                              ${showLeftFade ? "transparent 0%" : "black 0%"}, 
-                              black ${showLeftFade ? "64px" : "0%"}, 
-                              black calc(100% - ${showRightFade ? "64px" : "0%"}), 
-                              ${showRightFade ? "transparent 100%" : "black 100%"})`,
-                          }}
+                    ) : (
+                      <button
+                        onClick={() => setIsEditingTitle(true)}
+                        className="group flex flex-1 items-center gap-2 text-left"
+                      >
+                        <AutoSizeText
+                          maxSize={isScrolled ? 34 : 48}
+                          minSize={14}
+                          className="font-black tracking-tighter text-white drop-shadow-md"
                         >
-                          {!readOnly ? (
-                            <DatePicker
-                              value={firstMeal.date ? new Date(firstMeal.date) : undefined}
-                              onChange={(newDate) => {
-                                if (newDate) {
-                                  // Use local date methods to avoid timezone issues with toISOString()
-                                  const year = newDate.getFullYear();
-                                  const month = String(newDate.getMonth() + 1).padStart(2, "0");
-                                  const day = String(newDate.getDate()).padStart(2, "0");
-                                  const dateStr = `${year}-${month}-${day}`;
-                                  handlers.handleUpdateMeal?.(
-                                    firstMeal.id,
-                                    dateStr,
-                                    firstMeal.title,
-                                    firstMeal.adults,
-                                    firstMeal.children,
-                                    firstMeal.time,
-                                    firstMeal.address
-                                  );
-                                }
-                              }}
-                            >
-                              <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
+                          {plan.event?.name || tShared("defaultEventName")}
+                        </AutoSizeText>
+                        <Pencil
+                          size={18}
+                          className="opacity-0 transition-opacity group-hover:opacity-100 text-white/50"
+                        />
+                      </button>
+                    )
+                  ) : (
+                    <AutoSizeText
+                      maxSize={isScrolled ? 34 : 48}
+                      minSize={20}
+                      className="font-black tracking-tighter text-white drop-shadow-md"
+                    >
+                      {plan.event?.name || tShared("defaultEventName")}
+                    </AutoSizeText>
+                  )}
+                </div>
+
+                {plan.meals.length > 0 &&
+                  (() => {
+                    const firstMeal = plan.meals[0];
+                    const shortDate = format.dateTime(new Date(firstMeal.date), {
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                    });
+                    const eventName = plan.event?.name || "Event";
+                    const calendarTitle = firstMeal.title
+                      ? `${eventName} - ${firstMeal.title}`
+                      : eventName;
+                    const calendarDescription = tPlanning("calendar.description", {
+                      title: calendarTitle,
+                    });
+                    const calendarUrl = generateGoogleCalendarUrl(
+                      firstMeal,
+                      eventName,
+                      calendarDescription
+                    );
+
+                    return (
+                      <div className="flex items-center justify-between gap-2 px-1">
+                        <div className="relative flex flex-1 min-w-0 overflow-hidden">
+                          <div
+                            ref={scrollContainerRef}
+                            className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto pb-1 pt-0.5 text-sm font-medium transition-all"
+                            style={{
+                              WebkitMaskImage: `linear-gradient(to right, 
+                              ${showLeftFade ? "transparent 0%" : "black 0%"}, 
+                              black ${showLeftFade ? "64px" : "0%"}, 
+                              black calc(100% - ${showRightFade ? "64px" : "0%"}), 
+                              ${showRightFade ? "transparent 100%" : "black 100%"})`,
+                              maskImage: `linear-gradient(to right, 
+                              ${showLeftFade ? "transparent 0%" : "black 0%"}, 
+                              black ${showLeftFade ? "64px" : "0%"}, 
+                              black calc(100% - ${showRightFade ? "64px" : "0%"}), 
+                              ${showRightFade ? "transparent 100%" : "black 100%"})`,
+                            }}
+                          >
+                            {!readOnly ? (
+                              <DatePicker
+                                value={firstMeal.date ? new Date(firstMeal.date) : undefined}
+                                onChange={(newDate) => {
+                                  if (newDate) {
+                                    // Use local date methods to avoid timezone issues with toISOString()
+                                    const year = newDate.getFullYear();
+                                    const month = String(newDate.getMonth() + 1).padStart(2, "0");
+                                    const day = String(newDate.getDate()).padStart(2, "0");
+                                    const dateStr = `${year}-${month}-${day}`;
+                                    handlers.handleUpdateMeal?.(
+                                      firstMeal.id,
+                                      dateStr,
+                                      firstMeal.title,
+                                      firstMeal.adults,
+                                      firstMeal.children,
+                                      firstMeal.time,
+                                      firstMeal.address
+                                    );
+                                  }
+                                }}
+                              >
+                                <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
+                                  <Calendar
+                                    size={14}
+                                    className="shrink-0 text-white/90"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{shortDate}</span>
+                                </button>
+                              </DatePicker>
+                            ) : (
+                              <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
                                 <Calendar
                                   size={14}
                                   className="shrink-0 text-white/90"
                                   strokeWidth={1.8}
                                 />
                                 <span className="truncate">{shortDate}</span>
-                              </button>
-                            </DatePicker>
-                          ) : (
-                            <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
-                              <Calendar
-                                size={14}
-                                className="shrink-0 text-white/90"
-                                strokeWidth={1.8}
-                              />
-                              <span className="truncate">{shortDate}</span>
-                            </div>
-                          )}
-
-                          {!readOnly ? (
-                            <TimePicker
-                              value={firstMeal.time || ""}
-                              onChange={(time) => {
-                                handlers.handleUpdateMeal?.(
-                                  firstMeal.id,
-                                  firstMeal.date,
-                                  firstMeal.title,
-                                  firstMeal.adults,
-                                  firstMeal.children,
-                                  time,
-                                  firstMeal.address
-                                );
-                              }}
-                            >
-                              <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
-                                <Clock
-                                  size={14}
-                                  className="shrink-0 text-white/90"
-                                  strokeWidth={1.8}
-                                />
-                                <span className="truncate">{firstMeal.time || "--:--"}</span>
-                              </button>
-                            </TimePicker>
-                          ) : (
-                            firstMeal.time && (
-                              <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
-                                <Clock
-                                  size={14}
-                                  className="shrink-0 text-white/90"
-                                  strokeWidth={1.8}
-                                />
-                                <span className="truncate">{firstMeal.time}</span>
                               </div>
-                            )
-                          )}
+                            )}
 
-                          {firstMeal.address &&
-                            (!readOnly ? (
-                              <div className="flex items-center">
-                                {isMobile ? (
-                                  <Drawer
-                                    open={isAddressDrawerOpen}
-                                    onOpenChange={setIsAddressDrawerOpen}
-                                  >
-                                    <DrawerTrigger asChild>
-                                      <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
-                                        <MapPin
-                                          size={14}
-                                          className="shrink-0 text-white/90"
-                                          strokeWidth={1.8}
-                                        />
-                                        <span className="truncate">{firstMeal.address}</span>
-                                      </button>
-                                    </DrawerTrigger>
-                                    <DrawerContent className="px-4 pb-8">
-                                      <DrawerHeader className="px-0 text-left">
-                                        <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
-                                          Modifier l'adresse
-                                        </DrawerTitle>
-                                      </DrawerHeader>
-                                      <div className="flex flex-col gap-3 py-4">
-                                        <Input
-                                          defaultValue={firstMeal.address}
-                                          autoFocus
-                                          onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
+                            {!readOnly ? (
+                              <TimePicker
+                                value={firstMeal.time || ""}
+                                onChange={(time) => {
+                                  handlers.handleUpdateMeal?.(
+                                    firstMeal.id,
+                                    firstMeal.date,
+                                    firstMeal.title,
+                                    firstMeal.adults,
+                                    firstMeal.children,
+                                    time,
+                                    firstMeal.address
+                                  );
+                                }}
+                              >
+                                <button className="group flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
+                                  <Clock
+                                    size={14}
+                                    className="shrink-0 text-white/90"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{firstMeal.time || "--:--"}</span>
+                                </button>
+                              </TimePicker>
+                            ) : (
+                              firstMeal.time && (
+                                <div className="flex h-10 shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md">
+                                  <Clock
+                                    size={14}
+                                    className="shrink-0 text-white/90"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{firstMeal.time}</span>
+                                </div>
+                              )
+                            )}
+
+                            {firstMeal.address &&
+                              (!readOnly ? (
+                                <div className="flex items-center">
+                                  {isMobile ? (
+                                    <Drawer
+                                      open={isAddressDrawerOpen}
+                                      onOpenChange={setIsAddressDrawerOpen}
+                                    >
+                                      <DrawerTrigger asChild>
+                                        <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all active:scale-95 sm:max-w-[240px]">
+                                          <MapPin
+                                            size={14}
+                                            className="shrink-0 text-white/90"
+                                            strokeWidth={1.8}
+                                          />
+                                          <span className="truncate">{firstMeal.address}</span>
+                                        </button>
+                                      </DrawerTrigger>
+                                      <DrawerContent className="px-4 pb-8">
+                                        <DrawerHeader className="px-0 text-left">
+                                          <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-gray-500">
+                                            Modifier l'adresse
+                                          </DrawerTitle>
+                                        </DrawerHeader>
+                                        <div className="flex flex-col gap-3 py-4">
+                                          <Input
+                                            defaultValue={firstMeal.address}
+                                            autoFocus
+                                            onKeyDown={(e) => {
+                                              if (e.key === "Enter") {
+                                                handlers.handleUpdateMeal?.(
+                                                  firstMeal.id,
+                                                  firstMeal.date,
+                                                  firstMeal.title,
+                                                  firstMeal.adults,
+                                                  firstMeal.children,
+                                                  firstMeal.time,
+                                                  (e.target as HTMLInputElement).value
+                                                );
+                                                setIsAddressDrawerOpen(false);
+                                              }
+                                            }}
+                                            className="h-12 text-base"
+                                          />
+                                          <Button
+                                            onClick={(e) => {
+                                              const input = e.currentTarget
+                                                .previousElementSibling as HTMLInputElement;
                                               handlers.handleUpdateMeal?.(
                                                 firstMeal.id,
                                                 firstMeal.date,
@@ -441,163 +461,146 @@ export function EventPlannerHeader({
                                                 firstMeal.adults,
                                                 firstMeal.children,
                                                 firstMeal.time,
-                                                (e.target as HTMLInputElement).value
+                                                input.value
                                               );
                                               setIsAddressDrawerOpen(false);
-                                            }
-                                          }}
-                                          className="h-12 text-base"
-                                        />
-                                        <Button
-                                          onClick={(e) => {
-                                            const input = e.currentTarget
-                                              .previousElementSibling as HTMLInputElement;
-                                            handlers.handleUpdateMeal?.(
-                                              firstMeal.id,
-                                              firstMeal.date,
-                                              firstMeal.title,
-                                              firstMeal.adults,
-                                              firstMeal.children,
-                                              firstMeal.time,
-                                              input.value
-                                            );
-                                            setIsAddressDrawerOpen(false);
-                                          }}
-                                          className="w-full bg-accent text-white"
-                                        >
-                                          Sauvegarder
-                                        </Button>
-                                      </div>
-                                    </DrawerContent>
-                                  </Drawer>
-                                ) : (
-                                  <Popover
-                                    open={isAddressPopoverOpen}
-                                    onOpenChange={setIsAddressPopoverOpen}
-                                  >
-                                    <PopoverTrigger asChild>
-                                      <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 sm:max-w-[240px]">
-                                        <MapPin
-                                          size={14}
-                                          className="shrink-0 text-white/90"
-                                          strokeWidth={1.8}
-                                        />
-                                        <span className="truncate">{firstMeal.address}</span>
-                                      </button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-80 p-3" align="start">
-                                      <div className="flex flex-col gap-2">
-                                        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                                          Modifier l'adresse
-                                        </h4>
-                                        <Input
-                                          defaultValue={firstMeal.address}
-                                          autoFocus
-                                          onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                              handlers.handleUpdateMeal?.(
-                                                firstMeal.id,
-                                                firstMeal.date,
-                                                firstMeal.title,
-                                                firstMeal.adults,
-                                                firstMeal.children,
-                                                firstMeal.time,
-                                                (e.target as HTMLInputElement).value
-                                              );
-                                              setIsAddressPopoverOpen(false);
-                                            }
-                                          }}
-                                          className="h-9"
-                                        />
-                                      </div>
-                                    </PopoverContent>
-                                  </Popover>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md sm:max-w-[240px]">
-                                <MapPin
-                                  size={14}
-                                  className="shrink-0 text-white/90"
-                                  strokeWidth={1.8}
-                                />
-                                <span className="truncate">{firstMeal.address}</span>
-                              </div>
-                            ))}
+                                            }}
+                                            className="w-full bg-accent text-white"
+                                          >
+                                            Sauvegarder
+                                          </Button>
+                                        </div>
+                                      </DrawerContent>
+                                    </Drawer>
+                                  ) : (
+                                    <Popover
+                                      open={isAddressPopoverOpen}
+                                      onOpenChange={setIsAddressPopoverOpen}
+                                    >
+                                      <PopoverTrigger asChild>
+                                        <button className="group flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 sm:max-w-[240px]">
+                                          <MapPin
+                                            size={14}
+                                            className="shrink-0 text-white/90"
+                                            strokeWidth={1.8}
+                                          />
+                                          <span className="truncate">{firstMeal.address}</span>
+                                        </button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-80 p-3" align="start">
+                                        <div className="flex flex-col gap-2">
+                                          <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                            Modifier l'adresse
+                                          </h4>
+                                          <Input
+                                            defaultValue={firstMeal.address}
+                                            autoFocus
+                                            onKeyDown={(e) => {
+                                              if (e.key === "Enter") {
+                                                handlers.handleUpdateMeal?.(
+                                                  firstMeal.id,
+                                                  firstMeal.date,
+                                                  firstMeal.title,
+                                                  firstMeal.adults,
+                                                  firstMeal.children,
+                                                  firstMeal.time,
+                                                  (e.target as HTMLInputElement).value
+                                                );
+                                                setIsAddressPopoverOpen(false);
+                                              }
+                                            }}
+                                            className="h-9"
+                                          />
+                                        </div>
+                                      </PopoverContent>
+                                    </Popover>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="flex h-10 max-w-[180px] shrink-0 items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 mx-0.5 text-white shadow-sm backdrop-blur-md sm:max-w-[240px]">
+                                  <MapPin
+                                    size={14}
+                                    className="shrink-0 text-white/90"
+                                    strokeWidth={1.8}
+                                  />
+                                  <span className="truncate">{firstMeal.address}</span>
+                                </div>
+                              ))}
 
-                          {plan.meals.length > 1 && (
-                            <div className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 font-bold text-white shadow-sm backdrop-blur-md border border-white/20">
-                              <span className="text-xs">{plan.meals.length} jours</span>
-                            </div>
+                            {plan.meals.length > 1 && (
+                              <div className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-white/15 px-4 font-bold text-white shadow-sm backdrop-blur-md border border-white/20">
+                                <span className="text-xs">{plan.meals.length} jours</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="ml-auto flex shrink-0 items-center gap-2">
+                          {firstMeal && firstMeal.date !== "common" && (
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
+                                  <Calendar size={18} className="text-white/90" />
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="glass w-56 p-2" align="end">
+                                <div className="flex flex-col gap-1">
+                                  <button
+                                    onClick={() => window.open(calendarUrl, "_blank")}
+                                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                  >
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                    {tPlanning("calendar.google")}
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      window.open(
+                                        generateOutlookCalendarUrl(
+                                          firstMeal,
+                                          eventName,
+                                          calendarDescription
+                                        ),
+                                        "_blank"
+                                      )
+                                    }
+                                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                  >
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                    {tPlanning("calendar.outlook")}
+                                  </button>
+                                  <div className="my-1 border-t border-black/[0.05]" />
+                                  <button
+                                    onClick={() =>
+                                      downloadIcsFile(firstMeal, eventName, calendarDescription)
+                                    }
+                                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    {tPlanning("calendar.download")}
+                                  </button>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          )}
+
+                          {!readOnly && (
+                            <button
+                              onClick={() => setSheet({ type: "share" })}
+                              className={cn(
+                                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95",
+                                showAttention && "btn-shine-attention"
+                              )}
+                            >
+                              <Share size={18} className="text-white/90" />
+                            </button>
                           )}
                         </div>
                       </div>
-
-                      <div className="ml-auto flex shrink-0 items-center gap-2">
-                        {firstMeal && firstMeal.date !== "common" && (
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95">
-                                <Calendar size={18} className="text-white/90" />
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="glass w-56 p-2" align="end">
-                              <div className="flex flex-col gap-1">
-                                <button
-                                  onClick={() => window.open(calendarUrl, "_blank")}
-                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                  {tPlanning("calendar.google")}
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    window.open(
-                                      generateOutlookCalendarUrl(
-                                        firstMeal,
-                                        eventName,
-                                        calendarDescription
-                                      ),
-                                      "_blank"
-                                    )
-                                  }
-                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                  {tPlanning("calendar.outlook")}
-                                </button>
-                                <div className="my-1 border-t border-black/[0.05]" />
-                                <button
-                                  onClick={() =>
-                                    downloadIcsFile(firstMeal, eventName, calendarDescription)
-                                  }
-                                  className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-accent hover:text-white"
-                                >
-                                  <Download className="h-3.5 w-3.5" />
-                                  {tPlanning("calendar.download")}
-                                </button>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        )}
-
-                        {!readOnly && (
-                          <button
-                            onClick={() => setSheet({ type: "share" })}
-                            className={cn(
-                              "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/15 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/25 active:scale-95",
-                              showAttention && "btn-shine-attention"
-                            )}
-                          >
-                            <Share size={18} className="text-white/90" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
-            </div>
-          </motion.div>
+                    );
+                  })()}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
       <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
