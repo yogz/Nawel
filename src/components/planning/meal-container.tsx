@@ -91,12 +91,9 @@ export function MealContainer({
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
       className={cn("relative flex flex-col gap-6 pt-2", plan.meals.length === 1 && "gap-0 pt-0")}
     >
-      {/* Meal Info Row - Premium & Compact */}
+      {/* Meal Info Row - Minimalist & Continuous */}
       {plan.meals.length > 1 && (
-        <div className="group/meal-card relative mx-0 overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-5 shadow-lg backdrop-blur-xl transition-all duration-500 hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/5 sm:p-6">
-          {/* Decorative background accent */}
-          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover/meal-card:bg-accent/10" />
-
+        <div className="group/meal-card relative mx-0 transition-all duration-500">
           <div className="relative flex min-w-0 flex-1 flex-col">
             <div
               className={cn(
@@ -121,37 +118,37 @@ export function MealContainer({
                   e.stopPropagation();
                   setIsExpanded(!isExpanded);
                 }}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-accent/5 text-accent transition-all hover:bg-accent/10 active:scale-90"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 transition-all hover:bg-black/[0.06] active:scale-90"
                 aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <motion.div
                   animate={{ rotate: isExpanded ? 90 : 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <ChevronRight className="h-6 w-6" />
+                  <ChevronRight className="h-5 w-5 opacity-40" />
                 </motion.div>
               </button>
               <div className="flex min-w-0 flex-1 flex-col">
-                <h2 className="text-gradient-header truncate text-xl font-black tracking-tight sm:text-2xl">
+                <h2 className="text-gray-900 truncate text-lg font-bold tracking-tight">
                   {meal.date === "common" ? t("common") : meal.title || meal.date}
                 </h2>
-                <div className="mt-1 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
+                <div className="mt-0.5 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
                   {fullDate && (
-                    <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent">
-                      <Clock className="h-3 w-3" aria-hidden="true" />
+                    <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                      <Clock className="h-3 w-3 opacity-70" aria-hidden="true" />
                       {fullDate}
                     </div>
                   )}
                   {meal.address && (
-                    <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-gray-500">
-                      <MapPin className="h-3 w-3 text-gray-400" aria-hidden="true" />
+                    <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                      <MapPin className="h-3 w-3 opacity-70" aria-hidden="true" />
                       <span className="truncate">{meal.address}</span>
                     </div>
                   )}
                 </div>
               </div>
               {!readOnly && (
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-accent/20 opacity-0 transition-all group-hover:bg-accent/5 group-hover:text-accent group-hover:opacity-100">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 opacity-0 transition-all group-hover:bg-black/[0.06] group-hover:opacity-100 active:scale-95">
                   <Edit3 className="h-4 w-4" />
                 </div>
               )}
@@ -187,18 +184,14 @@ export function MealContainer({
                 />
               ))}
               {!readOnly && onCreateService && (
-                <Button
-                  variant="premium"
-                  className="h-14 w-full rounded-2xl border border-white/50 bg-white/80 text-accent shadow-accent backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:shadow-accent-lg focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95"
-                  icon={<PlusIcon size={20} />}
-                  shine
+                <button
                   onClick={() => onCreateService(meal.id)}
+                  className="flex items-center gap-1 px-4 py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                   aria-label={t("addService")}
                 >
-                  <span className="text-xs font-black uppercase tracking-widest text-accent">
-                    {t("addService")}
-                  </span>
-                </Button>
+                  <PlusIcon size={14} className="mt-0.5" />
+                  <span>{t("addService")}</span>
+                </button>
               )}
             </div>
           </motion.div>

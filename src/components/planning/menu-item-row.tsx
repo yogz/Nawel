@@ -108,7 +108,7 @@ function ItemRowComponent({
           <div className="flex items-center gap-2">
             <p
               className={cn(
-                "text-base font-bold leading-tight transition-colors sm:text-base",
+                "text-base font-semibold leading-tight transition-colors sm:text-[15px]",
                 "text-gray-900",
                 person && "opacity-100"
               )}
@@ -130,10 +130,10 @@ function ItemRowComponent({
             (item.ingredients && item.ingredients.length > 0)) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:text-[10px]">
+                <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground sm:text-[11px]">
                   <Scale
-                    size={13}
-                    className="text-muted-foreground sm:h-[11px] sm:w-[11px]"
+                    size={12}
+                    className="text-muted-foreground opacity-70"
                     strokeWidth={1.8}
                     aria-hidden="true"
                   />
@@ -141,13 +141,13 @@ function ItemRowComponent({
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-green-700 ring-1 ring-green-500/10">
+                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2 py-0.5 text-[10px] font-bold text-green-700 ring-1 ring-green-500/10">
                   <Euro size={10} className="text-green-600" strokeWidth={1.8} aria-hidden="true" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.05em] text-accent ring-1 ring-accent/10">
+                <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2 py-0.5 text-[10px] font-bold text-accent ring-1 ring-accent/10">
                   <ChefHat size={10} className="text-accent" strokeWidth={1.8} aria-hidden="true" />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
@@ -176,10 +176,8 @@ function ItemRowComponent({
       <div className="flex shrink-0 items-center">
         <div className="flex flex-col items-end">
           {person ? (
-            <div className="group/avatar relative flex items-center gap-2 rounded-xl border border-accent/10 bg-accent/5 px-2.5 py-1.5 transition-all hover:bg-accent/10 sm:px-3">
-              <span className="text-[10px] font-black uppercase tracking-widest text-accent">
-                {getDisplayName(person)}
-              </span>
+            <div className="group/avatar relative flex items-center gap-2 rounded-lg bg-accent/5 px-2 py-1 transition-all hover:bg-accent/10">
+              <span className="text-[10px] font-bold text-accent">{getDisplayName(person)}</span>
               <div className="shrink-0">
                 {(() => {
                   const avatar = renderAvatar(person, allPeopleNames);
@@ -207,7 +205,7 @@ function ItemRowComponent({
           ) : (
             <button
               type="button"
-              className="group relative flex h-9 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-2.5 py-1 transition-all duration-300 hover:border-accent hover:bg-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:px-3"
+              className="group relative flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-black/[0.03] px-2.5 py-1 transition-all duration-300 hover:bg-black/[0.06] active:scale-95"
               onClick={(e) => {
                 e.stopPropagation();
                 if (currentPerson && handleAssign) {
@@ -219,10 +217,8 @@ function ItemRowComponent({
               }}
               aria-label={t("takeAction")}
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-accent/5 text-accent transition-all duration-300 group-hover:bg-accent group-hover:text-white">
-                <Plus size={14} strokeWidth={3} />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors duration-300 group-hover:text-accent">
+              <Plus size={12} className="text-gray-400 group-hover:text-accent" strokeWidth={3} />
+              <span className="text-[10px] font-bold text-gray-400 group-hover:text-accent">
                 {t("takeAction")}
               </span>
             </button>

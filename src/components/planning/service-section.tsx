@@ -51,12 +51,9 @@ export const ServiceSection = memo(function ServiceSection({
   return (
     <div
       ref={setNodeRef}
-      className={cn(
-        "relative overflow-hidden rounded-[32px] border border-white/40 bg-white/90 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/5",
-        isOver && "bg-accent/5 ring-1 ring-accent/20"
-      )}
+      className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="relative z-10 flex items-center justify-between border-b border-gray-100 px-6 py-5 sm:px-7">
+      <div className="sticky top-[72px] lg:top-[84px] z-20 flex items-center justify-between px-4 py-3 backdrop-blur-md bg-white/60 border-y border-black/[0.03]">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
@@ -74,13 +71,11 @@ export const ServiceSection = memo(function ServiceSection({
           }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-[20px] shadow-lg shadow-accent/20 ring-4 ring-white transition-all duration-300 group-hover:scale-110 sm:h-12 sm:w-12 sm:text-[22px]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 text-[16px] shadow-sm ring-1 ring-accent/10 transition-all duration-300 group-hover:scale-110">
             {service.icon || getServiceIcon(service.title)}
           </div>
           <div className="flex-1">
-            <h3 className="text-gradient-header text-sm font-bold uppercase tracking-[0.15em] sm:text-base">
-              {translatedTitle}
-            </h3>
+            <h3 className="text-gray-900 text-sm font-bold tracking-tight">{translatedTitle}</h3>
             {filteredItems.length > 0 && (
               <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-accent/40">
                 {filteredItems.length} {t("items")}
@@ -100,14 +95,14 @@ export const ServiceSection = memo(function ServiceSection({
             e.stopPropagation();
             setIsExpanded(!isExpanded);
           }}
-          className="ml-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent/5 text-accent transition-all hover:bg-accent/10 sm:h-10 sm:w-10"
+          className="ml-4 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 transition-all hover:bg-black/[0.06] active:scale-95"
           aria-label={isExpanded ? t("collapse") : t("expand")}
         >
           <motion.div
             animate={{ rotate: isExpanded ? 90 : 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-5 w-5 opacity-40" />
           </motion.div>
         </button>
       </div>
@@ -141,22 +136,19 @@ export const ServiceSection = memo(function ServiceSection({
 
               {!readOnly && (
                 <div className="p-3 sm:p-4">
-                  <Button
-                    variant="premium"
-                    className="h-12 w-full touch-manipulation rounded-[20px] border border-dashed border-gray-200 bg-white/50 text-gray-500 shadow-sm transition-all duration-300 hover:border-accent hover:bg-accent/5 hover:text-accent active:scale-[0.98]"
-                    icon={<PlusIcon size={18} strokeWidth={3} />}
+                  <button
                     onClick={() => {
                       if (typeof navigator !== "undefined" && "vibrate" in navigator) {
                         navigator.vibrate(10);
                       }
                       onCreate();
                     }}
+                    className="flex items-center gap-1 px-4 py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
                     aria-label={t("addItem")}
                   >
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">
-                      {t("addItem")}
-                    </span>
-                  </Button>
+                    <PlusIcon size={14} className="mt-0.5" />
+                    <span>{t("addItem")}</span>
+                  </button>
                 </div>
               )}
             </div>

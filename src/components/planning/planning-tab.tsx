@@ -226,15 +226,13 @@ export function PlanningTab({
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
           {/* Main Actions Stack - Glassmorphism style */}
           <div className="flex w-full flex-col gap-3">
-            <Button
-              variant="premium"
-              className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
-              icon={<PlusIcon size={16} />}
-              shine
+            <button
               onClick={() => setSheet({ type: "meal-create" })}
+              className="flex items-center justify-center gap-1.5 px-4 py-4 text-sm font-semibold text-muted-foreground transition-colors hover:text-accent"
             >
-              <span className="text-[10px] font-bold uppercase tracking-wider">{t("addMeal")}</span>
-            </Button>
+              <PlusIcon size={16} className="mt-0.5" />
+              <span>{t("addMeal")}</span>
+            </button>
           </div>
 
           {/* Premium Footer Actions */}

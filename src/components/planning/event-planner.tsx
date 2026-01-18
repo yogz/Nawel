@@ -304,12 +304,21 @@ export function EventPlanner({
 
   return (
     <div
-      className="flex min-h-screen flex-col text-gray-900"
+      className="flex min-h-screen flex-col"
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
-        background: `transparent`,
       }}
     >
+      {/* Immersive background at the top */}
+      <div
+        className="fixed inset-x-0 top-0 h-[400px] pointer-events-none z-0"
+        style={{
+          background: `linear-gradient(to bottom, #ec4899 0%, #a855f7 40%, #6366f1 80%, transparent 100%)`,
+          opacity: 0.8,
+          filter: "blur(100px)",
+          transform: "translateY(-200px)",
+        }}
+      />
       <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}

@@ -32,17 +32,6 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
   const tabs = isAuthenticated ? authenticatedTabs : guestTabs;
   const [visibleLabel, setVisibleLabel] = useState<TabKey | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.scrollY;
-      const progress = Math.min(scrolled / 200, 1); // Max out at 200px
-      setScrollProgress(progress);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleTabChange = (key: TabKey) => {
     if (key !== active) {
@@ -69,19 +58,12 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
     };
   }, []);
 
-  const blurRadius = 12 + scrollProgress * 28; // From 12px to 40px
-  const shadowOpacity = 0.04 + scrollProgress * 0.08; // Increase depth
-  const iconLift = scrollProgress * -4; // Subtle float up
-
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-gray-100 bg-white p-2 shadow-xl ring-1 ring-black/[0.03] transition-all duration-300"
+        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/90 p-2 shadow-xl backdrop-blur-xl transition-all duration-300"
         style={{
-          marginBottom: "env(safe-area-inset-bottom, 0px)",
-          backdropFilter: `blur(${blurRadius}px)`,
-          WebkitBackdropFilter: `blur(${blurRadius}px)`,
-          boxShadow: `0 8px 32px 0 rgba(0, 0, 0, ${shadowOpacity})`,
+          paddingBottom: "env(safe-area-inset-bottom)",
         }}
         role="tablist"
         aria-label={t("navigation")}
@@ -92,26 +74,18 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
           const isLabelVisible = visibleLabel === tab.key;
 
           return (
-            <button
+            <motion.button
               key={tab.key}
+              whileTap={{ scale: 0.9 }}
               onClick={() => handleTabChange(tab.key)}
               role="tab"
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.9] sm:h-12",
-                selected ? "text-accent" : "text-gray-500"
+                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
+                selected ? "text-slate-900" : "text-slate-400"
               )}
             >
-              {selected && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 z-0 rounded-full bg-accent/10"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                  aria-hidden="true"
-                />
-              )}
-
               <AnimatePresence>
                 {isLabelVisible && (
                   <motion.div
@@ -127,29 +101,26 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
                 )}
               </AnimatePresence>
 
-              <motion.div
-                animate={{ y: selected ? iconLift : 0 }}
-                className={clsx(
-                  "relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
-                  selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
-                )}
+              <div
+                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-9 sm:w-9"
                 aria-hidden="true"
               >
-                <Icon size={selected ? 22 : 20} strokeWidth={1.8} />
-              </motion.div>
-            </button>
+                <Icon size={24} strokeWidth={2.5} />
+              </div>
+            </motion.button>
           );
         })}
 
         {/* Quick Add FAB */}
-        <div className="relative -mt-8 flex h-12 w-12 items-center justify-center sm:-mt-6 sm:h-10 sm:w-10">
-          <button
+        <div className="relative -mt-6 flex h-12 w-12 items-center justify-center sm:h-10 sm:w-10">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={onQuickAdd}
-            className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-accent to-pink-500 text-white shadow-lg shadow-accent/30 transition-transform active:scale-95 sm:h-12 sm:w-12"
+            className="absolute flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-accent to-pink-500 text-white shadow-lg shadow-accent/30 sm:h-[42px] sm:w-[42px]"
             aria-label="Quick Add"
           >
-            <Plus size={28} strokeWidth={2.5} className="sm:h-6 sm:w-6" />
-          </button>
+            <Plus size={24} strokeWidth={2.5} />
+          </motion.button>
         </div>
 
         {tabs.slice(1).map((tab) => {
@@ -158,26 +129,18 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
           const isLabelVisible = visibleLabel === tab.key;
 
           return (
-            <button
+            <motion.button
               key={tab.key}
+              whileTap={{ scale: 0.9 }}
               onClick={() => handleTabChange(tab.key)}
               role="tab"
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.9] sm:h-12",
-                selected ? "text-accent" : "text-gray-500"
+                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
+                selected ? "text-slate-900" : "text-slate-400"
               )}
             >
-              {selected && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute inset-0 z-0 rounded-full bg-accent/10"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                  aria-hidden="true"
-                />
-              )}
-
               <AnimatePresence>
                 {isLabelVisible && (
                   <motion.div
@@ -193,17 +156,13 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
                 )}
               </AnimatePresence>
 
-              <motion.div
-                animate={{ y: selected ? iconLift : 0 }}
-                className={clsx(
-                  "relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
-                  selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
-                )}
+              <div
+                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-9 sm:w-9"
                 aria-hidden="true"
               >
-                <Icon size={selected ? 22 : 20} strokeWidth={1.8} />
-              </motion.div>
-            </button>
+                <Icon size={24} strokeWidth={2.5} />
+              </div>
+            </motion.button>
           );
         })}
       </nav>
