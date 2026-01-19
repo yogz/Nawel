@@ -77,13 +77,13 @@ export const ServiceSection = memo(function ServiceSection({
           <div className="flex-1">
             <h3 className="text-gray-900 text-sm font-bold tracking-tight">{translatedTitle}</h3>
             {filteredItems.length > 0 && (
-              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-accent/40">
+              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                 {filteredItems.length} {t("items")}
               </p>
             )}
           </div>
           {!readOnly && (
-            <span className="text-accent/20 opacity-0 transition-all group-hover:text-accent group-hover:opacity-100">
+            <span className="text-gray-300 opacity-0 transition-all group-hover:text-gray-500 group-hover:opacity-100">
               <Edit3 size={14} strokeWidth={1.8} />
             </span>
           )}
@@ -116,7 +116,7 @@ export const ServiceSection = memo(function ServiceSection({
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="relative z-10 overflow-hidden"
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
               {filteredItems.map((item) => (
                 <div key={item.id} className="group-item relative">
                   <MenuItemRow

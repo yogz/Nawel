@@ -137,9 +137,9 @@ export function PlanningTab({
         variants={isMobile ? {} : containerVariants}
         initial={isMobile ? false : "hidden"}
         animate={isMobile ? false : "show"}
-        className="space-y-6 pt-0 sm:space-y-8"
+        className="space-y-4 pt-0 sm:space-y-6"
       >
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
 

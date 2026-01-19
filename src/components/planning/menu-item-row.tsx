@@ -117,7 +117,7 @@ function ItemRowComponent({
             </p>
             {!readOnly && (
               <Edit3
-                className="h-3.5 w-3.5 shrink-0 text-accent/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="h-3.5 w-3.5 shrink-0 text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 aria-hidden="true"
               />
             )}
@@ -147,8 +147,13 @@ function ItemRowComponent({
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2 py-0.5 text-[10px] font-bold text-accent ring-1 ring-accent/10">
-                  <ChefHat size={10} className="text-accent" strokeWidth={1.8} aria-hidden="true" />
+                <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2 py-0.5 text-[10px] font-bold text-gray-600 ring-1 ring-gray-200/50">
+                  <ChefHat
+                    size={10}
+                    className="text-gray-500"
+                    strokeWidth={1.8}
+                    aria-hidden="true"
+                  />
                   {item.ingredients.filter((i) => i.checked).length}/{item.ingredients.length}
                 </div>
               )}
