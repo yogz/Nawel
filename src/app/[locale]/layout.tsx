@@ -113,11 +113,23 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Viewport Configuration
+ * ======================
+ * - viewportFit: "cover" enables content to extend under notches/safe areas
+ * - themeColor: Sets the status bar color on mobile browsers
+ *
+ * IMPORTANT: This themeColor should match:
+ * - --status-bar-color in globals.css
+ * - Event page layout themeColor (if different, page takes precedence)
+ *
+ * Currently using: #E6D9F8 (lavender) - matches header gradient top
+ */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#ec4899", // Pink/Fuchsia to match header gradient top
+  themeColor: "#E6D9F8",
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";

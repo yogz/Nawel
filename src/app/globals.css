@@ -2,7 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * =============================================================================
+ * Z-INDEX HIERARCHY - Single source of truth for stacking context
+ * =============================================================================
+ * z-0    : Background gradients (event page gradient)
+ * z-10   : Content cards, default content
+ * z-30   : Dashboard header
+ * z-40   : TabBar (bottom navigation)
+ * z-50   : Snow overlay, floating elements
+ * z-100  : Sticky headers (event planner header)
+ * z-200  : Modals, sheets, drawers
+ * z-[999]: Tooltips, popovers
+ * =============================================================================
+ *
+ * STATUS BAR / SAFE-AREA COLORS
+ * =============================================================================
+ * The status bar color on mobile is controlled by:
+ * 1. viewport.themeColor in layout.tsx / page.tsx (meta tag)
+ * 2. body background-color (visible during overscroll)
+ * 3. CSS --status-bar-color variable (for consistency)
+ *
+ * To change the status bar color, update --status-bar-color below
+ * and the corresponding themeColor in the viewport exports.
+ * =============================================================================
+ */
+
 @layer base {
+  /*
+   * =============================================================================
+   * GLOBAL COLOR TOKENS - Single source of truth
+   * =============================================================================
+   */
+  :root {
+    /* Status bar and safe-area background color */
+    --status-bar-color: #e6d9f8;
+
+    /* Event page gradient colors */
+    --event-gradient-start: #e6d9f8;
+    --event-gradient-mid: #e3e8fa;
+    --event-gradient-end: #f5e2d8;
+
+    /*
+     * Computed gradient for reuse
+     * IMMERSIVE STATUS BAR: The gradient uses multiple layers:
+     * 1. Linear gradient at top ensures status bar color matches across full width
+     * 2. Radial gradient creates the decorative effect below
+     */
+    --event-header-gradient:
+      linear-gradient(
+        to bottom,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-start) 5%,
+        transparent 20%
+      ),
+      radial-gradient(
+        ellipse 120% 100% at 50% 0%,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-mid) 35%,
+        var(--event-gradient-end) 60%,
+        rgba(255, 247, 241, 0) 100%
+      );
+  }
+
   /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
   /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
   .theme-aurora {
@@ -732,10 +794,27 @@
     letter-spacing: -0.02em;
   }
 
+  /*
+   * HTML & BODY - Immersive Status Bar Setup
+   * =========================================
+   * For iOS Safari and Android Chrome, the status bar color blends with:
+   * 1. themeColor meta tag (set in layout.tsx viewport)
+   * 2. html/body background-color (visible during overscroll bounce)
+   *
+   * Both must match --status-bar-color for seamless immersion.
+   */
+  html {
+    background-color: var(--status-bar-color);
+  }
+
   body {
     @apply min-h-screen overflow-x-hidden bg-surface font-sans text-text antialiased;
     line-height: 1.6;
     font-weight: 400;
+    /* Immersive status bar: background matches gradient top for overscroll bounce */
+    background-color: var(--status-bar-color);
+    /* Prevent elastic overscroll on iOS - keeps status bar color clean */
+    overscroll-behavior-y: none;
   }
 
   h1,
@@ -1009,8 +1088,8 @@
     --shine-color: rgba(255, 255, 255, 0.4);
     --header-fade: #ffffff;
     --background: 0 0% 100%;
-    /* Indigo background for safe-area / overscroll consistency */
-    background: #6366f1;
+    /* Safe-area / overscroll background - matches status bar color */
+    background: var(--status-bar-color);
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;

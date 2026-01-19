@@ -1,5 +1,33 @@
 "use client";
 
+/**
+ * EventPlanner Component
+ * ======================
+ * Main client component for the event planning page.
+ *
+ * LAYOUT STRUCTURE:
+ * -----------------
+ * - Background gradient: Rendered by layout.tsx (z-0)
+ * - Header: Sticky, with safe-area padding, backdrop blur on scroll (z-100)
+ * - Content: Main planning area with tabs
+ * - TabBar: Fixed at bottom with safe-area padding (z-40)
+ *
+ * SAFE-AREA HANDLING:
+ * -------------------
+ * - Top: Handled by EventPlannerHeader (paddingTop: env(safe-area-inset-top))
+ * - Bottom: Handled by this component's paddingBottom
+ *
+ * Z-INDEX HIERARCHY (see globals.css for full documentation):
+ * - z-0: Background gradient (in layout.tsx)
+ * - z-40: TabBar
+ * - z-100: Sticky header
+ * - z-200: Sheets/modals
+ *
+ * To modify status bar color, see:
+ * - /src/app/[locale]/event/[slug]/layout.tsx (viewport.themeColor)
+ * - /src/app/globals.css (--status-bar-color)
+ */
+
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
@@ -303,12 +331,12 @@ export function EventPlanner({
   }, [writeKey, slug, setReadOnly]);
 
   useEffect(() => {
+    // Clean up any body background overrides to ensure "white/neutral" content area
     const previousBackground = document.body.style.background;
     const previousBackgroundAttachment = document.body.style.backgroundAttachment;
 
-    document.body.style.background =
-      "radial-gradient(circle at top, #E6D9F8 0%, #E3E8FA 40%, #F5E2D8 70%, #FFF7F1 100%)";
-    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.background = "";
+    document.body.style.backgroundAttachment = "";
 
     return () => {
       document.body.style.background = previousBackground;
@@ -323,14 +351,7 @@ export function EventPlanner({
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      {/* Event page background gradient */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(circle at top, #E6D9F8 0%, #E3E8FA 40%, #F5E2D8 70%, #FFF7F1 100%)",
-        }}
-      />
+      {/* Background gradient is rendered by layout.tsx - see z-index hierarchy in globals.css */}
       <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}

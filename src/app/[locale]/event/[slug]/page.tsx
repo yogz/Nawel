@@ -1,14 +1,8 @@
-import type { Metadata, Viewport } from "next";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: "cover",
-  themeColor: "#9333ea", // Match header vibrant purple (top of gradient)
-};
+import type { Metadata } from "next";
 import { Suspense } from "react";
+
+// NOTE: Viewport configuration (themeColor, viewportFit, etc.) is handled by
+// the layout.tsx file in this directory. See layout.tsx for details.
 import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventPlanner } from "@/components/planning/event-planner";

@@ -123,7 +123,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={onQuickAdd}
-            className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#7c3aed] to-[#db2777] text-white shadow-lg shadow-purple-500/30 sm:h-[42px] sm:w-[42px]"
+            className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white shadow-lg shadow-purple-500/30 sm:h-[42px] sm:w-[42px]"
             aria-label="Quick Add"
           >
             <Plus size={24} strokeWidth={2.5} />
