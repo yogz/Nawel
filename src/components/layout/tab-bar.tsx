@@ -67,7 +67,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
   return (
     <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/70 p-2 shadow-xl backdrop-blur-xl transition-all duration-300"
+        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/70 p-2 shadow-xl backdrop-blur-md transition-all duration-300"
         style={{
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
@@ -123,7 +123,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={onQuickAdd}
-            className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-accent to-pink-500 text-white shadow-lg shadow-accent/30 sm:h-[42px] sm:w-[42px]"
+            className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#7c3aed] to-[#db2777] text-white shadow-lg shadow-purple-500/30 sm:h-[42px] sm:w-[42px]"
             aria-label="Quick Add"
           >
             <Plus size={24} strokeWidth={2.5} />
