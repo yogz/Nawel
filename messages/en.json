@@ -322,7 +322,9 @@
       "deleteCancelButton": "Cancel",
       "quickAdd": "Quick Add",
       "quickAddTitle": "Quick Add",
-      "quickAddPlaceholder": "E.g., Yule Log, Champagne..."
+      "quickAddPlaceholder": "E.g., Yule Log, Champagne...",
+      "quickAddPlaceholderService": "Add to {service}...",
+      "quickAddEmptyTitle": "Empty list"
     },
     "Header": {
       "readOnlyWarning": "🔒 Read-only mode",

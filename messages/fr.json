@@ -322,7 +322,9 @@
       "deleteCancelButton": "Annuler",
       "quickAdd": "Ajout rapide",
       "quickAddTitle": "Ajout rapide",
-      "quickAddPlaceholder": "Ex: Bûche de Noël, Champagne..."
+      "quickAddPlaceholder": "Ex: Bûche de Noël, Champagne...",
+      "quickAddPlaceholderService": "Ajouter à {service}...",
+      "quickAddEmptyTitle": "Liste vide"
     },
     "Header": {
       "readOnlyWarning": "🔒 Mode lecture uniquement",

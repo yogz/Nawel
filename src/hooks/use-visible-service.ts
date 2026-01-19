@@ -43,6 +43,9 @@ export function useVisibleService() {
 
         // Only update if we have a visible service
         if (mostVisibleId !== null && maxRatio > 0) {
+          if (mostVisibleId !== visibleServiceId) {
+            console.log("[useVisibleService] Updating visible service:", mostVisibleId);
+          }
           setVisibleServiceId(mostVisibleId);
         }
       },

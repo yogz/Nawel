@@ -73,7 +73,7 @@ export type ItemData = {
 
 export interface OrganizerHandlers {
   findItem: (id: number) => { item: Item; service: Service; mealId?: number } | null | undefined;
-  handleCreateItem: (data: ItemData) => void;
+  handleCreateItem: (data: ItemData, closeSheet?: boolean) => void;
   handleUpdateItem: (id: number, data: ItemData) => void;
   handleAssign: (item: Item, personId: number | null) => void;
   handleDelete: (item: Item) => void;

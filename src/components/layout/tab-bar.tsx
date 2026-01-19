@@ -122,7 +122,15 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
         <div className="relative flex h-12 w-12 items-center justify-center sm:h-10 sm:w-10">
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={onQuickAdd}
+            onClick={(e) => {
+              console.log("[TabBar] Quick Add clicked. onQuickAdd type:", typeof onQuickAdd);
+              e.stopPropagation();
+              if (onQuickAdd) {
+                onQuickAdd();
+              } else {
+                console.error("[TabBar] onQuickAdd is undefined!");
+              }
+            }}
             className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white shadow-lg shadow-purple-500/30 sm:h-[42px] sm:w-[42px]"
             aria-label="Quick Add"
           >

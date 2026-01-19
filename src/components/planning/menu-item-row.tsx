@@ -89,10 +89,16 @@ function ItemRowComponent({
   };
 
   const content = (
-    <button
-      type="button"
+    <div
+      role={readOnly ? undefined : "button"}
+      tabIndex={readOnly ? undefined : 0}
       onClick={handleClick}
-      disabled={readOnly}
+      onKeyDown={(e) => {
+        if (!readOnly && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
         "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 active:scale-[0.99] sm:px-5 sm:py-4",
@@ -255,7 +261,7 @@ function ItemRowComponent({
           </motion.div>
         </AnimatePresence>
       )}
-    </button>
+    </div>
   );
 
   if (readOnly) {

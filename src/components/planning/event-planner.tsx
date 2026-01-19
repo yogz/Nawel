@@ -60,6 +60,7 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
+import { useVisibleService } from "@/hooks/use-visible-service";
 
 // Feature-specific hooks (imported directly for better tree-shaking)
 import { useItemHandlers } from "@/features/items";
@@ -213,6 +214,34 @@ export function EventPlanner({
   const [isGenerating, setIsGenerating] = useState(false);
 
   const searchParams = useSearchParams();
+
+  // Visibility tracking for Quick Add
+  const { visibleServiceId, registerService, unregisterService } = useVisibleService();
+
+  const handleQuickAdd = () => {
+    // Logic to determine which service to add to
+    // 1. Use the currently visible service (from IntersectionObserver)
+    // 2. Fallback to any service from any meal
+    // 3. If no meals/services, trigger meal creation
+    let targetServiceId = visibleServiceId;
+
+    // Fallback if no visible service detected - search all meals
+    if (!targetServiceId) {
+      for (const meal of plan.meals) {
+        if (meal.services.length > 0) {
+          targetServiceId = meal.services[0].id;
+          break;
+        }
+      }
+    }
+
+    if (targetServiceId) {
+      setSheet({ type: "quick-add", serviceId: targetServiceId });
+    } else {
+      // No services exist, create a meal first
+      setSheet({ type: "meal-create" });
+    }
+  };
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -394,6 +423,8 @@ export function EventPlanner({
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
                 currentUserId={session?.user?.id}
+                registerVisibility={registerService}
+                unregisterVisibility={unregisterService}
               />
             )}
 
@@ -423,7 +454,12 @@ export function EventPlanner({
           </Suspense>
         </main>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar
+          active={tab}
+          onChange={setTab}
+          isAuthenticated={!!session?.user}
+          onQuickAdd={handleQuickAdd}
+        />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}

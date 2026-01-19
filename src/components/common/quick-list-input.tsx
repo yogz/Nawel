@@ -20,6 +20,7 @@ interface QuickListInputProps {
   title?: string;
   className?: string;
   maxItems?: number;
+  hideCount?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export function QuickListInput({
   title,
   className,
   maxItems,
+  hideCount,
 }: QuickListInputProps) {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +52,7 @@ export function QuickListInput({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
+      e.preventDefault();
       handleAdd();
     }
   };
@@ -75,9 +78,11 @@ export function QuickListInput({
       {title && (
         <div className="border-b bg-white/80 px-6 py-4 backdrop-blur-md">
           <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-          <p className="text-xs font-medium uppercase tracking-widest text-gray-400">
-            {items.length} {items.length > 1 ? "éléments" : "élément"}
-          </p>
+          {!hideCount && (
+            <p className="text-xs font-medium uppercase tracking-widest text-gray-400">
+              {items.length} {items.length > 1 ? "éléments" : "élément"}
+            </p>
+          )}
         </div>
       )}
 

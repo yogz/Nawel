@@ -49,6 +49,7 @@ export const ServiceSection = memo(function ServiceSection({
   // Combined ref callback for both droppable and visibility tracking
   const combinedRef = useCallback(
     (element: HTMLDivElement | null) => {
+      // console.log(`[ServiceSection] Ref called for service ${service.id}. Element exists: ${!!element}`);
       elementRef.current = element;
       setNodeRef(element);
       registerVisibility?.(service.id, element);

@@ -8,6 +8,7 @@ import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
+import { QuickAddSheetContent } from "./quick-add-sheet";
 import { useSearchParams, useParams } from "next/navigation";
 import { updateEventWithMealAction } from "@/app/actions/event-actions";
 import { useTranslations } from "next-intl";
@@ -81,6 +82,8 @@ export function EventPlannerSheets({
         return t("editMeal");
       case "meal-create":
         return t("addMeal");
+      case "quick-add":
+        return t("quickAdd");
       case "person":
         return t("addGuest");
       case "person-edit":
@@ -257,7 +260,12 @@ export function EventPlannerSheets({
   return (
     <>
       <Drawer
-        open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
+        open={
+          !!sheet &&
+          sheet.type !== "item-ingredients" &&
+          sheet.type !== "event-edit" &&
+          sheet.type !== "quick-add"
+        }
         onOpenChange={(open) => !open && setSheet(null)}
       >
         <DrawerContent className="px-4 sm:px-6">
@@ -305,6 +313,15 @@ export function EventPlannerSheets({
           handleDeleteAllIngredients={handlers.handleDeleteAllIngredients}
           handleSaveFeedback={handlers.handleSaveFeedback}
           justGenerated={handlers.justGenerated}
+        />
+      )}
+
+      {sheet?.type === "quick-add" && (
+        <QuickAddSheetContent
+          serviceId={sheet.serviceId}
+          handlers={handlers}
+          plan={plan}
+          onClose={() => setSheet(null)}
         />
       )}
 

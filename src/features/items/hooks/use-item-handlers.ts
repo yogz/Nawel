@@ -51,7 +51,7 @@ export function useItemHandlers({
     return null;
   };
 
-  const handleCreateItem = (data: ItemData) => {
+  const handleCreateItem = (data: ItemData, closeSheet = true) => {
     if (readOnly) {
       return;
     }
@@ -68,7 +68,9 @@ export function useItemHandlers({
           ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
           : null;
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
-        setSheet(null);
+        if (closeSheet) {
+          setSheet(null);
+        }
         setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
         trackItemAction("item_created", itemData.name);
       } catch (error) {
