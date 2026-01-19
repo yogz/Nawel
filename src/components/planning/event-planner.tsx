@@ -302,6 +302,20 @@ export function EventPlanner({
     validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
   }, [writeKey, slug, setReadOnly]);
 
+  useEffect(() => {
+    const previousBackground = document.body.style.background;
+    const previousBackgroundAttachment = document.body.style.backgroundAttachment;
+
+    document.body.style.background =
+      "radial-gradient(circle at top, #E6D9F8 0%, #E3E8FA 40%, #F5E2D8 70%, #FFF7F1 100%)";
+    document.body.style.backgroundAttachment = "fixed";
+
+    return () => {
+      document.body.style.background = previousBackground;
+      document.body.style.backgroundAttachment = previousBackgroundAttachment;
+    };
+  }, []);
+
   return (
     <div
       className="flex min-h-screen flex-col"
@@ -309,18 +323,12 @@ export function EventPlanner({
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
-      {/* Premium gradient final: Vibrant Purple > Lavender > Transparent, short height */}
+      {/* Event page background gradient */}
       <div
-        className="fixed inset-x-0 top-0 h-[200px] pointer-events-none z-0"
+        className="fixed inset-0 pointer-events-none z-0"
         style={{
-          background: `
-            linear-gradient(to bottom, 
-              #9333ea 0%, 
-              #9333ea 15%, 
-              #d8b4fe 60%, 
-              rgba(255,255,255,0) 100%
-            )
-          `,
+          background:
+            "radial-gradient(circle at top, #E6D9F8 0%, #E3E8FA 40%, #F5E2D8 70%, #FFF7F1 100%)",
         }}
       />
       <EventPlannerHeader
