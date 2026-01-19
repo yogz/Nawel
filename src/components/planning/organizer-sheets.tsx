@@ -15,7 +15,7 @@ import { useSearchParams, useParams } from "next/navigation";
 import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
 import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
 import { ItemIngredientsManager } from "@/features/items/components/item-ingredients-manager";
-import { QuickAddSheet } from "./quick-add-sheet";
+import { QuickAddSheetContent } from "./quick-add-sheet";
 
 import {
   type PlanData,
@@ -228,6 +228,9 @@ export function OrganizerSheets({
     }
     if (sheet?.type === "claim-person") {
       return t("claimPerson");
+    }
+    if (sheet?.type === "quick-add") {
+      return t("quickAdd");
     }
     return "";
   };
@@ -585,12 +588,7 @@ export function OrganizerSheets({
           )}
 
           {sheet?.type === "quick-add" && (
-            <QuickAddSheet
-              isOpen
-              onClose={() => setSheet(null)}
-              serviceId={sheet.serviceId}
-              handlers={handlers}
-            />
+            <QuickAddSheetContent serviceId={sheet.serviceId} handlers={handlers} />
           )}
         </div>
       </DrawerContent>

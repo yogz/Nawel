@@ -319,7 +319,10 @@
       "deleteConfirmInstruction": "Veuillez saisir le nom de l'événement \"{name}\" pour confirmer la suppression :",
       "deleteConfirmPlaceholder": "Nom de l'événement",
       "deleteConfirmButton": "Supprimer définitivement",
-      "deleteCancelButton": "Annuler"
+      "deleteCancelButton": "Annuler",
+      "quickAdd": "Ajout rapide",
+      "quickAddTitle": "Ajout rapide",
+      "quickAddPlaceholder": "Ex: Bûche de Noël, Champagne..."
     },
     "Header": {
       "readOnlyWarning": "🔒 Mode lecture uniquement",
@@ -588,6 +591,7 @@
       "shoppingList": "Liste de courses",
       "guestAccess": "Accès invité",
       "claimPerson": "C'est vous ?",
+      "quickAdd": "Ajout rapide",
       "ingredientsGenerated": "Ingrédients générés avec succès !",
       "generationError": "Erreur lors de la génération des ingrédients.",
       "Share": {

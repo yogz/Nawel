@@ -35,6 +35,7 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
+import { useVisibleService } from "@/hooks/use-visible-service";
 
 // Loading skeleton for tabs
 function TabSkeleton() {
@@ -127,6 +128,9 @@ export function Organizer({
     handleUnclaimPerson,
     handleAssign,
   } = handlers;
+
+  // Track visible service for quick-add FAB
+  const { visibleServiceId, registerService, unregisterService } = useVisibleService();
 
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
@@ -302,6 +306,8 @@ export function Organizer({
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
                 currentUserId={session?.user?.id}
+                registerVisibility={registerService}
+                unregisterVisibility={unregisterService}
               />
             )}
 
@@ -337,21 +343,25 @@ export function Organizer({
           isAuthenticated={!!session?.user}
           onQuickAdd={() => {
             // Logic to determine which service to add to
-            // 1. Try to find from planningFilter
-            // 2. Fallback to the first service of the first meal
-            // 3. If no meals, trigger meal creation
-            let defaultServiceId = -1;
+            // 1. Use the currently visible service (from IntersectionObserver)
+            // 2. Fallback to any service from any meal
+            // 3. If no meals/services, trigger meal creation
+            let targetServiceId = visibleServiceId;
 
-            if (plan.meals.length > 0) {
-              const firstMeal = plan.meals[0];
-              if (firstMeal.services.length > 0) {
-                defaultServiceId = firstMeal.services[0].id;
+            // Fallback if no visible service detected - search all meals
+            if (!targetServiceId) {
+              for (const meal of plan.meals) {
+                if (meal.services.length > 0) {
+                  targetServiceId = meal.services[0].id;
+                  break;
+                }
               }
             }
 
-            if (defaultServiceId !== -1) {
-              setSheet({ type: "quick-add", serviceId: defaultServiceId });
+            if (targetServiceId) {
+              setSheet({ type: "quick-add", serviceId: targetServiceId });
             } else {
+              // No services exist, create a meal first
               setSheet({ type: "meal-create" });
             }
           }}

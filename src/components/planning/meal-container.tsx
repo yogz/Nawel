@@ -37,6 +37,8 @@ interface MealContainerProps {
   setSheet: (sheet: Sheet) => void;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
+  registerVisibility?: (serviceId: number, element: Element | null) => void;
+  unregisterVisibility?: (serviceId: number) => void;
 }
 
 export function MealContainer({
@@ -51,6 +53,8 @@ export function MealContainer({
   setSheet,
   handleAssign,
   currentUserId,
+  registerVisibility,
+  unregisterVisibility,
 }: MealContainerProps) {
   const [isExpanded, setIsExpanded] = React.useState(true);
   const t = useTranslations("EventDashboard.Planning");
@@ -181,6 +185,8 @@ export function MealContainer({
                   activeItemId={activeItemId}
                   handleAssign={handleAssign}
                   currentUserId={currentUserId}
+                  registerVisibility={registerVisibility}
+                  unregisterVisibility={unregisterVisibility}
                 />
               ))}
               {!readOnly && onCreateService && (

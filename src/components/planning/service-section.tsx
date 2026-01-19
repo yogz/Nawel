@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, memo } from "react";
+import React, { useState, memo, useEffect, useRef, useCallback } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { PlusIcon, Edit3, ChevronRight } from "lucide-react";
 import { type Service, type Person, type Item } from "@/lib/types";
 import { MenuItemRow } from "./menu-item-row";
-import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
@@ -22,6 +21,8 @@ interface ServiceSectionProps {
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
+  registerVisibility?: (serviceId: number, element: Element | null) => void;
+  unregisterVisibility?: (serviceId: number) => void;
 }
 
 export const ServiceSection = memo(function ServiceSection({
@@ -35,12 +36,32 @@ export const ServiceSection = memo(function ServiceSection({
   activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
+  registerVisibility,
+  unregisterVisibility,
 }: ServiceSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const t = useTranslations("EventDashboard.Planning");
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
   });
+  const elementRef = useRef<HTMLDivElement | null>(null);
+
+  // Combined ref callback for both droppable and visibility tracking
+  const combinedRef = useCallback(
+    (element: HTMLDivElement | null) => {
+      elementRef.current = element;
+      setNodeRef(element);
+      registerVisibility?.(service.id, element);
+    },
+    [setNodeRef, registerVisibility, service.id]
+  );
+
+  // Cleanup visibility registration on unmount
+  useEffect(() => {
+    return () => {
+      unregisterVisibility?.(service.id);
+    };
+  }, [service.id, unregisterVisibility]);
 
   const translatedTitle = useTranslatedServiceTitle(service.title);
 
@@ -50,7 +71,7 @@ export const ServiceSection = memo(function ServiceSection({
 
   return (
     <div
-      ref={setNodeRef}
+      ref={combinedRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
       <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-4">

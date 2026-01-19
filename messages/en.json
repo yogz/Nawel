@@ -319,7 +319,10 @@
       "deleteConfirmInstruction": "Please type the event name \"{name}\" to confirm deletion:",
       "deleteConfirmPlaceholder": "Event name",
       "deleteConfirmButton": "Permanently Delete",
-      "deleteCancelButton": "Cancel"
+      "deleteCancelButton": "Cancel",
+      "quickAdd": "Quick Add",
+      "quickAddTitle": "Quick Add",
+      "quickAddPlaceholder": "E.g., Yule Log, Champagne..."
     },
     "Header": {
       "readOnlyWarning": "🔒 Read-only mode",
@@ -586,6 +589,7 @@
       "shoppingList": "Shopping list",
       "guestAccess": "Guest access",
       "claimPerson": "Is it you?",
+      "quickAdd": "Quick Add",
       "ingredientsGenerated": "Ingredients generated successfully!",
       "generationError": "Error generating ingredients.",
       "Share": {
