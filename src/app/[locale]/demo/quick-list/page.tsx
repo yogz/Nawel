@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { QuickListInput } from "@/components/common/quick-list-input";
-import { useTranslations } from "next-intl";
+import { QuickListInput, QuickListItem } from "@/components/common/quick-list-input";
 
 export default function QuickListDemoPage() {
-  const [items, setItems] = useState<string[]>([]);
+  const [items, setItems] = useState<QuickListItem[]>([]);
 
-  const handleAdd = (item: string) => {
-    setItems((prev) => [item, ...prev]);
+  const handleAdd = (name: string) => {
+    setItems((prev) => [{ name, isNew: true }, ...prev]);
   };
 
-  const handleRemove = (index: number) => {
+  const handleRemove = (_item: QuickListItem, index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 

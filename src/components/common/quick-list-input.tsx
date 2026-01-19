@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X, ListPlus } from "lucide-react";
+import { Plus, Trash2, ListPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { clsx, type ClassValue } from "clsx";
@@ -12,10 +12,16 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export interface QuickListItem {
+  id?: number;
+  name: string;
+  isNew?: boolean;
+}
+
 interface QuickListInputProps {
-  items: string[];
-  onAdd: (item: string) => void;
-  onRemove?: (index: number) => void;
+  items: QuickListItem[];
+  onAdd: (name: string) => void;
+  onRemove?: (item: QuickListItem, index: number) => void;
   placeholder?: string;
   title?: string;
   className?: string;
@@ -96,7 +102,7 @@ export function QuickListInput({
           <AnimatePresence initial={false}>
             {items.map((item, index) => (
               <motion.div
-                key={`${item}-${index}`}
+                key={item.id ? `existing-${item.id}` : `new-${item.name}-${index}`}
                 layout
                 transition={{
                   layout: {
@@ -106,18 +112,30 @@ export function QuickListInput({
                     mass: 1,
                   },
                 }}
-                className="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white/70 p-4 shadow-sm backdrop-blur-sm transition-all hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+                className={cn(
+                  "group flex items-center gap-3 rounded-2xl border p-4 shadow-sm backdrop-blur-sm transition-all",
+                  item.isNew
+                    ? "border-accent/20 bg-accent/5"
+                    : "border-gray-100 bg-white/70 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+                )}
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent/20 to-pink-500/10 text-accent transition-transform group-hover:scale-110">
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110",
+                    item.isNew
+                      ? "bg-accent/20 text-accent"
+                      : "bg-gradient-to-br from-accent/20 to-pink-500/10 text-accent"
+                  )}
+                >
                   <ListPlus size={18} />
                 </div>
-                <span className="flex-1 text-base font-semibold text-gray-800">{item}</span>
+                <span className="flex-1 text-base font-semibold text-gray-800">{item.name}</span>
                 {onRemove && (
                   <button
-                    onClick={() => onRemove(index)}
-                    className="opacity-0 transition-all group-hover:opacity-100 rounded-full p-2 text-gray-300 hover:bg-red-50 hover:text-red-500 active:scale-90"
+                    onClick={() => onRemove(item, index)}
+                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 active:scale-90"
                   >
-                    <X size={20} />
+                    <Trash2 size={18} />
                   </button>
                 )}
               </motion.div>
@@ -137,7 +155,10 @@ export function QuickListInput({
       </div>
 
       {/* Sticky Premium Input Container */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pb-10 sm:pb-6">
+      <div
+        className="absolute bottom-0 left-0 right-0 z-20 p-4"
+        style={{ paddingBottom: `max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))` }}
+      >
         <div className="mx-auto max-w-lg overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] backdrop-blur-3xl ring-1 ring-black/5">
           <div className="flex items-center gap-2 rounded-[2rem] bg-white/60 p-1">
             <div className="relative flex-1">
@@ -192,9 +213,6 @@ export function QuickListInput({
           </div>
         </div>
       </div>
-
-      {/* Safe Area Spacer for iOS/Mobile */}
-      <div className="h-[env(safe-area-inset-bottom)] bg-white/50" />
     </div>
   );
 }

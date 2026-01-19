@@ -76,7 +76,7 @@ export interface OrganizerHandlers {
   handleCreateItem: (data: ItemData, closeSheet?: boolean) => void;
   handleUpdateItem: (id: number, data: ItemData) => void;
   handleAssign: (item: Item, personId: number | null) => void;
-  handleDelete: (item: Item) => void;
+  handleDelete: (item: Item, closeSheet?: boolean) => void;
   handleMoveItem: (itemId: number, serviceId: number, index?: number) => void;
   handleCreateMeal: (
     date: string,

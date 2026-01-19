@@ -186,13 +186,15 @@ export function useItemHandlers({
     });
   };
 
-  const handleDelete = (item: Item) => {
+  const handleDelete = (item: Item, closeSheet = true) => {
     if (readOnly) {
       return;
     }
     const previousPlan = plan;
     setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
-    setSheet(null);
+    if (closeSheet) {
+      setSheet(null);
+    }
     setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
     trackItemAction("item_deleted", item.name);
 
