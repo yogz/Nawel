@@ -95,10 +95,10 @@ export function QuickListInput({
       {/* List Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-6 scrollbar-none"
+        className="flex flex-1 flex-col overflow-y-auto px-4 py-6 scrollbar-none"
         style={{ paddingBottom: "120px" }} // Space for the floating input
       >
-        <div className="flex flex-col-reverse gap-3">
+        <div className="mt-auto flex flex-col-reverse gap-3">
           <AnimatePresence initial={false}>
             {items.map((item, index) => (
               <motion.div

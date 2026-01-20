@@ -25,17 +25,38 @@ export function QuickAddSheetContent({
 }: QuickAddSheetContentProps) {
   const t = useTranslations("EventDashboard.Organizer");
   const tShared = useTranslations("EventDashboard.Shared");
-  const [sessionItems, setSessionItems] = useState<QuickListItem[]>([]);
+  const [pendingItems, setPendingItems] = useState<QuickListItem[]>([]);
 
   const service = plan.meals.flatMap((m) => m.services).find((s) => s.id === serviceId);
   const existingItems: QuickListItem[] = (service?.items || []).map((item) => ({
     id: item.id,
     name: item.name,
-    isNew: false,
   }));
 
-  // Combine: new items first, then existing items
-  const allItems = [...sessionItems, ...existingItems];
+  // Count occurrences by name in existing items
+  const existingCounts = new Map<string, number>();
+  for (const item of existingItems) {
+    const key = item.name.toLowerCase();
+    existingCounts.set(key, (existingCounts.get(key) || 0) + 1);
+  }
+
+  // Filter pending items: keep only those not yet confirmed by backend
+  const pendingCounts = new Map<string, number>();
+  const filteredPending = pendingItems.filter((item) => {
+    const key = item.name.toLowerCase();
+    const existingCount = existingCounts.get(key) || 0;
+    const alreadyUsed = pendingCounts.get(key) || 0;
+
+    // Keep this pending item only if we haven't matched it to an existing item yet
+    if (alreadyUsed < existingCount) {
+      pendingCounts.set(key, alreadyUsed + 1);
+      return false; // This pending item is now in backend, remove it
+    }
+    return true; // Keep as pending
+  });
+
+  // Combine: pending first (newest), then existing
+  const allItems = [...filteredPending, ...existingItems];
 
   const title = service?.title || t("quickAddTitle");
   const placeholder = service?.title
@@ -44,7 +65,7 @@ export function QuickAddSheetContent({
 
   const handleAdd = (name: string) => {
     // Optimistic UI update
-    setSessionItems((prev) => [{ name, isNew: true }, ...prev]);
+    setPendingItems((prev) => [{ name, isNew: true }, ...prev]);
 
     // Backend update (don't close sheet)
     handlers.handleCreateItem(
@@ -59,14 +80,14 @@ export function QuickAddSheetContent({
 
   const handleRemove = (item: QuickListItem, index: number) => {
     if (item.id) {
-      // Existing item - delete from backend (don't close sheet)
+      // Existing item - delete from backend
       const existingItem = service?.items.find((i) => i.id === item.id);
       if (existingItem) {
         handlers.handleDelete(existingItem, false);
       }
     } else {
-      // New item - remove from session (adjust index for sessionItems)
-      setSessionItems((prev) => prev.filter((_, i) => i !== index));
+      // Pending item - remove from local state
+      setPendingItems((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
