@@ -28,7 +28,8 @@ export function QuickAddSheetContent({
   const [pendingItems, setPendingItems] = useState<QuickListItem[]>([]);
 
   const service = plan.meals.flatMap((m) => m.services).find((s) => s.id === serviceId);
-  const existingItems: QuickListItem[] = (service?.items || []).map((item) => ({
+  // Reverse so newest items appear first (closest to input with flex-col-reverse)
+  const existingItems: QuickListItem[] = [...(service?.items || [])].reverse().map((item) => ({
     id: item.id,
     name: item.name,
   }));

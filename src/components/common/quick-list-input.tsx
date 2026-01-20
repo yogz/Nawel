@@ -63,11 +63,12 @@ export function QuickListInput({
     }
   };
 
-  // Auto-scroll to bottom when items are added to keep the focus near the input
+  // Auto-scroll to keep new items visible (they appear at the bottom with flex-col-reverse)
   useEffect(() => {
     if (scrollRef.current) {
+      // With flex-col-reverse, scrollTop 0 is the visual bottom where new items appear
       scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
+        top: 0,
         behavior: "smooth",
       });
     }
