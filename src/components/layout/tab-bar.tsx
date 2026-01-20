@@ -110,7 +110,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
 
               <div
                 className={clsx(
-                  "relative z-10 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
+                  "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 sm:h-9 sm:w-9",
                   selected ? "bg-accent text-white shadow-md shadow-accent/20" : "bg-transparent"
                 )}
                 aria-hidden="true"
