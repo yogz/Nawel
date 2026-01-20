@@ -47,8 +47,8 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
   };
 
   const displayName = name || defaultName;
-  const maxSize = isScrolled ? 34 : 48;
-  const minSize = isScrolled ? 14 : 20;
+  const maxSize = 40;
+  const minSize = 20;
 
   // Always use dark text for better contrast on pastel gradient
   const textColorClass = "text-gray-900";

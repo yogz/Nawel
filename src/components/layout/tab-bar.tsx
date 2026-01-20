@@ -65,12 +65,14 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
   }, []);
 
   return (
-    <div className="pointer-events-none fixed bottom-6 left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
+    <div
+      className="pointer-events-none fixed left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]"
+      style={{
+        bottom: `calc(1.5rem + env(safe-area-inset-bottom))`,
+      }}
+    >
       <nav
-        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/20 bg-white/70 p-2 shadow-xl backdrop-blur-md transition-all duration-300"
-        style={{
-          paddingBottom: "env(safe-area-inset-bottom)",
-        }}
+        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full border border-white/30 bg-white/70 p-2 shadow-xl backdrop-blur-xl transition-all duration-300"
         role="tablist"
         aria-label={t("navigation")}
       >
@@ -119,9 +121,15 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
 
         {/* Quick Add FAB */}
         {/* Quick Add FAB - visually breaking out */}
-        <div className="relative flex h-12 w-12 items-center justify-center sm:h-10 sm:w-10">
+        <div className="relative pointer-events-auto flex h-12 w-12 items-center justify-center sm:h-10 sm:w-10">
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            initial="initial"
+            animate="initial"
+            whileHover={{ scale: 1.05, y: -14 }}
+            whileTap={{ scale: 0.95, y: -8 }}
+            variants={{
+              initial: { y: -12 },
+            }}
             onClick={(e) => {
               console.log("[TabBar] Quick Add clicked. onQuickAdd type:", typeof onQuickAdd);
               e.stopPropagation();
@@ -131,14 +139,14 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
                 console.error("[TabBar] onQuickAdd is undefined!");
               }
             }}
-            className="absolute -translate-y-6 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white shadow-lg shadow-purple-500/30 sm:h-[42px] sm:w-[42px]"
+            className="absolute flex h-[48px] w-[48px] items-center justify-center rounded-full border border-white/40 bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white shadow-lg shadow-purple-500/40 backdrop-blur-lg sm:h-[42px] sm:w-[42px]"
             aria-label="Quick Add"
           >
             <Plus size={24} strokeWidth={2.5} />
           </motion.button>
         </div>
 
-        {tabs.slice(1).map((tab) => {
+        {tabs.slice(1).map((tab, index) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
           const isLabelVisible = visibleLabel === tab.key;
