@@ -88,7 +88,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
+                "relative flex h-14 flex-1 items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
                 selected ? "text-slate-900" : "text-slate-400"
               )}
             >
@@ -152,7 +152,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
+                "relative flex h-14 flex-1 items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
                 selected ? "text-slate-900" : "text-slate-400"
               )}
             >
