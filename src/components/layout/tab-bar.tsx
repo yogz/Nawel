@@ -78,7 +78,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               aria-selected={selected}
               aria-label={t(tab.key)}
               className={clsx(
-                "relative flex h-14 flex-1 flex-col items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.9] sm:h-12",
+                "relative flex h-14 flex-1 items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.9] sm:h-12",
                 selected ? "text-accent" : "text-gray-500"
               )}
             >
