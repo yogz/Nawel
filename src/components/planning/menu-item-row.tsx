@@ -3,7 +3,7 @@
 import { memo, useState, useEffect } from "react";
 import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
-import { Scale, Euro, MessageSquare, ChefHat, Edit3, Plus, ArrowRight } from "lucide-react";
+import { Scale, Euro, MessageSquare, ChefHat, Plus, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -121,12 +121,6 @@ function ItemRowComponent({
             >
               {item.name}
             </p>
-            {!readOnly && (
-              <Edit3
-                className="h-3.5 w-3.5 shrink-0 text-gray-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                aria-hidden="true"
-              />
-            )}
           </div>
 
           {/* Metadata Row */}
