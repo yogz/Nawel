@@ -216,7 +216,7 @@ function ItemRowComponent({
           ) : (
             <button
               type="button"
-              className="group relative flex h-8 cursor-pointer items-center gap-2 rounded-lg bg-black/[0.03] px-2.5 py-1 transition-all duration-300 hover:bg-black/[0.06] active:scale-95"
+              className="group relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-accent/10 transition-all duration-300 hover:bg-accent/20 active:scale-95"
               onClick={(e) => {
                 e.stopPropagation();
                 if (currentPerson && handleAssign) {
@@ -227,11 +227,9 @@ function ItemRowComponent({
                 }
               }}
               aria-label={t("takeAction")}
+              title={t("takeAction")}
             >
-              <Plus size={12} className="text-gray-400 group-hover:text-accent" strokeWidth={3} />
-              <span className="text-[10px] font-bold text-gray-400 group-hover:text-accent">
-                {t("takeAction")}
-              </span>
+              <Plus size={16} className="text-accent" strokeWidth={2.5} />
             </button>
           )}
         </div>

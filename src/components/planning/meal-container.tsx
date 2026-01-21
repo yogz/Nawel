@@ -120,14 +120,14 @@ export function MealContainer({
                   e.stopPropagation();
                   setIsExpanded(!isExpanded);
                 }}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 transition-all hover:bg-black/[0.06] active:scale-90"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] text-gray-500 transition-all hover:bg-black/[0.08] active:scale-95"
                 aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <motion.div
                   animate={{ rotate: isExpanded ? 90 : 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <ChevronRight className="h-5 w-5 opacity-40" />
+                  <ChevronRight className="h-5 w-5" />
                 </motion.div>
               </button>
               <div className="flex min-w-0 flex-1 flex-col">
