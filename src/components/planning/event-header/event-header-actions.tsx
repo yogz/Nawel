@@ -46,27 +46,22 @@ export function EventHeaderActions({
   const calendarTitle = meal.title ? `${eventName} - ${meal.title}` : eventName;
   const calendarDescription = tPlanning("calendar.description", { title: calendarTitle });
 
-  // Background adapts to scroll state, maintains contrast
-  const containerClasses = cn(
-    "flex h-7 items-center rounded-full border px-1 shadow-sm transition-all gap-0.5",
-    isScrolled ? "bg-white/50 border-white/60" : "bg-white/40 border-black/[0.06] backdrop-blur-sm"
-  );
-
+  // Individual button classes - spatial glass orbs
   const buttonClasses = cn(
-    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-all hover:bg-black/10 active:scale-90",
-    "text-gray-600"
+    "glass-panel flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-105",
+    "text-gray-700 hover:text-gray-950"
   );
 
   const isCalendarEnabled = meal.date !== "common";
 
   return (
-    <div className={containerClasses}>
+    <div className="flex items-center gap-2">
       {/* Calendar Export */}
       {isCalendarEnabled && (
         <Popover>
           <PopoverTrigger asChild>
             <button className={buttonClasses} aria-label="Add to calendar">
-              <Calendar size={12} strokeWidth={2} />
+              <Calendar size={16} strokeWidth={2} />
             </button>
           </PopoverTrigger>
           <PopoverContent className="glass w-56 p-2" align="end">
@@ -115,7 +110,7 @@ export function EventHeaderActions({
           className={cn(buttonClasses, showAttention && "btn-shine-attention")}
           aria-label="Share event"
         >
-          <Share size={12} strokeWidth={2} />
+          <Share size={16} strokeWidth={2} />
         </button>
       )}
     </div>
