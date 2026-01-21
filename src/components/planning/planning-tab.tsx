@@ -40,8 +40,6 @@ interface PlanningTabProps {
   onDeleteEvent?: () => Promise<void>;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
-  registerVisibility?: (serviceId: number, element: Element | null) => void;
-  unregisterVisibility?: (serviceId: number) => void;
 }
 
 const containerVariants: Variants = {
@@ -75,8 +73,6 @@ export function PlanningTab({
   onDeleteEvent,
   handleAssign,
   currentUserId,
-  registerVisibility,
-  unregisterVisibility,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tSettings = useTranslations("EventDashboard.Settings");
@@ -176,8 +172,6 @@ export function PlanningTab({
                 setSheet={setSheet}
                 handleAssign={handleAssign}
                 currentUserId={currentUserId}
-                registerVisibility={registerVisibility}
-                unregisterVisibility={unregisterVisibility}
               />
             );
           })}

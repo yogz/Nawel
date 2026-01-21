@@ -30,7 +30,6 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import {
   PointerSensor,
@@ -61,7 +60,6 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
-import { useVisibleService } from "@/hooks/use-visible-service";
 
 // Feature-specific hooks (imported directly for better tree-shaking)
 import { useItemHandlers } from "@/features/items";
@@ -215,40 +213,6 @@ export function EventPlanner({
   const [isGenerating, setIsGenerating] = useState(false);
 
   const searchParams = useSearchParams();
-
-  // Visibility tracking for Quick Add
-  const { visibleServiceId, registerService, unregisterService } = useVisibleService();
-
-  const router = useRouter();
-
-  const handleQuickAdd = useCallback(() => {
-    // Logic to determine which service to add to
-    // 1. Use the currently visible service (from IntersectionObserver)
-    // 2. Fallback to any service from any meal
-    // 3. If no meals/services, trigger meal creation
-    let targetServiceId = visibleServiceId;
-
-    // Fallback if no visible service detected - search all meals
-    if (!targetServiceId) {
-      for (const meal of plan.meals) {
-        if (meal.services.length > 0) {
-          targetServiceId = meal.services[0].id;
-          break;
-        }
-      }
-    }
-
-    if (targetServiceId) {
-      // Navigate to quick-add page
-      const url = effectiveWriteKey
-        ? `/event/${slug}/quick-add?service=${targetServiceId}&key=${effectiveWriteKey}`
-        : `/event/${slug}/quick-add?service=${targetServiceId}`;
-      router.push(url);
-    } else {
-      // No services exist, create a meal first
-      setSheet({ type: "meal-create" });
-    }
-  }, [visibleServiceId, plan.meals, effectiveWriteKey, slug, router, setSheet]);
 
   // Handler for inline quick-add in ServiceSection
   const handleInlineAdd = useCallback(
@@ -446,8 +410,6 @@ export function EventPlanner({
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
                 currentUserId={session?.user?.id}
-                registerVisibility={registerService}
-                unregisterVisibility={unregisterService}
               />
             )}
 
@@ -477,12 +439,7 @@ export function EventPlanner({
           </Suspense>
         </main>
 
-        <TabBar
-          active={tab}
-          onChange={setTab}
-          isAuthenticated={!!session?.user}
-          onQuickAdd={handleQuickAdd}
-        />
+        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}

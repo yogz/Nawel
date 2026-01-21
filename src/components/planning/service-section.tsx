@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, memo, useEffect, useRef, useCallback } from "react";
+import React, { useState, memo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { Edit3, ChevronRight, MoreHorizontal } from "lucide-react";
 import { type Service, type Person, type Item } from "@/lib/types";
@@ -23,8 +23,6 @@ interface ServiceSectionProps {
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
-  registerVisibility?: (serviceId: number, element: Element | null) => void;
-  unregisterVisibility?: (serviceId: number) => void;
 }
 
 export const ServiceSection = memo(function ServiceSection({
@@ -39,34 +37,12 @@ export const ServiceSection = memo(function ServiceSection({
   activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
-  registerVisibility,
-  unregisterVisibility,
 }: ServiceSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const t = useTranslations("EventDashboard.Planning");
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
   });
-  const elementRef = useRef<HTMLDivElement | null>(null);
-
-  // Combined ref callback for both droppable and visibility tracking
-  const combinedRef = useCallback(
-    (element: HTMLDivElement | null) => {
-      // console.log(`[ServiceSection] Ref called for service ${service.id}. Element exists: ${!!element}`);
-      elementRef.current = element;
-      setNodeRef(element);
-      registerVisibility?.(service.id, element);
-    },
-    [setNodeRef, registerVisibility, service.id]
-  );
-
-  // Cleanup visibility registration on unmount
-  useEffect(() => {
-    return () => {
-      unregisterVisibility?.(service.id);
-    };
-  }, [service.id, unregisterVisibility]);
-
   const translatedTitle = useTranslatedServiceTitle(service.title);
 
   const filteredItems = service.items;
@@ -75,7 +51,7 @@ export const ServiceSection = memo(function ServiceSection({
 
   return (
     <div
-      ref={combinedRef}
+      ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
       <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-4">

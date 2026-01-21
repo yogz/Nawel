@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarRange, Users, ShoppingCart, Plus } from "lucide-react";
+import { CalendarRange, Users, ShoppingCart } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
@@ -24,10 +24,9 @@ interface TabBarProps {
   active: TabKey;
   onChange: (key: TabKey) => void;
   isAuthenticated?: boolean;
-  onQuickAdd?: () => void;
 }
 
-export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBarProps) {
+export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
   const [mounted, setMounted] = useState(false);
 
@@ -76,77 +75,7 @@ export function TabBar({ active, onChange, isAuthenticated, onQuickAdd }: TabBar
         role="tablist"
         aria-label={t("navigation")}
       >
-        {tabs.slice(0, 1).map((tab) => {
-          const Icon = tab.icon;
-          const selected = active === tab.key;
-          const isLabelVisible = visibleLabel === tab.key;
-
-          return (
-            <motion.button
-              key={tab.key}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleTabChange(tab.key)}
-              role="tab"
-              aria-selected={selected}
-              aria-label={t(tab.key)}
-              className={clsx(
-                "relative flex h-14 flex-1 items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
-                selected ? "text-slate-900" : "text-slate-400"
-              )}
-            >
-              <AnimatePresence>
-                {isLabelVisible && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
-                    animate={{ opacity: 1, y: -45, scale: 1, x: "-50%" }}
-                    exit={{ opacity: 0, y: 0, scale: 0.5, x: "-50%" }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className="absolute left-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg sm:text-[9px]"
-                  >
-                    {t(tab.key)}
-                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div
-                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-9 sm:w-9"
-                aria-hidden="true"
-              >
-                <Icon size={24} strokeWidth={2.5} />
-              </div>
-            </motion.button>
-          );
-        })}
-
-        {/* Quick Add FAB */}
-        {/* Quick Add FAB - visually breaking out */}
-        <div className="relative pointer-events-auto flex h-12 w-12 items-center justify-center sm:h-10 sm:w-10">
-          <motion.button
-            initial="initial"
-            animate="initial"
-            whileHover={{ scale: 1.05, y: -14 }}
-            whileTap={{ scale: 0.95, y: -8 }}
-            variants={{
-              initial: { y: -12 },
-            }}
-            onClick={(e) => {
-              console.log("[TabBar] Quick Add clicked. onQuickAdd type:", typeof onQuickAdd);
-              e.stopPropagation();
-              if (onQuickAdd) {
-                onQuickAdd();
-              } else {
-                console.error("[TabBar] onQuickAdd is undefined!");
-              }
-            }}
-            className="absolute flex h-[48px] w-[48px] items-center justify-center rounded-full border border-white/40 bg-gradient-to-br from-[#c084fc] to-[#a855f7] text-white shadow-lg shadow-purple-500/40 backdrop-blur-lg sm:h-[42px] sm:w-[42px]"
-            aria-label="Quick Add"
-          >
-            <Plus size={24} strokeWidth={2.5} />
-          </motion.button>
-        </div>
-
-        {tabs.slice(1).map((tab, index) => {
+        {tabs.map((tab) => {
           const Icon = tab.icon;
           const selected = active === tab.key;
           const isLabelVisible = visibleLabel === tab.key;

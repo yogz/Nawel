@@ -2,7 +2,6 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import {
   PointerSensor,
@@ -36,7 +35,6 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
-import { useVisibleService } from "@/hooks/use-visible-service";
 
 // Loading skeleton for tabs
 function TabSkeleton() {
@@ -130,15 +128,11 @@ export function Organizer({
     handleAssign,
   } = handlers;
 
-  // Track visible service for quick-add FAB
-  const { visibleServiceId, registerService, unregisterService } = useVisibleService();
-
   // State for ingredient generation
   const [isGenerating, setIsGenerating] = useState(false);
 
   const tOrganizer = useTranslations("EventDashboard.Organizer");
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -308,8 +302,6 @@ export function Organizer({
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
                 currentUserId={session?.user?.id}
-                registerVisibility={registerService}
-                unregisterVisibility={unregisterService}
               />
             )}
 
@@ -339,39 +331,7 @@ export function Organizer({
           </Suspense>
         </main>
 
-        <TabBar
-          active={tab}
-          onChange={setTab}
-          isAuthenticated={!!session?.user}
-          onQuickAdd={() => {
-            // Logic to determine which service to add to
-            // 1. Use the currently visible service (from IntersectionObserver)
-            // 2. Fallback to any service from any meal
-            // 3. If no meals/services, trigger meal creation
-            let targetServiceId = visibleServiceId;
-
-            // Fallback if no visible service detected - search all meals
-            if (!targetServiceId) {
-              for (const meal of plan.meals) {
-                if (meal.services.length > 0) {
-                  targetServiceId = meal.services[0].id;
-                  break;
-                }
-              }
-            }
-
-            if (targetServiceId) {
-              // Navigate to quick-add page
-              const url = effectiveWriteKey
-                ? `/event/${slug}/quick-add?service=${targetServiceId}&key=${effectiveWriteKey}`
-                : `/event/${slug}/quick-add?service=${targetServiceId}`;
-              router.push(url);
-            } else {
-              // No services exist, create a meal first
-              setSheet({ type: "meal-create" });
-            }
-          }}
-        />
+        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
