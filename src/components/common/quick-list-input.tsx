@@ -74,6 +74,24 @@ export function QuickListInput({
     }
   }, [items]);
 
+  // Sticky Premium Input Container
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+    const handleResize = () => {
+      const isInputFocused =
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA";
+      setIsKeyboardOpen(
+        (window.visualViewport?.height || window.innerHeight) < window.innerHeight * 0.8 &&
+          isInputFocused
+      );
+    };
+    window.visualViewport.addEventListener("resize", handleResize);
+    return () => window.visualViewport?.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div
       className={cn(
@@ -158,7 +176,11 @@ export function QuickListInput({
       {/* Sticky Premium Input Container */}
       <div
         className="absolute bottom-0 left-0 right-0 z-20 p-4"
-        style={{ paddingBottom: `max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))` }}
+        style={{
+          paddingBottom: isKeyboardOpen
+            ? "1rem"
+            : `max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))`,
+        }}
       >
         <div className="mx-auto max-w-lg overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] backdrop-blur-3xl ring-1 ring-black/5">
           <div className="flex items-center gap-2 rounded-[2rem] bg-white/60 p-1">
