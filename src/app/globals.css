@@ -192,6 +192,14 @@
     box-shadow: var(--glass-shadow, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
   }
 
+  /* 
+   * Crystal System - Standardized Glass
+   * Used for Header, TabBar, and other floating surfaces 
+   */
+  .glass-panel {
+    @apply bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-sm;
+  }
+
   /* Theme-specific Overrides - Keep minimal */
   .theme-aurora .premium-card {
     border-color: rgba(200, 180, 230, 0.3);

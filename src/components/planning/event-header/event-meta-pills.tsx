@@ -89,7 +89,9 @@ export function EventMetaPills({
   // Dark text for contrast, background adapts to scroll state
   const pillClasses = cn(
     "group flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 mx-0.5 shadow-sm transition-all text-gray-700",
-    isScrolled ? "bg-white/50 border-white/60" : "bg-white/40 border-black/[0.06] backdrop-blur-sm"
+    isScrolled
+      ? "bg-white/50 border-white/40 hover:bg-white/60"
+      : "bg-white/40 border-white/20 backdrop-blur-md hover:bg-white/50"
   );
 
   const pillClassesInteractive = cn(pillClasses, "hover:scale-105 active:scale-95");
