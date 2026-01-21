@@ -33,6 +33,7 @@ interface MealContainerProps {
   onAssign: (item: Item, serviceId?: number) => void;
   onDelete: (item: Item) => void;
   onCreateItem: (serviceId: number) => void;
+  onInlineAdd?: (serviceId: number, name: string) => Promise<void> | void;
   onCreateService?: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   handleAssign?: (item: Item, personId: number | null) => void;
@@ -49,6 +50,7 @@ export function MealContainer({
   onAssign,
   onDelete,
   onCreateItem,
+  onInlineAdd,
   onCreateService,
   setSheet,
   handleAssign,
@@ -181,6 +183,9 @@ export function MealContainer({
                   onAssign={(item) => onAssign(item, service.id)}
                   onDelete={onDelete}
                   onCreate={() => onCreateItem(service.id)}
+                  onInlineAdd={
+                    onInlineAdd ? (name: string) => onInlineAdd(service.id, name) : undefined
+                  }
                   onEdit={() => setSheet({ type: "service-edit", service })}
                   activeItemId={activeItemId}
                   handleAssign={handleAssign}

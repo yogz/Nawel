@@ -359,6 +359,8 @@
       "editMeal": "Redigera måltid",
       "editService": "Redigera rätt",
       "addItem": "Lägg till artikel",
+      "addItemPlaceholder": "T.ex.: Julkub, Champagne...",
+      "addItemDetails": "Lägg till med detaljer",
       "items": "artiklar",
       "cancel": "Avbryt",
       "expand": "Expandera",

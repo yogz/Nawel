@@ -30,6 +30,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import {
   PointerSensor,
@@ -218,7 +219,9 @@ export function EventPlanner({
   // Visibility tracking for Quick Add
   const { visibleServiceId, registerService, unregisterService } = useVisibleService();
 
-  const handleQuickAdd = () => {
+  const router = useRouter();
+
+  const handleQuickAdd = useCallback(() => {
     // Logic to determine which service to add to
     // 1. Use the currently visible service (from IntersectionObserver)
     // 2. Fallback to any service from any meal
@@ -236,12 +239,31 @@ export function EventPlanner({
     }
 
     if (targetServiceId) {
-      setSheet({ type: "quick-add", serviceId: targetServiceId });
+      // Navigate to quick-add page
+      const url = effectiveWriteKey
+        ? `/event/${slug}/quick-add?service=${targetServiceId}&key=${effectiveWriteKey}`
+        : `/event/${slug}/quick-add?service=${targetServiceId}`;
+      router.push(url);
     } else {
       // No services exist, create a meal first
       setSheet({ type: "meal-create" });
     }
-  };
+  }, [visibleServiceId, plan.meals, effectiveWriteKey, slug, router, setSheet]);
+
+  // Handler for inline quick-add in ServiceSection
+  const handleInlineAdd = useCallback(
+    async (serviceId: number, name: string) => {
+      await handlers.handleCreateItem(
+        {
+          name,
+          serviceId,
+          quantity: "1",
+        },
+        false // Don't close sheet (there's no sheet)
+      );
+    },
+    [handlers]
+  );
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -414,6 +436,7 @@ export function EventPlanner({
                 }
                 onDelete={handleDelete}
                 onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
+                onInlineAdd={readOnly ? undefined : handleInlineAdd}
                 onCreateService={(mealId) => setSheet({ type: "service", mealId })}
                 setSheet={setSheet}
                 sheet={sheet}

@@ -58,7 +58,6 @@ export type Sheet =
   | { type: "claim-person"; unclaimed: Person[] }
   | { type: "shopping-list"; person: Person }
   | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] }
-  | { type: "quick-add"; serviceId: number }
   | { type: "event-edit" };
 
 // Basic item data for creation/updates

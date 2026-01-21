@@ -2,6 +2,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import confetti from "canvas-confetti";
 import {
   PointerSensor,
@@ -137,6 +138,7 @@ export function Organizer({
 
   const tOrganizer = useTranslations("EventDashboard.Organizer");
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -359,7 +361,11 @@ export function Organizer({
             }
 
             if (targetServiceId) {
-              setSheet({ type: "quick-add", serviceId: targetServiceId });
+              // Navigate to quick-add page
+              const url = effectiveWriteKey
+                ? `/event/${slug}/quick-add?service=${targetServiceId}&key=${effectiveWriteKey}`
+                : `/event/${slug}/quick-add?service=${targetServiceId}`;
+              router.push(url);
             } else {
               // No services exist, create a meal first
               setSheet({ type: "meal-create" });

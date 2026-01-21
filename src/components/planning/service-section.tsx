@@ -2,13 +2,14 @@
 
 import React, { useState, memo, useEffect, useRef, useCallback } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { PlusIcon, Edit3, ChevronRight } from "lucide-react";
+import { Edit3, ChevronRight, MoreHorizontal } from "lucide-react";
 import { type Service, type Person, type Item } from "@/lib/types";
 import { MenuItemRow } from "./menu-item-row";
 import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
 import { motion, AnimatePresence } from "framer-motion";
+import { InlineItemInput } from "./inline-item-input";
 
 interface ServiceSectionProps {
   service: Service;
@@ -18,6 +19,7 @@ interface ServiceSectionProps {
   onDelete: (item: Item) => void;
   onCreate: () => void;
   onEdit: () => void;
+  onInlineAdd?: (name: string) => Promise<void> | void;
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
@@ -33,6 +35,7 @@ export const ServiceSection = memo(function ServiceSection({
   onDelete,
   onCreate,
   onEdit,
+  onInlineAdd,
   activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
@@ -158,19 +161,43 @@ export const ServiceSection = memo(function ServiceSection({
 
               {!readOnly && (
                 <div className="p-3 sm:p-4">
-                  <button
-                    onClick={() => {
-                      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
-                        navigator.vibrate(10);
-                      }
-                      onCreate();
-                    }}
-                    className="flex items-center gap-1 px-4 py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
-                    aria-label={t("addItem")}
-                  >
-                    <PlusIcon size={14} className="mt-0.5" />
-                    <span>{t("addItem")}</span>
-                  </button>
+                  {onInlineAdd ? (
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <InlineItemInput
+                          onAdd={onInlineAdd}
+                          placeholder={t("addItemPlaceholder")}
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                            navigator.vibrate(10);
+                          }
+                          onCreate();
+                        }}
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 active:scale-95"
+                        aria-label={t("addItemDetails")}
+                        title={t("addItemDetails")}
+                      >
+                        <MoreHorizontal size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                          navigator.vibrate(10);
+                        }
+                        onCreate();
+                      }}
+                      className="flex items-center gap-1 px-4 py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
+                      aria-label={t("addItem")}
+                    >
+                      <MoreHorizontal size={14} className="mt-0.5" />
+                      <span>{t("addItem")}</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>

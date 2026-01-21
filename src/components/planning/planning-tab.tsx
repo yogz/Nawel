@@ -30,6 +30,7 @@ interface PlanningTabProps {
   onAssign: (item: Item, serviceId?: number) => void;
   onDelete: (item: Item) => void;
   onCreateItem: (serviceId: number) => void;
+  onInlineAdd?: (serviceId: number, name: string) => Promise<void> | void;
   onCreateService: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   sheet: Sheet | null;
@@ -64,6 +65,7 @@ export function PlanningTab({
   onAssign,
   onDelete,
   onCreateItem,
+  onInlineAdd,
   onCreateService,
   setSheet,
   sheet,
@@ -169,6 +171,7 @@ export function PlanningTab({
                 onAssign={onAssign}
                 onDelete={onDelete}
                 onCreateItem={onCreateItem}
+                onInlineAdd={onInlineAdd}
                 onCreateService={onCreateService}
                 setSheet={setSheet}
                 handleAssign={handleAssign}

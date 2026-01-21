@@ -359,6 +359,8 @@
       "editMeal": "Rediger måltid",
       "editService": "Rediger ret",
       "addItem": "Tilføj vare",
+      "addItemPlaceholder": "F.eks.: Kransekage, Champagne...",
+      "addItemDetails": "Tilføj med detaljer",
       "items": "varer",
       "cancel": "Annuller",
       "expand": "Udfold",

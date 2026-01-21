@@ -359,6 +359,8 @@
       "editMeal": "Maaltijd bewerken",
       "editService": "Gang bewerken",
       "addItem": "Item toevoegen",
+      "addItemPlaceholder": "Bijv: Kerststronk, Champagne...",
+      "addItemDetails": "Toevoegen met details",
       "items": "items",
       "cancel": "Annuleren",
       "expand": "Uitklappen",

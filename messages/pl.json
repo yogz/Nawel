@@ -359,6 +359,8 @@
       "editMeal": "Edytuj posiłek",
       "editService": "Edytuj danie",
       "addItem": "Dodaj przedmiot",
+      "addItemPlaceholder": "Np.: Makowiec, Szampan...",
+      "addItemDetails": "Dodaj ze szczegółami",
       "items": "przedmioty",
       "cancel": "Anuluj",
       "expand": "Rozwiń",

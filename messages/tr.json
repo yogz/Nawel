@@ -359,6 +359,8 @@
       "editMeal": "Yemeği düzenle",
       "editService": "Bölümü düzenle",
       "addItem": "Ürün ekle",
+      "addItemPlaceholder": "Örn: Yılbaşı pastası, Şampanya...",
+      "addItemDetails": "Detaylarla ekle",
       "items": "ürünler",
       "cancel": "İptal",
       "expand": "Genişlet",

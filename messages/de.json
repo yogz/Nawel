@@ -359,6 +359,8 @@
       "editMeal": "Mahlzeit bearbeiten",
       "editService": "Gang bearbeiten",
       "addItem": "Artikel hinzufügen",
+      "addItemPlaceholder": "Z.B.: Weihnachtsstollen, Champagner...",
+      "addItemDetails": "Mit Details hinzufügen",
       "items": "Artikel",
       "cancel": "Abbrechen",
       "expand": "Erweitern",

@@ -359,6 +359,8 @@
       "editMeal": "Editar comida",
       "editService": "Editar plato",
       "addItem": "Añadir artículo",
+      "addItemPlaceholder": "Ej: Tronco de Navidad, Champán...",
+      "addItemDetails": "Añadir con detalles",
       "items": "artículos",
       "cancel": "Cancelar",
       "expand": "Expandir",
