@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, ListPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -44,8 +44,10 @@ export function QuickListInput({
   hideCount,
 }: QuickListInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleAdd = () => {
     const trimmedValue = inputValue.trim();
@@ -63,6 +65,35 @@ export function QuickListInput({
     }
   };
 
+  // Handle iOS virtual keyboard positioning
+  // On iOS, when the keyboard opens, the visualViewport shrinks but the layout viewport doesn't
+  // This causes a gap between the keyboard and absolutely positioned elements
+  const handleViewportResize = useCallback(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return;
+
+    const viewport = window.visualViewport;
+    // Calculate the offset: difference between window height and visual viewport height
+    // Plus any scroll offset of the visual viewport
+    const offset = window.innerHeight - viewport.height - viewport.offsetTop;
+    setKeyboardOffset(Math.max(0, offset));
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return;
+
+    const viewport = window.visualViewport;
+    viewport.addEventListener("resize", handleViewportResize);
+    viewport.addEventListener("scroll", handleViewportResize);
+
+    // Initial check
+    handleViewportResize();
+
+    return () => {
+      viewport.removeEventListener("resize", handleViewportResize);
+      viewport.removeEventListener("scroll", handleViewportResize);
+    };
+  }, [handleViewportResize]);
+
   // Auto-scroll to keep new items visible (they appear at the bottom with flex-col-reverse)
   useEffect(() => {
     if (scrollRef.current) {
@@ -73,24 +104,6 @@ export function QuickListInput({
       });
     }
   }, [items]);
-
-  // Sticky Premium Input Container
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-
-  useEffect(() => {
-    if (!window.visualViewport) return;
-    const handleResize = () => {
-      const isInputFocused =
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA";
-      setIsKeyboardOpen(
-        (window.visualViewport?.height || window.innerHeight) < window.innerHeight * 0.8 &&
-          isInputFocused
-      );
-    };
-    window.visualViewport.addEventListener("resize", handleResize);
-    return () => window.visualViewport?.removeEventListener("resize", handleResize);
-  }, []);
 
   return (
     <div
@@ -175,11 +188,13 @@ export function QuickListInput({
 
       {/* Sticky Premium Input Container */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-20 p-4"
+        className="absolute left-0 right-0 z-20 p-4 transition-[bottom] duration-100"
         style={{
-          paddingBottom: isKeyboardOpen
-            ? "1rem"
-            : `max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))`,
+          bottom: keyboardOffset,
+          paddingBottom:
+            keyboardOffset > 0
+              ? "1rem"
+              : `max(2.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))`,
         }}
       >
         <div className="mx-auto max-w-lg overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/40 p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] backdrop-blur-3xl ring-1 ring-black/5">

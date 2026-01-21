@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { OrganizerHandlers, PlanData } from "@/lib/types";
@@ -26,21 +26,6 @@ export function QuickAddSheetContent({
   const t = useTranslations("EventDashboard.Organizer");
   const tShared = useTranslations("EventDashboard.Shared");
   const [pendingItems, setPendingItems] = useState<QuickListItem[]>([]);
-  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
-
-  // Track visual viewport height to handle mobile keyboard
-  useEffect(() => {
-    if (!window.visualViewport) return;
-
-    const handleResize = () => {
-      setViewportHeight(window.visualViewport?.height || null);
-    };
-
-    window.visualViewport.addEventListener("resize", handleResize);
-    handleResize(); // Initial call
-
-    return () => window.visualViewport?.removeEventListener("resize", handleResize);
-  }, []);
 
   const service = plan.meals.flatMap((m) => m.services).find((s) => s.id === serviceId);
   // Reverse so newest items appear first (closest to input with flex-col-reverse)
@@ -108,12 +93,7 @@ export function QuickAddSheetContent({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[200] flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4"
-      style={{
-        height: viewportHeight ? `${viewportHeight}px` : "100dvh",
-      }}
-    >
+    <div className="fixed inset-0 z-[200] flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4">
       {/* Header */}
       <div
         className="flex items-center justify-between border-b px-6 py-4"
