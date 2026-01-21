@@ -126,7 +126,9 @@ export function EventPlannerHeader({
       <header
         className={cn(
           "sticky top-0 z-[100] w-full transition-all duration-500 overflow-visible",
-          isScrolled ? "glass-panel" : "bg-transparent"
+          isScrolled
+            ? "bg-[#E6D9F8]/80 backdrop-blur-xl border-b border-white/20 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.5),0_4px_20px_-2px_rgba(0,0,0,0.1)]"
+            : "bg-transparent"
         )}
       >
         <div
@@ -140,7 +142,7 @@ export function EventPlannerHeader({
               initial={false}
               animate={{
                 paddingTop: isScrolled ? "1.1rem" : "1.25rem",
-                paddingBottom: isScrolled ? "0.85rem" : "1.1rem",
+                paddingBottom: isScrolled ? "1rem" : "1.5rem",
               }}
               transition={{
                 duration: 0.4,

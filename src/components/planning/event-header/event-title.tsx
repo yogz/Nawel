@@ -64,7 +64,7 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
         maxSize={maxSize}
         minSize={14}
         className={cn(
-          "bg-transparent font-black tracking-tighter border-none focus-visible:ring-0 transition-colors",
+          "bg-transparent font-black tracking-[-0.03em] border-none focus-visible:ring-0 transition-colors",
           textColorClass,
           "caret-gray-900"
         )}
@@ -81,7 +81,7 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
         <AutoSizeText
           maxSize={maxSize}
           minSize={minSize}
-          className={cn("font-black tracking-tighter transition-colors", textColorClass)}
+          className={cn("font-black tracking-[-0.03em] transition-colors", textColorClass)}
         >
           {displayName}
         </AutoSizeText>
@@ -97,7 +97,7 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
     <AutoSizeText
       maxSize={maxSize}
       minSize={minSize}
-      className={cn("font-black tracking-tighter transition-colors", textColorClass)}
+      className={cn("font-black tracking-[-0.03em] transition-colors", textColorClass)}
     >
       {displayName}
     </AutoSizeText>

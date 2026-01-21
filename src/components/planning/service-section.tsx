@@ -54,7 +54,7 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-4">
+      <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-8">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
@@ -76,7 +76,9 @@ export const ServiceSection = memo(function ServiceSection({
             {service.icon || getServiceIcon(service.title)}
           </div>
           <div className="flex-1">
-            <h3 className="text-gray-900 text-sm font-bold tracking-tight">{translatedTitle}</h3>
+            <h3 className="text-gray-900 text-sm font-extrabold tracking-tight">
+              {translatedTitle}
+            </h3>
             {filteredItems.length > 0 && (
               <p className="mt-0.5 text-[11px] font-medium text-gray-400">
                 {filteredItems.length} {t("items")}
