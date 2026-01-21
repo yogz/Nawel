@@ -231,9 +231,9 @@ export function PlanningTab({
           <div className="flex w-full flex-col gap-3">
             <button
               onClick={() => setSheet({ type: "meal-create" })}
-              className="flex items-center justify-center gap-1.5 px-4 py-4 text-sm font-semibold text-muted-foreground transition-colors hover:text-accent"
+              className="flex items-center justify-center gap-2 rounded-xl bg-accent/5 px-5 py-3 text-sm font-semibold text-accent/80 transition-all hover:bg-accent/10 hover:text-accent active:scale-95"
             >
-              <PlusIcon size={16} className="mt-0.5" />
+              <PlusIcon size={16} strokeWidth={2.5} />
               <span>{t("addMeal")}</span>
             </button>
           </div>

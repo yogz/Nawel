@@ -191,10 +191,10 @@ export function MealContainer({
               {!readOnly && onCreateService && (
                 <button
                   onClick={() => onCreateService(meal.id)}
-                  className="flex items-center gap-1 px-4 py-4 text-sm font-medium text-muted-foreground transition-colors hover:text-accent"
+                  className="flex items-center gap-2 rounded-xl bg-accent/5 px-4 py-3 text-sm font-semibold text-accent/80 transition-all hover:bg-accent/10 hover:text-accent active:scale-95"
                   aria-label={t("addService")}
                 >
-                  <PlusIcon size={14} className="mt-0.5" />
+                  <PlusIcon size={16} strokeWidth={2.5} />
                   <span>{t("addService")}</span>
                 </button>
               )}

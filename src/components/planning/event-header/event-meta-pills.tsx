@@ -277,7 +277,9 @@ export function EventMetaPills({
 
         {/* Days Count Pill */}
         <div className={pillClasses}>
-          <span className="text-[10px] uppercase font-bold tracking-wider">{mealCount} jours</span>
+          <span className="text-[10px] uppercase font-bold tracking-wider">
+            {mealCount} {mealCount === 1 ? "jour" : "jours"}
+          </span>
         </div>
       </div>
     </div>
