@@ -90,9 +90,18 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
               aria-label={t(tab.key)}
               className={clsx(
                 "relative flex h-14 flex-1 items-center justify-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
-                selected ? "text-slate-900" : "text-slate-400"
+                selected ? "text-accent" : "text-slate-400"
               )}
             >
+              {/* Active indicator pill */}
+              {selected && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className="absolute inset-1 rounded-full bg-accent/10"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+
               <AnimatePresence>
                 {isLabelVisible && (
                   <motion.div

@@ -139,12 +139,11 @@ export const ServiceSection = memo(function ServiceSection({
                 <div className="p-3 sm:p-4">
                   {onInlineAdd ? (
                     <div className="flex items-center gap-2">
-                      <div className="flex-1">
-                        <InlineItemInput
-                          onAdd={onInlineAdd}
-                          placeholder={t("addItemPlaceholder")}
-                        />
-                      </div>
+                      <InlineItemInput
+                        onAdd={onInlineAdd}
+                        placeholder={t("addItemPlaceholder")}
+                        className="flex-1"
+                      />
                       <button
                         onClick={() => {
                           if (typeof navigator !== "undefined" && "vibrate" in navigator) {
