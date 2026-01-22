@@ -151,35 +151,30 @@ export function PeopleTab({
             // Show everyone even if they have no items, so they appear in "hero mode"
 
             return (
-              <div key={person.id} className="space-y-6">
-                <div className="group/hero relative overflow-hidden rounded-[32px] border border-white/40 bg-white/90 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/5 sm:p-8">
-                  {/* Vibrant background aesthetic */}
-                  <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/10 blur-[80px] transition-all group-hover/hero:bg-accent/20" />
-                  <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-all group-hover/hero:bg-primary/10" />
-
-                  <div className="relative flex items-center gap-6">
+              <div key={person.id} className="space-y-4">
+                <div className="group/hero relative flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
+                  <div className="relative flex items-center gap-4">
                     <div className="relative">
                       <PersonAvatar
                         person={person}
                         allNames={plan.people.map((p) => p.name)}
-                        size="xl"
-                        rounded="2xl"
-                        className="shadow-2xl ring-4 ring-white/50"
+                        size="md"
+                        className="shadow-sm ring-1 ring-gray-100"
                       />
                       {person.userId === currentUserId && (
-                        <div className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-xl bg-accent shadow-lg shadow-accent/40 ring-2 ring-white">
-                          <Sparkles size={16} className="text-white" />
+                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] text-white shadow-sm ring-2 ring-white">
+                          <Sparkles size={10} />
                         </div>
                       )}
                     </div>
 
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-gradient-header text-3xl font-black tracking-tight sm:text-4xl">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold tracking-tight text-gray-900">
                           {getDisplayName(person)}
                         </h3>
                         {person.userId === currentUserId ? (
-                          <span className="rounded-full bg-accent/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-accent ring-1 ring-accent/20">
+                          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
                             {t("itsYou")}
                           </span>
                         ) : (
@@ -191,40 +186,39 @@ export function PeopleTab({
                                 e.stopPropagation();
                                 onClaim?.(person.id);
                               }}
-                              className="relative flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-accent/30 transition-all hover:scale-105 hover:bg-accent/90 active:scale-95"
+                              className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm hover:bg-accent/90"
                             >
-                              <span className="relative flex h-2.5 w-2.5">
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-                                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
-                              </span>
                               {t("itsMe")}
                             </button>
                           )
                         )}
-                        {!readOnly && (
-                          <button
-                            type="button"
-                            onClick={() => setSheet({ type: "person-edit", person })}
-                            className="flex h-10 w-10 items-center justify-center rounded-full text-gray-400 transition-all hover:bg-accent/10 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
-                          >
-                            <Pencil size={18} />
-                          </button>
-                        )}
                       </div>
-                      <div className="mt-3 flex items-center gap-4">
-                        <p className="text-xs font-black uppercase tracking-[0.2em] text-accent/60">
+                      <div className="flex items-center gap-3">
+                        <p className="text-xs font-medium text-muted-foreground">
                           {t("articlesCount", { count: personItems.length })}
                         </p>
                         {personItems.length > 0 && (
-                          <div className="h-1 w-1 rounded-full bg-gray-200" />
-                        )}
-                        {personItems.length > 0 && (
-                          <p className="text-xs font-medium text-gray-400">
-                            Dernière mise à jour : {new Date().toLocaleDateString()}
-                          </p>
+                          <>
+                            <div className="h-1 w-1 rounded-full bg-gray-300" />
+                            <p className="text-xs text-muted-foreground/80">
+                              MAJ : {new Date().toLocaleDateString()}
+                            </p>
+                          </>
                         )}
                       </div>
                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {!readOnly && (
+                      <button
+                        type="button"
+                        onClick={() => setSheet({ type: "person-edit", person })}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-900"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                    )}
 
                     {personItems.length > 0 && (
                       <Link
@@ -233,73 +227,69 @@ export function PeopleTab({
                             ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
                             : `/event/${slug}/shopping/${person.id}`
                         }
-                        className="group/btn flex h-14 items-center gap-3 rounded-2xl bg-accent px-6 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-accent/20 transition-all hover:scale-[1.02] hover:bg-accent/90 active:scale-95 sm:h-auto sm:py-4"
+                        className="flex h-9 items-center gap-2 rounded-xl bg-accent/10 px-4 text-xs font-bold uppercase tracking-wide text-accent transition-all hover:bg-accent/20"
                       >
-                        <ShoppingCart
-                          size={20}
-                          className="transition-transform group-hover/btn:-rotate-12"
-                        />
+                        <ShoppingCart size={14} />
                         <span className="hidden sm:inline">{t("shoppingList")}</span>
                       </Link>
                     )}
                   </div>
                 </div>
-                <div className="overflow-hidden rounded-[32px] border border-white/40 bg-white/90 shadow-2xl backdrop-blur-xl">
+                <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                   <div className="flex flex-col">
                     {personItems.map(({ item, service, mealTitle }: PersonItem) => (
                       <motion.button
                         key={item.id}
                         type="button"
-                        whileTap={{ scale: 0.99 }}
+                        whileTap={{ scale: 0.995 }}
                         onClick={() => setSheet({ type: "item", serviceId: service.id, item })}
                         disabled={readOnly}
                         aria-label={t("editItem", { name: item.name })}
-                        className="group relative w-full cursor-pointer px-6 py-5 text-left transition-all duration-300 hover:bg-accent/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:cursor-default sm:px-8 sm:py-6"
+                        className="group relative w-full cursor-pointer px-4 py-3 text-left transition-all duration-200 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:cursor-default"
                       >
-                        {/* Interactive background reveal */}
-                        <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-accent/0 blur-3xl transition-all duration-500 group-hover:bg-accent/5" />
-
                         <div className="relative">
-                          <div className="mb-2 flex items-center justify-between">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent/50">
+                          <div className="mb-1 flex items-center justify-between">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
                               {plan.meals.length > 1 ? `${mealTitle} • ` : ""}
                               {service.title}
                             </p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-gray-900 group-hover:text-accent">
+                              {item.name}
+                            </p>
                             <ChevronRight
-                              size={16}
-                              className="text-accent/20 transition-all group-hover:translate-x-1 group-hover:text-accent"
+                              size={14}
+                              className="text-gray-300 transition-all group-hover:translate-x-0.5 group-hover:text-accent"
                             />
                           </div>
-                          <p className="text-base font-bold tracking-tight text-gray-900 transition-colors group-hover:text-accent">
-                            {item.name}
-                          </p>
                           {(item.quantity ||
                             item.note ||
                             item.price ||
                             (item.ingredients && item.ingredients.length > 0)) && (
-                            <div className="mt-3 flex flex-wrap items-center gap-3">
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
                               {item.quantity?.trim() && (
-                                <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-600 ring-1 ring-gray-100">
-                                  <Scale size={11} className="text-gray-400" />
+                                <div className="flex items-center gap-1 rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
+                                  <Scale size={10} className="text-gray-400" />
                                   {item.quantity}
                                 </div>
                               )}
                               {item.price && (
-                                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.05em] text-green-700 ring-1 ring-green-500/10">
-                                  <Euro size={11} className="text-green-600" />
+                                <div className="flex items-center gap-1 rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700">
+                                  <Euro size={10} className="text-green-600" />
                                   {item.price.toFixed(2)}
                                 </div>
                               )}
                               {item.ingredients && item.ingredients.length > 0 && (
-                                <div className="flex items-center gap-1.5 rounded-lg bg-accent/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.05em] text-accent ring-1 ring-accent/10">
-                                  <ChefHat size={11} className="text-accent" />
+                                <div className="flex items-center gap-1 rounded-md bg-accent/5 px-1.5 py-0.5 text-[10px] font-medium text-accent">
+                                  <ChefHat size={10} className="text-accent" />
                                   {item.ingredients.filter((i) => i.checked).length}/
                                   {item.ingredients.length}
                                 </div>
                               )}
                               {item.note && (
-                                <div className="flex items-center gap-1.5 rounded-lg bg-blue-50/30 px-2.5 py-1 text-[10px] font-medium italic tracking-wider text-blue-700 ring-1 ring-blue-100/30">
-                                  <MessageSquare size={11} className="text-blue-400" />
+                                <div className="flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium italic text-blue-700">
+                                  <MessageSquare size={10} className="text-blue-400" />
                                   <span className="max-w-[150px] truncate">
                                     {item.note.startsWith("EventDashboard.")
                                       ? tForm("defaultNote", {
@@ -314,8 +304,8 @@ export function PeopleTab({
                               )}
                             </div>
                           )}
-                          <div className="absolute bottom-0 left-6 right-6 h-px bg-gray-100 group-last:hidden" />
                         </div>
+                        <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-50 group-last:hidden" />
                       </motion.button>
                     ))}
                     {personItems.length === 0 && (
