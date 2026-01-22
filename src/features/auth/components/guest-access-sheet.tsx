@@ -10,10 +10,12 @@ export function GuestAccessSheet({
   open,
   onClose,
   onAuth,
+  onCreateGuest,
 }: {
   open: boolean;
   onClose: () => void;
   onAuth: () => void;
+  onCreateGuest?: () => void;
 }) {
   const t = useTranslations("EventDashboard.Sheets.GuestAccess");
   return (
@@ -48,7 +50,11 @@ export function GuestAccessSheet({
                 className="h-auto w-full whitespace-normal border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                 onClick={() => {
                   sendGAEvent("event", "guest_continued_without_auth");
-                  onClose();
+                  if (onCreateGuest) {
+                    onCreateGuest();
+                  } else {
+                    onClose();
+                  }
                 }}
                 icon={<UserPlus className="h-6 w-6" />}
                 iconClassName="bg-gray-100 text-gray-500"

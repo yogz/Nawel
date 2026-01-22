@@ -217,6 +217,10 @@ export function EventPlannerSheets({
               onDismissGuestPrompt();
             }}
             onAuth={onAuth}
+            onCreateGuest={() => {
+              setSheet({ type: "person" });
+              onDismissGuestPrompt();
+            }}
           />
         );
 

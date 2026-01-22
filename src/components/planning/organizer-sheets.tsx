@@ -491,6 +491,10 @@ export function OrganizerSheets({
                   onDismissGuestPrompt();
                 }}
                 onAuth={onAuth}
+                onCreateGuest={() => {
+                  setSheet({ type: "person" });
+                  onDismissGuestPrompt();
+                }}
               />
             )}
 

@@ -624,11 +624,11 @@
       },
       "GuestAccess": {
         "title": "Continue as guest",
-        "description": "You can continue without signing in, but you won't be able to use AI to generate ingredients.",
+        "description": "Create your guest profile to edit your information and confirm your attendance.",
         "identifyButton": "Sign in",
         "identifyDescription": "Use your Google account to save your events and use AI.",
-        "continueButton": "Continue as guest",
-        "continueDescription": "Limited access, no save or AI."
+        "continueButton": "Create my guest profile",
+        "continueDescription": "You'll be able to edit your information and attendance."
       },
       "ClaimPerson": {
         "title": "Is it you?",
