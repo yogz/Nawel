@@ -32,7 +32,7 @@ export default async function EventDashboard(props: {
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
 
   return (
-    <div className="flex min-h-screen flex-col text-gray-900">
+    <div className="relative flex min-h-screen flex-col text-gray-900">
       <DashboardHeader />
 
       <div className="mx-auto w-full max-w-3xl flex-1">

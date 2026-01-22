@@ -22,7 +22,7 @@ export function DashboardHeader() {
       <div className="sticky top-0 z-30">
         <header
           style={{
-            background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 30%, rgba(255, 255, 255, 0) 100%)`,
+            background: `linear-gradient(to bottom, var(--event-gradient-start) 0%, var(--event-gradient-start) 30%, rgba(255, 255, 255, 0) 100%)`,
           }}
           className="w-full px-4 pb-8 pt-6 backdrop-blur-sm transition-all duration-300 sm:px-4 sm:pb-6 sm:pt-5"
         >
