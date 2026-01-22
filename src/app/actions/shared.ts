@@ -2,7 +2,7 @@
 
 import { type z } from "zod";
 import { db } from "@/lib/db";
-import { assertWriteAccess, hasWriteAccess } from "@/lib/auth";
+import { assertEventWriteAccess, hasEventWriteAccess } from "@/lib/permissions";
 import { events, changeLogs, people, meals } from "@drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { type validateSchema, type getChangeLogsSchema } from "./schemas";
@@ -14,7 +14,7 @@ export async function verifyEventAccess(slug: string, key?: string | null) {
   if (!event) {
     throw new Error("Event not found");
   }
-  await assertWriteAccess(key, event);
+  await assertEventWriteAccess(key, event);
   return event;
 }
 
@@ -27,7 +27,7 @@ export const validateWriteKeyAction = withErrorThrower(
     if (!event) {
       return false;
     }
-    return hasWriteAccess(input.key, event);
+    return hasEventWriteAccess(input.key, event);
   }
 );
 
