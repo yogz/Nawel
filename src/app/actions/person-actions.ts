@@ -14,6 +14,7 @@ import {
   deletePersonSchema,
   claimPersonSchema,
   unclaimPersonSchema,
+  updatePersonStatusSchema,
   baseInput,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
@@ -190,3 +191,40 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
   revalidatePath("/");
   return updated;
 });
+
+export const updatePersonStatusAction = createSafeAction(
+  updatePersonStatusSchema,
+  async (input) => {
+    const event = await verifyEventAccess(input.slug, input.key);
+
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    const person = await db.query.people.findFirst({
+      where: eq(people.id, input.personId),
+    });
+
+    if (!person) {
+      throw new Error("Person not found");
+    }
+
+    // Permission check: Owner of event OR the user themselves
+    const isOwner = event.ownerId && session?.user?.id === event.ownerId;
+    const isSelf = person.userId && session?.user?.id === person.userId;
+
+    if (!isOwner && !isSelf) {
+      throw new Error("Unauthorized to update this status");
+    }
+
+    const [updated] = await db
+      .update(people)
+      .set({ status: input.status })
+      .where(eq(people.id, input.personId))
+      .returning();
+
+    await logChange("update", "people", updated.id, person, updated);
+    revalidatePath(`/event/${input.slug}`);
+    return updated;
+  }
+);

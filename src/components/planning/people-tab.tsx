@@ -11,7 +11,16 @@ import {
   ChefHat,
   Plus,
   ChevronRight,
+  Check,
+  X,
+  HelpCircle,
+  CircleDashed,
 } from "lucide-react";
+import { updatePersonStatusAction } from "@/app/actions/person-actions";
+import { toast } from "sonner";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useTransition, useState } from "react";
 import { getDisplayName } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -71,77 +80,186 @@ export function PeopleTab({
     return byPerson;
   }, [plan.meals, plan.people]);
 
+  const [isPending, startTransition] = useTransition();
+  const [optimisticStatus, setOptimisticStatus] = useState<Record<number, string>>({});
+  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+
+  const handleStatusUpdate = (personId: number, status: "confirmed" | "declined" | "maybe") => {
+    // 1. Optimistic Update (Immediate Feedback)
+    setOptimisticStatus((prev) => ({ ...prev, [personId]: status }));
+
+    // 2. Close Popover immediately
+    setOpenPopoverId(null);
+
+    // 3. Server Action
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status,
+        });
+        toast.success(t("statusUpdated"));
+      } catch (error) {
+        toast.error(t("errorUpdatingStatus"));
+        // Revert optimistic update on error
+        setOptimisticStatus((prev) => {
+          const newState = { ...prev };
+          delete newState[personId];
+          return newState;
+        });
+      }
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setSelectedPerson(null)}
-          className={clsx(
-            "rounded-2xl px-5 py-3 text-sm font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95",
-            selectedPerson === null
-              ? "bg-accent text-white shadow-xl shadow-accent/20"
-              : "bg-white/50 text-gray-500 hover:bg-white hover:text-accent"
-          )}
-        >
-          {t("all")}
-        </button>
-        {plan.people.map((person) => (
-          <div
-            key={person.id}
-            className={clsx(
-              "group flex items-center rounded-2xl transition-all",
-              selectedPerson === person.id
-                ? "bg-accent text-white shadow-xl shadow-accent/20"
-                : "bg-white/50 text-gray-500 hover:bg-white hover:text-accent"
-            )}
-          >
+      {/* Attendance & Filters Area */}
+      <div className="space-y-4">
+        {/* Attendance Confirmation Card (for current user) */}
+        {!readOnly &&
+          plan.people.map((person) => {
+            const effectiveStatus = optimisticStatus[person.id] || person.status;
+
+            if (person.userId !== currentUserId) return null;
+            if (effectiveStatus && effectiveStatus !== "maybe") return null;
+
+            return (
+              <motion.div
+                key={person.id}
+                layout // Smooth layout transition when it disappears
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="relative overflow-hidden rounded-2xl border border-accent/20 bg-gradient-to-br from-white to-purple-50 p-4 shadow-sm"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">
+                      {getDisplayName(person)}, {t("areYouComing")}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{t("confirmPresence")}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleStatusUpdate(person.id, "confirmed")}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700 transition-colors hover:bg-green-200"
+                    >
+                      <Check size={16} strokeWidth={3} />
+                    </button>
+                    <button
+                      onClick={() => handleStatusUpdate(person.id, "declined")}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200"
+                    >
+                      <X size={16} strokeWidth={3} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+
+        {/* Horizontal Filter Scroll */}
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex w-max space-x-3 p-1">
             <button
-              type="button"
-              onClick={() => setSelectedPerson(person.id)}
-              className="flex items-center px-4 py-3 text-sm font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95"
+              onClick={() => setSelectedPerson(null)}
+              className={clsx(
+                "flex flex-col items-center gap-1.5 transition-all outline-none",
+                selectedPerson === null ? "opacity-100 scale-105" : "opacity-60 hover:opacity-80"
+              )}
             >
-              <PersonAvatar
-                person={person}
-                allNames={plan.people.map((p) => p.name)}
-                size="xs"
-                className="mr-2.5 shadow-sm ring-2 ring-white/20"
-              />
-              {getDisplayName(person)}
-            </button>
-            {!readOnly && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSheet({ type: "person-edit", person });
-                }}
-                aria-label={t("edit")}
+              <div
                 className={clsx(
-                  "mr-1 flex h-10 w-10 items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50",
-                  selectedPerson === person.id
-                    ? "text-white/80 hover:bg-white/20 hover:text-white"
-                    : "text-gray-400 hover:bg-white hover:text-accent"
+                  "flex h-12 w-12 items-center justify-center rounded-full border-2 text-xs font-bold transition-all",
+                  selectedPerson === null
+                    ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
+                    : "border-gray-200 bg-white text-gray-500"
                 )}
               >
-                <Pencil
-                  size={14}
-                  className="opacity-0 transition-opacity group-hover:opacity-100"
-                />
+                {t("all")}
+              </div>
+              <span className="text-[10px] font-medium text-gray-600">{t("all")}</span>
+            </button>
+
+            {plan.people.map((person) => {
+              const effectiveStatus = optimisticStatus[person.id] || person.status;
+              const isAssigned = person.userId !== null;
+
+              const statusColor =
+                effectiveStatus === "confirmed"
+                  ? "bg-green-500"
+                  : effectiveStatus === "declined"
+                    ? "bg-red-500"
+                    : "bg-gray-300";
+
+              return (
+                <div key={person.id} className="relative group">
+                  <button
+                    onClick={() => setSelectedPerson(person.id)}
+                    className={clsx(
+                      "flex flex-col items-center gap-1.5 transition-all outline-none",
+                      selectedPerson === person.id
+                        ? "opacity-100 scale-105"
+                        : "opacity-60 hover:opacity-80"
+                    )}
+                  >
+                    <div
+                      className={clsx(
+                        "relative p-0.5 rounded-full border-2 transition-all",
+                        selectedPerson === person.id ? "border-accent" : "border-transparent"
+                      )}
+                    >
+                      <PersonAvatar
+                        person={person}
+                        allNames={plan.people.map((p) => p.name)}
+                        size="md" // 12w ~ 48px
+                        className="h-11 w-11 shadow-sm ring-2 ring-white"
+                      />
+                      {effectiveStatus && (
+                        <div
+                          className={clsx(
+                            "absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white",
+                            effectiveStatus === "confirmed"
+                              ? "bg-green-500"
+                              : effectiveStatus === "declined"
+                                ? "bg-red-500"
+                                : "bg-gray-200"
+                          )}
+                        >
+                          {effectiveStatus === "confirmed" && <Check size={8} strokeWidth={4} />}
+                          {effectiveStatus === "declined" && <X size={8} strokeWidth={4} />}
+                        </div>
+                      )}
+                    </div>
+                    <span
+                      className={clsx(
+                        "text-[10px] font-medium truncate max-w-[60px]",
+                        selectedPerson === person.id ? "text-accent font-bold" : "text-gray-600"
+                      )}
+                    >
+                      {getDisplayName(person)}
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+
+            {!readOnly && (
+              <button
+                onClick={() => setSheet({ type: "person" })}
+                className="flex flex-col items-center gap-1.5 opacity-60 hover:opacity-100 transition-all outline-none"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-gray-300 bg-gray-50 text-gray-400 hover:border-accent hover:text-accent hover:bg-accent/5">
+                  <Plus size={20} />
+                </div>
+                <span className="text-[10px] font-medium text-gray-500">{t("add")}</span>
               </button>
             )}
           </div>
-        ))}
-        {!readOnly && (
-          <button
-            type="button"
-            onClick={() => setSheet({ type: "person" })}
-            className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-accent/20 bg-accent/5 px-5 py-3 text-sm font-black uppercase tracking-widest text-accent transition-all hover:border-accent/40 hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95"
-          >
-            <Plus size={16} strokeWidth={3} />
-            {t("addMember")}
-          </button>
-        )}
+          <ScrollBar orientation="horizontal" className="hidden" />
+        </ScrollArea>
       </div>
 
       <div className="space-y-8">
@@ -150,6 +268,7 @@ export function PeopleTab({
           .map((person) => {
             const personItems = itemsByPerson[person.id] || [];
             // Show everyone even if they have no items, so they appear in "hero mode"
+            const effectiveStatus = optimisticStatus[person.id] || person.status;
 
             return (
               <div key={person.id} className="space-y-4">
@@ -180,7 +299,77 @@ export function PeopleTab({
                   }
                   actions={
                     <div className="flex items-center gap-2">
-                      {/* Claim Button Logic */}
+                      {/* Status Picker for Current User */}
+                      {person.userId === currentUserId && (
+                        <Popover
+                          open={openPopoverId === person.id}
+                          onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? person.id : null)}
+                        >
+                          <PopoverTrigger asChild>
+                            <button
+                              className={clsx(
+                                "flex h-8 items-center gap-2 rounded-full px-3 text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm ring-1 ring-inset",
+                                person.status === "confirmed"
+                                  ? "bg-green-50 text-green-700 ring-green-200 hover:bg-green-100"
+                                  : person.status === "declined"
+                                    ? "bg-red-50 text-red-700 ring-red-200 hover:bg-red-100"
+                                    : person.status === "maybe"
+                                      ? "bg-orange-50 text-orange-700 ring-orange-200 hover:bg-orange-100"
+                                      : "bg-white text-gray-500 ring-gray-200 hover:bg-gray-50"
+                              )}
+                            >
+                              {person.status === "confirmed" && <Check size={12} strokeWidth={3} />}
+                              {person.status === "declined" && <X size={12} strokeWidth={3} />}
+                              {person.status === "maybe" && (
+                                <HelpCircle size={12} strokeWidth={3} />
+                              )}
+                              {!person.status && <CircleDashed size={12} strokeWidth={3} />}
+                              <span>
+                                {person.status === "confirmed"
+                                  ? t("present")
+                                  : person.status === "declined"
+                                    ? t("absent")
+                                    : person.status === "maybe"
+                                      ? t("maybe")
+                                      : t("respond")}
+                              </span>
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-48 p-1" align="end">
+                            <div className="flex flex-col gap-1">
+                              <button
+                                onClick={() => handleStatusUpdate(person.id, "confirmed")}
+                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"
+                              >
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                  <Check size={10} strokeWidth={3} />
+                                </div>
+                                {t("present")}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(person.id, "maybe")}
+                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors"
+                              >
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                                  <HelpCircle size={10} strokeWidth={3} />
+                                </div>
+                                {t("maybe")}
+                              </button>
+                              <button
+                                onClick={() => handleStatusUpdate(person.id, "declined")}
+                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
+                              >
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600">
+                                  <X size={10} strokeWidth={3} />
+                                </div>
+                                {t("absent")}
+                              </button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+
+                      {/* Claim Button Logic (keep existing logic if needed, but might be redundant if user is already linked) */}
                       {!person.userId &&
                         currentUserId &&
                         !plan.people.some((p) => p.userId === currentUserId) && (

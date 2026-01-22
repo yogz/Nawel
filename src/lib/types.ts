@@ -23,6 +23,7 @@ export type Person = InferSelectModel<typeof people> & {
     name?: string | null;
     emoji?: string | null;
   } | null;
+  status?: string | null;
 };
 
 export type Ingredient = InferSelectModel<typeof ingredients>;

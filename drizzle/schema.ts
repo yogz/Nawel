@@ -168,6 +168,7 @@ export const people = pgTable(
     emoji: text("emoji"),
     image: text("image"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+    status: text("status"), // 'confirmed', 'declined', 'maybe'
   },
   (table) => ({
     eventIdIdx: index("people_event_id_idx").on(table.eventId),

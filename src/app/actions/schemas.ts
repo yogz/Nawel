@@ -103,6 +103,11 @@ export const updatePersonSchema = baseInput.extend({
   image: z.string().optional().nullable(),
 });
 
+export const updatePersonStatusSchema = baseInput.extend({
+  personId: z.number().int().positive(),
+  status: z.enum(["confirmed", "declined", "maybe"]),
+});
+
 export const deletePersonSchema = baseInput.extend({
   id: z.number().int().positive(),
 });
