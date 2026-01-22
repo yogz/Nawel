@@ -101,6 +101,7 @@ export const updatePersonSchema = baseInput.extend({
   name: safeStrictText(50),
   emoji: safeEmoji.optional().nullable(),
   image: z.string().optional().nullable(),
+  token: z.string().optional(),
 });
 
 export const updatePersonStatusSchema = baseInput.extend({

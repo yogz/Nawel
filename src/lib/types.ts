@@ -56,7 +56,7 @@ export type Sheet =
   | { type: "meal-edit"; meal: Meal }
   | { type: "meal-create" }
   | { type: "person" }
-  | { type: "person-edit"; person: Person }
+  | { type: "person-edit"; person: Person; token?: string | null }
   | { type: "share" }
   | { type: "guest-access" }
   | { type: "claim-person"; unclaimed: Person[] }
@@ -130,7 +130,8 @@ export interface OrganizerHandlers {
     id: number,
     name: string,
     emoji?: string | null,
-    image?: string | null
+    image?: string | null,
+    token?: string | null
   ) => void;
   handleDeletePerson: (id: number) => void;
   handleGenerateIngredients: (

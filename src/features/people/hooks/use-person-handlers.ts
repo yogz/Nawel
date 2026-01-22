@@ -73,6 +73,7 @@ export function usePersonHandlers({
     name: string,
     emoji?: string | null,
     image?: string | null,
+    token?: string | null,
     closeSheet = false
   ) => {
     if (readOnly) {
@@ -80,7 +81,15 @@ export function usePersonHandlers({
     }
     startTransition(async () => {
       try {
-        await updatePersonAction({ id, name, emoji, image, slug, key: writeKey });
+        await updatePersonAction({
+          id,
+          name,
+          emoji,
+          image,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
         setPlan((prev: PlanData) => ({
           ...prev,
           people: prev.people.map((p) =>

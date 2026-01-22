@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { people, items, user } from "@drizzle/schema";
+import { people, items, user, events } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -132,7 +132,15 @@ export const deletePersonAction = createSafeAction(deletePersonSchema, async (in
   revalidatePath("/");
   return { success: true };
 });
+
 export const claimPersonAction = createSafeAction(claimPersonSchema, async (input) => {
+  // Claiming requires event access? Or just logged in?
+  // Usually public event -> anyone can claim if they are logged in?
+  // But verifyEventAccess enforces WRITE key? No, verifyEventAccess checks if key is valid IF provided, but doesn't require it?
+  // Wait, verifyEventAccess DOES require write access.
+  // Guests cannot claim?
+  // Actually claimPerson is for logged in users.
+  // Let's keep it as is for now, assuming "Join" works via joinEventAction.
   await verifyEventAccess(input.slug, input.key);
 
   const session = await auth.api.getSession({
@@ -195,11 +203,7 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
 export const updatePersonStatusAction = createSafeAction(
   updatePersonStatusSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
-
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    await verifyEventAccess(input.slug, input.key);
 
     const person = await db.query.people.findFirst({
       where: eq(people.id, input.personId),
@@ -207,15 +211,6 @@ export const updatePersonStatusAction = createSafeAction(
 
     if (!person) {
       throw new Error("Person not found");
-    }
-
-    // Permission check: Owner of event OR the user themselves OR valid token
-    const isOwner = event.ownerId && session?.user?.id === event.ownerId;
-    const isSelf = person.userId && session?.user?.id === person.userId;
-    const isTokenValid = input.token && person.token && input.token === person.token;
-
-    if (!isOwner && !isSelf && !isTokenValid) {
-      throw new Error("Unauthorized to update this status");
     }
 
     const [updated] = await db
