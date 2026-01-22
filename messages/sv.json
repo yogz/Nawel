@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Fortsätt som gäst",
-        "description": "Du kan fortsätta utan att logga in, men du kommer inte att kunna använda AI för att generera ingredienser.",
+        "description": "Skapa din gästprofil för att redigera din information och bekräfta din närvaro.",
         "identifyButton": "Logga in",
         "identifyDescription": "Använd ditt Google-konto för att spara dina evenemang och använda AI.",
-        "continueButton": "Fortsätt som gäst",
-        "continueDescription": "Begränsad åtkomst, ingen sparning eller AI."
+        "continueButton": "Skapa min gästprofil",
+        "continueDescription": "Du kan redigera din information och närvaro."
       },
       "ClaimPerson": {
         "title": "Är det du?",

@@ -609,11 +609,11 @@
       },
       "GuestAccess": {
         "title": "Continuar como convidado",
-        "description": "Pode continuar sem iniciar sessão, mas não poderá utilizar a IA para gerar ingredientes.",
+        "description": "Crie o seu perfil de convidado para editar as suas informações e confirmar a sua presença.",
         "identifyButton": "Identificar-se",
         "identifyDescription": "Utilize a sua conta Google para guardar os seus eventos e utilizar a IA.",
-        "continueButton": "Continuar como convidado",
-        "continueDescription": "Acesso limitado, sem gravação ou IA."
+        "continueButton": "Criar o meu perfil de convidado",
+        "continueDescription": "Poderá editar as suas informações e presença."
       },
       "ClaimPerson": {
         "title": "É você?",

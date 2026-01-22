@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Continuar como invitado",
-        "description": "Puedes continuar sin iniciar sesión, pero no podrás usar la IA para generar ingredientes.",
+        "description": "Crea tu perfil de invitado para editar tu información y confirmar tu asistencia.",
         "identifyButton": "Identificarse",
         "identifyDescription": "Usa tu cuenta de Google para guardar tus eventos y usar la IA.",
-        "continueButton": "Continuar como invitado",
-        "continueDescription": "Acceso limitado, sin guardado ni IA."
+        "continueButton": "Crear mi perfil de invitado",
+        "continueDescription": "Podrás editar tu información y asistencia."
       },
       "ClaimPerson": {
         "title": "¿Es usted?",

@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Als Gast fortfahren",
-        "description": "Sie können ohne Anmeldung fortfahren, können dann aber keine KI zur Zutaten-Generierung nutzen.",
+        "description": "Erstellen Sie Ihr Gastprofil, um Ihre Informationen zu bearbeiten und Ihre Teilnahme zu bestätigen.",
         "identifyButton": "Anmelden",
         "identifyDescription": "Nutzen Sie Ihr Google-Konto, um Events zu speichern und KI zu nutzen.",
-        "continueButton": "Als Gast fortfahren",
-        "continueDescription": "Eingeschränkter Zugriff, keine Speicherung oder KI."
+        "continueButton": "Mein Gastprofil erstellen",
+        "continueDescription": "Sie können Ihre Informationen und Teilnahme bearbeiten."
       },
       "ClaimPerson": {
         "title": "Sind Sie das?",

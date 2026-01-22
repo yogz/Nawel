@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Kontynuuj jako gość",
-        "description": "Możesz kontynuować bez logowania, ale nie będziesz mógł użyć AI do generowania składników.",
+        "description": "Utwórz swój profil gościa, aby edytować swoje informacje i potwierdzić obecność.",
         "identifyButton": "Zaloguj się",
         "identifyDescription": "Użyj swojego konta Google, aby zapisać wydarzenia i korzystać z AI.",
-        "continueButton": "Kontynuuj jako gość",
-        "continueDescription": "Ograniczony dostęp, bez zapisu ani AI."
+        "continueButton": "Utwórz mój profil gościa",
+        "continueDescription": "Będziesz mógł edytować swoje informacje i obecność."
       },
       "ClaimPerson": {
         "title": "Czy to Ty?",
