@@ -54,7 +54,7 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 -mx-2 flex h-11 items-center justify-between px-4 bg-gradient-to-r from-purple-50/90 via-white/80 to-pink-50/90 backdrop-blur-xl border-b-2 border-accent/20 shadow-sm">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 mx-1 flex h-11 items-center justify-between px-4 rounded-2xl bg-gradient-to-r from-purple-50/90 via-white/80 to-pink-50/90 backdrop-blur-xl border border-white/40 shadow-sm">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
