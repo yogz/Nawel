@@ -54,14 +54,13 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="relative z-20 flex items-center justify-between px-4 py-3 mb-8">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+8rem)] z-30 flex h-10 items-center justify-between px-4 bg-white/70 backdrop-blur-xl border-b border-black/5">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
           className={cn(
-            "group flex flex-1 items-center gap-4 text-left",
-            !readOnly &&
-              "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+            "flex flex-1 items-center gap-2.5",
+            !readOnly && "cursor-pointer active:opacity-70"
           )}
           onClick={() => !readOnly && onEdit()}
           onKeyDown={(e) => {
@@ -72,37 +71,33 @@ export const ServiceSection = memo(function ServiceSection({
           }}
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/20 text-[16px] shadow-sm transition-all duration-300 group-hover:scale-110">
-            {service.icon || getServiceIcon(service.title)}
-          </div>
-          <div className="flex-1">
-            <h3 className="text-gray-900 text-sm font-extrabold tracking-tight">
-              {translatedTitle}
-            </h3>
-            {filteredItems.length > 0 && (
-              <p className="mt-0.5 text-[11px] font-medium text-gray-400">
-                {filteredItems.length} {t("items")}
-              </p>
-            )}
-          </div>
+          <span className="text-base">{service.icon || getServiceIcon(service.title)}</span>
+          <h3 className="text-sm font-semibold text-gray-900 tracking-tight">{translatedTitle}</h3>
         </div>
 
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(!isExpanded);
-          }}
-          className="ml-4 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] text-gray-500 transition-all hover:bg-black/[0.08] active:scale-95"
-          aria-label={isExpanded ? t("collapse") : t("expand")}
-        >
-          <motion.div
-            animate={{ rotate: isExpanded ? 90 : 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        <div className="flex items-center gap-3">
+          {filteredItems.length > 0 && (
+            <span className="text-xs font-medium text-gray-400">
+              {filteredItems.length} {t("items")}
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95"
+            aria-label={isExpanded ? t("collapse") : t("expand")}
           >
-            <ChevronRight className="h-5 w-5" />
-          </motion.div>
-        </button>
+            <motion.div
+              animate={{ rotate: isExpanded ? 90 : 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </motion.div>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence initial={false}>

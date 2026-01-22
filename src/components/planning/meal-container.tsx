@@ -167,7 +167,7 @@ export function MealContainer({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="overflow-hidden"
+            className=""
           >
             <div className="space-y-6 px-0 pb-4">
               {meal.services.map((service) => (
