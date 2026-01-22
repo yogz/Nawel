@@ -11,6 +11,8 @@ import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title"
 import { motion, AnimatePresence } from "framer-motion";
 import { InlineItemInput } from "./inline-item-input";
 
+import { SectionHeader } from "./section-header";
+
 interface ServiceSectionProps {
   service: Service;
   people: Person[];
@@ -54,53 +56,38 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 mx-1 flex h-11 items-center justify-between px-4 rounded-2xl bg-gradient-to-r from-purple-100/95 via-white/90 to-pink-100/95 backdrop-blur-xl border-2 border-accent/20 shadow-md">
-        <div
-          role={readOnly ? undefined : "button"}
-          tabIndex={readOnly ? undefined : 0}
-          className={cn(
-            "flex flex-1 items-center gap-2.5",
-            !readOnly && "cursor-pointer active:opacity-70"
-          )}
-          onClick={() => !readOnly && onEdit()}
-          onKeyDown={(e) => {
-            if (!readOnly && (e.key === "Enter" || e.key === " ")) {
-              e.preventDefault();
-              onEdit();
-            }
-          }}
-          aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
-        >
-          <span className="text-base">{service.icon || getServiceIcon(service.title)}</span>
-          <h3 className="text-base font-extrabold text-gray-800 tracking-tight">
-            {translatedTitle}
-          </h3>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {filteredItems.length > 0 && (
-            <span className="text-xs font-medium text-gray-400">
-              {filteredItems.length} {t("items")}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(!isExpanded);
-            }}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95"
-            aria-label={isExpanded ? t("collapse") : t("expand")}
-          >
-            <motion.div
-              animate={{ rotate: isExpanded ? 90 : 180 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      <SectionHeader
+        className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 mx-1"
+        readOnly={readOnly}
+        onClick={onEdit}
+        icon={service.icon || getServiceIcon(service.title)}
+        title={translatedTitle}
+        actions={
+          <div className="flex items-center gap-3">
+            {filteredItems.length > 0 && (
+              <span className="text-xs font-medium text-gray-400">
+                {filteredItems.length} {t("items")}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95"
+              aria-label={isExpanded ? t("collapse") : t("expand")}
             >
-              <ChevronRight className="h-4 w-4" />
-            </motion.div>
-          </button>
-        </div>
-      </div>
+              <motion.div
+                animate={{ rotate: isExpanded ? 90 : 180 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </motion.div>
+            </button>
+          </div>
+        }
+      />
 
       <AnimatePresence initial={false}>
         {isExpanded && (

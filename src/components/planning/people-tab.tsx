@@ -19,6 +19,7 @@ import { type PlanData, type Person, type Item, type Service, type Sheet } from 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PersonAvatar } from "../common/person-avatar";
+import { SectionHeader } from "./section-header";
 
 interface PeopleTabProps {
   plan: PlanData;
@@ -152,8 +153,16 @@ export function PeopleTab({
 
             return (
               <div key={person.id} className="space-y-4">
-                <div className="group/hero relative flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
-                  <div className="relative flex items-center gap-4">
+                <SectionHeader
+                  title={getDisplayName(person)}
+                  description={
+                    person.userId === currentUserId ? (
+                      <span className="text-accent font-bold uppercase tracking-wider text-[10px]">
+                        {t("itsYou")}
+                      </span>
+                    ) : null
+                  }
+                  icon={
                     <div className="relative">
                       <PersonAvatar
                         person={person}
@@ -162,78 +171,68 @@ export function PeopleTab({
                         className="shadow-sm ring-1 ring-gray-100"
                       />
                       {person.userId === currentUserId && (
-                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] text-white shadow-sm ring-2 ring-white">
-                          <Sparkles size={10} />
+                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[8px] text-white shadow-sm ring-2 ring-white">
+                          <Sparkles size={8} />
                         </div>
                       )}
                     </div>
+                  }
+                  actions={
+                    <div className="flex items-center gap-2">
+                      {/* Claim Button Logic */}
+                      {!person.userId &&
+                        currentUserId &&
+                        !plan.people.some((p) => p.userId === currentUserId) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onClaim?.(person.id);
+                            }}
+                            className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm hover:bg-accent/90"
+                          >
+                            {t("itsMe")}
+                          </button>
+                        )}
 
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-bold tracking-tight text-gray-900">
-                          {getDisplayName(person)}
-                        </h3>
-                        {person.userId === currentUserId ? (
-                          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-                            {t("itsYou")}
-                          </span>
-                        ) : (
-                          currentUserId &&
-                          !plan.people.some((p) => p.userId === currentUserId) &&
-                          !person.userId && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onClaim?.(person.id);
-                              }}
-                              className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm hover:bg-accent/90"
-                            >
-                              {t("itsMe")}
-                            </button>
-                          )
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {t("articlesCount", { count: personItems.length })}
-                        </p>
-                        {personItems.length > 0 && (
-                          <>
-                            <div className="h-1 w-1 rounded-full bg-gray-300" />
-                            <p className="text-xs text-muted-foreground/80">
-                              MAJ : {new Date().toLocaleDateString()}
-                            </p>
-                          </>
-                        )}
-                      </div>
+                      {!readOnly && (
+                        <button
+                          type="button"
+                          onClick={() => setSheet({ type: "person-edit", person })}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                      )}
+
+                      {personItems.length > 0 && (
+                        <Link
+                          href={
+                            writeKey
+                              ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
+                              : `/event/${slug}/shopping/${person.id}`
+                          }
+                          className="flex h-9 items-center gap-2 rounded-xl bg-white/50 px-3 text-xs font-bold uppercase tracking-wide text-accent transition-all hover:bg-white/80"
+                        >
+                          <ShoppingCart size={14} />
+                          <span className="hidden sm:inline">{t("shoppingList")}</span>
+                        </Link>
+                      )}
                     </div>
+                  }
+                >
+                  {/* Meta Content in middle (Article count) */}
+                  <div className="hidden sm:flex items-center gap-3 ml-auto mr-4">
+                    <p className="text-xs font-medium text-gray-500">
+                      {t("articlesCount", { count: personItems.length })}
+                    </p>
                   </div>
+                </SectionHeader>
 
-                  <div className="flex items-center gap-2">
-                    {!readOnly && (
-                      <button
-                        type="button"
-                        onClick={() => setSheet({ type: "person-edit", person })}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-gray-100 hover:text-gray-900"
-                      >
-                        <Pencil size={14} />
-                      </button>
-                    )}
-
-                    {personItems.length > 0 && (
-                      <Link
-                        href={
-                          writeKey
-                            ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
-                            : `/event/${slug}/shopping/${person.id}`
-                        }
-                        className="flex h-9 items-center gap-2 rounded-xl bg-accent/10 px-4 text-xs font-bold uppercase tracking-wide text-accent transition-all hover:bg-accent/20"
-                      >
-                        <ShoppingCart size={14} />
-                        <span className="hidden sm:inline">{t("shoppingList")}</span>
-                      </Link>
-                    )}
-                  </div>
+                {/* Mobile Article Count (outside header if space is tight, or just rely on items below) */}
+                <div className="sm:hidden -mt-2 px-2 flex justify-end">
+                  <p className="text-[10px] font-medium text-gray-400">
+                    {t("articlesCount", { count: personItems.length })}
+                  </p>
                 </div>
                 <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
                   <div className="flex flex-col">
