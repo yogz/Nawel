@@ -53,7 +53,7 @@ export function InlineItemInput({ onAdd, placeholder, className }: InlineItemInp
         onKeyDown={handleKeyDown}
         placeholder={placeholder || t("addItemPlaceholder")}
         disabled={isSubmitting}
-        className="h-11 border-gray-200 bg-white/60 pl-10 pr-4 text-sm placeholder:text-gray-400 focus:border-accent/30 focus:bg-white focus:ring-accent/20"
+        className="h-11 border-gray-200 bg-white pl-10 pr-4 text-sm placeholder:text-gray-500 focus:border-accent/30 focus:ring-accent/20"
       />
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
         {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}

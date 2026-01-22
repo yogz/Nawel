@@ -114,7 +114,7 @@ function ItemRowComponent({
           <div className="flex items-center gap-2">
             <p
               className={cn(
-                "text-base font-semibold leading-tight transition-colors sm:text-[15px]",
+                "text-base font-normal leading-tight transition-colors sm:text-[15px]",
                 "text-gray-900",
                 person && "opacity-100"
               )}

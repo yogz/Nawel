@@ -54,7 +54,7 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
-      <div className="sticky top-[calc(env(safe-area-inset-top)+8rem)] z-30 flex h-10 items-center justify-between px-4 bg-white/70 backdrop-blur-xl border-b border-black/5">
+      <div className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 -mx-2 flex h-11 items-center justify-between px-4 bg-gradient-to-r from-purple-50/90 via-white/80 to-pink-50/90 backdrop-blur-xl border-b-2 border-accent/20 shadow-sm">
         <div
           role={readOnly ? undefined : "button"}
           tabIndex={readOnly ? undefined : 0}
@@ -72,7 +72,9 @@ export const ServiceSection = memo(function ServiceSection({
           aria-label={readOnly ? undefined : t("editService", { name: translatedTitle })}
         >
           <span className="text-base">{service.icon || getServiceIcon(service.title)}</span>
-          <h3 className="text-sm font-semibold text-gray-900 tracking-tight">{translatedTitle}</h3>
+          <h3 className="text-base font-extrabold text-gray-800 tracking-tight">
+            {translatedTitle}
+          </h3>
         </div>
 
         <div className="flex items-center gap-3">
@@ -91,7 +93,7 @@ export const ServiceSection = memo(function ServiceSection({
             aria-label={isExpanded ? t("collapse") : t("expand")}
           >
             <motion.div
-              animate={{ rotate: isExpanded ? 90 : 0 }}
+              animate={{ rotate: isExpanded ? 90 : 180 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               <ChevronRight className="h-4 w-4" />

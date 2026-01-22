@@ -11,6 +11,7 @@ import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet"
 import { useSearchParams, useParams } from "next/navigation";
 import { updateEventWithMealAction } from "@/app/actions/event-actions";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 import {
   ItemSheetContent,
@@ -260,7 +261,13 @@ export function EventPlannerSheets({
         open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
         onOpenChange={(open) => !open && setSheet(null)}
       >
-        <DrawerContent className="px-4 sm:px-6">
+        <DrawerContent
+          className={cn(
+            "px-4 sm:px-6",
+            sheet?.type === "share" && "bg-gray-900/95 backdrop-blur-xl"
+          )}
+          overlayClassName={sheet?.type === "share" ? "bg-black/90 z-[150]" : undefined}
+        >
           <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
             {sheet?.type === "share" ? (
               <DrawerTitle className="sr-only">{getTitle()}</DrawerTitle>
