@@ -398,7 +398,11 @@
       "confirmUnlink": "Are you sure you no longer want to be associated with this profile?",
       "me": "Me",
       "editItem": "Edit item {name}",
-      "edit": "Edit"
+      "edit": "Edit",
+      "howMany": "How many people?",
+      "adjustCounts": "Adjust the headcount",
+      "validate": "Done",
+      "adjust": "I'm bringing guests"
     },
     "Shopping": {
       "notAssociated": "Profile not associated",

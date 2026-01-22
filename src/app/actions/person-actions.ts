@@ -220,7 +220,11 @@ export const updatePersonStatusAction = createSafeAction(
 
     const [updated] = await db
       .update(people)
-      .set({ status: input.status })
+      .set({
+        status: input.status,
+        guest_adults: input.guestAdults ?? person.guest_adults,
+        guest_children: input.guestChildren ?? person.guest_children,
+      })
       .where(eq(people.id, input.personId))
       .returning();
 

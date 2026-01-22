@@ -107,7 +107,9 @@ export function TimePicker({
   }, [open, value, minuteInterval]);
 
   // Render a static button during SSR to avoid hydration mismatch
-  if (!mounted && !children) {
+  if (!mounted) {
+    if (children) return <>{children}</>;
+
     return (
       <Button
         variant="outline"

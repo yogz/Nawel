@@ -15,6 +15,8 @@ import {
   X,
   HelpCircle,
   CircleDashed,
+  Minus,
+  Users,
 } from "lucide-react";
 import { updatePersonStatusAction } from "@/app/actions/person-actions";
 import { toast } from "sonner";
@@ -82,8 +84,12 @@ export function PeopleTab({
 
   const [isPending, startTransition] = useTransition();
   const [optimisticStatus, setOptimisticStatus] = useState<Record<number, string>>({});
+  const [optimisticCounts, setOptimisticCounts] = useState<
+    Record<number, { guestAdults: number; guestChildren: number }>
+  >({});
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const [guestTokens, setGuestTokens] = useState<Record<number, string>>({});
+  const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
 
   // Load guest tokens on mount
   useEffect(() => {
@@ -102,7 +108,20 @@ export function PeopleTab({
     // 2. Close Popover immediately
     setOpenPopoverId(null);
 
-    // 3. Server Action
+    // 3. Open Edit Mode if Confirmed
+    if (status === "confirmed") {
+      setEditingPersonId(personId);
+      // Scroll to card so user sees the inputs
+      setTimeout(() => {
+        document
+          .getElementById(`attendance-card-${personId}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    } else {
+      setEditingPersonId(null);
+    }
+
+    // 4. Server Action
     startTransition(async () => {
       try {
         await updatePersonStatusAction({
@@ -125,11 +144,63 @@ export function PeopleTab({
     });
   };
 
+  const handleGuestCountChange = (personId: number, type: "adults" | "children", delta: number) => {
+    // 1. Get current values (optimistic or server)
+    const person = plan.people.find((p) => p.id === personId);
+    if (!person) return;
+
+    const currentCounts = optimisticCounts[personId] || {
+      guestAdults: person.guest_adults,
+      guestChildren: person.guest_children,
+    };
+
+    const newCounts = {
+      ...currentCounts,
+      [type === "adults" ? "guestAdults" : "guestChildren"]: Math.max(
+        0,
+        (type === "adults" ? currentCounts.guestAdults : currentCounts.guestChildren) + delta
+      ),
+    };
+
+    // 2. Optimistic Update
+    setOptimisticCounts((prev) => ({ ...prev, [personId]: newCounts }));
+
+    // 3. Server Action
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status: "confirmed", // Changing count implies confirmed? Or keep current? Let's assume keep current status or force confirmed. For now keep "confirmed" as it's only shown when confirmed.
+          guestAdults: newCounts.guestAdults,
+          guestChildren: newCounts.guestChildren,
+          token: guestTokens[personId],
+        });
+      } catch (error) {
+        toast.error(t("errorUpdatingStatus"));
+        // Revert
+        setOptimisticCounts((prev) => {
+          const newState = { ...prev };
+          delete newState[personId];
+          return newState;
+        });
+      }
+    });
+  };
+
   const stats = plan.people.reduce(
     (acc, person) => {
       const status = optimisticStatus[person.id] || person.status;
-      if (status === "confirmed") acc.confirmed++;
-      else if (status === "declined") acc.declined++;
+      const counts = optimisticCounts[person.id] || {
+        guestAdults: person.guest_adults,
+        guestChildren: person.guest_children,
+      };
+
+      if (status === "confirmed") {
+        // Person + Guests + Children
+        acc.confirmed += 1 + counts.guestAdults + counts.guestChildren;
+      } else if (status === "declined") acc.declined++;
       else if (status === "maybe") acc.maybe++;
       else acc.pending++;
       return acc;
@@ -150,10 +221,20 @@ export function PeopleTab({
             const canEdit = isOwner || isTokenOwner;
 
             if (!canEdit) return null;
-            if (effectiveStatus && effectiveStatus !== "maybe") return null;
+            if (effectiveStatus === "declined") return null;
+            if (effectiveStatus === "confirmed" && editingPersonId !== person.id) return null;
+
+            const currentCounts = optimisticCounts[person.id] || {
+              guestAdults: person.guest_adults,
+              guestChildren: person.guest_children,
+            };
+            // Display 1 (self) + guests
+            const displayAdults = 1 + currentCounts.guestAdults;
+            const displayChildren = currentCounts.guestChildren;
 
             return (
               <motion.div
+                id={`attendance-card-${person.id}`}
                 key={person.id}
                 layout // Smooth layout transition when it disappears
                 initial={{ opacity: 0, y: -20 }}
@@ -161,27 +242,100 @@ export function PeopleTab({
                 exit={{ opacity: 0, y: -20 }}
                 className="relative overflow-hidden rounded-2xl border border-accent/20 bg-gradient-to-br from-white to-purple-50 p-4 shadow-sm"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-sm font-bold text-gray-900">
-                      {getDisplayName(person)}, {t("areYouComing")}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">{t("confirmPresence")}</p>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-bold text-gray-900">
+                        {getDisplayName(person)},{" "}
+                        {effectiveStatus === "confirmed" ? t("howMany") : t("areYouComing")}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {effectiveStatus === "confirmed" ? t("adjustCounts") : t("confirmPresence")}
+                      </p>
+                    </div>
+
+                    {/* Standard Yes/No Buttons if not confirmed yet */}
+                    {effectiveStatus !== "confirmed" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleStatusUpdate(person.id, "confirmed")}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700 transition-colors hover:bg-green-200"
+                        >
+                          <Check size={16} strokeWidth={3} />
+                        </button>
+                        <button
+                          onClick={() => handleStatusUpdate(person.id, "declined")}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200"
+                        >
+                          <X size={16} strokeWidth={3} />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleStatusUpdate(person.id, "confirmed")}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700 transition-colors hover:bg-green-200"
-                    >
-                      <Check size={16} strokeWidth={3} />
-                    </button>
-                    <button
-                      onClick={() => handleStatusUpdate(person.id, "declined")}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200"
-                    >
-                      <X size={16} strokeWidth={3} />
-                    </button>
-                  </div>
+
+                  {/* Guest Counters if Confirmed */}
+                  {effectiveStatus === "confirmed" && (
+                    <div className="flex flex-col gap-4 animate-in slide-in-from-top-2">
+                      <div className="flex items-center gap-6">
+                        {/* Adults Stepper */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
+                            Adultes
+                          </span>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => handleGuestCountChange(person.id, "adults", -1)}
+                              disabled={displayAdults <= 1} // Cannot remove self
+                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm disabled:opacity-50"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="text-lg font-bold text-gray-900 w-4 text-center">
+                              {displayAdults}
+                            </span>
+                            <button
+                              onClick={() => handleGuestCountChange(person.id, "adults", 1)}
+                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Children Stepper */}
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
+                            Enfants
+                          </span>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={() => handleGuestCountChange(person.id, "children", -1)}
+                              disabled={displayChildren <= 0}
+                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm disabled:opacity-50"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="text-lg font-bold text-gray-900 w-4 text-center">
+                              {displayChildren}
+                            </span>
+                            <button
+                              onClick={() => handleGuestCountChange(person.id, "children", 1)}
+                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => setEditingPersonId(null)}
+                        className="w-full rounded-xl bg-gray-900 py-3 text-sm font-bold text-white shadow-sm hover:bg-gray-800 transition-all"
+                      >
+                        {t("validate")}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             );
@@ -193,16 +347,16 @@ export function PeopleTab({
             <button
               onClick={() => setSelectedPerson(null)}
               className={clsx(
-                "group relative flex h-14 items-center justify-between gap-4 rounded-2xl border-2 px-3 transition-all outline-none",
+                "group relative flex h-14 min-w-[100px] flex-col items-center justify-center gap-1 rounded-2xl border-2 px-4 transition-all outline-none",
                 selectedPerson === null
                   ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
                   : "border-gray-200 bg-white hover:border-accent/30 hover:bg-gray-50"
               )}
             >
-              <div className="flex flex-col items-start min-w-[60px]">
+              <div className="flex items-center gap-1.5">
                 <span
                   className={clsx(
-                    "text-sm font-black uppercase tracking-widest",
+                    "text-xs font-black uppercase tracking-widest",
                     selectedPerson === null ? "text-white" : "text-gray-900"
                   )}
                 >
@@ -210,72 +364,59 @@ export function PeopleTab({
                 </span>
                 <span
                   className={clsx(
-                    "text-[10px] font-bold",
+                    "text-xs font-bold",
                     selectedPerson === null ? "text-white/80" : "text-gray-400"
                   )}
                 >
-                  {plan.people.length}
+                  ({plan.people.length})
                 </span>
               </div>
 
-              <div
-                className={clsx(
-                  "h-8 w-[1.5px] rounded-full",
-                  selectedPerson === null ? "bg-white/20" : "bg-gray-100"
-                )}
-              />
-
-              <div className="flex flex-col gap-0.5 min-w-[50px]">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <Check
-                      size={10}
-                      strokeWidth={4}
-                      className={clsx(selectedPerson === null ? "text-white" : "text-green-600")}
-                    />
-                    <span
-                      className={clsx(
-                        "text-[9px] font-bold leading-none",
-                        selectedPerson === null ? "text-white" : "text-gray-700"
-                      )}
-                    >
-                      {stats.confirmed}
-                    </span>
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <Check
+                    size={10}
+                    strokeWidth={4}
+                    className={clsx(selectedPerson === null ? "text-white" : "text-green-600")}
+                  />
+                  <span
+                    className={clsx(
+                      "text-[10px] font-bold leading-none",
+                      selectedPerson === null ? "text-white" : "text-gray-700"
+                    )}
+                  >
+                    {stats.confirmed}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <HelpCircle
-                      size={10}
-                      strokeWidth={4}
-                      className={clsx(selectedPerson === null ? "text-white" : "text-orange-500")}
-                    />
-                    <span
-                      className={clsx(
-                        "text-[9px] font-bold leading-none",
-                        selectedPerson === null ? "text-white" : "text-gray-700"
-                      )}
-                    >
-                      {stats.maybe}
-                    </span>
-                  </div>
+                <div className="flex items-center gap-1">
+                  <HelpCircle
+                    size={10}
+                    strokeWidth={4}
+                    className={clsx(selectedPerson === null ? "text-white" : "text-orange-500")}
+                  />
+                  <span
+                    className={clsx(
+                      "text-[10px] font-bold leading-none",
+                      selectedPerson === null ? "text-white" : "text-gray-700"
+                    )}
+                  >
+                    {stats.maybe}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <X
-                      size={10}
-                      strokeWidth={4}
-                      className={clsx(selectedPerson === null ? "text-white" : "text-red-500")}
-                    />
-                    <span
-                      className={clsx(
-                        "text-[9px] font-bold leading-none",
-                        selectedPerson === null ? "text-white" : "text-gray-700"
-                      )}
-                    >
-                      {stats.declined}
-                    </span>
-                  </div>
+                <div className="flex items-center gap-1">
+                  <X
+                    size={10}
+                    strokeWidth={4}
+                    className={clsx(selectedPerson === null ? "text-white" : "text-red-500")}
+                  />
+                  <span
+                    className={clsx(
+                      "text-[10px] font-bold leading-none",
+                      selectedPerson === null ? "text-white" : "text-gray-700"
+                    )}
+                  >
+                    {stats.declined}
+                  </span>
                 </div>
               </div>
             </button>
@@ -439,6 +580,25 @@ export function PeopleTab({
                           </PopoverTrigger>
                           <PopoverContent className="w-48 p-1" align="end">
                             <div className="flex flex-col gap-1">
+                              {effectiveStatus === "confirmed" && (
+                                <button
+                                  onClick={() => {
+                                    setEditingPersonId(person.id);
+                                    setOpenPopoverId(null);
+                                    setTimeout(() => {
+                                      document
+                                        .getElementById(`attendance-card-${person.id}`)
+                                        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                                    }, 100);
+                                  }}
+                                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                                >
+                                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <Users size={10} strokeWidth={3} />
+                                  </div>
+                                  {t("adjust")}
+                                </button>
+                              )}
                               <button
                                 onClick={() => handleStatusUpdate(person.id, "confirmed")}
                                 className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"

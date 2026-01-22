@@ -170,6 +170,8 @@ export const people = pgTable(
     image: text("image"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
     status: text("status"), // 'confirmed', 'declined', 'maybe'
+    guest_adults: integer("guest_adults").notNull().default(0), // Additional adults (excluding self)
+    guest_children: integer("guest_children").notNull().default(0), // Children count
     token: uuid("token").defaultRandom(), // Secret token for anonymous modification
   },
   (table) => ({

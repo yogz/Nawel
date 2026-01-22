@@ -120,6 +120,13 @@
       "when": 1769092621737,
       "tag": "0016_groovy_sentry",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1769095616839,
+      "tag": "0017_curvy_talon",
+      "breakpoints": true
     }
   ]
 }

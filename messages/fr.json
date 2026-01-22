@@ -398,7 +398,11 @@
       "confirmUnlink": "Êtes-vous sûr de ne plus vouloir être associé à ce profil ?",
       "me": "Moi",
       "editItem": "Modifier l'article {name}",
-      "edit": "Modifier"
+      "edit": "Modifier",
+      "howMany": "Combien serez-vous ?",
+      "adjustCounts": "Ajustez le nombre de personnes",
+      "validate": "Valider",
+      "adjust": "Je ne viens pas seul"
     },
     "Shopping": {
       "notAssociated": "Profil non associé",
