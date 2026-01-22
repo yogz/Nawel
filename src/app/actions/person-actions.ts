@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { people, items, user, events } from "@drizzle/schema";
+import { people, items, user } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -20,6 +20,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 import { auth, type User } from "@/lib/auth-config";
 import { headers } from "next/headers";
+import { assertCanModifyPerson } from "@/lib/permissions";
 
 export const joinEventAction = createSafeAction(baseInput, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
@@ -94,7 +95,10 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
 });
 
 export const updatePersonAction = createSafeAction(updatePersonSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  const event = await verifyEventAccess(input.slug, input.key);
+
+  // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
+  await assertCanModifyPerson(input.key, input.token, input.id, event);
 
   const oldPerson = await db.query.people.findFirst({
     where: eq(people.id, input.id),
@@ -203,7 +207,10 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
 export const updatePersonStatusAction = createSafeAction(
   updatePersonStatusSchema,
   async (input) => {
-    await verifyEventAccess(input.slug, input.key);
+    const event = await verifyEventAccess(input.slug, input.key);
+
+    // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
+    await assertCanModifyPerson(input.key, input.token, input.personId, event);
 
     const person = await db.query.people.findFirst({
       where: eq(people.id, input.personId),

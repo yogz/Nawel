@@ -626,11 +626,11 @@
       },
       "GuestAccess": {
         "title": "Continuer comme invité",
-        "description": "Vous pouvez continuer sans vous identifier, mais vous ne pourrez pas utiliser l'IA pour générer vos ingrédients.",
+        "description": "Créez votre profil invité pour pouvoir modifier vos informations et confirmer votre présence.",
         "identifyButton": "S'identifier",
         "identifyDescription": "Utilisez votre compte Google pour sauvegarder vos événements et utiliser l'IA.",
-        "continueButton": "Continuer comme invité",
-        "continueDescription": "Accès limité, sans sauvegarde ni IA."
+        "continueButton": "Créer mon profil invité",
+        "continueDescription": "Vous pourrez modifier vos informations et votre présence."
       },
       "ClaimPerson": {
         "title": "C'est vous ?",

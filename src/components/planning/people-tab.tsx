@@ -649,7 +649,13 @@ export function PeopleTab({
                       {!readOnly && (
                         <button
                           type="button"
-                          onClick={() => setSheet({ type: "person-edit", person })}
+                          onClick={() =>
+                            setSheet({
+                              type: "person-edit",
+                              person,
+                              token: guestTokens[person.id] || null,
+                            })
+                          }
                           className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900"
                         >
                           <Pencil size={14} />
