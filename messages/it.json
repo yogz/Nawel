@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Continua come ospite",
-        "description": "Puoi continuare senza accedere, ma non potrai usare l'IA per generare ingredienti.",
+        "description": "Crea il tuo profilo ospite per modificare le tue informazioni e confermare la tua partecipazione.",
         "identifyButton": "Accedi",
         "identifyDescription": "Usa il tuo account Google per salvare i tuoi eventi e usare l'IA.",
-        "continueButton": "Continua come ospite",
-        "continueDescription": "Accesso limitato, nessun salvataggio o IA."
+        "continueButton": "Crea il mio profilo ospite",
+        "continueDescription": "Potrai modificare le tue informazioni e partecipazione."
       },
       "ClaimPerson": {
         "title": "Sei tu?",

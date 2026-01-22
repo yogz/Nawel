@@ -602,11 +602,11 @@
       },
       "GuestAccess": {
         "title": "Davetli olarak devam et",
-        "description": "Kimlik doğrulaması olmadan devam edebilirsiniz, ancak malzemelerinizi oluşturmak için YZ'yi kullanamazsınız.",
+        "description": "Bilgilerinizi düzenlemek ve katılımınızı onaylamak için davetli profilinizi oluşturun.",
         "identifyButton": "Giriş yap",
         "identifyDescription": "Etkinliklerinizi kaydetmek ve YZ kullanmak için Google hesabınızı kullanın.",
-        "continueButton": "Davetli olarak devam et",
-        "continueDescription": "Kayıt veya YZ olmadan sınırlı erişim."
+        "continueButton": "Davetli profilimi oluştur",
+        "continueDescription": "Bilgilerinizi ve katılımınızı düzenleyebilirsiniz."
       },
       "ClaimPerson": {
         "title": "Siz misiniz ?",
