@@ -172,10 +172,11 @@ export function EventList({
                   }
                 }}
                 aria-label={t("view") + " " + event.name}
-                className={`group relative block w-full cursor-pointer overflow-hidden rounded-[24px] border border-gray-100 bg-white p-0 text-left shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.99] ${isPast ? "opacity-60 grayscale-[30%]" : ""}`}
+                className={`group relative block w-full cursor-pointer overflow-hidden rounded-[32px] border border-white/40 bg-white/90 p-0 text-left shadow-2xl backdrop-blur-xl transition-all duration-500 hover:shadow-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-[0.99] ${isPast ? "opacity-60 grayscale-[30%]" : ""}`}
               >
-                {/* Decorative background gradient */}
-                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
+                {/* Decorative background gradient orbs */}
+                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/10 blur-[80px] transition-all group-hover:bg-accent/20" />
+                <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] transition-all group-hover:bg-primary/10" />
 
                 <div className="relative flex flex-col p-5 sm:p-4">
                   <div className="flex items-start justify-between">
@@ -187,7 +188,7 @@ export function EventList({
 
                     <div className="flex flex-col items-end gap-2">
                       {isOwner && (
-                        <span className="inline-flex items-center rounded-full bg-accent/10 px-2.5 py-1 text-xs font-black uppercase tracking-widest text-accent ring-1 ring-accent/20 sm:px-2 sm:py-0.5 sm:text-[8px]">
+                        <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-accent ring-1 ring-accent/20 backdrop-blur-sm">
                           {t("myEvent")}
                         </span>
                       )}
@@ -200,12 +201,12 @@ export function EventList({
                     </p>
                   )}
 
-                  <div className="mt-4 flex items-center justify-between border-t border-gray-50 pt-3">
+                  <div className="mt-4 flex items-center justify-between border-t border-gray-100/50 pt-3">
                     <div className="flex items-center gap-3">
                       {/* Date details if available */}
                       {event.meals && event.meals.length > 0 && (
-                        <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2.5 py-1 text-xs font-bold text-gray-600 sm:px-2 sm:py-0.5 sm:text-[10px]">
-                          <Calendar size={12} className="text-gray-400 sm:h-[10px] sm:w-[10px]" />
+                        <div className="flex items-center gap-1.5 rounded-xl bg-white/50 px-3 py-1.5 text-xs font-bold text-gray-600 ring-1 ring-black/5 backdrop-blur-sm">
+                          <Calendar size={12} className="text-accent/60" />
                           <span>
                             {format.dateTime(new Date(event.meals[0].date), {
                               day: "numeric",
@@ -216,8 +217,8 @@ export function EventList({
                       )}
 
                       {/* Guests count */}
-                      <div className="flex items-center gap-1.5 rounded-lg bg-gray-50/50 px-2.5 py-1 text-xs font-bold text-gray-600 sm:px-2 sm:py-0.5 sm:text-[10px]">
-                        <Users size={12} className="text-gray-400 sm:h-[10px] sm:w-[10px]" />
+                      <div className="flex items-center gap-1.5 rounded-xl bg-white/50 px-3 py-1.5 text-xs font-bold text-gray-600 ring-1 ring-black/5 backdrop-blur-sm">
+                        <Users size={12} className="text-accent/60" />
                         <span>{event.adults + event.children}</span>
                       </div>
                     </div>
@@ -264,8 +265,8 @@ export function EventList({
                         )}
                       </div>
 
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-all group-hover:bg-accent group-hover:text-white sm:h-7 sm:w-7 lg:group-hover:hidden">
-                        <ArrowRight size={14} className="sm:h-3 sm:w-3" />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent/10 text-accent transition-all group-hover:bg-accent group-hover:text-white sm:h-8 sm:w-8 lg:group-hover:hidden">
+                        <ArrowRight size={16} className="sm:h-4 sm:w-4" />
                       </div>
                     </div>
                   </div>
