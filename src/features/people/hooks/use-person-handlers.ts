@@ -41,6 +41,18 @@ export function usePersonHandlers({
           slug,
           key: writeKey,
         });
+
+        // Store anonymous token if present (for guest RSVP)
+        if (created.token) {
+          try {
+            const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
+            tokens[created.id] = created.token;
+            localStorage.setItem("colist_guest_tokens", JSON.stringify(tokens));
+          } catch (e) {
+            console.error("Failed to save guest token", e);
+          }
+        }
+
         setPlan((prev: PlanData) => ({
           ...prev,
           people: [...prev.people, created].sort((a, b) => a.name.localeCompare(b.name)),

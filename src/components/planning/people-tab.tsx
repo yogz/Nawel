@@ -20,7 +20,7 @@ import { updatePersonStatusAction } from "@/app/actions/person-actions";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useTransition, useState } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { getDisplayName } from "@/lib/utils";
 import { motion } from "framer-motion";
 import clsx from "clsx";
@@ -83,6 +83,17 @@ export function PeopleTab({
   const [isPending, startTransition] = useTransition();
   const [optimisticStatus, setOptimisticStatus] = useState<Record<number, string>>({});
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
+  const [guestTokens, setGuestTokens] = useState<Record<number, string>>({});
+
+  // Load guest tokens on mount
+  useEffect(() => {
+    try {
+      const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
+      setGuestTokens(tokens);
+    } catch (e) {
+      console.error("Failed to load guest tokens", e);
+    }
+  }, []);
 
   const handleStatusUpdate = (personId: number, status: "confirmed" | "declined" | "maybe") => {
     // 1. Optimistic Update (Immediate Feedback)
@@ -99,6 +110,7 @@ export function PeopleTab({
           key: writeKey,
           personId,
           status,
+          token: guestTokens[personId],
         });
         toast.success(t("statusUpdated"));
       } catch (error) {
@@ -113,16 +125,31 @@ export function PeopleTab({
     });
   };
 
+  const stats = plan.people.reduce(
+    (acc, person) => {
+      const status = optimisticStatus[person.id] || person.status;
+      if (status === "confirmed") acc.confirmed++;
+      else if (status === "declined") acc.declined++;
+      else if (status === "maybe") acc.maybe++;
+      else acc.pending++;
+      return acc;
+    },
+    { confirmed: 0, declined: 0, maybe: 0, pending: 0 }
+  );
+
   return (
     <div className="space-y-4">
       {/* Attendance & Filters Area */}
       <div className="space-y-4">
-        {/* Attendance Confirmation Card (for current user) */}
+        {/* Attendance Confirmation Card (for current user or token owner) */}
         {!readOnly &&
           plan.people.map((person) => {
             const effectiveStatus = optimisticStatus[person.id] || person.status;
+            const isOwner = person.userId === currentUserId;
+            const isTokenOwner = !!guestTokens[person.id];
+            const canEdit = isOwner || isTokenOwner;
 
-            if (person.userId !== currentUserId) return null;
+            if (!canEdit) return null;
             if (effectiveStatus && effectiveStatus !== "maybe") return null;
 
             return (
@@ -166,21 +193,91 @@ export function PeopleTab({
             <button
               onClick={() => setSelectedPerson(null)}
               className={clsx(
-                "flex flex-col items-center gap-1.5 transition-all outline-none",
-                selectedPerson === null ? "opacity-100 scale-105" : "opacity-60 hover:opacity-80"
+                "group relative flex h-14 items-center justify-between gap-4 rounded-2xl border-2 px-3 transition-all outline-none",
+                selectedPerson === null
+                  ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
+                  : "border-gray-200 bg-white hover:border-accent/30 hover:bg-gray-50"
               )}
             >
+              <div className="flex flex-col items-start min-w-[60px]">
+                <span
+                  className={clsx(
+                    "text-sm font-black uppercase tracking-widest",
+                    selectedPerson === null ? "text-white" : "text-gray-900"
+                  )}
+                >
+                  {t("all")}
+                </span>
+                <span
+                  className={clsx(
+                    "text-[10px] font-bold",
+                    selectedPerson === null ? "text-white/80" : "text-gray-400"
+                  )}
+                >
+                  {plan.people.length}
+                </span>
+              </div>
+
               <div
                 className={clsx(
-                  "flex h-12 w-12 items-center justify-center rounded-full border-2 text-xs font-bold transition-all",
-                  selectedPerson === null
-                    ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
-                    : "border-gray-200 bg-white text-gray-500"
+                  "h-8 w-[1.5px] rounded-full",
+                  selectedPerson === null ? "bg-white/20" : "bg-gray-100"
                 )}
-              >
-                {t("all")}
+              />
+
+              <div className="flex flex-col gap-0.5 min-w-[50px]">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Check
+                      size={10}
+                      strokeWidth={4}
+                      className={clsx(selectedPerson === null ? "text-white" : "text-green-600")}
+                    />
+                    <span
+                      className={clsx(
+                        "text-[9px] font-bold leading-none",
+                        selectedPerson === null ? "text-white" : "text-gray-700"
+                      )}
+                    >
+                      {stats.confirmed}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <HelpCircle
+                      size={10}
+                      strokeWidth={4}
+                      className={clsx(selectedPerson === null ? "text-white" : "text-orange-500")}
+                    />
+                    <span
+                      className={clsx(
+                        "text-[9px] font-bold leading-none",
+                        selectedPerson === null ? "text-white" : "text-gray-700"
+                      )}
+                    >
+                      {stats.maybe}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <X
+                      size={10}
+                      strokeWidth={4}
+                      className={clsx(selectedPerson === null ? "text-white" : "text-red-500")}
+                    />
+                    <span
+                      className={clsx(
+                        "text-[9px] font-bold leading-none",
+                        selectedPerson === null ? "text-white" : "text-gray-700"
+                      )}
+                    >
+                      {stats.declined}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <span className="text-[10px] font-medium text-gray-600">{t("all")}</span>
             </button>
 
             {plan.people.map((person) => {
@@ -269,6 +366,9 @@ export function PeopleTab({
             const personItems = itemsByPerson[person.id] || [];
             // Show everyone even if they have no items, so they appear in "hero mode"
             const effectiveStatus = optimisticStatus[person.id] || person.status;
+            const isOwner = person.userId === currentUserId;
+            const isTokenOwner = !!guestTokens[person.id];
+            const canEdit = isOwner || isTokenOwner;
 
             return (
               <div key={person.id} className="space-y-4">
@@ -299,8 +399,8 @@ export function PeopleTab({
                   }
                   actions={
                     <div className="flex items-center gap-2">
-                      {/* Status Picker for Current User */}
-                      {person.userId === currentUserId && (
+                      {/* Status Picker for Current User OR Token Owner */}
+                      {canEdit && (
                         <Popover
                           open={openPopoverId === person.id}
                           onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? person.id : null)}
@@ -309,27 +409,29 @@ export function PeopleTab({
                             <button
                               className={clsx(
                                 "flex h-8 items-center gap-2 rounded-full px-3 text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm ring-1 ring-inset",
-                                person.status === "confirmed"
+                                effectiveStatus === "confirmed"
                                   ? "bg-green-50 text-green-700 ring-green-200 hover:bg-green-100"
-                                  : person.status === "declined"
+                                  : effectiveStatus === "declined"
                                     ? "bg-red-50 text-red-700 ring-red-200 hover:bg-red-100"
-                                    : person.status === "maybe"
+                                    : effectiveStatus === "maybe"
                                       ? "bg-orange-50 text-orange-700 ring-orange-200 hover:bg-orange-100"
                                       : "bg-white text-gray-500 ring-gray-200 hover:bg-gray-50"
                               )}
                             >
-                              {person.status === "confirmed" && <Check size={12} strokeWidth={3} />}
-                              {person.status === "declined" && <X size={12} strokeWidth={3} />}
-                              {person.status === "maybe" && (
+                              {effectiveStatus === "confirmed" && (
+                                <Check size={12} strokeWidth={3} />
+                              )}
+                              {effectiveStatus === "declined" && <X size={12} strokeWidth={3} />}
+                              {effectiveStatus === "maybe" && (
                                 <HelpCircle size={12} strokeWidth={3} />
                               )}
-                              {!person.status && <CircleDashed size={12} strokeWidth={3} />}
+                              {!effectiveStatus && <CircleDashed size={12} strokeWidth={3} />}
                               <span>
-                                {person.status === "confirmed"
+                                {effectiveStatus === "confirmed"
                                   ? t("present")
-                                  : person.status === "declined"
+                                  : effectiveStatus === "declined"
                                     ? t("absent")
-                                    : person.status === "maybe"
+                                    : effectiveStatus === "maybe"
                                       ? t("maybe")
                                       : t("respond")}
                               </span>

@@ -209,11 +209,12 @@ export const updatePersonStatusAction = createSafeAction(
       throw new Error("Person not found");
     }
 
-    // Permission check: Owner of event OR the user themselves
+    // Permission check: Owner of event OR the user themselves OR valid token
     const isOwner = event.ownerId && session?.user?.id === event.ownerId;
     const isSelf = person.userId && session?.user?.id === person.userId;
+    const isTokenValid = input.token && person.token && input.token === person.token;
 
-    if (!isOwner && !isSelf) {
+    if (!isOwner && !isSelf && !isTokenValid) {
       throw new Error("Unauthorized to update this status");
     }
 

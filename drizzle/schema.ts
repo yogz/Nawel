@@ -8,6 +8,7 @@ import {
   real,
   index,
   boolean,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -169,6 +170,7 @@ export const people = pgTable(
     image: text("image"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
     status: text("status"), // 'confirmed', 'declined', 'maybe'
+    token: uuid("token").defaultRandom(), // Secret token for anonymous modification
   },
   (table) => ({
     eventIdIdx: index("people_event_id_idx").on(table.eventId),

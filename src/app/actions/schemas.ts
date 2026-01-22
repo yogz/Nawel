@@ -106,6 +106,7 @@ export const updatePersonSchema = baseInput.extend({
 export const updatePersonStatusSchema = baseInput.extend({
   personId: z.number().int().positive(),
   status: z.enum(["confirmed", "declined", "maybe"]),
+  token: z.string().optional(),
 });
 
 export const deletePersonSchema = baseInput.extend({

@@ -24,6 +24,7 @@ export type Person = InferSelectModel<typeof people> & {
     emoji?: string | null;
   } | null;
   status?: string | null;
+  token?: string | null;
 };
 
 export type Ingredient = InferSelectModel<typeof ingredients>;
