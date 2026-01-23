@@ -22,7 +22,7 @@ interface EventHeaderNavProps {
 export function EventHeaderNav({ isScrolled, onMenuClick }: EventHeaderNavProps) {
   // Dark text for contrast, subtle background adapts to scroll state
   const buttonClasses = cn(
-    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border shadow-sm text-gray-700",
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border shadow-sm text-[#1a0a33]/80",
     isScrolled ? "bg-white/50 border-white/60" : "bg-white/40 border-black/[0.06] backdrop-blur-sm"
   );
 

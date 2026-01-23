@@ -49,7 +49,7 @@ export function EventHeaderActions({
   // Individual button classes - spatial glass orbs
   const buttonClasses = cn(
     "glass-panel flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-transform active:scale-95 hover:scale-105",
-    "text-gray-700 hover:text-gray-950"
+    "text-[#1a0a33]/80 hover:text-[#1a0a33]"
   );
 
   const isCalendarEnabled = meal.date !== "common";

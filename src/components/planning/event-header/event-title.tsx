@@ -51,7 +51,8 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
   const minSize = 20;
 
   // Always use dark text for better contrast on pastel gradient
-  const textColorClass = "text-gray-900";
+  // Use deep indigo for better harmony with the aurora/pastel gradient
+  const textColorClass = "text-[#1a0a33]";
 
   if (!readOnly && isEditing) {
     return (
@@ -64,9 +65,9 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
         maxSize={maxSize}
         minSize={14}
         className={cn(
-          "bg-transparent font-black tracking-[-0.03em] border-none focus-visible:ring-0 transition-colors",
+          "bg-transparent font-extrabold tracking-[-0.01em] border-none focus-visible:ring-0 transition-colors",
           textColorClass,
-          "caret-gray-900"
+          "caret-[#1a0a33]"
         )}
       />
     );
@@ -81,13 +82,13 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
         <AutoSizeText
           maxSize={maxSize}
           minSize={minSize}
-          className={cn("font-black tracking-[-0.03em] transition-colors", textColorClass)}
+          className={cn("font-extrabold tracking-[-0.01em] transition-colors", textColorClass)}
         >
           {displayName}
         </AutoSizeText>
         <Pencil
           size={18}
-          className="opacity-0 transition-opacity group-hover:opacity-100 text-gray-400"
+          className="opacity-0 transition-opacity group-hover:opacity-100 text-[#1a0a33]/40"
         />
       </button>
     );
@@ -97,7 +98,7 @@ export function EventTitle({ name, defaultName, isScrolled, readOnly, onUpdate }
     <AutoSizeText
       maxSize={maxSize}
       minSize={minSize}
-      className={cn("font-black tracking-[-0.03em] transition-colors", textColorClass)}
+      className={cn("font-extrabold tracking-[-0.01em] transition-colors", textColorClass)}
     >
       {displayName}
     </AutoSizeText>

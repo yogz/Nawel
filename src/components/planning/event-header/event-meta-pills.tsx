@@ -86,9 +86,9 @@ export function EventMetaPills({
     }
   }, []);
 
-  // Dark text for contrast, background adapts to scroll state
+  // Deep indigo text for harmony, background adapts to scroll state
   const pillClasses = cn(
-    "group flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 mx-0.5 shadow-sm transition-all text-gray-700",
+    "group flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 mx-0.5 shadow-sm transition-all text-[#1a0a33]/80",
     isScrolled
       ? "bg-white/50 border-white/40 hover:bg-white/60"
       : "bg-white/40 border-white/20 backdrop-blur-md hover:bg-white/50"
@@ -96,8 +96,8 @@ export function EventMetaPills({
 
   const pillClassesInteractive = cn(pillClasses, "hover:scale-105 active:scale-95");
 
-  // Dark icons for better contrast
-  const iconClasses = "text-gray-500";
+  // Deep indigo icons with lower opacity for hierarchy
+  const iconClasses = "text-[#1a0a33]/60";
 
   const shortDate = format.dateTime(new Date(meal.date), {
     weekday: "short",
