@@ -20,7 +20,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 import { auth, type User } from "@/lib/auth-config";
 import { headers } from "next/headers";
-import { assertCanModifyPerson } from "@/lib/permissions";
+import { assertCanModifyPersonLegacy } from "@/lib/permissions";
 
 export const joinEventAction = createSafeAction(baseInput, async (input) => {
   const event = await verifyEventAccess(input.slug, input.key);
@@ -98,7 +98,7 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
   const event = await verifyEventAccess(input.slug, input.key);
 
   // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
-  await assertCanModifyPerson(input.key, input.token, input.id, event);
+  await assertCanModifyPersonLegacy(input.key, input.token, input.id, event);
 
   const oldPerson = await db.query.people.findFirst({
     where: eq(people.id, input.id),
@@ -210,7 +210,7 @@ export const updatePersonStatusAction = createSafeAction(
     const event = await verifyEventAccess(input.slug, input.key);
 
     // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
-    await assertCanModifyPerson(input.key, input.token, input.personId, event);
+    await assertCanModifyPersonLegacy(input.key, input.token, input.personId, event);
 
     const person = await db.query.people.findFirst({
       where: eq(people.id, input.personId),

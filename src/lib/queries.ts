@@ -47,16 +47,32 @@ export async function fetchPlan(slug: string): Promise<PlanData> {
         },
       });
 
+      // Strip tokens from items' person references for security
+      const secureServiceRows = serviceRows.map((service) => ({
+        ...service,
+        items: service.items.map((item) => ({
+          ...item,
+          person: item.person ? { ...item.person, token: null } : null,
+        })),
+      }));
+
       return {
         ...meal,
-        services: serviceRows,
+        services: secureServiceRows,
       };
     })
   );
 
+  // 5. Strip tokens from people for security
+  // Tokens are sensitive - only the creator knows their token (stored in localStorage)
+  const securePeople = peopleList.map(({ token: _token, ...person }) => ({
+    ...person,
+    token: null, // Explicitly set to null instead of undefined for type consistency
+  }));
+
   return {
     event,
     meals: mealsWithDetails as Meal[],
-    people: peopleList as Person[],
+    people: securePeople as Person[],
   };
 }

@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 
 import { useTranslations } from "next-intl";
+import { SectionHeader } from "./section-header";
+import { PersonAvatar } from "../common/person-avatar";
 
 interface ShoppingTabProps {
   plan: PlanData;
@@ -342,73 +344,53 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           </SelectContent>
         </Select>
 
-        {/* Global progress */}
-        <div className="group/progress relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-          <div className="relative mb-3 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                {t("totalProgress")}
-              </p>
-              <div className="mt-0.5 flex items-baseline gap-2">
-                <p className="text-2xl font-bold tracking-tight text-gray-900">
-                  {checkedAll}
-                  <span className="text-sm font-normal text-muted-foreground mx-0.5">/</span>
-                  <span className="text-lg text-muted-foreground">{totalAll}</span>
-                </p>
-              </div>
-            </div>
-            <div className="text-2xl font-black text-accent/20">{progressAll}%</div>
-          </div>
-          <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-100">
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: progressAll / 100 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-0 origin-left bg-gradient-to-r from-accent to-accent/80"
-            />
-          </div>
-        </div>
-
         {/* Global shopping list card */}
         <Link
           href={
             writeKey ? `/event/${slug}/shopping/all?key=${writeKey}` : `/event/${slug}/shopping/all`
           }
-          className="group relative block overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-gray-200 hover:shadow-md active:scale-[0.99]"
+          className="block active:scale-[0.99] transition-all"
         >
-          <div className="relative">
-            <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-accent/10">
-                <Users size={20} className="text-accent" />
+          <SectionHeader
+            title={t("allListTitle")}
+            description={
+              progressAll === 100 ? (
+                <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                  <Check size={10} />
+                  {t("completed")}
+                </span>
+              ) : (
+                <span className="text-[10px] font-medium text-gray-400 capitalize">
+                  {checkedAll}/{totalAll} {t("items")}
+                </span>
+              )
+            }
+            icon={
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-1 ring-gray-100">
+                <Users size={20} />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-gray-900">{t("allListTitle")}</h3>
-                  {progressAll === 100 && (
-                    <span className="flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-green-700">
-                      <Check size={10} />
-                      {t("completed")}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-1 flex items-center gap-3">
-                  <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100">
+            }
+            actions={
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end gap-1">
+                  <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
                     <div
-                      className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${progressAll === 100 ? "bg-green-500" : "bg-accent"}`}
+                      className={cn(
+                        "h-full origin-left rounded-full transition-transform duration-300",
+                        progressAll === 100 ? "bg-green-500" : "bg-accent"
+                      )}
                       style={{ transform: `scaleX(${progressAll / 100})` }}
                     />
                   </div>
-                  <span className="text-[10px] font-medium text-muted-foreground">
-                    {checkedAll}/{totalAll}
-                  </span>
+                  <span className="text-[10px] font-black text-accent/40">{progressAll}%</span>
                 </div>
+                <ExternalLink
+                  size={14}
+                  className="text-gray-300 transition-colors group-hover:text-accent"
+                />
               </div>
-              <ExternalLink
-                size={16}
-                className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
-              />
-            </div>
-          </div>
+            }
+          />
         </Link>
 
         {/* Per-person cards */}
@@ -421,59 +403,50 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               : `/event/${slug}/shopping/${person.id}`;
 
             return (
-              <Link
-                key={person.id}
-                href={url}
-                className="group relative block overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-gray-200 hover:shadow-md active:scale-[0.99]"
-              >
-                <div className="relative">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-accent/10 text-lg">
-                      {(() => {
-                        const avatar = renderAvatar(
-                          person,
-                          plan.people.map((p) => p.name)
-                        );
-                        if (avatar.type === "image") {
-                          return (
-                            <img
-                              src={avatar.src}
-                              alt={getDisplayName(person)}
-                              className="h-full w-full object-cover"
-                            />
-                          );
-                        }
-                        return avatar.value;
-                      })()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-gray-900">{getDisplayName(person)}</h3>
-                        {isComplete && (
-                          <span className="flex items-center gap-1 rounded-full bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-green-700">
-                            <Check size={10} />
-                            {t("completed")}
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-1 flex items-center gap-3">
-                        <div className="h-1 flex-1 overflow-hidden rounded-full bg-gray-100">
+              <Link key={person.id} href={url} className="block active:scale-[0.99] transition-all">
+                <SectionHeader
+                  title={getDisplayName(person)}
+                  description={
+                    isComplete ? (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                        <Check size={10} />
+                        {t("completed")}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-gray-400 capitalize">
+                        {checkedItems}/{totalItems} {t("items")}
+                      </span>
+                    )
+                  }
+                  icon={
+                    <PersonAvatar
+                      person={person}
+                      allNames={plan.people.map((p) => p.name)}
+                      size="md"
+                      className="shadow-sm ring-1 ring-gray-100"
+                    />
+                  }
+                  actions={
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${isComplete ? "bg-green-500" : "bg-accent"}`}
+                            className={cn(
+                              "h-full origin-left rounded-full transition-transform duration-300",
+                              isComplete ? "bg-green-500" : "bg-accent"
+                            )}
                             style={{ transform: `scaleX(${progress / 100})` }}
                           />
                         </div>
-                        <span className="text-[10px] font-medium text-muted-foreground">
-                          {checkedItems}/{totalItems}
-                        </span>
+                        <span className="text-[10px] font-black text-accent/40">{progress}%</span>
                       </div>
+                      <ExternalLink
+                        size={14}
+                        className="text-gray-300 transition-colors group-hover:text-accent"
+                      />
                     </div>
-                    <ExternalLink
-                      size={16}
-                      className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
-                    />
-                  </div>
-                </div>
+                  }
+                />
               </Link>
             );
           })}
@@ -530,53 +503,41 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       )}
 
       {/* Header with progress */}
-      <div className="group/progress relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-        <div className="relative mb-4 flex items-center gap-4">
-          {displayPerson && (
-            <div className="relative">
-              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-accent text-xl ring-2 ring-white shadow-sm">
-                {(() => {
-                  const avatar = renderAvatar(
-                    displayPerson,
-                    plan.people.map((p) => p.name)
-                  );
-                  if (avatar.type === "image") {
-                    return (
-                      <img
-                        src={avatar.src}
-                        alt={displayPerson ? getDisplayName(displayPerson) : ""}
-                        className="h-full w-full object-cover"
-                      />
-                    );
-                  }
-                  return <span className="text-white font-bold">{avatar.value}</span>;
-                })()}
-              </div>
-              <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5">
-                <ShoppingCart size={12} className="text-accent" />
-              </div>
+      <SectionHeader
+        title={displayPerson ? getDisplayName(displayPerson) : t("myList")}
+        description={
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+            {checkedCount}/{allItems.length} {t("items")}
+          </span>
+        }
+        icon={
+          displayPerson ? (
+            <PersonAvatar
+              person={displayPerson}
+              allNames={plan.people.map((p) => p.name)}
+              size="md"
+              className="shadow-sm ring-1 ring-gray-100"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <ShoppingCart size={20} />
             </div>
-          )}
-          <div className="flex-1">
-            <h2 className="text-xl font-bold tracking-tight text-gray-900">
-              {displayPerson ? getDisplayName(displayPerson) : t("myList")}
-            </h2>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-              {checkedCount}/{allItems.length} {t("items")}
-            </p>
+          )
+        }
+        actions={
+          <div className="flex items-center gap-4">
+            <div className="text-2xl font-black text-accent/20">{progressPercent}%</div>
+            <div className="relative h-2 w-24 overflow-hidden rounded-full bg-gray-100 hidden sm:block">
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: progressPercent / 100 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 origin-left bg-gradient-to-r from-accent to-accent/80"
+              />
+            </div>
           </div>
-          <div className="text-2xl font-black text-accent/20">{progressPercent}%</div>
-        </div>
-
-        <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-100">
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: progressPercent / 100 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 origin-left bg-gradient-to-r from-accent to-accent/80"
-          />
-        </div>
-      </div>
+        }
+      />
 
       {/* Full screen link */}
       {fullPageUrl && (
