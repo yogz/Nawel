@@ -113,19 +113,34 @@ export function EventPlanner({
 
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Check if user has a token for any person in this event
+  const [hasExistingToken, setHasExistingToken] = useState(false);
+  useEffect(() => {
+    try {
+      const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
+      const personIds = plan.people.map((p) => p.id);
+      const hasToken = personIds.some((id) => tokens[id]);
+      setHasExistingToken(hasToken);
+    } catch (e) {
+      setHasExistingToken(false);
+    }
+  }, [plan.people]);
+
+  // Per-event dismissal key
+  const dismissalKey = `colist_guest_prompt_dismissed_${slug}`;
   const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(() => {
-    // Initialize from localStorage (only on client)
     if (typeof window !== "undefined") {
-      return localStorage.getItem("colist_guest_prompt_dismissed") === "true";
+      return localStorage.getItem(dismissalKey) === "true";
     }
     return false;
   });
 
-  // Persist guest prompt dismissal to localStorage
+  // Persist guest prompt dismissal to localStorage (per-event)
   const dismissGuestPrompt = () => {
     setHasDismissedGuestPrompt(true);
     if (typeof window !== "undefined") {
-      localStorage.setItem("colist_guest_prompt_dismissed", "true");
+      localStorage.setItem(dismissalKey, "true");
     }
   };
 
@@ -319,13 +334,21 @@ export function EventPlanner({
     }
   }, [session, slug, writeKey, readOnly, plan.people, setPlan, sheet, setSheet]);
 
-  // Guest prompt effect
+  // Guest prompt effect - show drawer if:
+  // - User is not authenticated
+  // - Session is not loading
+  // - Has write access (not readOnly)
+  // - Has NOT dismissed for this event
+  // - Has NO existing token for this event
+  // - No other sheet is open
+  // - Auth modal is not open
   useEffect(() => {
     if (
       !session &&
       !isSessionLoading &&
       !readOnly &&
       !hasDismissedGuestPrompt &&
+      !hasExistingToken &&
       !sheet &&
       !isAuthModalOpen
     ) {
@@ -336,6 +359,7 @@ export function EventPlanner({
     isSessionLoading,
     readOnly,
     hasDismissedGuestPrompt,
+    hasExistingToken,
     sheet,
     setSheet,
     isAuthModalOpen,
