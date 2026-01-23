@@ -376,7 +376,8 @@
       "items": "przedmioty",
       "cancel": "Anuluj",
       "expand": "Rozwiń",
-      "collapse": "Zwiń"
+      "collapse": "Zwiń",
+      "noMealsDesc": "Dodaj swój pierwszy posiłek, aby zacząć organizować menu."
     },
     "Service": {
       "editService": "Edytuj danie {name}",
@@ -409,7 +410,9 @@
       "present": "Przyjdę",
       "respond": "Odpowiedz",
       "statusUpdated": "Status zaktualizowany",
-      "validate": "Zatwierdź"
+      "validate": "Zatwierdź",
+      "adults": "Dorośli",
+      "children": "Dzieci"
     },
     "Shopping": {
       "notAssociated": "Profil niepowiązany",
@@ -599,7 +602,8 @@
       "emojiLabel": "Charakterystyczne emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Domyślne:",
-      "deleteButton": "Usuń tego gościa"
+      "deleteButton": "Usuń tego gościa",
+      "namingNotice": "Dla swoich gości wybierz rozpoznawalną nazwę."
     },
     "Sheets": {
       "addItem": "Dodaj przedmiot",
@@ -630,12 +634,12 @@
         "shareButton": "Udostępnij"
       },
       "GuestAccess": {
-        "title": "Kontynuuj jako gość",
-        "description": "Utwórz swój profil gościa, aby edytować swoje informacje i potwierdzić obecność.",
-        "identifyButton": "Zaloguj się",
-        "identifyDescription": "Użyj swojego konta Google, aby zapisać wydarzenia i korzystać z AI.",
-        "continueButton": "Utwórz mój profil gościa",
-        "continueDescription": "Będziesz mógł edytować swoje informacje i obecność."
+        "title": "Witaj!",
+        "description": "Dołącz do wydarzenia, aby potwierdzić swoją obecność i wziąć udział.",
+        "identifyButton": "ZALOGUJ SIĘ",
+        "identifyDescription": "Znajdź swoje wydarzenia, historię i AI.",
+        "continueButton": "SZYBKI DOSTĘP GOŚCIA",
+        "continueDescription": "Natychmiastowy dostęp, tylko z Twoim imieniem."
       },
       "ClaimPerson": {
         "title": "Czy to Ty?",

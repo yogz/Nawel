@@ -376,7 +376,8 @@
       "items": "Artikel",
       "cancel": "Abbrechen",
       "expand": "Erweitern",
-      "collapse": "Einklappen"
+      "collapse": "Einklappen",
+      "noMealsDesc": "Fügen Sie Ihre erste Mahlzeit hinzu, um mit der Organisation des Menüs zu beginnen."
     },
     "Service": {
       "editService": "Gang bearbeiten {name}",
@@ -409,7 +410,9 @@
       "present": "Ich komme",
       "respond": "Antworten",
       "statusUpdated": "Status aktualisiert",
-      "validate": "Bestätigen"
+      "validate": "Bestätigen",
+      "adults": "Erwachsene",
+      "children": "Kinder"
     },
     "Shopping": {
       "notAssociated": "Profil nicht verknüpft",
@@ -599,7 +602,8 @@
       "emojiLabel": "Signatur-Emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Standard:",
-      "deleteButton": "Diesen Gast löschen"
+      "deleteButton": "Diesen Gast löschen",
+      "namingNotice": "Wählen Sie einen erkennbaren Namen für Ihre Gäste."
     },
     "Sheets": {
       "addItem": "Artikel hinzufügen",
@@ -630,12 +634,12 @@
         "shareButton": "Teilen"
       },
       "GuestAccess": {
-        "title": "Als Gast fortfahren",
-        "description": "Erstellen Sie Ihr Gastprofil, um Ihre Informationen zu bearbeiten und Ihre Teilnahme zu bestätigen.",
-        "identifyButton": "Anmelden",
-        "identifyDescription": "Nutzen Sie Ihr Google-Konto, um Events zu speichern und KI zu nutzen.",
-        "continueButton": "Mein Gastprofil erstellen",
-        "continueDescription": "Sie können Ihre Informationen und Teilnahme bearbeiten."
+        "title": "Willkommen!",
+        "description": "Tritt dem Event bei, um deine Anwesenheit zu bestätigen und teilzunehmen.",
+        "identifyButton": "ANMELDEN",
+        "identifyDescription": "Finde deine Events, deinen Verlauf und die KI.",
+        "continueButton": "SCHNELLER GASTZUGANG",
+        "continueDescription": "Sofortiger Zugang, nur mit deinem Namen."
       },
       "ClaimPerson": {
         "title": "Sind Sie das?",

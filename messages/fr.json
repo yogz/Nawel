@@ -376,7 +376,8 @@
       "items": "articles",
       "cancel": "Annuler",
       "expand": "Développer",
-      "collapse": "Réduire"
+      "collapse": "Réduire",
+      "noMealsDesc": "Ajoutez un premier repas pour commencer à organiser le menu."
     },
     "Service": {
       "editService": "Modifier le service {name}",
@@ -409,7 +410,9 @@
       "howMany": "Combien serez-vous ?",
       "adjustCounts": "Ajustez le nombre de personnes",
       "validate": "Valider",
-      "adjust": "Je ne viens pas seul"
+      "adjust": "Je ne viens pas seul",
+      "adults": "Adultes",
+      "children": "Enfants"
     },
     "Shopping": {
       "notAssociated": "Profil non associé",
@@ -599,7 +602,8 @@
       "emojiLabel": "Emoji Signature",
       "autoEmoji": "Auto",
       "defaultEmoji": "Par défaut:",
-      "deleteButton": "Supprimer ce convive"
+      "deleteButton": "Supprimer ce convive",
+      "namingNotice": "Pour vos convives, choisissez un nom reconnaissable."
     },
     "Sheets": {
       "addItem": "Ajouter un article",
@@ -632,12 +636,12 @@
         "shareMessage": "Rejoins-moi pour organiser {name} sur CoList ! 🎁 {url}"
       },
       "GuestAccess": {
-        "title": "Rejoindre l'événement",
-        "description": "Créez votre profil invité pour pouvoir modifier vos informations et confirmer votre présence.",
-        "identifyButton": "S'identifier / Créer un compte",
-        "identifyDescription": "Utilisez votre compte Google pour sauvegarder vos événements et utiliser l'IA.",
-        "continueButton": "Rejoindre l'événement sans créer de compte",
-        "continueDescription": "On a juste besoin de votre nom."
+        "title": "Bienvenue !",
+        "description": "Rejoignez l'événement pour confirmer votre présence et participer.",
+        "identifyButton": "SE CONNECTER",
+        "identifyDescription": "Retrouvez vos événements, votre historique et l'IA.",
+        "continueButton": "ACCÈS INVITÉ RAPIDE",
+        "continueDescription": "Accès immédiat, juste avec votre nom."
       },
       "ClaimPerson": {
         "title": "C'est vous ?",

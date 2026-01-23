@@ -376,7 +376,8 @@
       "items": "itens",
       "cancel": "Cancelar",
       "expand": "Expandir",
-      "collapse": "Recolher"
+      "collapse": "Recolher",
+      "noMealsDesc": "Adicione a sua primeira refeição para começar a organizar o menu."
     },
     "Service": {
       "editService": "Editar prato {name}",
@@ -409,7 +410,9 @@
       "present": "Vou",
       "respond": "Responder",
       "statusUpdated": "Estado atualizado",
-      "validate": "Validar"
+      "validate": "Validar",
+      "adults": "Adultos",
+      "children": "Crianças"
     },
     "Shopping": {
       "notAssociated": "Perfil não associado",
@@ -599,7 +602,8 @@
       "emojiLabel": "Emoji de assinatura",
       "autoEmoji": "Auto",
       "defaultEmoji": "Por defeito:",
-      "deleteButton": "Eliminar este convidado"
+      "deleteButton": "Eliminar este convidado",
+      "namingNotice": "Para os seus convidados, escolha um nome reconhecível."
     },
     "Sheets": {
       "addItem": "Adicionar um artigo",
@@ -630,12 +634,12 @@
         "shareButton": "Partilhar"
       },
       "GuestAccess": {
-        "title": "Continuar como convidado",
-        "description": "Crie o seu perfil de convidado para editar as suas informações e confirmar a sua presença.",
-        "identifyButton": "Identificar-se",
-        "identifyDescription": "Utilize a sua conta Google para guardar os seus eventos e utilizar a IA.",
-        "continueButton": "Criar o meu perfil de convidado",
-        "continueDescription": "Poderá editar as suas informações e presença."
+        "title": "Bem-vindo!",
+        "description": "Junte-se ao evento para confirmar sua presença e participar.",
+        "identifyButton": "ENTRAR",
+        "identifyDescription": "Encontre seus eventos, seu histórico e a IA.",
+        "continueButton": "ACESSO RÁPIDO COMO CONVIDADO",
+        "continueDescription": "Acesso imediato, apenas com seu nome."
       },
       "ClaimPerson": {
         "title": "É você?",

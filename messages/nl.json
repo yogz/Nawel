@@ -376,7 +376,8 @@
       "items": "items",
       "cancel": "Annuleren",
       "expand": "Uitklappen",
-      "collapse": "Inklappen"
+      "collapse": "Inklappen",
+      "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren."
     },
     "Service": {
       "editService": "Gang bewerken {name}",
@@ -409,7 +410,9 @@
       "present": "Bevestigd",
       "respond": "Reageren",
       "statusUpdated": "Status bijgewerkt",
-      "validate": "Valideren"
+      "validate": "Valideren",
+      "adults": "Volwassenen",
+      "children": "Kinderen"
     },
     "Shopping": {
       "notAssociated": "Profiel niet geassocieerd",
@@ -599,7 +602,8 @@
       "emojiLabel": "Kenmerkende Emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Standaard:",
-      "deleteButton": "Deze gast verwijderen"
+      "deleteButton": "Deze gast verwijderen",
+      "namingNotice": "Kies een herkenbare naam voor je gasten."
     },
     "Sheets": {
       "addItem": "Item toevoegen",
@@ -630,12 +634,12 @@
         "shareButton": "Delen"
       },
       "GuestAccess": {
-        "title": "Doorgaan als gast",
-        "description": "Maak uw gastprofiel aan om uw gegevens te bewerken en uw aanwezigheid te bevestigen.",
-        "identifyButton": "Aanmelden",
-        "identifyDescription": "Gebruik uw Google-account om uw evenementen op te slaan en AI te gebruiken.",
-        "continueButton": "Mijn gastprofiel aanmaken",
-        "continueDescription": "U kunt uw gegevens en aanwezigheid bewerken."
+        "title": "Welkom!",
+        "description": "Neem deel aan het evenement om je aanwezigheid te bevestigen en mee te doen.",
+        "identifyButton": "INLOGGEN",
+        "identifyDescription": "Vind je evenementen, je geschiedenis en de AI.",
+        "continueButton": "SNELLE GASTTOEGANG",
+        "continueDescription": "Directe toegang, alleen met je naam."
       },
       "ClaimPerson": {
         "title": "Bent u dit?",

@@ -287,7 +287,7 @@ export function EventPlannerSheets({
               </div>
             )}
           </DrawerHeader>
-          <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
+          <div className="scrollbar-none flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
             {renderSheetContent()}
           </div>
         </DrawerContent>

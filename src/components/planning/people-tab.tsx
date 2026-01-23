@@ -93,6 +93,7 @@ export function PeopleTab({
 
   const [isPending, startTransition] = useTransition();
   const [guestTokens, setGuestTokens] = useState<Record<number, string>>({});
+  const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
 
   // Load guest tokens on mount
   useEffect(() => {
@@ -129,7 +130,9 @@ export function PeopleTab({
           handleUpdateStatus &&
           handleUpdateGuestCount &&
           plan.people
-            .filter((p) => p.userId === currentUserId || !!guestTokens[p.id])
+            .filter(
+              (p) => p.userId === currentUserId || !!guestTokens[p.id] || editingPersonId === p.id
+            )
             .map((person) => (
               <RSVPControl
                 key={person.id}
@@ -138,6 +141,17 @@ export function PeopleTab({
                 readOnly={readOnly}
                 onUpdateStatus={handleUpdateStatus}
                 onUpdateGuestCount={handleUpdateGuestCount}
+                onAdjust={() => {
+                  setEditingPersonId(person.id);
+                  // Scroll to card so user sees it
+                  setTimeout(() => {
+                    document
+                      .getElementById(`attendance-card-${person.id}`)
+                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }, 100);
+                }}
+                onValidated={() => setEditingPersonId(null)}
+                isEditing={editingPersonId === person.id}
                 variant="card"
               />
             ))}
@@ -199,6 +213,16 @@ export function PeopleTab({
                           readOnly={readOnly}
                           onUpdateStatus={handleUpdateStatus}
                           onUpdateGuestCount={handleUpdateGuestCount}
+                          onAdjust={() => {
+                            setEditingPersonId(person.id);
+                            // Scroll to card so user sees it
+                            setTimeout(() => {
+                              document
+                                .getElementById(`attendance-card-${person.id}`)
+                                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+                            }, 100);
+                          }}
+                          onValidated={() => setEditingPersonId(null)}
                           variant="inline"
                         />
                       )}

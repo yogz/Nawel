@@ -376,7 +376,8 @@
       "items": "items",
       "cancel": "Cancel",
       "expand": "Expand",
-      "collapse": "Collapse"
+      "collapse": "Collapse",
+      "noMealsDesc": "Add your first meal to start organizing the menu."
     },
     "Service": {
       "editService": "Edit course {name}",
@@ -409,7 +410,9 @@
       "howMany": "How many people?",
       "adjustCounts": "Adjust the headcount",
       "validate": "Done",
-      "adjust": "I'm bringing guests"
+      "adjust": "I'm bringing guests",
+      "adults": "Adults",
+      "children": "Children"
     },
     "Shopping": {
       "notAssociated": "Profile not associated",
@@ -599,7 +602,8 @@
       "emojiLabel": "Signature Emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Default:",
-      "deleteButton": "Delete this guest"
+      "deleteButton": "Delete this guest",
+      "namingNotice": "For your guests, choose a recognizable name."
     },
     "Sheets": {
       "addItem": "Add item",
@@ -632,12 +636,12 @@
         "shareMessage": "Join me in organizing {name} on CoList! 🎁 {url}"
       },
       "GuestAccess": {
-        "title": "Continue as guest",
-        "description": "Create your guest profile to edit your information and confirm your attendance.",
-        "identifyButton": "Sign in",
-        "identifyDescription": "Use your Google account to save your events and use AI.",
-        "continueButton": "Create my guest profile",
-        "continueDescription": "You'll be able to edit your information and attendance."
+        "title": "Welcome!",
+        "description": "Join the event to confirm your presence and participate.",
+        "identifyButton": "LOG IN",
+        "identifyDescription": "Find your events, history, and AI.",
+        "continueButton": "QUICK GUEST ACCESS",
+        "continueDescription": "Immediate access, just with your name."
       },
       "ClaimPerson": {
         "title": "Is it you?",

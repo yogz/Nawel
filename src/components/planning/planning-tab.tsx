@@ -160,26 +160,17 @@ export function PlanningTab({
         className="space-y-4 pt-0 sm:space-y-6"
       >
         {/* RSVP Section at the top of the page */}
-        <div className="space-y-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/20 shadow-sm mb-2">
-          <RSVPSummary
-            plan={plan}
-            selectedPersonId={null} // No filter here by default or keep it synced?
-            onSelectPerson={() => {}} // No filtering in planning tab for now
-            onAddPerson={readOnly ? undefined : () => setSheet({ type: "person" })}
+        {currentPersonId && handleUpdateStatus && handleUpdateGuestCount && (
+          <RSVPControl
+            person={plan.people.find((p) => p.id === currentPersonId)!}
+            token={null} // use current session/token automatically via handler
             readOnly={readOnly}
+            onUpdateStatus={handleUpdateStatus}
+            onUpdateGuestCount={handleUpdateGuestCount}
+            onValidated={() => {}} // Planning tab currently doesn't manage external edit state
+            variant="card"
           />
-
-          {currentPersonId && handleUpdateStatus && handleUpdateGuestCount && (
-            <RSVPControl
-              person={plan.people.find((p) => p.id === currentPersonId)!}
-              token={null} // use current session/token automatically via handler
-              readOnly={readOnly}
-              onUpdateStatus={handleUpdateStatus}
-              onUpdateGuestCount={handleUpdateGuestCount}
-              variant="card"
-            />
-          )}
-        </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />

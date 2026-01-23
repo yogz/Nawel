@@ -376,7 +376,8 @@
       "items": "ürünler",
       "cancel": "İptal",
       "expand": "Genişlet",
-      "collapse": "Daralt"
+      "collapse": "Daralt",
+      "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin."
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",
@@ -409,7 +410,9 @@
       "present": "Geliyorum",
       "respond": "Cevapla",
       "statusUpdated": "Durum güncellendi",
-      "validate": "Onayla"
+      "validate": "Onayla",
+      "adults": "Yetişkinler",
+      "children": "Çocuklar"
     },
     "Shopping": {
       "notAssociated": "Profil ilişkilendirilmemiş",
@@ -599,7 +602,8 @@
       "emojiLabel": "İmza Emoji",
       "autoEmoji": "Oto",
       "defaultEmoji": "Varsayılan:",
-      "deleteButton": "Bu davetliyi sil"
+      "deleteButton": "Bu davetliyi sil",
+      "namingNotice": "Misafirleriniz için tanınabilir bir isim seçin."
     },
     "Sheets": {
       "addItem": "Ürün ekle",
@@ -630,12 +634,12 @@
         "shareButton": "Paylaş"
       },
       "GuestAccess": {
-        "title": "Davetli olarak devam et",
-        "description": "Bilgilerinizi düzenlemek ve katılımınızı onaylamak için davetli profilinizi oluşturun.",
-        "identifyButton": "Giriş yap",
-        "identifyDescription": "Etkinliklerinizi kaydetmek ve YZ kullanmak için Google hesabınızı kullanın.",
-        "continueButton": "Davetli profilimi oluştur",
-        "continueDescription": "Bilgilerinizi ve katılımınızı düzenleyebilirsiniz."
+        "title": "Hoş Geldiniz!",
+        "description": "Katılımınızı onaylamak ve dahil olmak için etkinliğe katılın.",
+        "identifyButton": "GİRİŞ YAP",
+        "identifyDescription": "Etkinliklerinizi, geçmişinizi ve YZ'yi bulun.",
+        "continueButton": "HIZLI MİSAFİR ERİŞİMİ",
+        "continueDescription": "Sadece isminizle, anında erişim."
       },
       "ClaimPerson": {
         "title": "Siz misiniz ?",

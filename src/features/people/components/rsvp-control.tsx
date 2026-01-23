@@ -8,6 +8,8 @@ import clsx from "clsx";
 import { type Person } from "@/lib/types";
 import { getDisplayName } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface RSVPControlProps {
   person: Person;
@@ -19,6 +21,9 @@ interface RSVPControlProps {
     token?: string | null
   ) => void;
   onUpdateGuestCount: (id: number, adults: number, children: number, token?: string | null) => void;
+  onAdjust?: () => void;
+  onValidated?: () => void;
+  isEditing?: boolean;
   variant?: "card" | "inline";
 }
 
@@ -28,41 +33,54 @@ export function RSVPControl({
   readOnly,
   onUpdateStatus,
   onUpdateGuestCount,
+  onAdjust,
+  onValidated,
+  isEditing,
   variant = "card",
 }: RSVPControlProps) {
   const t = useTranslations("EventDashboard.People");
-  const [isEditing, setIsEditing] = useState(false);
+  const [localIsEditing, setLocalIsEditing] = useState(false);
   const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
 
-  const effectiveStatus = person.status;
-  const currentCounts = {
-    guestAdults: person.guest_adults,
-    guestChildren: person.guest_children,
-  };
+  const [localAdults, setLocalAdults] = useState(person.guest_adults);
+  const [localChildren, setLocalChildren] = useState(person.guest_children);
 
-  const displayAdults = 1 + currentCounts.guestAdults;
-  const displayChildren = currentCounts.guestChildren;
+  // Synchronize local counts when person data changes or editing starts
+  const activeIsEditing = isEditing ?? localIsEditing;
+
+  useEffect(() => {
+    setLocalAdults(person.guest_adults);
+    setLocalChildren(person.guest_children);
+  }, [person.guest_adults, person.guest_children]);
+
+  const effectiveStatus = person.status;
+  const displayAdults = 1 + localAdults;
+  const displayChildren = localChildren;
 
   const handleStatusChange = (status: "confirmed" | "declined" | "maybe") => {
     onUpdateStatus(person.id, status, token);
     setOpenPopoverId(null);
     if (status === "confirmed") {
-      setIsEditing(true);
+      if (onAdjust) onAdjust();
+      else setLocalIsEditing(true);
     } else {
-      setIsEditing(false);
+      setLocalIsEditing(false);
     }
   };
 
   const handleCountChange = (type: "adults" | "children", delta: number) => {
-    const adults =
-      type === "adults"
-        ? Math.max(0, currentCounts.guestAdults + delta)
-        : currentCounts.guestAdults;
-    const children =
-      type === "children"
-        ? Math.max(0, currentCounts.guestChildren + delta)
-        : currentCounts.guestChildren;
-    onUpdateGuestCount(person.id, adults, children, token);
+    if (type === "adults") {
+      setLocalAdults((prev) => Math.max(0, prev + delta));
+    } else {
+      setLocalChildren((prev) => Math.max(0, prev + delta));
+    }
+  };
+
+  const handleValidate = () => {
+    onUpdateGuestCount(person.id, localAdults, localChildren, token);
+    setLocalIsEditing(false);
+    if (onValidated) onValidated();
+    toast.success(t("statusUpdated"));
   };
 
   if (variant === "inline") {
@@ -104,7 +122,8 @@ export function RSVPControl({
             {effectiveStatus === "confirmed" && (
               <button
                 onClick={() => {
-                  setIsEditing(true);
+                  if (onAdjust) onAdjust();
+                  else setLocalIsEditing(true);
                   setOpenPopoverId(null);
                 }}
                 className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
@@ -150,11 +169,12 @@ export function RSVPControl({
 
   // Card variant (default)
   if (effectiveStatus === "declined") return null;
-  if (effectiveStatus === "confirmed" && !isEditing) return null;
+  if (effectiveStatus === "confirmed" && !activeIsEditing) return null;
 
   return (
     <motion.div
       layout
+      id={`attendance-card-${person.id}`}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -195,7 +215,7 @@ export function RSVPControl({
             <div className="flex items-center gap-6">
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
-                  Adultes
+                  {t("adults")}
                 </span>
                 <div className="flex items-center gap-3">
                   <button
@@ -219,7 +239,7 @@ export function RSVPControl({
 
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
-                  Enfants
+                  {t("children")}
                 </span>
                 <div className="flex items-center gap-3">
                   <button
@@ -243,7 +263,7 @@ export function RSVPControl({
             </div>
 
             <button
-              onClick={() => setIsEditing(false)}
+              onClick={handleValidate}
               className="w-full rounded-xl bg-gray-900 py-3 text-sm font-bold text-white shadow-sm hover:bg-gray-800 transition-all"
             >
               {t("validate")}

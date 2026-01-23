@@ -376,7 +376,8 @@
       "items": "varer",
       "cancel": "Annuller",
       "expand": "Udfold",
-      "collapse": "Skjul"
+      "collapse": "Skjul",
+      "noMealsDesc": "Tilføj dit første måltid for at begynde at organisere menuen."
     },
     "Service": {
       "editService": "Rediger ret {name}",
@@ -409,7 +410,9 @@
       "present": "Jeg kommer",
       "respond": "Svar",
       "statusUpdated": "Status opdateret",
-      "validate": "Bekræft"
+      "validate": "Bekræft",
+      "adults": "Voksne",
+      "children": "Børn"
     },
     "Shopping": {
       "notAssociated": "Profil ikke tilknyttet",
@@ -599,7 +602,8 @@
       "emojiLabel": "Signatur-Emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Standard:",
-      "deleteButton": "Slet denne gæst"
+      "deleteButton": "Slet denne gæst",
+      "namingNotice": "Vælg et genkendeligt navn til dine gæster."
     },
     "Sheets": {
       "addItem": "Tilføj vare",
@@ -630,12 +634,12 @@
         "shareButton": "Del"
       },
       "GuestAccess": {
-        "title": "Fortsæt som gæst",
-        "description": "Opret din gæsteprofil for at redigere dine oplysninger og bekræfte din deltagelse.",
-        "identifyButton": "Log ind",
-        "identifyDescription": "Brug din Google-konto til at gemme dine begivenheder og bruge AI.",
-        "continueButton": "Opret min gæsteprofil",
-        "continueDescription": "Du kan redigere dine oplysninger og deltagelse."
+        "title": "Velkommen!",
+        "description": "Deltag i begivenheden for at bekræfte din tilstedeværelse og deltage.",
+        "identifyButton": "LOG IND",
+        "identifyDescription": "Find dine begivenheder, din historik og AI.",
+        "continueButton": "HURTIG GÆSTEADGANG",
+        "continueDescription": "Øjeblikkelig adgang, kun med dit navn."
       },
       "ClaimPerson": {
         "title": "Er det dig?",
