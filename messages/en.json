@@ -307,7 +307,14 @@
     "commonItems": "📦 Commons",
     "startDatePlaceholder": "Start date",
     "endDatePlaceholder": "End date",
-    "datePlaceholder": "Date"
+    "datePlaceholder": "Date",
+    "adminKeyLabel": "Admin key (optional)",
+    "adminKeyPlaceholder": "my-secret-key",
+    "customUrlLabel": "Custom URL",
+    "customUrlPlaceholder": "event-name",
+    "hideOptions": "↑ Hide options",
+    "showOptions": "↓ Advanced options",
+    "summaryUrl": "URL"
   },
   "EventDashboard": {
     "Organizer": {
@@ -546,7 +553,9 @@
       "showLess": "Less options",
       "defaultEventName": "Event",
       "thisEvent": "this event",
-      "eventDeleted": "Event deleted ✓"
+      "eventDeleted": "Event deleted ✓",
+      "eventUpdateError": "Error updating event",
+      "eventUpdated": "Event updated ✓"
     },
     "Meal": {
       "common": "📦 Common items",
@@ -826,6 +835,14 @@
         "feedback": {
           "title": "Feedback",
           "content": "Have an idea? Found a bug? Click here to share your feedback with us."
+        },
+        "list": {
+          "content": "Find the list of your upcoming and past events here.",
+          "title": "Your events"
+        },
+        "welcome": {
+          "content": "Here is your dashboard where you will find all your events.",
+          "title": "Welcome to CoList!"
         }
       }
     },

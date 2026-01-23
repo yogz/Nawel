@@ -55,7 +55,7 @@ export type Sheet =
   | { type: "service-edit"; service: Service }
   | { type: "meal-edit"; meal: Meal }
   | { type: "meal-create" }
-  | { type: "person" }
+  | { type: "person"; context?: string }
   | { type: "person-edit"; person: Person; token?: string | null }
   | { type: "share" }
   | { type: "guest-access" }

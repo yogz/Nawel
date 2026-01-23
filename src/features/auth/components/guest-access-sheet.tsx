@@ -34,20 +34,6 @@ export function GuestAccessSheet({
               <Button
                 variant="premium"
                 className="h-auto w-full whitespace-normal border-accent/20 bg-accent py-4 text-white shadow-lg shadow-accent/20 active:scale-95"
-                onClick={onAuth}
-                icon={<UserCircle className="h-6 w-6" />}
-                iconClassName="bg-white/20 text-white"
-              >
-                <div className="flex-1 text-left">
-                  <div className="text-base font-bold">{t("identifyButton")}</div>
-                  <div className="text-xs text-white/70">{t("identifyDescription")}</div>
-                </div>
-                <ArrowRight className="h-5 w-5 opacity-50" />
-              </Button>
-
-              <Button
-                variant="premium"
-                className="h-auto w-full whitespace-normal border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
                 onClick={() => {
                   sendGAEvent("event", "guest_continued_without_auth");
                   if (onCreateGuest) {
@@ -57,12 +43,26 @@ export function GuestAccessSheet({
                   }
                 }}
                 icon={<UserPlus className="h-6 w-6" />}
-                iconClassName="bg-gray-100 text-gray-500"
+                iconClassName="bg-white/20 text-white"
               >
                 <div className="flex-1 text-left">
                   <div className="text-base font-bold">{t("continueButton")}</div>
+                  <div className="text-xs text-white/70">{t("continueDescription")}</div>
+                </div>
+                <ArrowRight className="h-5 w-5 opacity-50" />
+              </Button>
+
+              <Button
+                variant="premium"
+                className="h-auto w-full whitespace-normal border-gray-100 bg-white py-4 text-gray-900 shadow-sm transition-all hover:bg-gray-50 active:scale-95"
+                onClick={onAuth}
+                icon={<UserCircle className="h-6 w-6" />}
+                iconClassName="bg-gray-100 text-gray-500"
+              >
+                <div className="flex-1 text-left">
+                  <div className="text-base font-bold">{t("identifyButton")}</div>
                   <div className="text-xs font-medium text-gray-500">
-                    {t("continueDescription")}
+                    {t("identifyDescription")}
                   </div>
                 </div>
                 <ArrowRight className="h-5 w-5 text-gray-300" />

@@ -82,8 +82,10 @@ export function EventPlannerSheets({
         return t("editMeal");
       case "meal-create":
         return t("addMeal");
-      case "person":
-        return t("addGuest");
+      case "person": {
+        const isJoin = sheet.context === "join";
+        return isJoin ? t("claimPerson") : t("addGuest");
+      }
       case "person-edit":
         return t("editGuest");
       case "share":
@@ -178,6 +180,7 @@ export function EventPlannerSheets({
       case "person":
         return (
           <PersonSheetContent
+            sheet={sheet}
             readOnly={readOnly}
             currentUserId={currentUserId}
             currentUserImage={currentUserImage}
@@ -218,7 +221,7 @@ export function EventPlannerSheets({
             }}
             onAuth={onAuth}
             onCreateGuest={() => {
-              setSheet({ type: "person" });
+              setSheet({ type: "person", context: "join" });
               onDismissGuestPrompt();
             }}
           />

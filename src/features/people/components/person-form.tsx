@@ -13,13 +13,16 @@ export function PersonForm({
   readOnly,
   currentUserId,
   currentUserImage,
+  isJoin,
 }: {
   onSubmit: (name: string, emoji?: string, userId?: string) => void;
   readOnly?: boolean;
   currentUserId?: string;
   currentUserImage?: string | null;
+  isJoin?: boolean;
 }) {
   const t = useTranslations("EventDashboard.PersonForm");
+  const tGuest = useTranslations("EventDashboard.Sheets.GuestAccess");
   const [name, setName] = useState("");
   const [isMe, setIsMe] = useState(false);
 
@@ -32,6 +35,11 @@ export function PersonForm({
 
   return (
     <div className="space-y-4">
+      {isJoin && (
+        <div className="px-1 text-center">
+          <p className="text-sm font-medium text-gray-600">{tGuest("continueDescription")}</p>
+        </div>
+      )}
       <div className="space-y-2">
         <Label
           htmlFor="person-name"

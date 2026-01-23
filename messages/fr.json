@@ -307,7 +307,14 @@
     "commonItems": "📦 Communs",
     "startDatePlaceholder": "Date de début",
     "endDatePlaceholder": "Date de fin",
-    "datePlaceholder": "Date"
+    "datePlaceholder": "Date",
+    "adminKeyLabel": "Clé d'administration (optionnel)",
+    "adminKeyPlaceholder": "mon-code-secret",
+    "customUrlLabel": "URL personnalisée",
+    "customUrlPlaceholder": "nom-de-l-evenement",
+    "hideOptions": "↑ Masquer les options",
+    "showOptions": "↓ Options avancées",
+    "summaryUrl": "URL"
   },
   "EventDashboard": {
     "Organizer": {
@@ -625,12 +632,12 @@
         "shareMessage": "Rejoins-moi pour organiser {name} sur CoList ! 🎁 {url}"
       },
       "GuestAccess": {
-        "title": "Continuer comme invité",
+        "title": "Rejoindre l'événement",
         "description": "Créez votre profil invité pour pouvoir modifier vos informations et confirmer votre présence.",
-        "identifyButton": "S'identifier",
+        "identifyButton": "S'identifier / Créer un compte",
         "identifyDescription": "Utilisez votre compte Google pour sauvegarder vos événements et utiliser l'IA.",
-        "continueButton": "Créer mon profil invité",
-        "continueDescription": "Vous pourrez modifier vos informations et votre présence."
+        "continueButton": "Rejoindre l'événement sans créer de compte",
+        "continueDescription": "On a juste besoin de votre nom."
       },
       "ClaimPerson": {
         "title": "C'est vous ?",
@@ -828,6 +835,14 @@
         "feedback": {
           "title": "Feedback",
           "content": "Une idée ? Un bug ? Cliquez ici pour nous faire part de vos retours."
+        },
+        "list": {
+          "content": "Retrouvez ici la liste de vos événements à venir et passés.",
+          "title": "Vos événements"
+        },
+        "welcome": {
+          "content": "Voici votre tableau de bord où vous retrouverez tous vos événements.",
+          "title": "Bienvenue sur CoList !"
         }
       }
     },
