@@ -15,6 +15,8 @@ import {
   formatAggregatedQuantity,
   type AggregatedShoppingItem,
 } from "@/lib/shopping-utils";
+import { CitationDisplay } from "../common/citation-display";
+import { AppBranding } from "../common/app-branding";
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -553,6 +555,18 @@ export function ShoppingPage({
             {t("readOnlyNotice")}
           </div>
         )}
+
+        {/* Poetic Footer */}
+        <div className="mt-16 mb-8 px-4 flex justify-center">
+          <div className="max-w-md w-full opacity-40 hover:opacity-100 transition-opacity duration-700">
+            <CitationDisplay seed={slug} className="text-center" />
+          </div>
+        </div>
+
+        {/* Global Branding Signature */}
+        <div className="mt-20 mb-8 flex flex-col items-center gap-4 opacity-30 hover:opacity-100 transition-opacity duration-700">
+          <AppBranding variant="icon-text" logoSize={24} noLink />
+        </div>
       </main>
     </div>
   );

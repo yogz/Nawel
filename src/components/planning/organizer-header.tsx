@@ -236,17 +236,6 @@ export function OrganizerHeader({
                 <UserNav showLabel={true} />
               </div>
             </div>
-
-            {tab === "planning" && (
-              <div className="mt-1">
-                <div className="px-0.5 pb-0.5">
-                  <CitationDisplay
-                    seed={plan.event?.name || slug}
-                    className="text-xs sm:text-[10px]"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </header>
       </div>

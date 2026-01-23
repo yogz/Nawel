@@ -9,6 +9,7 @@ import { MealContainer } from "./meal-container";
 import { DayTabs } from "./day-tabs";
 import { Link } from "@/i18n/navigation";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { CitationDisplay } from "../common/citation-display";
 
 import {
   type DragEndEvent,
@@ -236,6 +237,11 @@ export function PlanningTab({
               <PlusIcon size={16} strokeWidth={2.5} />
               <span>{t("addMeal")}</span>
             </button>
+          </div>
+
+          {/* Poetic Quote before buttons */}
+          <div className="mt-12 w-full max-w-md px-4 opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <CitationDisplay seed={slug} className="text-center" />
           </div>
 
           {/* Premium Footer Actions */}

@@ -58,6 +58,10 @@ const PeopleTab = lazy(() => import("./people-tab").then((m) => ({ default: m.Pe
 const ShoppingTab = lazy(() => import("./shopping-tab").then((m) => ({ default: m.ShoppingTab })));
 const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default: m.AuthModal })));
 
+// Common components
+import { AppBranding } from "../common/app-branding";
+import { CitationDisplay } from "../common/citation-display";
+
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
 
@@ -403,6 +407,26 @@ export function EventPlanner({
         handlers={handlers}
       />
 
+      {/* Read-only banner - shown when user has no write access */}
+      {readOnly && (
+        <div className="sticky top-[calc(env(safe-area-inset-top)+60px)] z-50 mx-2 mb-2">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-amber-50 px-4 py-3 shadow-sm ring-1 ring-amber-200/50">
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-white text-xs font-bold">
+                👁
+              </div>
+              <p className="text-sm font-medium text-amber-800">Mode lecture seule</p>
+            </div>
+            <button
+              onClick={() => setSheet({ type: "guest-access" })}
+              className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600"
+            >
+              Obtenir l'accès
+            </button>
+          </div>
+        </div>
+      )}
+
       <SuccessToast
         message={successMessage?.text || null}
         type={successMessage?.type || "success"}
@@ -462,6 +486,10 @@ export function EventPlanner({
             )}
           </Suspense>
         </main>
+
+        <footer className="mt-12 mb-8 flex flex-col items-center gap-4 opacity-30 hover:opacity-100 transition-opacity duration-700">
+          <AppBranding variant="icon-text" logoSize={24} noLink />
+        </footer>
 
         <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
       </div>
