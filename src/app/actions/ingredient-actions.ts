@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { ingredients, ingredientCache, items } from "@drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   generateIngredientsSchema,
   createIngredientSchema,
@@ -83,7 +83,7 @@ export const generateIngredientsAction = createSafeAction(
         };
       }
 
-      await verifyEventAccess(input.slug, input.key);
+      await verifyAccess(input.slug, "ingredient:generate", input.key, input.token);
 
       // First, delete existing ingredients for this item
       await db.delete(ingredients).where(eq(ingredients.itemId, input.itemId));
@@ -257,7 +257,7 @@ export const generateIngredientsAction = createSafeAction(
 );
 
 export const createIngredientAction = createSafeAction(createIngredientSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "ingredient:create", input.key, input.token);
 
   const [{ maxOrder }] = await db
     .select({ maxOrder: sql<number | null>`MAX(${ingredients.order})` })
@@ -280,7 +280,7 @@ export const createIngredientAction = createSafeAction(createIngredientSchema, a
 });
 
 export const updateIngredientAction = createSafeAction(updateIngredientSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "ingredient:update", input.key, input.token);
 
   const [updated] = await db
     .update(ingredients)
@@ -297,7 +297,7 @@ export const updateIngredientAction = createSafeAction(updateIngredientSchema, a
 });
 
 export const deleteIngredientAction = createSafeAction(deleteIngredientSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "ingredient:delete", input.key, input.token);
 
   await db.delete(ingredients).where(eq(ingredients.id, input.id));
 
@@ -308,7 +308,7 @@ export const deleteIngredientAction = createSafeAction(deleteIngredientSchema, a
 export const deleteAllIngredientsAction = createSafeAction(
   deleteAllIngredientsSchema,
   async (input) => {
-    await verifyEventAccess(input.slug, input.key);
+    await verifyAccess(input.slug, "ingredient:delete", input.key, input.token);
 
     await db.delete(ingredients).where(eq(ingredients.itemId, input.itemId));
 

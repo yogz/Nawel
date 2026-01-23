@@ -24,6 +24,7 @@ export interface BaseHandlerParams {
   setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
   session?: ExtendedSession | null;
   refetch?: () => Promise<unknown>;
+  token?: string | null;
 }
 
 export type ItemHandlerParams = BaseHandlerParams;

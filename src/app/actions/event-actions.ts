@@ -7,7 +7,7 @@ import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people, meals } from "@drizzle/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createEventSchema,
   deleteEventSchema,
@@ -214,7 +214,7 @@ export const getMyEventsAction = withErrorThrower(async () => {
 });
 
 export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "event:update", input.key, input.token);
 
   await db
     .update(events)
@@ -240,7 +240,7 @@ export const updateEventAction = createSafeAction(updateEventSchema, async (inpu
 });
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "event:delete", input.key, input.token);
 
   // Log deletion before removing the record
   await logChange("delete", "events", event.id, event);
@@ -255,7 +255,7 @@ export const deleteEventAction = createSafeAction(deleteEventSchema, async (inpu
 export const updateEventWithMealAction = createSafeAction(
   updateEventWithMealSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
+    const { event } = await verifyAccess(input.slug, "event:update", input.key, input.token);
 
     // 1. Update event fields
     await db

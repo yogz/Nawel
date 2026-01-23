@@ -24,6 +24,7 @@ export function usePersonHandlers({
   setSelectedPerson,
   session,
   refetch,
+  token,
 }: PersonHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -73,7 +74,7 @@ export function usePersonHandlers({
     name: string,
     emoji?: string | null,
     image?: string | null,
-    token?: string | null,
+    updateToken?: string | null,
     closeSheet = false
   ) => {
     if (readOnly) {
@@ -88,7 +89,7 @@ export function usePersonHandlers({
           image,
           slug,
           key: writeKey,
-          token: token ?? undefined,
+          token: (updateToken || token) ?? undefined,
         });
         setPlan((prev: PlanData) => ({
           ...prev,
@@ -147,7 +148,7 @@ export function usePersonHandlers({
 
     startTransition(async () => {
       try {
-        await deletePersonAction({ id, slug, key: writeKey });
+        await deletePersonAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete person:", error);
         setPlan(previousPlan);
@@ -197,7 +198,7 @@ export function usePersonHandlers({
     }
     startTransition(async () => {
       try {
-        await unclaimPersonAction({ personId, slug, key: writeKey });
+        await unclaimPersonAction({ personId, slug, key: writeKey, token: token ?? undefined });
         setPlan((prev: PlanData) => ({
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, userId: null } : p)),

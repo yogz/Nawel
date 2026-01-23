@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { items, ingredientCache } from "@drizzle/schema";
 import { eq, asc, sql } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createItemSchema,
   updateItemSchema,
@@ -20,7 +20,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 
 export const createItemAction = createSafeAction(createItemSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:create", input.key, input.token);
 
   // Atomique: évite les race conditions
   const [{ maxOrder }] = await db
@@ -48,7 +48,7 @@ export const createItemAction = createSafeAction(createItemSchema, async (input)
 });
 
 export const updateItemAction = createSafeAction(updateItemSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:update", input.key, input.token);
 
   // Fetch old data for audit log
   const oldItem = await db.query.items.findFirst({
@@ -72,7 +72,7 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
 });
 
 export const deleteItemAction = createSafeAction(deleteItemSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:delete", input.key, input.token);
   const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
   if (deleted) {
     await logChange("delete", "items", deleted.id, deleted, null);
@@ -82,7 +82,7 @@ export const deleteItemAction = createSafeAction(deleteItemSchema, async (input)
 });
 
 export const assignItemAction = createSafeAction(assignItemSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:assign", input.key, input.token);
 
   // Fetch old data for audit log
   const oldItem = await db.query.items.findFirst({
@@ -100,7 +100,7 @@ export const assignItemAction = createSafeAction(assignItemSchema, async (input)
 });
 
 export const reorderItemsAction = createSafeAction(reorderSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:update", input.key, input.token);
   await db.transaction(async (tx) => {
     for (let i = 0; i < input.itemIds.length; i++) {
       await tx.update(items).set({ order: i }).where(eq(items.id, input.itemIds[i]));
@@ -111,7 +111,7 @@ export const reorderItemsAction = createSafeAction(reorderSchema, async (input) 
 });
 
 export const moveItemAction = createSafeAction(moveItemSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:update", input.key, input.token);
 
   const itemId = input.itemId;
   const targetServiceId = input.targetServiceId;
@@ -178,7 +178,7 @@ export const moveItemAction = createSafeAction(moveItemSchema, async (input) => 
 });
 
 export const toggleItemCheckedAction = createSafeAction(toggleItemCheckedSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:check", input.key, input.token);
   const [updated] = await db
     .update(items)
     .set({ checked: input.checked })
@@ -188,7 +188,7 @@ export const toggleItemCheckedAction = createSafeAction(toggleItemCheckedSchema,
   return updated;
 });
 export const saveAIFeedbackAction = createSafeAction(saveAIFeedbackSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "item:update", input.key, input.token);
 
   const [updated] = await db
     .update(items)

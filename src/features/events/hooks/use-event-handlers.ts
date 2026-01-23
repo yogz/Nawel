@@ -10,6 +10,7 @@ export function useEventHandlers({
   slug,
   writeKey,
   setPlan,
+  token,
 }: BaseHandlerParams & { setPlan: (updater: (prev: any) => any) => void }) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -17,7 +18,7 @@ export function useEventHandlers({
 
   const handleDeleteEvent = async () => {
     try {
-      const result = await deleteEventAction({ slug, key: writeKey });
+      const result = await deleteEventAction({ slug, key: writeKey, token: token ?? undefined });
       if (result.success) {
         setSuccessMessage({ text: tShared("eventDeleted"), type: "success" });
         setTimeout(() => {
@@ -37,6 +38,7 @@ export function useEventHandlers({
           slug,
           key: writeKey,
           name,
+          token: token ?? undefined,
         });
 
         setPlan((prev) => ({

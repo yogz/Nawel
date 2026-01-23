@@ -23,6 +23,7 @@ export function useItemHandlers({
   readOnly,
   setSheet,
   setSuccessMessage,
+  token,
 }: ItemHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -63,7 +64,12 @@ export function useItemHandlers({
     const itemData = data as ItemData & { serviceId: number };
     startTransition(async () => {
       try {
-        const created = await createItemAction({ ...itemData, slug, key: writeKey });
+        const created = await createItemAction({
+          ...itemData,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
         const person = itemData.personId
           ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
           : null;
@@ -101,6 +107,7 @@ export function useItemHandlers({
         personId: updatedItem.personId ?? null,
         slug,
         key: writeKey,
+        token: token ?? undefined,
       });
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
@@ -182,7 +189,13 @@ export function useItemHandlers({
     }
 
     startTransition(async () => {
-      await assignItemAction({ id: item.id, personId, slug, key: writeKey });
+      await assignItemAction({
+        id: item.id,
+        personId,
+        slug,
+        key: writeKey,
+        token: token ?? undefined,
+      });
     });
   };
 
@@ -200,7 +213,7 @@ export function useItemHandlers({
 
     startTransition(async () => {
       try {
-        await deleteItemAction({ id: item.id, slug, key: writeKey });
+        await deleteItemAction({ id: item.id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete item:", error);
         setPlan(previousPlan);
@@ -236,7 +249,14 @@ export function useItemHandlers({
         }
         return newItems;
       });
-      await moveItemAction({ itemId, targetServiceId, targetOrder, slug, key: writeKey });
+      await moveItemAction({
+        itemId,
+        targetServiceId,
+        targetOrder,
+        slug,
+        key: writeKey,
+        token: token ?? undefined,
+      });
     });
   };
 
@@ -257,7 +277,13 @@ export function useItemHandlers({
 
     startTransition(async () => {
       try {
-        await toggleItemCheckedAction({ id: itemId, checked, slug, key: writeKey });
+        await toggleItemCheckedAction({
+          id: itemId,
+          checked,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
       } catch (error) {
         console.error("Failed to toggle item checked:", error);
         // Revert on error

@@ -20,6 +20,7 @@ export function useMealHandlers({
   readOnly,
   setSheet,
   setSuccessMessage,
+  token,
 }: MealHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -45,6 +46,7 @@ export function useMealHandlers({
         children,
         time,
         address,
+        token: token ?? undefined,
       });
       // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
       setPlan((prev: PlanData) => {
@@ -90,6 +92,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
         // Mettre à jour le state immédiatement
         const newMeal = { ...created, services: [] };
@@ -118,6 +121,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
         // Mettre à jour le state immédiatement
         setPlan((prev: PlanData) => {
@@ -166,6 +170,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
 
         setPlan((prev: PlanData) => ({
@@ -223,7 +228,7 @@ export function useMealHandlers({
     trackMealServiceAction("meal_deleted", meal?.title || meal?.date);
     startTransition(async () => {
       try {
-        await deleteMealAction({ id, slug, key: writeKey });
+        await deleteMealAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete meal:", error);
         setPlan(previousPlan);

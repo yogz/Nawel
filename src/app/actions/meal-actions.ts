@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { meals, services } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createMealSchema,
   updateMealSchema,
@@ -15,7 +15,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 
 export const createMealAction = createSafeAction(createMealSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "meal:create", input.key, input.token);
   const [created] = await db
     .insert(meals)
     .values({
@@ -36,7 +36,7 @@ export const createMealAction = createSafeAction(createMealSchema, async (input)
 export const createMealWithServicesAction = createSafeAction(
   createMealWithServicesSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
+    const { event } = await verifyAccess(input.slug, "meal:create", input.key, input.token);
 
     const result = await db.transaction(async (tx) => {
       const [meal] = await tx
@@ -87,7 +87,7 @@ export const createMealWithServicesAction = createSafeAction(
 );
 
 export const updateMealAction = createSafeAction(updateMealSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "meal:update", input.key, input.token);
 
   const updated = await db.transaction(async (tx) => {
     // 1. Fetch old meal to see if guests changed
@@ -141,7 +141,7 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
 });
 
 export const deleteMealAction = createSafeAction(deleteMealSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "meal:delete", input.key, input.token);
   const [deleted] = await db.delete(meals).where(eq(meals.id, input.id)).returning();
   if (deleted) {
     await logChange("delete", "meals", deleted.id, deleted, null);

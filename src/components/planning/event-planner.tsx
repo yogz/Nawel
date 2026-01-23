@@ -28,7 +28,8 @@
  * - /src/app/globals.css (--status-bar-color)
  */
 
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useGuestToken } from "@/hooks/use-guest-token";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -118,18 +119,8 @@ export function EventPlanner({
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Check if user has a token for any person in this event
-  const [hasExistingToken, setHasExistingToken] = useState(false);
-  useEffect(() => {
-    try {
-      const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
-      const personIds = plan.people.map((p) => p.id);
-      const hasToken = personIds.some((id) => tokens[id]);
-      setHasExistingToken(hasToken);
-    } catch (e) {
-      setHasExistingToken(false);
-    }
-  }, [plan.people]);
+  const guestToken = useGuestToken(plan.people);
+  const hasExistingToken = !!guestToken;
 
   // Per-event dismissal key
   const dismissalKey = `colist_guest_prompt_dismissed_${slug}`;
@@ -163,6 +154,7 @@ export function EventPlanner({
     setSuccessMessage,
     session,
     refetch,
+    token: guestToken,
   };
 
   // Call individual feature hooks

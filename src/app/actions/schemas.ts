@@ -28,6 +28,7 @@ const dateSchema = z
 export const baseInput = z.object({
   key: safeKey.optional(),
   slug: safeSlug,
+  token: z.string().optional(),
 });
 
 export const createMealSchema = baseInput.extend({
@@ -101,13 +102,11 @@ export const updatePersonSchema = baseInput.extend({
   name: safeStrictText(50),
   emoji: safeEmoji.optional().nullable(),
   image: z.string().optional().nullable(),
-  token: z.string().optional(),
 });
 
 export const updatePersonStatusSchema = baseInput.extend({
   personId: z.number().int().positive(),
   status: z.enum(["confirmed", "declined", "maybe"]),
-  token: z.string().optional(),
   guestAdults: z.coerce.number().int().min(0).optional(),
   guestChildren: z.coerce.number().int().min(0).optional(),
 });

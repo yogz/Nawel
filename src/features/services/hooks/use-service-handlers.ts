@@ -15,6 +15,7 @@ export function useServiceHandlers({
   readOnly,
   setSheet,
   setSuccessMessage,
+  token,
 }: ServiceHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -39,6 +40,7 @@ export function useServiceHandlers({
           peopleCount,
           slug,
           key: writeKey,
+          token: token ?? undefined,
         });
         setPlan((prev: PlanData) => ({
           ...prev,
@@ -77,6 +79,7 @@ export function useServiceHandlers({
           peopleCount,
           slug,
           key: writeKey,
+          token: token ?? undefined,
         });
 
         setPlan((prev: PlanData) => ({
@@ -137,7 +140,7 @@ export function useServiceHandlers({
 
     startTransition(async () => {
       try {
-        await deleteServiceAction({ id, slug, key: writeKey });
+        await deleteServiceAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete service:", error);
         setPlan(previousPlan);

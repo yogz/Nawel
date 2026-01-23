@@ -20,6 +20,7 @@ export function useIngredientHandlers({
   writeKey,
   readOnly,
   setSuccessMessage,
+  token,
 }: IngredientHandlerParams) {
   const [, startTransition] = useTransition();
   const [justGenerated, setJustGenerated] = useState<number | null>(null); // itemId
@@ -47,6 +48,7 @@ export function useIngredientHandlers({
       key: writeKey,
       locale,
       note,
+      token: token ?? undefined,
     });
 
     if (!result.success) {
@@ -78,7 +80,7 @@ export function useIngredientHandlers({
       return;
     }
 
-    await saveAIFeedbackAction({ itemId, rating, slug, key: writeKey });
+    await saveAIFeedbackAction({ itemId, rating, slug, key: writeKey, token: token ?? undefined });
     setJustGenerated(null);
   };
 
@@ -109,12 +111,17 @@ export function useIngredientHandlers({
     }));
 
     startTransition(async () => {
-      await updateIngredientAction({
-        id: ingredientId,
-        checked,
-        slug,
-        key: writeKey,
-      });
+      try {
+        await updateIngredientAction({
+          id: ingredientId,
+          checked,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+      } catch (error) {
+        console.error("Failed to toggle ingredient:", error);
+      }
     });
   };
 
@@ -142,7 +149,16 @@ export function useIngredientHandlers({
     }));
 
     startTransition(async () => {
-      await deleteIngredientAction({ id: ingredientId, slug, key: writeKey });
+      try {
+        await deleteIngredientAction({
+          id: ingredientId,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+      } catch (error) {
+        console.error("Failed to delete ingredient:", error);
+      }
     });
   };
 
@@ -152,28 +168,33 @@ export function useIngredientHandlers({
     }
 
     startTransition(async () => {
-      const created = await createIngredientAction({
-        itemId,
-        name,
-        quantity,
-        slug,
-        key: writeKey,
-      });
+      try {
+        const created = await createIngredientAction({
+          itemId,
+          name,
+          quantity,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
 
-      setPlan((prev: PlanData) => ({
-        ...prev,
-        meals: prev.meals.map((meal) => ({
-          ...meal,
-          services: meal.services.map((service) => ({
-            ...service,
-            items: service.items.map((item) =>
-              item.id === itemId
-                ? { ...item, ingredients: [...(item.ingredients || []), created] }
-                : item
-            ),
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          meals: prev.meals.map((meal) => ({
+            ...meal,
+            services: meal.services.map((service) => ({
+              ...service,
+              items: service.items.map((item) =>
+                item.id === itemId
+                  ? { ...item, ingredients: [...(item.ingredients || []), created] }
+                  : item
+              ),
+            })),
           })),
-        })),
-      }));
+        }));
+      } catch (error) {
+        console.error("Failed to create ingredient:", error);
+      }
     });
   };
 
@@ -196,7 +217,16 @@ export function useIngredientHandlers({
     }));
 
     startTransition(async () => {
-      await deleteAllIngredientsAction({ itemId, slug, key: writeKey });
+      try {
+        await deleteAllIngredientsAction({
+          itemId,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+      } catch (error) {
+        console.error("Failed to delete all ingredients:", error);
+      }
     });
   };
 

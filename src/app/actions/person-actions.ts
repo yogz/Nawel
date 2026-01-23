@@ -7,7 +7,7 @@ import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { people, items, user, events } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createPersonSchema,
   updatePersonSchema,
@@ -23,7 +23,7 @@ import { headers } from "next/headers";
 import { assertCanModifyPersonLegacy } from "@/lib/permissions";
 
 export const joinEventAction = createSafeAction(baseInput, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:create", input.key);
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -60,7 +60,7 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
 });
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:create", input.key);
 
   let name = input.name;
   let emoji = input.emoji ?? null;
@@ -95,7 +95,7 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
 });
 
 export const updatePersonAction = createSafeAction(updatePersonSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:update:self", input.key, input.token);
 
   // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
   await assertCanModifyPersonLegacy(input.key, input.token, input.id, event);
@@ -123,7 +123,7 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
 });
 
 export const deletePersonAction = createSafeAction(deletePersonSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:delete", input.key);
 
   // Unassign items first
   await db.update(items).set({ personId: null }).where(eq(items.personId, input.id));
@@ -138,14 +138,7 @@ export const deletePersonAction = createSafeAction(deletePersonSchema, async (in
 });
 
 export const claimPersonAction = createSafeAction(claimPersonSchema, async (input) => {
-  // Claiming requires event access? Or just logged in?
-  // Usually public event -> anyone can claim if they are logged in?
-  // But verifyEventAccess enforces WRITE key? No, verifyEventAccess checks if key is valid IF provided, but doesn't require it?
-  // Wait, verifyEventAccess DOES require write access.
-  // Guests cannot claim?
-  // Actually claimPerson is for logged in users.
-  // Let's keep it as is for now, assuming "Join" works via joinEventAction.
-  await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:update:self", input.key);
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -178,7 +171,7 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
 });
 
 export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "person:update:self", input.key);
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -207,7 +200,7 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
 export const updatePersonStatusAction = createSafeAction(
   updatePersonStatusSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
+    const { event } = await verifyAccess(input.slug, "person:update:self", input.key, input.token);
 
     // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
     await assertCanModifyPersonLegacy(input.key, input.token, input.personId, event);
