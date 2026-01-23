@@ -161,6 +161,7 @@ export const toggleItemCheckedSchema = baseInput.extend({
 export const validateSchema = z.object({
   key: safeKey.optional(),
   slug: safeSlug.optional(),
+  token: z.string().optional(),
 });
 
 export const getChangeLogsSchema = z.object({

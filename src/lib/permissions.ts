@@ -276,9 +276,10 @@ export async function assertCanModifyPersonLegacy(
  */
 export async function hasEventWriteAccess(
   key: string | undefined | null,
-  event: Event
+  event: Event,
+  token?: string | null
 ): Promise<boolean> {
-  const ctx = await buildPermissionContext(event, key);
+  const ctx = await buildPermissionContext(event, key, token);
   return can("item:create", ctx); // General write access
 }
 

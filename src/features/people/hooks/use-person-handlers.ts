@@ -30,7 +30,9 @@ export function usePersonHandlers({
   const t = useTranslations("Translations");
 
   const handleCreatePerson = (name: string, emoji?: string | null, userId?: string) => {
-    if (readOnly) {
+    // For joining as a guest, we allow creation even in readOnly mode
+    // if a writeKey (adminKey) is present, as person:create hanya requires the key.
+    if (readOnly && !writeKey) {
       return;
     }
     startTransition(async () => {

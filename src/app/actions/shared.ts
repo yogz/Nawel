@@ -92,7 +92,7 @@ export const validateWriteKeyAction = withErrorThrower(
     if (!event) {
       return false;
     }
-    return hasEventWriteAccess(input.key, event);
+    return hasEventWriteAccess(input.key, event, input.token);
   }
 );
 
