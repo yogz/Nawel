@@ -61,7 +61,7 @@ export function PersonForm({
               handleSubmit();
             }
           }}
-          disabled={readOnly}
+          disabled={readOnly && !isJoin}
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"
@@ -108,7 +108,7 @@ export function PersonForm({
           className="w-full py-6 pr-8 shadow-md"
           icon={<UserPlus size={18} />}
           onClick={handleSubmit}
-          disabled={readOnly || !name.trim()}
+          disabled={(readOnly && !isJoin) || !name.trim()}
           shine
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">

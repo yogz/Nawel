@@ -362,8 +362,8 @@ export function EventPlanner({
   ]);
 
   useEffect(() => {
-    validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
-  }, [writeKey, slug, setReadOnly]);
+    validateWriteKeyAction({ key: effectiveWriteKey, slug }).then((ok) => setReadOnly(!ok));
+  }, [effectiveWriteKey, slug, setReadOnly]);
 
   useEffect(() => {
     // Clean up any body background overrides to ensure "white/neutral" content area
