@@ -6,8 +6,8 @@ import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
 import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
-import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
-import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
+import { GuestAccessSheetContent } from "@/features/auth/components/guest-access-sheet";
+import { ClaimPersonSheetContent } from "@/features/auth/components/claim-person-sheet";
 import { useSearchParams, useParams } from "next/navigation";
 import { updateEventWithMealAction } from "@/app/actions/event-actions";
 import { useTranslations } from "next-intl";
@@ -213,12 +213,7 @@ export function EventPlannerSheets({
 
       case "guest-access":
         return (
-          <GuestAccessSheet
-            open
-            onClose={() => {
-              setSheet(null);
-              onDismissGuestPrompt();
-            }}
+          <GuestAccessSheetContent
             onAuth={onAuth}
             onCreateGuest={() => {
               setSheet({ type: "person", context: "join" });
@@ -229,10 +224,8 @@ export function EventPlannerSheets({
 
       case "claim-person":
         return (
-          <ClaimPersonSheet
-            open
+          <ClaimPersonSheetContent
             unclaimed={sheet.unclaimed}
-            onClose={() => setSheet(null)}
             onClaim={async (id) => {
               try {
                 await handlers.handleClaimPerson(id);

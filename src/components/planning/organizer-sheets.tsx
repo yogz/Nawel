@@ -12,8 +12,8 @@ import { PersonForm } from "@/features/people/components/person-form";
 import { PersonEditForm } from "@/features/people/components/person-edit-form";
 import { ShoppingListSheet } from "./shopping-list-sheet";
 import { useSearchParams, useParams } from "next/navigation";
-import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
-import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
+import { GuestAccessSheetContent } from "@/features/auth/components/guest-access-sheet";
+import { ClaimPersonSheetContent } from "@/features/auth/components/claim-person-sheet";
 import { ItemIngredientsManager } from "@/features/items/components/item-ingredients-manager";
 
 import {
@@ -484,12 +484,7 @@ export function OrganizerSheets({
             )}
 
             {sheet?.type === "guest-access" && (
-              <GuestAccessSheet
-                open
-                onClose={() => {
-                  setSheet(null);
-                  onDismissGuestPrompt();
-                }}
+              <GuestAccessSheetContent
                 onAuth={onAuth}
                 onCreateGuest={() => {
                   setSheet({ type: "person" });
@@ -499,10 +494,8 @@ export function OrganizerSheets({
             )}
 
             {sheet?.type === "claim-person" && (
-              <ClaimPersonSheet
-                open
+              <ClaimPersonSheetContent
                 unclaimed={sheet.unclaimed}
-                onClose={() => setSheet(null)}
                 onClaim={async (id) => {
                   try {
                     await handlers.handleClaimPerson(id);

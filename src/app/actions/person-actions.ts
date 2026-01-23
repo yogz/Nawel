@@ -149,8 +149,16 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
   }
 
   const oldPerson = await db.query.people.findFirst({
-    where: eq(people.id, input.personId),
+    where: and(eq(people.id, input.personId), eq(people.eventId, event.id)),
   });
+
+  if (!oldPerson) {
+    throw new Error("Person not found in this event");
+  }
+
+  if (oldPerson.userId) {
+    throw new Error("This profile is already claimed by another user");
+  }
 
   const [updated] = await db
     .update(people)
@@ -182,8 +190,19 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
   }
 
   const oldPerson = await db.query.people.findFirst({
-    where: eq(people.id, input.personId),
+    where: and(eq(people.id, input.personId), eq(people.eventId, event.id)),
   });
+
+  if (!oldPerson) {
+    throw new Error("Person not found in this event");
+  }
+
+  const isProfileOwner = session.user.id === oldPerson.userId;
+  const isEventOwner = session.user.id === event.ownerId;
+
+  if (!isProfileOwner && !isEventOwner) {
+    throw new Error("Unauthorized: You do not own this profile");
+  }
 
   const [updated] = await db
     .update(people)
