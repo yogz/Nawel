@@ -29,8 +29,9 @@ export function usePersonHandlers({
   const t = useTranslations("Translations");
 
   const handleCreatePerson = (name: string, emoji?: string | null, userId?: string) => {
-    // We allow person creation even in readOnly mode (no admin key)
-    // as it's the gateway for guests to join the event.
+    if (readOnly) {
+      return;
+    }
     startTransition(async () => {
       try {
         const created = await createPersonAction({

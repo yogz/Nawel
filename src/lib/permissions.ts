@@ -120,7 +120,7 @@ const PERMISSION_RULES: Record<ActionType, (ctx: PermissionContext) => boolean> 
   "ingredient:generate": (c) => c.hasValidKey && (c.isAuthenticated || c.hasValidToken),
 
   // Persons
-  "person:create": () => true, // Anyone with access to the event slug can create a guest profile
+  "person:create": (c) => c.hasValidKey, // Must have valid key to join/create
   "person:update:self": (c) => c.hasValidKey && (c.isAuthenticated || c.hasValidToken),
   "person:update:other": () => false, // Only owner
   "person:delete": () => false, // Only owner

@@ -61,7 +61,7 @@ export function PersonForm({
               handleSubmit();
             }
           }}
-          disabled={readOnly && !isJoin}
+          disabled={readOnly}
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"

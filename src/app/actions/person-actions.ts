@@ -60,14 +60,7 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
 });
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
-  // Use a softer check for creation: just verify the event exists.
-  // Full permission checks are handled inside if needed, but person:create is public.
-  const event = await db.query.events.findFirst({
-    where: eq(events.slug, input.slug),
-  });
-  if (!event) {
-    throw new Error("Event not found");
-  }
+  const event = await verifyEventAccess(input.slug, input.key);
 
   let name = input.name;
   let emoji = input.emoji ?? null;
