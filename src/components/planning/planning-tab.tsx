@@ -41,6 +41,7 @@ interface PlanningTabProps {
   onDeleteEvent?: () => Promise<void>;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
+  currentPersonId?: number;
 }
 
 const containerVariants: Variants = {
@@ -74,6 +75,7 @@ export function PlanningTab({
   onDeleteEvent,
   handleAssign,
   currentUserId,
+  currentPersonId,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tSettings = useTranslations("EventDashboard.Settings");
@@ -173,6 +175,7 @@ export function PlanningTab({
                 setSheet={setSheet}
                 handleAssign={handleAssign}
                 currentUserId={currentUserId}
+                currentPersonId={currentPersonId}
               />
             );
           })}

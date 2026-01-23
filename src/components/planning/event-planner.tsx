@@ -30,6 +30,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useGuestToken } from "@/hooks/use-guest-token";
+import { useCurrentPerson } from "@/hooks/use-current-person";
 import { useSearchParams } from "next/navigation";
 import confetti from "canvas-confetti";
 import {
@@ -121,6 +122,9 @@ export function EventPlanner({
 
   const guestToken = useGuestToken(plan.people);
   const hasExistingToken = !!guestToken;
+
+  // Unified current person: works for both authenticated users and guests with tokens
+  const currentPerson = useCurrentPerson(plan.people, session?.user?.id);
 
   // Per-event dismissal key
   const dismissalKey = `colist_guest_prompt_dismissed_${slug}`;
@@ -452,6 +456,7 @@ export function EventPlanner({
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
                 currentUserId={session?.user?.id}
+                currentPersonId={currentPerson?.id}
               />
             )}
 
@@ -485,7 +490,7 @@ export function EventPlanner({
           <AppBranding variant="icon-text" logoSize={24} noLink />
         </footer>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}

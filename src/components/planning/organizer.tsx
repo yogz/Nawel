@@ -331,7 +331,7 @@ export function Organizer({
           </Suspense>
         </main>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}

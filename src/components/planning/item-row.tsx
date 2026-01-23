@@ -31,6 +31,7 @@ interface ItemRowProps {
   peopleCount?: number;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
+  currentPersonId?: number;
   people?: Person[];
 }
 
@@ -44,6 +45,7 @@ function ItemRowComponent({
   peopleCount,
   handleAssign,
   currentUserId,
+  currentPersonId,
   people,
 }: ItemRowProps) {
   const t = useTranslations("EventDashboard.ItemForm");
@@ -77,9 +79,13 @@ function ItemRowComponent({
     return () => clearTimeout(timer);
   }, [hasSeenSwipeHint]);
 
-  // Find current user's person if they are linked
+  // Find current person: prefer directly passed currentPersonId, fall back to userId lookup
   const currentPerson =
-    currentUserId && people ? people.find((p) => p.userId === currentUserId) : null;
+    currentPersonId && people
+      ? people.find((p) => p.id === currentPersonId)
+      : currentUserId && people
+        ? people.find((p) => p.userId === currentUserId)
+        : null;
 
   // Handle click: if user has a person and item is not assigned, assign directly
   const handleClick = () => {
@@ -323,6 +329,7 @@ export const ItemRow = memo(ItemRowComponent, (prev, next) => {
     prev.person?.id === next.person?.id &&
     prev.person?.name === next.person?.name &&
     prev.readOnly === next.readOnly &&
-    prev.peopleCount === next.peopleCount
+    prev.peopleCount === next.peopleCount &&
+    prev.currentPersonId === next.currentPersonId
   );
 });

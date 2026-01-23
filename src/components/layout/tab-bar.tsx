@@ -23,10 +23,10 @@ export type TabKey = "planning" | "people" | "shopping";
 interface TabBarProps {
   active: TabKey;
   onChange: (key: TabKey) => void;
-  isAuthenticated?: boolean;
+  hasWriteAccess?: boolean;
 }
 
-export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
+export function TabBar({ active, onChange, hasWriteAccess }: TabBarProps) {
   const t = useTranslations("EventDashboard.TabBar");
   const [mounted, setMounted] = useState(false);
 
@@ -34,7 +34,7 @@ export function TabBar({ active, onChange, isAuthenticated }: TabBarProps) {
     setMounted(true);
   }, []);
 
-  const tabs = mounted && isAuthenticated ? authenticatedTabs : guestTabs;
+  const tabs = mounted && hasWriteAccess ? authenticatedTabs : guestTabs;
   const [visibleLabel, setVisibleLabel] = useState<TabKey | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 

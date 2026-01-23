@@ -25,6 +25,7 @@ interface ServiceSectionProps {
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
+  currentPersonId?: number;
 }
 
 export const ServiceSection = memo(function ServiceSection({
@@ -39,6 +40,7 @@ export const ServiceSection = memo(function ServiceSection({
   activeItemId: _activeItemId,
   handleAssign,
   currentUserId,
+  currentPersonId,
 }: ServiceSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const t = useTranslations("EventDashboard.Planning");
@@ -111,6 +113,7 @@ export const ServiceSection = memo(function ServiceSection({
                     peopleCount={service.peopleCount || 0}
                     handleAssign={handleAssign}
                     currentUserId={currentUserId}
+                    currentPersonId={currentPersonId}
                     people={people}
                   />
                 </div>
