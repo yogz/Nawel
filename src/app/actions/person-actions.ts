@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { people, items, user } from "@drizzle/schema";
+import { people, items, user, events } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { verifyEventAccess } from "./shared";
 import {
@@ -60,7 +60,14 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
 });
 
 export const createPersonAction = createSafeAction(createPersonSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  // Use a softer check for creation: just verify the event exists.
+  // Full permission checks are handled inside if needed, but person:create is public.
+  const event = await db.query.events.findFirst({
+    where: eq(events.slug, input.slug),
+  });
+  if (!event) {
+    throw new Error("Event not found");
+  }
 
   let name = input.name;
   let emoji = input.emoji ?? null;

@@ -36,8 +36,12 @@ export function PersonForm({
   return (
     <div className="space-y-4">
       {isJoin && (
-        <div className="px-1 text-center">
-          <p className="text-sm font-medium text-gray-600">{tGuest("continueDescription")}</p>
+        <div className="flex justify-center px-1">
+          <div className="rounded-full bg-accent/10 px-4 py-1.5 border border-accent/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-accent">
+              {t("namingNotice")}
+            </p>
+          </div>
         </div>
       )}
       <div className="space-y-2">
@@ -57,7 +61,7 @@ export function PersonForm({
               handleSubmit();
             }
           }}
-          disabled={readOnly}
+          disabled={readOnly && !isJoin}
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"
