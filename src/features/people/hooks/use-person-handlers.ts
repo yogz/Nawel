@@ -8,6 +8,7 @@ import {
   deletePersonAction,
   claimPersonAction,
   unclaimPersonAction,
+  updatePersonStatusAction,
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
@@ -213,11 +214,75 @@ export function usePersonHandlers({
     });
   };
 
+  const handleUpdateStatus = (
+    personId: number,
+    status: "confirmed" | "declined" | "maybe",
+    updateToken?: string | null
+  ) => {
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status,
+          token: (updateToken || token) ?? undefined,
+        });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) => (p.id === personId ? { ...p, status } : p)),
+        }));
+      } catch (error) {
+        console.error("Failed to update status:", error);
+        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+      }
+    });
+  };
+
+  const handleUpdateGuestCount = (
+    personId: number,
+    guestAdults: number,
+    guestChildren: number,
+    updateToken?: string | null
+  ) => {
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status: "confirmed",
+          guestAdults,
+          guestChildren,
+          token: (updateToken || token) ?? undefined,
+        });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) =>
+            p.id === personId
+              ? {
+                  ...p,
+                  status: "confirmed",
+                  guest_adults: guestAdults,
+                  guest_children: guestChildren,
+                }
+              : p
+          ),
+        }));
+      } catch (error) {
+        console.error("Failed to update guest count:", error);
+        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+      }
+    });
+  };
+
   return {
     handleCreatePerson,
     handleUpdatePerson,
     handleDeletePerson,
     handleClaimPerson,
     handleUnclaimPerson,
+    handleUpdateStatus,
+    handleUpdateGuestCount,
   };
 }

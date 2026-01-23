@@ -10,6 +10,8 @@ import { DayTabs } from "./day-tabs";
 import { Link } from "@/i18n/navigation";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { CitationDisplay } from "../common/citation-display";
+import { RSVPSummary } from "@/features/people/components/rsvp-summary";
+import { RSVPControl } from "@/features/people/components/rsvp-control";
 
 import {
   type DragEndEvent,
@@ -40,6 +42,17 @@ interface PlanningTabProps {
   isOwner?: boolean;
   onDeleteEvent?: () => Promise<void>;
   handleAssign?: (item: Item, personId: number | null) => void;
+  handleUpdateStatus?: (
+    id: number,
+    status: "confirmed" | "declined" | "maybe",
+    token?: string | null
+  ) => void;
+  handleUpdateGuestCount?: (
+    id: number,
+    adults: number,
+    children: number,
+    token?: string | null
+  ) => void;
   currentUserId?: string;
   currentPersonId?: number;
 }
@@ -74,6 +87,8 @@ export function PlanningTab({
   isOwner,
   onDeleteEvent,
   handleAssign,
+  handleUpdateStatus,
+  handleUpdateGuestCount,
   currentUserId,
   currentPersonId,
 }: PlanningTabProps) {
@@ -144,6 +159,28 @@ export function PlanningTab({
         animate={isMobile ? false : "show"}
         className="space-y-4 pt-0 sm:space-y-6"
       >
+        {/* RSVP Section at the top of the page */}
+        <div className="space-y-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/20 shadow-sm mb-2">
+          <RSVPSummary
+            plan={plan}
+            selectedPersonId={null} // No filter here by default or keep it synced?
+            onSelectPerson={() => {}} // No filtering in planning tab for now
+            onAddPerson={readOnly ? undefined : () => setSheet({ type: "person" })}
+            readOnly={readOnly}
+          />
+
+          {currentPersonId && handleUpdateStatus && handleUpdateGuestCount && (
+            <RSVPControl
+              person={plan.people.find((p) => p.id === currentPersonId)!}
+              token={null} // use current session/token automatically via handler
+              readOnly={readOnly}
+              onUpdateStatus={handleUpdateStatus}
+              onUpdateGuestCount={handleUpdateGuestCount}
+              variant="card"
+            />
+          )}
+        </div>
+
         <div className="flex flex-col gap-2">
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>

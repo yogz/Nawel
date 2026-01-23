@@ -149,5 +149,16 @@ export interface OrganizerHandlers {
   handleDeleteAllIngredients: (itemId: number) => void;
   handleToggleItemChecked: (itemId: number, checked: boolean) => void;
   handleSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
+  handleUpdateStatus: (
+    personId: number,
+    status: "confirmed" | "declined" | "maybe",
+    token?: string | null
+  ) => void;
+  handleUpdateGuestCount: (
+    personId: number,
+    guestAdults: number,
+    guestChildren: number,
+    token?: string | null
+  ) => void;
   justGenerated?: number | null;
 }

@@ -11,17 +11,13 @@ import {
   ChefHat,
   Plus,
   ChevronRight,
-  Check,
-  X,
-  HelpCircle,
-  CircleDashed,
   Minus,
   Users,
 } from "lucide-react";
-import { updatePersonStatusAction } from "@/app/actions/person-actions";
 import { toast } from "sonner";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { RSVPSummary } from "@/features/people/components/rsvp-summary";
+import { RSVPControl } from "@/features/people/components/rsvp-control";
 import { useTransition, useState, useEffect } from "react";
 import { getDisplayName } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -41,6 +37,17 @@ interface PeopleTabProps {
   setSheet: (sheet: Sheet) => void;
   onClaim?: (personId: number) => void;
   onUnclaim?: (personId: number) => void; // Keeping prop for now to avoid breaking too many things, but will remove usage
+  handleUpdateStatus?: (
+    id: number,
+    status: "confirmed" | "declined" | "maybe",
+    token?: string | null
+  ) => void;
+  handleUpdateGuestCount?: (
+    id: number,
+    adults: number,
+    children: number,
+    token?: string | null
+  ) => void;
   readOnly?: boolean;
   currentUserId?: string;
 }
@@ -62,6 +69,8 @@ export function PeopleTab({
   currentUserId,
   onClaim,
   onUnclaim: _onUnclaim,
+  handleUpdateStatus,
+  handleUpdateGuestCount,
 }: PeopleTabProps) {
   const t = useTranslations("EventDashboard.People");
   const tForm = useTranslations("EventDashboard.ItemForm");
@@ -83,13 +92,7 @@ export function PeopleTab({
   }, [plan.meals, plan.people]);
 
   const [isPending, startTransition] = useTransition();
-  const [optimisticStatus, setOptimisticStatus] = useState<Record<number, string>>({});
-  const [optimisticCounts, setOptimisticCounts] = useState<
-    Record<number, { guestAdults: number; guestChildren: number }>
-  >({});
-  const [openPopoverId, setOpenPopoverId] = useState<number | null>(null);
   const [guestTokens, setGuestTokens] = useState<Record<number, string>>({});
-  const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
 
   // Load guest tokens on mount
   useEffect(() => {
@@ -101,105 +104,14 @@ export function PeopleTab({
     }
   }, []);
 
-  const handleStatusUpdate = (personId: number, status: "confirmed" | "declined" | "maybe") => {
-    // 1. Optimistic Update (Immediate Feedback)
-    setOptimisticStatus((prev) => ({ ...prev, [personId]: status }));
-
-    // 2. Close Popover immediately
-    setOpenPopoverId(null);
-
-    // 3. Open Edit Mode if Confirmed
-    if (status === "confirmed") {
-      setEditingPersonId(personId);
-      // Scroll to card so user sees the inputs
-      setTimeout(() => {
-        document
-          .getElementById(`attendance-card-${personId}`)
-          ?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
-    } else {
-      setEditingPersonId(null);
-    }
-
-    // 4. Server Action
-    startTransition(async () => {
-      try {
-        await updatePersonStatusAction({
-          slug,
-          key: writeKey,
-          personId,
-          status,
-          token: guestTokens[personId],
-        });
-        toast.success(t("statusUpdated"));
-      } catch (error) {
-        toast.error(t("errorUpdatingStatus"));
-        // Revert optimistic update on error
-        setOptimisticStatus((prev) => {
-          const newState = { ...prev };
-          delete newState[personId];
-          return newState;
-        });
-      }
-    });
-  };
-
-  const handleGuestCountChange = (personId: number, type: "adults" | "children", delta: number) => {
-    // 1. Get current values (optimistic or server)
-    const person = plan.people.find((p) => p.id === personId);
-    if (!person) return;
-
-    const currentCounts = optimisticCounts[personId] || {
-      guestAdults: person.guest_adults,
-      guestChildren: person.guest_children,
-    };
-
-    const newCounts = {
-      ...currentCounts,
-      [type === "adults" ? "guestAdults" : "guestChildren"]: Math.max(
-        0,
-        (type === "adults" ? currentCounts.guestAdults : currentCounts.guestChildren) + delta
-      ),
-    };
-
-    // 2. Optimistic Update
-    setOptimisticCounts((prev) => ({ ...prev, [personId]: newCounts }));
-
-    // 3. Server Action
-    startTransition(async () => {
-      try {
-        await updatePersonStatusAction({
-          slug,
-          key: writeKey,
-          personId,
-          status: "confirmed", // Changing count implies confirmed? Or keep current? Let's assume keep current status or force confirmed. For now keep "confirmed" as it's only shown when confirmed.
-          guestAdults: newCounts.guestAdults,
-          guestChildren: newCounts.guestChildren,
-          token: guestTokens[personId],
-        });
-      } catch (error) {
-        toast.error(t("errorUpdatingStatus"));
-        // Revert
-        setOptimisticCounts((prev) => {
-          const newState = { ...prev };
-          delete newState[personId];
-          return newState;
-        });
-      }
-    });
-  };
-
   const stats = plan.people.reduce(
     (acc, person) => {
-      const status = optimisticStatus[person.id] || person.status;
-      const counts = optimisticCounts[person.id] || {
-        guestAdults: person.guest_adults,
-        guestChildren: person.guest_children,
-      };
+      const status = person.status;
+      const adults = person.guest_adults || 0;
+      const children = person.guest_children || 0;
 
       if (status === "confirmed") {
-        // Person + Guests + Children
-        acc.confirmed += 1 + counts.guestAdults + counts.guestChildren;
+        acc.confirmed += 1 + adults + children;
       } else if (status === "declined") acc.declined++;
       else if (status === "maybe") acc.maybe++;
       else acc.pending++;
@@ -212,292 +124,31 @@ export function PeopleTab({
     <div className="space-y-4">
       {/* Attendance & Filters Area */}
       <div className="space-y-4">
-        {/* Attendance Confirmation Card (for current user or token owner) */}
+        {/* Simplified RSVP Controls for current identity (Owner or Token Owner) */}
         {!readOnly &&
-          plan.people.map((person) => {
-            const effectiveStatus = optimisticStatus[person.id] || person.status;
-            const isOwner = person.userId === currentUserId;
-            const isTokenOwner = !!guestTokens[person.id];
-            const canEdit = isOwner || isTokenOwner;
-
-            if (!canEdit) return null;
-            if (effectiveStatus === "declined") return null;
-            if (effectiveStatus === "confirmed" && editingPersonId !== person.id) return null;
-
-            const currentCounts = optimisticCounts[person.id] || {
-              guestAdults: person.guest_adults,
-              guestChildren: person.guest_children,
-            };
-            // Display 1 (self) + guests
-            const displayAdults = 1 + currentCounts.guestAdults;
-            const displayChildren = currentCounts.guestChildren;
-
-            return (
-              <motion.div
-                id={`attendance-card-${person.id}`}
+          handleUpdateStatus &&
+          handleUpdateGuestCount &&
+          plan.people
+            .filter((p) => p.userId === currentUserId || !!guestTokens[p.id])
+            .map((person) => (
+              <RSVPControl
                 key={person.id}
-                layout // Smooth layout transition when it disappears
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="relative overflow-hidden rounded-2xl border border-accent/20 bg-gradient-to-br from-white to-purple-50 p-4 shadow-sm"
-              >
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-sm font-bold text-gray-900">
-                        {getDisplayName(person)},{" "}
-                        {effectiveStatus === "confirmed" ? t("howMany") : t("areYouComing")}
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        {effectiveStatus === "confirmed" ? t("adjustCounts") : t("confirmPresence")}
-                      </p>
-                    </div>
+                person={person}
+                token={guestTokens[person.id]}
+                readOnly={readOnly}
+                onUpdateStatus={handleUpdateStatus}
+                onUpdateGuestCount={handleUpdateGuestCount}
+                variant="card"
+              />
+            ))}
 
-                    {/* Standard Yes/No Buttons if not confirmed yet */}
-                    {effectiveStatus !== "confirmed" && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleStatusUpdate(person.id, "confirmed")}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700 transition-colors hover:bg-green-200"
-                        >
-                          <Check size={16} strokeWidth={3} />
-                        </button>
-                        <button
-                          onClick={() => handleStatusUpdate(person.id, "declined")}
-                          className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200"
-                        >
-                          <X size={16} strokeWidth={3} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Guest Counters if Confirmed */}
-                  {effectiveStatus === "confirmed" && (
-                    <div className="flex flex-col gap-4 animate-in slide-in-from-top-2">
-                      <div className="flex items-center gap-6">
-                        {/* Adults Stepper */}
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
-                            Adultes
-                          </span>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => handleGuestCountChange(person.id, "adults", -1)}
-                              disabled={displayAdults <= 1} // Cannot remove self
-                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm disabled:opacity-50"
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="text-lg font-bold text-gray-900 w-4 text-center">
-                              {displayAdults}
-                            </span>
-                            <button
-                              onClick={() => handleGuestCountChange(person.id, "adults", 1)}
-                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm"
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Children Stepper */}
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider text-center">
-                            Enfants
-                          </span>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={() => handleGuestCountChange(person.id, "children", -1)}
-                              disabled={displayChildren <= 0}
-                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm disabled:opacity-50"
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="text-lg font-bold text-gray-900 w-4 text-center">
-                              {displayChildren}
-                            </span>
-                            <button
-                              onClick={() => handleGuestCountChange(person.id, "children", 1)}
-                              className="h-8 w-8 flex items-center justify-center rounded-full bg-white border border-gray-200 text-gray-600 shadow-sm"
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => setEditingPersonId(null)}
-                        className="w-full rounded-xl bg-gray-900 py-3 text-sm font-bold text-white shadow-sm hover:bg-gray-800 transition-all"
-                      >
-                        {t("validate")}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-
-        {/* Horizontal Filter Scroll */}
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex w-max space-x-3 p-1">
-            <button
-              onClick={() => setSelectedPerson(null)}
-              className={clsx(
-                "group relative flex h-14 min-w-[100px] flex-col items-center justify-center gap-1 rounded-2xl border-2 px-4 transition-all outline-none",
-                selectedPerson === null
-                  ? "border-accent bg-accent text-white shadow-md shadow-accent/20"
-                  : "border-gray-200 bg-white hover:border-accent/30 hover:bg-gray-50"
-              )}
-            >
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={clsx(
-                    "text-xs font-black uppercase tracking-widest",
-                    selectedPerson === null ? "text-white" : "text-gray-900"
-                  )}
-                >
-                  {t("all")}
-                </span>
-                <span
-                  className={clsx(
-                    "text-xs font-bold",
-                    selectedPerson === null ? "text-white/80" : "text-gray-400"
-                  )}
-                >
-                  ({plan.people.length})
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1">
-                  <Check
-                    size={10}
-                    strokeWidth={4}
-                    className={clsx(selectedPerson === null ? "text-white" : "text-green-600")}
-                  />
-                  <span
-                    className={clsx(
-                      "text-[10px] font-bold leading-none",
-                      selectedPerson === null ? "text-white" : "text-gray-700"
-                    )}
-                  >
-                    {stats.confirmed}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <HelpCircle
-                    size={10}
-                    strokeWidth={4}
-                    className={clsx(selectedPerson === null ? "text-white" : "text-orange-500")}
-                  />
-                  <span
-                    className={clsx(
-                      "text-[10px] font-bold leading-none",
-                      selectedPerson === null ? "text-white" : "text-gray-700"
-                    )}
-                  >
-                    {stats.maybe}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <X
-                    size={10}
-                    strokeWidth={4}
-                    className={clsx(selectedPerson === null ? "text-white" : "text-red-500")}
-                  />
-                  <span
-                    className={clsx(
-                      "text-[10px] font-bold leading-none",
-                      selectedPerson === null ? "text-white" : "text-gray-700"
-                    )}
-                  >
-                    {stats.declined}
-                  </span>
-                </div>
-              </div>
-            </button>
-
-            {plan.people.map((person) => {
-              const effectiveStatus = optimisticStatus[person.id] || person.status;
-              const isAssigned = person.userId !== null;
-
-              const statusColor =
-                effectiveStatus === "confirmed"
-                  ? "bg-green-500"
-                  : effectiveStatus === "declined"
-                    ? "bg-red-500"
-                    : "bg-gray-300";
-
-              return (
-                <div key={person.id} className="relative group">
-                  <button
-                    onClick={() => setSelectedPerson(person.id)}
-                    className={clsx(
-                      "flex flex-col items-center gap-1.5 transition-all outline-none",
-                      selectedPerson === person.id
-                        ? "opacity-100 scale-105"
-                        : "opacity-60 hover:opacity-80"
-                    )}
-                  >
-                    <div
-                      className={clsx(
-                        "relative p-0.5 rounded-full border-2 transition-all",
-                        selectedPerson === person.id ? "border-accent" : "border-transparent"
-                      )}
-                    >
-                      <PersonAvatar
-                        person={person}
-                        allNames={plan.people.map((p) => p.name)}
-                        size="md" // 12w ~ 48px
-                        className="h-11 w-11 shadow-sm ring-2 ring-white"
-                      />
-                      {effectiveStatus && (
-                        <div
-                          className={clsx(
-                            "absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white",
-                            effectiveStatus === "confirmed"
-                              ? "bg-green-500"
-                              : effectiveStatus === "declined"
-                                ? "bg-red-500"
-                                : "bg-gray-200"
-                          )}
-                        >
-                          {effectiveStatus === "confirmed" && <Check size={8} strokeWidth={4} />}
-                          {effectiveStatus === "declined" && <X size={8} strokeWidth={4} />}
-                        </div>
-                      )}
-                    </div>
-                    <span
-                      className={clsx(
-                        "text-[10px] font-medium truncate max-w-[60px]",
-                        selectedPerson === person.id ? "text-accent font-bold" : "text-gray-600"
-                      )}
-                    >
-                      {getDisplayName(person)}
-                    </span>
-                  </button>
-                </div>
-              );
-            })}
-
-            {!readOnly && (
-              <button
-                onClick={() => setSheet({ type: "person" })}
-                className="flex flex-col items-center gap-1.5 opacity-60 hover:opacity-100 transition-all outline-none"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-gray-300 bg-gray-50 text-gray-400 hover:border-accent hover:text-accent hover:bg-accent/5">
-                  <Plus size={20} />
-                </div>
-                <span className="text-[10px] font-medium text-gray-500">{t("add")}</span>
-              </button>
-            )}
-          </div>
-          <ScrollBar orientation="horizontal" className="hidden" />
-        </ScrollArea>
+        <RSVPSummary
+          plan={plan}
+          selectedPersonId={selectedPerson}
+          onSelectPerson={setSelectedPerson}
+          onAddPerson={readOnly ? undefined : () => setSheet({ type: "person" })}
+          readOnly={readOnly}
+        />
       </div>
 
       <div className="space-y-8">
@@ -506,7 +157,7 @@ export function PeopleTab({
           .map((person) => {
             const personItems = itemsByPerson[person.id] || [];
             // Show everyone even if they have no items, so they appear in "hero mode"
-            const effectiveStatus = optimisticStatus[person.id] || person.status;
+            const effectiveStatus = person.status;
             const isOwner = person.userId === currentUserId;
             const isTokenOwner = !!guestTokens[person.id];
             const canEdit = isOwner || isTokenOwner;
@@ -541,94 +192,15 @@ export function PeopleTab({
                   actions={
                     <div className="flex items-center gap-2">
                       {/* Status Picker for Current User OR Token Owner */}
-                      {canEdit && (
-                        <Popover
-                          open={openPopoverId === person.id}
-                          onOpenChange={(isOpen) => setOpenPopoverId(isOpen ? person.id : null)}
-                        >
-                          <PopoverTrigger asChild>
-                            <button
-                              className={clsx(
-                                "flex h-8 items-center gap-2 rounded-full px-3 text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm ring-1 ring-inset",
-                                effectiveStatus === "confirmed"
-                                  ? "bg-green-50 text-green-700 ring-green-200 hover:bg-green-100"
-                                  : effectiveStatus === "declined"
-                                    ? "bg-red-50 text-red-700 ring-red-200 hover:bg-red-100"
-                                    : effectiveStatus === "maybe"
-                                      ? "bg-orange-50 text-orange-700 ring-orange-200 hover:bg-orange-100"
-                                      : "bg-white text-gray-500 ring-gray-200 hover:bg-gray-50"
-                              )}
-                            >
-                              {effectiveStatus === "confirmed" && (
-                                <Check size={12} strokeWidth={3} />
-                              )}
-                              {effectiveStatus === "declined" && <X size={12} strokeWidth={3} />}
-                              {effectiveStatus === "maybe" && (
-                                <HelpCircle size={12} strokeWidth={3} />
-                              )}
-                              {!effectiveStatus && <CircleDashed size={12} strokeWidth={3} />}
-                              <span>
-                                {effectiveStatus === "confirmed"
-                                  ? t("present")
-                                  : effectiveStatus === "declined"
-                                    ? t("absent")
-                                    : effectiveStatus === "maybe"
-                                      ? t("maybe")
-                                      : t("respond")}
-                              </span>
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-48 p-1" align="end">
-                            <div className="flex flex-col gap-1">
-                              {effectiveStatus === "confirmed" && (
-                                <button
-                                  onClick={() => {
-                                    setEditingPersonId(person.id);
-                                    setOpenPopoverId(null);
-                                    setTimeout(() => {
-                                      document
-                                        .getElementById(`attendance-card-${person.id}`)
-                                        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-                                    }, 100);
-                                  }}
-                                  className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
-                                >
-                                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                    <Users size={10} strokeWidth={3} />
-                                  </div>
-                                  {t("adjust")}
-                                </button>
-                              )}
-                              <button
-                                onClick={() => handleStatusUpdate(person.id, "confirmed")}
-                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"
-                              >
-                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-600">
-                                  <Check size={10} strokeWidth={3} />
-                                </div>
-                                {t("present")}
-                              </button>
-                              <button
-                                onClick={() => handleStatusUpdate(person.id, "maybe")}
-                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors"
-                              >
-                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                                  <HelpCircle size={10} strokeWidth={3} />
-                                </div>
-                                {t("maybe")}
-                              </button>
-                              <button
-                                onClick={() => handleStatusUpdate(person.id, "declined")}
-                                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
-                              >
-                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600">
-                                  <X size={10} strokeWidth={3} />
-                                </div>
-                                {t("absent")}
-                              </button>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                      {canEdit && handleUpdateStatus && handleUpdateGuestCount && (
+                        <RSVPControl
+                          person={person}
+                          token={guestTokens[person.id]}
+                          readOnly={readOnly}
+                          onUpdateStatus={handleUpdateStatus}
+                          onUpdateGuestCount={handleUpdateGuestCount}
+                          variant="inline"
+                        />
                       )}
 
                       {/* Claim Button Logic (keep existing logic if needed, but might be redundant if user is already linked) */}

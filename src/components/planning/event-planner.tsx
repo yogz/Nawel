@@ -198,6 +198,8 @@ export function EventPlanner({
     handleDeletePerson: personHandlers.handleDeletePerson,
     handleClaimPerson: personHandlers.handleClaimPerson,
     handleUnclaimPerson: personHandlers.handleUnclaimPerson,
+    handleUpdateStatus: personHandlers.handleUpdateStatus,
+    handleUpdateGuestCount: personHandlers.handleUpdateGuestCount,
 
     // Event handlers
     handleDeleteEvent: eventHandlers.handleDeleteEvent,
@@ -455,6 +457,8 @@ export function EventPlanner({
                 isOwner={isOwner}
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
+                handleUpdateStatus={handlers.handleUpdateStatus}
+                handleUpdateGuestCount={handlers.handleUpdateGuestCount}
                 currentUserId={session?.user?.id}
                 currentPersonId={currentPerson?.id}
               />
@@ -472,6 +476,8 @@ export function EventPlanner({
                 currentUserId={session?.user?.id}
                 onClaim={handleClaimPerson}
                 onUnclaim={handleUnclaimPerson}
+                handleUpdateStatus={handlers.handleUpdateStatus}
+                handleUpdateGuestCount={handlers.handleUpdateGuestCount}
               />
             )}
 
