@@ -1,21 +1,30 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, ArrowRight, CornerDownLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InlineItemInputProps {
   onAdd: (name: string) => Promise<void> | void;
   placeholder?: string;
   className?: string;
+  serviceName?: string;
 }
 
-export function InlineItemInput({ onAdd, placeholder, className }: InlineItemInputProps) {
-  const t = useTranslations("EventDashboard.Planning");
+export function InlineItemInput({
+  onAdd,
+  placeholder,
+  className,
+  serviceName,
+}: InlineItemInputProps) {
+  const t = useTranslations("EventDashboard.Organizer");
+  const tPlanning = useTranslations("EventDashboard.Planning");
   const [value, setValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useCallback(async () => {
@@ -43,21 +52,77 @@ export function InlineItemInput({ onAdd, placeholder, className }: InlineItemInp
     [handleSubmit]
   );
 
+  // Dynamic placeholder logic
+  const displayPlaceholder =
+    placeholder ||
+    (serviceName
+      ? t("quickAddPlaceholderService", { service: serviceName })
+      : tPlanning("addItemPlaceholder"));
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative group transition-all duration-300", className)}>
+      <div
+        className={cn(
+          "absolute inset-0 rounded-md transition-all duration-300",
+          isFocused
+            ? "bg-white shadow-[0_0_20px_rgba(124,58,237,0.1)] ring-2 ring-violet-500/20"
+            : "bg-transparent"
+        )}
+      />
+
       <Input
         ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder || t("addItemPlaceholder")}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={displayPlaceholder}
         disabled={isSubmitting}
-        className="h-11 border-gray-200 bg-white pl-10 pr-4 text-sm placeholder:text-gray-500 focus:border-accent/30 focus:ring-accent/20"
+        className={cn(
+          "relative z-10 h-11 pl-10 pr-12 text-sm transition-all duration-300",
+          "placeholder:text-gray-400 placeholder:transition-opacity",
+          isFocused
+            ? "border-violet-500 bg-white placeholder:opacity-40"
+            : "border-dashed border-gray-300 bg-transparent opacity-70 hover:opacity-100 hover:bg-white/50 hover:border-gray-400",
+          isSubmitting && "opacity-50"
+        )}
       />
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-        {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+
+      {/* Left Icon (Plus or Loading) */}
+      <div
+        className={cn(
+          "absolute left-3 top-1/2 -translate-y-1/2 z-20 pointer-events-none transition-colors duration-300",
+          isFocused ? "text-violet-500" : "text-gray-400 group-hover:text-gray-500"
+        )}
+      >
+        {isSubmitting ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <Plus size={16} strokeWidth={isFocused ? 2.5 : 2} />
+        )}
       </div>
+
+      {/* Right Action (Enter Key Hint) */}
+      <AnimatePresence>
+        {value.trim().length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, x: -10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.8, x: -5 }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1"
+          >
+            <button
+              onClick={handleSubmit}
+              className="flex items-center gap-1.5 bg-violet-100 text-violet-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-violet-200 transition-colors"
+            >
+              <span>Enter</span>
+              <CornerDownLeft size={10} strokeWidth={3} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

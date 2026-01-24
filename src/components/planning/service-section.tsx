@@ -141,7 +141,7 @@ export const ServiceSection = memo(function ServiceSection({
                     <div className="flex items-center gap-2">
                       <InlineItemInput
                         onAdd={onInlineAdd}
-                        placeholder={t("addItemPlaceholder")}
+                        serviceName={translatedTitle}
                         className="flex-1"
                       />
                       <button

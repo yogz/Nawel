@@ -340,7 +340,7 @@
       "quickAdd": "Ajout rapide",
       "quickAddTitle": "Ajout rapide",
       "quickAddPlaceholder": "Ex: Bûche de Noël, Champagne...",
-      "quickAddPlaceholderService": "Ajouter à {service}...",
+      "quickAddPlaceholderService": "Ajouter un article à : {service}...",
       "quickAddEmptyTitle": "Liste vide"
     },
     "Header": {
@@ -811,6 +811,9 @@
     "title": "Envoyer moi un message",
     "description": "Une question, une suggestion ou juste pour dire bonjour ? Je lis tous vos messages ! 💌",
     "placeholder": "Votre message ici...",
+    "submit": "Envoyer",
+    "successTitle": "Merci ! ✨",
+    "successDescription": "Votre message a bien été reçu. Merci de nous aider à améliorer CoList !",
     "errorDescription": "L'envoi a échoué. Réessayez plus tard."
   },
   "DefaultServices": {
