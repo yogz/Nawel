@@ -235,11 +235,12 @@ export function EventPlanner({
           name,
           serviceId,
           quantity: "1",
+          personId: currentPerson?.id ?? null,
         },
         false // Don't close sheet (there's no sheet)
       );
     },
-    [handlers]
+    [handlers, currentPerson?.id]
   );
 
   // Memoize sensors to avoid re-creating on every render

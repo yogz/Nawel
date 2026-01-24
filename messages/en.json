@@ -340,7 +340,7 @@
       "quickAdd": "Quick Add",
       "quickAddTitle": "Quick Add",
       "quickAddPlaceholder": "E.g., Yule Log, Champagne...",
-      "quickAddPlaceholderService": "Add item to: {service}...",
+      "quickAddPlaceholderService": "Add to: {service}...",
       "quickAddEmptyTitle": "Empty list"
     },
     "Header": {

@@ -340,7 +340,7 @@
       "quickAdd": "Añadir rápido",
       "quickAddEmptyTitle": "Lista vacía",
       "quickAddPlaceholder": "Ej: Tronco de Navidad, Champagne...",
-      "quickAddPlaceholderService": "Añadir artículo a: {service}...",
+      "quickAddPlaceholderService": "Añadir a: {service}...",
       "quickAddTitle": "Añadir rápido"
     },
     "Header": {

@@ -88,11 +88,15 @@
     /* Base blur */
 
     /* Light blue-grey background for the content area */
-    background: #f5f7fb;
-    background-image:
-      radial-gradient(at 0% 0%, rgba(188, 99, 233, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(230, 200, 255, 0.03) 0px, transparent 50%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    /* IMPORTANT: Start with --status-bar-color at top for seamless status bar integration on mobile */
+    background: linear-gradient(
+      to bottom,
+      var(--status-bar-color) 0px,
+      var(--status-bar-color) 60px,
+      #f5f7fb 160px,
+      #f5f7fb 100%
+    );
+    background-color: var(--status-bar-color);
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;

@@ -340,7 +340,7 @@
       "quickAdd": "Schnell hinzufügen",
       "quickAddEmptyTitle": "Leere Liste",
       "quickAddPlaceholder": "Z.B. Baumstamm, Champagner...",
-      "quickAddPlaceholderService": "Zu {service} hinzufügen...",
+      "quickAddPlaceholderService": "Hinzufügen zu: {service}...",
       "quickAddTitle": "Schnell hinzufügen"
     },
     "Header": {

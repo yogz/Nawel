@@ -340,7 +340,7 @@
       "quickAdd": "Ajout rapide",
       "quickAddTitle": "Ajout rapide",
       "quickAddPlaceholder": "Ex: Bûche de Noël, Champagne...",
-      "quickAddPlaceholderService": "Ajouter un article à : {service}...",
+      "quickAddPlaceholderService": "Ajouter à : {service}...",
       "quickAddEmptyTitle": "Liste vide"
     },
     "Header": {
