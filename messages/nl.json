@@ -540,7 +540,9 @@
       "selectMealLabel": "Selecteer maaltijd",
       "selectMealPlaceholder": "Kies maaltijd...",
       "newMealOption": "+ Nieuwe maaltijd",
-      "newMealSection": "Nieuwe maaltijd"
+      "newMealSection": "Nieuwe maaltijd",
+      "descriptionLabel": "Beschrijving (details)",
+      "descriptionPlaceholder": "Hapjes, Voorgerechten, Salades..."
     },
     "Shared": {
       "adultsLabel": "Volwassenen",

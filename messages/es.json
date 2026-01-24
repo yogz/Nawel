@@ -540,7 +540,9 @@
       "selectMealLabel": "Seleccionar comida",
       "selectMealPlaceholder": "Elegir comida...",
       "newMealOption": "+ Nueva comida",
-      "newMealSection": "Nueva comida"
+      "newMealSection": "Nueva comida",
+      "descriptionLabel": "Descripción (detalles)",
+      "descriptionPlaceholder": "Aperitivo, Entrante, Ensaladas..."
     },
     "Shared": {
       "adultsLabel": "Adultos",

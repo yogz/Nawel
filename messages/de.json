@@ -540,7 +540,9 @@
       "selectMealLabel": "Mahlzeit auswählen",
       "selectMealPlaceholder": "Mahlzeit wählen...",
       "newMealOption": "+ Neue Mahlzeit",
-      "newMealSection": "Neue Mahlzeit"
+      "newMealSection": "Neue Mahlzeit",
+      "descriptionLabel": "Beschreibung (Details)",
+      "descriptionPlaceholder": "Aperitif, Vorspeise, Salate..."
     },
     "Shared": {
       "adultsLabel": "Erwachsene",

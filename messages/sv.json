@@ -540,7 +540,9 @@
       "selectMealLabel": "Välj måltid",
       "selectMealPlaceholder": "Välj måltid...",
       "newMealOption": "+ Ny måltid",
-      "newMealSection": "Ny måltid"
+      "newMealSection": "Ny måltid",
+      "descriptionLabel": "Beskrivning (detaljer)",
+      "descriptionPlaceholder": "Tilltugg, Förrätter, Sallader..."
     },
     "Shared": {
       "adultsLabel": "Vuxna",

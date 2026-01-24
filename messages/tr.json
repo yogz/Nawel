@@ -540,7 +540,9 @@
       "selectMealLabel": "Yemek seç",
       "selectMealPlaceholder": "Yemek seçin...",
       "newMealOption": "+ Yeni yemek",
-      "newMealSection": "Yeni yemek"
+      "newMealSection": "Yeni yemek",
+      "descriptionLabel": "Açıklama (detaylar)",
+      "descriptionPlaceholder": "Atıştırmalıklar, Başlangıçlar, Salatalar..."
     },
     "Shared": {
       "adultsLabel": "Yetişkinler",

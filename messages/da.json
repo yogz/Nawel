@@ -540,7 +540,9 @@
       "selectMealLabel": "Vælg måltid",
       "selectMealPlaceholder": "Vælg måltid...",
       "newMealOption": "+ Nyt måltid",
-      "newMealSection": "Nyt måltid"
+      "newMealSection": "Nyt måltid",
+      "descriptionLabel": "Beskrivelse (detaljer)",
+      "descriptionPlaceholder": "Snacks, Forretter, Salater..."
     },
     "Shared": {
       "adultsLabel": "Voksne",

@@ -540,7 +540,9 @@
       "selectMealLabel": "Επιλέξτε γεύμα",
       "selectMealPlaceholder": "Επιλογή γεύματος...",
       "newMealOption": "+ Νέο γεύμα",
-      "newMealSection": "Νέο γεύμα"
+      "newMealSection": "Νέο γεύμα",
+      "descriptionLabel": "Περιγραφή (λεπτομέρειες)",
+      "descriptionPlaceholder": "Ορεκτικά, Σαλάτες..."
     },
     "Shared": {
       "adultsLabel": "Ενήλικες",

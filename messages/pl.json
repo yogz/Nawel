@@ -540,7 +540,9 @@
       "selectMealLabel": "Wybierz posiłek",
       "selectMealPlaceholder": "Wybierz posiłek...",
       "newMealOption": "+ Nowy posiłek",
-      "newMealSection": "Nowy posiłek"
+      "newMealSection": "Nowy posiłek",
+      "descriptionLabel": "Opis (szczegóły)",
+      "descriptionPlaceholder": "Przekąski, Przystawki, Sałatki..."
     },
     "Shared": {
       "adultsLabel": "Dorośli",

@@ -540,7 +540,9 @@
       "selectMealLabel": "Seleziona pasto",
       "selectMealPlaceholder": "Scegli pasto...",
       "newMealOption": "+ Nuovo pasto",
-      "newMealSection": "Nuovo pasto"
+      "newMealSection": "Nuovo pasto",
+      "descriptionLabel": "Descrizione (dettagli)",
+      "descriptionPlaceholder": "Aperitivo, Antipasti, Insalate..."
     },
     "Shared": {
       "adultsLabel": "Adulti",
