@@ -804,10 +804,10 @@
   "DefaultServices": {
     "total": [
       "Pour commencer (Apéro, Entrées légères, Salades)",
-      "Plats résistants (Viandes, Quiches, Gratins)",
+      "Plats résistants (Quiches, Gratins, Viandes)",
       "Douceurs (Gâteaux, Fruits, Tartes)",
       "Boissons (Vins, Bières, Softs)",
-      "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes, Couverts)"
+      "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes)"
     ]
   },
   "ResetPassword": {

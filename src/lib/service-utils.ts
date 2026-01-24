@@ -37,26 +37,34 @@ export function translateServiceTitle(title: string, t: (key: string) => string)
   return title;
 }
 
-/**
- * Splits a service title into a main part and a detail part.
- * Example: "Pour commencer (Apéro, Entrées légères, Salades)"
- * -> { main: "Pour commencer", details: "Apéro, Entrées légères, Salades" }
- */
 export function splitServiceTitle(title: string): {
   main: string;
   details?: string;
 } {
   if (!title) return { main: "" };
 
-  const lastOpen = title.lastIndexOf("(");
-  const lastClose = title.lastIndexOf(")");
+  // Look for parentheses
+  const openParen = title.indexOf("(");
+  const closeParen = title.lastIndexOf(")");
 
-  if (lastOpen !== -1 && lastClose > lastOpen) {
-    const main = title.substring(0, lastOpen).trim();
-    const details = title.substring(lastOpen + 1, lastClose).trim();
+  if (openParen !== -1 && closeParen > openParen) {
+    const main = title.substring(0, openParen).trim();
+    const details = title.substring(openParen + 1, closeParen).trim();
     if (main) {
       return { main, details };
     }
+  }
+
+  // Fallback split for common phrases if parentheses are missing (legacy or manual edit)
+  // This regex matches known prefixes and captures the rest as details
+  const fallbackRegex =
+    /^(Pour commencer|Plats résistants|Douceurs|Boissons|Pain, Fromage(?:\s*&?\s*Extras)?)(?:\s+)(.*)$/;
+  const fbMatch = title.match(fallbackRegex);
+  if (fbMatch) {
+    return {
+      main: fbMatch[1].trim(),
+      details: fbMatch[2].trim(),
+    };
   }
 
   return { main: title.trim() };
