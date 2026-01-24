@@ -13,7 +13,6 @@ interface IngredientsSheetContentProps {
   readOnly?: boolean;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
   currentUserId?: string;
   onAuth: () => void;
   // Handlers - matching OrganizerHandlers types exactly
@@ -41,7 +40,6 @@ export function IngredientsSheetContent({
   readOnly,
   isGenerating,
   setIsGenerating,
-  setSuccessMessage,
   currentUserId,
   onAuth,
   findItem,
@@ -90,10 +88,8 @@ export function IngredientsSheetContent({
         finalPeopleCount,
         locale
       );
-      setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
     } catch (error) {
       console.error("Failed to generate ingredients:", error);
-      setSuccessMessage({ text: t("generationError"), type: "error" });
     } finally {
       setIsGenerating(false);
     }

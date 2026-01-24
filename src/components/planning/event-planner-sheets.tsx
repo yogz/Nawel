@@ -36,8 +36,6 @@ interface EventPlannerSheetsProps {
   handlers: OrganizerHandlers;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  successMessage: { text: string; type?: "success" | "error" } | null;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
   currentUserId?: string;
   currentUserImage?: string | null;
   onAuth: () => void;
@@ -55,8 +53,6 @@ export function EventPlannerSheets({
   handlers,
   isGenerating,
   setIsGenerating,
-  successMessage,
-  setSuccessMessage,
   currentUserId,
   currentUserImage,
   onAuth,
@@ -119,7 +115,6 @@ export function EventPlannerSheets({
             readOnly={readOnly}
             isGenerating={isGenerating}
             setIsGenerating={setIsGenerating}
-            setSuccessMessage={setSuccessMessage}
             currentUserId={currentUserId}
             onAuth={onAuth}
             findItem={handlers.findItem}
@@ -301,7 +296,6 @@ export function EventPlannerSheets({
           readOnly={readOnly}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          setSuccessMessage={setSuccessMessage}
           currentUserId={currentUserId}
           onAuth={onAuth}
           findItem={handlers.findItem}

@@ -2,11 +2,11 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { deleteEventAction, updateEventAction } from "@/app/actions";
 import type { BaseHandlerParams } from "@/features/shared/types";
 
 export function useEventHandlers({
-  setSuccessMessage,
   slug,
   writeKey,
   setPlan,
@@ -20,14 +20,14 @@ export function useEventHandlers({
     try {
       const result = await deleteEventAction({ slug, key: writeKey, token: token ?? undefined });
       if (result.success) {
-        setSuccessMessage({ text: tShared("eventDeleted"), type: "success" });
+        toast.success(tShared("eventDeleted"));
         setTimeout(() => {
           window.location.href = "/";
         }, 1500);
       }
     } catch (error) {
       console.error("Failed to delete event:", error);
-      setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
+      toast.error(t("meal.errorDelete"));
     }
   };
 
@@ -45,10 +45,10 @@ export function useEventHandlers({
           ...prev,
           event: prev.event ? { ...prev.event, name } : null,
         }));
-        setSuccessMessage({ text: tShared("eventUpdated"), type: "success" });
+        toast.success(tShared("eventUpdated"));
       } catch (error) {
         console.error("Failed to update event:", error);
-        setSuccessMessage({ text: tShared("eventUpdateError"), type: "error" });
+        toast.error(tShared("eventUpdateError"));
       }
     });
   };

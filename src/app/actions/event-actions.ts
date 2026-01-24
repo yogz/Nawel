@@ -16,6 +16,7 @@ import {
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 import { getTranslations } from "next-intl/server";
+import { splitServiceTitle } from "@/lib/service-utils";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
   // Find a unique slug automatically based on name
@@ -178,6 +179,11 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     }
 
     if (services.length > 0) {
+      const formattedServices = services.map((s) => {
+        const { main, details } = splitServiceTitle(s);
+        return { title: main, description: details || null };
+      });
+
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
@@ -186,7 +192,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         time: input.time,
         address: input.address,
         title: defaultMode === "total" ? "Menu" : "Full meal",
-        services: services,
+        services: formattedServices,
         adults: created.adults,
         children: created.children,
       });

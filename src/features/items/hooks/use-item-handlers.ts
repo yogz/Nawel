@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 import {
   createItemAction,
   updateItemAction,
@@ -22,7 +23,6 @@ export function useItemHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
   token,
 }: ItemHandlerParams) {
   const [, startTransition] = useTransition();
@@ -77,11 +77,11 @@ export function useItemHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
+        toast.success(`${itemData.name} ajouté ! ✨`);
         trackItemAction("item_created", itemData.name);
       } catch (error) {
         console.error("Failed to create item:", error);
-        setSuccessMessage({ text: t("item.errorAdd"), type: "error" });
+        toast.error(t("item.errorAdd"));
       }
     });
   };
@@ -112,7 +112,7 @@ export function useItemHandlers({
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
-      setSuccessMessage({ text: "Modifications enregistrées ✓", type: "success" });
+      toast.success("Modifications enregistrées ✓");
       trackItemAction("item_updated", updatedItem.name);
       if (closeSheet) {
         setSheet(null);
@@ -142,7 +142,7 @@ export function useItemHandlers({
 
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
-    setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
+    toast.success(`Article assigné à ${personName} ✓`);
     trackItemAction("item_assigned", item.name, { assigned_to: personName });
 
     // Easter egg for Cécile
@@ -208,7 +208,7 @@ export function useItemHandlers({
     if (closeSheet) {
       setSheet(null);
     }
-    setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
+    toast.success(`${item.name} supprimé ✓`);
     trackItemAction("item_deleted", item.name);
 
     startTransition(async () => {
@@ -217,7 +217,7 @@ export function useItemHandlers({
       } catch (error) {
         console.error("Failed to delete item:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("item.errorDelete"), type: "error" });
+        toast.error(t("item.errorDelete"));
       }
     });
   };
@@ -257,6 +257,7 @@ export function useItemHandlers({
         key: writeKey,
         token: token ?? undefined,
       });
+      toast.success("Article déplacé ✓");
     });
   };
 
@@ -284,6 +285,7 @@ export function useItemHandlers({
           key: writeKey,
           token: token ?? undefined,
         });
+        toast.success(checked ? "Article coché ✓" : "Article décoché ✓");
       } catch (error) {
         console.error("Failed to toggle item checked:", error);
         // Revert on error

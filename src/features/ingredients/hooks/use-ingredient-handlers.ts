@@ -1,6 +1,7 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
+import { toast } from "sonner";
 import {
   generateIngredientsAction,
   createIngredientAction,
@@ -10,7 +11,6 @@ import {
 } from "@/app/actions";
 import { saveAIFeedbackAction } from "@/app/actions/item-actions";
 import type { PlanData } from "@/lib/types";
-import { useState } from "react";
 import type { IngredientHandlerParams } from "@/features/shared/types";
 import { trackAIAction } from "@/lib/analytics";
 
@@ -19,7 +19,6 @@ export function useIngredientHandlers({
   slug,
   writeKey,
   readOnly,
-  setSuccessMessage,
   token,
 }: IngredientHandlerParams) {
   const [, startTransition] = useTransition();
@@ -52,7 +51,7 @@ export function useIngredientHandlers({
     });
 
     if (!result.success) {
-      setSuccessMessage({ text: result.error, type: "error" });
+      toast.error(result.error);
       return;
     }
 

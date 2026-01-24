@@ -15,6 +15,7 @@ export type Meal = InferSelectModel<typeof meals> & {
 export type Service = InferSelectModel<typeof services> & {
   items: Item[];
   icon?: string | null;
+  description?: string | null;
 };
 
 export type Person = InferSelectModel<typeof people> & {
@@ -92,6 +93,7 @@ export interface OrganizerHandlers {
   handleCreateService: (
     mealId: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -109,6 +111,7 @@ export interface OrganizerHandlers {
   handleUpdateService: (
     id: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number

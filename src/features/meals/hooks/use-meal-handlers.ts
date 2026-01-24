@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   createMealAction,
   updateMealAction,
@@ -19,7 +20,6 @@ export function useMealHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
   token,
 }: MealHandlerParams) {
   const [, startTransition] = useTransition();
@@ -58,12 +58,12 @@ export function useMealHandlers({
           meals: newMeals,
         };
       });
-      setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+      toast.success("Repas ajouté ✨");
       trackMealServiceAction("meal_created", title || date);
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
-      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+      toast.error(t("meal.errorAdd"));
       return 0;
     }
   };
@@ -108,7 +108,7 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        toast.success("Repas ajouté ✨");
         trackMealServiceAction("meal_created", title || date);
       } else {
         const created = await createMealWithServicesAction({
@@ -136,12 +136,12 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        toast.success("Repas ajouté ✨");
         trackMealServiceAction("meal_created", title || date);
       }
     } catch (error) {
       console.error("Failed to create meal:", error);
-      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+      toast.error(t("meal.errorAdd"));
     }
   };
 
@@ -204,11 +204,11 @@ export function useMealHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
+        toast.success("Repas mis à jour ✓");
         trackMealServiceAction("meal_updated", title || date);
       } catch (error) {
         console.error("Failed to update meal:", error);
-        setSuccessMessage({ text: t("meal.errorUpdate"), type: "error" });
+        toast.error(t("meal.errorUpdate"));
       }
     });
   };
@@ -224,7 +224,7 @@ export function useMealHandlers({
       meals: prev.meals.filter((m) => m.id !== id),
     }));
     setSheet(null);
-    setSuccessMessage({ text: "Repas supprimé ✓", type: "success" });
+    toast.success("Repas supprimé ✓");
     trackMealServiceAction("meal_deleted", meal?.title || meal?.date);
     startTransition(async () => {
       try {
@@ -232,7 +232,7 @@ export function useMealHandlers({
       } catch (error) {
         console.error("Failed to delete meal:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
+        toast.error(t("meal.errorDelete"));
       }
     });
   };

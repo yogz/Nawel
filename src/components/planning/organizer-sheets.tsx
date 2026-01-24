@@ -34,8 +34,7 @@ interface OrganizerSheetsProps {
   handlers: OrganizerHandlers;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  successMessage: { text: string; type?: "success" | "error" } | null;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
+  setIsGenerating: (isGenerating: boolean) => void;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
@@ -55,8 +54,7 @@ export function OrganizerSheets({
   handlers,
   isGenerating,
   setIsGenerating,
-  successMessage,
-  setSuccessMessage,
+  setIsGenerating,
   planningFilter,
   setPlanningFilter,
   currentUserId,
@@ -315,10 +313,8 @@ export function OrganizerSheets({
                               })(),
                             locale
                           );
-                          setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
                         } catch (error) {
                           console.error("Failed to generate ingredients:", error);
-                          setSuccessMessage({ text: t("generationError"), type: "error" });
                         } finally {
                           setIsGenerating(false);
                         }
@@ -575,10 +571,8 @@ export function OrganizerSheets({
                             finalPeopleCount,
                             locale
                           );
-                          setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
                         } catch (error) {
                           console.error("Failed to generate ingredients:", error);
-                          setSuccessMessage({ text: t("generationError"), type: "error" });
                         } finally {
                           setIsGenerating(false);
                         }

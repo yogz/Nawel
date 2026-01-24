@@ -20,6 +20,7 @@ interface ServiceSheetContentProps {
   handleCreateService: (
     mealId: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -68,6 +69,7 @@ export function ServiceSheetContent({
       onSubmit={async (
         mealId: number,
         title: string,
+        description: string,
         adults: number,
         children: number,
         peopleCount: number,
@@ -87,7 +89,7 @@ export function ServiceSheetContent({
             newMealAddress
           );
         }
-        handleCreateService(targetMealId, title, adults, children, peopleCount);
+        handleCreateService(targetMealId, title, description, adults, children, peopleCount);
       }}
     />
   );
@@ -99,6 +101,7 @@ interface ServiceEditSheetContentProps {
   handleUpdateService: (
     id: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number

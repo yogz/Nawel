@@ -21,7 +21,6 @@ export interface BaseHandlerParams {
   writeKey?: string;
   readOnly: boolean;
   setSheet: (sheet: Sheet | null) => void;
-  setSuccessMessage: (message: { text: string; type?: "success" | "error" } | null) => void;
   session?: ExtendedSession | null;
   refetch?: () => Promise<unknown>;
   token?: string | null;

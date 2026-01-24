@@ -19,8 +19,7 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SuccessToast } from "@/components/common/success-toast";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
 
@@ -54,7 +53,6 @@ interface CitationItem {
 export function CitationManager() {
   const t = useTranslations("Citations");
   const tLang = useTranslations("common.languages");
-  const { message: toastMessage, setMessage: setToastMessage } = useToast();
 
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
@@ -180,10 +178,10 @@ export function CitationManager() {
       const result = await deleteCitationAdminAction({ id });
       if (result?.success) {
         setItems((prev) => prev.filter((i) => i.id !== id));
-        setToastMessage({ text: "Citation supprimée", type: "success" });
+        toast.success("Citation supprimée");
       }
     } catch (_error) {
-      setToastMessage({ text: "Erreur lors de la suppression", type: "error" });
+      toast.error("Erreur lors de la suppression");
     }
   };
 
@@ -272,10 +270,10 @@ export function CitationManager() {
         setItems((prev) => prev.map((item) => (item.id === activeItem.id ? result.item : item)));
         setIsEditing(false);
         setEditedItem(null);
-        setToastMessage({ text: "Citation mise à jour", type: "success" });
+        toast.success("Citation mise à jour");
       }
     } catch (_error) {
-      setToastMessage({ text: "Erreur lors de la mise à jour", type: "error" });
+      toast.error("Erreur lors de la mise à jour");
     } finally {
       setIsSaving(false);
     }
@@ -283,8 +281,6 @@ export function CitationManager() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <SuccessToast message={toastMessage?.text || null} type={toastMessage?.type || "success"} />
-
       {/* Control Bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">

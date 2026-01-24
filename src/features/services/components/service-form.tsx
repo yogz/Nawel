@@ -46,6 +46,7 @@ export function ServiceForm({
   onSubmit: (
     mealId: number,
     title: string,
+    description: string,
     adults: number,
     children: number,
     peopleCount: number,
@@ -78,6 +79,7 @@ export function ServiceForm({
 
   const [mealId, setMealId] = useState<string>(initialMealId);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [adults, setAdults] = useState(initialAdults);
   const [children, setChildren] = useState(initialChildren);
   const [peopleCount, setPeopleCount] = useState(initialPeople);
@@ -105,6 +107,7 @@ export function ServiceForm({
         await onSubmit(
           -1,
           title,
+          description,
           adults,
           children,
           peopleCount,
@@ -114,7 +117,7 @@ export function ServiceForm({
           newMealAddress
         );
       } else {
-        await onSubmit(Number(mealId), title, adults, children, peopleCount);
+        await onSubmit(Number(mealId), title, description, adults, children, peopleCount);
       }
     });
   };
@@ -294,6 +297,34 @@ export function ServiceForm({
           placeholder={t("placeholder")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const skip = (mealId === "new" || forceNewMeal) && !newMealDate;
+              if (!skip && title.trim()) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }
+          }}
+          disabled={readOnly}
+          autoCapitalize="sentences"
+          enterKeyHint="next"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+        />
+      </div>
+
+      <div className="space-y-4">
+        <Label
+          htmlFor="service-description"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          {t("descriptionLabel") || "Description (ex: Apéro, Entrées...)"}
+        </Label>
+        <Input
+          id="service-description"
+          placeholder={t("descriptionPlaceholder") || "Détails du service"}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               const skip = (mealId === "new" || forceNewMeal) && !newMealDate;

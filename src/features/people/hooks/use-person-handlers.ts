@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   createPersonAction,
   updatePersonAction,
@@ -21,7 +22,6 @@ export function usePersonHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
   setSelectedPerson,
   session,
   refetch,
@@ -63,11 +63,11 @@ export function usePersonHandlers({
         }));
         setSelectedPerson?.(created.id);
         setSheet(null);
-        setSuccessMessage({ text: t("person.added", { name }), type: "success" });
+        toast.success(t("person.added", { name }));
         trackPersonAction("person_created", name);
       } catch (error) {
         console.error("Failed to create person:", error);
-        setSuccessMessage({ text: t("person.errorAdd"), type: "error" });
+        toast.error(t("person.errorAdd"));
       }
     });
   };
@@ -114,11 +114,11 @@ export function usePersonHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: t("person.updated"), type: "success" });
+        toast.success(t("person.updated"));
         trackPersonAction("person_updated", name);
       } catch (error) {
         console.error("Failed to update person:", error);
-        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+        toast.error(t("person.errorUpdate"));
       }
     });
   };
@@ -143,10 +143,7 @@ export function usePersonHandlers({
       })),
     }));
     setSheet(null);
-    setSuccessMessage({
-      text: t("person.deleted", { name: person?.name || "Convive" }),
-      type: "success",
-    });
+    toast.success(t("person.deleted", { name: person?.name || "Convive" }));
     trackPersonAction("person_deleted", person?.name);
 
     startTransition(async () => {
@@ -155,7 +152,7 @@ export function usePersonHandlers({
       } catch (error) {
         console.error("Failed to delete person:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("person.errorDelete"), type: "error" });
+        toast.error(t("person.errorDelete"));
       }
     });
   };
@@ -183,11 +180,11 @@ export function usePersonHandlers({
                   : p
               ),
             }));
-            setSuccessMessage({ text: t("person.claimed"), type: "success" });
+            toast.success(t("person.claimed"));
             resolve(updated);
           } catch (error) {
             console.error("Failed to claim person:", error);
-            setSuccessMessage({ text: t("person.errorClaim"), type: "error" });
+            toast.error(t("person.errorClaim"));
             reject(error);
           }
         });
@@ -206,10 +203,10 @@ export function usePersonHandlers({
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, userId: null } : p)),
         }));
-        setSuccessMessage({ text: t("person.unclaimed"), type: "success" });
+        toast.success(t("person.unclaimed"));
       } catch (error) {
         console.error("Failed to unclaim person:", error);
-        setSuccessMessage({ text: t("person.errorUnclaim"), type: "error" });
+        toast.error(t("person.errorUnclaim"));
       }
     });
   };
@@ -232,9 +229,10 @@ export function usePersonHandlers({
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, status } : p)),
         }));
+        toast.success(t("person.statusUpdated"));
       } catch (error) {
         console.error("Failed to update status:", error);
-        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+        toast.error(t("person.errorUpdate"));
       }
     });
   };
@@ -269,9 +267,10 @@ export function usePersonHandlers({
               : p
           ),
         }));
+        toast.success(t("person.updated"));
       } catch (error) {
         console.error("Failed to update guest count:", error);
-        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+        toast.error(t("person.errorUpdate"));
       }
     });
   };

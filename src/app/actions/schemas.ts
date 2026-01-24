@@ -43,7 +43,17 @@ export const createMealSchema = baseInput.extend({
 export const createMealWithServicesSchema = baseInput.extend({
   date: dateSchema,
   title: safeText(200).optional(),
-  services: z.array(safeStrictText(100)).min(1, "At least one service required"),
+  services: z
+    .array(
+      z.union([
+        safeStrictText(100),
+        z.object({
+          title: safeStrictText(100),
+          description: safeText(500).optional().nullable(),
+        }),
+      ])
+    )
+    .min(1, "At least one service required"),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   time: z.string().optional(),
@@ -63,6 +73,7 @@ export const updateMealSchema = baseInput.extend({
 export const createServiceSchema = baseInput.extend({
   mealId: z.number().int().positive(),
   title: safeText(200),
+  description: safeText(500).optional().nullable(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),
@@ -71,6 +82,7 @@ export const createServiceSchema = baseInput.extend({
 export const serviceSchema = baseInput.extend({
   id: z.number().int().positive(),
   title: safeText(200).optional(),
+  description: safeText(500).optional().nullable(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),

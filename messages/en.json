@@ -540,7 +540,9 @@
       "selectMealLabel": "Select meal",
       "selectMealPlaceholder": "Choose meal...",
       "newMealOption": "+ New meal",
-      "newMealSection": "New meal"
+      "newMealSection": "New meal",
+      "descriptionLabel": "Description (details)",
+      "descriptionPlaceholder": "Nibbles, Starters, Salads..."
     },
     "Shared": {
       "adultsLabel": "Adults",

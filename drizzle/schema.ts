@@ -148,6 +148,7 @@ export const services = pgTable(
       .notNull()
       .references(() => meals.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
+    description: text("description"),
     order: integer("order_index").notNull().default(0),
     adults: integer("adults").notNull().default(0),
     children: integer("children").notNull().default(0),

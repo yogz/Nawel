@@ -51,6 +51,10 @@ export const ServiceSection = memo(function ServiceSection({
   const translatedTitle = useTranslatedServiceTitle(service.title);
   const { main, details } = splitServiceTitle(translatedTitle);
 
+  // Prefer stored description if available, otherwise fallback to parsed details
+  const displayTitle = service.description ? translatedTitle : main;
+  const displayDescription = service.description || details;
+
   const filteredItems = service.items;
 
   const allPeopleNames = people.map((p) => p.name);
@@ -65,8 +69,8 @@ export const ServiceSection = memo(function ServiceSection({
         readOnly={readOnly}
         onClick={onEdit}
         icon={service.icon || getServiceIcon(service.title)}
-        title={main}
-        description={details ? `${details}...` : undefined}
+        title={displayTitle}
+        description={displayDescription ? `${displayDescription}...` : undefined}
         actions={
           <div className="flex items-center gap-3">
             {filteredItems.length > 0 && (

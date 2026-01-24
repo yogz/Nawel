@@ -246,7 +246,7 @@ export default async function RootLayout({
             <AnalyticsSessionSync />
             <AnalyticsMonitor />
             <PWAPrompt />
-            <Toaster position="top-center" richColors duration={2000} />
+            <Toaster position="top-center" richColors duration={1500} expand={false} closeButton />
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

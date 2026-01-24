@@ -35,6 +35,7 @@ export const createServiceAction = createSafeAction(createServiceSchema, async (
     .values({
       mealId: input.mealId,
       title: input.title,
+      description: input.description,
       adults: finalAdults,
       children: finalChildren,
       peopleCount: finalPeopleCount,
@@ -71,6 +72,7 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
       .update(services)
       .set({
         ...(input.title !== undefined && { title: input.title }),
+        ...(input.description !== undefined && { description: input.description }),
         adults: newAdults,
         children: newChildren,
         peopleCount: newPeopleCount,

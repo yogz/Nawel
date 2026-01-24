@@ -25,6 +25,7 @@ export function ServiceEditForm({
   onSubmit: (
     id: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -35,16 +36,17 @@ export function ServiceEditForm({
   const t = useTranslations("EventDashboard.ServiceForm");
   const tCommon = useTranslations("EventDashboard.Shared");
   const [title, setTitle] = useState(service?.title || "");
+  const [description, setDescription] = useState(service?.description || "");
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
   const [showDetails, setShowDetails] = useState(false);
   const skipSaveRef = useRef(false);
-  const stateRef = useRef({ title, adults, children, peopleCount });
+  const stateRef = useRef({ title, description, adults, children, peopleCount });
 
   useEffect(() => {
-    stateRef.current = { title, adults, children, peopleCount };
-  }, [title, adults, children, peopleCount]);
+    stateRef.current = { title, description, adults, children, peopleCount };
+  }, [title, description, adults, children, peopleCount]);
 
   const handleBlurSave = () => {
     if (skipSaveRef.current) {
@@ -52,18 +54,28 @@ export function ServiceEditForm({
     }
     const {
       title: currTitle,
+      description: currDescription,
       adults: currAdults,
       children: currChildren,
+      adultsCount: _adultsCount, // Not used but present in some types
       peopleCount: currCount,
-    } = stateRef.current;
+    } = stateRef.current as any;
     const hasChanged =
       currTitle !== (service?.title || "") ||
+      currDescription !== (service?.description || "") ||
       currAdults !== (service?.adults || 0) ||
       currChildren !== (service?.children || 0) ||
       currCount !== (service?.peopleCount || 0);
 
     if (hasChanged && currTitle.trim()) {
-      onSubmit(service.id, currTitle, currAdults, currChildren, currCount);
+      (onSubmit as any)(
+        service.id,
+        currTitle,
+        currDescription,
+        currAdults,
+        currChildren,
+        currCount
+      );
     }
   };
 
@@ -96,6 +108,24 @@ export function ServiceEditForm({
           required
           autoCapitalize="sentences"
           enterKeyHint="done"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label
+          htmlFor="service-description"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          {t("descriptionLabel") || "Description (ex: Apéro, Entrées...)"}
+        </Label>
+        <Input
+          id="service-description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={handleBlurSave}
+          placeholder={t("descriptionPlaceholder") || "Détails du service"}
+          autoCapitalize="sentences"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
       </div>

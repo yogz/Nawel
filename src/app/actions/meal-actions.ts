@@ -56,11 +56,16 @@ export const createMealWithServicesAction = createSafeAction(
 
       const createdServices = [];
       for (let i = 0; i < input.services.length; i++) {
+        const sInput = input.services[i];
+        const sTitle = typeof sInput === "string" ? sInput : sInput.title;
+        const sDescription = typeof sInput === "string" ? null : sInput.description;
+
         const [service] = await tx
           .insert(services)
           .values({
             mealId: meal.id,
-            title: input.services[i],
+            title: sTitle,
+            description: sDescription,
             order: i,
             adults: adults,
             children: children,

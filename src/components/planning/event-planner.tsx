@@ -113,8 +113,6 @@ export function EventPlanner({
     setReadOnly,
     activeItemId,
     setActiveItemId,
-    successMessage,
-    setSuccessMessage,
   } = useEventState(initialPlan, initialWriteEnabled);
 
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
@@ -155,7 +153,6 @@ export function EventPlanner({
     writeKey: effectiveWriteKey,
     readOnly,
     setSheet,
-    setSuccessMessage,
     session,
     refetch,
     token: guestToken,
@@ -427,11 +424,6 @@ export function EventPlanner({
         </div>
       )}
 
-      <SuccessToast
-        message={successMessage?.text || null}
-        type={successMessage?.type || "success"}
-      />
-
       <div className="mx-auto w-full max-w-3xl flex-1">
         <main className="space-y-4 px-2 pt-0 pb-6 sm:px-2 sm:pt-0 sm:pb-4">
           <Suspense fallback={<TabSkeleton />}>
@@ -492,8 +484,8 @@ export function EventPlanner({
           </Suspense>
         </main>
 
-        <footer className="mt-12 mb-8 flex flex-col items-center gap-4 opacity-30 hover:opacity-100 transition-opacity duration-700">
-          <AppBranding variant="icon-text" logoSize={24} noLink />
+        <footer className="mt-12 mb-8 flex flex-col items-center gap-4 transition-opacity duration-700">
+          <AppBranding variant="icon-text" logoSize={24} href="https://www.colist.fr" />
         </footer>
 
         <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />
@@ -511,8 +503,6 @@ export function EventPlanner({
           handlers={handlers}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          successMessage={successMessage}
-          setSuccessMessage={setSuccessMessage}
           currentUserId={session?.user?.id}
           currentUserImage={session?.user?.image}
           onAuth={() => {

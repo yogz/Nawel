@@ -21,7 +21,6 @@ import { useTranslations } from "next-intl";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
-import { SuccessToast } from "../common/success-toast";
 
 // Heavy components loaded lazily (code-splitting)
 const OrganizerSheets = lazy(() =>
@@ -76,8 +75,6 @@ export function Organizer({
     setReadOnly,
     activeItemId,
     setActiveItemId,
-    successMessage,
-    setSuccessMessage,
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
@@ -111,7 +108,6 @@ export function Organizer({
     readOnly,
     setSheet,
     setSelectedPerson,
-    setSuccessMessage,
     session,
     refetch,
   });
@@ -268,11 +264,6 @@ export function Organizer({
         writeKey={effectiveWriteKey}
       />
 
-      <SuccessToast
-        message={successMessage?.text || null}
-        type={successMessage?.type || "success"}
-      />
-
       <div className="mx-auto w-full max-w-3xl flex-1">
         <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
           <Suspense fallback={<TabSkeleton />}>
@@ -344,8 +335,6 @@ export function Organizer({
           handlers={handlers}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          successMessage={successMessage}
-          setSuccessMessage={setSuccessMessage}
           planningFilter={planningFilter}
           setPlanningFilter={setPlanningFilter}
           currentUserId={session?.user?.id}

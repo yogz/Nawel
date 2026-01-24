@@ -540,7 +540,9 @@
       "selectMealLabel": "Sélectionner le repas",
       "selectMealPlaceholder": "Choisir le repas...",
       "newMealOption": "+ Nouveau repas",
-      "newMealSection": "Nouveau repas"
+      "newMealSection": "Nouveau repas",
+      "descriptionLabel": "Description (détails)",
+      "descriptionPlaceholder": "Apéro, Entrées, Salades..."
     },
     "Shared": {
       "adultsLabel": "Adultes",
@@ -804,7 +806,7 @@
   "DefaultServices": {
     "total": [
       "Pour commencer (Apéro, Entrées légères, Salades)",
-      "Plats résistants (Quiches, Gratins, Viandes)",
+      "Plats de résistance (Quiches, Gratins, Viandes)",
       "Douceurs (Gâteaux, Fruits, Tartes)",
       "Boissons (Vins, Bières, Softs)",
       "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes)"
