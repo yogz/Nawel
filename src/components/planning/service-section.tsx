@@ -53,7 +53,15 @@ export const ServiceSection = memo(function ServiceSection({
 
   // Prefer stored description if available, otherwise fallback to parsed details
   const displayTitle = service.description ? translatedTitle : main;
-  const displayDescription = service.description || details;
+
+  // Try to translate description if it matches a known key
+  const descriptionKey = service.description || details;
+  const isDescriptionKey = descriptionKey?.startsWith("desc_");
+  const translatedDescription = isDescriptionKey
+    ? t(`serviceTypes.${descriptionKey}`)
+    : descriptionKey;
+
+  const displayDescription = translatedDescription;
 
   const filteredItems = service.items;
 

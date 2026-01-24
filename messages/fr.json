@@ -587,7 +587,17 @@
         "divers": "Divers",
         "custom": "Sur mesure",
         "midi": "Midi",
-        "soir": "Soir"
+        "soir": "Soir",
+        "course_starter": "Pour commencer",
+        "desc_starter": "Apéro, Entrées légères, Salades",
+        "course_main": "Plats de résistance",
+        "desc_main": "Quiches, Gratins, Viandes",
+        "course_sweet": "Douceurs",
+        "desc_sweet": "Gâteaux, Fruits, Tartes",
+        "course_drinks": "Boissons",
+        "desc_drinks": "Vins, Bières, Softs",
+        "course_cheese_extras": "Pain, Fromage & Extras",
+        "desc_cheese_extras": "Baguettes, Fromages, Serviettes, Couverts"
       },
       "dateLabel": "Date",
       "datePlaceholder": "Choisir une date",

@@ -585,7 +585,17 @@
         "divers": "Diverses",
         "custom": "Maßgeschneidert",
         "midi": "Mittagessen",
-        "soir": "Abendessen"
+        "soir": "Abendessen",
+        "course_starter": "Fingerfood & Snacks",
+        "desc_starter": "Bretzel, knackiges Gemüse",
+        "course_main": "Hauptspeisen",
+        "desc_main": "Frikadellen, Würstchen, Schnitzel",
+        "course_sweet": "Nachtisch",
+        "desc_sweet": "Kuchen, Muffins",
+        "course_drinks": "Getränke",
+        "desc_drinks": "Bier, Radler, Softdrinks",
+        "course_cheese_extras": "Salate, Brot & Zubehör",
+        "desc_cheese_extras": "Nudelsalat, Kartoffelsalat, Brot, Besteck"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Datum wählen",

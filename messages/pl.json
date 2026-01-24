@@ -585,7 +585,17 @@
         "divers": "Różne",
         "custom": "Niestandardowe",
         "midi": "Obiad",
-        "soir": "Kolacja"
+        "soir": "Kolacja",
+        "course_starter": "Na początek",
+        "desc_starter": "Przekąski, Lekkie przystawki, Sałatki",
+        "course_main": "Dania główne",
+        "desc_main": "Mięsa, Zapiekanki, Tartry wytrawne",
+        "course_sweet": "Słodkości",
+        "desc_sweet": "Ciasta, Owoce, Desery",
+        "course_drinks": "Napoje",
+        "desc_drinks": "Wina, Piwa, Napoje bezalkoholowe",
+        "course_cheese_extras": "Chleb, Sery & Dodatki",
+        "desc_cheese_extras": "Bagietki, Sery, Serwetki, Sztućce"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Wybierz datę",

@@ -587,7 +587,17 @@
         "divers": "Misc",
         "custom": "Custom",
         "midi": "Lunch",
-        "soir": "Dinner"
+        "soir": "Dinner",
+        "course_starter": "Starters & Nibbles",
+        "desc_starter": "Chips, Nuts, Sausage rolls, Dips",
+        "course_main": "Mains & Savouries",
+        "desc_main": "Pies, Stews, Pizza, Roast",
+        "course_sweet": "Sweet Treats",
+        "desc_sweet": "Puddings, Cakes, Brownies",
+        "course_drinks": "Drinks",
+        "desc_drinks": "Beer, Wine, Softs",
+        "course_cheese_extras": "Sides & Cutlery",
+        "desc_cheese_extras": "Salads, Coleslaw, Garlic Bread, Plates"
       },
       "dateLabel": "Date",
       "datePlaceholder": "Choose a date",

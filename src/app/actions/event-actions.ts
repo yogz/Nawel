@@ -153,39 +153,28 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
 
     switch (defaultMode) {
       case "total":
-        try {
-          const tDefault = await getTranslations({
-            locale: input.locale || "fr",
-            namespace: "DefaultServices",
-          });
-          services = tDefault.raw("total") as {
-            title: string;
-            description: string | null;
-          }[];
-        } catch (e) {
-          services = [
-            {
-              title: "Pour commencer",
-              description: "Apéro, Entrées légères, Salades",
-            },
-            {
-              title: "Plats résistants",
-              description: "Viandes, Quiches, Gratins",
-            },
-            {
-              title: "Douceurs",
-              description: "Gâteaux, Fruits, Tartes",
-            },
-            {
-              title: "Boissons",
-              description: "Vins, Bières, Softs",
-            },
-            {
-              title: "Pain, Fromage & Extras",
-              description: "Baguettes, Fromages, Serviettes, Couverts",
-            },
-          ];
-        }
+        services = [
+          {
+            title: "course_starter",
+            description: "desc_starter",
+          },
+          {
+            title: "course_main",
+            description: "desc_main",
+          },
+          {
+            title: "course_sweet",
+            description: "desc_sweet",
+          },
+          {
+            title: "course_drinks",
+            description: "desc_drinks",
+          },
+          {
+            title: "course_cheese_extras",
+            description: "desc_cheese_extras",
+          },
+        ];
         break;
       case "classique":
         services = [

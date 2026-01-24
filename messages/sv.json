@@ -585,7 +585,17 @@
         "divers": "Diverse",
         "custom": "Anpassad",
         "midi": "Lunch",
-        "soir": "Middag"
+        "soir": "Middag",
+        "course_starter": "Till att börja med",
+        "desc_starter": "Tilltugg, Förrätter, Sallader",
+        "course_main": "Huvudrätter",
+        "desc_main": "Kött, Pajer, Gratänger",
+        "course_sweet": "Sötsaker",
+        "desc_sweet": "Kakor, Frukt, Bakverk",
+        "course_drinks": "Dryck",
+        "desc_drinks": "Vin, Öl, Läsk",
+        "course_cheese_extras": "Bröd, Ost & Extra",
+        "desc_cheese_extras": "Baguetter, Ostar, Servetter, Bestick"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Välj ett datum",

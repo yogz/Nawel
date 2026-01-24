@@ -585,7 +585,17 @@
         "divers": "Diverse",
         "custom": "Tilpasset",
         "midi": "Frokost",
-        "soir": "Aftensmad"
+        "soir": "Aftensmad",
+        "course_starter": "Til en start",
+        "desc_starter": "Snacks, Forretter, Salater",
+        "course_main": "Hovedretter",
+        "desc_main": "Kød, Tærter, Gratiner",
+        "course_sweet": "Søde sager",
+        "desc_sweet": "Kager, Frugt, Bakværk",
+        "course_drinks": "Drikkevarer",
+        "desc_drinks": "Vin, Øl, Sodavand",
+        "course_cheese_extras": "Brød, Ost & Ekstra",
+        "desc_cheese_extras": "Baguetter, Oste, Servietter, Bestik"
       },
       "dateLabel": "Dato",
       "datePlaceholder": "Vælg en dato",

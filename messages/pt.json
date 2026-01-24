@@ -585,7 +585,17 @@
         "divers": "Diversos",
         "custom": "Sob medida",
         "midi": "Almoço",
-        "soir": "Jantar"
+        "soir": "Jantar",
+        "course_starter": "Para começar",
+        "desc_starter": "Aperitivos, Entradas leves, Saladas",
+        "course_main": "Pratos principais",
+        "desc_main": "Carnes, Quiches, Gratins",
+        "course_sweet": "Doces",
+        "desc_sweet": "Bolos, Frutas, Tartes",
+        "course_drinks": "Bebidas",
+        "desc_drinks": "Vinhos, Cervejas, Refrigerantes",
+        "course_cheese_extras": "Pão, Queijo & Extras",
+        "desc_cheese_extras": "Baguetes, Queijos, Guardanapos, Talheres"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Escolher uma data",

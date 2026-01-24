@@ -585,7 +585,17 @@
         "divers": "Varios",
         "custom": "A medida",
         "midi": "Almuerzo",
-        "soir": "Cena"
+        "soir": "Cena",
+        "course_starter": "Para empezar",
+        "desc_starter": "Aperitivo, Entrantes ligeros, Ensaladas",
+        "course_main": "Platos principales",
+        "desc_main": "Carnes, Quiches, Gratinados",
+        "course_sweet": "Dulces",
+        "desc_sweet": "Tartas, Frutas, Pasteles",
+        "course_drinks": "Bebidas",
+        "desc_drinks": "Vinos, Cervezas, Refrescos",
+        "course_cheese_extras": "Pan, Queso y Extras",
+        "desc_cheese_extras": "Baguettes, Quesos, Servilletas, Cubiertos"
       },
       "dateLabel": "Fecha",
       "datePlaceholder": "Elegir una fecha",

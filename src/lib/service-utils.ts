@@ -18,6 +18,11 @@ export function translateServiceTitle(title: string, t: (key: string) => string)
     "autre",
     "divers",
     "custom",
+    "course_starter",
+    "course_main",
+    "course_sweet",
+    "course_drinks",
+    "course_cheese_extras",
   ];
 
   // Normalize the title to lowercase for comparison

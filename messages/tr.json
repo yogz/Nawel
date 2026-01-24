@@ -585,7 +585,17 @@
         "divers": "Çeşitli",
         "custom": "Özel",
         "midi": "Öğle Yemeği",
-        "soir": "Akşam Yemeği"
+        "soir": "Akşam Yemeği",
+        "course_starter": "Meze & Atıştırmalık",
+        "desc_starter": "Sarma, Humus, Soğuk Başlangıçlar",
+        "course_main": "Ana Yemekler & Börek",
+        "desc_main": "Kebaplar, Börekler, Ana Yemekler",
+        "course_sweet": "Tatlı & Meyve",
+        "desc_sweet": "Baklava, Sütlü Tatlılar, Meyve",
+        "course_drinks": "İçecekler",
+        "desc_drinks": "Ayran, Meyve Suyu, Kola, İçecekler",
+        "course_cheese_extras": "Ekmek & Malzemeler",
+        "desc_cheese_extras": "Ekmekler, Yeşil Salatalar, Peçete, Çay"
       },
       "dateLabel": "Tarih",
       "datePlaceholder": "Bir tarih seçin",

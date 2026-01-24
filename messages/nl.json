@@ -585,7 +585,17 @@
         "divers": "Diversen",
         "custom": "Aangepast",
         "midi": "Lunch",
-        "soir": "Diner"
+        "soir": "Diner",
+        "course_starter": "Om te beginnen",
+        "desc_starter": "Hapjes, Voorgerechten, Salades",
+        "course_main": "Hoofdgerechten",
+        "desc_main": "Vlees, Quiches, Ovenschotels",
+        "course_sweet": "Zoetigheden",
+        "desc_sweet": "Taart, Fruit, Gebak",
+        "course_drinks": "Dranken",
+        "desc_drinks": "Wijn, Bier, Frisdrank",
+        "course_cheese_extras": "Brood, Kaas & Extra's",
+        "desc_cheese_extras": "Stokbrood, Kaas, Servetten, Bestek"
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Kies een datum",

@@ -585,7 +585,17 @@
         "divers": "Varie",
         "custom": "Personalizzato",
         "midi": "Pranzo",
-        "soir": "Cena"
+        "soir": "Cena",
+        "course_starter": "Per iniziare",
+        "desc_starter": "Aperitivo, Antipasti, Insalate",
+        "course_main": "Piatti forti",
+        "desc_main": "Carni, Quiche, Sformati",
+        "course_sweet": "Dolci",
+        "desc_sweet": "Torte, Frutta, Pasticceria",
+        "course_drinks": "Bevande",
+        "desc_drinks": "Vini, Birre, Bibite",
+        "course_cheese_extras": "Pane, Formaggio & Extra",
+        "desc_cheese_extras": "Baguette, Formaggi, Tovaglioli, Posate"
       },
       "dateLabel": "Data",
       "datePlaceholder": "Scegli una data",
