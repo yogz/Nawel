@@ -16,7 +16,6 @@ import {
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
 import { getTranslations } from "next-intl/server";
-import { splitServiceTitle } from "@/lib/service-utils";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
   // Find a unique slug automatically based on name
@@ -150,7 +149,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   } else if (input.creationMode || !input.creationMode) {
     const defaultMode = input.creationMode || "total";
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
-    let services: string[] = [];
+    let services: { title: string; description: string | null }[] = [];
 
     switch (defaultMode) {
       case "total":
@@ -159,31 +158,51 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
             locale: input.locale || "fr",
             namespace: "DefaultServices",
           });
-          services = tDefault.raw("total") as string[];
+          services = tDefault.raw("total") as {
+            title: string;
+            description: string | null;
+          }[];
         } catch (e) {
           services = [
-            "Pour commencer (Apéro, Entrées légères, Salades)",
-            "Plats résistants (Viandes, Quiches, Gratins)",
-            "Douceurs (Gâteaux, Fruits, Tartes)",
-            "Boissons (Vins, Bières, Softs)",
-            "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes, Couverts)",
+            {
+              title: "Pour commencer",
+              description: "Apéro, Entrées légères, Salades",
+            },
+            {
+              title: "Plats résistants",
+              description: "Viandes, Quiches, Gratins",
+            },
+            {
+              title: "Douceurs",
+              description: "Gâteaux, Fruits, Tartes",
+            },
+            {
+              title: "Boissons",
+              description: "Vins, Bières, Softs",
+            },
+            {
+              title: "Pain, Fromage & Extras",
+              description: "Baguettes, Fromages, Serviettes, Couverts",
+            },
           ];
         }
         break;
       case "classique":
-        services = ["entree", "plat", "dessert"];
+        services = [
+          { title: "entree", description: null },
+          { title: "plat", description: null },
+          { title: "dessert", description: null },
+        ];
         break;
       case "apero":
-        services = ["apero", "boissons"];
+        services = [
+          { title: "apero", description: null },
+          { title: "boissons", description: null },
+        ];
         break;
     }
 
     if (services.length > 0) {
-      const formattedServices = services.map((s) => {
-        const { main, details } = splitServiceTitle(s);
-        return { title: main, description: details || null };
-      });
-
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
@@ -192,7 +211,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         time: input.time,
         address: input.address,
         title: defaultMode === "total" ? "Menu" : "Full meal",
-        services: formattedServices,
+        services: services,
         adults: created.adults,
         children: created.children,
       });

@@ -805,11 +805,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Pour commencer (Apéro, Entrées légères, Salades)",
-      "Plats de résistance (Quiches, Gratins, Viandes)",
-      "Douceurs (Gâteaux, Fruits, Tartes)",
-      "Boissons (Vins, Bières, Softs)",
-      "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes)"
+      {
+        "title": "Pour commencer",
+        "description": "Apéro, Entrées légères, Salades"
+      },
+      {
+        "title": "Plats de résistance",
+        "description": "Quiches, Gratins, Viandes"
+      },
+      {
+        "title": "Douceurs",
+        "description": "Gâteaux, Fruits, Tartes"
+      },
+      {
+        "title": "Boissons",
+        "description": "Vins, Bières, Softs"
+      },
+      {
+        "title": "Pain, Fromage & Extras",
+        "description": "Baguettes, Fromages, Serviettes"
+      }
     ]
   },
   "ResetPassword": {

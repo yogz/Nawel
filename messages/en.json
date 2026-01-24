@@ -808,11 +808,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Starters & Nibbles (Chips, Nuts, Sausage rolls, Dips)",
-      "Mains & Savouries (Pies, Stews, Pizza, Roast)",
-      "Sweet Treats (Puddings, Cakes, Brownies)",
-      "Drinks (Beer, Wine, Softs)",
-      "Sides & Cutlery (Salads, Coleslaw, Garlic Bread, Plates)"
+      {
+        "title": "Starters & Nibbles",
+        "description": "Chips, Nuts, Sausage rolls, Dips"
+      },
+      {
+        "title": "Mains & Savouries",
+        "description": "Pies, Stews, Pizza, Roast"
+      },
+      {
+        "title": "Sweet Treats",
+        "description": "Puddings, Cakes, Brownies"
+      },
+      {
+        "title": "Drinks",
+        "description": "Beer, Wine, Softs"
+      },
+      {
+        "title": "Sides & Cutlery",
+        "description": "Salads, Coleslaw, Garlic Bread, Plates"
+      }
     ]
   },
   "ResetPassword": {
