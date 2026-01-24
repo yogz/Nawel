@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Till att börja med (Tilltugg, Förrätter, Sallader)",
-      "Huvudrätter (Kött, Pajer, Gratänger)",
-      "Sötsaker (Kakor, Frukt, Bakverk)",
-      "Dryck (Vin, Öl, Läsk)",
-      "Bröd, Ost & Extra (Baguetter, Ostar, Servetter, Bestick)"
+      {
+        "title": "Till att börja med",
+        "description": "Tilltugg, Förrätter, Sallader"
+      },
+      {
+        "title": "Huvudrätter",
+        "description": "Kött, Pajer, Gratänger"
+      },
+      {
+        "title": "Sötsaker",
+        "description": "Kakor, Frukt, Bakverk"
+      },
+      {
+        "title": "Dryck",
+        "description": "Vin, Öl, Läsk"
+      },
+      {
+        "title": "Bröd, Ost & Extra",
+        "description": "Baguetter, Ostar, Servetter, Bestick"
+      }
     ]
   },
   "ResetPassword": {

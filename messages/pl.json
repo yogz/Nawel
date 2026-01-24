@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Na początek (Przekąski, Lekkie przystawki, Sałatki)",
-      "Dania główne (Mięsa, Zapiekanki, Tartry wytrawne)",
-      "Słodkości (Ciasta, Owoce, Desery)",
-      "Napoje (Wina, Piwa, Napoje bezalkoholowe)",
-      "Chleb, Sery & Dodatki (Bagietki, Sery, Serwetki, Sztućce)"
+      {
+        "title": "Na początek",
+        "description": "Przekąski, Lekkie przystawki, Sałatki"
+      },
+      {
+        "title": "Dania główne",
+        "description": "Mięsa, Zapiekanki, Tartry wytrawne"
+      },
+      {
+        "title": "Słodkości",
+        "description": "Ciasta, Owoce, Desery"
+      },
+      {
+        "title": "Napoje",
+        "description": "Wina, Piwa, Napoje bezalkoholowe"
+      },
+      {
+        "title": "Chleb, Sery & Dodatki",
+        "description": "Bagietki, Sery, Serwetki, Sztućce"
+      }
     ]
   },
   "ResetPassword": {

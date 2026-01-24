@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Para começar (Aperitivos, Entradas leves, Saladas)",
-      "Pratos principais (Carnes, Quiches, Gratins)",
-      "Doces (Bolos, Frutas, Tartes)",
-      "Bebidas (Vinhos, Cervejas, Refrigerantes)",
-      "Pão, Queijo & Extras (Baguetes, Queijos, Guardanapos, Talheres)"
+      {
+        "title": "Para começar",
+        "description": "Aperitivos, Entradas leves, Saladas"
+      },
+      {
+        "title": "Pratos principais",
+        "description": "Carnes, Quiches, Gratins"
+      },
+      {
+        "title": "Doces",
+        "description": "Bolos, Frutas, Tartes"
+      },
+      {
+        "title": "Bebidas",
+        "description": "Vinhos, Cervejas, Refrigerantes"
+      },
+      {
+        "title": "Pão, Queijo & Extras",
+        "description": "Baguetes, Queijos, Guardanapos, Talheres"
+      }
     ]
   },
   "ResetPassword": {

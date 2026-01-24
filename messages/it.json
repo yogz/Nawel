@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Per iniziare (Aperitivo, Antipasti, Insalate)",
-      "Piatti forti (Carni, Quiche, Sformati)",
-      "Dolci (Torte, Frutta, Pasticceria)",
-      "Bevande (Vini, Birre, Bibite)",
-      "Pane, Formaggio & Extra (Baguette, Formaggi, Tovaglioli, Posate)"
+      {
+        "title": "Per iniziare",
+        "description": "Aperitivo, Antipasti, Insalate"
+      },
+      {
+        "title": "Piatti forti",
+        "description": "Carni, Quiche, Sformati"
+      },
+      {
+        "title": "Dolci",
+        "description": "Torte, Frutta, Pasticceria"
+      },
+      {
+        "title": "Bevande",
+        "description": "Vini, Birre, Bibite"
+      },
+      {
+        "title": "Pane, Formaggio & Extra",
+        "description": "Baguette, Formaggi, Tovaglioli, Posate"
+      }
     ]
   },
   "ResetPassword": {

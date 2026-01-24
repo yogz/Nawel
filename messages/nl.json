@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Om te beginnen (Hapjes, Voorgerechten, Salades)",
-      "Hoofdgerechten (Vlees, Quiches, Ovenschotels)",
-      "Zoetigheden (Taart, Fruit, Gebak)",
-      "Dranken (Wijn, Bier, Frisdrank)",
-      "Brood, Kaas & Extra's (Stokbrood, Kaas, Servetten, Bestek)"
+      {
+        "title": "Om te beginnen",
+        "description": "Hapjes, Voorgerechten, Salades"
+      },
+      {
+        "title": "Hoofdgerechten",
+        "description": "Vlees, Quiches, Ovenschotels"
+      },
+      {
+        "title": "Zoetigheden",
+        "description": "Taart, Fruit, Gebak"
+      },
+      {
+        "title": "Dranken",
+        "description": "Wijn, Bier, Frisdrank"
+      },
+      {
+        "title": "Brood, Kaas & Extra's",
+        "description": "Stokbrood, Kaas, Servetten, Bestek"
+      }
     ]
   },
   "ResetPassword": {

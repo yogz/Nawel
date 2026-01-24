@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Meze & Atıştırmalık (Sarma, Humus, Soğuk Başlangıçlar)",
-      "Ana Yemekler & Börek (Kebaplar, Börekler, Ana Yemekler)",
-      "Tatlı & Meyve (Baklava, Sütlü Tatlılar, Meyve)",
-      "İçecekler (Ayran, Meyve Suyu, Kola, İçecekler)",
-      "Ekmek & Malzemeler (Ekmekler, Yeşil Salatalar, Peçete, Çay)"
+      {
+        "title": "Meze & Atıştırmalık",
+        "description": "Sarma, Humus, Soğuk Başlangıçlar"
+      },
+      {
+        "title": "Ana Yemekler & Börek",
+        "description": "Kebaplar, Börekler, Ana Yemekler"
+      },
+      {
+        "title": "Tatlı & Meyve",
+        "description": "Baklava, Sütlü Tatlılar, Meyve"
+      },
+      {
+        "title": "İçecekler",
+        "description": "Ayran, Meyve Suyu, Kola, İçecekler"
+      },
+      {
+        "title": "Ekmek & Malzemeler",
+        "description": "Ekmekler, Yeşil Salatalar, Peçete, Çay"
+      }
     ]
   },
   "ResetPassword": {

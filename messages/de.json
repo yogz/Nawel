@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Fingerfood & Snacks (Bretzel, knackiges Gemüse)",
-      "Hauptspeisen (Frikadellen, Würstchen, Schnitzel)",
-      "Nachtisch (Kuchen, Muffins)",
-      "Getränke (Bier, Radler, Softdrinks)",
-      "Salate, Brot & Zubehör (Nudelsalat, Kartoffelsalat, Brot, Besteck)"
+      {
+        "title": "Fingerfood & Snacks",
+        "description": "Bretzel, knackiges Gemüse"
+      },
+      {
+        "title": "Hauptspeisen",
+        "description": "Frikadellen, Würstchen, Schnitzel"
+      },
+      {
+        "title": "Nachtisch",
+        "description": "Kuchen, Muffins"
+      },
+      {
+        "title": "Getränke",
+        "description": "Bier, Radler, Softdrinks"
+      },
+      {
+        "title": "Salate, Brot & Zubehör",
+        "description": "Nudelsalat, Kartoffelsalat, Brot, Besteck"
+      }
     ]
   },
   "ResetPassword": {

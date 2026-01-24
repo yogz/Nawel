@@ -806,11 +806,26 @@
   },
   "DefaultServices": {
     "total": [
-      "Til en start (Snacks, Forretter, Salater)",
-      "Hovedretter (Kød, Tærter, Gratiner)",
-      "Søde sager (Kager, Frugt, Bakværk)",
-      "Drikkevarer (Vin, Øl, Sodavand)",
-      "Brød, Ost & Ekstra (Baguetter, Oste, Servietter, Bestik)"
+      {
+        "title": "Til en start",
+        "description": "Snacks, Forretter, Salater"
+      },
+      {
+        "title": "Hovedretter",
+        "description": "Kød, Tærter, Gratiner"
+      },
+      {
+        "title": "Søde sager",
+        "description": "Kager, Frugt, Bakværk"
+      },
+      {
+        "title": "Drikkevarer",
+        "description": "Vin, Øl, Sodavand"
+      },
+      {
+        "title": "Brød, Ost & Ekstra",
+        "description": "Baguetter, Oste, Servietter, Bestik"
+      }
     ]
   },
   "ResetPassword": {
