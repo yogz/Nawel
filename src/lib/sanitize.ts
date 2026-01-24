@@ -42,7 +42,7 @@ export function sanitizeStrictText(input: string, maxLength: number = 100): stri
   }
   return input
     .slice(0, maxLength)
-    .replace(/[^\p{L}0-9\s',.-]/gu, "")
+    .replace(/[^\p{L}0-9\s',._-]/gu, "")
     .replace(/\s+/g, " ")
     .trim();
 }

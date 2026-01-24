@@ -45,6 +45,7 @@ export const ServiceSection = memo(function ServiceSection({
 }: ServiceSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const t = useTranslations("EventDashboard.Planning");
+  const tMeal = useTranslations("EventDashboard.Meal");
   const { setNodeRef, isOver } = useDroppable({
     id: `service-${service.id}`,
   });
