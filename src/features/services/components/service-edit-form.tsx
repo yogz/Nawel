@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
+
 export function ServiceEditForm({
   service,
   onSubmit,
@@ -35,8 +37,25 @@ export function ServiceEditForm({
 }) {
   const t = useTranslations("EventDashboard.ServiceForm");
   const tCommon = useTranslations("EventDashboard.Shared");
-  const [title, setTitle] = useState(service?.title || "");
-  const [description, setDescription] = useState(service?.description || "");
+  const tMeal = useTranslations("EventDashboard.Meal");
+
+  const translatedTitle = useTranslatedServiceTitle(service?.title || "");
+
+  // Translate description if it matches a known key pattern (desc_*)
+  const initialDescription = (() => {
+    const desc = service?.description || "";
+    if (desc.startsWith("desc_")) {
+      try {
+        return tMeal(`serviceTypes.${desc}`);
+      } catch {
+        return desc;
+      }
+    }
+    return desc;
+  })();
+
+  const [title, setTitle] = useState(translatedTitle);
+  const [description, setDescription] = useState(initialDescription);
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);

@@ -194,8 +194,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                           );
                         })()}
                       </div>
-                      {/* Edit indicator */}
-                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-accent text-[10px] text-white shadow-md transition-transform group-hover:scale-110">
+                      {/* Edit indicator - darker text for contrast if needed, but white on accent is fine */}
+                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white text-[12px] shadow-md transition-transform group-hover:scale-110">
                         ✏️
                       </div>
                     </button>
@@ -263,10 +263,10 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
               >
-                <h3 className="text-xl font-black leading-none tracking-tight text-white">
+                <h3 className="text-xl font-black leading-none tracking-tight text-foreground/90">
                   {tProfile("settings")}
                 </h3>
-                <p className="mx-auto mt-3 max-w-[280px] text-sm font-medium leading-relaxed text-gray-200">
+                <p className="mx-auto mt-3 max-w-[280px] text-sm font-medium leading-relaxed text-muted-foreground">
                   {session.user.email}
                 </p>
 
@@ -303,7 +303,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   {t("profile.fullName")}
                 </Label>
                 <div className="group relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-white">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/60 transition-colors group-focus-within:text-accent">
                     <User size={18} />
                   </div>
                   <Input
@@ -316,7 +316,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                       }
                     }}
                     placeholder={t("profile.exampleName")}
-                    className="h-14 rounded-2xl border-white/10 bg-white/5 pl-10 text-lg font-bold text-white transition-all focus:bg-white/10 focus:ring-accent/20"
+                    className="h-14 rounded-2xl border-black/5 bg-black/5 pl-10 text-lg font-bold text-foreground placeholder:text-muted-foreground/50 transition-all focus:bg-white focus:ring-accent/20 focus:border-accent/30"
                     required
                   />
                 </div>
@@ -345,14 +345,14 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500">
                   {t("profile.theme")}
                 </Label>
-                <div className="flex gap-2 rounded-2xl bg-white/5 p-1.5 ring-1 ring-white/10">
+                <div className="flex gap-2 rounded-2xl bg-black/5 p-1.5 ring-1 ring-black/5">
                   <button
                     onClick={() => setTheme("aurora")}
                     className={clsx(
                       "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
                       theme === "aurora"
-                        ? "bg-accent text-white shadow-md shadow-accent/20"
-                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                        ? "bg-white text-accent shadow-sm"
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
                     )}
                   >
                     <span>✨</span>
@@ -363,8 +363,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     className={clsx(
                       "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
                       theme === "none"
-                        ? "bg-white text-gray-900 shadow-md"
-                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
                     )}
                   >
                     <span>⚫️</span>
@@ -378,7 +378,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500">
                   {t("profile.language")}
                 </Label>
-                <div className="flex h-14 items-center justify-between rounded-2xl bg-white/5 px-4 ring-1 ring-white/10">
+                <div className="flex h-14 items-center justify-between rounded-2xl bg-black/5 px-4 ring-1 ring-black/5 transition-colors focus-within:bg-white focus-within:ring-accent/20">
                   <LanguageSelector variant="bottomSheet" showSearch />
                 </div>
               </div>
@@ -399,7 +399,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
 
               <Button
                 variant="outline"
-                className="h-14 w-full rounded-2xl border-white/10 bg-white/5 text-white transition-all hover:bg-white/10 active:scale-95"
+                className="h-14 w-full rounded-2xl border-black/5 bg-white transition-all hover:bg-red-50 hover:border-red-100 hover:text-red-600 active:scale-95 shadow-sm"
                 onClick={async () => {
                   await signOut();
                   onClose();
@@ -407,13 +407,15 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   router.refresh();
                 }}
               >
-                <LogOut className="mr-3 text-gray-400" size={20} />
-                <span className="text-lg font-black">{t("profile.logout")}</span>
+                <LogOut className="mr-3 text-muted-foreground/70" size={20} />
+                <span className="text-lg font-black text-muted-foreground">
+                  {t("profile.logout")}
+                </span>
               </Button>
 
               <Button
-                variant="outline"
-                className="h-14 w-full rounded-[20px] border-none bg-white/5 font-bold text-gray-500 transition-all hover:bg-white/10"
+                variant="ghost"
+                className="h-14 w-full rounded-[20px] font-bold text-muted-foreground hover:bg-black/5 hover:text-foreground"
                 onClick={onClose}
               >
                 {tCommon("close") || "Fermer"}
@@ -422,8 +424,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               {/* Danger Zone */}
               <div className="pt-8">
                 <div className="relative mb-6 flex items-center justify-center">
-                  <div className="absolute inset-x-0 h-px bg-white/5" />
-                  <span className="relative bg-surface px-4 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                  <div className="absolute inset-x-0 h-px bg-black/5" />
+                  <span className="relative bg-surface px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
                     Propriétés Avancées
                   </span>
                 </div>
