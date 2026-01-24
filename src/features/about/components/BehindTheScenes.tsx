@@ -28,7 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { submitFeedbackAction } from "@/app/actions/feedback-actions";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 import {
   ChartContainer,
@@ -58,7 +58,6 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
   const t = useTranslations("BehindTheScenes");
   const feedbackT = useTranslations("Feedback");
   const commonT = useTranslations("common");
-  const { showToast } = useToast();
   const pathname = usePathname();
 
   const [content, setContent] = useState("");
@@ -76,17 +75,11 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
       });
 
       if (result.success) {
-        showToast({
-          text: feedbackT("successDescription"),
-          type: "success",
-        });
+        toast.success(feedbackT("successDescription"));
         setContent("");
       }
     } catch (error) {
-      showToast({
-        text: error instanceof Error ? error.message : feedbackT("errorDescription"),
-        type: "error",
-      });
+      toast.error(error instanceof Error ? error.message : feedbackT("errorDescription"));
     } finally {
       setIsSubmitting(false);
     }

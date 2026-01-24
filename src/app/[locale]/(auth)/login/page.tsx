@@ -20,7 +20,7 @@ export default async function LoginPage(props: { params: Promise<{ locale: strin
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 via-violet-50 to-purple-100 p-4">
       <Suspense fallback={<div className="h-screen w-full" />}>
         <LoginForm />
       </Suspense>

@@ -49,7 +49,6 @@ import { useSession } from "@/lib/auth-client";
 
 // Lightweight components loaded immediately
 import { EventPlannerHeader } from "./event-planner-header";
-import { SuccessToast } from "../common/success-toast";
 
 // Heavy components loaded lazily (code-splitting)
 const EventPlannerSheets = lazy(() =>

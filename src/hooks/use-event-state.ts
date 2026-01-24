@@ -2,7 +2,6 @@
 
 import { useState, useTransition, useMemo } from "react";
 import type { PlanData, PlanningFilter, Sheet } from "@/lib/types";
-import { useToast } from "./use-toast";
 
 export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [plan, setPlan] = useState(initialPlan);
@@ -13,8 +12,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [readOnly, setReadOnly] = useState(!writeEnabled);
   const [pending, startTransition] = useTransition();
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
-  // Toast messages with auto-dismiss - no need for manual setTimeout
-  const { message: successMessage, setMessage: setSuccessMessage } = useToast();
 
   // Compute count of unassigned items
   const unassignedItemsCount = useMemo(() => {
@@ -45,8 +42,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     startTransition,
     activeItemId,
     setActiveItemId,
-    successMessage,
-    setSuccessMessage,
     unassignedItemsCount,
   };
 }

@@ -34,7 +34,6 @@ interface OrganizerSheetsProps {
   handlers: OrganizerHandlers;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  setIsGenerating: (isGenerating: boolean) => void;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
@@ -53,7 +52,6 @@ export function OrganizerSheets({
   readOnly,
   handlers,
   isGenerating,
-  setIsGenerating,
   setIsGenerating,
   planningFilter,
   setPlanningFilter,
@@ -371,6 +369,7 @@ export function OrganizerSheets({
                 onSubmit={async (
                   mealId: number,
                   title: string,
+                  description: string,
                   adults: number,
                   children: number,
                   peopleCount: number,
@@ -390,7 +389,14 @@ export function OrganizerSheets({
                       newMealAddress
                     );
                   }
-                  handleCreateService(targetMealId, title, adults, children, peopleCount);
+                  handleCreateService(
+                    targetMealId,
+                    title,
+                    description,
+                    adults,
+                    children,
+                    peopleCount
+                  );
                 }}
               />
             )}
