@@ -99,12 +99,17 @@ const config: Config = {
         slower: "800ms",
       },
       keyframes: {
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
         gradient: {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
       },
       animation: {
+        blink: "blink 1s step-end infinite",
         "gradient-slow": "gradient 6s ease infinite",
       },
     },

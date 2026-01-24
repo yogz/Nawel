@@ -28,7 +28,7 @@ export function SectionHeader({
   return (
     <div
       className={cn(
-        "flex h-11 items-center justify-between gap-3 px-4 rounded-2xl bg-gradient-to-r from-purple-100/95 via-white/90 to-pink-100/95 backdrop-blur-xl border-2 border-accent/20 shadow-md transition-all",
+        "flex min-h-[44px] h-auto items-center justify-between gap-3 px-4 py-1 rounded-2xl bg-gradient-to-r from-purple-100/95 via-white/90 to-pink-100/95 backdrop-blur-xl border-2 border-accent/20 shadow-md transition-all",
         !readOnly && onClick && "cursor-pointer active:opacity-90",
         className
       )}
@@ -44,12 +44,14 @@ export function SectionHeader({
     >
       <div className="flex flex-1 items-center gap-2.5 min-w-0">
         {icon && <span className="flex-shrink-0 text-base">{icon}</span>}
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-1 flex-col min-w-0">
           <h3 className="text-base font-extrabold text-gray-800 tracking-tight truncate">
             {title}
           </h3>
           {description && (
-            <div className="text-[10px] font-medium text-gray-500 leading-none">{description}</div>
+            <div className="text-[11px] font-semibold text-gray-600 opacity-80 leading-snug">
+              {description}
+            </div>
           )}
         </div>
       </div>

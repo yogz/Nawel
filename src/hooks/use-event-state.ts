@@ -4,23 +4,9 @@ import { useState, useTransition, useMemo } from "react";
 import type { PlanData, PlanningFilter, Sheet } from "@/lib/types";
 import { useToast } from "./use-toast";
 
-export interface ChangeLog {
-  id: number;
-  action: string;
-  tableName: string;
-  recordId: number;
-  oldData: { name?: string; title?: string } | null;
-  newData: { name?: string; title?: string } | null;
-  userIp: string | null;
-  userAgent: string | null;
-  referer: string | null;
-  createdAt: Date;
-}
-
 export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [plan, setPlan] = useState(initialPlan);
   const [tab, setTab] = useState<"planning" | "people" | "shopping">("planning");
-  const [logs, setLogs] = useState<ChangeLog[]>([]);
   const [planningFilter, setPlanningFilter] = useState<PlanningFilter>({ type: "all" });
   const [sheet, setSheet] = useState<Sheet | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
@@ -29,7 +15,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   // Toast messages with auto-dismiss - no need for manual setTimeout
   const { message: successMessage, setMessage: setSuccessMessage } = useToast();
-  const [logsLoading, setLogsLoading] = useState(false);
 
   // Compute count of unassigned items
   const unassignedItemsCount = useMemo(() => {
@@ -48,8 +33,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     setPlan,
     tab,
     setTab,
-    logs,
-    setLogs,
     planningFilter,
     setPlanningFilter,
     sheet,
@@ -64,8 +47,6 @@ export function useEventState(initialPlan: PlanData, writeEnabled: boolean) {
     setActiveItemId,
     successMessage,
     setSuccessMessage,
-    logsLoading,
-    setLogsLoading,
     unassignedItemsCount,
   };
 }

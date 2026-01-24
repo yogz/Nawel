@@ -33,7 +33,6 @@ const navItems = [
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: Bug },
   { href: "/admin/marketing", label: "Plan Marketing", icon: Megaphone },
-  { href: "/admin/logs", label: "Audit Logs", icon: Shield },
 ];
 
 export function AdminHeader({ user }: { user: User }) {

@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { people, items, user, events } from "@drizzle/schema";
 import { eq, and } from "drizzle-orm";
@@ -53,7 +52,6 @@ export const joinEventAction = createSafeAction(baseInput, async (input) => {
     })
     .returning();
 
-  await logChange("create", "people", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return created;
@@ -88,7 +86,6 @@ export const createPersonAction = createSafeAction(createPersonSchema, async (in
       userId: input.userId ?? null,
     })
     .returning();
-  await logChange("create", "people", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return created;
@@ -99,10 +96,6 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
 
   // Verify person-specific permissions (owner, admin key + auth, or admin key + token)
   await assertCanModifyPersonLegacy(input.key, input.token, input.id, event);
-
-  const oldPerson = await db.query.people.findFirst({
-    where: eq(people.id, input.id),
-  });
 
   const [updated] = await db
     .update(people)
@@ -116,7 +109,6 @@ export const updatePersonAction = createSafeAction(updatePersonSchema, async (in
 
   // Decoupled: Removed synchronization back to user profile
 
-  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return updated;
@@ -129,9 +121,6 @@ export const deletePersonAction = createSafeAction(deletePersonSchema, async (in
   await db.update(items).set({ personId: null }).where(eq(items.personId, input.id));
 
   const [deleted] = await db.delete(people).where(eq(people.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "people", deleted.id, deleted, null);
-  }
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return { success: true };
@@ -172,7 +161,6 @@ export const claimPersonAction = createSafeAction(claimPersonSchema, async (inpu
     .where(eq(people.id, input.personId))
     .returning();
 
-  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return updated;
@@ -210,7 +198,6 @@ export const unclaimPersonAction = createSafeAction(unclaimPersonSchema, async (
     .where(eq(people.id, input.personId))
     .returning();
 
-  await logChange("update", "people", updated.id, oldPerson, updated);
   revalidatePath(`/event/${input.slug}`);
   revalidatePath("/");
   return updated;
@@ -242,7 +229,6 @@ export const updatePersonStatusAction = createSafeAction(
       .where(eq(people.id, input.personId))
       .returning();
 
-    await logChange("update", "people", updated.id, person, updated);
     revalidatePath(`/event/${input.slug}`);
     return updated;
   }

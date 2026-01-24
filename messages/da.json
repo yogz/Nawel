@@ -257,6 +257,15 @@
     "warningAccount": "AI-generering og andre avancerede funktioner kræver en brugerkonto.",
     "eventNameLabel": "Begivenhedsnavn",
     "eventNamePlaceholder": "Middag med venner",
+    "eventPlaceholders": [
+      "Sofies fødselsdag 🎂",
+      "Pizzaaften 🍕",
+      "Jul 2026 🎄",
+      "Søndagsbrunch 🥐",
+      "Sommergrill 🍖",
+      "Indflytterfest 🏠",
+      "Filmaften 🍿"
+    ],
     "dateLabel": "Dato",
     "timeLabel": "Tid",
     "addressLabel": "Sted / Adresse",
@@ -794,6 +803,15 @@
     "successTitle": "Tak! ✨",
     "successDescription": "Din rapport er modtaget. Tak fordi du hjælper os med at forbedre CoList!",
     "errorDescription": "Afsendelse mislykkedes. Prøv venligst igen senere."
+  },
+  "DefaultServices": {
+    "total": [
+      "Til en start (Snacks, Forretter, Salater)",
+      "Hovedretter (Kød, Tærter, Gratiner)",
+      "Søde sager (Kager, Frugt, Bakværk)",
+      "Drikkevarer (Vin, Øl, Sodavand)",
+      "Brød, Ost & Ekstra (Baguetter, Oste, Servietter, Bestik)"
+    ]
   },
   "ResetPassword": {
     "title": "Ny Adgangskode",

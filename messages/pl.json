@@ -257,6 +257,15 @@
     "warningAccount": "Generowanie AI i inne zaawansowane funkcje wymagają konta użytkownika.",
     "eventNameLabel": "Nazwa wydarzenia",
     "eventNamePlaceholder": "Kolacja z przyjaciółmi",
+    "eventPlaceholders": [
+      "Urodziny Anny 🎂",
+      "Impreza z Pizzą 🍕",
+      "Boże Narodzenie 2026 🎄",
+      "Niedzielny Brunch 🥐",
+      "Letni Grill 🍖",
+      "Parapetówka 🏠",
+      "Wieczór Filmowy 🍿"
+    ],
     "dateLabel": "Data",
     "timeLabel": "Godzina",
     "addressLabel": "Lokalizacja / Adres",
@@ -794,6 +803,15 @@
     "successTitle": "Dziękujemy! ✨",
     "successDescription": "Twoje zgłoszenie zostało odebrane. Dziękujemy za pomoc w ulepszaniu CoList!",
     "errorDescription": "Przesyłanie nie powiodło się. Spróbuj ponownie później."
+  },
+  "DefaultServices": {
+    "total": [
+      "Na początek (Przekąski, Lekkie przystawki, Sałatki)",
+      "Dania główne (Mięsa, Zapiekanki, Tartry wytrawne)",
+      "Słodkości (Ciasta, Owoce, Desery)",
+      "Napoje (Wina, Piwa, Napoje bezalkoholowe)",
+      "Chleb, Sery & Dodatki (Bagietki, Sery, Serwetki, Sztućce)"
+    ]
   },
   "ResetPassword": {
     "title": "Nowe Hasło",

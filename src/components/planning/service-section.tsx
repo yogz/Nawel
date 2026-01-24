@@ -8,6 +8,7 @@ import { MenuItemRow } from "./menu-item-row";
 import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
+import { splitServiceTitle } from "@/lib/service-utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { InlineItemInput } from "./inline-item-input";
 
@@ -48,6 +49,7 @@ export const ServiceSection = memo(function ServiceSection({
     id: `service-${service.id}`,
   });
   const translatedTitle = useTranslatedServiceTitle(service.title);
+  const { main, details } = splitServiceTitle(translatedTitle);
 
   const filteredItems = service.items;
 
@@ -63,7 +65,8 @@ export const ServiceSection = memo(function ServiceSection({
         readOnly={readOnly}
         onClick={onEdit}
         icon={service.icon || getServiceIcon(service.title)}
-        title={translatedTitle}
+        title={main}
+        description={details ? `${details}...` : undefined}
         actions={
           <div className="flex items-center gap-3">
             {filteredItems.length > 0 && (

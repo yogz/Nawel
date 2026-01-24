@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { meals, services } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyAccess } from "./shared";
@@ -28,7 +27,6 @@ export const createMealAction = createSafeAction(createMealSchema, async (input)
       address: input.address ?? null,
     })
     .returning();
-  await logChange("create", "meals", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
@@ -75,12 +73,6 @@ export const createMealWithServicesAction = createSafeAction(
       return { meal, createdServices };
     });
 
-    // Log changes OUTSIDE the transaction to avoid deadlock
-    await logChange("create", "meals", result.meal.id, null, result.meal);
-    for (const service of result.createdServices) {
-      await logChange("create", "services", service.id, null, service);
-    }
-
     revalidatePath(`/event/${input.slug}`);
     return { ...result.meal, services: result.createdServices };
   }
@@ -126,26 +118,13 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
     return updatedMeal;
   });
 
-  // Re-fetch old data if not already captured or use transaction result
-  // The transaction in updateMealAction already fetches 'current' meal
-  // Let's modify the transaction to return both old and new data for cleaner logging
-
-  // Actually, I'll just refetch here for simplicity since logChange is outside transaction anyway
-  const oldMeal = await db.query.meals.findFirst({
-    where: eq(meals.id, input.id),
-  });
-
-  await logChange("update", "meals", updated.id, oldMeal, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
 
 export const deleteMealAction = createSafeAction(deleteMealSchema, async (input) => {
   await verifyAccess(input.slug, "meal:delete", input.key, input.token);
-  const [deleted] = await db.delete(meals).where(eq(meals.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "meals", deleted.id, deleted, null);
-  }
+  await db.delete(meals).where(eq(meals.id, input.id)).returning();
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });

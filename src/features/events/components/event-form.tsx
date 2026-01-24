@@ -69,10 +69,26 @@ export function EventForm({
   const [name, setName] = useState(initialData?.name ?? "");
   const [isVacation, setIsVacation] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
 
   // Constants
   const defaultDuration = 7;
   const creationMode: "total" | "classique" | "apero" | "vacation" = "total";
+
+  const placeholders = t.raw("eventPlaceholders") as string[];
+
+  // Rotate placeholders
+  useEffect(() => {
+    if (name) return; // Stop rotation if user typed something
+
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [name, placeholders.length]);
+
+  const currentPlaceholder = placeholders[placeholderIndex] || t("eventNamePlaceholder");
 
   // Advanced State
   const [description, setDescription] = useState(initialData?.description ?? "");
@@ -145,13 +161,16 @@ export function EventForm({
                 handleSubmit();
               }
             }}
-            placeholder={t("eventNamePlaceholder")}
+            placeholder={currentPlaceholder}
             maxSize={36}
             minSize={16}
-            className="h-auto border-none bg-transparent p-0 font-black tracking-tighter placeholder:text-gray-300 focus-visible:ring-0"
+            className="h-auto border-none bg-transparent p-0 font-black tracking-tighter caret-transparent placeholder:text-accent/40 text-[#1a0a33] focus-visible:ring-0"
           />
-          {name.trim().length === 0 && (
-            <div className="pointer-events-none absolute bottom-0 left-0 h-[2px] w-6 animate-pulse bg-accent" />
+          {/* Custom Blinking Cursor when empty */}
+          {name.length === 0 && (
+            <span className="animate-blink absolute left-0 top-1 text-[36px] font-light text-accent pointer-events-none">
+              _
+            </span>
           )}
         </div>
       </div>

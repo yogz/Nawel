@@ -164,10 +164,6 @@ export const validateSchema = z.object({
   token: z.string().optional(),
 });
 
-export const getChangeLogsSchema = z.object({
-  slug: safeSlug,
-});
-
 export const createEventSchema = z.object({
   name: safeText(100),
   description: safeText(500).optional(),
@@ -294,33 +290,6 @@ export const updateCacheEntrySchema = z.object({
   id: z.number().int().positive(),
   ingredients: z.string().min(2, "JSON invalide"), // JSON string of ingredients
 });
-
-// Audit Logs schemas - validated enums to prevent injection
-export const auditTableNames = [
-  "events",
-  "meals",
-  "services",
-  "items",
-  "people",
-  "ingredients",
-] as const;
-
-export const auditActions = ["create", "update", "delete"] as const;
-
-export const getAuditLogsSchema = z.object({
-  tableName: z.enum(auditTableNames).optional(),
-  action: z.enum(auditActions).optional(),
-  userId: z.string().optional(),
-});
-
-export const deleteAuditLogsSchema = z
-  .object({
-    olderThanDays: z.number().int().min(1).max(365).optional(),
-    deleteAll: z.boolean().optional(),
-  })
-  .refine((data) => data.olderThanDays !== undefined || data.deleteAll === true, {
-    message: "Either olderThanDays or deleteAll must be provided",
-  });
 
 export const deleteCitationAdminSchema = z.object({
   id: z.string(),

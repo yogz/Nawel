@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { items, ingredientCache } from "@drizzle/schema";
 import { eq, asc, sql } from "drizzle-orm";
 import { verifyAccess } from "./shared";
@@ -42,18 +41,12 @@ export const createItemAction = createSafeAction(createItemSchema, async (input)
     })
     .returning();
 
-  await logChange("create", "items", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
 
 export const updateItemAction = createSafeAction(updateItemSchema, async (input) => {
   await verifyAccess(input.slug, "item:update", input.key, input.token);
-
-  // Fetch old data for audit log
-  const oldItem = await db.query.items.findFirst({
-    where: eq(items.id, input.id),
-  });
 
   const [updated] = await db
     .update(items)
@@ -66,7 +59,6 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
     })
     .where(eq(items.id, input.id))
     .returning();
-  await logChange("update", "items", updated.id, oldItem, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -74,9 +66,6 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
 export const deleteItemAction = createSafeAction(deleteItemSchema, async (input) => {
   await verifyAccess(input.slug, "item:delete", input.key, input.token);
   const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "items", deleted.id, deleted, null);
-  }
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });
@@ -84,17 +73,12 @@ export const deleteItemAction = createSafeAction(deleteItemSchema, async (input)
 export const assignItemAction = createSafeAction(assignItemSchema, async (input) => {
   await verifyAccess(input.slug, "item:assign", input.key, input.token);
 
-  // Fetch old data for audit log
-  const oldItem = await db.query.items.findFirst({
-    where: eq(items.id, input.id),
-  });
-
   const [updated] = await db
     .update(items)
     .set({ personId: input.personId })
     .where(eq(items.id, input.id))
     .returning();
-  await logChange("update", "items", updated.id, oldItem, updated);
+
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });

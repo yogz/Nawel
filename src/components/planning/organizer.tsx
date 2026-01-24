@@ -15,7 +15,7 @@ import {
 import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../layout";
 import { useThemeMode } from "../theme-provider";
-import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
+import { validateWriteKeyAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 
@@ -66,7 +66,6 @@ export function Organizer({
     setPlan,
     tab,
     setTab,
-    setLogs,
     planningFilter,
     setPlanningFilter,
     sheet,
@@ -79,7 +78,6 @@ export function Organizer({
     setActiveItemId,
     successMessage,
     setSuccessMessage,
-    setLogsLoading,
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 

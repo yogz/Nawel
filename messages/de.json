@@ -257,6 +257,15 @@
     "warningAccount": "KI-Generierung und andere erweiterte Funktionen erfordern ein Benutzerkonto.",
     "eventNameLabel": "Name des Events",
     "eventNamePlaceholder": "Abendessen mit Freunden",
+    "eventPlaceholders": [
+      "Sarahs Geburtstag 🎂",
+      "Pizza-Party 🍕",
+      "Weihnachten 2026 🎄",
+      "Sonntagsbrunch 🥞",
+      "Sommer-Grillfest 🌭",
+      "Einweihungsparty 🏠",
+      "Kinoabend 🍿"
+    ],
     "dateLabel": "Datum",
     "timeLabel": "Uhrzeit",
     "addressLabel": "Ort / Adresse",
@@ -794,6 +803,15 @@
     "successTitle": "Vielen Dank! ✨",
     "successDescription": "Ihr Bericht wurde empfangen. Vielen Dank, dass Sie uns helfen, CoList zu verbessern!",
     "errorDescription": "Senden fehlgeschlagen. Bitte versuchen Sie es später erneut."
+  },
+  "DefaultServices": {
+    "total": [
+      "Fingerfood & Snacks (Bretzel, knackiges Gemüse)",
+      "Hauptspeisen (Frikadellen, Würstchen, Schnitzel)",
+      "Nachtisch (Kuchen, Muffins)",
+      "Getränke (Bier, Radler, Softdrinks)",
+      "Salate, Brot & Zubehör (Nudelsalat, Kartoffelsalat, Brot, Besteck)"
+    ]
   },
   "ResetPassword": {
     "title": "Neues Passwort",

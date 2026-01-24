@@ -257,6 +257,15 @@
     "warningAccount": "La generazione IA e altre funzionalità avanzate richiedono un account utente.",
     "eventNameLabel": "Nome Evento",
     "eventNamePlaceholder": "Cena con amici",
+    "eventPlaceholders": [
+      "Compleanno di Giulia 🎂",
+      "Pizza Party 🍕",
+      "Natale 2026 🎄",
+      "Brunch della Domenica 🥐",
+      "Grigliata Estiva 🍖",
+      "Festa di inaugurazione 🏠",
+      "Serata Cinema 🍿"
+    ],
     "dateLabel": "Data",
     "timeLabel": "Ora",
     "addressLabel": "Luogo / Indirizzo",
@@ -794,6 +803,15 @@
     "successTitle": "Grazie! ✨",
     "successDescription": "La tua segnalazione è stata ricevuta. Grazie per aiutarci a migliorare CoList!",
     "errorDescription": "Invio fallito. Riprova più tardi."
+  },
+  "DefaultServices": {
+    "total": [
+      "Per iniziare (Aperitivo, Antipasti, Insalate)",
+      "Piatti forti (Carni, Quiche, Sformati)",
+      "Dolci (Torte, Frutta, Pasticceria)",
+      "Bevande (Vini, Birre, Bibite)",
+      "Pane, Formaggio & Extra (Baguette, Formaggi, Tovaglioli, Posate)"
+    ]
   },
   "ResetPassword": {
     "title": "Nuova Password",

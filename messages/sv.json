@@ -257,6 +257,15 @@
     "warningAccount": "AI-generering och andra avancerade funktioner kräver ett användarkonto.",
     "eventNameLabel": "Evenemangsnamn",
     "eventNamePlaceholder": "Middag med vänner",
+    "eventPlaceholders": [
+      "Lisas födelsedag 🎂",
+      "Pizzakväll 🍕",
+      "Jul 2026 🎄",
+      "Söndagsbrunch 🥐",
+      "Sommargrillning 🍖",
+      "Inflyttningsfest 🏠",
+      "Filmkväll 🍿"
+    ],
     "dateLabel": "Datum",
     "timeLabel": "Tid",
     "addressLabel": "Plats / Adress",
@@ -794,6 +803,15 @@
     "successTitle": "Tack! ✨",
     "successDescription": "Din rapport har tagits emot. Tack för att du hjälper oss att förbättre CoList!",
     "errorDescription": "Det gick inte att skicka. Försök igen senare."
+  },
+  "DefaultServices": {
+    "total": [
+      "Till att börja med (Tilltugg, Förrätter, Sallader)",
+      "Huvudrätter (Kött, Pajer, Gratänger)",
+      "Sötsaker (Kakor, Frukt, Bakverk)",
+      "Dryck (Vin, Öl, Läsk)",
+      "Bröd, Ost & Extra (Baguetter, Ostar, Servetter, Bestick)"
+    ]
   },
   "ResetPassword": {
     "title": "Nytt Lösenord",

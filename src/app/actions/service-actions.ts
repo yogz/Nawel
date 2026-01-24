@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { services, meals } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
 import { verifyAccess } from "./shared";
@@ -42,7 +41,6 @@ export const createServiceAction = createSafeAction(createServiceSchema, async (
     })
     .returning();
 
-  await logChange("create", "services", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
@@ -83,22 +81,13 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
     return updatedService;
   });
 
-  // Fetch old data for audit (the transaction logic could be optimized but this is safe)
-  const oldService = await db.query.services.findFirst({
-    where: eq(services.id, input.id),
-  });
-
-  await logChange("update", "services", updated.id, oldService, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
 
 export const deleteServiceAction = createSafeAction(deleteServiceSchema, async (input) => {
   await verifyAccess(input.slug, "service:delete", input.key, input.token);
-  const [deleted] = await db.delete(services).where(eq(services.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "services", deleted.id, deleted, null);
-  }
+  await db.delete(services).where(eq(services.id, input.id)).returning();
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });

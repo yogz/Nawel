@@ -257,6 +257,15 @@
     "warningAccount": "AI-generatie en andere geavanceerde functies vereisen een gebruikersaccount.",
     "eventNameLabel": "Naam Evenement",
     "eventNamePlaceholder": "Diner met vrienden",
+    "eventPlaceholders": [
+      "Verjaardag van Emma 🎂",
+      "Pizza Party 🍕",
+      "Kerst 2026 🎄",
+      "Zondagse Brunch 🥐",
+      "Zomer BBQ 🍖",
+      "Housewarming 🏠",
+      "Filmavond 🍿"
+    ],
     "dateLabel": "Datum",
     "timeLabel": "Tijd",
     "addressLabel": "Locatie / Adres",
@@ -794,6 +803,15 @@
     "successTitle": "Bedankt! ✨",
     "successDescription": "Je rapport is ontvangen. Bedankt voor het helpen verbeteren van CoList!",
     "errorDescription": "Verzenden mislukt. Probeer het later opnieuw."
+  },
+  "DefaultServices": {
+    "total": [
+      "Om te beginnen (Hapjes, Voorgerechten, Salades)",
+      "Hoofdgerechten (Vlees, Quiches, Ovenschotels)",
+      "Zoetigheden (Taart, Fruit, Gebak)",
+      "Dranken (Wijn, Bier, Frisdrank)",
+      "Brood, Kaas & Extra's (Stokbrood, Kaas, Servetten, Bestek)"
+    ]
   },
   "ResetPassword": {
     "title": "Nieuw Wachtwoord",

@@ -257,6 +257,15 @@
     "warningAccount": "YZ ile oluşturma ve diğer gelişmiş özellikler bir kullanıcı hesabı gerektirir.",
     "eventNameLabel": "Etkinlik adı",
     "eventNamePlaceholder": "Arkadaşlar ile akşam yemeği",
+    "eventPlaceholders": [
+      "Ayşe'nin Doğum Günü 🎂",
+      "Pizza Partisi 🍕",
+      "Yılbaşı 2026 🎄",
+      "Pazar Kahvaltısı 🍳",
+      "Mangal Keyfi 🥩",
+      "Ev Görme 🏠",
+      "Film Gecesi 🍿"
+    ],
     "dateLabel": "Tarih",
     "timeLabel": "Saat",
     "addressLabel": "Yer / Adres",
@@ -794,6 +803,15 @@
     "successTitle": "Teşekkürler ! ✨",
     "successDescription": "Raporunuz alındı. CoList'i geliştirmemize yardımcı olduğunuz için teşekkürler !",
     "errorDescription": "Gönderim başarısız oldu. Daha sonra tekrar deneyin."
+  },
+  "DefaultServices": {
+    "total": [
+      "Meze & Atıştırmalık (Sarma, Humus, Soğuk Başlangıçlar)",
+      "Ana Yemekler & Börek (Kebaplar, Börekler, Ana Yemekler)",
+      "Tatlı & Meyve (Baklava, Sütlü Tatlılar, Meyve)",
+      "İçecekler (Ayran, Meyve Suyu, Kola, İçecekler)",
+      "Ekmek & Malzemeler (Ekmekler, Yeşil Salatalar, Peçete, Çay)"
+    ]
   },
   "ResetPassword": {
     "title": "Yeni şifre",

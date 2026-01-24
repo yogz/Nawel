@@ -15,6 +15,7 @@ import {
   formatAggregatedQuantity,
   type AggregatedShoppingItem,
 } from "@/lib/shopping-utils";
+import { splitServiceTitle } from "@/lib/service-utils";
 
 interface ShoppingListSheetProps {
   person: Person;
@@ -225,7 +226,7 @@ export function ShoppingListSheet({
                         </>
                       ) : null}
                       {aggregatedItem.sources[0].mealTitle} ·{" "}
-                      {aggregatedItem.sources[0].serviceTitle}
+                      {splitServiceTitle(aggregatedItem.sources[0].serviceTitle).main}
                     </>
                   )}
                 </p>

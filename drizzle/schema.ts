@@ -280,20 +280,6 @@ export const personRelations = relations(people, ({ one, many }) => ({
   }),
 }));
 
-export const changeLogs = pgTable("change_logs", {
-  id: serial("id").primaryKey(),
-  action: varchar("action", { length: 20 }).notNull(), // 'create', 'update', 'delete'
-  tableName: varchar("table_name", { length: 50 }).notNull(), // 'items', 'meals', 'people', 'days'
-  recordId: integer("record_id").notNull(),
-  userId: text("user_id"), // Nullable for anonymous actions
-  oldData: text("old_data"), // JSON string of old data (for update/delete)
-  newData: text("new_data"), // JSON string of new data (for create/update)
-  userIp: varchar("user_ip", { length: 100 }),
-  userAgent: text("user_agent"),
-  referer: text("referer"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
 // Cache for AI-generated ingredients (to reduce API costs)
 // Key = dishName + peopleCount (e.g., "raclette" + 4 ≠ "raclette" + 6)
 // Cache is only trusted after 3 consistent AI responses (confirmations >= 3)

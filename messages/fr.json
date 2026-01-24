@@ -257,6 +257,15 @@
     "warningAccount": "La génération par l'IA et d'autres fonctions avancées nécessitent un compte utilisateur.",
     "eventNameLabel": "Nom de l'événement",
     "eventNamePlaceholder": "Dîner entre amis",
+    "eventPlaceholders": [
+      "Anniversaire de Sarah 🎂",
+      "Raclette Party 🧀",
+      "Noël 2026 🎄",
+      "Brunch du Dimanche 🥐",
+      "Soirée Pizza 🍕",
+      "Barbecue d'été 🌭",
+      "Crémaillère 🏠"
+    ],
     "dateLabel": "Date",
     "timeLabel": "Heure",
     "addressLabel": "Lieu / Adresse",
@@ -790,10 +799,16 @@
     "title": "Envoyer moi un message",
     "description": "Une question, une suggestion ou juste pour dire bonjour ? Je lis tous vos messages ! 💌",
     "placeholder": "Votre message ici...",
-    "submit": "Envoyer le message",
-    "successTitle": "Merci ! ✨",
-    "successDescription": "Votre message a été bien reçu. Je vous répondrai dès que possible !",
     "errorDescription": "L'envoi a échoué. Réessayez plus tard."
+  },
+  "DefaultServices": {
+    "total": [
+      "Pour commencer (Apéro, Entrées légères, Salades)",
+      "Plats résistants (Viandes, Quiches, Gratins)",
+      "Douceurs (Gâteaux, Fruits, Tartes)",
+      "Boissons (Vins, Bières, Softs)",
+      "Pain, Fromage & Extras (Baguettes, Fromages, Serviettes, Couverts)"
+    ]
   },
   "ResetPassword": {
     "title": "Nouveau mot de passe",

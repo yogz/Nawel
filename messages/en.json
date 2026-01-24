@@ -256,7 +256,16 @@
     "warningLoss": "Save your event URL carefully. Without an account, you will need it to edit your event later.",
     "warningAccount": "AI generation and other advanced features require a user account.",
     "eventNameLabel": "Event Name",
-    "eventNamePlaceholder": "Dinner with friends",
+    "eventNamePlaceholder": "Family Dinner",
+    "eventPlaceholders": [
+      "Sarah's Birthday 🎂",
+      "Pizza Party 🍕",
+      "Christmas 2026 🎄",
+      "Sunday Brunch 🥞",
+      "Summer BBQ 🌭",
+      "Housewarming 🏠",
+      "Movie Night 🍿"
+    ],
     "dateLabel": "Date",
     "timeLabel": "Time",
     "addressLabel": "Location / Address",
@@ -794,6 +803,15 @@
     "successTitle": "Thank you! ✨",
     "successDescription": "Your report has been received. Thanks for helping us improve CoList!",
     "errorDescription": "Submission failed. Please try again later."
+  },
+  "DefaultServices": {
+    "total": [
+      "Starters & Nibbles (Chips, Nuts, Sausage rolls, Dips)",
+      "Mains & Savouries (Pies, Stews, Pizza, Roast)",
+      "Sweet Treats (Puddings, Cakes, Brownies)",
+      "Drinks (Beer, Wine, Softs)",
+      "Sides & Cutlery (Salads, Coleslaw, Garlic Bread, Plates)"
+    ]
   },
   "ResetPassword": {
     "title": "New Password",

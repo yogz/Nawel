@@ -168,8 +168,6 @@ export const deleteEventAdminAction = createSafeAction(deleteEventAdminSchema, a
     where: eq(events.id, input.id),
   });
   if (event) {
-    const { logChange } = await import("@/lib/logger");
-    await logChange("delete", "events", event.id, event);
   }
 
   await db.delete(events).where(eq(events.id, input.id));
