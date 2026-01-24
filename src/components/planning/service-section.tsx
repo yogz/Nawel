@@ -59,7 +59,7 @@ export const ServiceSection = memo(function ServiceSection({
   const descriptionKey = service.description || details;
   const isDescriptionKey = descriptionKey?.startsWith("desc_");
   const translatedDescription = isDescriptionKey
-    ? t(`serviceTypes.${descriptionKey}`)
+    ? tMeal(`serviceTypes.${descriptionKey}`)
     : descriptionKey;
 
   const displayDescription = translatedDescription;
