@@ -224,7 +224,8 @@
       "body": "Je hebt een wachtwoordherstel aangevraagd voor je CoList-account. Klik op de onderstaande knop om door te gaan.",
       "button": "Wachtwoord herstellen",
       "footer": "Als je dit herstel niet hebt aangevraagd, kun je deze e-mail veilig negeren."
-    }
+    },
+    "guestWarning": "Beperkte functies"
   },
   "FAQ": {
     "title": "Veelgestelde Vragen",

@@ -202,7 +202,8 @@
     "orContinueWith": "Ou continuer avec",
     "noAccount": "Pas encore de compte ?",
     "haveAccount": "Déjà un compte ?",
-    "guestLink": "Continuer sans s'identifier",
+    "guestLink": "Créer un événement sans compte",
+    "guestWarning": "Fonctionnalités limitées",
     "EmailVerification": {
       "subject": "🔮 ✅ Vérifiez votre compte CoList",
       "body": "Bienvenue sur CoList ! Cliquez sur le lien ci-dessous pour vérifier votre adresse email et activer votre compte :",

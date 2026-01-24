@@ -224,7 +224,8 @@
       "body": "CoList şifrenizi sıfırlama talebinde bulundunuz. Devam etmek için aşağıdaki düğmeye tıklayın.",
       "button": "Şifreyi sıfırla",
       "footer": "Bu sıfırlamayı siz istemediyseniz, bu e-postayı güvenle görmezden gelebilirsiniz."
-    }
+    },
+    "guestWarning": "Sınırlı özellikler"
   },
   "FAQ": {
     "title": "Sıkça Sorulan Sorular",

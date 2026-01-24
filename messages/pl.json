@@ -224,7 +224,8 @@
       "body": "Poprosiłeś o zresetowanie hasła do konta CoList. Kliknij w poniższy przycisk, aby kontynuować.",
       "button": "Resetuj hasło",
       "footer": "Jeśli nie prosiłeś o zresetowanie hasła, możesz bezpiecznie zignorować tę wiadomość."
-    }
+    },
+    "guestWarning": "Ograniczone funkcje"
   },
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",

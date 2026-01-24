@@ -224,7 +224,8 @@
       "body": "Has solicitado restablecer tu contraseña de CoList. Haz clic en el botón de abajo para continuar.",
       "button": "Restablecer contraseña",
       "footer": "Si no has solicitado este restablecimiento, puedes ignorar este correo de forma segura."
-    }
+    },
+    "guestWarning": "Funcionalidades limitadas"
   },
   "FAQ": {
     "title": "Preguntas frecuentes",

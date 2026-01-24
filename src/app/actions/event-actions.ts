@@ -64,6 +64,10 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   await logChange("create", "events", created.id, null, created);
 
   // Automatically add owner as a guest if they are logged in
+  let guestToken: string | undefined;
+  let guestPersonId: number | undefined;
+
+  // Automatically add owner as a guest if they are logged in
   if (session?.user) {
     const user = session.user as {
       id: string;
@@ -82,6 +86,23 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       })
       .returning();
     await logChange("create", "people", person.id, null, person);
+  } else {
+    // If guest mode (no account), create a default "Host" profile with a token
+    // allowing them to have immediate write access via local storage
+    const token = randomUUID();
+    const [person] = await db
+      .insert(people)
+      .values({
+        eventId: created.id,
+        name: "Hôte", // Default name for the creator
+        token: token,
+      })
+      .returning();
+
+    guestToken = token;
+    guestPersonId = person.id;
+
+    await logChange("create", "people", person.id, null, person);
   }
 
   if (input.creationMode === "vacation") {
@@ -97,6 +118,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     await createMealWithServicesAction({
       slug: created.slug,
       key: adminKey,
+      token: guestToken,
       date: "common",
       title: mealTitles.common,
       services: ["divers"],
@@ -118,6 +140,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
+        token: guestToken,
         date: dateStr,
         time: "12:30",
         address: input.address,
@@ -147,6 +170,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
+        token: guestToken,
         date: defaultDate,
         time: input.time,
         address: input.address,
@@ -159,7 +183,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   }
 
   revalidatePath("/");
-  return created;
+  return { ...created, guestToken, guestPersonId };
 });
 
 export const getAllEventsAction = withErrorThrower(async () => {

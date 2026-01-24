@@ -224,7 +224,8 @@
       "body": "Hai richiesto la reimpostazione della password per il tuo account CoList. Clicca sul pulsante qui sotto per continuare.",
       "button": "Reimposta password",
       "footer": "Se non hai richiesto questa reimpostazione, puoi ignorare tranquillamente questa email."
-    }
+    },
+    "guestWarning": "Funzionalità limitate"
   },
   "FAQ": {
     "title": "Domande Frequenti",

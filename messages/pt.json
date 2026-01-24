@@ -224,7 +224,8 @@
       "body": "Você solicitou a redefinição da sua senha da CoList. Clique no botão abaixo para continuar.",
       "button": "Redefinir senha",
       "footer": "Se você não solicitou essa redefinição, pode ignorar este e-mail com segurança."
-    }
+    },
+    "guestWarning": "Funcionalidades limitadas"
   },
   "FAQ": {
     "title": "Perguntas Frequentes",

@@ -224,7 +224,8 @@
       "body": "Du har begärt att få återställa ditt lösenord för CoList. Klicka på knappen nedan för att fortsätta.",
       "button": "Återställ lösenord",
       "footer": "Om du inte har begärt detta kan du säkert ignorera detta e-postmeddelande."
-    }
+    },
+    "guestWarning": "Begränsade funktioner"
   },
   "FAQ": {
     "title": "Vanliga Frågor",

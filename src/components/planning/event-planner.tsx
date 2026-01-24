@@ -120,7 +120,7 @@ export function EventPlanner({
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const guestToken = useGuestToken(plan.people);
+  const guestToken = useGuestToken(plan.people, slug);
   const hasExistingToken = !!guestToken;
 
   // Unified current person: works for both authenticated users and guests with tokens

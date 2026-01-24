@@ -58,6 +58,12 @@ export default function CreateEventClient() {
           creation_mode: creationMode || "total",
         });
 
+        if (result.guestToken) {
+          localStorage.setItem(`event_token_${result.slug}`, result.guestToken); // Use slug or id depending on how auth usually works, assuming slug for public access
+          // Also store broadly if generic binding is needed, though specific event binding is safer
+          // localStorage.setItem("nawel_guest_token", result.guestToken);
+        }
+
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : t("errorDefault");

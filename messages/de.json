@@ -224,7 +224,8 @@
       "body": "Sie haben das Zurücksetzen Ihres CoList-Passworts angefordert. Klicken Sie auf die Schaltfläche unten, um fortzufahren.",
       "button": "Passwort zurücksetzen",
       "footer": "Wenn Sie diese Zurücksetzung nicht angefordert haben, können Sie diese E-Mail ignorieren."
-    }
+    },
+    "guestWarning": "Eingeschränkte Funktionen"
   },
   "FAQ": {
     "title": "Häufig gestellte Fragen",

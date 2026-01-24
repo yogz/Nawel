@@ -224,7 +224,8 @@
       "body": "Du har anmodet om at få nulstillet din adgangskode til CoList. Klik på knappen nedenfor for at fortsætte.",
       "button": "Nulstil adgangskode",
       "footer": "Hvis du ikke har anmodet om denne nulstilling, kan du roligt ignorere denne e-mail."
-    }
+    },
+    "guestWarning": "Begrænsede funktioner"
   },
   "FAQ": {
     "title": "Ofte Stillede Spørgsmål",

@@ -224,7 +224,8 @@
       "body": "You requested a password reset for your CoList account. Click the button below to continue.",
       "button": "Reset Password",
       "footer": "If you did not request a password reset, you can safely ignore this email."
-    }
+    },
+    "guestWarning": "Limited features"
   },
   "FAQ": {
     "title": "Frequently Asked Questions",
