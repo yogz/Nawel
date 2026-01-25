@@ -230,7 +230,11 @@ export function OrganizerSheets({
 
   return (
     <>
-      <Drawer open={!!sheet} onOpenChange={(open) => !open && setSheet(null)}>
+      <Drawer
+        open={!!sheet}
+        onOpenChange={(open) => !open && setSheet(null)}
+        repositionInputs={true}
+      >
         <DrawerContent className="px-4 sm:px-6">
           <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
             {sheet?.type === "share" ? (
