@@ -2,30 +2,59 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { deleteEventAction } from "@/app/actions";
+import { toast } from "sonner";
+import { deleteEventAction, updateEventAction } from "@/app/actions";
 import type { BaseHandlerParams } from "@/features/shared/types";
 
-export function useEventHandlers({ setSuccessMessage, slug, writeKey }: BaseHandlerParams) {
-  const [, _startTransition] = useTransition();
+export function useEventHandlers({
+  slug,
+  writeKey,
+  setPlan,
+  token,
+}: BaseHandlerParams & { setPlan: (updater: (prev: any) => any) => void }) {
+  const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
   const tShared = useTranslations("EventDashboard.Shared");
 
   const handleDeleteEvent = async () => {
     try {
-      const result = await deleteEventAction({ slug, key: writeKey });
+      const result = await deleteEventAction({ slug, key: writeKey, token: token ?? undefined });
       if (result.success) {
-        setSuccessMessage({ text: tShared("eventDeleted"), type: "success" });
+        toast.success(tShared("eventDeleted"));
         setTimeout(() => {
           window.location.href = "/";
         }, 1500);
       }
     } catch (error) {
       console.error("Failed to delete event:", error);
-      setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
+      toast.error(t("meal.errorDelete"));
     }
+  };
+
+  const handleUpdateEvent = (name: string) => {
+    startTransition(async () => {
+      try {
+        await updateEventAction({
+          slug,
+          key: writeKey,
+          name,
+          token: token ?? undefined,
+        });
+
+        setPlan((prev) => ({
+          ...prev,
+          event: prev.event ? { ...prev.event, name } : null,
+        }));
+        toast.success(tShared("eventUpdated"));
+      } catch (error) {
+        console.error("Failed to update event:", error);
+        toast.error(tShared("eventUpdateError"));
+      }
+    });
   };
 
   return {
     handleDeleteEvent,
+    handleUpdateEvent,
   };
 }

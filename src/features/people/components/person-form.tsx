@@ -13,13 +13,16 @@ export function PersonForm({
   readOnly,
   currentUserId,
   currentUserImage,
+  isJoin,
 }: {
   onSubmit: (name: string, emoji?: string, userId?: string) => void;
   readOnly?: boolean;
   currentUserId?: string;
   currentUserImage?: string | null;
+  isJoin?: boolean;
 }) {
   const t = useTranslations("EventDashboard.PersonForm");
+  const tGuest = useTranslations("EventDashboard.Sheets.GuestAccess");
   const [name, setName] = useState("");
   const [isMe, setIsMe] = useState(false);
 
@@ -32,6 +35,15 @@ export function PersonForm({
 
   return (
     <div className="space-y-4">
+      {isJoin && (
+        <div className="flex justify-center px-1">
+          <div className="rounded-full bg-accent/10 px-4 py-1.5 border border-accent/10 shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-accent">
+              {t("namingNotice")}
+            </p>
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         <Label
           htmlFor="person-name"
@@ -49,7 +61,7 @@ export function PersonForm({
               handleSubmit();
             }
           }}
-          disabled={readOnly}
+          disabled={readOnly && !isJoin}
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"
@@ -96,7 +108,7 @@ export function PersonForm({
           className="w-full py-6 pr-8 shadow-md"
           icon={<UserPlus size={18} />}
           onClick={handleSubmit}
-          disabled={readOnly || !name.trim()}
+          disabled={(readOnly && !isJoin) || !name.trim()}
           shine
         >
           <span className="text-sm font-black uppercase tracking-widest text-gray-700">

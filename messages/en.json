@@ -224,7 +224,8 @@
       "body": "You requested a password reset for your CoList account. Click the button below to continue.",
       "button": "Reset Password",
       "footer": "If you did not request a password reset, you can safely ignore this email."
-    }
+    },
+    "guestWarning": "Limited features"
   },
   "FAQ": {
     "title": "Frequently Asked Questions",
@@ -255,7 +256,16 @@
     "warningLoss": "Save your event URL carefully. Without an account, you will need it to edit your event later.",
     "warningAccount": "AI generation and other advanced features require a user account.",
     "eventNameLabel": "Event Name",
-    "eventNamePlaceholder": "Dinner with friends",
+    "eventNamePlaceholder": "Family Dinner",
+    "eventPlaceholders": [
+      "Sarah's Birthday 🎂",
+      "Pizza Party 🍕",
+      "Christmas 2026 🎄",
+      "Sunday Brunch 🥞",
+      "Summer BBQ 🌭",
+      "Housewarming 🏠",
+      "Movie Night 🍿"
+    ],
     "dateLabel": "Date",
     "timeLabel": "Time",
     "addressLabel": "Location / Address",
@@ -293,9 +303,60 @@
     "descriptionPlaceholder": "A small message for your guests...",
     "errorDefault": "An error occurred",
     "createButton": "Let's go!",
-    "creatingButton": "Creating..."
+    "creatingButton": "Creating...",
+    "eventType": "Event type",
+    "singleMeal": "1 Meal",
+    "meal": "Meal",
+    "singleMealSubtitle": "Classic",
+    "stay": "Stay",
+    "staySubtitle": "Multiple days",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "stayDuration": "{count, plural, one {# day} other {# days}} stay",
+    "moreOptions": "More options",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Start date",
+    "endDatePlaceholder": "End date",
+    "datePlaceholder": "Date",
+    "adminKeyLabel": "Admin key (optional)",
+    "adminKeyPlaceholder": "my-secret-key",
+    "customUrlLabel": "Custom URL",
+    "customUrlPlaceholder": "event-name",
+    "hideOptions": "↑ Hide options",
+    "showOptions": "↓ Advanced options",
+    "summaryUrl": "URL"
   },
   "EventDashboard": {
+    "ReadOnly": {
+      "title": "Read-only mode",
+      "getAccess": "Get access"
+    },
+    "MetaPills": {
+      "editAddress": "Edit address",
+      "save": "Save",
+      "daysCount": "{count, plural, one {# day} other {# days}}"
+    },
+    "Properties": {
+      "title": "Event properties",
+      "noConfirmed": "{total} guests (0 confirmed)",
+      "confirmed": "{count} confirmed",
+      "guests": "{count, plural, one {# guest} other {# guests}}",
+      "adults": "{count, plural, one {# adult} other {# adults}}",
+      "children": "{count, plural, one {# child} other {# children}}",
+      "edit": "Edit",
+      "share": "Share",
+      "deleteEvent": "Delete event",
+      "deleteWarning": "This action is irreversible. All data will be lost.",
+      "deleteConfirm": "Delete permanently",
+      "deleteConfirmTitle": "Delete event?",
+      "deleteConfirmDescription": "This action is irreversible. All data, lists, and participants will be deleted.",
+      "deleteConfirmYes": "Yes, delete",
+      "guestCount": "{count, plural, one {# guest} other {# guests}}",
+      "adultsCount": "{count, plural, one {# adult} other {# adults}}",
+      "childrenCount": "{count, plural, one {# child} other {# children}}",
+      "editEvent": "Edit",
+      "shareAccess": "Share access"
+    },
     "Organizer": {
       "success": "Success",
       "error": "Error",
@@ -305,7 +366,12 @@
       "deleteConfirmInstruction": "Please type the event name \"{name}\" to confirm deletion:",
       "deleteConfirmPlaceholder": "Event name",
       "deleteConfirmButton": "Permanently Delete",
-      "deleteCancelButton": "Cancel"
+      "deleteCancelButton": "Cancel",
+      "quickAdd": "Quick Add",
+      "quickAddTitle": "Quick Add",
+      "quickAddPlaceholder": "E.g., Yule Log, Champagne...",
+      "quickAddPlaceholderService": "Add to: {service}...",
+      "quickAddEmptyTitle": "Empty list"
     },
     "Header": {
       "readOnlyWarning": "🔒 Read-only mode",
@@ -315,6 +381,8 @@
       "shareTitle": "Share access",
       "shareNavigatorTitle": "Event - {name}",
       "shareNavigatorText": "Join the event \"{name}\" on CoList!",
+      "backToEvents": "Back to events",
+      "openMenu": "Open menu",
       "filter": {
         "all": "Full menu",
         "unassigned": "To take ({count})",
@@ -334,6 +402,7 @@
       "noMeals": "No meals for now.",
       "addMeal": "Add a meal",
       "addService": "Add a course",
+      "shareEvent": "Share event",
       "calendar": {
         "options": "Calendar options",
         "addToCalendar": "Add to calendar",
@@ -345,9 +414,13 @@
       "editMeal": "Edit meal",
       "editService": "Edit course",
       "addItem": "Add item",
+      "addItemPlaceholder": "Add an item...",
+      "addItemDetails": "Add with details",
+      "items": "items",
       "cancel": "Cancel",
       "expand": "Expand",
-      "collapse": "Collapse"
+      "collapse": "Collapse",
+      "noMealsDesc": "Add your first meal to start organizing the menu."
     },
     "Service": {
       "editService": "Edit course {name}",
@@ -357,7 +430,16 @@
     },
     "People": {
       "all": "All",
+      "areYouComing": "Are you coming?",
+      "confirmPresence": "Confirm your attendance",
+      "add": "Add",
       "addMember": "Add member",
+      "present": "Confirmed",
+      "absent": "Declined",
+      "maybe": "Maybe",
+      "respond": "Respond",
+      "statusUpdated": "Status updated",
+      "errorUpdatingStatus": "Error updating status",
       "itsYou": "It's you! 👋",
       "itsMe": "It's me!",
       "unlink": "Unlink",
@@ -367,7 +449,15 @@
       "confirmUnlink": "Are you sure you no longer want to be associated with this profile?",
       "me": "Me",
       "editItem": "Edit item {name}",
-      "edit": "Edit"
+      "edit": "Edit",
+      "editPerson": "Edit {name}",
+      "howMany": "How many people?",
+      "adjustCounts": "Adjust the headcount",
+      "validate": "Done",
+      "adjust": "I'm bringing guests",
+      "adults": "Adults",
+      "children": "Children",
+      "editPerson": "Edit {name}"
     },
     "Shopping": {
       "notAssociated": "Profile not associated",
@@ -454,6 +544,8 @@
       "Ingredients": {
         "generating": "Generating...",
         "generateButton": "Generate ingredients (AI)",
+        "generateFor": "Generate for {count} guests",
+        "smartCountTooltip": "Based on: {source}",
         "authRequired": "Sign in to use AI",
         "addManual": "Add manually",
         "namePlaceholder": "Ex: Salt, Pepper...",
@@ -485,7 +577,9 @@
       "selectMealLabel": "Select meal",
       "selectMealPlaceholder": "Choose meal...",
       "newMealOption": "+ New meal",
-      "newMealSection": "New meal"
+      "newMealSection": "New meal",
+      "descriptionLabel": "Description (details)",
+      "descriptionPlaceholder": "Nibbles, Starters, Salads..."
     },
     "Shared": {
       "adultsLabel": "Adults",
@@ -511,7 +605,9 @@
       "showLess": "Less options",
       "defaultEventName": "Event",
       "thisEvent": "this event",
-      "eventDeleted": "Event deleted ✓"
+      "eventDeleted": "Event deleted ✓",
+      "eventUpdateError": "Error updating event",
+      "eventUpdated": "Event updated ✓"
     },
     "Meal": {
       "common": "📦 Common items",
@@ -528,11 +624,22 @@
         "divers": "Misc",
         "custom": "Custom",
         "midi": "Lunch",
-        "soir": "Dinner"
+        "soir": "Dinner",
+        "course_starter": "Starters & Nibbles",
+        "desc_starter": "Chips, Nuts, Sausage rolls, Dips",
+        "course_main": "Mains & Savouries",
+        "desc_main": "Pies, Stews, Pizza, Roast",
+        "course_sweet": "Sweet Treats",
+        "desc_sweet": "Puddings, Cakes, Brownies",
+        "course_drinks": "Drinks",
+        "desc_drinks": "Beer, Wine, Softs",
+        "course_cheese_extras": "Sides & Cutlery",
+        "desc_cheese_extras": "Salads, Coleslaw, Garlic Bread, Plates"
       },
       "dateLabel": "Date",
       "datePlaceholder": "Choose a date",
       "timeLabel": "Time",
+      "timePlaceholder": "Choose a time",
       "titleLabel": "Meal name",
       "titlePlaceholder": "Ex: Dinner",
       "addressLabel": "Address",
@@ -555,7 +662,8 @@
       "emojiLabel": "Signature Emoji",
       "autoEmoji": "Auto",
       "defaultEmoji": "Default:",
-      "deleteButton": "Delete this guest"
+      "deleteButton": "Delete this guest",
+      "namingNotice": "For your guests, choose a recognizable name."
     },
     "Sheets": {
       "addItem": "Add item",
@@ -563,6 +671,7 @@
       "addService": "Add course",
       "editService": "Edit course",
       "editMeal": "Edit meal",
+      "editEvent": "Edit event",
       "addMeal": "Add meal",
       "addGuest": "Add guest",
       "editGuest": "Edit guest",
@@ -570,6 +679,7 @@
       "shoppingList": "Shopping list",
       "guestAccess": "Guest access",
       "claimPerson": "Is it you?",
+      "quickAdd": "Quick Add",
       "ingredientsGenerated": "Ingredients generated successfully!",
       "generationError": "Error generating ingredients.",
       "Share": {
@@ -578,18 +688,20 @@
         "description": "Your event is live. Share this magic link with your co-organizers.",
         "adminLinkLabel": "Admin Link",
         "accessKeyLabel": "Secret Key",
-        "closeButton": "Let's go!",
+        "closeButton": "OK",
         "copySuccess": "Copied!",
+        "copyLink": "Copy link",
+        "shareButton": "Share",
         "shareWhatsApp": "Share on WhatsApp",
         "shareMessage": "Join me in organizing {name} on CoList! 🎁 {url}"
       },
       "GuestAccess": {
-        "title": "Continue as guest",
-        "description": "You can continue without signing in, but you won't be able to use AI to generate ingredients.",
-        "identifyButton": "Sign in",
-        "identifyDescription": "Use your Google account to save your events and use AI.",
-        "continueButton": "Continue as guest",
-        "continueDescription": "Limited access, no save or AI."
+        "title": "Welcome!",
+        "description": "Join the event to confirm your presence and participate.",
+        "identifyButton": "LOG IN",
+        "identifyDescription": "Find your events, history, and AI.",
+        "continueButton": "QUICK GUEST ACCESS",
+        "continueDescription": "Immediate access, just with your name."
       },
       "ClaimPerson": {
         "title": "Is it you?",
@@ -685,10 +797,12 @@
       "errorAdd": "Error adding item ❌",
       "updated": "Item updated ✓",
       "errorUpdate": "Error updating item ❌",
-      "deleted": "Item deleted ✓",
+      "deleted": "{name} deleted ✓",
       "errorDelete": "Error deleting item ❌",
       "moved": "Item moved ✓",
-      "errorMove": "Error moving item ❌"
+      "errorMove": "Error moving item ❌",
+      "checked": "Item checked ✓",
+      "unchecked": "Item unchecked ✓"
     },
     "meal": {
       "added": "Meal created! ✨",
@@ -742,6 +856,30 @@
     "successDescription": "Your report has been received. Thanks for helping us improve CoList!",
     "errorDescription": "Submission failed. Please try again later."
   },
+  "DefaultServices": {
+    "total": [
+      {
+        "title": "Starters & Nibbles",
+        "description": "Chips, Nuts, Sausage rolls, Dips"
+      },
+      {
+        "title": "Mains & Savouries",
+        "description": "Pies, Stews, Pizza, Roast"
+      },
+      {
+        "title": "Sweet Treats",
+        "description": "Puddings, Cakes, Brownies"
+      },
+      {
+        "title": "Drinks",
+        "description": "Beer, Wine, Softs"
+      },
+      {
+        "title": "Sides & Cutlery",
+        "description": "Salads, Coleslaw, Garlic Bread, Plates"
+      }
+    ]
+  },
   "ResetPassword": {
     "title": "New Password",
     "description": "Choose a new secure password for your account.",
@@ -787,6 +925,14 @@
         "feedback": {
           "title": "Feedback",
           "content": "Have an idea? Found a bug? Click here to share your feedback with us."
+        },
+        "list": {
+          "content": "Find the list of your upcoming and past events here.",
+          "title": "Your events"
+        },
+        "welcome": {
+          "content": "Here is your dashboard where you will find all your events.",
+          "title": "Welcome to CoList!"
         }
       }
     },
@@ -835,12 +981,14 @@
     "totalSinceStart": "Total since launch",
     "totalYear": "Total this year",
     "developmentTime": "Development time",
+    "developmentTimeValue": "~250 Hours",
     "supportTitle": "Support the project",
     "supportDescription": "If CoList helps you in your daily life, you can buy me a coffee or help me cover the hosting costs. Every gesture counts!",
     "buyMeACoffee": "Buy me a coffee",
     "revolut": "Via Revolut",
     "changelogTitle": "What's new?",
     "changelogSubtitle": "The latest features added with love.",
+    "footer": "Made with 🇪🇺❤️🐻 by an independent developer",
     "noCosts": "No cost data available yet.",
     "categories": {
       "hosting": "Hosting",
@@ -855,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Premium Immersive Redesign",
+          "description": "Complete UI overhaul with 'glassmorphism' style, dynamic gradients, and enhanced fluid transitions on mobile."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Quick Add 2.0",
+          "description": "New ultra-fast entry system with smart suggestions based on meal type to build your menus in seconds."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Advanced Permissions System",
+          "description": "Revamped guest access management with a secure token system allowing collaboration without an account."
+        },
         {
           "date": "Jan 2026",
           "title": "Aisle classification",

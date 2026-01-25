@@ -13,7 +13,6 @@ interface IngredientsSheetContentProps {
   readOnly?: boolean;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
   currentUserId?: string;
   onAuth: () => void;
   // Handlers - matching OrganizerHandlers types exactly
@@ -24,7 +23,8 @@ interface IngredientsSheetContentProps {
     adults?: number,
     children?: number,
     peopleCount?: number,
-    locale?: string
+    locale?: string,
+    note?: string
   ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;
@@ -41,7 +41,6 @@ export function IngredientsSheetContent({
   readOnly,
   isGenerating,
   setIsGenerating,
-  setSuccessMessage,
   currentUserId,
   onAuth,
   findItem,
@@ -88,12 +87,11 @@ export function IngredientsSheetContent({
         adults,
         children,
         finalPeopleCount,
-        locale
+        locale,
+        note
       );
-      setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
     } catch (error) {
       console.error("Failed to generate ingredients:", error);
-      setSuccessMessage({ text: t("generationError"), type: "error" });
     } finally {
       setIsGenerating(false);
     }

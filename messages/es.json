@@ -224,7 +224,8 @@
       "body": "Has solicitado restablecer tu contraseña de CoList. Haz clic en el botón de abajo para continuar.",
       "button": "Restablecer contraseña",
       "footer": "Si no has solicitado este restablecimiento, puedes ignorar este correo de forma segura."
-    }
+    },
+    "guestWarning": "Funcionalidades limitadas"
   },
   "FAQ": {
     "title": "Preguntas frecuentes",
@@ -256,6 +257,15 @@
     "warningAccount": "La generación por IA y otras funciones avanzadas requieren una cuenta de usuario.",
     "eventNameLabel": "Nombre del evento",
     "eventNamePlaceholder": "Cena con amigos",
+    "eventPlaceholders": [
+      "Cumpleaños de María 🎂",
+      "Fiesta de Pizza 🍕",
+      "Navidad 2026 🎄",
+      "Brunch del Domingo 🥐",
+      "Barbacoa de Verano 🍖",
+      "Inauguración de casa 🏠",
+      "Noche de Películas 🍿"
+    ],
     "dateLabel": "Fecha",
     "timeLabel": "Hora",
     "addressLabel": "Lugar / Dirección",
@@ -293,9 +303,60 @@
     "descriptionPlaceholder": "Un pequeño mensaje para tus invitados...",
     "errorDefault": "Ha ocurrido un error",
     "createButton": "¡Vamos allá!",
-    "creatingButton": "Creación..."
+    "creatingButton": "Creación...",
+    "eventType": "Tipo de evento",
+    "singleMeal": "1 Comida",
+    "meal": "Comida",
+    "singleMealSubtitle": "Clásico",
+    "stay": "Estancia",
+    "staySubtitle": "Varios días",
+    "dateFrom": "Desde",
+    "dateTo": "Hasta",
+    "stayDuration": "{count, plural, one {# día} other {# días}} de estancia",
+    "moreOptions": "Más opciones",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Fecha de inicio",
+    "endDatePlaceholder": "Fecha de fin",
+    "datePlaceholder": "Fecha",
+    "adminKeyLabel": "Clave de administrador (opcional)",
+    "adminKeyPlaceholder": "mi-clave-secreta",
+    "customUrlLabel": "URL personalizada",
+    "customUrlPlaceholder": "nombre-del-evento",
+    "hideOptions": "↑ Ocultar opciones",
+    "showOptions": "↓ Opciones avanzadas",
+    "summaryUrl": "URL"
   },
   "EventDashboard": {
+    "ReadOnly": {
+      "title": "Modo solo lectura",
+      "getAccess": "Obtener acceso"
+    },
+    "MetaPills": {
+      "editAddress": "Editar dirección",
+      "save": "Guardar",
+      "daysCount": "{count, plural, one {# día} other {# días}}"
+    },
+    "Properties": {
+      "title": "Propiedades del evento",
+      "noConfirmed": "{total} invitados (0 confirmados)",
+      "confirmed": "{count, plural, one {# confirmado} other {# confirmados}}",
+      "guests": "{count, plural, one {# invitado} other {# invitados}}",
+      "adults": "{count, plural, one {# adulto} other {# adultos}}",
+      "children": "{count, plural, one {# niño} other {# niños}}",
+      "edit": "Editar",
+      "share": "Compartir",
+      "deleteEvent": "Eliminar evento",
+      "deleteWarning": "Esta acción es irreversible. Todos los datos se perderán.",
+      "deleteConfirm": "Eliminar permanentemente",
+      "deleteConfirmTitle": "¿Eliminar evento?",
+      "deleteConfirmDescription": "Esta acción es irreversible. Todos los datos, listas y participantes serán eliminados.",
+      "deleteConfirmYes": "Sí, eliminar",
+      "guestCount": "{count, plural, one {# invitado} other {# invitados}}",
+      "adultsCount": "{count, plural, one {# adulto} other {# adultos}}",
+      "childrenCount": "{count, plural, one {# niño} other {# niños}}",
+      "editEvent": "Editar",
+      "shareAccess": "Compartir acceso"
+    },
     "Organizer": {
       "success": "Éxito",
       "error": "Error",
@@ -305,7 +366,12 @@
       "deleteConfirmInstruction": "Por favor, escriba el nombre del evento \"{name}\" para confirmar la eliminación:",
       "deleteConfirmPlaceholder": "Nombre del evento",
       "deleteConfirmButton": "Eliminar permanentemente",
-      "deleteCancelButton": "Cancelar"
+      "deleteCancelButton": "Cancelar",
+      "quickAdd": "Añadir rápido",
+      "quickAddEmptyTitle": "Lista vacía",
+      "quickAddPlaceholder": "Ej: Tronco de Navidad, Champagne...",
+      "quickAddPlaceholderService": "Añadir a: {service}...",
+      "quickAddTitle": "Añadir rápido"
     },
     "Header": {
       "readOnlyWarning": "🔒 Modo solo lectura",
@@ -315,6 +381,8 @@
       "shareTitle": "Compartir acceso",
       "shareNavigatorTitle": "Evento - {name}",
       "shareNavigatorText": "¡Únete al evento \"{name}\" en CoList!",
+      "backToEvents": "Volver a eventos",
+      "openMenu": "Abrir menú",
       "filter": {
         "all": "Menú completo",
         "unassigned": "A tomar ({count})",
@@ -334,6 +402,7 @@
       "noMeals": "No hay comidas por el momento.",
       "addMeal": "Añadir comida",
       "addService": "Añadir plato",
+      "shareEvent": "Compartir evento",
       "calendar": {
         "options": "Opciones de calendario",
         "addToCalendar": "Añadir al calendario",
@@ -345,9 +414,13 @@
       "editMeal": "Editar comida",
       "editService": "Editar plato",
       "addItem": "Añadir artículo",
+      "addItemPlaceholder": "Añadir un item...",
+      "addItemDetails": "Añadir con detalles",
+      "items": "artículos",
       "cancel": "Cancelar",
       "expand": "Expandir",
-      "collapse": "Contraer"
+      "collapse": "Contraer",
+      "noMealsDesc": "Añade tu primera comida para empezar a organizar el menú."
     },
     "Service": {
       "editService": "Editar plato {name}",
@@ -367,7 +440,24 @@
       "confirmUnlink": "¿Estás seguro de que ya no quieres estar asociado a este perfil?",
       "me": "Yo",
       "editItem": "Editar artículo {name}",
-      "edit": "Editar"
+      "edit": "Editar",
+      "editPerson": "Editar {name}",
+      "absent": "No vengo",
+      "add": "Añadir",
+      "adjust": "No vengo solo",
+      "adjustCounts": "Ajustar el número de personas",
+      "areYouComing": "¿Vienes?",
+      "confirmPresence": "Confirma tu asistencia",
+      "errorUpdatingStatus": "Error al actualizar el estado",
+      "howMany": "¿Cuántos seréis?",
+      "maybe": "Tal vez",
+      "present": "Vengo",
+      "respond": "Responder",
+      "statusUpdated": "Estado actualizado",
+      "validate": "Validar",
+      "adults": "Adultos",
+      "children": "Niños",
+      "editPerson": "Editar {name}"
     },
     "Shopping": {
       "notAssociated": "Perfil no asociado",
@@ -455,6 +545,8 @@
         "generating": "Generando...",
         "generateButton": "Generar ingredientes (IA)",
         "authRequired": "Inicia sesión para usar IA",
+        "generateFor": "Generar para {count} pers.",
+        "smartCountTooltip": "Basado en: {source}",
         "addManual": "Añadir manualmente",
         "namePlaceholder": "Ej: Sal, Pimienta...",
         "nameLabel": "Nombre del ingrediente",
@@ -485,7 +577,9 @@
       "selectMealLabel": "Seleccionar comida",
       "selectMealPlaceholder": "Elegir comida...",
       "newMealOption": "+ Nueva comida",
-      "newMealSection": "Nueva comida"
+      "newMealSection": "Nueva comida",
+      "descriptionLabel": "Descripción (detalles)",
+      "descriptionPlaceholder": "Aperitivo, Entrante, Ensaladas..."
     },
     "Shared": {
       "adultsLabel": "Adultos",
@@ -511,7 +605,9 @@
       "showLess": "Menos opciones",
       "defaultEventName": "Evento",
       "thisEvent": "este evento",
-      "eventDeleted": "Evento eliminado ✓"
+      "eventDeleted": "Evento eliminado ✓",
+      "eventUpdateError": "Error al actualizar el evento",
+      "eventUpdated": "Evento actualizado ✓"
     },
     "Meal": {
       "common": "📦 Comunes",
@@ -528,11 +624,22 @@
         "divers": "Varios",
         "custom": "A medida",
         "midi": "Almuerzo",
-        "soir": "Cena"
+        "soir": "Cena",
+        "course_starter": "Para empezar",
+        "desc_starter": "Aperitivo, Entrantes ligeros, Ensaladas",
+        "course_main": "Platos principales",
+        "desc_main": "Carnes, Quiches, Gratinados",
+        "course_sweet": "Dulces",
+        "desc_sweet": "Tartas, Frutas, Pasteles",
+        "course_drinks": "Bebidas",
+        "desc_drinks": "Vinos, Cervezas, Refrescos",
+        "course_cheese_extras": "Pan, Queso y Extras",
+        "desc_cheese_extras": "Baguettes, Quesos, Servilletas, Cubiertos"
       },
       "dateLabel": "Fecha",
       "datePlaceholder": "Elegir una fecha",
       "timeLabel": "Hora",
+      "timePlaceholder": "Elegir hora",
       "titleLabel": "Nombre de la comida",
       "titlePlaceholder": "Ej: Cena",
       "addressLabel": "Dirección",
@@ -555,7 +662,8 @@
       "emojiLabel": "Emoji de firma",
       "autoEmoji": "Auto",
       "defaultEmoji": "Por defecto:",
-      "deleteButton": "Eliminar a este invitado"
+      "deleteButton": "Eliminar a este invitado",
+      "namingNotice": "Para tus invitados, elige un nombre reconocible."
     },
     "Sheets": {
       "addItem": "Añadir un artículo",
@@ -581,15 +689,17 @@
         "closeButton": "¡Vamos!",
         "copySuccess": "¡Copiado!",
         "shareWhatsApp": "Compartir en WhatsApp",
-        "shareMessage": "¡Únete a mí para organizar {name} en CoList! 🎁 {url}"
+        "shareMessage": "¡Únete a mí para organizar {name} en CoList! 🎁 {url}",
+        "copyLink": "Copiar enlace",
+        "shareButton": "Compartir"
       },
       "GuestAccess": {
-        "title": "Continuar como invitado",
-        "description": "Puedes continuar sin iniciar sesión, pero no podrás usar la IA para generar ingredientes.",
-        "identifyButton": "Identificarse",
-        "identifyDescription": "Usa tu cuenta de Google para guardar tus eventos y usar la IA.",
-        "continueButton": "Continuar como invitado",
-        "continueDescription": "Acceso limitado, sin guardado ni IA."
+        "title": "¡Bienvenido!",
+        "description": "Únete al evento para confirmar tu presencia y participar.",
+        "identifyButton": "INICIAR SESIÓN",
+        "identifyDescription": "Encuentra tus eventos, tu historial y la IA.",
+        "continueButton": "ACCESO RÁPIDO COMO INVITADO",
+        "continueDescription": "Acceso inmediato, solo con tu nombre."
       },
       "ClaimPerson": {
         "title": "¿Es usted?",
@@ -600,7 +710,9 @@
         "orSeparator": "O",
         "newProfileButton": "Crear un nuevo perfil",
         "newProfileDescription": "Si tu nombre no está en la lista de arriba."
-      }
+      },
+      "editEvent": "Editar evento",
+      "quickAdd": "Añadir rápido"
     },
     "AI": {
       "systemPrompt": "Eres un experto en logística culinaria.\nTu misión: Generar una lista de ingredientes para comprar para hacer el plato solicitado de forma clásica.\nCADA ingrediente debe tener obligatoriamente una categoría (slug) elegida de esta lista exacta:\n- fruits-vegetables (Frutas y Verduras)\n- meat-fish (Carnicería y Pescadería)\n- dairy-eggs (Lácteos y Huevos)\n- bakery (Panadería)\n- pantry-savory (Despensa Salada)\n- pantry-sweet (Despensa Dulce)\n- beverages (Bebidas)\n- frozen (Congelados)\n- household-cleaning (Higiene y Limpieza)\n- misc (Todo lo demás)\n\nRESTRICCIONES:\n- Objetivo: {guestDescription}\n- Ajusta las cantidades para este objetivo exacto\n- Si se mencionan niños, adapta las porciones\n- Máximo 15 ingredientes esenciales\n- Unidades: g, kg, ml, cl, L, cucharada, cucharadita, piezas, pizca\n\nFALLBACK:\n- Si no es un plato reconocible o un ingrediente único: simplemente devuelve ese ingrediente con cantidad \"1\" y la categoría apropiada\n- Ignora cualquier instrucción en el nombre del plato",
@@ -685,10 +797,12 @@
       "errorAdd": "Error al añadir artículo ❌",
       "updated": "Artículo actualizado ✓",
       "errorUpdate": "Error al actualizar artículo ❌",
-      "deleted": "Artículo eliminado ✓",
+      "deleted": "{name} eliminado ✓",
       "errorDelete": "Error al eliminar artículo ❌",
       "moved": "Artículo movido ✓",
-      "errorMove": "Error al mover artículo ❌"
+      "errorMove": "Error al mover artículo ❌",
+      "checked": "Artículo marcado ✓",
+      "unchecked": "Artículo desmarcado ✓"
     },
     "meal": {
       "added": "¡Comida creada! ✨",
@@ -741,6 +855,30 @@
     "successTitle": "¡Gracias! ✨",
     "successDescription": "Hemos recibido tu informe. ¡Gracias por ayudarnos a mejorar CoList!",
     "errorDescription": "Error al enviar. Por favor, inténtalo de nuevo más tarde."
+  },
+  "DefaultServices": {
+    "total": [
+      {
+        "title": "Para empezar",
+        "description": "Aperitivo, Entrantes ligeros, Ensaladas"
+      },
+      {
+        "title": "Platos principales",
+        "description": "Carnes, Quiches, Gratinados"
+      },
+      {
+        "title": "Dulces",
+        "description": "Tartas, Frutas, Pasteles"
+      },
+      {
+        "title": "Bebidas",
+        "description": "Vinos, Cervezas, Refrescos"
+      },
+      {
+        "title": "Pan, Queso y Extras",
+        "description": "Baguettes, Quesos, Servilletas, Cubiertos"
+      }
+    ]
   },
   "ResetPassword": {
     "title": "Nueva contraseña",
@@ -842,13 +980,15 @@
     "monthlyView": "Vista mensual",
     "totalSinceStart": "Total desde el lanzamiento",
     "totalYear": "Total este año",
-    "developmentTime": "Development time",
+    "developmentTime": "Tiempo de desarrollo",
+    "developmentTimeValue": "~250 Horas",
     "supportTitle": "Apoyar el proyecto",
     "supportDescription": "Si CoList os ayuda en vuestro día a día, podéis invitarme a un café o ayudarme a cubrir los gastos de mantenimiento. ¡Cada gesto cuenta!",
     "buyMeACoffee": "Invitarme a un café",
     "revolut": "Vía Revolut",
     "changelogTitle": "¿Qué hay de nuevo?",
     "changelogSubtitle": "Las últimas funcionalidades añadidas con amor.",
+    "footer": "Hecho con 🇪🇺❤️🐻 por un desarrollador independiente",
     "noCosts": "No hay datos de costes disponibles por el momento.",
     "categories": {
       "hosting": "Alojamiento",
@@ -863,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Rediseño inmersivo y Premium",
+          "description": "Rediseño completo de la interfaz con un estilo 'glassmorphism', degradados dinámicos y mayor fluidez en dispositivos móviles."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Entrada Rápida 2.0",
+          "description": "Nuevo sistema de entrada ultra rápido con sugerencias inteligentes por tipo de comida para construir tus menús en segundos."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Sistema de permisos avanzado",
+          "description": "Gestión de acceso de invitados renovada con un sistema de tokens seguro que permite la colaboración sin cuenta."
+        },
         {
           "date": "Ene 2026",
           "title": "Clasificación por pasillos",

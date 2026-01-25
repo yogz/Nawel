@@ -109,7 +109,7 @@ export function ItemIngredientsManager({
   }, [justGenerated]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-white duration-300 animate-in fade-in slide-in-from-bottom-4">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-6 py-4 pt-10 sm:pt-4">
         <div>

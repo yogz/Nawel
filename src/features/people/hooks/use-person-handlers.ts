@@ -2,12 +2,14 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   createPersonAction,
   updatePersonAction,
   deletePersonAction,
   claimPersonAction,
   unclaimPersonAction,
+  updatePersonStatusAction,
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
@@ -20,16 +22,18 @@ export function usePersonHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
   setSelectedPerson,
   session,
   refetch,
+  token,
 }: PersonHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
 
   const handleCreatePerson = (name: string, emoji?: string | null, userId?: string) => {
-    if (readOnly) {
+    // For joining as a guest, we allow creation even in readOnly mode
+    // if a writeKey (adminKey) is present, as person:create hanya requires the key.
+    if (readOnly && !writeKey) {
       return;
     }
     startTransition(async () => {
@@ -41,17 +45,29 @@ export function usePersonHandlers({
           slug,
           key: writeKey,
         });
+
+        // Store anonymous token if present (for guest RSVP)
+        if (created.token) {
+          try {
+            const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
+            tokens[created.id] = created.token;
+            localStorage.setItem("colist_guest_tokens", JSON.stringify(tokens));
+          } catch (e) {
+            console.error("Failed to save guest token", e);
+          }
+        }
+
         setPlan((prev: PlanData) => ({
           ...prev,
           people: [...prev.people, created].sort((a, b) => a.name.localeCompare(b.name)),
         }));
         setSelectedPerson?.(created.id);
         setSheet(null);
-        setSuccessMessage({ text: t("person.added", { name }), type: "success" });
+        toast.success(t("person.added", { name }));
         trackPersonAction("person_created", name);
       } catch (error) {
         console.error("Failed to create person:", error);
-        setSuccessMessage({ text: t("person.errorAdd"), type: "error" });
+        toast.error(t("person.errorAdd"));
       }
     });
   };
@@ -61,6 +77,7 @@ export function usePersonHandlers({
     name: string,
     emoji?: string | null,
     image?: string | null,
+    updateToken?: string | null,
     closeSheet = false
   ) => {
     if (readOnly) {
@@ -68,7 +85,15 @@ export function usePersonHandlers({
     }
     startTransition(async () => {
       try {
-        await updatePersonAction({ id, name, emoji, image, slug, key: writeKey });
+        await updatePersonAction({
+          id,
+          name,
+          emoji,
+          image,
+          slug,
+          key: writeKey,
+          token: (updateToken || token) ?? undefined,
+        });
         setPlan((prev: PlanData) => ({
           ...prev,
           people: prev.people.map((p) =>
@@ -89,11 +114,11 @@ export function usePersonHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: t("person.updated"), type: "success" });
+        toast.success(t("person.updated"));
         trackPersonAction("person_updated", name);
       } catch (error) {
         console.error("Failed to update person:", error);
-        setSuccessMessage({ text: t("person.errorUpdate"), type: "error" });
+        toast.error(t("person.errorUpdate"));
       }
     });
   };
@@ -118,19 +143,16 @@ export function usePersonHandlers({
       })),
     }));
     setSheet(null);
-    setSuccessMessage({
-      text: t("person.deleted", { name: person?.name || "Convive" }),
-      type: "success",
-    });
+    toast.success(t("person.deleted", { name: person?.name || "Convive" }));
     trackPersonAction("person_deleted", person?.name);
 
     startTransition(async () => {
       try {
-        await deletePersonAction({ id, slug, key: writeKey });
+        await deletePersonAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete person:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("person.errorDelete"), type: "error" });
+        toast.error(t("person.errorDelete"));
       }
     });
   };
@@ -158,11 +180,11 @@ export function usePersonHandlers({
                   : p
               ),
             }));
-            setSuccessMessage({ text: t("person.claimed"), type: "success" });
+            toast.success(t("person.claimed"));
             resolve(updated);
           } catch (error) {
             console.error("Failed to claim person:", error);
-            setSuccessMessage({ text: t("person.errorClaim"), type: "error" });
+            toast.error(t("person.errorClaim"));
             reject(error);
           }
         });
@@ -176,15 +198,79 @@ export function usePersonHandlers({
     }
     startTransition(async () => {
       try {
-        await unclaimPersonAction({ personId, slug, key: writeKey });
+        await unclaimPersonAction({ personId, slug, key: writeKey, token: token ?? undefined });
         setPlan((prev: PlanData) => ({
           ...prev,
           people: prev.people.map((p) => (p.id === personId ? { ...p, userId: null } : p)),
         }));
-        setSuccessMessage({ text: t("person.unclaimed"), type: "success" });
+        toast.success(t("person.unclaimed"));
       } catch (error) {
         console.error("Failed to unclaim person:", error);
-        setSuccessMessage({ text: t("person.errorUnclaim"), type: "error" });
+        toast.error(t("person.errorUnclaim"));
+      }
+    });
+  };
+
+  const handleUpdateStatus = (
+    personId: number,
+    status: "confirmed" | "declined" | "maybe",
+    updateToken?: string | null
+  ) => {
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status,
+          token: (updateToken || token) ?? undefined,
+        });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) => (p.id === personId ? { ...p, status } : p)),
+        }));
+        toast.success(t("person.statusUpdated"));
+      } catch (error) {
+        console.error("Failed to update status:", error);
+        toast.error(t("person.errorUpdate"));
+      }
+    });
+  };
+
+  const handleUpdateGuestCount = (
+    personId: number,
+    guestAdults: number,
+    guestChildren: number,
+    updateToken?: string | null
+  ) => {
+    startTransition(async () => {
+      try {
+        await updatePersonStatusAction({
+          slug,
+          key: writeKey,
+          personId,
+          status: "confirmed",
+          guestAdults,
+          guestChildren,
+          token: (updateToken || token) ?? undefined,
+        });
+        setPlan((prev: PlanData) => ({
+          ...prev,
+          people: prev.people.map((p) =>
+            p.id === personId
+              ? {
+                  ...p,
+                  status: "confirmed",
+                  guest_adults: guestAdults,
+                  guest_children: guestChildren,
+                }
+              : p
+          ),
+        }));
+        toast.success(t("person.updated"));
+      } catch (error) {
+        console.error("Failed to update guest count:", error);
+        toast.error(t("person.errorUpdate"));
       }
     });
   };
@@ -195,5 +281,7 @@ export function usePersonHandlers({
     handleDeletePerson,
     handleClaimPerson,
     handleUnclaimPerson,
+    handleUpdateStatus,
+    handleUpdateGuestCount,
   };
 }

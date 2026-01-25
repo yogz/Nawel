@@ -2,34 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * =============================================================================
+ * Z-INDEX HIERARCHY - Single source of truth for stacking context
+ * =============================================================================
+ * z-0    : Background gradients (event page gradient)
+ * z-10   : Content cards, default content
+ * z-30   : Dashboard header
+ * z-40   : TabBar (bottom navigation)
+ * z-50   : Snow overlay, floating elements
+ * z-100  : Sticky headers (event planner header)
+ * z-200  : Modals, sheets, drawers
+ * z-[999]: Tooltips, popovers
+ * =============================================================================
+ *
+ * STATUS BAR / SAFE-AREA COLORS
+ * =============================================================================
+ * The status bar color on mobile is controlled by:
+ * 1. viewport.themeColor in layout.tsx / page.tsx (meta tag)
+ * 2. body background-color (visible during overscroll)
+ * 3. CSS --status-bar-color variable (for consistency)
+ *
+ * To change the status bar color, update --status-bar-color below
+ * and the corresponding themeColor in the viewport exports.
+ * =============================================================================
+ */
+
 @layer base {
+  /*
+   * =============================================================================
+   * GLOBAL COLOR TOKENS - Single source of truth
+   * =============================================================================
+   */
+  :root {
+    /* Status bar and safe-area background color */
+    --status-bar-color: #e6d9f8;
+
+    /* Event page gradient colors */
+    --event-gradient-start: #e6d9f8;
+    --event-gradient-mid: #e3e8fa;
+    --event-gradient-end: #f5e2d8;
+
+    /*
+     * Computed gradient for reuse
+     * IMMERSIVE STATUS BAR: The gradient uses multiple layers:
+     * 1. Linear gradient at top ensures status bar color matches across full width
+     * 2. Radial gradient creates the decorative effect below
+     */
+    --event-header-gradient:
+      linear-gradient(
+        to bottom,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-start) 5%,
+        transparent 20%
+      ),
+      radial-gradient(
+        ellipse 120% 100% at 50% 0%,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-mid) 35%,
+        var(--event-gradient-end) 60%,
+        rgba(255, 247, 241, 0) 100%
+      );
+  }
+
+  /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
   /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
   .theme-aurora {
-    --surface: #e8dbf5;
-    --muted: #d4c5e8;
+    /* Lighter, more premium palette */
+    /* Vibrant violet immersion */
+    --surface: #bc63e9;
+    --muted: rgba(255, 255, 255, 0.1);
     --accent: 280 75% 65%;
-    --text: #3a2b52;
-    --header-fade: #e8dbf5;
+    --text: #1a0a33;
+    --header-fade: #bc63e9;
 
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --card-border: rgba(200, 180, 230, 0.3);
-    --card-shadow: 0 4px 16px rgba(120, 80, 180, 0.12), 0 2px 8px rgba(150, 100, 200, 0.08);
-    --card-shadow-hover: 0 8px 24px rgba(120, 80, 180, 0.18), 0 4px 12px rgba(150, 100, 200, 0.12);
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --card-border: rgba(255, 255, 255, 0.6);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    --card-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.06);
 
-    --glass-bg: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.85) 0%,
-      rgba(248, 240, 255, 0.75) 100%
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+    --glass-blur: 12px;
+    /* Base blur */
+
+    /* Light blue-grey background for the content area */
+    /* IMPORTANT: Start with --status-bar-color at top for seamless status bar integration on mobile */
+    background: linear-gradient(
+      to bottom,
+      var(--status-bar-color) 0px,
+      var(--status-bar-color) 60px,
+      #f5f7fb 160px,
+      #f5f7fb 100%
     );
-    --glass-border: rgba(200, 180, 230, 0.4);
-    --glass-shadow: 0 4px 12px rgba(120, 80, 180, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-    background: linear-gradient(180deg, #e8dbf5 0%, #d8c9ec 50%, #cdbde5 100%);
+    background-color: var(--status-bar-color);
     background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
   }
 
+  /* Subtler Orbs */
   .theme-aurora::before {
     content: "";
     position: fixed;
@@ -39,29 +112,16 @@
     height: 200%;
     z-index: -1;
     background:
-      radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.12) 0%, transparent 45%),
-      radial-gradient(circle at 70% 20%, rgba(200, 160, 255, 0.1) 0%, transparent 45%),
-      radial-gradient(circle at 50% 80%, rgba(180, 140, 220, 0.15) 0%, transparent 45%),
-      radial-gradient(circle at 20% 80%, rgba(220, 190, 255, 0.08) 0%, transparent 45%);
-    filter: blur(60px);
-    animation: aurora-mesh 20s ease-in-out infinite alternate;
+      radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(200, 160, 255, 0.06) 0%, transparent 40%);
+    filter: blur(80px);
+    animation: aurora-mesh 25s ease-in-out infinite alternate;
     pointer-events: none;
   }
 
-  /* Floating Orbs for extra "pop" */
   .theme-aurora::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background-image:
-      radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.15), transparent 30%),
-      radial-gradient(circle at 15% 85%, rgba(200, 150, 255, 0.2), transparent 30%);
-    animation: aurora-floats 15s ease-in-out infinite alternate;
-    pointer-events: none;
+    /* Removed secondary orbs for cleaner look */
+    content: none;
   }
 
   @keyframes aurora-mesh {
@@ -69,33 +129,8 @@
       transform: translate(0, 0) rotate(0deg) scale(1);
     }
 
-    33% {
-      transform: translate(5%, 10%) rotate(5deg) scale(1.1);
-    }
-
-    66% {
-      transform: translate(-5%, 5%) rotate(-5deg) scale(0.9);
-    }
-
     100% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-  }
-
-  @keyframes aurora-floats {
-    0% {
-      opacity: 0.4;
-      filter: blur(40px);
-    }
-
-    50% {
-      opacity: 0.8;
-      filter: blur(60px);
-    }
-
-    100% {
-      opacity: 0.4;
-      filter: blur(40px);
+      transform: translate(2%, 2%) rotate(2deg) scale(1.05);
     }
   }
 
@@ -155,10 +190,21 @@
 
   .glass {
     background: var(--glass-bg, rgba(255, 255, 255, 0.7));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--glass-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
     border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2));
     box-shadow: var(--glass-shadow, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  }
+
+  /* 
+   * Crystal System - Standardized Glass
+   * Used for Header, TabBar, and other floating surfaces 
+   */
+  .glass-panel {
+    @apply bg-white/60 backdrop-blur-xl border-b border-white/20;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+      0 4px 20px -2px rgba(0, 0, 0, 0.1);
   }
 
   /* Theme-specific Overrides - Keep minimal */
@@ -383,6 +429,34 @@
       padding: 10px 16px;
       font-size: 14px;
     }
+  }
+
+  /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
+  .theme-aurora {
+    --background: 270 20% 98%;
+    --foreground: 280 40% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 280 40% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 280 40% 12%;
+    --primary: 280 75% 65%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 270 30% 96%;
+    --secondary-foreground: 280 40% 12%;
+    --muted: 270 20% 94%;
+    --muted-foreground: 270 10% 45%;
+    --accent: 280 75% 65%;
+    --accent-foreground: 280 40% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 270 20% 90%;
+    --input: 270 20% 90%;
+    --ring: 280 75% 65%;
+    --radius: 1rem;
+    --surface: 265 59% 91%;
+    /* Light grey/blue surface */
+    --text: 280 50% 10%;
+    --header-fade: #bc63e9;
   }
 
   /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */
@@ -735,8 +809,37 @@
     letter-spacing: -0.02em;
   }
 
+  /*
+   * HTML & BODY - Immersive Status Bar Setup
+   * =========================================
+   * For iOS Safari and Android Chrome, the status bar color blends with:
+   * 1. themeColor meta tag (set in layout.tsx viewport)
+   * 2. html/body background-color (visible during overscroll bounce)
+   *
+   * Both must match --status-bar-color for seamless immersion.
+   */
+  html {
+    background-color: var(--status-bar-color);
+  }
+
   body {
     @apply min-h-screen overflow-x-hidden bg-surface font-sans text-text antialiased;
+    line-height: 1.6;
+    font-weight: 400;
+    /* Immersive status bar: background matches gradient top for overscroll bounce */
+    background-color: var(--status-bar-color);
+    /* Prevent elastic overscroll on iOS - keeps status bar color clean */
+    overscroll-behavior-y: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 
   a {
@@ -1000,6 +1103,8 @@
     --shine-color: rgba(255, 255, 255, 0.4);
     --header-fade: #ffffff;
     --background: 0 0% 100%;
+    /* Safe-area / overscroll background - matches status bar color */
+    background: var(--status-bar-color);
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -1107,14 +1212,12 @@
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0%,
-      rgba(168, 85, 247, 0.5) 25%,
-      rgba(236, 72, 153, 0.8) 50%,
-      rgba(168, 85, 247, 0.5) 75%,
+      rgba(168, 85, 247, 0.5) 50%,
       rgba(255, 255, 255, 0) 100%
     );
     transform: rotate(25deg);
     animation: wave-sweep 4s ease-in-out infinite;
-    z-index: 50;
+    z-index: 999;
     pointer-events: none;
   }
 
@@ -1124,14 +1227,35 @@
       opacity: 0;
     }
 
-    10% {
+    15% {
       opacity: 1;
     }
 
-    40%,
+    45%,
     100% {
       left: 150%;
       opacity: 0;
     }
+  }
+
+  /* Fix for date inputs on mobile - prevent overflow */
+  input[type="date"],
+  input[type="time"] {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* WebKit (Safari, Chrome) specific fix */
+  input[type="date"]::-webkit-date-and-time-value,
+  input[type="time"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.75rem;
+    opacity: 0.5;
   }
 }

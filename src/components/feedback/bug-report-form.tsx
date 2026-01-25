@@ -15,7 +15,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { submitFeedbackAction } from "@/app/actions/feedback-actions";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface BugReportFormProps {
   isOpen: boolean;
@@ -25,7 +25,6 @@ interface BugReportFormProps {
 export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
   const t = useTranslations("Feedback");
   const commonT = useTranslations("common");
-  const { showToast } = useToast();
   const pathname = usePathname();
 
   const [content, setContent] = useState("");
@@ -43,18 +42,12 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
       });
 
       if (result.success) {
-        showToast({
-          text: t("successDescription"),
-          type: "success",
-        });
+        toast.success(t("successDescription"));
         setContent("");
         onOpenChange(false);
       }
     } catch (error) {
-      showToast({
-        text: error instanceof Error ? error.message : t("errorDescription"),
-        type: "error",
-      });
+      toast.error(error instanceof Error ? error.message : t("errorDescription"));
     } finally {
       setIsSubmitting(false);
     }

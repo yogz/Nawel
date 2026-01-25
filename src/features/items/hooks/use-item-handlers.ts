@@ -2,7 +2,8 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import confetti from "canvas-confetti";
+import { toast } from "sonner";
+import { fireEmojiConfetti } from "@/lib/confetti";
 import {
   createItemAction,
   updateItemAction,
@@ -22,7 +23,7 @@ export function useItemHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
+  token,
 }: ItemHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -51,7 +52,7 @@ export function useItemHandlers({
     return null;
   };
 
-  const handleCreateItem = (data: ItemData) => {
+  const handleCreateItem = (data: ItemData, closeSheet = true) => {
     if (readOnly) {
       return;
     }
@@ -63,17 +64,24 @@ export function useItemHandlers({
     const itemData = data as ItemData & { serviceId: number };
     startTransition(async () => {
       try {
-        const created = await createItemAction({ ...itemData, slug, key: writeKey });
+        const created = await createItemAction({
+          ...itemData,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
         const person = itemData.personId
           ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
           : null;
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
-        setSheet(null);
-        setSuccessMessage({ text: `${itemData.name} ajouté ! ✨`, type: "success" });
+        if (closeSheet) {
+          setSheet(null);
+        }
+        toast.success(t("item.added", { name: itemData.name }));
         trackItemAction("item_created", itemData.name);
       } catch (error) {
         console.error("Failed to create item:", error);
-        setSuccessMessage({ text: t("item.errorAdd"), type: "error" });
+        toast.error(t("item.errorAdd"));
       }
     });
   };
@@ -99,11 +107,12 @@ export function useItemHandlers({
         personId: updatedItem.personId ?? null,
         slug,
         key: writeKey,
+        token: token ?? undefined,
       });
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
-      setSuccessMessage({ text: "Modifications enregistrées ✓", type: "success" });
+      toast.success(t("item.updated"));
       trackItemAction("item_updated", updatedItem.name);
       if (closeSheet) {
         setSheet(null);
@@ -133,7 +142,7 @@ export function useItemHandlers({
 
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
-    setSuccessMessage({ text: `Article assigné à ${personName} ✓`, type: "success" });
+    toast.success(t("person.claimed"));
     trackItemAction("item_assigned", item.name, { assigned_to: personName });
 
     // Easter egg for Cécile
@@ -141,66 +150,39 @@ export function useItemHandlers({
       person &&
       (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")
     ) {
-      const duration = 4 * 1000;
-      const end = Date.now() + duration;
-      const emojis = ["❤️", "💖", "💕", "🥂", "🌸", "🌺", "🌷", "✨"];
-      const emojiShapes = emojis.map((e) => confetti.shapeFromText({ text: e }));
-
-      const frame = () => {
-        confetti({
-          particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.8 },
-          shapes: emojiShapes as confetti.Shape[],
-          scalar: 2.5,
-        });
-        confetti({
-          particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.8 },
-          shapes: emojiShapes as confetti.Shape[],
-          scalar: 2.5,
-        });
-        if (Math.random() > 0.7) {
-          confetti({
-            particleCount: 4,
-            spread: 120,
-            origin: { y: 0.6 },
-            shapes: emojiShapes as confetti.Shape[],
-            scalar: 3.5,
-          });
-        }
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-      frame();
+      fireEmojiConfetti();
     }
 
     startTransition(async () => {
-      await assignItemAction({ id: item.id, personId, slug, key: writeKey });
+      await assignItemAction({
+        id: item.id,
+        personId,
+        slug,
+        key: writeKey,
+        token: token ?? undefined,
+      });
     });
   };
 
-  const handleDelete = (item: Item) => {
+  const handleDelete = (item: Item, closeSheet = true) => {
     if (readOnly) {
       return;
     }
     const previousPlan = plan;
     setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
-    setSheet(null);
-    setSuccessMessage({ text: `${item.name} supprimé ✓`, type: "success" });
+    if (closeSheet) {
+      setSheet(null);
+    }
+    toast.success(t("item.deleted", { name: item.name }));
     trackItemAction("item_deleted", item.name);
 
     startTransition(async () => {
       try {
-        await deleteItemAction({ id: item.id, slug, key: writeKey });
+        await deleteItemAction({ id: item.id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete item:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("item.errorDelete"), type: "error" });
+        toast.error(t("item.errorDelete"));
       }
     });
   };
@@ -232,7 +214,15 @@ export function useItemHandlers({
         }
         return newItems;
       });
-      await moveItemAction({ itemId, targetServiceId, targetOrder, slug, key: writeKey });
+      await moveItemAction({
+        itemId,
+        targetServiceId,
+        targetOrder,
+        slug,
+        key: writeKey,
+        token: token ?? undefined,
+      });
+      toast.success(t("item.moved"));
     });
   };
 
@@ -253,7 +243,14 @@ export function useItemHandlers({
 
     startTransition(async () => {
       try {
-        await toggleItemCheckedAction({ id: itemId, checked, slug, key: writeKey });
+        await toggleItemCheckedAction({
+          id: itemId,
+          checked,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+        toast.success(checked ? t("item.checked") : t("item.unchecked"));
       } catch (error) {
         console.error("Failed to toggle item checked:", error);
         // Revert on error

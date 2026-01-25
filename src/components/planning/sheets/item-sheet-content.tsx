@@ -14,7 +14,6 @@ interface ItemSheetContentProps {
   readOnly?: boolean;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
   currentUserId?: string;
   onAuth: () => void;
   // Handlers - matching OrganizerHandlers types exactly
@@ -30,7 +29,8 @@ interface ItemSheetContentProps {
     adults?: number,
     children?: number,
     peopleCount?: number,
-    locale?: string
+    locale?: string,
+    note?: string
   ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;
@@ -46,7 +46,6 @@ export function ItemSheetContent({
   readOnly,
   isGenerating,
   setIsGenerating,
-  setSuccessMessage,
   currentUserId,
   onAuth,
   findItem,
@@ -108,19 +107,68 @@ export function ItemSheetContent({
     return plan.meals.flatMap((m) => m.services).find((s) => s.id === serviceId);
   };
 
-  const handleGenerate = async (currentName: string, currentNote?: string) => {
+  // Calculate Confirmed RSVP Count from plan.people
+  const rsvpConfirmedCount = useMemo(() => {
+    return plan.people.reduce((acc, p) => {
+      if (p.status === "confirmed") {
+        return acc + 1 + (p.guest_adults || 0) + (p.guest_children || 0);
+      }
+      return acc;
+    }, 0);
+  }, [plan.people]);
+
+  // Client-side Smart Count Logic
+  const { smartCount, countSource } = useMemo(() => {
+    const serviceCount = servicePeopleCount || 0;
+
+    // Priority 1: Service/Meal Count (if manual override exists)
+    // But adhering to "MAX(Meal, RSVP)"
+
+    let count = 4; // Default
+    let source = "default";
+
+    if (serviceCount > 0) {
+      count = serviceCount;
+      source = "service";
+    }
+
+    // Logic: If RSVP > Planned, bump it up.
+    if ((serviceCount === 0 || rsvpConfirmedCount > serviceCount) && rsvpConfirmedCount > 0) {
+      count = rsvpConfirmedCount;
+      source = "rsvp";
+    }
+
+    // Fallback if everything is 0
+    if (count === 0) count = 4;
+
+    return { smartCount: count, countSource: source };
+  }, [servicePeopleCount, rsvpConfirmedCount]);
+
+  const handleGenerate = async (
+    currentName: string,
+    currentNote?: string,
+    manualCount?: number
+  ) => {
     if (!sheet.item) {
       return;
     }
 
     setIsGenerating(true);
     try {
-      let peopleCount = undefined;
-      if (currentNote) {
+      // Priority 0: Manual Override from the UI (pencil)
+      let finalCount = manualCount;
+
+      // Priority 1: Note in item (server handles this parsing too, but we can do it here to show intent)
+      if (!finalCount && currentNote) {
         const match = currentNote.match(/Pour (\d+) personne/i);
         if (match) {
-          peopleCount = parseInt(match[1]);
+          finalCount = parseInt(match[1]);
         }
+      }
+
+      // Priority 2: Smart Count
+      if (!finalCount) {
+        finalCount = smartCount;
       }
 
       const sId = sheet.serviceId || sheet.item?.serviceId;
@@ -129,15 +177,14 @@ export function ItemSheetContent({
       await handleGenerateIngredients(
         sheet.item.id,
         currentName || sheet.item.name,
-        service?.adults,
-        service?.children,
-        peopleCount || service?.peopleCount,
-        locale
+        undefined, // adults deprecated
+        undefined, // children deprecated
+        finalCount, // This is the single source of truth now
+        locale,
+        currentNote
       );
-      setSuccessMessage({ text: t("ingredientsGenerated"), type: "success" });
     } catch (error) {
       console.error("Failed to generate ingredients:", error);
-      setSuccessMessage({ text: t("generationError"), type: "error" });
     } finally {
       setIsGenerating(false);
     }
@@ -150,6 +197,8 @@ export function ItemSheetContent({
       allServices={allServices}
       currentServiceId={currentServiceId}
       servicePeopleCount={servicePeopleCount}
+      smartCount={smartCount}
+      countSource={countSource}
       onSubmit={(vals) => {
         if (sheet.item) {
           handleUpdateItem(sheet.item.id, vals as ItemData);

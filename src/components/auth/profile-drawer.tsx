@@ -12,6 +12,7 @@ import { Loader2, User, Check, LogOut, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
+import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { THEME_EMOJIS, renderAvatar } from "@/lib/utils";
@@ -142,33 +143,28 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DrawerContent className="px-6">
-        <DrawerHeader className="px-0 text-left">
-          <div className="flex items-center justify-between">
-            <DrawerTitle>{tProfile("settings")}</DrawerTitle>
-            <DrawerClose asChild>
-              <button
-                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
-                aria-label={tCommon("close") || "Fermer"}
-              >
-                <X size={16} />
-              </button>
-            </DrawerClose>
-          </div>
+        <DrawerHeader className="px-0 pb-3 text-left">
+          <DrawerTitle className="sr-only">{tProfile("settings")}</DrawerTitle>
         </DrawerHeader>
 
         <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
-          <div className="space-y-5">
-            {/* Avatar with Emoji Picker */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative">
+          <div className="space-y-6">
+            {/* Centered Header Section matching ShareModal */}
+            <div className="text-center pt-2">
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 12, stiffness: 200 }}
+                className="relative mx-auto mb-4"
+              >
                 {/* Clickable Avatar with Popover */}
                 <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                   <PopoverTrigger asChild>
                     <button
-                      className="group relative h-20 w-20 cursor-pointer transition-transform active:scale-95"
+                      className="group relative mx-auto flex h-20 w-20 cursor-pointer items-center justify-center rounded-[22px] bg-gradient-to-br from-accent to-accent/80 transition-transform active:scale-95 shadow-xl shadow-accent/20"
                       aria-label={t("profile.changeEmoji")}
                     >
-                      <div className="h-full w-full overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-xl ring-1 ring-gray-100 transition-all group-hover:ring-4 group-hover:ring-accent/20">
+                      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[22px] text-3xl text-white">
                         {(() => {
                           const avatar = renderAvatar(
                             {
@@ -192,21 +188,21 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                             );
                           }
                           return (
-                            <div className="flex h-full w-full items-center justify-center bg-accent/10 text-4xl">
+                            <div className="flex h-full w-full items-center justify-center text-4xl">
                               {avatar.value}
                             </div>
                           );
                         })()}
                       </div>
-                      {/* Edit indicator */}
-                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-accent text-xs text-white shadow-md transition-transform group-hover:scale-110">
+                      {/* Edit indicator - darker text for contrast if needed, but white on accent is fine */}
+                      <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white text-[12px] shadow-md transition-transform group-hover:scale-110">
                         ✏️
                       </div>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-4" align="center" sideOffset={8}>
                     <div className="space-y-3">
-                      <div className="text-xs font-black uppercase tracking-widest text-gray-400">
+                      <div className="text-xs font-black uppercase tracking-widest text-gray-500">
                         {t("profile.chooseEmoji")}
                       </div>
                       <div className="grid grid-cols-6 gap-2">
@@ -260,129 +256,150 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                     </div>
                   </PopoverContent>
                 </Popover>
-              </div>
+              </motion.div>
 
-              {/* Email & Status */}
-              <div className="text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className="text-xl font-black leading-none tracking-tight text-foreground/90">
+                  {tProfile("settings")}
+                </h3>
+                <p className="mx-auto mt-3 max-w-[280px] text-sm font-medium leading-relaxed text-muted-foreground">
                   {session.user.email}
                 </p>
-                <div className="mt-1 h-4">
+
+                <div className="mt-2 h-4">
                   {isSubmitting && (
-                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-accent">
-                      <Loader2 size={10} className="animate-spin" />
+                    <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-accent">
+                      <Loader2 size={12} className="animate-spin" />
                       <span>{t("profile.updateLoading")}</span>
                     </div>
                   )}
                   {success && (
-                    <div className="flex items-center justify-center gap-1.5 text-[9px] font-bold text-green-500">
-                      <Check size={10} />
+                    <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-green-500">
+                      <Check size={12} />
                       <span>{t("profile.synchronized")}</span>
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Name Field */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="profile-name"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-              >
-                {t("profile.fullName")}
-              </Label>
-              <div className="group relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-black">
-                  <User size={18} />
+            {/* Content Sections */}
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-4"
+            >
+              {/* Name Field */}
+              <div className="space-y-2">
+                <Label
+                  htmlFor="profile-name"
+                  className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500"
+                >
+                  {t("profile.fullName")}
+                </Label>
+                <div className="group relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/60 transition-colors group-focus-within:text-accent">
+                    <User size={18} />
+                  </div>
+                  <Input
+                    id="profile-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSaveProfile();
+                      }
+                    }}
+                    placeholder={t("profile.exampleName")}
+                    className="h-14 rounded-2xl border-black/5 bg-black/5 pl-10 text-lg font-bold text-foreground placeholder:text-muted-foreground/50 transition-all focus:bg-white focus:ring-accent/20 focus:border-accent/30"
+                    required
+                  />
                 </div>
-                <Input
-                  id="profile-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSaveProfile();
-                    }
-                  }}
-                  placeholder={t("profile.exampleName")}
-                  className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 font-medium transition-all focus:bg-white"
-                  required
-                />
+                {name !== (session.user.name || "") && (
+                  <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+                    <Button
+                      className="h-14 w-full rounded-2xl bg-accent text-white shadow-lg shadow-accent/20 transition-all hover:bg-accent/90 active:scale-95"
+                      onClick={() => handleSaveProfile()}
+                      disabled={isSubmitting || !name.trim()}
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="mr-2 animate-spin" />
+                      ) : (
+                        <Check className="mr-2" size={20} />
+                      )}
+                      <span className="text-lg font-black text-white">
+                        {tCommon("save") || "Enregistrer"}
+                      </span>
+                    </Button>
+                  </div>
+                )}
               </div>
-              {name !== (session.user.name || "") && (
-                <div className="pt-1 animate-in fade-in slide-in-from-top-2">
-                  <Button
-                    variant="premium"
-                    className="h-10 w-full"
-                    onClick={() => handleSaveProfile()}
-                    disabled={isSubmitting || !name.trim()}
-                    icon={isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
-                    shine
+
+              {/* Theme Toggle */}
+              <div className="space-y-2">
+                <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500">
+                  {t("profile.theme")}
+                </Label>
+                <div className="flex gap-2 rounded-2xl bg-black/5 p-1.5 ring-1 ring-black/5">
+                  <button
+                    onClick={() => setTheme("aurora")}
+                    className={clsx(
+                      "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
+                      theme === "aurora"
+                        ? "bg-white text-accent shadow-sm"
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
+                    )}
                   >
-                    <span className="text-xs font-black uppercase tracking-widest text-gray-700">
-                      {tCommon("save") || "Enregistrer"}
-                    </span>
-                  </Button>
+                    <span>✨</span>
+                    <span>Aurore</span>
+                  </button>
+                  <button
+                    onClick={() => setTheme("none")}
+                    className={clsx(
+                      "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
+                      theme === "none"
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
+                    )}
+                  >
+                    <span>⚫️</span>
+                    <span>Classique</span>
+                  </button>
                 </div>
-              )}
-            </div>
-
-            {/* Theme Toggle - Compact Segment Control */}
-            <div className="flex items-center justify-between rounded-xl bg-gray-50/50 p-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                {t("profile.theme")}
-              </Label>
-              <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
-                <button
-                  onClick={() => setTheme("aurora")}
-                  className={clsx(
-                    "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all",
-                    theme === "aurora"
-                      ? "bg-white text-accent shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <span>✨</span>
-                  <span>Aurore</span>
-                </button>
-                <button
-                  onClick={() => setTheme("none")}
-                  className={clsx(
-                    "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all",
-                    theme === "none"
-                      ? "bg-white text-gray-800 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <span>⚫️</span>
-                  <span>Classique</span>
-                </button>
               </div>
-            </div>
 
-            {/* Language Selector - Compact Inline */}
-            <div className="flex items-center justify-between rounded-xl bg-gray-50/50 p-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                {t("profile.language")}
-              </Label>
-              <LanguageSelector variant="bottomSheet" showSearch />
-            </div>
-
-            {/* Status Messages */}
-            {error && (
-              <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-2">
-                <p>{error}</p>
+              {/* Language Selector */}
+              <div className="space-y-2">
+                <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500">
+                  {t("profile.language")}
+                </Label>
+                <div className="flex h-14 items-center justify-between rounded-2xl bg-black/5 px-4 ring-1 ring-black/5 transition-colors focus-within:bg-white focus-within:ring-accent/20">
+                  <LanguageSelector variant="bottomSheet" showSearch />
+                </div>
               </div>
-            )}
+            </motion.div>
 
             {/* Actions */}
-            <div className="space-y-3 pt-2">
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="space-y-4 pt-4"
+            >
+              {error && (
+                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm font-bold text-red-400 animate-in fade-in slide-in-from-top-2 text-center">
+                  <p>{error}</p>
+                </div>
+              )}
+
               <Button
-                variant="premium"
-                className="w-full border-gray-100 bg-gray-50/50"
-                icon={<LogOut size={16} />}
-                iconClassName="bg-gray-200 text-gray-500 group-hover:bg-accent group-hover:text-white"
+                variant="outline"
+                className="h-14 w-full rounded-2xl border-black/5 bg-white transition-all hover:bg-red-50 hover:border-red-100 hover:text-red-600 active:scale-95 shadow-sm"
                 onClick={async () => {
                   await signOut();
                   onClose();
@@ -390,26 +407,36 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   router.refresh();
                 }}
               >
-                <span className="text-xs font-black uppercase tracking-widest text-gray-700 transition-colors group-hover:text-gray-900">
+                <LogOut className="mr-3 text-muted-foreground/70" size={20} />
+                <span className="text-lg font-black text-muted-foreground">
                   {t("profile.logout")}
                 </span>
               </Button>
 
-              {/* Danger Zone - More explicit separation */}
-              <div className="relative pb-2 pt-8">
-                <div className="absolute inset-x-0 top-4 flex items-center" aria-hidden="true">
-                  <div className="w-full border-t border-gray-100" />
-                </div>
-              </div>
+              <Button
+                variant="ghost"
+                className="h-14 w-full rounded-[20px] font-bold text-muted-foreground hover:bg-black/5 hover:text-foreground"
+                onClick={onClose}
+              >
+                {tCommon("close") || "Fermer"}
+              </Button>
 
-              {/* Danger Zone - In-Place Reveal (with extra space) */}
-              <div className="pt-6">
+              {/* Danger Zone */}
+              <div className="pt-8">
+                <div className="relative mb-6 flex items-center justify-center">
+                  <div className="absolute inset-x-0 h-px bg-black/5" />
+                  <span className="relative bg-surface px-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
+                    Propriétés Avancées
+                  </span>
+                </div>
+
                 {!showAdvanced ? (
-                  <DangerZoneTrigger
+                  <button
                     onClick={() => setShowAdvanced(true)}
-                    label={tProfile("dangerZone") || "Zone de danger"}
-                    className="bg-transparent opacity-60 hover:bg-red-50 hover:opacity-100"
-                  />
+                    className="flex w-full items-center justify-center gap-2 py-3 text-[11px] font-black uppercase tracking-widest text-red-500/60 transition-all hover:text-red-500"
+                  >
+                    {tProfile("dangerZone") || "Zone de danger"}
+                  </button>
                 ) : (
                   <div className="animate-in fade-in slide-in-from-bottom-2">
                     <DangerZoneContent
@@ -430,7 +457,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </DrawerContent>

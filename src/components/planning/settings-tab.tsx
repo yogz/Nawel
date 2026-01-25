@@ -32,8 +32,12 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
 
   return (
     <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
-      <div className="premium-card space-y-4 p-6">
-        <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+      <div className="premium-card relative space-y-4 overflow-hidden p-6">
+        {/* Decorative background gradient orbs */}
+        <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent/10 blur-[80px]" />
+        <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px]" />
+
+        <h3 className="relative text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Sparkles size={14} /> {t("ambiance")}
         </h3>
         <div className="grid grid-cols-1 gap-3">
@@ -64,11 +68,17 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
         </div>
       </div>
 
-      <div className="premium-card space-y-4 p-6">
-        <h3 className="text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+      <div className="premium-card relative space-y-4 overflow-hidden p-6">
+        {/* Decorative background gradient orbs */}
+        <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-[80px]" />
+        <div className="absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-accent/5 blur-[80px]" />
+
+        <h3 className="relative text-text/40 flex items-center gap-2 text-sm font-black uppercase tracking-widest">
           <Globe size={14} /> {t("language")}
         </h3>
-        <LanguageSelector variant="grid" showSearch />
+        <div className="relative">
+          <LanguageSelector variant="grid" showSearch />
+        </div>
       </div>
 
       {!readOnly && isOwner && (

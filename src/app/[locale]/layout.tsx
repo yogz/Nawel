@@ -90,7 +90,7 @@ export async function generateMetadata({
     manifest: "/manifest.json",
     appleWebApp: {
       capable: true,
-      statusBarStyle: "default",
+      statusBarStyle: "black-translucent",
       title: "CoList",
     },
     alternates: {
@@ -113,11 +113,23 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Viewport Configuration
+ * ======================
+ * - viewportFit: "cover" enables content to extend under notches/safe areas
+ * - themeColor: Sets the status bar color on mobile browsers
+ *
+ * IMPORTANT: This themeColor should match:
+ * - --status-bar-color in globals.css
+ * - Event page layout themeColor (if different, page takes precedence)
+ *
+ * Currently using: #E6D9F8 (lavender) - matches header gradient top
+ */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#ffffff",
+  themeColor: "#E6D9F8",
 };
 
 import { BugReportButton } from "@/components/feedback/bug-report-button";
@@ -234,7 +246,7 @@ export default async function RootLayout({
             <AnalyticsSessionSync />
             <AnalyticsMonitor />
             <PWAPrompt />
-            <Toaster position="top-center" richColors duration={2000} />
+            <Toaster position="top-center" richColors duration={1500} expand={false} closeButton />
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

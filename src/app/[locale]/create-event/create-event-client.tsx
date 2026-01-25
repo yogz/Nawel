@@ -46,7 +46,7 @@ export default function CreateEventClient() {
           mealTitles:
             creationMode === "vacation"
               ? {
-                  common: "📦 Communs",
+                  common: t("commonItems"),
                   lunch: t("lunch"),
                   dinner: t("dinner"),
                 }
@@ -58,9 +58,15 @@ export default function CreateEventClient() {
           creation_mode: creationMode || "total",
         });
 
+        if (result.guestToken) {
+          localStorage.setItem(`event_token_${result.slug}`, result.guestToken); // Use slug or id depending on how auth usually works, assuming slug for public access
+          // Also store broadly if generic binding is needed, though specific event binding is safer
+          // localStorage.setItem("nawel_guest_token", result.guestToken);
+        }
+
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);
       } catch (e: unknown) {
-        const message = e instanceof Error ? e.message : "Une erreur est survenue";
+        const message = e instanceof Error ? e.message : t("errorDefault");
         setError(message);
       }
     });
@@ -68,7 +74,7 @@ export default function CreateEventClient() {
 
   return (
     <main
-      className="mx-auto flex min-h-[100dvh] max-w-2xl flex-col justify-center px-4 py-4 sm:px-6 sm:py-12"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-2xl flex-col items-stretch justify-center overflow-x-hidden px-4 py-4 sm:px-6 sm:py-12"
       style={{
         paddingTop: `calc(0.5rem + env(safe-area-inset-top, 0px))`,
         paddingBottom: `calc(0.5rem + env(safe-area-inset-bottom, 0px))`,
@@ -86,20 +92,16 @@ export default function CreateEventClient() {
         {session ? tDashboard("title") : t("backToLogin")}
       </Link>
 
-      <div className="mb-3 space-y-1 sm:mb-10 sm:space-y-4">
-        <h1 className="text-xl font-bold text-gray-900 sm:text-3xl">{t("title")}</h1>
-      </div>
-
-      <div className="mb-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-xl shadow-gray-200/50 sm:mb-0 sm:rounded-3xl sm:p-8">
-        <EventForm
-          onSubmit={handleCreateEvent}
-          onClose={() => router.push(session ? "/event" : "/login?mode=user")}
-          isPending={isPending}
-          error={error}
-          inline
-          showWarnings
-          isAuthenticated={!!session}
-        />
+      <div className="mb-4 w-full sm:mb-0">
+        <div className="premium-card max-w-full overflow-hidden p-3 sm:p-8">
+          <EventForm
+            onSubmit={handleCreateEvent}
+            onClose={() => router.push(session ? "/event" : "/login?mode=user")}
+            isPending={isPending}
+            error={error}
+            inline
+          />
+        </div>
       </div>
     </main>
   );

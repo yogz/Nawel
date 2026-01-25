@@ -1,8 +1,39 @@
 "use client";
 
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+/**
+ * EventPlanner Component
+ * ======================
+ * Main client component for the event planning page.
+ *
+ * LAYOUT STRUCTURE:
+ * -----------------
+ * - Background gradient: Rendered by layout.tsx (z-0)
+ * - Header: Sticky, with safe-area padding, backdrop blur on scroll (z-100)
+ * - Content: Main planning area with tabs
+ * - TabBar: Fixed at bottom with safe-area padding (z-40)
+ *
+ * SAFE-AREA HANDLING:
+ * -------------------
+ * - Top: Handled by EventPlannerHeader (paddingTop: env(safe-area-inset-top))
+ * - Bottom: Handled by this component's paddingBottom
+ *
+ * Z-INDEX HIERARCHY (see globals.css for full documentation):
+ * - z-0: Background gradient (in layout.tsx)
+ * - z-40: TabBar
+ * - z-100: Sticky header
+ * - z-200: Sheets/modals
+ *
+ * To modify status bar color, see:
+ * - /src/app/[locale]/event/[slug]/layout.tsx (viewport.themeColor)
+ * - /src/app/globals.css (--status-bar-color)
+ */
+
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useGuestToken } from "@/hooks/use-guest-token";
+import { useCurrentPerson } from "@/hooks/use-current-person";
 import { useSearchParams } from "next/navigation";
-import confetti from "canvas-confetti";
+import { useTranslations } from "next-intl";
+import { fireCelebrationConfetti } from "@/lib/confetti";
 import {
   PointerSensor,
   TouchSensor,
@@ -19,7 +50,6 @@ import { useSession } from "@/lib/auth-client";
 
 // Lightweight components loaded immediately
 import { EventPlannerHeader } from "./event-planner-header";
-import { SuccessToast } from "../common/success-toast";
 
 // Heavy components loaded lazily (code-splitting)
 const EventPlannerSheets = lazy(() =>
@@ -29,6 +59,10 @@ const PlanningTab = lazy(() => import("./planning-tab").then((m) => ({ default: 
 const PeopleTab = lazy(() => import("./people-tab").then((m) => ({ default: m.PeopleTab })));
 const ShoppingTab = lazy(() => import("./shopping-tab").then((m) => ({ default: m.ShoppingTab })));
 const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default: m.AuthModal })));
+
+// Common components
+import { AppBranding } from "../common/app-branding";
+import { CitationDisplay } from "../common/citation-display";
 
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
@@ -71,8 +105,6 @@ export function EventPlanner({
     setPlan,
     tab,
     setTab,
-    planningFilter,
-    setPlanningFilter,
     sheet,
     setSheet,
     selectedPerson,
@@ -81,26 +113,32 @@ export function EventPlanner({
     setReadOnly,
     activeItemId,
     setActiveItemId,
-    successMessage,
-    setSuccessMessage,
-    unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
+  const t = useTranslations("EventDashboard.ReadOnly");
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const guestToken = useGuestToken(plan.people, slug);
+  const hasExistingToken = !!guestToken;
+
+  // Unified current person: works for both authenticated users and guests with tokens
+  const currentPerson = useCurrentPerson(plan.people, session?.user?.id);
+
+  // Per-event dismissal key
+  const dismissalKey = `colist_guest_prompt_dismissed_${slug}`;
   const [hasDismissedGuestPrompt, setHasDismissedGuestPrompt] = useState(() => {
-    // Initialize from localStorage (only on client)
     if (typeof window !== "undefined") {
-      return localStorage.getItem("colist_guest_prompt_dismissed") === "true";
+      return localStorage.getItem(dismissalKey) === "true";
     }
     return false;
   });
 
-  // Persist guest prompt dismissal to localStorage
+  // Persist guest prompt dismissal to localStorage (per-event)
   const dismissGuestPrompt = () => {
     setHasDismissedGuestPrompt(true);
     if (typeof window !== "undefined") {
-      localStorage.setItem("colist_guest_prompt_dismissed", "true");
+      localStorage.setItem(dismissalKey, "true");
     }
   };
 
@@ -116,9 +154,9 @@ export function EventPlanner({
     writeKey: effectiveWriteKey,
     readOnly,
     setSheet,
-    setSuccessMessage,
     session,
     refetch,
+    token: guestToken,
   };
 
   // Call individual feature hooks
@@ -158,9 +196,12 @@ export function EventPlanner({
     handleDeletePerson: personHandlers.handleDeletePerson,
     handleClaimPerson: personHandlers.handleClaimPerson,
     handleUnclaimPerson: personHandlers.handleUnclaimPerson,
+    handleUpdateStatus: personHandlers.handleUpdateStatus,
+    handleUpdateGuestCount: personHandlers.handleUpdateGuestCount,
 
     // Event handlers
     handleDeleteEvent: eventHandlers.handleDeleteEvent,
+    handleUpdateEvent: eventHandlers.handleUpdateEvent,
 
     // Ingredient handlers
     handleGenerateIngredients: ingredientHandlers.handleGenerateIngredients,
@@ -187,6 +228,22 @@ export function EventPlanner({
   const [isGenerating, setIsGenerating] = useState(false);
 
   const searchParams = useSearchParams();
+
+  // Handler for inline quick-add in ServiceSection
+  const handleInlineAdd = useCallback(
+    async (serviceId: number, name: string) => {
+      await handlers.handleCreateItem(
+        {
+          name,
+          serviceId,
+
+          personId: currentPerson?.id ?? null,
+        },
+        false // Don't close sheet (there's no sheet)
+      );
+    },
+    [handlers, currentPerson?.id]
+  );
 
   // Memoize sensors to avoid re-creating on every render
   const sensors = useSensors(
@@ -233,13 +290,7 @@ export function EventPlanner({
     if (searchParams.get("new") === "true") {
       setSheet({ type: "share" });
       setTimeout(() => {
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
-          zIndex: 200,
-        });
+        fireCelebrationConfetti();
       }, 300);
 
       // Clear the "new" parameter from the URL without a full page reload
@@ -278,13 +329,21 @@ export function EventPlanner({
     }
   }, [session, slug, writeKey, readOnly, plan.people, setPlan, sheet, setSheet]);
 
-  // Guest prompt effect
+  // Guest prompt effect - show drawer if:
+  // - User is not authenticated
+  // - Session is not loading
+  // - Has write access (not readOnly)
+  // - Has NOT dismissed for this event
+  // - Has NO existing token for this event
+  // - No other sheet is open
+  // - Auth modal is not open
   useEffect(() => {
     if (
       !session &&
       !isSessionLoading &&
       !readOnly &&
       !hasDismissedGuestPrompt &&
+      !hasExistingToken &&
       !sheet &&
       !isAuthModalOpen
     ) {
@@ -295,48 +354,78 @@ export function EventPlanner({
     isSessionLoading,
     readOnly,
     hasDismissedGuestPrompt,
+    hasExistingToken,
     sheet,
     setSheet,
     isAuthModalOpen,
   ]);
 
   useEffect(() => {
-    validateWriteKeyAction({ key: writeKey, slug }).then((ok) => setReadOnly(!ok));
-  }, [writeKey, slug, setReadOnly]);
+    validateWriteKeyAction({ key: effectiveWriteKey, slug, token: guestToken ?? undefined }).then(
+      (ok) => setReadOnly(!ok)
+    );
+  }, [effectiveWriteKey, slug, setReadOnly, guestToken]);
+
+  useEffect(() => {
+    // Clean up any body background overrides to ensure "white/neutral" content area
+    const previousBackground = document.body.style.background;
+    const previousBackgroundAttachment = document.body.style.backgroundAttachment;
+
+    document.body.style.background = "";
+    document.body.style.backgroundAttachment = "";
+
+    return () => {
+      document.body.style.background = previousBackground;
+      document.body.style.backgroundAttachment = previousBackgroundAttachment;
+    };
+  }, []);
 
   return (
     <div
-      className="flex min-h-screen flex-col text-gray-900"
+      className="flex min-h-screen flex-col"
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}
     >
+      {/* Background gradient is rendered by layout.tsx - see z-index hierarchy in globals.css */}
       <EventPlannerHeader
         readOnly={readOnly}
         tab={tab}
+        setTab={setTab}
         plan={plan}
-        planningFilter={planningFilter}
-        setPlanningFilter={setPlanningFilter}
         setSheet={setSheet}
         sheet={sheet}
-        unassignedItemsCount={unassignedItemsCount}
         slug={slug}
         writeKey={effectiveWriteKey}
+        handlers={handlers}
       />
 
-      <SuccessToast
-        message={successMessage?.text || null}
-        type={successMessage?.type || "success"}
-      />
+      {/* Read-only banner - shown when user has no write access */}
+      {readOnly && (
+        <div className="sticky top-[calc(env(safe-area-inset-top)+60px)] z-50 mx-2 mb-2">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-amber-50 px-4 py-3 shadow-sm ring-1 ring-amber-200/50">
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-white text-xs font-bold">
+                👁
+              </div>
+              <p className="text-sm font-medium text-amber-800">{t("title")}</p>
+            </div>
+            <button
+              onClick={() => setSheet({ type: "guest-access" })}
+              className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600"
+            >
+              {t("getAccess")}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-2 py-6 sm:px-2 sm:py-4">
+        <main className="space-y-4 px-2 pt-0 pb-6 sm:px-2 sm:pt-0 sm:pb-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab
                 plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 sensors={sensors}
@@ -347,6 +436,7 @@ export function EventPlanner({
                 }
                 onDelete={handleDelete}
                 onCreateItem={(serviceId: number) => setSheet({ type: "item", serviceId })}
+                onInlineAdd={readOnly ? undefined : handleInlineAdd}
                 onCreateService={(mealId) => setSheet({ type: "service", mealId })}
                 setSheet={setSheet}
                 sheet={sheet}
@@ -355,7 +445,10 @@ export function EventPlanner({
                 isOwner={isOwner}
                 onDeleteEvent={handleDeleteEvent}
                 handleAssign={handleAssign}
+                handleUpdateStatus={handlers.handleUpdateStatus}
+                handleUpdateGuestCount={handlers.handleUpdateGuestCount}
                 currentUserId={session?.user?.id}
+                currentPersonId={currentPerson?.id}
               />
             )}
 
@@ -371,6 +464,8 @@ export function EventPlanner({
                 currentUserId={session?.user?.id}
                 onClaim={handleClaimPerson}
                 onUnclaim={handleUnclaimPerson}
+                handleUpdateStatus={handlers.handleUpdateStatus}
+                handleUpdateGuestCount={handlers.handleUpdateGuestCount}
               />
             )}
 
@@ -385,7 +480,11 @@ export function EventPlanner({
           </Suspense>
         </main>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <footer className="mt-12 mb-8 flex flex-col items-center gap-4 transition-opacity duration-700">
+          <AppBranding variant="icon-text" logoSize={24} href="https://www.colist.fr" />
+        </footer>
+
+        <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
@@ -400,10 +499,6 @@ export function EventPlanner({
           handlers={handlers}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          successMessage={successMessage}
-          setSuccessMessage={setSuccessMessage}
-          planningFilter={planningFilter}
-          setPlanningFilter={setPlanningFilter}
           currentUserId={session?.user?.id}
           currentUserImage={session?.user?.image}
           onAuth={() => {

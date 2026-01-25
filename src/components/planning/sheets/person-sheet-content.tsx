@@ -5,6 +5,7 @@ import { PersonEditForm } from "@/features/people/components/person-edit-form";
 import type { PlanData, Sheet } from "@/lib/types";
 
 interface PersonSheetContentProps {
+  sheet?: Extract<Sheet, { type: "person" }>;
   readOnly?: boolean;
   currentUserId?: string;
   currentUserImage?: string | null;
@@ -12,6 +13,7 @@ interface PersonSheetContentProps {
 }
 
 export function PersonSheetContent({
+  sheet,
   readOnly,
   currentUserId,
   currentUserImage,
@@ -23,6 +25,7 @@ export function PersonSheetContent({
       onSubmit={handleCreatePerson}
       currentUserId={currentUserId}
       currentUserImage={currentUserImage}
+      isJoin={sheet?.context === "join"}
     />
   );
 }
@@ -36,7 +39,8 @@ interface PersonEditSheetContentProps {
     id: number,
     name: string,
     emoji: string | null,
-    image?: string | null
+    image?: string | null,
+    token?: string | null
   ) => void;
   handleDeletePerson: (id: number) => void;
 }
@@ -55,7 +59,7 @@ export function PersonEditSheetContent({
       allPeople={plan.people}
       readOnly={readOnly}
       onSubmit={(name: string, emoji: string | null, image?: string | null) =>
-        handleUpdatePerson(sheet.person.id, name, emoji, image)
+        handleUpdatePerson(sheet.person.id, name, emoji, image, sheet.token)
       }
       onDelete={() => handleDeletePerson(sheet.person.id)}
       currentUserId={currentUserId}

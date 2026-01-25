@@ -8,13 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Trash2, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
+
 export function ServiceEditForm({
   service,
   onSubmit,
@@ -25,6 +21,7 @@ export function ServiceEditForm({
   onSubmit: (
     id: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -34,17 +31,35 @@ export function ServiceEditForm({
 }) {
   const t = useTranslations("EventDashboard.ServiceForm");
   const tCommon = useTranslations("EventDashboard.Shared");
-  const [title, setTitle] = useState(service?.title || "");
+  const tMeal = useTranslations("EventDashboard.Meal");
+
+  const translatedTitle = useTranslatedServiceTitle(service?.title || "");
+
+  // Translate description if it matches a known key pattern (desc_*)
+  const initialDescription = (() => {
+    const desc = service?.description || "";
+    if (desc.startsWith("desc_")) {
+      try {
+        return tMeal(`serviceTypes.${desc}`);
+      } catch {
+        return desc;
+      }
+    }
+    return desc;
+  })();
+
+  const [title, setTitle] = useState(translatedTitle);
+  const [description, setDescription] = useState(initialDescription);
   const [adults, setAdults] = useState(service?.adults || 0);
   const [children, setChildren] = useState(service?.children || 0);
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
   const [showDetails, setShowDetails] = useState(false);
   const skipSaveRef = useRef(false);
-  const stateRef = useRef({ title, adults, children, peopleCount });
+  const stateRef = useRef({ title, description, adults, children, peopleCount });
 
   useEffect(() => {
-    stateRef.current = { title, adults, children, peopleCount };
-  }, [title, adults, children, peopleCount]);
+    stateRef.current = { title, description, adults, children, peopleCount };
+  }, [title, description, adults, children, peopleCount]);
 
   const handleBlurSave = () => {
     if (skipSaveRef.current) {
@@ -52,18 +67,28 @@ export function ServiceEditForm({
     }
     const {
       title: currTitle,
+      description: currDescription,
       adults: currAdults,
       children: currChildren,
+      adultsCount: _adultsCount, // Not used but present in some types
       peopleCount: currCount,
-    } = stateRef.current;
+    } = stateRef.current as any;
     const hasChanged =
       currTitle !== (service?.title || "") ||
+      currDescription !== (service?.description || "") ||
       currAdults !== (service?.adults || 0) ||
       currChildren !== (service?.children || 0) ||
       currCount !== (service?.peopleCount || 0);
 
     if (hasChanged && currTitle.trim()) {
-      onSubmit(service.id, currTitle, currAdults, currChildren, currCount);
+      (onSubmit as any)(
+        service.id,
+        currTitle,
+        currDescription,
+        currAdults,
+        currChildren,
+        currCount
+      );
     }
   };
 
@@ -100,61 +125,22 @@ export function ServiceEditForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label
-            htmlFor="edit-adults"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {tCommon("adultsLabel")}
-          </Label>
-          <Select
-            value={String(adults)}
-            onValueChange={(val) => {
-              const v = parseInt(val);
-              setAdults(v);
-              setPeopleCount(v + children);
-            }}
-          >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder={tCommon("adultsLabel")} />
-            </SelectTrigger>
-            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-              {Array.from({ length: 51 }, (_, i) => (
-                <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {tCommon("adultsCount", { count: i })}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="edit-children"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {tCommon("childrenLabel")}
-          </Label>
-          <Select
-            value={String(children)}
-            onValueChange={(val) => {
-              const v = parseInt(val);
-              setChildren(v);
-              setPeopleCount(adults + v);
-            }}
-          >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder={tCommon("childrenLabel")} />
-            </SelectTrigger>
-            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-              {Array.from({ length: 51 }, (_, i) => (
-                <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {tCommon("childrenCount", { count: i })}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label
+          htmlFor="service-description"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+        >
+          {t("descriptionLabel") || "Description (ex: Apéro, Entrées...)"}
+        </Label>
+        <Input
+          id="service-description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={handleBlurSave}
+          placeholder={t("descriptionPlaceholder") || "Détails du service"}
+          autoCapitalize="sentences"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+        />
       </div>
 
       <div className="flex flex-col gap-3 pt-4">

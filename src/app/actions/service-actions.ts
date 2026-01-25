@@ -3,15 +3,14 @@
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { services, meals } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import { createServiceSchema, serviceSchema, deleteServiceSchema } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
 
 export const createServiceAction = createSafeAction(createServiceSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "service:create", input.key, input.token);
 
   // Fetch parent meal for initialization if counts not provided
   let adults = input.adults;
@@ -36,19 +35,19 @@ export const createServiceAction = createSafeAction(createServiceSchema, async (
     .values({
       mealId: input.mealId,
       title: input.title,
+      description: input.description,
       adults: finalAdults,
       children: finalChildren,
       peopleCount: finalPeopleCount,
     })
     .returning();
 
-  await logChange("create", "services", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
 
 export const updateServiceAction = createSafeAction(serviceSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "service:update", input.key, input.token);
 
   const updated = await db.transaction(async (tx) => {
     // 1. Fetch current service to get old peopleCount
@@ -73,6 +72,7 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
       .update(services)
       .set({
         ...(input.title !== undefined && { title: input.title }),
+        ...(input.description !== undefined && { description: input.description }),
         adults: newAdults,
         children: newChildren,
         peopleCount: newPeopleCount,
@@ -83,22 +83,13 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
     return updatedService;
   });
 
-  // Fetch old data for audit (the transaction logic could be optimized but this is safe)
-  const oldService = await db.query.services.findFirst({
-    where: eq(services.id, input.id),
-  });
-
-  await logChange("update", "services", updated.id, oldService, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
 
 export const deleteServiceAction = createSafeAction(deleteServiceSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
-  const [deleted] = await db.delete(services).where(eq(services.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "services", deleted.id, deleted, null);
-  }
+  await verifyAccess(input.slug, "service:delete", input.key, input.token);
+  await db.delete(services).where(eq(services.id, input.id)).returning();
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });

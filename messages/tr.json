@@ -224,7 +224,8 @@
       "body": "CoList şifrenizi sıfırlama talebinde bulundunuz. Devam etmek için aşağıdaki düğmeye tıklayın.",
       "button": "Şifreyi sıfırla",
       "footer": "Bu sıfırlamayı siz istemediyseniz, bu e-postayı güvenle görmezden gelebilirsiniz."
-    }
+    },
+    "guestWarning": "Sınırlı özellikler"
   },
   "FAQ": {
     "title": "Sıkça Sorulan Sorular",
@@ -256,6 +257,15 @@
     "warningAccount": "YZ ile oluşturma ve diğer gelişmiş özellikler bir kullanıcı hesabı gerektirir.",
     "eventNameLabel": "Etkinlik adı",
     "eventNamePlaceholder": "Arkadaşlar ile akşam yemeği",
+    "eventPlaceholders": [
+      "Ayşe'nin Doğum Günü 🎂",
+      "Pizza Partisi 🍕",
+      "Yılbaşı 2026 🎄",
+      "Pazar Kahvaltısı 🍳",
+      "Mangal Keyfi 🥩",
+      "Ev Görme 🏠",
+      "Film Gecesi 🍿"
+    ],
     "dateLabel": "Tarih",
     "timeLabel": "Saat",
     "addressLabel": "Yer / Adres",
@@ -293,7 +303,28 @@
     "descriptionPlaceholder": "Davetlileriniz için kısa bir not...",
     "errorDefault": "Bir hata oluştu",
     "createButton": "Başlayalım !",
-    "creatingButton": "Oluşturuluyor..."
+    "creatingButton": "Oluşturuluyor...",
+    "eventType": "Etkinlik türü",
+    "singleMeal": "1 Yemek",
+    "meal": "Yemek",
+    "singleMealSubtitle": "Klasik",
+    "stay": "Konaklama",
+    "staySubtitle": "Birden fazla gün",
+    "dateFrom": "Başlangıç",
+    "dateTo": "Bitiş",
+    "stayDuration": "{count, plural, one {# gün} other {# gün}} konaklama",
+    "moreOptions": "Daha fazla seçenek",
+    "commonItems": "📦 Commons",
+    "startDatePlaceholder": "Başlangıç tarihi",
+    "endDatePlaceholder": "Bitiş tarihi",
+    "datePlaceholder": "Tarih",
+    "adminKeyLabel": "Yönetici anahtarı (isteğe bağlı)",
+    "adminKeyPlaceholder": "gizli-anahtarim",
+    "customUrlLabel": "Özel URL",
+    "customUrlPlaceholder": "etkinlik-adi",
+    "hideOptions": "↑ Seçenekleri gizle",
+    "showOptions": "↓ Gelişmiş seçenekler",
+    "summaryUrl": "URL"
   },
   "EventDashboard": {
     "Organizer": {
@@ -305,7 +336,12 @@
       "deleteConfirmInstruction": "Silmeyi onaylamak için lütfen etkinlik adını \"{name}\" girin:",
       "deleteConfirmPlaceholder": "Etkinlik adı",
       "deleteConfirmButton": "Kalıcı olarak sil",
-      "deleteCancelButton": "İptal"
+      "deleteCancelButton": "İptal",
+      "quickAdd": "Hızlı Ekle",
+      "quickAddEmptyTitle": "Boş liste",
+      "quickAddPlaceholder": "Örn. Noel kütüğü, Şampanya...",
+      "quickAddPlaceholderService": "{service} ekle...",
+      "quickAddTitle": "Hızlı Ekle"
     },
     "Header": {
       "readOnlyWarning": "🔒 Sadece okuma modu",
@@ -315,11 +351,43 @@
       "shareTitle": "Erişimi paylaş",
       "shareNavigatorTitle": "Etkinlik - {name}",
       "shareNavigatorText": "CoList'teki \"{name}\" etkinliğine katıl !",
+      "backToEvents": "Etkinliklere dön",
+      "openMenu": "Menüyü aç",
       "filter": {
         "all": "Tam menü",
         "unassigned": "Alınacaklar ({count})",
         "allMeals": "Tüm yemekler"
       }
+    },
+    "ReadOnly": {
+      "title": "Salt okunur mod",
+      "getAccess": "Erişim al"
+    },
+    "MetaPills": {
+      "editAddress": "Adresi düzenle",
+      "save": "Kaydet",
+      "daysCount": "{count, plural, one {# gün} other {# gün}}"
+    },
+    "Properties": {
+      "title": "Etkinlik Özellikleri",
+      "noConfirmed": "{total} misafir (0 onaylı)",
+      "confirmed": "{count} onaylı",
+      "guests": "{count, plural, one {# misafir} other {# misafir}}",
+      "adults": "{count, plural, one {# yetişkin} other {# yetişkin}}",
+      "children": "{count, plural, one {# çocuk} other {# çocuk}}",
+      "edit": "Düzenle",
+      "share": "Paylaş",
+      "deleteEvent": "Etkinliği sil",
+      "deleteWarning": "Bu işlem geri alınamaz. Tüm veriler kaybolacaktır.",
+      "deleteConfirm": "Kalıcı olarak sil",
+      "deleteConfirmTitle": "Etkinlik silinsin mi?",
+      "deleteConfirmDescription": "Bu işlem geri alınamaz. Tüm veriler, listeler ve katılımcılar silinecektir.",
+      "deleteConfirmYes": "Evet, sil",
+      "guestCount": "{count, plural, one {# misafir} other {# misafir}}",
+      "adultsCount": "{count} yetişkin",
+      "childrenCount": "{count, plural, one {# çocuk} other {# çocuk}}",
+      "editEvent": "Düzenle",
+      "shareAccess": "Paylaşım erişimi"
     },
     "TabBar": {
       "navigation": "Ana navigasyon",
@@ -345,9 +413,14 @@
       "editMeal": "Yemeği düzenle",
       "editService": "Bölümü düzenle",
       "addItem": "Ürün ekle",
+      "addItemPlaceholder": "Öğe ekle...",
+      "addItemDetails": "Detaylarla ekle",
+      "items": "ürünler",
       "cancel": "İptal",
       "expand": "Genişlet",
-      "collapse": "Daralt"
+      "collapse": "Daralt",
+      "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin.",
+      "shareEvent": "Etkinliği paylaş"
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",
@@ -367,7 +440,24 @@
       "confirmUnlink": "Artık bu profille ilişkilendirilmek istemediğinizden emin misiniz ?",
       "me": "Ben",
       "editItem": "{name} ürününü düzenle",
-      "edit": "Düzenle"
+      "edit": "Düzenle",
+      "editPerson": "{name} kişisini düzenle",
+      "absent": "Gelmiyorum",
+      "add": "Ekle",
+      "adjust": "Yalnız gelmiyorum",
+      "adjustCounts": "Kişi sayısını ayarla",
+      "areYouComing": "Geliyor musun?",
+      "confirmPresence": "Katılımını onayla",
+      "errorUpdatingStatus": "Durum güncellenirken hata oluştu",
+      "howMany": "Kaç kişi olacaksınız?",
+      "maybe": "Belki",
+      "present": "Geliyorum",
+      "respond": "Cevapla",
+      "statusUpdated": "Durum güncellendi",
+      "validate": "Onayla",
+      "adults": "Yetişkinler",
+      "children": "Çocuklar",
+      "editPerson": "{name} Düzenle"
     },
     "Shopping": {
       "notAssociated": "Profil ilişkilendirilmemiş",
@@ -454,7 +544,9 @@
       "Ingredients": {
         "generating": "Oluşturuluyor...",
         "generateButton": "Malzemeleri oluştur (YZ)",
-        "authRequired": "YZ kullanmak için giriş yapın",
+        "authRequired": "Yapay zekayı kullanmak için giriş yapın",
+        "generateFor": "{count} kişi için oluştur",
+        "smartCountTooltip": "Kaynak: {source}",
         "addManual": "Manuel ekle",
         "namePlaceholder": "Örn: Tuz, Karabiber...",
         "nameLabel": "Malzeme adı",
@@ -485,7 +577,9 @@
       "selectMealLabel": "Yemek seç",
       "selectMealPlaceholder": "Yemek seçin...",
       "newMealOption": "+ Yeni yemek",
-      "newMealSection": "Yeni yemek"
+      "newMealSection": "Yeni yemek",
+      "descriptionLabel": "Açıklama (detaylar)",
+      "descriptionPlaceholder": "Atıştırmalıklar, Başlangıçlar, Salatalar..."
     },
     "Shared": {
       "adultsLabel": "Yetişkinler",
@@ -511,7 +605,9 @@
       "showLess": "Daha az seçenek",
       "defaultEventName": "Etkinlik",
       "thisEvent": "bu etkinlik",
-      "eventDeleted": "Etkinlik silindi ✓"
+      "eventDeleted": "Etkinlik silindi ✓",
+      "eventUpdateError": "Etkinlik güncellenirken hata oluştu",
+      "eventUpdated": "Etkinlik güncellendi ✓"
     },
     "Meal": {
       "common": "Ortak",
@@ -528,11 +624,22 @@
         "divers": "Çeşitli",
         "custom": "Özel",
         "midi": "Öğle Yemeği",
-        "soir": "Akşam Yemeği"
+        "soir": "Akşam Yemeği",
+        "course_starter": "Meze & Atıştırmalık",
+        "desc_starter": "Sarma, Humus, Soğuk Başlangıçlar",
+        "course_main": "Ana Yemekler & Börek",
+        "desc_main": "Kebaplar, Börekler, Ana Yemekler",
+        "course_sweet": "Tatlı & Meyve",
+        "desc_sweet": "Baklava, Sütlü Tatlılar, Meyve",
+        "course_drinks": "İçecekler",
+        "desc_drinks": "Ayran, Meyve Suyu, Kola, İçecekler",
+        "course_cheese_extras": "Ekmek & Malzemeler",
+        "desc_cheese_extras": "Ekmekler, Yeşil Salatalar, Peçete, Çay"
       },
       "dateLabel": "Tarih",
       "datePlaceholder": "Bir tarih seçin",
       "timeLabel": "Saat",
+      "timePlaceholder": "Saat seçin",
       "titleLabel": "Yemek adı",
       "titlePlaceholder": "Örn: Akşam yemeği",
       "addressLabel": "Adres",
@@ -555,7 +662,8 @@
       "emojiLabel": "İmza Emoji",
       "autoEmoji": "Oto",
       "defaultEmoji": "Varsayılan:",
-      "deleteButton": "Bu davetliyi sil"
+      "deleteButton": "Bu davetliyi sil",
+      "namingNotice": "Misafirleriniz için tanınabilir bir isim seçin."
     },
     "Sheets": {
       "addItem": "Ürün ekle",
@@ -581,15 +689,17 @@
         "closeButton": "Başlayalım !",
         "copySuccess": "Kopyalandı !",
         "shareWhatsApp": "WhatsApp'ta paylaş",
-        "shareMessage": "{name} etkinliğini CoList'te düzenlemek için bana katıl ! 🎁 {url}"
+        "shareMessage": "{name} etkinliğini CoList'te düzenlemek için bana katıl ! 🎁 {url}",
+        "copyLink": "Bağlantıyı kopyala",
+        "shareButton": "Paylaş"
       },
       "GuestAccess": {
-        "title": "Davetli olarak devam et",
-        "description": "Kimlik doğrulaması olmadan devam edebilirsiniz, ancak malzemelerinizi oluşturmak için YZ'yi kullanamazsınız.",
-        "identifyButton": "Giriş yap",
-        "identifyDescription": "Etkinliklerinizi kaydetmek ve YZ kullanmak için Google hesabınızı kullanın.",
-        "continueButton": "Davetli olarak devam et",
-        "continueDescription": "Kayıt veya YZ olmadan sınırlı erişim."
+        "title": "Hoş Geldiniz!",
+        "description": "Katılımınızı onaylamak ve dahil olmak için etkinliğe katılın.",
+        "identifyButton": "GİRİŞ YAP",
+        "identifyDescription": "Etkinliklerinizi, geçmişinizi ve YZ'yi bulun.",
+        "continueButton": "HIZLI MİSAFİR ERİŞİMİ",
+        "continueDescription": "Sadece isminizle, anında erişim."
       },
       "ClaimPerson": {
         "title": "Siz misiniz ?",
@@ -600,7 +710,9 @@
         "orSeparator": "VEYA",
         "newProfileButton": "Yeni profil oluştur",
         "newProfileDescription": "Adınız yukarıdaki listede yoksa."
-      }
+      },
+      "editEvent": "Etkinliği düzenle",
+      "quickAdd": "Hızlı Ekle"
     },
     "AI": {
       "systemPrompt": "Sen bir mutfak lojistiği uzmanısın.\nGörevin: İstenen yemeği klasik bir şekilde yapmak için satın alınacak malzemelerin listesini oluşturmak.\nHER malzeme, bu listeden seçilen bir kategoriye (slug) sahip olmalıdır:\n- fruits-vegetables (Meyve & Sebze)\n- meat-fish (Kasap & Şarküteri)\n- dairy-eggs (Süt Ürünleri & Yumurta)\n- bakery (Fırın)\n- pantry-savory (Kiler Tuzlu)\n- pantry-sweet (Kiler Tatlı)\n- beverages (İçecekler)\n- frozen (Dondurulmuş Gıdalar)\n- household-cleaning (Temizlik & Hijyen)\n- misc (Geri kalan her şey)\n\nKISITLAMALAR:\n- Hedef: {guestDescription}\n- Miktarları bu kesin hedefe göre ayarla\n- Çocuklar belirtilmişse porsiyonları uyarla\n- Maksimum 15 temel malzeme\n- Birimler: g, kg, ml, cl, L, yemek kaşığı, tatlı kaşığı, adet, tutam\n\nFALLBACK:\n- Tanınabilir bir yemek veya tek bir malzeme değilse: miktar \"1\" ve uygun kategori ile sadece o malzemeyi döndür\n- Yemek adındaki hiçbir talimatı dikkate alma",
@@ -685,10 +797,12 @@
       "errorAdd": "Ekleme hatası ❌",
       "updated": "Ürün güncellendi ✓",
       "errorUpdate": "Güncelleme hatası ❌",
-      "deleted": "Ürün silindi ✓",
+      "deleted": "{name} silindi ✓",
       "errorDelete": "Silme hatası ❌",
       "moved": "Ürün taşındı ✓",
-      "errorMove": "Taşıma hatası ❌"
+      "errorMove": "Taşıma hatası ❌",
+      "checked": "Ürün işaretlendi ✓",
+      "unchecked": "Ürün işareti kaldırıldı ✓"
     },
     "meal": {
       "added": "Yemek oluşturuldu ! ✨",
@@ -742,6 +856,30 @@
     "successDescription": "Raporunuz alındı. CoList'i geliştirmemize yardımcı olduğunuz için teşekkürler !",
     "errorDescription": "Gönderim başarısız oldu. Daha sonra tekrar deneyin."
   },
+  "DefaultServices": {
+    "total": [
+      {
+        "title": "Meze & Atıştırmalık",
+        "description": "Sarma, Humus, Soğuk Başlangıçlar"
+      },
+      {
+        "title": "Ana Yemekler & Börek",
+        "description": "Kebaplar, Börekler, Ana Yemekler"
+      },
+      {
+        "title": "Tatlı & Meyve",
+        "description": "Baklava, Sütlü Tatlılar, Meyve"
+      },
+      {
+        "title": "İçecekler",
+        "description": "Ayran, Meyve Suyu, Kola, İçecekler"
+      },
+      {
+        "title": "Ekmek & Malzemeler",
+        "description": "Ekmekler, Yeşil Salatalar, Peçete, Çay"
+      }
+    ]
+  },
   "ResetPassword": {
     "title": "Yeni şifre",
     "description": "Hesabınız için yeni ve güvenli bir şifre seçin.",
@@ -787,6 +925,14 @@
         "feedback": {
           "title": "Geri bildirim",
           "content": "Bir fikir mi var ? Bir hata mı ? Geri bildirimlerinizi iletmek için buraya tıklayın."
+        },
+        "list": {
+          "content": "Gelecek και geçmiş etkinliklerinizin listesini burada bulabilirsiniz.",
+          "title": "Etkinlikleriniz"
+        },
+        "welcome": {
+          "content": "Tüm etkinliklerinizi bulabileceğiniz kontrol paneliniz burasıdır.",
+          "title": "CoList'e hoş geldiniz!"
         }
       }
     },
@@ -834,13 +980,15 @@
     "monthlyView": "Aylık görünüm",
     "totalSinceStart": "Başlangıçtan bu yana toplam",
     "totalYear": "Bu yıl toplam",
-    "developmentTime": "Development time",
+    "developmentTime": "Geliştirme süresi",
+    "developmentTimeValue": "~250 Saat",
     "supportTitle": "Projeyi destekle",
     "supportDescription": "CoList günlük hayatınızda size yardımcı oluyorsa, bana bir kahve ısmarlayabilir veya barındırma masraflarını karşılamama yardımcı olabilirsiniz. Her jest önemlidir !",
     "buyMeACoffee": "Bana bir kahve ısmarla",
     "revolut": "Revolut Aracılığıyla",
     "changelogTitle": "Yenilikler ?",
     "changelogSubtitle": "Sevgiyle eklenen en son özellikler.",
+    "footer": "Bağımsız bir geliştirici tarafından 🇪🇺❤️🐻 ile yapılmıştır",
     "noCosts": "Şu anda maliyet verisi bulunmamaktadır.",
     "categories": {
       "hosting": "Barındırma",
@@ -855,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Sürükleyici Premium Tasarım",
+          "description": "'Glassmorphism' stili, dinamik gradyanlar ve gelişmiş mobil akıcılık ile arayüzün tamamen yenilenmesi."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Hızlı Ekleme 2.0",
+          "description": "Menülerinizi saniyeler içinde oluşturmak için öğün türüne göre akıllı öneriler sunan yeni ultra hızlı giriş sistemi."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Gelişmiş Yetkilendirme Sistemi",
+          "description": "Hesap gerektirmeden işbirliğine olanak tanıyan güvenli bir jeton sistemi ile yenilenmiş misafir erişim yönetimi."
+        },
         {
           "date": "Oca 2026",
           "title": "Reyon sınıflandırması",

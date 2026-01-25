@@ -2,12 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people, meals } from "@drizzle/schema";
 import { eq, desc, inArray } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createEventSchema,
   deleteEventSchema,
@@ -16,6 +15,7 @@ import {
 } from "./schemas";
 import { createMealWithServicesAction } from "./meal-actions";
 import { createSafeAction, withErrorThrower } from "@/lib/action-utils";
+import { getTranslations } from "next-intl/server";
 
 export const createEventAction = createSafeAction(createEventSchema, async (input) => {
   // Find a unique slug automatically based on name
@@ -61,7 +61,10 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       children: input.children ?? 0,
     })
     .returning();
-  await logChange("create", "events", created.id, null, created);
+
+  // Automatically add owner as a guest if they are logged in
+  let guestToken: string | undefined;
+  let guestPersonId: number | undefined;
 
   // Automatically add owner as a guest if they are logged in
   if (session?.user) {
@@ -79,9 +82,25 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         emoji: user.emoji ?? null,
         image: user.image ?? null,
         userId: user.id,
+        status: "confirmed",
       })
       .returning();
-    await logChange("create", "people", person.id, null, person);
+  } else {
+    // If guest mode (no account), create a default "Host" profile with a token
+    // allowing them to have immediate write access via local storage
+    const token = randomUUID();
+    const [person] = await db
+      .insert(people)
+      .values({
+        eventId: created.id,
+        name: "Hôte", // Default name for the creator
+        token: token,
+        status: "confirmed",
+      })
+      .returning();
+
+    guestToken = token;
+    guestPersonId = person.id;
   }
 
   if (input.creationMode === "vacation") {
@@ -97,6 +116,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
     await createMealWithServicesAction({
       slug: created.slug,
       key: adminKey,
+      token: guestToken,
       date: "common",
       title: mealTitles.common,
       services: ["divers"],
@@ -118,6 +138,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
+        token: guestToken,
         date: dateStr,
         time: "12:30",
         address: input.address,
@@ -127,19 +148,48 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         children: created.children,
       });
     }
-  } else if (input.creationMode) {
+  } else if (input.creationMode || !input.creationMode) {
+    const defaultMode = input.creationMode || "total";
     const defaultDate = input.date || new Date().toISOString().split("T")[0];
-    let services: string[] = [];
+    let services: { title: string; description: string | null }[] = [];
 
-    switch (input.creationMode) {
+    switch (defaultMode) {
       case "total":
-        services = ["apero", "entree", "plat", "fromage", "dessert", "boissons", "autre"];
+        services = [
+          {
+            title: "course_starter",
+            description: "desc_starter",
+          },
+          {
+            title: "course_main",
+            description: "desc_main",
+          },
+          {
+            title: "course_sweet",
+            description: "desc_sweet",
+          },
+          {
+            title: "course_drinks",
+            description: "desc_drinks",
+          },
+          {
+            title: "course_cheese_extras",
+            description: "desc_cheese_extras",
+          },
+        ];
         break;
       case "classique":
-        services = ["entree", "plat", "dessert"];
+        services = [
+          { title: "entree", description: null },
+          { title: "plat", description: null },
+          { title: "dessert", description: null },
+        ];
         break;
       case "apero":
-        services = ["apero", "boissons"];
+        services = [
+          { title: "apero", description: null },
+          { title: "boissons", description: null },
+        ];
         break;
     }
 
@@ -147,10 +197,11 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       await createMealWithServicesAction({
         slug: created.slug,
         key: adminKey,
+        token: guestToken,
         date: defaultDate,
         time: input.time,
         address: input.address,
-        title: "Full meal",
+        title: defaultMode === "total" ? "Menu" : "Full meal",
         services: services,
         adults: created.adults,
         children: created.children,
@@ -159,7 +210,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
   }
 
   revalidatePath("/");
-  return created;
+  return { ...created, guestToken, guestPersonId };
 });
 
 export const getAllEventsAction = withErrorThrower(async () => {
@@ -214,7 +265,7 @@ export const getMyEventsAction = withErrorThrower(async () => {
 });
 
 export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "event:update", input.key, input.token);
 
   await db
     .update(events)
@@ -226,24 +277,13 @@ export const updateEventAction = createSafeAction(updateEventSchema, async (inpu
     })
     .where(eq(events.id, event.id));
 
-  await logChange("update", "events", event.id, event, {
-    ...event,
-    ...(input.name && { name: input.name }),
-    ...(input.description !== undefined && { description: input.description }),
-    ...(input.adults !== undefined && { adults: input.adults }),
-    ...(input.children !== undefined && { children: input.children }),
-  });
-
   revalidatePath("/");
   revalidatePath(`/event/${event.slug}`);
   return { success: true };
 });
 
 export const deleteEventAction = createSafeAction(deleteEventSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
-
-  // Log deletion before removing the record
-  await logChange("delete", "events", event.id, event);
+  const { event } = await verifyAccess(input.slug, "event:delete", input.key, input.token);
 
   await db.delete(events).where(eq(events.id, event.id));
 
@@ -255,7 +295,7 @@ export const deleteEventAction = createSafeAction(deleteEventSchema, async (inpu
 export const updateEventWithMealAction = createSafeAction(
   updateEventWithMealSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
+    const { event } = await verifyAccess(input.slug, "event:update", input.key, input.token);
 
     // 1. Update event fields
     await db
@@ -267,14 +307,6 @@ export const updateEventWithMealAction = createSafeAction(
         ...(input.children !== undefined && { children: input.children }),
       })
       .where(eq(events.id, event.id));
-
-    await logChange("update", "events", event.id, event, {
-      ...event,
-      ...(input.name && { name: input.name }),
-      ...(input.description !== undefined && { description: input.description }),
-      ...(input.adults !== undefined && { adults: input.adults }),
-      ...(input.children !== undefined && { children: input.children }),
-    });
 
     // 2. Update meal if mealId is provided
     if (input.mealId) {
@@ -291,13 +323,6 @@ export const updateEventWithMealAction = createSafeAction(
             ...(input.address !== undefined && { address: input.address }),
           })
           .where(eq(meals.id, input.mealId));
-
-        await logChange("update", "meals", input.mealId, currentMeal, {
-          ...currentMeal,
-          ...(input.date && { date: input.date }),
-          ...(input.time !== undefined && { time: input.time }),
-          ...(input.address !== undefined && { address: input.address }),
-        });
       }
     }
 

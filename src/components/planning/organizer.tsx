@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import confetti from "canvas-confetti";
+import { fireCelebrationConfetti } from "@/lib/confetti";
 import {
   PointerSensor,
   TouchSensor,
@@ -15,13 +15,12 @@ import {
 import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../layout";
 import { useThemeMode } from "../theme-provider";
-import { validateWriteKeyAction, getChangeLogsAction, joinEventAction } from "@/app/actions";
+import { validateWriteKeyAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 
 // Lightweight components loaded immediately
 import { OrganizerHeader } from "./organizer-header";
-import { SuccessToast } from "../common/success-toast";
 
 // Heavy components loaded lazily (code-splitting)
 const OrganizerSheets = lazy(() =>
@@ -66,7 +65,6 @@ export function Organizer({
     setPlan,
     tab,
     setTab,
-    setLogs,
     planningFilter,
     setPlanningFilter,
     sheet,
@@ -77,9 +75,6 @@ export function Organizer({
     setReadOnly,
     activeItemId,
     setActiveItemId,
-    successMessage,
-    setSuccessMessage,
-    setLogsLoading,
     unassignedItemsCount,
   } = useEventState(initialPlan, initialWriteEnabled);
 
@@ -113,7 +108,6 @@ export function Organizer({
     readOnly,
     setSheet,
     setSelectedPerson,
-    setSuccessMessage,
     session,
     refetch,
   });
@@ -179,13 +173,7 @@ export function Organizer({
     if (searchParams.get("new") === "true") {
       setSheet({ type: "share" });
       setTimeout(() => {
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
-          zIndex: 200,
-        });
+        fireCelebrationConfetti();
       }, 300);
 
       // Clear the "new" parameter from the URL without a full page reload
@@ -270,19 +258,12 @@ export function Organizer({
         writeKey={effectiveWriteKey}
       />
 
-      <SuccessToast
-        message={successMessage?.text || null}
-        type={successMessage?.type || "success"}
-      />
-
       <div className="mx-auto w-full max-w-3xl flex-1">
         <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab
                 plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 sensors={sensors}
@@ -333,7 +314,7 @@ export function Organizer({
           </Suspense>
         </main>
 
-        <TabBar active={tab} onChange={setTab} isAuthenticated={!!session?.user} />
+        <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />
       </div>
 
       {/* Lazy-loaded sheets - only downloaded when a sheet is opened */}
@@ -348,8 +329,6 @@ export function Organizer({
           handlers={handlers}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          successMessage={successMessage}
-          setSuccessMessage={setSuccessMessage}
           planningFilter={planningFilter}
           setPlanningFilter={setPlanningFilter}
           currentUserId={session?.user?.id}

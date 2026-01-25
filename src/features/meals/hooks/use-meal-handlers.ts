@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import {
   createMealAction,
   updateMealAction,
@@ -19,7 +20,7 @@ export function useMealHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
+  token,
 }: MealHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -45,6 +46,7 @@ export function useMealHandlers({
         children,
         time,
         address,
+        token: token ?? undefined,
       });
       // Mettre à jour le state immédiatement - créer un nouvel objet pour forcer le re-render
       setPlan((prev: PlanData) => {
@@ -56,12 +58,12 @@ export function useMealHandlers({
           meals: newMeals,
         };
       });
-      setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+      toast.success(t("meal.added"));
       trackMealServiceAction("meal_created", title || date);
       return created.id;
     } catch (error) {
       console.error("Failed to create meal:", error);
-      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+      toast.error(t("meal.errorAdd"));
       return 0;
     }
   };
@@ -90,6 +92,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
         // Mettre à jour le state immédiatement
         const newMeal = { ...created, services: [] };
@@ -105,7 +108,7 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        toast.success(t("meal.added"));
         trackMealServiceAction("meal_created", title || date);
       } else {
         const created = await createMealWithServicesAction({
@@ -118,6 +121,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
         // Mettre à jour le state immédiatement
         setPlan((prev: PlanData) => {
@@ -132,12 +136,12 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        setSuccessMessage({ text: "Repas ajouté ✨", type: "success" });
+        toast.success(t("meal.added"));
         trackMealServiceAction("meal_created", title || date);
       }
     } catch (error) {
       console.error("Failed to create meal:", error);
-      setSuccessMessage({ text: t("meal.errorAdd"), type: "error" });
+      toast.error(t("meal.errorAdd"));
     }
   };
 
@@ -166,6 +170,7 @@ export function useMealHandlers({
           children,
           time,
           address,
+          token: token ?? undefined,
         });
 
         setPlan((prev: PlanData) => ({
@@ -199,11 +204,11 @@ export function useMealHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: "Repas mis à jour ✓", type: "success" });
+        toast.success(t("meal.updated"));
         trackMealServiceAction("meal_updated", title || date);
       } catch (error) {
         console.error("Failed to update meal:", error);
-        setSuccessMessage({ text: t("meal.errorUpdate"), type: "error" });
+        toast.error(t("meal.errorUpdate"));
       }
     });
   };
@@ -219,15 +224,15 @@ export function useMealHandlers({
       meals: prev.meals.filter((m) => m.id !== id),
     }));
     setSheet(null);
-    setSuccessMessage({ text: "Repas supprimé ✓", type: "success" });
+    toast.success(t("meal.deleted"));
     trackMealServiceAction("meal_deleted", meal?.title || meal?.date);
     startTransition(async () => {
       try {
-        await deleteMealAction({ id, slug, key: writeKey });
+        await deleteMealAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete meal:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("meal.errorDelete"), type: "error" });
+        toast.error(t("meal.errorDelete"));
       }
     });
   };

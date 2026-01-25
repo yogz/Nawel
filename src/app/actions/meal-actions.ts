@@ -2,10 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
-import { logChange } from "@/lib/logger";
 import { meals, services } from "@drizzle/schema";
 import { eq } from "drizzle-orm";
-import { verifyEventAccess } from "./shared";
+import { verifyAccess } from "./shared";
 import {
   createMealSchema,
   updateMealSchema,
@@ -15,7 +14,7 @@ import {
 import { createSafeAction } from "@/lib/action-utils";
 
 export const createMealAction = createSafeAction(createMealSchema, async (input) => {
-  const event = await verifyEventAccess(input.slug, input.key);
+  const { event } = await verifyAccess(input.slug, "meal:create", input.key, input.token);
   const [created] = await db
     .insert(meals)
     .values({
@@ -28,7 +27,6 @@ export const createMealAction = createSafeAction(createMealSchema, async (input)
       address: input.address ?? null,
     })
     .returning();
-  await logChange("create", "meals", created.id, null, created);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
@@ -36,7 +34,7 @@ export const createMealAction = createSafeAction(createMealSchema, async (input)
 export const createMealWithServicesAction = createSafeAction(
   createMealWithServicesSchema,
   async (input) => {
-    const event = await verifyEventAccess(input.slug, input.key);
+    const { event } = await verifyAccess(input.slug, "meal:create", input.key, input.token);
 
     const result = await db.transaction(async (tx) => {
       const [meal] = await tx
@@ -58,15 +56,20 @@ export const createMealWithServicesAction = createSafeAction(
 
       const createdServices = [];
       for (let i = 0; i < input.services.length; i++) {
+        const sInput = input.services[i];
+        const sTitle = typeof sInput === "string" ? sInput : sInput.title;
+        const sDescription = typeof sInput === "string" ? null : sInput.description;
+
         const [service] = await tx
           .insert(services)
           .values({
             mealId: meal.id,
-            title: input.services[i],
+            title: sTitle,
+            description: sDescription,
             order: i,
-            adults: adults,
-            children: children,
-            peopleCount: totalGuests || 0,
+            adults: 0,
+            children: 0,
+            peopleCount: 0,
           })
           .returning();
         createdServices.push({ ...service, items: [] });
@@ -75,19 +78,13 @@ export const createMealWithServicesAction = createSafeAction(
       return { meal, createdServices };
     });
 
-    // Log changes OUTSIDE the transaction to avoid deadlock
-    await logChange("create", "meals", result.meal.id, null, result.meal);
-    for (const service of result.createdServices) {
-      await logChange("create", "services", service.id, null, service);
-    }
-
     revalidatePath(`/event/${input.slug}`);
     return { ...result.meal, services: result.createdServices };
   }
 );
 
 export const updateMealAction = createSafeAction(updateMealSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
+  await verifyAccess(input.slug, "meal:update", input.key, input.token);
 
   const updated = await db.transaction(async (tx) => {
     // 1. Fetch old meal to see if guests changed
@@ -126,26 +123,13 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
     return updatedMeal;
   });
 
-  // Re-fetch old data if not already captured or use transaction result
-  // The transaction in updateMealAction already fetches 'current' meal
-  // Let's modify the transaction to return both old and new data for cleaner logging
-
-  // Actually, I'll just refetch here for simplicity since logChange is outside transaction anyway
-  const oldMeal = await db.query.meals.findFirst({
-    where: eq(meals.id, input.id),
-  });
-
-  await logChange("update", "meals", updated.id, oldMeal, updated);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
 
 export const deleteMealAction = createSafeAction(deleteMealSchema, async (input) => {
-  await verifyEventAccess(input.slug, input.key);
-  const [deleted] = await db.delete(meals).where(eq(meals.id, input.id)).returning();
-  if (deleted) {
-    await logChange("delete", "meals", deleted.id, deleted, null);
-  }
+  await verifyAccess(input.slug, "meal:delete", input.key, input.token);
+  await db.delete(meals).where(eq(meals.id, input.id)).returning();
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });

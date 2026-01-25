@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { createServiceAction, updateServiceAction, deleteServiceAction } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { ServiceHandlerParams } from "@/features/shared/types";
@@ -14,7 +15,7 @@ export function useServiceHandlers({
   writeKey,
   readOnly,
   setSheet,
-  setSuccessMessage,
+  token,
 }: ServiceHandlerParams) {
   const [, startTransition] = useTransition();
   const t = useTranslations("Translations");
@@ -22,6 +23,7 @@ export function useServiceHandlers({
   const handleCreateService = (
     mealId: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -34,11 +36,13 @@ export function useServiceHandlers({
         const created = await createServiceAction({
           mealId,
           title,
+          description,
           adults,
           children,
           peopleCount,
           slug,
           key: writeKey,
+          token: token ?? undefined,
         });
         setPlan((prev: PlanData) => ({
           ...prev,
@@ -47,11 +51,11 @@ export function useServiceHandlers({
           ),
         }));
         setSheet(null);
-        setSuccessMessage({ text: "Service ajouté ! ✓", type: "success" });
+        toast.success(t("service.added"));
         trackMealServiceAction("service_created", title);
       } catch (error) {
         console.error("Failed to create service:", error);
-        setSuccessMessage({ text: t("service.errorAdd"), type: "error" });
+        toast.error(t("service.errorAdd"));
       }
     });
   };
@@ -59,6 +63,7 @@ export function useServiceHandlers({
   const handleUpdateService = (
     id: number,
     title?: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number,
@@ -72,11 +77,13 @@ export function useServiceHandlers({
         await updateServiceAction({
           id,
           title,
+          description,
           adults,
           children,
           peopleCount,
           slug,
           key: writeKey,
+          token: token ?? undefined,
         });
 
         setPlan((prev: PlanData) => ({
@@ -91,6 +98,7 @@ export function useServiceHandlers({
               return {
                 ...s,
                 ...(title !== undefined && { title }),
+                ...(description !== undefined && { description }),
                 ...(adults !== undefined && { adults }),
                 ...(children !== undefined && { children }),
                 ...(peopleCount !== undefined && { peopleCount }),
@@ -101,11 +109,11 @@ export function useServiceHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        setSuccessMessage({ text: "Service mis à jour ✓", type: "success" });
+        toast.success(t("service.updated"));
         trackMealServiceAction("service_updated", title);
       } catch (error) {
         console.error("Failed to update service:", error);
-        setSuccessMessage({ text: t("service.errorUpdate"), type: "error" });
+        toast.error(t("service.errorUpdate"));
       }
     });
   };
@@ -132,16 +140,16 @@ export function useServiceHandlers({
       })),
     }));
     setSheet(null);
-    setSuccessMessage({ text: "Service supprimé ✓", type: "success" });
+    toast.success(t("service.deleted"));
     trackMealServiceAction("service_deleted", serviceTitle);
 
     startTransition(async () => {
       try {
-        await deleteServiceAction({ id, slug, key: writeKey });
+        await deleteServiceAction({ id, slug, key: writeKey, token: token ?? undefined });
       } catch (error) {
         console.error("Failed to delete service:", error);
         setPlan(previousPlan);
-        setSuccessMessage({ text: t("service.errorDelete"), type: "error" });
+        toast.error(t("service.errorDelete"));
       }
     });
   };

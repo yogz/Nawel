@@ -3,19 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import {
-  UtensilsCrossed,
   Utensils,
-  GlassWater,
   Loader2,
-  Calendar,
-  Clock,
   MapPin,
   Users,
   MessageSquare,
   Sparkles,
-  Palmtree,
+  Luggage,
+  ChevronDown,
 } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -26,7 +23,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AutoSizeInput } from "@/components/common/auto-size-input";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
 import { cn } from "@/lib/utils";
 
 export function EventForm({
@@ -35,9 +35,7 @@ export function EventForm({
   isPending,
   error,
   inline = false,
-  showWarnings = false,
   initialData,
-  isAuthenticated,
 }: {
   onSubmit: (
     name: string,
@@ -54,7 +52,6 @@ export function EventForm({
   isPending: boolean;
   error: string | null;
   inline?: boolean;
-  showWarnings?: boolean;
   initialData?: {
     name: string;
     description: string | null;
@@ -64,575 +61,392 @@ export function EventForm({
     address?: string;
     time?: string;
   };
-  isAuthenticated?: boolean;
 }) {
   const t = useTranslations("CreateEvent");
   const tShared = useTranslations("EventDashboard.Shared");
-  const locale = useLocale();
-  const [step, setStep] = useState(1);
+
+  // Primary State
   const [name, setName] = useState(initialData?.name ?? "");
+  const [isVacation, setIsVacation] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+
+  // Constants
+  const defaultDuration = 7;
+  const creationMode: "total" | "classique" | "apero" | "vacation" = "total";
+
+  const placeholders = t.raw("eventPlaceholders") as string[];
+
+  // Rotate placeholders
+  useEffect(() => {
+    if (name) return; // Stop rotation if user typed something
+
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [name, placeholders.length]);
+
+  const currentPlaceholder = placeholders[placeholderIndex] || t("eventNamePlaceholder");
+
+  // Advanced State
   const [description, setDescription] = useState(initialData?.description ?? "");
-  const [creationMode, setCreationMode] = useState<"total" | "classique" | "apero" | "vacation">(
-    "total"
+  const [date, setDate] = useState<Date>(
+    initialData?.date ? new Date(initialData.date) : new Date()
   );
-  const [duration, setDuration] = useState(7);
-  const [date, setDate] = useState(initialData?.date ?? new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState<Date>(
+    new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+  );
   const [time, setTime] = useState(initialData?.time ?? "20:00");
   const [address, setAddress] = useState(initialData?.address ?? "");
   const [adults, setAdults] = useState(initialData?.adults ?? 2);
   const [children, setChildren] = useState(initialData?.children ?? 0);
 
+  // Computed duration from dates
+  const computedDuration = Math.max(
+    1,
+    Math.round((endDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+  );
+
   const nameRef = useRef<HTMLInputElement>(null);
-  const addressRef = useRef<HTMLInputElement>(null);
-  const dateRef = useRef<HTMLInputElement>(null);
-  const timeRef = useRef<HTMLInputElement>(null);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
+  // Focus management
   useEffect(() => {
-    if (step === 3) {
-      // Small timeout to ensure the transition is finished and keyboard is ready
-      const timer = setTimeout(() => {
-        descriptionRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [step]);
-
-  const CREATION_MODES = [
-    {
-      id: "total",
-      label: t("modeTotalLabel"),
-      desc: t("modeTotalDesc"),
-      icon: <UtensilsCrossed size={20} />,
-    },
-    {
-      id: "classique",
-      label: t("modeClassicLabel"),
-      desc: t("modeClassicDesc"),
-      icon: <Utensils size={20} />,
-    },
-    {
-      id: "apero",
-      label: t("modeAperoLabel"),
-      desc: t("modeAperoDesc"),
-      icon: <GlassWater size={20} />,
-    },
-    {
-      id: "vacation",
-      label: t("modeVacationLabel"),
-      desc: t("modeVacationDesc"),
-      icon: <Palmtree size={20} />,
-    },
-  ] as const;
+    const timer = setTimeout(() => {
+      nameRef.current?.focus();
+    }, 400); // Slightly longer delay for entering the drawer
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = () => {
     if (!name.trim()) {
       return;
     }
-    // Note: slug is now auto-generated on server, we pass name as base slug hint
+
+    const finalMode = isVacation ? "vacation" : creationMode;
+    const effectiveDuration = isVacation ? computedDuration : defaultDuration;
+
     onSubmit(
       name.trim(),
       description.trim() || undefined,
-      creationMode,
-      date,
+      finalMode,
+      // Use local date methods to avoid timezone issues with toISOString()
+      `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
       adults,
       children,
       time,
       address,
-      duration
+      effectiveDuration
     );
   };
 
-  const canGoNext = () => {
-    if (step === 1) {
-      return name.trim().length > 0 && date.length > 0;
-    }
-    return true;
-  };
-
-  const goNext = () => {
-    if (step < 3 && canGoNext()) {
-      setStep(step + 1);
-    }
-  };
-
-  const goBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
-  const selectedMode = CREATION_MODES.find((m) => m.id === creationMode);
-  const stepTitles = [t("step1Title"), t("step2Title"), t("step3Title")];
-
   const content = (
-    <div className="flex flex-col gap-4 overscroll-contain sm:gap-4">
-      {/* Progress indicator */}
-      {!initialData && (
-        <div className="flex gap-2">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={cn(
-                "h-1.5 flex-1 rounded-full transition-all duration-500 sm:h-1.5",
-                s <= step ? "bg-accent shadow-[0_0_8px_rgba(var(--accent-rgb),0.4)]" : "bg-gray-100"
-              )}
-            />
-          ))}
-        </div>
-      )}
-
-      {showWarnings && step === 1 && !isAuthenticated && (
-        <div className="space-y-2 rounded-2xl border border-accent/10 bg-accent/5 p-3 sm:rounded-[24px]">
-          <div className="flex gap-2 text-accent">
-            <Sparkles size={18} className="shrink-0 sm:h-[18px] sm:w-[18px]" />
-            <p className="text-xs font-medium leading-relaxed sm:text-xs">{t("warningAccount")}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Step 1: L'Essentiel */}
-      {step === 1 && (
-        <div className="space-y-4 sm:space-y-4">
-          <div className="space-y-2 sm:space-y-2">
-            <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-              {t("eventNameLabel")}
-            </Label>
-            <div className="group relative">
-              <Input
-                ref={nameRef}
-                className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 text-base transition-all focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/5 group-hover:border-gray-200 sm:h-12"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addressRef.current?.focus();
-                  }
-                }}
-                placeholder={t("eventNamePlaceholder")}
-                autoFocus
-                autoCapitalize="sentences"
-                enterKeyHint="next"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2.5 sm:space-y-2">
-            <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-              {t("addressLabel")}
-            </Label>
-            <div className="relative">
-              <Input
-                ref={addressRef}
-                className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    dateRef.current?.focus();
-                  }
-                }}
-                placeholder={t("addressPlaceholder")}
-                autoComplete="street-address"
-                autoCapitalize="sentences"
-                enterKeyHint="next"
-              />
-              <MapPin
-                size={18}
-                className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-                {t("dateLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  ref={dateRef}
-                  type="date"
-                  className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      timeRef.current?.focus();
-                    }
-                  }}
-                  enterKeyHint="next"
-                />
-                <Calendar
-                  size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-                {t("timeLabel")}
-              </Label>
-              <div className="relative">
-                <Input
-                  ref={timeRef}
-                  type="time"
-                  className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 px-4 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
-                  value={time}
-                  onChange={(e) => setTime(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      if (canGoNext()) {
-                        if (initialData) {
-                          handleSubmit();
-                        } else {
-                          goNext();
-                        }
-                      }
-                    }
-                  }}
-                  enterKeyHint="next"
-                />
-                <Clock
-                  size={18}
-                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-2 sm:space-y-2">
-              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-                {tShared("adultsLabel")}
-              </Label>
-              <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                <SelectTrigger className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
-                  <div className="flex items-center gap-2">
-                    <Users size={18} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
-                    <SelectValue />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-[24px] border-gray-100 shadow-2xl">
-                  {Array.from({ length: 101 }, (_, i) => (
-                    <SelectItem
-                      key={i}
-                      value={String(i)}
-                      className="rounded-xl py-3 text-base sm:py-2 sm:text-sm"
-                    >
-                      {i} {tShared("adultsCount", { count: i })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 sm:space-y-2">
-              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-                {tShared("childrenLabel")}
-              </Label>
-              <Select value={String(children)} onValueChange={(val) => setChildren(parseInt(val))}>
-                <SelectTrigger className="h-12 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12">
-                  <div className="flex items-center gap-2">
-                    <Users size={18} className="text-gray-400 sm:h-[18px] sm:w-[18px]" />
-                    <SelectValue />
-                  </div>
-                </SelectTrigger>
-                <SelectContent className="z-[110] max-h-[300px] rounded-[24px] border-gray-100 shadow-2xl">
-                  {Array.from({ length: 101 }, (_, i) => (
-                    <SelectItem
-                      key={i}
-                      value={String(i)}
-                      className="rounded-xl py-3 text-base sm:py-2 sm:text-sm"
-                    >
-                      {i} {tShared("childrenCount", { count: i })}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-3 sm:pt-2">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 hover:bg-gray-50 active:scale-95 sm:h-12"
-            >
-              {t("cancelButton")}
-            </Button>
-            <Button
-              onClick={initialData ? handleSubmit : goNext}
-              disabled={!canGoNext() || isPending}
-              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 hover:bg-accent/90 active:scale-95 sm:h-12"
-            >
-              {isPending ? (
-                <Loader2 size={20} className="animate-spin sm:h-[18px] sm:w-[18px]" />
-              ) : initialData ? (
-                tShared("save")
-              ) : (
-                t("nextButton")
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: L'Ambiance */}
-      {step === 2 && (
-        <div className="space-y-4 sm:space-y-3">
-          <div className="pb-1 text-center sm:pb-2">
-            <h4 className="text-sm font-bold text-gray-900 sm:text-sm">{t("menuDescription")}</h4>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2.5 sm:gap-2">
-            {[
-              { id: "group_standard", label: t("modeGroupStandard") },
-              ...CREATION_MODES.filter((m) => !["vacation"].includes(m.id)),
-              { id: "group_special", label: t("modeGroupSpecial") },
-              ...CREATION_MODES.filter((m) => ["vacation"].includes(m.id)),
-            ].map((item) => {
-              if (item.id.startsWith("group_")) {
-                return (
-                  <div key={item.id} className="pb-1 pt-3 first:pt-0 sm:pb-0.5 sm:pt-2">
-                    <h5 className="ml-1 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400">
-                      {item.label}
-                    </h5>
-                  </div>
-                );
+    <div
+      className="flex w-full min-w-0 flex-col gap-4 overflow-hidden px-0 pb-24 sm:gap-6 sm:pb-32"
+      suppressHydrationWarning
+    >
+      {/* 1. Hero Input: The Name */}
+      <div className="space-y-2">
+        <Label className="ml-1 text-[9px] font-black uppercase tracking-[0.2em] text-accent/60">
+          {t("eventNameLabel")}
+        </Label>
+        <div className="relative">
+          <AutoSizeInput
+            ref={nameRef}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && name.trim()) {
+                handleSubmit();
               }
-
-              const mode = item as (typeof CREATION_MODES)[number];
-              return (
-                <button
-                  key={mode.id}
-                  type="button"
-                  onClick={() => setCreationMode(mode.id)}
-                  className={cn(
-                    "group flex touch-manipulation items-center gap-3 rounded-xl border-2 p-3 text-left transition-all duration-300 active:scale-[0.98] sm:gap-2.5 sm:rounded-2xl sm:p-2.5",
-                    creationMode === mode.id
-                      ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/5"
-                      : "border-gray-50 bg-gray-50/30 hover:border-gray-200 hover:bg-white"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 sm:h-10 sm:w-10 sm:rounded-[18px]",
-                      creationMode === mode.id
-                        ? "bg-accent text-white"
-                        : "bg-white text-gray-400 shadow-sm group-hover:bg-accent/10 group-hover:text-accent"
-                    )}
-                  >
-                    <div className="h-5 w-5 sm:h-4 sm:w-4">{mode.icon}</div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span
-                      className={cn(
-                        "block text-sm font-bold transition-colors sm:text-sm",
-                        creationMode === mode.id ? "text-accent" : "text-gray-900"
-                      )}
-                    >
-                      {mode.label}
-                    </span>
-                    <span className="block truncate text-xs text-gray-500 sm:text-xs">
-                      {mode.desc}
-                    </span>
-                  </div>
-                  <div
-                    className={cn(
-                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 sm:h-5 sm:w-5",
-                      creationMode === mode.id ? "border-accent bg-accent" : "border-gray-200"
-                    )}
-                  >
-                    {creationMode === mode.id && (
-                      <div className="h-2 w-2 rounded-full bg-white sm:h-1.5 sm:w-1.5" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {creationMode === "vacation" && (
-            <div className="space-y-3 pt-2">
-              <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-                {t("durationLabel")}
-              </Label>
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  {[2, 3, 5, 7, 10, 14].map((d) => (
-                    <button
-                      key={d}
-                      type="button"
-                      onClick={() => setDuration(d)}
-                      className={cn(
-                        "flex h-9 items-center justify-center rounded-full border px-4 text-sm font-medium transition-all active:scale-95",
-                        duration === d
-                          ? "border-accent bg-accent text-white"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-accent hover:bg-accent/5"
-                      )}
-                    >
-                      {d}
-                    </button>
-                  ))}
-                </div>
-                <div className="relative flex items-center gap-3">
-                  <Input
-                    type="number"
-                    min={1}
-                    max={31}
-                    value={duration}
-                    onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                    className="h-10 w-24 rounded-xl border-gray-100 bg-gray-50/50 px-3 text-center text-sm font-bold focus:bg-white"
-                  />
-                  <span className="text-sm font-medium text-gray-500">{t("durationLabel")}</span>
-                </div>
-              </div>
-            </div>
+            }}
+            placeholder={currentPlaceholder}
+            maxSize={36}
+            minSize={16}
+            className="h-auto border-none bg-transparent p-0 font-black tracking-tighter caret-transparent placeholder:text-accent/40 text-[#1a0a33] focus-visible:ring-0"
+          />
+          {/* Custom Blinking Cursor when empty */}
+          {name.length === 0 && (
+            <span className="animate-blink absolute left-0 top-1 text-[36px] font-light text-accent pointer-events-none">
+              _
+            </span>
           )}
+        </div>
+      </div>
 
-          <div className="flex gap-3 pt-3 sm:pt-2">
-            <Button
-              variant="outline"
-              onClick={goBack}
-              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
+      {/* 2. Type Selection Cards */}
+      <div className="space-y-2">
+        <Label className="ml-1 text-[9px] font-black uppercase tracking-[0.2em] text-gray-600">
+          {t("eventType")}
+        </Label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setIsVacation(false)}
+            className={cn(
+              "group relative flex items-center gap-3 overflow-hidden rounded-2xl border-2 p-3 transition-all duration-300 active:scale-[0.98]",
+              !isVacation
+                ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/10"
+                : "border-gray-100 bg-white hover:border-gray-200"
+            )}
+          >
+            <div
+              className={cn(
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-300",
+                !isVacation ? "bg-accent text-white" : "bg-gray-50 text-gray-500"
+              )}
             >
-              {t("backButton")}
-            </Button>
-            <Button
-              onClick={goNext}
-              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
+              <Utensils size={20} />
+            </div>
+            <div className="text-left">
+              <span
+                className={cn(
+                  "block text-sm font-bold tracking-tight transition-colors duration-300",
+                  !isVacation ? "text-accent" : "text-gray-600"
+                )}
+              >
+                {t("meal")}
+              </span>
+              <span className="text-[9px] font-medium text-gray-400">
+                {t("singleMealSubtitle")}
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setIsVacation(true)}
+            className={cn(
+              "group relative flex items-center gap-3 overflow-hidden rounded-2xl border-2 p-3 transition-all duration-300 active:scale-[0.98]",
+              isVacation
+                ? "border-accent bg-accent/[0.03] shadow-md shadow-accent/10"
+                : "border-gray-100 bg-white hover:border-gray-200"
+            )}
+          >
+            <div
+              className={cn(
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-300",
+                isVacation ? "bg-accent text-white" : "bg-gray-50 text-gray-500"
+              )}
             >
-              {t("nextButton")}
-            </Button>
+              <Luggage size={20} />
+            </div>
+            <div className="text-left">
+              <span
+                className={cn(
+                  "block text-sm font-bold tracking-tight transition-colors duration-300",
+                  isVacation ? "text-accent" : "text-gray-600"
+                )}
+              >
+                {t("stay")}
+              </span>
+              <span className="text-[9px] font-medium text-gray-400">{t("staySubtitle")}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Date Range Selector (Conditional) */}
+      {isVacation && (
+        <div className="animate-in fade-in slide-in-from-top-2 space-y-3 duration-300">
+          <div className="grid grid-cols-2 gap-3">
+            {/* Start Date */}
+            <div className="space-y-1">
+              <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                {t("dateFrom")}
+              </Label>
+              <DatePicker
+                value={date}
+                onChange={(d) => d && setDate(d)}
+                placeholder={t("startDatePlaceholder")}
+                className="h-11 rounded-xl border-gray-100 bg-white text-sm font-medium hover:border-accent/30"
+              />
+            </div>
+            {/* End Date */}
+            <div className="space-y-1">
+              <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                {t("dateTo")}
+              </Label>
+              <DatePicker
+                value={endDate}
+                onChange={(d) => d && setEndDate(d)}
+                placeholder={t("endDatePlaceholder")}
+                fromDate={date}
+                className="h-11 rounded-xl border-gray-100 bg-white text-sm font-medium hover:border-accent/30"
+              />
+            </div>
+          </div>
+          {/* Duration badge */}
+          <div className="text-center">
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent/5 px-3 py-1 text-xs font-bold text-accent">
+              <Sparkles size={12} />
+              {t("stayDuration", { count: computedDuration })}
+            </span>
           </div>
         </div>
       )}
 
-      {/* Step 3: Finalisation */}
-      {step === 3 && (
-        <div className="space-y-5 sm:space-y-4">
-          <div className="space-y-3 rounded-2xl border border-gray-100 bg-gray-50/50 p-5 sm:rounded-[32px]">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <div className="flex items-center gap-2 text-gray-400">
-                <Sparkles size={18} className="sm:h-4 sm:w-4" />
-                <span className="text-sm font-bold uppercase tracking-wider sm:text-xs">
-                  {t("summaryEvent")}
-                </span>
-              </div>
-              <span className="text-base font-black text-gray-900 sm:text-sm">{name}</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5 sm:space-y-1">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:text-[10px]">
-                  {t("summaryDate")}
-                </span>
-                <span className="text-base font-bold text-gray-700 sm:text-sm">
-                  {new Date(date).toLocaleDateString(locale === "fr" ? "fr-FR" : locale, {
-                    day: "numeric",
-                    month: "short",
-                  })}{" "}
-                  à {time}
-                </span>
-              </div>
-              <div className="space-y-1.5 sm:space-y-1">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:text-[10px]">
-                  {t("summaryGuestsLabel")}
-                </span>
-                <span className="text-base font-bold text-gray-700 sm:text-sm">
-                  {t("summaryGuests", { adults, children })}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 pt-2 sm:pt-1">
-              <div className="space-y-1.5 sm:space-y-1">
-                <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:text-[10px]">
-                  {t("summaryMenu")}
-                </span>
-                <div className="flex items-center gap-2">
-                  <div className="h-5 w-5 text-accent sm:h-4 sm:w-4">{selectedMode?.icon}</div>
-                  <span className="text-base font-bold text-gray-700 sm:text-sm">
-                    {selectedMode?.label}
-                  </span>
-                </div>
-              </div>
-              {address && (
-                <div className="space-y-1.5 sm:space-y-1">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-gray-400 sm:text-[10px]">
-                    {t("summaryAddress")}
-                  </span>
-                  <span className="block truncate text-base font-bold text-gray-700 sm:text-sm">
-                    {address}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2.5 sm:space-y-2">
-            <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
-              {t("descriptionLabel")}
+      {/* 3b. Date & Time (for single meal) */}
+      {!isVacation && (
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+              {t("dateLabel")}
             </Label>
-            <div className="relative">
-              <Textarea
-                ref={descriptionRef}
-                className="min-h-[100px] w-full touch-manipulation resize-none rounded-2xl border border-gray-100 bg-gray-50/50 p-4 pl-12 text-base outline-none transition-all focus:border-accent focus:bg-white focus:ring-2 focus:ring-accent/20 sm:min-h-[80px] sm:pl-10"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    if (name.trim()) {
-                      handleSubmit();
-                    }
-                  }
-                }}
-                placeholder={t("descriptionPlaceholder")}
-                autoCapitalize="sentences"
-                enterKeyHint="send"
-              />
-              <MessageSquare
-                size={20}
-                className="pointer-events-none absolute left-4 top-4 z-10 text-gray-400 sm:left-3.5 sm:h-[18px] sm:w-[18px]"
-              />
+            <DatePicker
+              value={date}
+              onChange={(d) => d && setDate(d)}
+              placeholder={t("datePlaceholder")}
+              className="h-11 rounded-xl border-gray-200 bg-white text-sm font-medium hover:border-accent/50"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+              {t("timeLabel")}
+            </Label>
+            <TimePicker
+              value={time}
+              onChange={(t) => setTime(t)}
+              placeholder={t("timeLabel")}
+              className="h-11 rounded-xl border-gray-200 bg-white text-sm font-medium hover:border-accent/50"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 4. Advanced Section Toggle */}
+      <div>
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="group flex w-full items-center justify-between rounded-lg px-1 py-1.5 text-left transition-colors hover:bg-gray-50"
+        >
+          <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 group-hover:text-accent">
+            {t("moreOptions")}
+          </span>
+          <ChevronDown
+            size={14}
+            className={cn(
+              "text-gray-400 transition-transform group-hover:text-accent",
+              showAdvanced && "rotate-180"
+            )}
+          />
+        </button>
+
+        {showAdvanced && (
+          <div className="animate-in fade-in slide-in-from-top-2 mt-2 space-y-3 rounded-xl border border-gray-100 bg-gray-50/50 p-3 duration-200">
+            {/* Guests */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                  {tShared("adultsLabel")}
+                </Label>
+                <Select value={String(adults)} onValueChange={(v) => setAdults(parseInt(v))}>
+                  <SelectTrigger className="h-10 rounded-lg border-gray-200 bg-white text-sm font-medium focus:border-accent focus:ring-0">
+                    <div className="flex items-center gap-2">
+                      <Users size={14} className="text-gray-400" />
+                      <SelectValue />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] rounded-xl border-gray-100 shadow-lg">
+                    {Array.from({ length: 31 }, (_, i) => (
+                      <SelectItem key={i} value={String(i)} className="rounded-lg py-2 text-sm">
+                        {i}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                  {tShared("childrenLabel")}
+                </Label>
+                <Select value={String(children)} onValueChange={(v) => setChildren(parseInt(v))}>
+                  <SelectTrigger className="h-10 rounded-lg border-gray-200 bg-white text-sm font-medium focus:border-accent focus:ring-0">
+                    <div className="flex items-center gap-2">
+                      <Users size={14} className="text-gray-400" />
+                      <SelectValue />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[200px] rounded-xl border-gray-100 shadow-lg">
+                    {Array.from({ length: 21 }, (_, i) => (
+                      <SelectItem key={i} value={String(i)} className="rounded-lg py-2 text-sm">
+                        {i}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-1">
+              <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                {t("addressLabel")}
+              </Label>
+              <div className="relative">
+                <Input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={t("addressPlaceholder")}
+                  className="h-10 rounded-lg border-gray-200 bg-white pl-9 text-sm font-medium focus:border-accent focus:ring-0"
+                />
+                <MapPin
+                  size={14}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-1">
+              <Label className="ml-1 text-[9px] font-bold uppercase tracking-wider text-gray-500">
+                {t("descriptionLabel")}
+              </Label>
+              <div className="relative">
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t("descriptionPlaceholder")}
+                  className="min-h-[60px] resize-none rounded-lg border-gray-200 bg-white p-2.5 pl-9 text-sm font-medium focus:border-accent focus:ring-0"
+                  style={{ fontSize: "16px" }}
+                />
+                <MessageSquare size={14} className="absolute left-3 top-3 text-gray-400" />
+              </div>
             </div>
           </div>
+        )}
+      </div>
 
-          {error && (
-            <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
-              <p className="text-center text-sm font-bold text-red-500 sm:text-xs">
-                {error === "Une erreur est survenue" ? t("errorDefault") : error}
-              </p>
-            </div>
-          )}
-
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="outline"
-              onClick={goBack}
-              className="h-12 flex-1 touch-manipulation rounded-xl border-gray-100 font-bold text-gray-500 active:scale-95 sm:h-12"
-            >
-              {t("backButton")}
-            </Button>
+      {/* 5. Floating Action Button */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-4">
+        <div className="mx-auto max-w-2xl">
+          <div className="rounded-2xl bg-white/90 p-1.5 shadow-lg backdrop-blur-lg border border-gray-200/50">
             <Button
               onClick={handleSubmit}
-              disabled={isPending || !name.trim()}
-              className="h-12 flex-[2] touch-manipulation rounded-xl bg-accent font-bold text-white shadow-lg shadow-accent/20 active:scale-95 sm:h-12"
+              disabled={!name.trim() || isPending}
+              className={cn(
+                "h-12 w-full rounded-xl text-base font-bold tracking-tight transition-all duration-300 active:scale-[0.98]",
+                name.trim()
+                  ? "bg-accent text-white shadow-md hover:bg-accent/90"
+                  : "bg-gray-100 text-gray-400"
+              )}
             >
               {isPending ? (
-                <Loader2 size={20} className="animate-spin sm:h-[18px] sm:w-[18px]" />
+                <Loader2 size={20} className="animate-spin" />
               ) : (
-                t("createButton")
+                <div className="flex items-center gap-2">
+                  <span>{t("createButton")}</span>
+                  <Sparkles size={16} className={cn(name.trim() && "animate-pulse")} />
+                </div>
               )}
             </Button>
           </div>
+          {error && (
+            <p className="mt-2 text-center text-xs font-medium text-red-500 animate-in fade-in">
+              {error}
+            </p>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 
@@ -642,13 +456,13 @@ export function EventForm({
 
   return (
     <Drawer open onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="px-4 sm:px-6">
-        <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
-          <DrawerTitle className="text-lg sm:text-xl">{stepTitles[step - 1]}</DrawerTitle>
+      <DrawerContent className="max-h-[96vh] px-4 sm:px-6">
+        <DrawerHeader className="px-0 pb-6 pt-4 text-left">
+          <DrawerTitle className="text-xl font-black tracking-tight text-gray-900">
+            {t("title")}
+          </DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
-          {content}
-        </div>
+        <div className="scrollbar-hide overflow-y-auto overscroll-contain">{content}</div>
       </DrawerContent>
     </Drawer>
   );

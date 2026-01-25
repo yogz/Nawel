@@ -1,13 +1,17 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
 import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
+import { EditEventSheet } from "@/features/events/components/edit-event-sheet";
 import { ShoppingListSheet } from "./shopping-list-sheet";
-import { GuestAccessSheet } from "@/features/auth/components/guest-access-sheet";
-import { ClaimPersonSheet } from "@/features/auth/components/claim-person-sheet";
+import { GuestAccessSheetContent } from "@/features/auth/components/guest-access-sheet";
+import { ClaimPersonSheetContent } from "@/features/auth/components/claim-person-sheet";
 import { useSearchParams, useParams } from "next/navigation";
+import { updateEventWithMealAction } from "@/app/actions/event-actions";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 import {
   ItemSheetContent,
@@ -20,12 +24,7 @@ import {
   IngredientsSheetContent,
 } from "./sheets";
 
-import {
-  type PlanData,
-  type OrganizerHandlers,
-  type Sheet,
-  type PlanningFilter,
-} from "@/lib/types";
+import { type PlanData, type OrganizerHandlers, type Sheet } from "@/lib/types";
 
 interface EventPlannerSheetsProps {
   sheet: Sheet | null;
@@ -37,10 +36,6 @@ interface EventPlannerSheetsProps {
   handlers: OrganizerHandlers;
   isGenerating: boolean;
   setIsGenerating: (isGenerating: boolean) => void;
-  successMessage: { text: string; type?: "success" | "error" } | null;
-  setSuccessMessage: (msg: { text: string; type?: "success" | "error" } | null) => void;
-  planningFilter: PlanningFilter;
-  setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
   currentUserImage?: string | null;
   onAuth: () => void;
@@ -58,7 +53,6 @@ export function EventPlannerSheets({
   handlers,
   isGenerating,
   setIsGenerating,
-  setSuccessMessage,
   currentUserId,
   currentUserImage,
   onAuth,
@@ -70,6 +64,7 @@ export function EventPlannerSheets({
   const searchParams = useSearchParams();
   const params = useParams();
   const locale = params.locale as string;
+  const [isEventPending, startEventTransition] = useTransition();
 
   const getTitle = () => {
     switch (sheet?.type) {
@@ -83,8 +78,10 @@ export function EventPlannerSheets({
         return t("editMeal");
       case "meal-create":
         return t("addMeal");
-      case "person":
-        return t("addGuest");
+      case "person": {
+        const isJoin = sheet.context === "join";
+        return isJoin ? t("claimPerson") : t("addGuest");
+      }
       case "person-edit":
         return t("editGuest");
       case "share":
@@ -95,6 +92,8 @@ export function EventPlannerSheets({
         return t("guestAccess");
       case "claim-person":
         return t("claimPerson");
+      case "event-edit":
+        return t("editEvent");
       default:
         return "";
     }
@@ -116,7 +115,6 @@ export function EventPlannerSheets({
             readOnly={readOnly}
             isGenerating={isGenerating}
             setIsGenerating={setIsGenerating}
-            setSuccessMessage={setSuccessMessage}
             currentUserId={currentUserId}
             onAuth={onAuth}
             findItem={handlers.findItem}
@@ -177,6 +175,7 @@ export function EventPlannerSheets({
       case "person":
         return (
           <PersonSheetContent
+            sheet={sheet}
             readOnly={readOnly}
             currentUserId={currentUserId}
             currentUserImage={currentUserImage}
@@ -209,22 +208,19 @@ export function EventPlannerSheets({
 
       case "guest-access":
         return (
-          <GuestAccessSheet
-            open
-            onClose={() => {
-              setSheet(null);
+          <GuestAccessSheetContent
+            onAuth={onAuth}
+            onCreateGuest={() => {
+              setSheet({ type: "person", context: "join" });
               onDismissGuestPrompt();
             }}
-            onAuth={onAuth}
           />
         );
 
       case "claim-person":
         return (
-          <ClaimPersonSheet
-            open
+          <ClaimPersonSheetContent
             unclaimed={sheet.unclaimed}
-            onClose={() => setSheet(null)}
             onClaim={async (id) => {
               try {
                 await handlers.handleClaimPerson(id);
@@ -257,10 +253,16 @@ export function EventPlannerSheets({
   return (
     <>
       <Drawer
-        open={!!sheet && sheet.type !== "item-ingredients"}
+        open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
         onOpenChange={(open) => !open && setSheet(null)}
       >
-        <DrawerContent className="px-4 sm:px-6">
+        <DrawerContent
+          className={cn(
+            "px-4 sm:px-6",
+            sheet?.type === "share" && "bg-gray-900/95 backdrop-blur-xl"
+          )}
+          overlayClassName={sheet?.type === "share" ? "bg-black/90 z-[150]" : undefined}
+        >
           <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
             {sheet?.type === "share" ? (
               <DrawerTitle className="sr-only">{getTitle()}</DrawerTitle>
@@ -280,7 +282,7 @@ export function EventPlannerSheets({
               </div>
             )}
           </DrawerHeader>
-          <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
+          <div className="scrollbar-none flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
             {renderSheetContent()}
           </div>
         </DrawerContent>
@@ -294,7 +296,6 @@ export function EventPlannerSheets({
           readOnly={readOnly}
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
-          setSuccessMessage={setSuccessMessage}
           currentUserId={currentUserId}
           onAuth={onAuth}
           findItem={handlers.findItem}
@@ -305,6 +306,41 @@ export function EventPlannerSheets({
           handleDeleteAllIngredients={handlers.handleDeleteAllIngredients}
           handleSaveFeedback={handlers.handleSaveFeedback}
           justGenerated={handlers.justGenerated}
+        />
+      )}
+
+      {sheet?.type === "event-edit" && plan.event && (
+        <EditEventSheet
+          open
+          onClose={() => setSheet(null)}
+          initialData={{
+            name: plan.event.name,
+            description: plan.event.description,
+            adults: plan.event.adults,
+            children: plan.event.children,
+            date: plan.meals[0]?.date,
+            time: plan.meals[0]?.time,
+            address: plan.meals[0]?.address,
+            mealId: plan.meals[0]?.id,
+          }}
+          onSubmit={(data) => {
+            startEventTransition(async () => {
+              await updateEventWithMealAction({
+                slug,
+                key: writeKey,
+                name: data.name,
+                description: data.description,
+                adults: data.adults,
+                children: data.children,
+                mealId: data.mealId,
+                date: data.date,
+                time: data.time,
+                address: data.address,
+              });
+              setSheet(null);
+            });
+          }}
+          isPending={isEventPending}
         />
       )}
     </>

@@ -1,13 +1,8 @@
-import type { Metadata, Viewport } from "next";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  viewportFit: "cover",
-};
+import type { Metadata } from "next";
 import { Suspense } from "react";
+
+// NOTE: Viewport configuration (themeColor, viewportFit, etc.) is handled by
+// the layout.tsx file in this directory. See layout.tsx for details.
 import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventPlanner } from "@/components/planning/event-planner";
@@ -31,6 +26,15 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const description =
     plan.event?.description || t("shareNavigatorText", { name: plan.event?.name || params.slug });
   const url = `https://www.colist.fr/${params.locale}/event/${params.slug}`;
+
+  // Build dynamic OG image URL with event details
+  const firstMeal = plan.meals[0];
+  const ogParams = new URLSearchParams({
+    title,
+    ...(firstMeal?.date && { date: firstMeal.date }),
+    ...(plan.people.length > 0 && { guests: `${plan.people.length} invités` }),
+  });
+  const ogImageUrl = `https://www.colist.fr/api/og?${ogParams.toString()}`;
 
   return {
     title,
@@ -61,9 +65,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       siteName: "CoList",
       images: [
         {
-          url: "https://www.colist.fr/og-image.png",
-          width: 800,
-          height: 800,
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
           alt: title,
           type: "image/png",
         },
@@ -76,7 +80,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://www.colist.fr/og-image.png"],
+      images: [ogImageUrl],
     },
   };
 }

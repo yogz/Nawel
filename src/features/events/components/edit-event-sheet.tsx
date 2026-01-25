@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Check, X, Calendar, Clock } from "lucide-react";
+import { MapPin, Check, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,8 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { fr, enUS, el, de, es, pt } from "date-fns/locale";
 import { format } from "date-fns";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
 
 const dateLocales: Record<string, typeof fr> = {
   fr,
@@ -202,17 +204,12 @@ export function EditEventSheet({
                     {tMeal("dateLabel")}
                   </Label>
                   <div className="relative">
-                    <Input
-                      id="date"
-                      type="date"
-                      value={date ? format(date, "yyyy-MM-dd") : ""}
-                      onChange={(e) =>
-                        setDate(e.target.value ? new Date(e.target.value) : undefined)
-                      }
-                      enterKeyHint="next"
-                      className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                    <DatePicker
+                      value={date}
+                      onChange={setDate}
+                      placeholder={tMeal("datePlaceholder") || "Choisir une date"}
+                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12"
                     />
-                    <Calendar className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-4 sm:w-4" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -223,15 +220,12 @@ export function EditEventSheet({
                     {tMeal("timeLabel")}
                   </Label>
                   <div className="relative">
-                    <Input
-                      id="time"
-                      type="time"
+                    <TimePicker
                       value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                      enterKeyHint="next"
-                      className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 pl-12 pr-4 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-10"
+                      onChange={setTime}
+                      placeholder={tMeal("timePlaceholder") || "Choisir l'heure"}
+                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12"
                     />
-                    <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3 sm:h-4 sm:w-4" />
                   </div>
                 </div>
               </div>

@@ -2,9 +2,10 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { ShoppingCart, ExternalLink, Check, UserX, Users, X } from "lucide-react";
-import { renderAvatar, getDisplayName } from "@/lib/utils";
+import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
+import { renderAvatar, getDisplayName, cn } from "@/lib/utils";
 import clsx from "clsx";
+import { motion, AnimatePresence } from "framer-motion";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/select";
 
 import { useTranslations } from "next-intl";
+import { SectionHeader } from "./section-header";
+import { PersonAvatar } from "../common/person-avatar";
 
 interface ShoppingTabProps {
   plan: PlanData;
@@ -120,7 +123,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
     aggregated.forEach((item) => {
       // For ingredients, use the category from the first source
       // For items (manual), default to "misc"
-      const category = (item.sources[0].ingredient as any)?.category || "misc";
+      const category = (item.sources[0].ingredient as Ingredient | undefined)?.category || "misc";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -341,68 +344,53 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
           </SelectContent>
         </Select>
 
-        {/* Global progress */}
-        <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
-              <p className="text-2xl font-bold text-text">
-                {checkedAll}/{totalAll}
-                <span className="ml-2 text-sm font-normal text-muted-foreground">{t("items")}</span>
-              </p>
-            </div>
-            <div className="text-3xl font-black text-accent">{progressAll}%</div>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-            <div
-              className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
-              style={{ transform: `scaleX(${progressAll / 100})` }}
-            />
-          </div>
-        </div>
-
         {/* Global shopping list card */}
         <Link
           href={
             writeKey ? `/event/${slug}/shopping/all?key=${writeKey}` : `/event/${slug}/shopping/all`
           }
-          className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
+          className="block active:scale-[0.99] transition-all"
         >
-          {/* Decorative background gradient */}
-          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
-          <div className="relative">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10">
-                <Users size={24} className="text-accent" />
+          <SectionHeader
+            title={t("allListTitle")}
+            description={
+              progressAll === 100 ? (
+                <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                  <Check size={10} />
+                  {t("completed")}
+                </span>
+              ) : (
+                <span className="text-[10px] font-medium text-gray-400 capitalize">
+                  {checkedAll}/{totalAll} {t("items")}
+                </span>
+              )
+            }
+            icon={
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-1 ring-gray-100">
+                <Users size={20} />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-text">{t("allListTitle")}</h3>
-                  {progressAll === 100 && (
-                    <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
-                      <Check size={10} />
-                      {t("completed")}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-1 flex items-center gap-3">
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+            }
+            actions={
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end gap-1">
+                  <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
                     <div
-                      className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${progressAll === 100 ? "bg-green-500" : "bg-accent"}`}
+                      className={cn(
+                        "h-full origin-left rounded-full transition-transform duration-300",
+                        progressAll === 100 ? "bg-green-500" : "bg-accent"
+                      )}
                       style={{ transform: `scaleX(${progressAll / 100})` }}
                     />
                   </div>
-                  <span className="text-xs font-semibold text-muted-foreground">
-                    {checkedAll}/{totalAll}
-                  </span>
+                  <span className="text-[10px] font-black text-accent/40">{progressAll}%</span>
                 </div>
+                <ExternalLink
+                  size={14}
+                  className="text-gray-300 transition-colors group-hover:text-accent"
+                />
               </div>
-              <ExternalLink
-                size={18}
-                className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
-              />
-            </div>
-          </div>
+            }
+          />
         </Link>
 
         {/* Per-person cards */}
@@ -415,61 +403,50 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
               : `/event/${slug}/shopping/${person.id}`;
 
             return (
-              <Link
-                key={person.id}
-                href={url}
-                className="group relative block overflow-hidden rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5 active:scale-[0.99]"
-              >
-                {/* Decorative background gradient */}
-                <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
-                <div className="relative">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-accent/10 text-2xl">
-                      {(() => {
-                        const avatar = renderAvatar(
-                          person,
-                          plan.people.map((p) => p.name)
-                        );
-                        if (avatar.type === "image") {
-                          return (
-                            <img
-                              src={avatar.src}
-                              alt={getDisplayName(person)}
-                              className="h-full w-full object-cover"
-                            />
-                          );
-                        }
-                        return avatar.value;
-                      })()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-text">{getDisplayName(person)}</h3>
-                        {isComplete && (
-                          <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
-                            <Check size={10} />
-                            {t("completed")}
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-1 flex items-center gap-3">
-                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+              <Link key={person.id} href={url} className="block active:scale-[0.99] transition-all">
+                <SectionHeader
+                  title={getDisplayName(person)}
+                  description={
+                    isComplete ? (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase tracking-wider">
+                        <Check size={10} />
+                        {t("completed")}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-medium text-gray-400 capitalize">
+                        {checkedItems}/{totalItems} {t("items")}
+                      </span>
+                    )
+                  }
+                  icon={
+                    <PersonAvatar
+                      person={person}
+                      allNames={plan.people.map((p) => p.name)}
+                      size="md"
+                      className="shadow-sm ring-1 ring-gray-100"
+                    />
+                  }
+                  actions={
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
                           <div
-                            className={`h-full w-full origin-left rounded-full transition-transform duration-300 ${isComplete ? "bg-green-500" : "bg-accent"}`}
+                            className={cn(
+                              "h-full origin-left rounded-full transition-transform duration-300",
+                              isComplete ? "bg-green-500" : "bg-accent"
+                            )}
                             style={{ transform: `scaleX(${progress / 100})` }}
                           />
                         </div>
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          {checkedItems}/{totalItems}
-                        </span>
+                        <span className="text-[10px] font-black text-accent/40">{progress}%</span>
                       </div>
+                      <ExternalLink
+                        size={14}
+                        className="text-gray-300 transition-colors group-hover:text-accent"
+                      />
                     </div>
-                    <ExternalLink
-                      size={18}
-                      className="shrink-0 text-gray-300 transition-colors group-hover:text-accent"
-                    />
-                  </div>
-                </div>
+                  }
+                />
               </Link>
             );
           })}
@@ -526,45 +503,41 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       )}
 
       {/* Header with progress */}
-      <div className="rounded-2xl border border-l-4 border-black/[0.05] border-l-accent bg-white/95 p-5 shadow-sm backdrop-blur-sm transition-all duration-300">
-        <div className="mb-3 flex items-center gap-4">
-          {displayPerson && (
-            <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-accent/10 text-3xl">
-              {(() => {
-                const avatar = renderAvatar(
-                  displayPerson,
-                  plan.people.map((p) => p.name)
-                );
-                if (avatar.type === "image") {
-                  return (
-                    <img
-                      src={avatar.src}
-                      alt={displayPerson ? getDisplayName(displayPerson) : ""}
-                      className="h-full w-full object-cover"
-                    />
-                  );
-                }
-                return avatar.value;
-              })()}
+      <SectionHeader
+        title={displayPerson ? getDisplayName(displayPerson) : t("myList")}
+        description={
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+            {checkedCount}/{allItems.length} {t("items")}
+          </span>
+        }
+        icon={
+          displayPerson ? (
+            <PersonAvatar
+              person={displayPerson}
+              allNames={plan.people.map((p) => p.name)}
+              size="md"
+              className="shadow-sm ring-1 ring-gray-100"
+            />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <ShoppingCart size={20} />
             </div>
-          )}
-          <div className="flex-1">
-            <h2 className="text-lg font-bold text-text">
-              {displayPerson ? getDisplayName(displayPerson) : t("myList")}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {checkedCount}/{allItems.length} {t("items")} {t("bought", { count: checkedCount })}
-            </p>
+          )
+        }
+        actions={
+          <div className="flex items-center gap-4">
+            <div className="text-2xl font-black text-accent/20">{progressPercent}%</div>
+            <div className="relative h-2 w-24 overflow-hidden rounded-full bg-gray-100 hidden sm:block">
+              <motion.div
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: progressPercent / 100 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute inset-0 origin-left bg-gradient-to-r from-accent to-accent/80"
+              />
+            </div>
           </div>
-          <div className="text-3xl font-black text-accent">{progressPercent}%</div>
-        </div>
-        <div className="h-2 overflow-hidden rounded-full bg-gray-100">
-          <div
-            className="h-full w-full origin-left rounded-full bg-gradient-to-r from-accent to-primary transition-transform duration-500 ease-out"
-            style={{ transform: `scaleX(${progressPercent / 100})` }}
-          />
-        </div>
-      </div>
+        }
+      />
 
       {/* Full screen link */}
       {fullPageUrl && (
@@ -582,97 +555,130 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         {Object.entries(shoppingList)
           .sort(([catA], [catB]) => {
             // Put 'misc' at the end
-            if (catA === "misc") return 1;
-            if (catB === "misc") return -1;
+            if (catA === "misc") {
+              return 1;
+            }
+            if (catB === "misc") {
+              return -1;
+            }
             return catA.localeCompare(catB);
           })
           .map(([category, items]) => (
-            <div key={category} className="space-y-3">
-              <h3 className="flex items-center gap-2 px-1 text-xs font-bold uppercase tracking-wider text-muted-foreground/70">
-                <span className="h-px flex-1 bg-gray-100" />
-                {t(`aisles.${category}` as any)}
-                <span className="h-px flex-1 bg-gray-100" />
-              </h3>
-              <div className="space-y-2">
-                {items.map((aggregatedItem) => {
-                  const isChecked = getEffectiveChecked(aggregatedItem);
-                  const itemName = aggregatedItem.name;
+            <div key={category} className="space-y-4">
+              <div className="flex items-center gap-4 px-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent/40">
+                  {t(`aisles.${category}` as Parameters<typeof t>[0])}
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-black/[0.05] to-transparent" />
+              </div>
+              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div className="flex flex-col">
+                  {items.map((aggregatedItem) => {
+                    const isChecked = getEffectiveChecked(aggregatedItem);
+                    const itemName = aggregatedItem.name;
 
-                  return (
-                    <button
-                      key={aggregatedItem.id}
-                      type="button"
-                      onClick={() => handleToggle(aggregatedItem)}
-                      disabled={isPending}
-                      aria-label={`${t(isChecked ? "uncheck" : "check") as string} ${itemName}`}
-                      aria-pressed={isChecked}
-                      className={clsx(
-                        "group relative flex w-full items-start gap-4 overflow-hidden rounded-[24px] border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99] sm:p-4",
-                        isChecked
-                          ? "border-green-200 bg-green-50 shadow-sm"
-                          : "border border-gray-100 bg-white shadow-sm hover:border-accent/20 hover:shadow-xl hover:shadow-accent/5"
-                      )}
-                    >
-                      {/* Decorative background gradient */}
-                      {!isChecked && (
-                        <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-accent/5 blur-3xl transition-all group-hover:bg-accent/10" />
-                      )}
-                      {/* Checkbox */}
-                      <div
+                    return (
+                      <motion.button
+                        key={aggregatedItem.id}
+                        type="button"
+                        whileTap={{ scale: 0.995 }}
+                        onClick={() => handleToggle(aggregatedItem)}
+                        disabled={isPending}
+                        aria-label={`${t(isChecked ? "uncheck" : "check") as string} ${itemName}`}
+                        aria-pressed={isChecked}
                         className={clsx(
-                          "relative z-10 mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-2 transition-all sm:h-6 sm:w-6",
-                          isChecked ? "border-green-500 bg-green-500 text-white" : "border-gray-300"
+                          "group relative flex w-full items-center gap-4 px-4 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99]",
+                          isChecked ? "bg-gray-50/50" : "hover:bg-gray-50"
                         )}
                       >
-                        {isChecked && (
-                          <Check size={16} strokeWidth={3} className="sm:h-[14px] sm:w-[14px]" />
-                        )}
-                      </div>
+                        {/* Checkbox */}
+                        <div
+                          className={clsx(
+                            "relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-300",
+                            isChecked
+                              ? "border-green-500 bg-green-500 text-white shadow-sm"
+                              : "border-gray-200 bg-white group-hover:border-gray-300"
+                          )}
+                        >
+                          <AnimatePresence mode="wait">
+                            {isChecked ? (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -45 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                key="check"
+                              >
+                                <Check size={14} strokeWidth={4} />
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                key="empty"
+                              />
+                            )}
+                          </AnimatePresence>
+                        </div>
 
-                      {/* Content */}
-                      <div className="relative z-10 min-w-0 flex-1">
-                        <div className="flex items-baseline gap-2">
-                          <span
-                            className={clsx(
-                              "text-base font-semibold transition-all sm:text-base",
-                              isChecked ? "text-green-700 line-through" : "text-text"
+                        {/* Content */}
+                        <div className="relative z-10 min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={clsx(
+                                "truncate text-base font-semibold tracking-tight transition-all",
+                                isChecked ? "text-gray-400 line-through" : "text-gray-900"
+                              )}
+                            >
+                              {itemName}
+                            </span>
+                            {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
+                              <span
+                                className={cn(
+                                  "rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-500",
+                                  isChecked && "opacity-50"
+                                )}
+                              >
+                                {formatAggregatedQuantity(
+                                  aggregatedItem.quantity,
+                                  aggregatedItem.unit
+                                )}
+                              </span>
+                            )}
+                          </div>
+                          <p
+                            className={cn(
+                              "mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground/60 transition-colors",
+                              isChecked && "opacity-50"
                             )}
                           >
-                            {itemName}
-                          </span>
-                          {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
-                            <span className="text-sm text-muted-foreground sm:text-sm">
-                              {formatAggregatedQuantity(
-                                aggregatedItem.quantity,
-                                aggregatedItem.unit
-                              )}
-                            </span>
-                          )}
+                            {aggregatedItem.sources.length > 1 ? (
+                              <span className="text-accent/60">
+                                {t("sources", { count: aggregatedItem.sources.length })}
+                              </span>
+                            ) : (
+                              <span className="truncate block">
+                                {aggregatedItem.sources[0].type === "ingredient" && (
+                                  <>
+                                    <span className="text-muted-foreground">
+                                      {aggregatedItem.sources[0].item.name}
+                                    </span>
+                                    {" • "}
+                                  </>
+                                )}
+                                {plan.meals.length > 1 && (
+                                  <>{aggregatedItem.sources[0].mealTitle} • </>
+                                )}
+                                {aggregatedItem.sources[0].serviceTitle}
+                              </span>
+                            )}
+                          </p>
                         </div>
-                        <p className="mt-0.5 text-xs text-muted-foreground sm:text-xs">
-                          {aggregatedItem.sources.length > 1 ? (
-                            <span className="font-medium text-accent">
-                              {t("sources", { count: aggregatedItem.sources.length })}
-                            </span>
-                          ) : (
-                            <>
-                              {aggregatedItem.sources[0].type === "ingredient" && (
-                                <>
-                                  <span className="font-medium">
-                                    {aggregatedItem.sources[0].item.name}
-                                  </span>
-                                  {" · "}
-                                </>
-                              )}
-                              {aggregatedItem.sources[0].mealTitle} ·{" "}
-                              {aggregatedItem.sources[0].serviceTitle}
-                            </>
-                          )}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+
+                        {/* Subtle separator */}
+                        <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-50 group-last:hidden" />
+                      </motion.button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ))}

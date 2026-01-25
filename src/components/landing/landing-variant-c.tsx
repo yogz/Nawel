@@ -55,8 +55,6 @@ export function LandingVariantC() {
     },
   ];
 
-
-
   return (
     <div
       ref={containerRef}
@@ -82,7 +80,7 @@ export function LandingVariantC() {
           text: t("ctaStart"),
           icon: <Zap className="h-4 w-4 fill-current" />,
         }}
-        secondaryCta={{ text: t("ctaDemo") }}
+        secondaryCta={{ text: t("ctaDemo"), href: "#demo" }}
         badgeColor="red" // Using red/orange theme
         gradientStyle="default"
       />

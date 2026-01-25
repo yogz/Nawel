@@ -8,6 +8,7 @@ import {
   real,
   index,
   boolean,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -147,6 +148,7 @@ export const services = pgTable(
       .notNull()
       .references(() => meals.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
+    description: text("description"),
     order: integer("order_index").notNull().default(0),
     adults: integer("adults").notNull().default(0),
     children: integer("children").notNull().default(0),
@@ -168,6 +170,10 @@ export const people = pgTable(
     emoji: text("emoji"),
     image: text("image"),
     userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+    status: text("status"), // 'confirmed', 'declined', 'maybe'
+    guest_adults: integer("guest_adults").notNull().default(0), // Additional adults (excluding self)
+    guest_children: integer("guest_children").notNull().default(0), // Children count
+    token: uuid("token").defaultRandom(), // Secret token for anonymous modification
   },
   (table) => ({
     eventIdIdx: index("people_event_id_idx").on(table.eventId),
@@ -274,20 +280,6 @@ export const personRelations = relations(people, ({ one, many }) => ({
     references: [user.id],
   }),
 }));
-
-export const changeLogs = pgTable("change_logs", {
-  id: serial("id").primaryKey(),
-  action: varchar("action", { length: 20 }).notNull(), // 'create', 'update', 'delete'
-  tableName: varchar("table_name", { length: 50 }).notNull(), // 'items', 'meals', 'people', 'days'
-  recordId: integer("record_id").notNull(),
-  userId: text("user_id"), // Nullable for anonymous actions
-  oldData: text("old_data"), // JSON string of old data (for update/delete)
-  newData: text("new_data"), // JSON string of new data (for create/update)
-  userIp: varchar("user_ip", { length: 100 }),
-  userAgent: text("user_agent"),
-  referer: text("referer"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
 
 // Cache for AI-generated ingredients (to reduce API costs)
 // Key = dishName + peopleCount (e.g., "raclette" + 4 ≠ "raclette" + 6)

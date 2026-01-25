@@ -27,6 +27,7 @@ interface HeroSectionProps {
   };
   secondaryCta: {
     text: string;
+    href?: string;
   };
   /** Badge color scheme */
   badgeColor?: "red" | "indigo";
@@ -158,8 +159,18 @@ export function HeroSection({
                 {primaryCta.icon}
               </Link>
               <Link
-                href="#discover"
-                onClick={() => trackDiscoverClick(variant)}
+                href={secondaryCta.href || "#discover"}
+                onClick={(e) => {
+                  trackDiscoverClick(variant);
+                  if (secondaryCta.href?.startsWith("#") || (!secondaryCta.href && "#discover")) {
+                    e.preventDefault();
+                    const targetId = (secondaryCta.href || "#discover").replace("#", "");
+                    const element = document.getElementById(targetId);
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }
+                }}
                 className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-900 transition-all hover:bg-gray-50 sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
               >
                 {secondaryCta.text}

@@ -28,6 +28,7 @@ const dateSchema = z
 export const baseInput = z.object({
   key: safeKey.optional(),
   slug: safeSlug,
+  token: z.string().optional(),
 });
 
 export const createMealSchema = baseInput.extend({
@@ -42,7 +43,17 @@ export const createMealSchema = baseInput.extend({
 export const createMealWithServicesSchema = baseInput.extend({
   date: dateSchema,
   title: safeText(200).optional(),
-  services: z.array(safeStrictText(100)).min(1, "At least one service required"),
+  services: z
+    .array(
+      z.union([
+        safeStrictText(100),
+        z.object({
+          title: safeStrictText(100),
+          description: safeText(500).optional().nullable(),
+        }),
+      ])
+    )
+    .min(1, "At least one service required"),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   time: z.string().optional(),
@@ -62,6 +73,7 @@ export const updateMealSchema = baseInput.extend({
 export const createServiceSchema = baseInput.extend({
   mealId: z.number().int().positive(),
   title: safeText(200),
+  description: safeText(500).optional().nullable(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),
@@ -70,6 +82,7 @@ export const createServiceSchema = baseInput.extend({
 export const serviceSchema = baseInput.extend({
   id: z.number().int().positive(),
   title: safeText(200).optional(),
+  description: safeText(500).optional().nullable(),
   adults: z.number().int().min(0).max(1000).optional(),
   children: z.number().int().min(0).max(1000).optional(),
   peopleCount: z.number().int().min(0).max(1000).optional(),
@@ -101,6 +114,13 @@ export const updatePersonSchema = baseInput.extend({
   name: safeStrictText(50),
   emoji: safeEmoji.optional().nullable(),
   image: z.string().optional().nullable(),
+});
+
+export const updatePersonStatusSchema = baseInput.extend({
+  personId: z.number().int().positive(),
+  status: z.enum(["confirmed", "declined", "maybe"]),
+  guestAdults: z.coerce.number().int().min(0).optional(),
+  guestChildren: z.coerce.number().int().min(0).optional(),
 });
 
 export const deletePersonSchema = baseInput.extend({
@@ -153,10 +173,7 @@ export const toggleItemCheckedSchema = baseInput.extend({
 export const validateSchema = z.object({
   key: safeKey.optional(),
   slug: safeSlug.optional(),
-});
-
-export const getChangeLogsSchema = z.object({
-  slug: safeSlug,
+  token: z.string().optional(),
 });
 
 export const createEventSchema = z.object({
@@ -285,33 +302,6 @@ export const updateCacheEntrySchema = z.object({
   id: z.number().int().positive(),
   ingredients: z.string().min(2, "JSON invalide"), // JSON string of ingredients
 });
-
-// Audit Logs schemas - validated enums to prevent injection
-export const auditTableNames = [
-  "events",
-  "meals",
-  "services",
-  "items",
-  "people",
-  "ingredients",
-] as const;
-
-export const auditActions = ["create", "update", "delete"] as const;
-
-export const getAuditLogsSchema = z.object({
-  tableName: z.enum(auditTableNames).optional(),
-  action: z.enum(auditActions).optional(),
-  userId: z.string().optional(),
-});
-
-export const deleteAuditLogsSchema = z
-  .object({
-    olderThanDays: z.number().int().min(1).max(365).optional(),
-    deleteAll: z.boolean().optional(),
-  })
-  .refine((data) => data.olderThanDays !== undefined || data.deleteAll === true, {
-    message: "Either olderThanDays or deleteAll must be provided",
-  });
 
 export const deleteCitationAdminSchema = z.object({
   id: z.string(),

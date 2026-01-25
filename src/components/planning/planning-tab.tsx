@@ -4,12 +4,14 @@ import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
-import { PlanningFilters } from "./event-planner-header";
 import { PlusIcon, Calendar, Coffee, ArrowUpRight } from "lucide-react";
 import { MealContainer } from "./meal-container";
 import { DayTabs } from "./day-tabs";
 import { Link } from "@/i18n/navigation";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { CitationDisplay } from "../common/citation-display";
+import { RSVPSummary } from "@/features/people/components/rsvp-summary";
+import { RSVPControl } from "@/features/people/components/rsvp-control";
 
 import {
   type DragEndEvent,
@@ -17,15 +19,12 @@ import {
   type SensorDescriptor,
   type SensorOptions,
 } from "@dnd-kit/core";
-import { type PlanData, type PlanningFilter, type Item, type Sheet } from "@/lib/types";
+import { type PlanData, type Item, type Sheet } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 
 interface PlanningTabProps {
   plan: PlanData;
-  planningFilter: PlanningFilter;
-
-  setPlanningFilter: (filter: PlanningFilter) => void;
   activeItemId: number | null;
   readOnly?: boolean;
   sensors: SensorDescriptor<SensorOptions>[];
@@ -34,6 +33,7 @@ interface PlanningTabProps {
   onAssign: (item: Item, serviceId?: number) => void;
   onDelete: (item: Item) => void;
   onCreateItem: (serviceId: number) => void;
+  onInlineAdd?: (serviceId: number, name: string) => Promise<void> | void;
   onCreateService: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   sheet: Sheet | null;
@@ -42,7 +42,19 @@ interface PlanningTabProps {
   isOwner?: boolean;
   onDeleteEvent?: () => Promise<void>;
   handleAssign?: (item: Item, personId: number | null) => void;
+  handleUpdateStatus?: (
+    id: number,
+    status: "confirmed" | "declined" | "maybe",
+    token?: string | null
+  ) => void;
+  handleUpdateGuestCount?: (
+    id: number,
+    adults: number,
+    children: number,
+    token?: string | null
+  ) => void;
   currentUserId?: string;
+  currentPersonId?: number;
 }
 
 const containerVariants: Variants = {
@@ -58,8 +70,6 @@ const containerVariants: Variants = {
 
 export function PlanningTab({
   plan,
-  planningFilter,
-  setPlanningFilter,
   activeItemId,
   readOnly,
   sensors,
@@ -68,6 +78,7 @@ export function PlanningTab({
   onAssign,
   onDelete,
   onCreateItem,
+  onInlineAdd,
   onCreateService,
   setSheet,
   sheet,
@@ -76,7 +87,10 @@ export function PlanningTab({
   isOwner,
   onDeleteEvent,
   handleAssign,
+  handleUpdateStatus,
+  handleUpdateGuestCount,
   currentUserId,
+  currentPersonId,
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tSettings = useTranslations("EventDashboard.Settings");
@@ -127,28 +141,6 @@ export function PlanningTab({
     setHasMounted(true);
   }, []);
 
-  // All hooks must be called before any conditional returns
-  const unassignedItemsCount = useMemo(
-    () =>
-      plan.meals.reduce(
-        (acc, meal) =>
-          acc +
-          meal.services.reduce(
-            (acc2, service) => acc2 + service.items.filter((i) => !i.personId).length,
-            0
-          ),
-        0
-      ),
-    [plan.meals]
-  );
-
-  // Reset filter to "all" when no more unassigned items
-  useEffect(() => {
-    if (planningFilter.type === "unassigned" && unassignedItemsCount === 0) {
-      setPlanningFilter({ type: "all" });
-    }
-  }, [unassignedItemsCount, planningFilter.type, setPlanningFilter]);
-
   // Early return after all hooks are called
   if (!hasMounted) {
     return null;
@@ -165,52 +157,26 @@ export function PlanningTab({
         variants={isMobile ? {} : containerVariants}
         initial={isMobile ? false : "hidden"}
         animate={isMobile ? false : "show"}
-        className="space-y-2 pt-0"
+        className="space-y-4 pt-0 sm:space-y-6"
       >
-        <div className="flex flex-col gap-3">
-          {unassignedItemsCount > 0 && (
-            <div className="px-0">
-              <PlanningFilters
-                plan={plan}
-                planningFilter={planningFilter}
-                setPlanningFilter={setPlanningFilter}
-                setSheet={setSheet}
-                sheet={sheet}
-                unassignedItemsCount={unassignedItemsCount}
-                slug={slug}
-                writeKey={writeKey}
-                readOnly={!!readOnly}
-              />
-            </div>
-          )}
+        {/* RSVP Section at the top of the page */}
+        {currentPersonId && handleUpdateStatus && handleUpdateGuestCount && (
+          <RSVPControl
+            person={plan.people.find((p) => p.id === currentPersonId)!}
+            token={null} // use current session/token automatically via handler
+            readOnly={readOnly}
+            onUpdateStatus={handleUpdateStatus}
+            onUpdateGuestCount={handleUpdateGuestCount}
+            onValidated={() => {}} // Planning tab currently doesn't manage external edit state
+            variant="card"
+          />
+        )}
 
+        <div className="flex flex-col gap-2">
           <DayTabs days={uniqueDates} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
 
         {plan.meals
-          .filter((meal) => {
-            // Afficher tous les repas (même vides) pour le filtre "all"
-            if (planningFilter.type === "all") {
-              return true;
-            }
-            // Pour les autres filtres, vérifier s'il y a des correspondances
-            // Si le repas n'a pas de services, il n'y a pas de correspondance
-            if (!meal.services || meal.services.length === 0) {
-              return false;
-            }
-            const hasMatch = meal.services.some((s) =>
-              s.items.some((i) => {
-                if (planningFilter.type === "unassigned") {
-                  return !i.personId;
-                }
-                if (planningFilter.type === "person") {
-                  return i.personId === planningFilter.personId;
-                }
-                return false;
-              })
-            );
-            return hasMatch;
-          })
           .filter((meal) => {
             if (selectedDate === "all") return true;
             return meal.date === selectedDate;
@@ -227,42 +193,63 @@ export function PlanningTab({
                 key={meal.id}
                 meal={meal}
                 plan={plan}
-                planningFilter={planningFilter}
                 activeItemId={activeItemId}
                 readOnly={readOnly}
                 onAssign={onAssign}
                 onDelete={onDelete}
                 onCreateItem={onCreateItem}
+                onInlineAdd={onInlineAdd}
                 onCreateService={onCreateService}
                 setSheet={setSheet}
                 handleAssign={handleAssign}
                 currentUserId={currentUserId}
+                currentPersonId={currentPersonId}
               />
             );
           })}
       </motion.div>
-      {plan.meals.length === 0 && planningFilter.type === "all" && (
+      {plan.meals.length === 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-4 py-12 text-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto flex max-w-lg flex-col items-center justify-center px-6 py-20 text-center"
         >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-            className="mb-6 flex justify-center"
-          >
-            <Calendar className="h-20 w-20 text-gray-300" />
-          </motion.div>
-          <h3 className="mb-2 text-lg font-bold text-gray-900">{t("noMeals")}</h3>
-          <p className="mx-auto mb-6 max-w-sm text-sm text-gray-500">
-            Créez votre premier repas pour commencer à organiser votre événement
+          <div className="group relative mb-8">
+            <div className="absolute -inset-8 animate-pulse rounded-full bg-accent/5 blur-2xl transition-all group-hover:bg-accent/10" />
+            <motion.div
+              animate={{
+                y: [0, -8, 0],
+                rotate: [0, -2, 2, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              className="relative rounded-3xl bg-white/50 p-6 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl"
+            >
+              <Calendar className="h-20 w-20 text-accent/20" strokeWidth={1.5} />
+              <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 shadow-lg ring-1 ring-accent/20">
+                <PlusIcon className="h-5 w-5 text-accent" strokeWidth={2.5} />
+              </div>
+            </motion.div>
+          </div>
+
+          <h3 className="mb-3 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">
+            {t("noMeals")}
+          </h3>
+          <p className="mb-10 max-w-sm text-base font-medium leading-relaxed text-gray-500">
+            {t("noMealsDesc") ||
+              "Donnez vie à votre événement ! Ajoutez votre premier repas pour commencer à vous organiser en toute simplicité."}
           </p>
+
           {!readOnly && (
             <Button
               variant="premium"
-              className="h-14 w-full max-w-xs text-base font-bold sm:h-12 sm:text-sm"
-              icon={<PlusIcon size={24} className="sm:h-5 sm:w-5" />}
+              size="lg"
+              className="h-14 w-full max-w-xs rounded-full bg-accent text-lg font-black uppercase tracking-widest text-white shadow-[0_20px_40px_-15px_rgba(var(--accent-rgb),0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_25px_45px_-15px_rgba(var(--accent-rgb),0.4)] active:scale-95"
+              icon={<PlusIcon size={24} />}
               onClick={() => setSheet({ type: "meal-create" })}
             >
               {t("addMeal")}
@@ -270,19 +257,22 @@ export function PlanningTab({
           )}
         </motion.div>
       )}
-      {!readOnly && planningFilter.type === "all" && plan.meals.length > 0 && (
+      {!readOnly && plan.meals.length > 0 && (
         <div className="mt-12 flex flex-col items-center gap-6 px-4 pb-12">
           {/* Main Actions Stack - Glassmorphism style */}
           <div className="flex w-full flex-col gap-3">
-            <Button
-              variant="premium"
-              className="h-12 w-full rounded-2xl border border-white/20 bg-white/40 text-gray-500 shadow-sm backdrop-blur-md transition-all hover:bg-white/60 hover:text-accent active:scale-95"
-              icon={<PlusIcon size={16} />}
-              shine
+            <button
               onClick={() => setSheet({ type: "meal-create" })}
+              className="flex items-center justify-center gap-2 rounded-xl bg-accent/5 px-5 py-3 text-sm font-semibold text-accent/80 transition-all hover:bg-accent/10 hover:text-accent active:scale-95"
             >
-              <span className="text-[10px] font-bold uppercase tracking-wider">{t("addMeal")}</span>
-            </Button>
+              <PlusIcon size={16} strokeWidth={2.5} />
+              <span>{t("addMeal")}</span>
+            </button>
+          </div>
+
+          {/* Poetic Quote before buttons */}
+          <div className="mt-12 w-full max-w-md px-4 opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <CitationDisplay seed={slug} className="text-center" />
           </div>
 
           {/* Premium Footer Actions */}

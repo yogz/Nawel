@@ -175,11 +175,11 @@ export function CitationDisplay({
               className="flex flex-col"
             >
               {currentContent.type === "text" ? (
-                <p className="text-[14px] font-medium italic leading-relaxed tracking-tight text-indigo-950/80 decoration-accent/20 underline-offset-4 transition-colors group-hover:text-accent">
+                <p className="text-[16px] font-medium italic leading-relaxed tracking-tight text-indigo-950/80 decoration-accent/20 underline-offset-4 transition-colors group-hover:text-accent">
                   {currentContent.value}
                 </p>
               ) : (
-                <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-indigo-900/50">
+                <p className="text-[13px] font-bold uppercase tracking-[0.15em] text-indigo-900/50">
                   — {currentContent.value}
                 </p>
               )}

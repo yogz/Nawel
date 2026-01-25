@@ -60,6 +60,8 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleDeletePerson: personHandlers.handleDeletePerson,
     handleClaimPerson: personHandlers.handleClaimPerson,
     handleUnclaimPerson: personHandlers.handleUnclaimPerson,
+    handleUpdateStatus: personHandlers.handleUpdateStatus,
+    handleUpdateGuestCount: personHandlers.handleUpdateGuestCount,
 
     // Event handlers
     handleDeleteEvent: eventHandlers.handleDeleteEvent,

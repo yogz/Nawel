@@ -15,6 +15,7 @@ export type Meal = InferSelectModel<typeof meals> & {
 export type Service = InferSelectModel<typeof services> & {
   items: Item[];
   icon?: string | null;
+  description?: string | null;
 };
 
 export type Person = InferSelectModel<typeof people> & {
@@ -23,6 +24,10 @@ export type Person = InferSelectModel<typeof people> & {
     name?: string | null;
     emoji?: string | null;
   } | null;
+  guest_adults: number;
+  guest_children: number;
+  status?: string | null;
+  token?: string | null;
 };
 
 export type Ingredient = InferSelectModel<typeof ingredients>;
@@ -51,13 +56,14 @@ export type Sheet =
   | { type: "service-edit"; service: Service }
   | { type: "meal-edit"; meal: Meal }
   | { type: "meal-create" }
-  | { type: "person" }
-  | { type: "person-edit"; person: Person }
+  | { type: "person"; context?: string }
+  | { type: "person-edit"; person: Person; token?: string | null }
   | { type: "share" }
   | { type: "guest-access" }
   | { type: "claim-person"; unclaimed: Person[] }
   | { type: "shopping-list"; person: Person }
-  | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] };
+  | { type: "item-ingredients"; itemId: number; itemName: string; ingredients: Ingredient[] }
+  | { type: "event-edit" };
 
 // Basic item data for creation/updates
 export type ItemData = {
@@ -71,10 +77,10 @@ export type ItemData = {
 
 export interface OrganizerHandlers {
   findItem: (id: number) => { item: Item; service: Service; mealId?: number } | null | undefined;
-  handleCreateItem: (data: ItemData) => void;
+  handleCreateItem: (data: ItemData, closeSheet?: boolean) => void;
   handleUpdateItem: (id: number, data: ItemData) => void;
   handleAssign: (item: Item, personId: number | null) => void;
-  handleDelete: (item: Item) => void;
+  handleDelete: (item: Item, closeSheet?: boolean) => void;
   handleMoveItem: (itemId: number, serviceId: number, index?: number) => void;
   handleCreateMeal: (
     date: string,
@@ -87,6 +93,7 @@ export interface OrganizerHandlers {
   handleCreateService: (
     mealId: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -104,6 +111,7 @@ export interface OrganizerHandlers {
   handleUpdateService: (
     id: number,
     title: string,
+    description?: string,
     adults?: number,
     children?: number,
     peopleCount?: number
@@ -125,7 +133,8 @@ export interface OrganizerHandlers {
     id: number,
     name: string,
     emoji?: string | null,
-    image?: string | null
+    image?: string | null,
+    token?: string | null
   ) => void;
   handleDeletePerson: (id: number) => void;
   handleGenerateIngredients: (
@@ -143,5 +152,16 @@ export interface OrganizerHandlers {
   handleDeleteAllIngredients: (itemId: number) => void;
   handleToggleItemChecked: (itemId: number, checked: boolean) => void;
   handleSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
+  handleUpdateStatus: (
+    personId: number,
+    status: "confirmed" | "declined" | "maybe",
+    token?: string | null
+  ) => void;
+  handleUpdateGuestCount: (
+    personId: number,
+    guestAdults: number,
+    guestChildren: number,
+    token?: string | null
+  ) => void;
   justGenerated?: number | null;
 }

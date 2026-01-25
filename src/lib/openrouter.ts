@@ -171,30 +171,9 @@ export async function generateIngredients(
   const sanitizedName = sanitizeInput(itemName);
   const sanitizedCount = sanitizeNumber(peopleCount, 1, 100, 4);
 
-  let guestDescription = `${sanitizedCount} personne${sanitizedCount > 1 ? "s" : ""}`;
-  let guestSource = "Défaut / Total";
-
-  const totalGranular = (details?.adults || 0) + (details?.children || 0);
-
-  if (details?.description) {
-    guestDescription = details.description;
-    guestSource = "Article (champ quantité)";
-  } else if (
-    details?.adults !== undefined &&
-    details?.children !== undefined &&
-    totalGranular > 0
-  ) {
-    const adults = details.adults;
-    const children = details.children;
-    guestDescription = `${adults} adulte${adults > 1 ? "s" : ""}${
-      children > 0 ? ` et ${children} enfant${children > 1 ? "s" : ""}` : ""
-    }`;
-    guestSource = "Service (granularité adultes/enfants)";
-  } else {
-    // Fallback to peopleCount (either from detail or from argument)
-    guestDescription = `${sanitizedCount} personne${sanitizedCount > 1 ? "s" : ""}`;
-    guestSource = "Service (total peopleCount)";
-  }
+  // Simplify guest description to just "X personnes" to stop AI from over-analyzing demographics
+  const guestDescription = `${sanitizedCount} personne${sanitizedCount > 1 ? "s" : ""}`;
+  const guestSource = details?.description ? "Article (champ quantité)" : "Calculé (Smart Count)";
 
   if (!sanitizedName || sanitizedName.length < 2) {
     return [];
@@ -208,7 +187,6 @@ Ta mission : Générer une liste d'ingrédients à acheter pour faire de façon 
 CONTRAINTES :
 - Cible : ${guestDescription}
 - Ajuste les quantités pour cette cible exacte
-- Si enfants mentionnés, adapte les portions
 - Maximum 15 ingrédients essentiels
 - Unités : g, kg, ml, cl, L, c. à soupe, c. à café, pièces, pincée
 
@@ -366,7 +344,6 @@ Ta mission : Générer une liste d'ingrédients à acheter pour le plat demandé
 CONTRAINTES :
 - Cible : ${guestDescription}
 - Ajuste les quantités pour cette cible exacte
-- Si enfants mentionnés, adapte les portions
 - Maximum 15 ingrédients essentiels
 - Unités : g, kg, ml, cl, L, c. à soupe, c. à café, pièces, pincée
 
