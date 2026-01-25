@@ -157,7 +157,7 @@ export function EditEventSheet({
   const hasMeal = !!initialData.mealId;
 
   return (
-    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()} repositionInputs={true}>
       <DrawerContent className="px-6">
         <DrawerHeader className="px-0 text-left">
           <div className="flex items-center justify-between">

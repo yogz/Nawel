@@ -136,12 +136,15 @@ export function OrganizerSheets({
 
     if (sheet.type === "item" && sheet.item) {
       const found = findItem(sheet.item.id);
-      return found?.item.ingredients || sheet.item.ingredients;
+      return found?.item.ingredients ?? sheet.item.ingredients;
     }
 
     if (sheet.type === "item-ingredients") {
       const found = findItem(sheet.itemId);
-      return found?.item.ingredients || sheet.ingredients;
+      if (found) {
+        return found.item.ingredients ?? [];
+      }
+      return sheet.ingredients;
     }
 
     return undefined;
@@ -230,7 +233,11 @@ export function OrganizerSheets({
 
   return (
     <>
-      <Drawer open={!!sheet} onOpenChange={(open) => !open && setSheet(null)}>
+      <Drawer
+        open={!!sheet}
+        onOpenChange={(open) => !open && setSheet(null)}
+        repositionInputs={true}
+      >
         <DrawerContent className="px-4 sm:px-6">
           <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
             {sheet?.type === "share" ? (

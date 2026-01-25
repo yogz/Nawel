@@ -31,8 +31,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const firstMeal = plan.meals[0];
   const ogParams = new URLSearchParams({
     title,
+    locale: params.locale,
     ...(firstMeal?.date && { date: firstMeal.date }),
-    ...(plan.people.length > 0 && { guests: `${plan.people.length} invités` }),
   });
   const ogImageUrl = `https://www.colist.fr/api/og?${ogParams.toString()}`;
 

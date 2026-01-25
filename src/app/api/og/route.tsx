@@ -9,7 +9,61 @@ export async function GET(request: NextRequest) {
   // Get parameters from URL
   const title = searchParams.get("title") || "Mon événement";
   const date = searchParams.get("date") || "";
-  const guests = searchParams.get("guests") || "";
+  const locale = searchParams.get("locale") || "fr";
+
+  // Simple translation map for basic UI elements
+  const translations: Record<string, { viewEvent: string; tagline: string }> = {
+    fr: {
+      viewEvent: "Voir l'événement",
+      tagline: "Organisez vos repas sans stress",
+    },
+    en: {
+      viewEvent: "View event",
+      tagline: "Organize your meals stress-free",
+    },
+    es: {
+      viewEvent: "Ver evento",
+      tagline: "Organiza tus comidas sin estrés",
+    },
+    pt: {
+      viewEvent: "Ver evento",
+      tagline: "Organize as suas refeições sem stress",
+    },
+    de: {
+      viewEvent: "Event ansehen",
+      tagline: "Mahlzeiten stressfrei organiseren",
+    },
+    el: {
+      viewEvent: "Προβολή εκδήλωσης",
+      tagline: "Οργανώστε τα γεύματά σας χωρίς άγχος",
+    },
+    it: {
+      viewEvent: "Vedi evento",
+      tagline: "Organizza i tuoi pasti senza stress",
+    },
+    nl: {
+      viewEvent: "Evenement bekijken",
+      tagline: "Maaltijden stressvrij organiseren",
+    },
+    pl: {
+      viewEvent: "Zobacz wydarzenie",
+      tagline: "Organizuj posiłki bez stresu",
+    },
+    sv: {
+      viewEvent: "Visa evenemang",
+      tagline: "Organisera dina måltider utan stress",
+    },
+    da: {
+      viewEvent: "Se begivenhed",
+      tagline: "Organiser dine måltider uden stress",
+    },
+    tr: {
+      viewEvent: "Etkinliği görüntüle",
+      tagline: "Yemeklerinizi stressiz organize edin",
+    },
+  };
+
+  const t = translations[locale] || translations.fr;
 
   return new ImageResponse(
     <div
@@ -18,31 +72,46 @@ export async function GET(request: NextRequest) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        background: "linear-gradient(135deg, #E6D9F8 0%, #F5E6D3 50%, #FCE7D6 100%)",
+        background: "white",
         position: "relative",
       }}
     >
-      {/* Decorative circles */}
+      {/* Premium Background Gradient */}
       <div
         style={{
           position: "absolute",
-          top: -100,
-          right: -100,
-          width: 400,
-          height: 400,
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "linear-gradient(135deg, #fef2f2 0%, #f5f3ff 50%, #fff7ed 100%)",
+          display: "flex",
+        }}
+      />
+
+      {/* Subtle Background Shapes */}
+      <div
+        style={{
+          position: "absolute",
+          top: -150,
+          right: -150,
+          width: 500,
+          height: 500,
           borderRadius: "50%",
-          background: "rgba(234, 88, 12, 0.1)",
+          background: "rgba(168, 85, 247, 0.05)",
+          filter: "blur(40px)",
         }}
       />
       <div
         style={{
           position: "absolute",
-          bottom: -150,
-          left: -150,
-          width: 500,
-          height: 500,
+          bottom: -200,
+          left: -200,
+          width: 600,
+          height: 600,
           borderRadius: "50%",
-          background: "rgba(168, 85, 247, 0.1)",
+          background: "rgba(234, 88, 12, 0.05)",
+          filter: "blur(40px)",
         }}
       />
 
@@ -54,112 +123,96 @@ export async function GET(request: NextRequest) {
           alignItems: "center",
           justifyContent: "center",
           flex: 1,
-          padding: "60px 80px",
+          padding: "40px 80px",
           textAlign: "center",
+          position: "relative",
+          zIndex: 10,
         }}
       >
-        {/* Event emoji */}
+        {/* CoList Logo Icon */}
         <div
           style={{
-            fontSize: 80,
-            marginBottom: 20,
+            display: "flex",
+            marginBottom: 32,
+            background: "white",
+            padding: "16px",
+            borderRadius: "24px",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
           }}
         >
-          🎉
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://www.colist.fr/LogoIcon.png" alt="Logo" width="80" height="80" />
         </div>
 
         {/* Event title */}
         <div
           style={{
-            fontSize: title.length > 25 ? 52 : 64,
-            fontWeight: 800,
-            color: "#1f2937",
+            fontSize: title.length > 20 ? 60 : 72,
+            fontWeight: 900,
+            color: "#111827",
             lineHeight: 1.1,
-            marginBottom: 24,
+            marginBottom: 20,
             maxWidth: "90%",
             wordWrap: "break-word",
+            letterSpacing: "-0.04em",
           }}
         >
           {title}
         </div>
 
-        {/* Date and guests info */}
-        {(date || guests) && (
+        {/* Date info */}
+        {date && (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 32,
-              marginTop: 8,
+              fontSize: 32,
+              fontWeight: 500,
+              color: "#4b5563",
+              marginBottom: 48,
+              opacity: 0.8,
             }}
           >
-            {date && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  fontSize: 28,
-                  color: "#6b7280",
-                }}
-              >
-                <span>📅</span>
-                <span>{date}</span>
-              </div>
-            )}
-            {guests && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  fontSize: 28,
-                  color: "#6b7280",
-                }}
-              >
-                <span>👥</span>
-                <span>{guests}</span>
-              </div>
-            )}
+            {date}
           </div>
         )}
 
-        {/* CTA */}
+        {/* Action Button */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: 48,
-            padding: "16px 32px",
-            background: "linear-gradient(135deg, #ea580c 0%, #dc2626 100%)",
-            borderRadius: 16,
+            padding: "20px 48px",
+            background: "#111827",
+            borderRadius: "9999px",
             color: "white",
-            fontSize: 24,
-            fontWeight: 700,
+            fontSize: 28,
+            fontWeight: 600,
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
           }}
         >
-          Voir l&apos;événement →
+          {t.viewEvent}
         </div>
       </div>
 
-      {/* Footer with branding */}
+      {/* Footer Branded Bottom Bar */}
       <div
         style={{
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          padding: "24px 0 32px",
-          gap: 12,
+          padding: "0 0 48px",
+          gap: 4,
+          position: "relative",
+          zIndex: 10,
         }}
       >
         <div
           style={{
-            fontSize: 32,
+            fontSize: 36,
             fontWeight: 800,
-            background: "linear-gradient(135deg, #ea580c 0%, #a855f7 100%)",
-            backgroundClip: "text",
-            color: "transparent",
+            letterSpacing: "-0.02em",
+            color: "#111827",
           }}
         >
           CoList
@@ -167,10 +220,13 @@ export async function GET(request: NextRequest) {
         <div
           style={{
             fontSize: 18,
-            color: "#9ca3af",
+            fontWeight: 500,
+            color: "#6b7280",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
           }}
         >
-          — Organisez vos repas sans stress
+          {t.tagline}
         </div>
       </div>
     </div>,

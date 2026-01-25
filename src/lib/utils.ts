@@ -290,7 +290,8 @@ export function getServiceIcon(title: string): string {
     normalized.includes("cocktail") ||
     normalized.includes("soft") ||
     normalized.includes("jus") ||
-    normalized.includes("aperitif")
+    normalized.includes("aperitif") ||
+    normalized.includes("drink")
   ) {
     return "🥂";
   }
@@ -303,7 +304,8 @@ export function getServiceIcon(title: string): string {
     normalized.includes("douceur") ||
     normalized.includes("mignardise") ||
     normalized.includes("fruit") ||
-    normalized.includes("goute")
+    normalized.includes("goute") ||
+    normalized.includes("sweet")
   ) {
     return "🍰";
   }
