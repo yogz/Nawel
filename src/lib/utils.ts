@@ -287,12 +287,38 @@ export function getServiceIcon(title: string): string {
     normalized.includes("vin") ||
     normalized.includes("champagne") ||
     normalized.includes("biere") ||
-    normalized.includes("cocktail")
+    normalized.includes("cocktail") ||
+    normalized.includes("soft") ||
+    normalized.includes("jus") ||
+    normalized.includes("aperitif")
   ) {
-    return "🍷";
+    return "🥂";
   }
 
-  if (normalized.includes("entree") || normalized.includes("salade")) {
+  if (
+    normalized.includes("dessert") ||
+    normalized.includes("gateau") ||
+    normalized.includes("buche") ||
+    normalized.includes("sucre") ||
+    normalized.includes("douceur") ||
+    normalized.includes("mignardise") ||
+    normalized.includes("fruit") ||
+    normalized.includes("goute")
+  ) {
+    return "🍰";
+  }
+
+  if (normalized.includes("fromage") || normalized.includes("cheese")) {
+    return "🧀";
+  }
+
+  if (
+    normalized.includes("entree") ||
+    normalized.includes("salade") ||
+    normalized.includes("amuse-bouche") ||
+    normalized.includes("starter") ||
+    normalized.includes("tapas")
+  ) {
     return "🥗";
   }
 
@@ -300,41 +326,36 @@ export function getServiceIcon(title: string): string {
     normalized.includes("plat") ||
     normalized.includes("principal") ||
     normalized.includes("viande") ||
-    normalized.includes("poisson")
+    normalized.includes("poisson") ||
+    normalized.includes("main")
   ) {
-    return "🥘";
-  }
-
-  if (normalized.includes("fromage")) {
-    return "🧀";
-  }
-
-  if (
-    normalized.includes("dessert") ||
-    normalized.includes("gateau") ||
-    normalized.includes("buche") ||
-    normalized.includes("sucre")
-  ) {
-    return "🍰";
+    return "🍽️";
   }
 
   if (
     normalized.includes("cafe") ||
     normalized.includes("the") ||
     normalized.includes("petit dej") ||
-    normalized.includes("morning")
+    normalized.includes("morning") ||
+    normalized.includes("petit-dejeuner")
   ) {
     return "☕";
   }
 
-  if (normalized.includes("pain") || normalized.includes("boulangerie")) {
+  if (
+    normalized.includes("pain") ||
+    normalized.includes("boulangerie") ||
+    normalized.includes("baguette") ||
+    normalized.includes("galette")
+  ) {
     return "🥖";
   }
 
   if (
     normalized.includes("musique") ||
     normalized.includes("dance") ||
-    normalized.includes("son")
+    normalized.includes("son") ||
+    normalized.includes("party")
   ) {
     return "🎵";
   }
@@ -350,11 +371,16 @@ export function getServiceIcon(title: string): string {
   if (
     normalized.includes("deco") ||
     normalized.includes("ambiance") ||
-    normalized.includes("fleurs")
+    normalized.includes("fleurs") ||
+    normalized.includes("etincelle")
   ) {
     return "✨";
   }
 
+  if (normalized.includes("midi") || normalized.includes("soir")) {
+    return "🍽️";
+  }
+
   // Default fallback
-  return "🛒";
+  return "🍴";
 }

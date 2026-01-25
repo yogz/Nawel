@@ -82,6 +82,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         emoji: user.emoji ?? null,
         image: user.image ?? null,
         userId: user.id,
+        status: "confirmed",
       })
       .returning();
   } else {
@@ -94,6 +95,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
         eventId: created.id,
         name: "Hôte", // Default name for the creator
         token: token,
+        status: "confirmed",
       })
       .returning();
 
