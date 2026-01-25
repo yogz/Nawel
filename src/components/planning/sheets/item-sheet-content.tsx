@@ -29,7 +29,8 @@ interface ItemSheetContentProps {
     adults?: number,
     children?: number,
     peopleCount?: number,
-    locale?: string
+    locale?: string,
+    note?: string
   ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;

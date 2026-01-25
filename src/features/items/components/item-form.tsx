@@ -545,7 +545,9 @@ export function ItemForm({
                           setIsEditingCount(true);
                         }}
                         className="group flex items-center gap-1.5 rounded-lg py-1 px-2 transition-colors hover:bg-gray-100"
-                        title={t("Ingredients.smartCountTooltip", { source: countSource })}
+                        title={t("Ingredients.smartCountTooltip", {
+                          source: countSource || "default",
+                        })}
                       >
                         <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 group-hover:text-accent">
                           {t("Ingredients.generateFor", {
