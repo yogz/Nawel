@@ -57,7 +57,11 @@ export function IngredientsSheetContent({
 
   const itemIngredients = useMemo(() => {
     const found = findItem(sheet.itemId);
-    return found?.item.ingredients || sheet.ingredients;
+    // Prioritize updating from the plan if the item exists
+    if (found) {
+      return found.item.ingredients ?? [];
+    }
+    return sheet.ingredients;
   }, [sheet.itemId, sheet.ingredients, findItem]);
 
   const itemNote = useMemo(() => {

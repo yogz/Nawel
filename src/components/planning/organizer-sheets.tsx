@@ -136,12 +136,15 @@ export function OrganizerSheets({
 
     if (sheet.type === "item" && sheet.item) {
       const found = findItem(sheet.item.id);
-      return found?.item.ingredients || sheet.item.ingredients;
+      return found?.item.ingredients ?? sheet.item.ingredients;
     }
 
     if (sheet.type === "item-ingredients") {
       const found = findItem(sheet.itemId);
-      return found?.item.ingredients || sheet.ingredients;
+      if (found) {
+        return found.item.ingredients ?? [];
+      }
+      return sheet.ingredients;
     }
 
     return undefined;
