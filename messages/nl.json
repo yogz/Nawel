@@ -759,10 +759,12 @@
       "errorAdd": "Fout bij toevoegen item ❌",
       "updated": "Item bijgewerkt ✓",
       "errorUpdate": "Fout bij bijwerken item ❌",
-      "deleted": "Item verwijderd ✓",
+      "deleted": "{name} verwijderd ✓",
       "errorDelete": "Fout bij verwijderen item ❌",
       "moved": "Item verplaatst ✓",
-      "errorMove": "Fout bij verplaatsen item ❌"
+      "errorMove": "Fout bij verplaatsen item ❌",
+      "checked": "Item aangevinkt ✓",
+      "unchecked": "Item uitgevinkt ✓"
     },
     "meal": {
       "added": "Maaltijd gemaakt! ✨",

@@ -58,7 +58,7 @@ export function useMealHandlers({
           meals: newMeals,
         };
       });
-      toast.success("Repas ajouté ✨");
+      toast.success(t("meal.added"));
       trackMealServiceAction("meal_created", title || date);
       return created.id;
     } catch (error) {
@@ -108,7 +108,7 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        toast.success("Repas ajouté ✨");
+        toast.success(t("meal.added"));
         trackMealServiceAction("meal_created", title || date);
       } else {
         const created = await createMealWithServicesAction({
@@ -136,7 +136,7 @@ export function useMealHandlers({
             meals: newMeals,
           };
         });
-        toast.success("Repas ajouté ✨");
+        toast.success(t("meal.added"));
         trackMealServiceAction("meal_created", title || date);
       }
     } catch (error) {
@@ -204,7 +204,7 @@ export function useMealHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        toast.success("Repas mis à jour ✓");
+        toast.success(t("meal.updated"));
         trackMealServiceAction("meal_updated", title || date);
       } catch (error) {
         console.error("Failed to update meal:", error);
@@ -224,7 +224,7 @@ export function useMealHandlers({
       meals: prev.meals.filter((m) => m.id !== id),
     }));
     setSheet(null);
-    toast.success("Repas supprimé ✓");
+    toast.success(t("meal.deleted"));
     trackMealServiceAction("meal_deleted", meal?.title || meal?.date);
     startTransition(async () => {
       try {

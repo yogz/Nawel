@@ -759,10 +759,12 @@
       "errorAdd": "Errore nell'aggiunta dell'articolo ❌",
       "updated": "Articolo aggiornato ✓",
       "errorUpdate": "Errore nell'aggiornamento dell'articolo ❌",
-      "deleted": "Articolo eliminato ✓",
+      "deleted": "{name} eliminato ✓",
       "errorDelete": "Errore nell'eliminazione dell'articolo ❌",
       "moved": "Articolo spostato ✓",
-      "errorMove": "Errore nello spostamento dell'articolo ❌"
+      "errorMove": "Errore nello spostamento dell'articolo ❌",
+      "checked": "Articolo spuntato ✓",
+      "unchecked": "Articolo non spuntato ✓"
     },
     "meal": {
       "added": "Pasto creato! ✨",

@@ -51,7 +51,7 @@ export function useServiceHandlers({
           ),
         }));
         setSheet(null);
-        toast.success("Service ajouté ! ✓");
+        toast.success(t("service.added"));
         trackMealServiceAction("service_created", title);
       } catch (error) {
         console.error("Failed to create service:", error);
@@ -109,7 +109,7 @@ export function useServiceHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        toast.success("Service mis à jour ✓");
+        toast.success(t("service.updated"));
         trackMealServiceAction("service_updated", title);
       } catch (error) {
         console.error("Failed to update service:", error);
@@ -140,7 +140,7 @@ export function useServiceHandlers({
       })),
     }));
     setSheet(null);
-    toast.success("Service supprimé ✓");
+    toast.success(t("service.deleted"));
     trackMealServiceAction("service_deleted", serviceTitle);
 
     startTransition(async () => {

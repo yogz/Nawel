@@ -25,6 +25,8 @@ export function ItemForm({
   allServices,
   currentServiceId,
   servicePeopleCount,
+  smartCount,
+  countSource,
   onSubmit,
   onAssign,
   onMoveService,
@@ -51,6 +53,8 @@ export function ItemForm({
   allServices?: Array<Service & { mealTitle: string }>;
   currentServiceId?: number;
   servicePeopleCount?: number;
+  smartCount?: number;
+  countSource?: string;
   onSubmit: (values: {
     name: string;
     quantity?: string;
@@ -64,7 +68,7 @@ export function ItemForm({
   readOnly?: boolean;
   // Ingredient props
   ingredients?: Ingredient[];
-  onGenerateIngredients?: (name: string, note?: string, locale?: string) => Promise<void>;
+  onGenerateIngredients?: (name: string, note?: string, manualCount?: number) => Promise<void>;
   onToggleIngredient?: (id: number, checked: boolean) => void;
   onDeleteIngredient?: (id: number) => void;
   onCreateIngredient?: (name: string, quantity?: string) => void;
@@ -105,11 +109,15 @@ export function ItemForm({
   const userPerson = currentUserId ? people.find((p) => p.userId === currentUserId) : undefined;
   const [selectedPersonId, setSelectedPersonId] = useState<number | null>(userPerson?.id ?? null);
   const [showDetails, setShowDetails] = useState(false);
+  const [isEditingCount, setIsEditingCount] = useState(false);
+  const [manualCount, setManualCount] = useState<string>("");
+
   const _timerRef = useRef<NodeJS.Timeout | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const noteRef = useRef<HTMLInputElement>(null);
   const qtyRef = useRef<HTMLInputElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
+  const countRef = useRef<HTMLInputElement>(null);
   const [isPending, startTransition] = useTransition();
 
   const isEditMode = !!defaultItem;
@@ -501,24 +509,81 @@ export function ItemForm({
                   </Button>
                 </div>
               ) : (
-                <Button
-                  type="button"
-                  onClick={() => onGenerateIngredients?.(name, note, locale)}
-                  disabled={isGenerating || !name.trim()}
-                  className="h-11 w-full gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-xs font-bold text-white shadow-md transition-all active:scale-95"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      {t("Ingredients.generating")}
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={14} />
-                      {t("Ingredients.generateButton")}
-                    </>
-                  )}
-                </Button>
+                <div className="space-y-4">
+                  {/* Smart Count UI with Interactivity */}
+                  <div className="flex items-center justify-between px-1">
+                    {isEditingCount ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          autoFocus
+                          ref={countRef}
+                          type="number"
+                          value={manualCount}
+                          onChange={(e) => setManualCount(e.target.value)}
+                          placeholder={String(smartCount || 4)}
+                          className="h-8 w-16 rounded-lg border-accent/20 bg-white text-center text-xs font-bold text-accent focus:ring-accent/20"
+                          onBlur={() => {
+                            if (!manualCount) setIsEditingCount(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              onGenerateIngredients?.(
+                                name,
+                                note,
+                                manualCount ? parseInt(manualCount) : undefined
+                              );
+                            }
+                          }}
+                        />
+                        <span className="text-[10px] font-medium text-gray-400">pers.</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setManualCount(String(smartCount || 4));
+                          setIsEditingCount(true);
+                        }}
+                        className="group flex items-center gap-1.5 rounded-lg py-1 px-2 transition-colors hover:bg-gray-100"
+                        title={t("Ingredients.smartCountTooltip", { source: countSource })}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 group-hover:text-accent">
+                          {t("Ingredients.generateFor", {
+                            count: manualCount ? parseInt(manualCount) : smartCount || 4,
+                          })}
+                        </span>
+                        <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-accent/10 group-hover:text-accent">
+                          <Sparkles size={8} />
+                        </div>
+                      </button>
+                    )}
+                  </div>
+
+                  <Button
+                    type="button"
+                    onClick={() =>
+                      onGenerateIngredients?.(
+                        name,
+                        note,
+                        manualCount ? parseInt(manualCount) : undefined
+                      )
+                    }
+                    disabled={isGenerating || !name.trim()}
+                    className="h-11 w-full gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-xs font-bold text-white shadow-md transition-all active:scale-95"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        {t("Ingredients.generating")}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={14} />
+                        {t("Ingredients.generateButton")}
+                      </>
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
           )}

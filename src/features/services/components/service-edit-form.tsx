@@ -8,13 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Trash2, ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
 
 export function ServiceEditForm({
@@ -147,63 +141,6 @@ export function ServiceEditForm({
           autoCapitalize="sentences"
           className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
         />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label
-            htmlFor="edit-adults"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {tCommon("adultsLabel")}
-          </Label>
-          <Select
-            value={String(adults)}
-            onValueChange={(val) => {
-              const v = parseInt(val);
-              setAdults(v);
-              setPeopleCount(v + children);
-            }}
-          >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder={tCommon("adultsLabel")} />
-            </SelectTrigger>
-            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-              {Array.from({ length: 51 }, (_, i) => (
-                <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {tCommon("adultsCount", { count: i })}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label
-            htmlFor="edit-children"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
-          >
-            {tCommon("childrenLabel")}
-          </Label>
-          <Select
-            value={String(children)}
-            onValueChange={(val) => {
-              const v = parseInt(val);
-              setChildren(v);
-              setPeopleCount(adults + v);
-            }}
-          >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
-              <SelectValue placeholder={tCommon("childrenLabel")} />
-            </SelectTrigger>
-            <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
-              {Array.from({ length: 51 }, (_, i) => (
-                <SelectItem key={i} value={String(i)} className="rounded-xl">
-                  {i} {tCommon("childrenCount", { count: i })}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       <div className="flex flex-col gap-3 pt-4">

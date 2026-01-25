@@ -234,7 +234,7 @@ export function EventPlanner({
         {
           name,
           serviceId,
-          quantity: "1",
+
           personId: currentPerson?.id ?? null,
         },
         false // Don't close sheet (there's no sheet)

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/components/theme-provider";
-import { ProfileDrawer } from "@/components/auth/profile-drawer";
+import { EventPropertiesDrawer } from "./event-properties-drawer";
 import { EventHeaderNav } from "./event-header-nav";
 import { EventTitle } from "./event-title";
 import { EventMetaPills } from "./event-meta-pills";
@@ -35,6 +35,7 @@ interface EventPlannerHeaderProps {
       time?: string,
       address?: string
     ) => void;
+    handleDeleteEvent: () => Promise<void>;
   };
 }
 
@@ -83,7 +84,7 @@ export function EventPlannerHeader({
   const tShared = useTranslations("EventDashboard.Shared");
 
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showProfileDrawer, setShowProfileDrawer] = useState(false);
+  const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
 
   // Stop attention animation after 2 minutes
@@ -168,7 +169,7 @@ export function EventPlannerHeader({
                 >
                   <EventHeaderNav
                     isScrolled={isScrolled}
-                    onMenuClick={() => setShowProfileDrawer(true)}
+                    onMenuClick={() => setShowPropertiesDrawer(true)}
                   />
                 </motion.div>
 
@@ -220,8 +221,14 @@ export function EventPlannerHeader({
         </div>
       </header>
 
-      {/* Profile Drawer */}
-      <ProfileDrawer open={showProfileDrawer} onClose={() => setShowProfileDrawer(false)} />
+      {/* Properties Drawer */}
+      <EventPropertiesDrawer
+        open={showPropertiesDrawer}
+        onClose={() => setShowPropertiesDrawer(false)}
+        plan={plan}
+        setSheet={setSheet}
+        handlers={handlers}
+      />
     </>
   );
 }

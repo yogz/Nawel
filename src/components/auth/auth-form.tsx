@@ -256,9 +256,9 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
     <div className="w-full">
       {/* Mode Toggle */}
       <div className="mb-6 flex justify-center">
-        <div className="relative flex w-full max-w-[240px] rounded-full bg-gray-100/80 p-1 backdrop-blur-sm">
+        <div className="relative flex w-full max-w-[280px] rounded-full bg-gray-100 p-1.5">
           <motion.div
-            className="absolute inset-y-1 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)]"
+            className="absolute inset-y-1.5 rounded-full bg-white shadow-sm"
             initial={false}
             animate={{
               x: authMode === "signin" ? 0 : "100%",
@@ -272,8 +272,8 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
               setAuthMode("signin");
               sendGAEvent("event", "auth_mode_toggle", { target_mode: "signin" });
             }}
-            className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
-              authMode === "signin" ? "text-gray-900" : "text-gray-400"
+            className={`relative z-10 w-1/2 py-3 text-sm font-bold transition-colors ${
+              authMode === "signin" ? "text-gray-900" : "text-gray-500"
             }`}
           >
             {t("signinButton")}
@@ -284,8 +284,8 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
               setAuthMode("signup");
               sendGAEvent("event", "auth_mode_toggle", { target_mode: "signup" });
             }}
-            className={`relative z-10 w-1/2 py-2 text-xs font-bold transition-colors ${
-              authMode === "signup" ? "text-gray-900" : "text-gray-400"
+            className={`relative z-10 w-1/2 py-3 text-sm font-bold transition-colors ${
+              authMode === "signup" ? "text-gray-900" : "text-gray-500"
             }`}
           >
             {t("signupButton")}
@@ -334,14 +334,14 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
             </div>
           ) : (
             <>
-              <h1 className="mb-3 text-center text-[28px] font-black tracking-tight text-[#1a1a1a] sm:text-3xl">
+              <h1 className="mb-2 text-center text-[28px] font-black tracking-tight text-[#1a1a1a] sm:text-3xl text-balance">
                 {authMode === "signin"
                   ? showMagicLink
                     ? t("signinMagicTitle")
                     : t("signinTitle")
                   : t("signupTitle")}
               </h1>
-              <p className="mb-6 text-center text-sm font-medium text-gray-500">
+              <p className="mb-4 text-center text-sm font-medium text-gray-500">
                 {authMode === "signin"
                   ? showMagicLink
                     ? t("signinMagicDescription")
@@ -356,7 +356,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     onClick={handleGoogleAuth}
                     disabled={loading}
                     variant="outline"
-                    className="flex h-14 w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white text-[15px] font-bold text-[#1f1f1f] shadow-sm transition-all hover:bg-gray-50 hover:border-gray-300 hover:shadow active:scale-[0.98]"
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white text-[15px] font-bold text-[#1f1f1f] shadow-sm transition-all hover:bg-gray-50 hover:border-gray-300 hover:shadow active:scale-[0.98]"
                     shine
                   >
                     {loading ? (
@@ -367,7 +367,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     {authMode === "signin" ? t("googleButton") : t("googleSignupButton")}
                   </Button>
 
-                  <div className="relative my-6">
+                  <div className="relative my-4">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-gray-100" />
                     </div>
@@ -405,7 +405,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     disabled={loading}
                     autoComplete="email"
                     enterKeyHint="next"
-                    className="h-14 rounded-2xl border-0 bg-gray-50 px-5 text-base font-medium text-gray-900 shadow-inner transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-purple-500/20"
+                    className="h-12 rounded-2xl border-0 bg-gray-50 px-5 text-base font-medium text-gray-900 shadow-inner transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-purple-500/20"
                   />
                 </div>
 
@@ -429,7 +429,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                         disabled={loading}
                         autoComplete={authMode === "signin" ? "current-password" : "new-password"}
                         enterKeyHint="done"
-                        className="h-14 rounded-2xl border-0 bg-gray-50 px-5 pr-12 text-base font-medium text-gray-900 shadow-inner transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-purple-500/20"
+                        className="h-12 rounded-2xl border-0 bg-gray-50 px-5 pr-12 text-base font-medium text-gray-900 shadow-inner transition-all placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-purple-500/20"
                       />
                       <button
                         type="button"
@@ -472,7 +472,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                       handleMagicLink();
                     }
                   }}
-                  className="h-14 w-full rounded-2xl bg-[#0f172a] text-[15px] font-bold text-white shadow-lg shadow-purple-900/20 transition-all hover:bg-black hover:shadow-xl hover:shadow-purple-900/30 active:scale-[0.98] disabled:opacity-50"
+                  className="h-12 w-full rounded-2xl bg-[#0f172a] text-[15px] font-bold text-white shadow-lg shadow-purple-900/20 transition-all hover:bg-black hover:shadow-xl hover:shadow-purple-900/30 active:scale-[0.98] disabled:opacity-50"
                   disabled={loading}
                 >
                   {loading ? (

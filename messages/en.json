@@ -602,6 +602,7 @@
       "dateLabel": "Date",
       "datePlaceholder": "Choose a date",
       "timeLabel": "Time",
+      "timePlaceholder": "Choose a time",
       "titleLabel": "Meal name",
       "titlePlaceholder": "Ex: Dinner",
       "addressLabel": "Address",
@@ -759,10 +760,12 @@
       "errorAdd": "Error adding item ❌",
       "updated": "Item updated ✓",
       "errorUpdate": "Error updating item ❌",
-      "deleted": "Item deleted ✓",
+      "deleted": "{name} deleted ✓",
       "errorDelete": "Error deleting item ❌",
       "moved": "Item moved ✓",
-      "errorMove": "Error moving item ❌"
+      "errorMove": "Error moving item ❌",
+      "checked": "Item checked ✓",
+      "unchecked": "Item unchecked ✓"
     },
     "meal": {
       "added": "Meal created! ✨",

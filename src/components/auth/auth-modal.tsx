@@ -9,11 +9,11 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()} repositionInputs={true}>
-      <DrawerContent className="px-6">
-        <DrawerHeader className="px-0 text-left">
+      <DrawerContent className="px-6 h-[95vh] bg-[#fdfcff] max-h-[95vh]">
+        <DrawerHeader className="px-0 text-left mb-6">
           <DrawerTitle className="sr-only">{t("signinTitle")}</DrawerTitle>
         </DrawerHeader>
-        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
+        <div className="flex-1 overflow-y-auto">
           <div className="py-2">
             <AuthForm onSuccess={onClose} isUserMode={true} />
           </div>

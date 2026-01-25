@@ -77,7 +77,7 @@ export function useItemHandlers({
         if (closeSheet) {
           setSheet(null);
         }
-        toast.success(`${itemData.name} ajouté ! ✨`);
+        toast.success(t("item.added", { name: itemData.name }));
         trackItemAction("item_created", itemData.name);
       } catch (error) {
         console.error("Failed to create item:", error);
@@ -112,7 +112,7 @@ export function useItemHandlers({
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
-      toast.success("Modifications enregistrées ✓");
+      toast.success(t("item.updated"));
       trackItemAction("item_updated", updatedItem.name);
       if (closeSheet) {
         setSheet(null);
@@ -142,7 +142,7 @@ export function useItemHandlers({
 
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
-    toast.success(`Article assigné à ${personName} ✓`);
+    toast.success(t("person.claimed"));
     trackItemAction("item_assigned", item.name, { assigned_to: personName });
 
     // Easter egg for Cécile
@@ -208,7 +208,7 @@ export function useItemHandlers({
     if (closeSheet) {
       setSheet(null);
     }
-    toast.success(`${item.name} supprimé ✓`);
+    toast.success(t("item.deleted", { name: item.name }));
     trackItemAction("item_deleted", item.name);
 
     startTransition(async () => {
@@ -257,7 +257,7 @@ export function useItemHandlers({
         key: writeKey,
         token: token ?? undefined,
       });
-      toast.success("Article déplacé ✓");
+      toast.success(t("item.moved"));
     });
   };
 
@@ -285,7 +285,7 @@ export function useItemHandlers({
           key: writeKey,
           token: token ?? undefined,
         });
-        toast.success(checked ? "Article coché ✓" : "Article décoché ✓");
+        toast.success(checked ? t("item.checked") : t("item.unchecked"));
       } catch (error) {
         console.error("Failed to toggle item checked:", error);
         // Revert on error

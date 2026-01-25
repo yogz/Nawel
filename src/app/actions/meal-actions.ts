@@ -67,9 +67,9 @@ export const createMealWithServicesAction = createSafeAction(
             title: sTitle,
             description: sDescription,
             order: i,
-            adults: adults,
-            children: children,
-            peopleCount: totalGuests || 0,
+            adults: 0,
+            children: 0,
+            peopleCount: 0,
           })
           .returning();
         createdServices.push({ ...service, items: [] });

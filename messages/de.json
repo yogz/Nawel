@@ -759,10 +759,12 @@
       "errorAdd": "Fehler beim Hinzufügen des Artikels ❌",
       "updated": "Artikel aktualisiert ✓",
       "errorUpdate": "Fehler beim Aktualisieren des Artikels ❌",
-      "deleted": "Artikel gelöscht ✓",
+      "deleted": "{name} gelöscht ✓",
       "errorDelete": "Fehler beim Löschen des Artikels ❌",
       "moved": "Artikel verschoben ✓",
-      "errorMove": "Fehler beim Verschieben des Artikels ❌"
+      "errorMove": "Fehler beim Verschieben des Artikels ❌",
+      "checked": "Artikel abgehakt ✓",
+      "unchecked": "Artikel nicht abgehakt ✓"
     },
     "meal": {
       "added": "Mahlzeit erstellt! ✨",

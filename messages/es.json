@@ -759,10 +759,12 @@
       "errorAdd": "Error al añadir artículo ❌",
       "updated": "Artículo actualizado ✓",
       "errorUpdate": "Error al actualizar artículo ❌",
-      "deleted": "Artículo eliminado ✓",
+      "deleted": "{name} eliminado ✓",
       "errorDelete": "Error al eliminar artículo ❌",
       "moved": "Artículo movido ✓",
-      "errorMove": "Error al mover artículo ❌"
+      "errorMove": "Error al mover artículo ❌",
+      "checked": "Artículo marcado ✓",
+      "unchecked": "Artículo desmarcado ✓"
     },
     "meal": {
       "added": "¡Comida creada! ✨",

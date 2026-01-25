@@ -759,10 +759,12 @@
       "errorAdd": "Fejl ved tilføjelse af element ❌",
       "updated": "Element opdateret ✓",
       "errorUpdate": "Fejl ved opdatering af element ❌",
-      "deleted": "Element slettet ✓",
+      "deleted": "{name} slettet ✓",
       "errorDelete": "Fejl ved sletning af element ❌",
       "moved": "Element flyttet ✓",
-      "errorMove": "Fejl ved flytning af element ❌"
+      "errorMove": "Fejl ved flytning af element ❌",
+      "checked": "Vare markeret ✓",
+      "unchecked": "Vare afmarkeret ✓"
     },
     "meal": {
       "added": "Måltid oprettet! ✨",

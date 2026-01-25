@@ -759,10 +759,12 @@
       "errorAdd": "Fel vid tilläggning av artikel ❌",
       "updated": "Artikel uppdaterad ✓",
       "errorUpdate": "Fel vid uppdatering av artikel ❌",
-      "deleted": "Artikel borttagen ✓",
+      "deleted": "{name} raderad ✓",
       "errorDelete": "Fel vid borttagning av artikel ❌",
       "moved": "Artikel flyttad ✓",
-      "errorMove": "Fel vid förflyttning av artikel ❌"
+      "errorMove": "Fel vid förflyttning av artikel ❌",
+      "checked": "Artikel markerad ✓",
+      "unchecked": "Artikel avmarkerad ✓"
     },
     "meal": {
       "added": "Måltid skapad! ✨",

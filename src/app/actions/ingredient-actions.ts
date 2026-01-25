@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
-import { ingredients, ingredientCache, items } from "@drizzle/schema";
+import { ingredients, ingredientCache, items, people } from "@drizzle/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { verifyAccess } from "./shared";
 import {
@@ -83,34 +83,63 @@ export const generateIngredientsAction = createSafeAction(
         };
       }
 
-      await verifyAccess(input.slug, "ingredient:generate", input.key, input.token);
+      const { event } = await verifyAccess(
+        input.slug,
+        "ingredient:generate",
+        input.key,
+        input.token
+      );
 
       // First, delete existing ingredients for this item
       await db.delete(ingredients).where(eq(ingredients.itemId, input.itemId));
 
       const normalizedName = normalizeDishName(input.itemName);
-      const peopleCount = input.peopleCount || 0;
 
-      // Fetch item to check for custom quantity
+      // Calculate Confirmed RSVP Count
+      // We need to fetch all people for this event to count confirmed guests
+      const eventPeople = await db.query.people.findMany({
+        where: eq(people.eventId, event.id),
+      });
+
+      let rsvpCount = 0;
+      for (const p of eventPeople) {
+        if (p.status === "confirmed") {
+          rsvpCount += 1 + (p.guest_adults || 0) + (p.guest_children || 0);
+        }
+      }
+
+      // Priority Logic:
+      // 1. input.peopleCount (passed from UI, which might be manual override or client-side calculation)
+      // 2. Smart Count = MAX(input.peopleCount [if it came from meal/service], rsvpCount)
+
       const item = await db.query.items.findFirst({
         where: eq(items.id, input.itemId),
       });
 
-      // Construct localized guest description
+      let finalPeopleCount = 4; // Default fallback
+      let guestSource = "Défaut (4 pers.)";
       let guestDescription = "";
+
+      // 1. Item Note / Quantity Field
       if (item?.quantity) {
         guestDescription = item.quantity;
-      } else if (input.adults !== undefined && input.children !== undefined) {
-        const parts = [];
-        if (input.adults > 0) {
-          parts.push(tAi("adults", { count: input.adults }));
-        }
-        if (input.children > 0) {
-          parts.push(tAi("children", { count: input.children }));
-        }
-        guestDescription = parts.join(tAi("and"));
+        guestSource = "Article (champ quantité)";
+        finalPeopleCount = 0;
       } else {
-        guestDescription = tAi("people", { count: input.peopleCount || 0 });
+        // 2. Smart Count Logic
+        const mealServiceCount = input.peopleCount || 0;
+
+        finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
+
+        // If no explicit count passed (0), fallback to RSVP if available
+        if (mealServiceCount === 0 && rsvpCount > 0) {
+          finalPeopleCount = rsvpCount;
+          guestSource = "Participants confirmés (RSVP)";
+        } else if (mealServiceCount > 0) {
+          guestSource = "Configuration (Manuel/Service)";
+        }
+
+        guestDescription = `${finalPeopleCount} personne${finalPeopleCount > 1 ? "s" : ""}`;
       }
 
       const systemPrompt = tAi("systemPrompt", { guestDescription });
@@ -124,13 +153,17 @@ export const generateIngredientsAction = createSafeAction(
 
       // Check cache for this dish + people count
       // (Cache remains on peopleCount for now to keep it simple, but prompt will be detailed)
+      // Use finalPeopleCount for cache key if possible, or input.peopleCount?
+      // Just use finalPeopleCount for cache consistency with the prompt.
+      const cacheCount = finalPeopleCount > 0 ? finalPeopleCount : input.peopleCount || 0;
+
       const [cached] = await db
         .select()
         .from(ingredientCache)
         .where(
           and(
             eq(ingredientCache.dishName, normalizedName),
-            eq(ingredientCache.peopleCount, peopleCount)
+            eq(ingredientCache.peopleCount, cacheCount)
           )
         )
         .limit(1);
@@ -144,9 +177,7 @@ export const generateIngredientsAction = createSafeAction(
       } else {
         // Need to call AI (either no cache or not enough confirmations)
         try {
-          generatedIngredients = await generateFromAI(input.itemName, peopleCount, {
-            adults: input.adults,
-            children: input.children,
+          generatedIngredients = await generateFromAI(input.itemName, cacheCount, {
             description: item?.quantity || undefined,
             note: input.note || item?.note || undefined,
             systemPrompt,
@@ -201,7 +232,7 @@ export const generateIngredientsAction = createSafeAction(
               .insert(ingredientCache)
               .values({
                 dishName: normalizedName,
-                peopleCount,
+                peopleCount: cacheCount,
                 ingredients: JSON.stringify(generatedIngredients),
                 confirmations: 1,
               })

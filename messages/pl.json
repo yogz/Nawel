@@ -759,10 +759,12 @@
       "errorAdd": "Błąd dodawania przedmiotu ❌",
       "updated": "Przedmiot zaktualizowany ✓",
       "errorUpdate": "Błąd aktualizacji przedmiotu ❌",
-      "deleted": "Przedmiot usunięty ✓",
+      "deleted": "{name} usunięty ✓",
       "errorDelete": "Błąd usuwania przedmiotu ❌",
       "moved": "Przedmiot przesunięty ✓",
-      "errorMove": "Błąd przenoszenia przedmiotu ❌"
+      "errorMove": "Błąd przenoszenia przedmiotu ❌",
+      "checked": "Zaznaczono ✓",
+      "unchecked": "Odznaczono ✓"
     },
     "meal": {
       "added": "Posiłek stworzony! ✨",

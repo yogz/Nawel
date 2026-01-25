@@ -759,10 +759,12 @@
       "errorAdd": "Ekleme hatası ❌",
       "updated": "Ürün güncellendi ✓",
       "errorUpdate": "Güncelleme hatası ❌",
-      "deleted": "Ürün silindi ✓",
+      "deleted": "{name} silindi ✓",
       "errorDelete": "Silme hatası ❌",
       "moved": "Ürün taşındı ✓",
-      "errorMove": "Taşıma hatası ❌"
+      "errorMove": "Taşıma hatası ❌",
+      "checked": "Ürün işaretlendi ✓",
+      "unchecked": "Ürün işareti kaldırıldı ✓"
     },
     "meal": {
       "added": "Yemek oluşturuldu ! ✨",
