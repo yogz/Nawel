@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -115,13 +114,7 @@ export function EventPlannerHeader({
         </div>
       )}
 
-      {/* Read-Only Warning Banner */}
-      {readOnly && (
-        <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
-          <ShieldAlert size={16} />
-          {t("readOnlyWarning")}
-        </div>
-      )}
+      {/* Read-only banner is rendered by EventPlanner component to avoid duplication */}
 
       {/* Main Sticky Header */}
       <header

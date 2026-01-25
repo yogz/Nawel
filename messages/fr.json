@@ -350,7 +350,12 @@
       "deleteConfirm": "Supprimer définitivement",
       "deleteConfirmTitle": "Supprimer l'événement ?",
       "deleteConfirmDescription": "Cette action est irréversible. Toutes les données, listes et participants seront supprimés.",
-      "deleteConfirmYes": "Oui, supprimer"
+      "deleteConfirmYes": "Oui, supprimer",
+      "guestCount": "{count, plural, one {# invité} other {# invités}}",
+      "adultsCount": "{count, plural, one {# adulte} other {# adultes}}",
+      "childrenCount": "{count, plural, one {# enfant} other {# enfants}}",
+      "editEvent": "Modifier",
+      "shareAccess": "Partager l'accès"
     },
     "Organizer": {
       "success": "Succès",
@@ -445,6 +450,7 @@
       "me": "Moi",
       "editItem": "Modifier l'article {name}",
       "edit": "Modifier",
+      "editPerson": "Modifier {name}",
       "howMany": "Combien serez-vous ?",
       "adjustCounts": "Ajustez le nombre de personnes",
       "validate": "Valider",
@@ -521,6 +527,9 @@
       "deleteItem": "Supprimer l'article",
       "addItem": "Ajouter l'article",
       "generating": "Génération...",
+      "generateIngredients": "Générer les ingrédients",
+      "aiAnalyzing": "L'IA analyse votre plat...",
+      "forPeople": "Pour {count} personne{count, plural, one {} other {s}}",
       "assignLabel": "Qui s'en occupe ?",
       "unassigned": "À prévoir",
       "takeAction": "Je prends !",
@@ -971,12 +980,14 @@
     "totalSinceStart": "Total depuis le lancement",
     "totalYear": "Total cette année",
     "developmentTime": "Temps de développement",
+    "developmentTimeValue": "~250 Heures",
     "supportTitle": "Soutenir le projet",
     "supportDescription": "Si CoList vous aide dans votre quotidien, vous pouvez m'offrir un café ou m'aider à couvrir les frais d'hébergement. Chaque geste compte !",
     "buyMeACoffee": "M'offrir un café",
     "revolut": "Via Revolut",
     "changelogTitle": "Quoi de neuf ?",
     "changelogSubtitle": "Les dernières fonctionnalités ajoutées avec amour.",
+    "footer": "Fait avec 🇪🇺❤️🐻 par un indépendant",
     "noCosts": "Aucune donnée de coût disponible pour le moment.",
     "categories": {
       "hosting": "Hébergement",
@@ -991,6 +1002,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Redesign immersif & Premium",
+          "description": "Refonte complète de l'interface avec un style 'glassmorphism', des dégradés dynamiques et une fluidité accrue sur mobile."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Saisie Rapide 2.0",
+          "description": "Ajout d'un système de saisie ultra-rapide avec suggestions intelligentes par type de repas pour construire vos menus en quelques secondes."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Nouveau système de droits",
+          "description": "Refonte de la gestion des accès pour les invités avec un système sécurisé par jetons permettant une collaboration sans compte."
+        },
         {
           "date": "Jan 2026",
           "title": "Classification par rayon",

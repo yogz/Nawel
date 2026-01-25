@@ -38,6 +38,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { LanguageSelector } from "@/components/common/language-selector";
 
 interface Cost {
   id: number;
@@ -281,6 +282,13 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 text-gray-900 sm:px-6 lg:py-20">
       <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8 flex justify-end"
+      >
+        <LanguageSelector variant="compact" showSearch />
+      </motion.div>
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -369,7 +377,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   {t("developmentTime")}
                 </p>
                 <div className="flex items-baseline gap-2 text-3xl font-black text-primary">
-                  ~250 Hours
+                  {t("developmentTimeValue")}
                 </div>
               </div>
             </div>
@@ -587,7 +595,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
         <motion.footer variants={itemVariants} className="border-t border-black/5 pt-8 text-center">
           <p className="text-text/40 flex items-center justify-center gap-2 text-sm">
-            Fait avec 🇪🇺❤️🐻 par un indépendant
+            {t("footer")}
           </p>
         </motion.footer>
       </motion.div>

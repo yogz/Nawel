@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Check, X, HelpCircle, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
@@ -26,25 +26,33 @@ export function RSVPSummary({
 }: RSVPSummaryProps) {
   const t = useTranslations("EventDashboard.People");
 
-  const stats = plan.people.reduce(
-    (acc, person) => {
-      const status = person.status;
-      const adults = person.guest_adults || 0;
-      const children = person.guest_children || 0;
+  // Memoize stats calculation to prevent re-computation on every render
+  const stats = useMemo(
+    () =>
+      plan.people.reduce(
+        (acc, person) => {
+          const status = person.status;
+          const adults = person.guest_adults || 0;
+          const children = person.guest_children || 0;
 
-      if (status === "confirmed") {
-        acc.confirmed += 1 + adults + children;
-      } else if (status === "declined") {
-        acc.declined++;
-      } else if (status === "maybe") {
-        acc.maybe++;
-      } else {
-        acc.pending++;
-      }
-      return acc;
-    },
-    { confirmed: 0, declined: 0, maybe: 0, pending: 0 }
+          if (status === "confirmed") {
+            acc.confirmed += 1 + adults + children;
+          } else if (status === "declined") {
+            acc.declined++;
+          } else if (status === "maybe") {
+            acc.maybe++;
+          } else {
+            acc.pending++;
+          }
+          return acc;
+        },
+        { confirmed: 0, declined: 0, maybe: 0, pending: 0 }
+      ),
+    [plan.people]
   );
+
+  // Memoize all names array to prevent new array creation on every render
+  const allNames = useMemo(() => plan.people.map((p) => p.name), [plan.people]);
 
   return (
     <div className="space-y-4">
@@ -127,7 +135,7 @@ export function RSVPSummary({
                 >
                   <PersonAvatar
                     person={person}
-                    allNames={plan.people.map((p) => p.name)}
+                    allNames={allNames}
                     size="md"
                     className="h-11 w-11 shadow-sm ring-2 ring-white"
                   />

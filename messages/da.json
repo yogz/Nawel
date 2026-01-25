@@ -370,12 +370,24 @@
     },
     "Properties": {
       "title": "Egenskaber",
+      "noConfirmed": "{total} gæster (0 bekræftet)",
+      "confirmed": "{count} bekræftet",
+      "guests": "{count, plural, one {# gæst} other {# gæster}}",
+      "adults": "{count, plural, one {# voksen} other {# voksne}}",
+      "children": "{count, plural, one {# barn} other {# børn}}",
+      "edit": "Rediger",
+      "share": "Del",
+      "deleteEvent": "Slet begivenhed",
+      "deleteWarning": "Denne handling kan ikke fortrydes. Alle data vil gå tabt.",
+      "deleteConfirm": "Slet permanent",
+      "deleteConfirmTitle": "Slet begivenhed?",
+      "deleteConfirmDescription": "Denne handling kan ikke fortrydes. Alle data, lister og deltagere vil blive slettet.",
+      "deleteConfirmYes": "Ja, slet",
       "guestCount": "{count, plural, one {# gæst} other {# gæster}}",
       "adultsCount": "{count} voksne",
       "childrenCount": "{count, plural, one {# barn} other {# børn}}",
       "editEvent": "Rediger",
-      "shareAccess": "Del adgang",
-      "deleteEvent": "Slet"
+      "shareAccess": "Del adgang"
     },
     "TabBar": {
       "navigation": "Hovednavigation",
@@ -433,6 +445,7 @@
       "add": "Tilføj",
       "adjust": "Jeg kommer ikke alene",
       "adjustCounts": "Juster antallet af personer",
+      "editPerson": "Rediger {name}",
       "areYouComing": "Kommer du?",
       "confirmPresence": "Bekræft din deltagelse",
       "errorUpdatingStatus": "Fejl ved opdatering af status",
@@ -531,6 +544,8 @@
         "generating": "Genererer...",
         "generateButton": "Generer ingredienser (AI)",
         "authRequired": "Log ind for at bruge AI",
+        "generateFor": "Generer til {count} pers.",
+        "smartCountTooltip": "Baseret på: {source}",
         "addManual": "Tilføj manuelt",
         "namePlaceholder": "F.eks.: Salt, Peber...",
         "nameLabel": "Ingrediensnavn",
@@ -623,6 +638,7 @@
       "dateLabel": "Dato",
       "datePlaceholder": "Vælg en dato",
       "timeLabel": "Tid",
+      "timePlaceholder": "Vælg tidspunkt",
       "titleLabel": "Måltidsnavn",
       "titlePlaceholder": "F.eks.: Aftensmad",
       "addressLabel": "Adresse",
@@ -963,13 +979,15 @@
     "monthlyView": "Månedlig visning",
     "totalSinceStart": "I alt siden start",
     "totalYear": "I alt i år",
-    "developmentTime": "Development time",
+    "developmentTime": "Udviklingstid",
+    "developmentTimeValue": "~250 Timer",
     "supportTitle": "Støt projektet",
     "supportDescription": "Hvis CoList hjælper dig i din hverdag, kan du købe mig en kop kaffe eller hjælpe mig med at dække hostingomkostningerne. Hver gestus tæller!",
     "buyMeACoffee": "Køb mig en kop kaffe",
     "revolut": "Via Revolut",
     "changelogTitle": "Hvad er nyt?",
     "changelogSubtitle": "De seneste funktioner tilføjet med kærlighed.",
+    "footer": "Lavet med 🇪🇺❤️🐻 af en selvstændig udvikler",
     "noCosts": "Ingen omkostningsdata tilgængelige endnu.",
     "categories": {
       "hosting": "Hosting",
@@ -984,6 +1002,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Forddybende Premium Redesign",
+          "description": "Fuldstændig overhaling af brugerfladen med 'glassmorphism' stil, dynamiske gradienter og forbedret flow på mobilen."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Hurtig Tilføjelse 2.0",
+          "description": "Nyt system til ultrahurtig indtastning med smarte forslag baseret på måltidstype, så du kan bygge dine menuer på få sekunder."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Avanceret Rettighedssystem",
+          "description": "Fornyet gæsteadgangsstyring med et sikkert token-system, der muliggør samarbejde uden en konto."
+        },
         {
           "date": "Jan 2026",
           "title": "Klassificering efter afdeling",

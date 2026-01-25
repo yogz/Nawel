@@ -350,7 +350,12 @@
       "deleteConfirm": "Eliminar permanentemente",
       "deleteConfirmTitle": "¿Eliminar evento?",
       "deleteConfirmDescription": "Esta acción es irreversible. Todos los datos, listas y participantes serán eliminados.",
-      "deleteConfirmYes": "Sí, eliminar"
+      "deleteConfirmYes": "Sí, eliminar",
+      "guestCount": "{count, plural, one {# invitado} other {# invitados}}",
+      "adultsCount": "{count, plural, one {# adulto} other {# adultos}}",
+      "childrenCount": "{count, plural, one {# niño} other {# niños}}",
+      "editEvent": "Editar",
+      "shareAccess": "Compartir acceso"
     },
     "Organizer": {
       "success": "Éxito",
@@ -436,6 +441,7 @@
       "me": "Yo",
       "editItem": "Editar artículo {name}",
       "edit": "Editar",
+      "editPerson": "Editar {name}",
       "absent": "No vengo",
       "add": "Añadir",
       "adjust": "No vengo solo",
@@ -450,7 +456,8 @@
       "statusUpdated": "Estado actualizado",
       "validate": "Validar",
       "adults": "Adultos",
-      "children": "Niños"
+      "children": "Niños",
+      "editPerson": "Editar {name}"
     },
     "Shopping": {
       "notAssociated": "Perfil no asociado",
@@ -538,6 +545,8 @@
         "generating": "Generando...",
         "generateButton": "Generar ingredientes (IA)",
         "authRequired": "Inicia sesión para usar IA",
+        "generateFor": "Generar para {count} pers.",
+        "smartCountTooltip": "Basado en: {source}",
         "addManual": "Añadir manualmente",
         "namePlaceholder": "Ej: Sal, Pimienta...",
         "nameLabel": "Nombre del ingrediente",
@@ -630,6 +639,7 @@
       "dateLabel": "Fecha",
       "datePlaceholder": "Elegir una fecha",
       "timeLabel": "Hora",
+      "timePlaceholder": "Elegir hora",
       "titleLabel": "Nombre de la comida",
       "titlePlaceholder": "Ej: Cena",
       "addressLabel": "Dirección",
@@ -970,13 +980,15 @@
     "monthlyView": "Vista mensual",
     "totalSinceStart": "Total desde el lanzamiento",
     "totalYear": "Total este año",
-    "developmentTime": "Development time",
+    "developmentTime": "Tiempo de desarrollo",
+    "developmentTimeValue": "~250 Horas",
     "supportTitle": "Apoyar el proyecto",
     "supportDescription": "Si CoList os ayuda en vuestro día a día, podéis invitarme a un café o ayudarme a cubrir los gastos de mantenimiento. ¡Cada gesto cuenta!",
     "buyMeACoffee": "Invitarme a un café",
     "revolut": "Vía Revolut",
     "changelogTitle": "¿Qué hay de nuevo?",
     "changelogSubtitle": "Las últimas funcionalidades añadidas con amor.",
+    "footer": "Hecho con 🇪🇺❤️🐻 por un desarrollador independiente",
     "noCosts": "No hay datos de costes disponibles por el momento.",
     "categories": {
       "hosting": "Alojamiento",
@@ -991,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Rediseño inmersivo y Premium",
+          "description": "Rediseño completo de la interfaz con un estilo 'glassmorphism', degradados dinámicos y mayor fluidez en dispositivos móviles."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Entrada Rápida 2.0",
+          "description": "Nuevo sistema de entrada ultra rápido con sugerencias inteligentes por tipo de comida para construir tus menús en segundos."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Sistema de permisos avanzado",
+          "description": "Gestión de acceso de invitados renovada con un sistema de tokens seguro que permite la colaboración sin cuenta."
+        },
         {
           "date": "Ene 2026",
           "title": "Clasificación por pasillos",

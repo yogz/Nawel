@@ -369,13 +369,25 @@
       "daysCount": "{count, plural, one {# ημέρα} other {# ημέρες}}"
     },
     "Properties": {
-      "title": "Ιδιότητες",
+      "title": "Ιδιότητες Εκδήλωσης",
+      "noConfirmed": "{total} καλεσμένοι (0 επιβεβαιωμένοι)",
+      "confirmed": "{count} επιβεβαιωμένοι",
+      "guests": "{count, plural, one {# καλεσμένος} other {# καλεσμένοι}}",
+      "adults": "{count, plural, one {# ενήλικας} other {# ενήλικες}}",
+      "children": "{count, plural, one {# παιδί} other {# παιδιά}}",
+      "edit": "Επεξεργασία",
+      "share": "Κοινοποίηση",
+      "deleteEvent": "Διαγραφή εκδήλωσης",
+      "deleteWarning": "Αυτή η ενέργεια είναι μη αναστρέψιμη. Όλα τα δεδομένα θα χαθούν.",
+      "deleteConfirm": "Οριστική διαγραφή",
+      "deleteConfirmTitle": "Διαγραφή εκδήλωσης;",
+      "deleteConfirmDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη. Όλα τα δεδομένα, οι λίστες και οι συμμετέχοντες θα διαγραφούν.",
+      "deleteConfirmYes": "Ναι, διαγραφή",
       "guestCount": "{count, plural, one {# καλεσμένος} other {# καλεσμένοι}}",
       "adultsCount": "{count} ενήλικες",
       "childrenCount": "{count, plural, one {# παιδί} other {# παιδιά}}",
       "editEvent": "Επεξεργασία",
-      "shareAccess": "Κοινοποίηση πρόσβασης",
-      "deleteEvent": "Διαγραφή"
+      "shareAccess": "Κοινοποίηση πρόσβασης"
     },
     "TabBar": {
       "navigation": "Κύρια πλοήγηση",
@@ -429,6 +441,7 @@
       "me": "Εγώ",
       "editItem": "Επεξεργασία προϊόντος {name}",
       "edit": "Επεξεργασία",
+      "editPerson": "Επεξεργασία {name}",
       "absent": "Δεν θα έρθω",
       "add": "Προσθήκη",
       "adjust": "Δεν θα έρθω μόνος",
@@ -443,7 +456,8 @@
       "statusUpdated": "Η κατάσταση ενημερώθηκε",
       "validate": "Επικύρωση",
       "adults": "Ενήλικες",
-      "children": "Παιδιά"
+      "children": "Παιδιά",
+      "editPerson": "Επεξεργασία {name}"
     },
     "Shopping": {
       "notAssociated": "Προφίλ μη συνδεδεμένο",
@@ -530,7 +544,9 @@
       "Ingredients": {
         "generating": "Δημιουργία...",
         "generateButton": "Δημιουργία συστατικών (ΤΝ)",
-        "authRequired": "Συνδεθείτε για χρήση ΤΝ",
+        "authRequired": "Συνδεθείτε για να χρησιμοποιήσετε το AI",
+        "generateFor": "Δημιουργία για {count} άτομα",
+        "smartCountTooltip": "Βασισμένο σε: {source}",
         "addManual": "Μη αυτόματη προσθήκη",
         "namePlaceholder": "Π.χ. Αλάτι, Πιπέρι...",
         "nameLabel": "Όνομα συστατικού",
@@ -623,6 +639,7 @@
       "dateLabel": "Ημερομηνία",
       "datePlaceholder": "Επιλέξτε ημερομηνία",
       "timeLabel": "Ώρα",
+      "timePlaceholder": "Επιλογή ώρας",
       "titleLabel": "Όνομα γεύματος",
       "titlePlaceholder": "Π.χ. Δείπνο",
       "addressLabel": "Διεύθυνση",
@@ -963,13 +980,15 @@
     "monthlyView": "Μηνιαία προβολή",
     "totalSinceStart": "Σύνολο από την αρχή",
     "totalYear": "Σύνολο φέτος",
-    "developmentTime": "Development time",
+    "developmentTime": "Χρόνος ανάπτυξης",
+    "developmentTimeValue": "~250 Ώρες",
     "supportTitle": "Υποστηρίξτε το έργο",
     "supportDescription": "Εάν το CoList σας βοηθά στην καθημερινότητά σας, μπορείτε να με κεράσετε έναν καφέ ή να με βοηθήσετε να καλύψω τα έξοδα φιλοξενίας. Κάθε χειρονομία μετράει!",
     "buyMeACoffee": "Κεράστε με έναν καφέ",
     "revolut": "Μέσω Revolut",
     "changelogTitle": "Τι νέο υπάρχει;",
     "changelogSubtitle": "Τα τελευταία χαρακτηριστικά που προστέθηκαν με αγάπη.",
+    "footer": "Φτιαγμένο με 🇪🇺❤️🐻 από έναν ανεξάρτητο προγραμματιστή",
     "noCosts": "Δεν υπάρχουν διαθέσιμα δεδομένα κόστους προς το παρόν.",
     "categories": {
       "hosting": "Φιλοξενία",
@@ -984,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Καθηλωτικός Premium Σχεδιασμός",
+          "description": "Πλήρης ανασχεδιασμός της διεπαφής με στυλ 'glassmorphism', δυναμικές διαβαθμίσεις και ενισχυμένη ροή σε κινητά."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Γρήγορη Προσθήκη 2.0",
+          "description": "Νέο σύστημα εξαιρετικά γρήγορης εισαγωγής με έξυπνες προτάσεις ανά τύπο γεύματος για να χτίζετε τα μενού σας σε δευτερόλεπτα."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Προηγμένο Σύστημα Δικαιωμάτων",
+          "description": "Ανανεωμένη διαχείριση πρόσβασης επισκεπτών με ένα ασφαλές σύστημα διακριτικών (tokens) που επιτρέπει τη συνεργασία χωρίς λογαριασμό."
+        },
         {
           "date": "Ιαν 2026",
           "title": "Ταξινόμηση ανά διάδρομο",

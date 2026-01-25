@@ -369,13 +369,25 @@
       "daysCount": "{count, plural, one {# dag} other {# dagar}}"
     },
     "Properties": {
-      "title": "Egenskaper",
+      "title": "Händelseegenskaper",
+      "noConfirmed": "{total} gäster (0 bekräftade)",
+      "confirmed": "{count} bekräftade",
+      "guests": "{count, plural, one {# gäst} other {# gäster}}",
+      "adults": "{count, plural, one {# vuxen} other {# vuxna}}",
+      "children": "{count, plural, one {# barn} other {# barn}}",
+      "edit": "Redigera",
+      "share": "Dela",
+      "deleteEvent": "Ta bort händelse",
+      "deleteWarning": "Denna åtgärd är oåterkallelig. All data kommer att förloras.",
+      "deleteConfirm": "Ta bort permanent",
+      "deleteConfirmTitle": "Ta bort händelse?",
+      "deleteConfirmDescription": "Denna åtgärd är oåterkallelig. All data, listor och deltagare kommer att raderas.",
+      "deleteConfirmYes": "Ja, ta bort",
       "guestCount": "{count, plural, one {# gäst} other {# gäster}}",
       "adultsCount": "{count} vuxna",
       "childrenCount": "{count, plural, one {# barn} other {# barn}}",
       "editEvent": "Redigera",
-      "shareAccess": "Dela åtkomst",
-      "deleteEvent": "Ta bort"
+      "shareAccess": "Dela åtkomst"
     },
     "TabBar": {
       "navigation": "Huvudnavigering",
@@ -433,6 +445,7 @@
       "add": "Lägg till",
       "adjust": "Jag kommer inte ensam",
       "adjustCounts": "Justera antal personer",
+      "editPerson": "Redigera {name}",
       "areYouComing": "Kommer du?",
       "confirmPresence": "Bekräfta ditt deltagande",
       "errorUpdatingStatus": "Fel vid uppdatering av status",
@@ -531,6 +544,8 @@
         "generating": "Genererar...",
         "generateButton": "Generera ingredienser (AI)",
         "authRequired": "Logga in för att använda AI",
+        "generateFor": "Generera för {count} pers.",
+        "smartCountTooltip": "Baserat på: {source}",
         "addManual": "Lägg till manuellt",
         "namePlaceholder": "Ex: Salt, Peppar...",
         "nameLabel": "Ingrediensnamn",
@@ -623,6 +638,7 @@
       "dateLabel": "Datum",
       "datePlaceholder": "Välj ett datum",
       "timeLabel": "Tid",
+      "timePlaceholder": "Välj tid",
       "titleLabel": "Måltidsnamn",
       "titlePlaceholder": "Ex: Middag",
       "addressLabel": "Adress",
@@ -963,13 +979,15 @@
     "monthlyView": "Månadsvisning",
     "totalSinceStart": "Totalt sedan start",
     "totalYear": "Totalt i år",
-    "developmentTime": "Development time",
+    "developmentTime": "Utvecklingstid",
+    "developmentTimeValue": "~250 Timmar",
     "supportTitle": "Stöd projektet",
     "supportDescription": "Om CoList hjälper dig i din vardag kan du bjuda mig på en kaffe eller hjälpa mig att täcka hostingkostnaderna. Varje gest räknas!",
     "buyMeACoffee": "Bjud mig på en kaffe",
     "revolut": "Via Revolut",
     "changelogTitle": "Vad är nytt?",
     "changelogSubtitle": "De senaste funktionerna tillagda med kärlek.",
+    "footer": "Gjord med 🇪🇺❤️🐻 av en självständig utvecklare",
     "noCosts": "Ingen kostnadsdata tillgänglig än.",
     "categories": {
       "hosting": "Hosting",
@@ -984,6 +1002,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Uppslukande Premium-redesign",
+          "description": "Fullständig översyn av gränssnittet med 'glassmorphism'-stil, dynamiska övergångar och förbättrat flöde på mobilen."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Snabbval 2.0",
+          "description": "Nytt ultrasnabbt inmatningssystem med smarta förslag baserat på måltidstype för att bygga dina menyer på några sekunder."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Avancerat behörighetssystem",
+          "description": "Förnyad hantering av gäståtkomst med ett säkert token-system som möjliggör samarbete utan konto."
+        },
         {
           "date": "Jan 2026",
           "title": "Klassificering efter avdelning",

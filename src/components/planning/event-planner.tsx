@@ -33,7 +33,7 @@ import { useGuestToken } from "@/hooks/use-guest-token";
 import { useCurrentPerson } from "@/hooks/use-current-person";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import confetti from "canvas-confetti";
+import { fireCelebrationConfetti } from "@/lib/confetti";
 import {
   PointerSensor,
   TouchSensor,
@@ -290,13 +290,7 @@ export function EventPlanner({
     if (searchParams.get("new") === "true") {
       setSheet({ type: "share" });
       setTimeout(() => {
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ["#ea580c", "#ef4444", "#fbbf24", "#ffffff"],
-          zIndex: 200,
-        });
+        fireCelebrationConfetti();
       }, 300);
 
       // Clear the "new" parameter from the URL without a full page reload

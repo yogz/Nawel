@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { fireEmojiConfetti } from "@/lib/confetti";
 import {
   createItemAction,
   updateItemAction,
@@ -150,42 +150,7 @@ export function useItemHandlers({
       person &&
       (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")
     ) {
-      const duration = 4 * 1000;
-      const end = Date.now() + duration;
-      const emojis = ["❤️", "💖", "💕", "🥂", "🌸", "🌺", "🌷", "✨"];
-      const emojiShapes = emojis.map((e) => confetti.shapeFromText({ text: e }));
-
-      const frame = () => {
-        confetti({
-          particleCount: 2,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.8 },
-          shapes: emojiShapes as confetti.Shape[],
-          scalar: 2.5,
-        });
-        confetti({
-          particleCount: 2,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.8 },
-          shapes: emojiShapes as confetti.Shape[],
-          scalar: 2.5,
-        });
-        if (Math.random() > 0.7) {
-          confetti({
-            particleCount: 4,
-            spread: 120,
-            origin: { y: 0.6 },
-            shapes: emojiShapes as confetti.Shape[],
-            scalar: 3.5,
-          });
-        }
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-      frame();
+      fireEmojiConfetti();
     }
 
     startTransition(async () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, memo } from "react";
+import React, { useState, memo, useMemo } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { type Service, type Person, type Item } from "@/lib/types";
@@ -66,7 +66,8 @@ export const ServiceSection = memo(function ServiceSection({
 
   const filteredItems = service.items;
 
-  const allPeopleNames = people.map((p) => p.name);
+  // Memoize people names to prevent new array creation on every render
+  const allPeopleNames = useMemo(() => people.map((p) => p.name), [people]);
 
   return (
     <div

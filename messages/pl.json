@@ -369,13 +369,25 @@
       "daysCount": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dni}}"
     },
     "Properties": {
-      "title": "Właściwości",
-      "guestCount": "{count, plural, one {# gość} few {# gości} many {# gości} other {# gości}}",
+      "title": "Właściwości wydarzenia",
+      "noConfirmed": "{total} gości (0 potwierdzonych)",
+      "confirmed": "{count} potwierdzonych",
+      "guests": "{count, plural, one {# gość} few {# gości} many {# gości} other {# gościa}}",
+      "adults": "{count, plural, one {# dorosły} few {# dorosłych} many {# dorosłych} other {# dorosłego}}",
+      "children": "{count, plural, one {# dziecko} few {# dzieci} many {# dzieci} other {# dziecka}}",
+      "edit": "Edytuj",
+      "share": "Udostępnij",
+      "deleteEvent": "Usuń wydarzenie",
+      "deleteWarning": "Ta akcja jest nieodwracalna. Wszystkie dane zostaną utracone.",
+      "deleteConfirm": "Usuń na stałe",
+      "deleteConfirmTitle": "Usuń wydarzenie?",
+      "deleteConfirmDescription": "Ta akcja jest nieodwracalna. Wszystkie dane, listy i uczestnicy zostaną usunięci.",
+      "deleteConfirmYes": "Tak, usuń",
+      "guestCount": "{count, plural, one {# gość} few {# gości} many {# gości} other {# gościa}}",
       "adultsCount": "{count} dorosłych",
-      "childrenCount": "{count, plural, one {# dziecko} few {# dzieci} many {# dzieci} other {# dzieci}}",
+      "childrenCount": "{count, plural, one {# dziecko} few {# dzieci} many {# dzieci} other {# dziecka}}",
       "editEvent": "Edytuj",
-      "shareAccess": "Udostępnij dostęp",
-      "deleteEvent": "Usuń"
+      "shareAccess": "Udostępnij dostęp"
     },
     "TabBar": {
       "navigation": "Nawigacja główna",
@@ -429,6 +441,7 @@
       "me": "Ja",
       "editItem": "Edytuj przedmiot {name}",
       "edit": "Edytuj",
+      "editPerson": "Edytuj {name}",
       "absent": "Nie przyjdę",
       "add": "Dodaj",
       "adjust": "Nie przychodzę sam",
@@ -443,7 +456,8 @@
       "statusUpdated": "Status zaktualizowany",
       "validate": "Zatwierdź",
       "adults": "Dorośli",
-      "children": "Dzieci"
+      "children": "Dzieci",
+      "editPerson": "Edytuj {name}"
     },
     "Shopping": {
       "notAssociated": "Profil niepowiązany",
@@ -530,7 +544,9 @@
       "Ingredients": {
         "generating": "Generowanie...",
         "generateButton": "Wygeneruj składniki (AI)",
-        "authRequired": "Zaloguj się, aby używać AI",
+        "authRequired": "Zaloguj się, aby użyć AI",
+        "generateFor": "Generuj dla {count} os.",
+        "smartCountTooltip": "Na podstawie: {source}",
         "addManual": "Dodaj ręcznie",
         "namePlaceholder": "Np.: Sól, pieprz...",
         "nameLabel": "Nazwa składnika",
@@ -623,6 +639,7 @@
       "dateLabel": "Data",
       "datePlaceholder": "Wybierz datę",
       "timeLabel": "Godzina",
+      "timePlaceholder": "Wybierz godzinę",
       "titleLabel": "Nazwa posiłku",
       "titlePlaceholder": "Np.: Kolacja",
       "addressLabel": "Adres",
@@ -963,13 +980,15 @@
     "monthlyView": "Widok miesięczny",
     "totalSinceStart": "Łącznie od początku",
     "totalYear": "Łącznie w tym roku",
-    "developmentTime": "Development time",
+    "developmentTime": "Czas rozwoju",
+    "developmentTimeValue": "~250 Godzin",
     "supportTitle": "Wesprzyj projekt",
     "supportDescription": "Jeśli CoList pomaga Ci w codziennym życiu, możesz postawić mi kawę lub pomóc w pokryciu kosztów hostingu. Każdy gest się liczy!",
     "buyMeACoffee": "Postaw mi kawę",
     "revolut": "Przez Revolut",
     "changelogTitle": "Co nowego?",
     "changelogSubtitle": "Najnowsze funkcje dodane z miłością.",
+    "footer": "Wykonane z 🇪🇺❤️🐻 przez niezależnego programistę",
     "noCosts": "Brak danych o kosztach w tej chwili.",
     "categories": {
       "hosting": "Hosting",
@@ -984,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Imersyjny Design Premium",
+          "description": "Całkowite odświeżenie interfejsu w stylu 'glassmorphism', z dynamicznymi gradientami i zwiększoną płynnością na urządzeniach mobilnych."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Szybkie Dodawanie 2.0",
+          "description": "Nowy, ultraszybki system wprowadzania z inteligentnymi sugestiami według rodzaju posiłku, pozwalający skomponować menu w kilka sekund."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Zaawansowany System Uprawnień",
+          "description": "Odświeżone zarządzanie dostępem gości z bezpiecznym systemem tokenów, umożliwiającym współpracę bez zakładania konta."
+        },
         {
           "date": "Sty 2026",
           "title": "Klasyfikacja według działów",

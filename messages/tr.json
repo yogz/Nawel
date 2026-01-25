@@ -369,13 +369,25 @@
       "daysCount": "{count, plural, one {# gün} other {# gün}}"
     },
     "Properties": {
-      "title": "Özellikler",
+      "title": "Etkinlik Özellikleri",
+      "noConfirmed": "{total} misafir (0 onaylı)",
+      "confirmed": "{count} onaylı",
+      "guests": "{count, plural, one {# misafir} other {# misafir}}",
+      "adults": "{count, plural, one {# yetişkin} other {# yetişkin}}",
+      "children": "{count, plural, one {# çocuk} other {# çocuk}}",
+      "edit": "Düzenle",
+      "share": "Paylaş",
+      "deleteEvent": "Etkinliği sil",
+      "deleteWarning": "Bu işlem geri alınamaz. Tüm veriler kaybolacaktır.",
+      "deleteConfirm": "Kalıcı olarak sil",
+      "deleteConfirmTitle": "Etkinlik silinsin mi?",
+      "deleteConfirmDescription": "Bu işlem geri alınamaz. Tüm veriler, listeler ve katılımcılar silinecektir.",
+      "deleteConfirmYes": "Evet, sil",
       "guestCount": "{count, plural, one {# misafir} other {# misafir}}",
       "adultsCount": "{count} yetişkin",
       "childrenCount": "{count, plural, one {# çocuk} other {# çocuk}}",
       "editEvent": "Düzenle",
-      "shareAccess": "Erişimi paylaş",
-      "deleteEvent": "Sil"
+      "shareAccess": "Paylaşım erişimi"
     },
     "TabBar": {
       "navigation": "Ana navigasyon",
@@ -429,6 +441,7 @@
       "me": "Ben",
       "editItem": "{name} ürününü düzenle",
       "edit": "Düzenle",
+      "editPerson": "{name} kişisini düzenle",
       "absent": "Gelmiyorum",
       "add": "Ekle",
       "adjust": "Yalnız gelmiyorum",
@@ -443,7 +456,8 @@
       "statusUpdated": "Durum güncellendi",
       "validate": "Onayla",
       "adults": "Yetişkinler",
-      "children": "Çocuklar"
+      "children": "Çocuklar",
+      "editPerson": "{name} Düzenle"
     },
     "Shopping": {
       "notAssociated": "Profil ilişkilendirilmemiş",
@@ -530,7 +544,9 @@
       "Ingredients": {
         "generating": "Oluşturuluyor...",
         "generateButton": "Malzemeleri oluştur (YZ)",
-        "authRequired": "YZ kullanmak için giriş yapın",
+        "authRequired": "Yapay zekayı kullanmak için giriş yapın",
+        "generateFor": "{count} kişi için oluştur",
+        "smartCountTooltip": "Kaynak: {source}",
         "addManual": "Manuel ekle",
         "namePlaceholder": "Örn: Tuz, Karabiber...",
         "nameLabel": "Malzeme adı",
@@ -623,6 +639,7 @@
       "dateLabel": "Tarih",
       "datePlaceholder": "Bir tarih seçin",
       "timeLabel": "Saat",
+      "timePlaceholder": "Saat seçin",
       "titleLabel": "Yemek adı",
       "titlePlaceholder": "Örn: Akşam yemeği",
       "addressLabel": "Adres",
@@ -963,13 +980,15 @@
     "monthlyView": "Aylık görünüm",
     "totalSinceStart": "Başlangıçtan bu yana toplam",
     "totalYear": "Bu yıl toplam",
-    "developmentTime": "Development time",
+    "developmentTime": "Geliştirme süresi",
+    "developmentTimeValue": "~250 Saat",
     "supportTitle": "Projeyi destekle",
     "supportDescription": "CoList günlük hayatınızda size yardımcı oluyorsa, bana bir kahve ısmarlayabilir veya barındırma masraflarını karşılamama yardımcı olabilirsiniz. Her jest önemlidir !",
     "buyMeACoffee": "Bana bir kahve ısmarla",
     "revolut": "Revolut Aracılığıyla",
     "changelogTitle": "Yenilikler ?",
     "changelogSubtitle": "Sevgiyle eklenen en son özellikler.",
+    "footer": "Bağımsız bir geliştirici tarafından 🇪🇺❤️🐻 ile yapılmıştır",
     "noCosts": "Şu anda maliyet verisi bulunmamaktadır.",
     "categories": {
       "hosting": "Barındırma",
@@ -984,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Sürükleyici Premium Tasarım",
+          "description": "'Glassmorphism' stili, dinamik gradyanlar ve gelişmiş mobil akıcılık ile arayüzün tamamen yenilenmesi."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Hızlı Ekleme 2.0",
+          "description": "Menülerinizi saniyeler içinde oluşturmak için öğün türüne göre akıllı öneriler sunan yeni ultra hızlı giriş sistemi."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Gelişmiş Yetkilendirme Sistemi",
+          "description": "Hesap gerektirmeden işbirliğine olanak tanıyan güvenli bir jeton sistemi ile yenilenmiş misafir erişim yönetimi."
+        },
         {
           "date": "Oca 2026",
           "title": "Reyon sınıflandırması",

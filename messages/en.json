@@ -350,7 +350,12 @@
       "deleteConfirm": "Delete permanently",
       "deleteConfirmTitle": "Delete event?",
       "deleteConfirmDescription": "This action is irreversible. All data, lists, and participants will be deleted.",
-      "deleteConfirmYes": "Yes, delete"
+      "deleteConfirmYes": "Yes, delete",
+      "guestCount": "{count, plural, one {# guest} other {# guests}}",
+      "adultsCount": "{count, plural, one {# adult} other {# adults}}",
+      "childrenCount": "{count, plural, one {# child} other {# children}}",
+      "editEvent": "Edit",
+      "shareAccess": "Share access"
     },
     "Organizer": {
       "success": "Success",
@@ -445,12 +450,14 @@
       "me": "Me",
       "editItem": "Edit item {name}",
       "edit": "Edit",
+      "editPerson": "Edit {name}",
       "howMany": "How many people?",
       "adjustCounts": "Adjust the headcount",
       "validate": "Done",
       "adjust": "I'm bringing guests",
       "adults": "Adults",
-      "children": "Children"
+      "children": "Children",
+      "editPerson": "Edit {name}"
     },
     "Shopping": {
       "notAssociated": "Profile not associated",
@@ -537,6 +544,8 @@
       "Ingredients": {
         "generating": "Generating...",
         "generateButton": "Generate ingredients (AI)",
+        "generateFor": "Generate for {count} guests",
+        "smartCountTooltip": "Based on: {source}",
         "authRequired": "Sign in to use AI",
         "addManual": "Add manually",
         "namePlaceholder": "Ex: Salt, Pepper...",
@@ -972,12 +981,14 @@
     "totalSinceStart": "Total since launch",
     "totalYear": "Total this year",
     "developmentTime": "Development time",
+    "developmentTimeValue": "~250 Hours",
     "supportTitle": "Support the project",
     "supportDescription": "If CoList helps you in your daily life, you can buy me a coffee or help me cover the hosting costs. Every gesture counts!",
     "buyMeACoffee": "Buy me a coffee",
     "revolut": "Via Revolut",
     "changelogTitle": "What's new?",
     "changelogSubtitle": "The latest features added with love.",
+    "footer": "Made with 🇪🇺❤️🐻 by an independent developer",
     "noCosts": "No cost data available yet.",
     "categories": {
       "hosting": "Hosting",
@@ -992,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Premium Immersive Redesign",
+          "description": "Complete UI overhaul with 'glassmorphism' style, dynamic gradients, and enhanced fluid transitions on mobile."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Quick Add 2.0",
+          "description": "New ultra-fast entry system with smart suggestions based on meal type to build your menus in seconds."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Advanced Permissions System",
+          "description": "Revamped guest access management with a secure token system allowing collaboration without an account."
+        },
         {
           "date": "Jan 2026",
           "title": "Aisle classification",

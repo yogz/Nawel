@@ -370,12 +370,24 @@
     },
     "Properties": {
       "title": "Eigenschappen",
+      "noConfirmed": "{total} gasten (0 bevestigd)",
+      "confirmed": "{count} bevestigd",
+      "guests": "{count, plural, one {# gast} other {# gasten}}",
+      "adults": "{count, plural, one {# volwassene} other {# volwassenen}}",
+      "children": "{count, plural, one {# kind} other {# kinderen}}",
+      "edit": "Bewerken",
+      "share": "Delen",
+      "deleteEvent": "Evenement verwijderen",
+      "deleteWarning": "Deze actie is onomkeerbaar. Alle gegevens gaan verloren.",
+      "deleteConfirm": "Permanent verwijderen",
+      "deleteConfirmTitle": "Evenement verwijderen?",
+      "deleteConfirmDescription": "Deze actie is onomkeerbaar. Alle gegevens, lijsten en deelnemers worden verwijderd.",
+      "deleteConfirmYes": "Ja, verwijderen",
       "guestCount": "{count, plural, one {# gast} other {# gasten}}",
       "adultsCount": "{count} volwassenen",
       "childrenCount": "{count, plural, one {# kind} other {# kinderen}}",
       "editEvent": "Bewerken",
-      "shareAccess": "Toegang delen",
-      "deleteEvent": "Verwijderen"
+      "shareAccess": "Toegang delen"
     },
     "TabBar": {
       "navigation": "Hoofdnavigatie",
@@ -433,6 +445,7 @@
       "add": "Toevoegen",
       "adjust": "Ik kom niet alleen",
       "adjustCounts": "Aantal personen aanpassen",
+      "editPerson": "Bewerken {name}",
       "areYouComing": "Kom je?",
       "confirmPresence": "Bevestig je aanwezigheid",
       "errorUpdatingStatus": "Fout bij het bijwerken van de status",
@@ -531,6 +544,8 @@
         "generating": "Genereren...",
         "generateButton": "Ingrediënten genereren (AI)",
         "authRequired": "Meld u aan om AI te gebruiken",
+        "generateFor": "Genereren voor {count} pers.",
+        "smartCountTooltip": "Gebaseerd op: {source}",
         "addManual": "Handmatig toevoegen",
         "namePlaceholder": "Bijv: Zout, Peper...",
         "nameLabel": "Naam ingrediënt",
@@ -623,6 +638,7 @@
       "dateLabel": "Datum",
       "datePlaceholder": "Kies een datum",
       "timeLabel": "Tijd",
+      "timePlaceholder": "Kies tijdstip",
       "titleLabel": "Naam maaltijd",
       "titlePlaceholder": "Bijv: Diner",
       "addressLabel": "Adres",
@@ -963,13 +979,15 @@
     "monthlyView": "Maandelijkse weergave",
     "totalSinceStart": "Totaal sinds de start",
     "totalYear": "Totaal dit jaar",
-    "developmentTime": "Development time",
+    "developmentTime": "Ontwikkeltijd",
+    "developmentTimeValue": "~250 Uur",
     "supportTitle": "Ondersteun het project",
     "supportDescription": "Als CoList u helpt in uw dagelijks leven, kunt u mij op een kopje koffie trakteren of mij helpen de hostingkosten te deken. Elk gebaar telt!",
     "buyMeACoffee": "Trakteer mij op een kopje koffie",
     "revolut": "Via Revolut",
     "changelogTitle": "Wat is er nieuw?",
     "changelogSubtitle": "De nieuwste functies met liefde toegevoegd.",
+    "footer": "Gemaakt με 🇪🇺❤️🐻 door een onafhankelijke ontwikkelaar",
     "noCosts": "Nog geen kostengegevens beschikbaar.",
     "categories": {
       "hosting": "Hosting",
@@ -984,6 +1002,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Meeslepend Premium Herontwerp",
+          "description": "Volledige herziening van de interface met een 'glassmorphism' stijl, dynamische gradiënten en verbeterde vloeiendheid op mobiel."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Snel Toevoegen 2.0",
+          "description": "Nieuw supersnel invoersysteem met slimme suggesties per type maaltijd om je menu's in seconden op te bouwen."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Geavanceerd Machtigingssysteem",
+          "description": "Vernieuwd toegangsbeheer voor gasten met een veilig tokensysteem waardoor samenwerking zonder account mogelijk is."
+        },
         {
           "date": "Jan 2026",
           "title": "Classificatie per gangpad",

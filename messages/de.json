@@ -350,7 +350,12 @@
       "deleteConfirm": "Dauerhaft löschen",
       "deleteConfirmTitle": "Event löschen?",
       "deleteConfirmDescription": "Diese Aktion ist unwiderruflich. Alle Daten, Listen und Teilnehmer werden gelöscht.",
-      "deleteConfirmYes": "Ja, löschen"
+      "deleteConfirmYes": "Ja, löschen",
+      "guestCount": "{count, plural, one {# Gast} other {# Gäste}}",
+      "adultsCount": "{count, plural, one {# Erwachsener} other {# Erwachsene}}",
+      "childrenCount": "{count, plural, one {# Kind} other {# Kinder}}",
+      "editEvent": "Bearbeiten",
+      "shareAccess": "Zugang teilen"
     },
     "Organizer": {
       "success": "Erfolg",
@@ -436,6 +441,7 @@
       "me": "Ich",
       "editItem": "Artikel bearbeiten {name}",
       "edit": "Bearbeiten",
+      "editPerson": "{name} bearbeiten",
       "absent": "Abgesagt",
       "add": "Hinzufügen",
       "adjust": "Ich komme nicht alleine",
@@ -450,7 +456,8 @@
       "statusUpdated": "Status aktualisiert",
       "validate": "Bestätigen",
       "adults": "Erwachsene",
-      "children": "Kinder"
+      "children": "Kinder",
+      "editPerson": "Bearbeiten {name}"
     },
     "Shopping": {
       "notAssociated": "Profil nicht verknüpft",
@@ -537,7 +544,9 @@
       "Ingredients": {
         "generating": "Generierung läuft...",
         "generateButton": "Zutaten generieren (KI)",
-        "authRequired": "Anmelden zur KI-Nutzung",
+        "authRequired": "Anmelden, um KI zu nutzen",
+        "generateFor": "Generieren für {count} Pers.",
+        "smartCountTooltip": "Basiert auf: {source}",
         "addManual": "Manuell hinzufügen",
         "namePlaceholder": "Z.B. Salz, Pfeffer...",
         "nameLabel": "Name der Zutat",
@@ -629,7 +638,8 @@
       },
       "dateLabel": "Datum",
       "datePlaceholder": "Datum wählen",
-      "timeLabel": "Uhrzeit",
+      "timeLabel": "Zeit",
+      "timePlaceholder": "Zeit auswählen",
       "titleLabel": "Name der Mahlzeit",
       "titlePlaceholder": "Z.B. Abendessen",
       "addressLabel": "Adresse",
@@ -970,13 +980,15 @@
     "monthlyView": "Monatliche Ansicht",
     "totalSinceStart": "Gesamt seit dem Start",
     "totalYear": "Gesamt in diesem Jahr",
-    "developmentTime": "Development time",
+    "developmentTime": "Entwicklungszeit",
+    "developmentTimeValue": "~250 Stunden",
     "supportTitle": "Unterstütze das Projekt",
     "supportDescription": "Wenn CoList dir im Alltag hilft, kannst du mir einen Kaffee ausgeben oder mir helfen, die Hosting-Kosten zu decken. Jede Geste zählt!",
     "buyMeACoffee": "Gib mir einen Kaffee aus",
     "revolut": "Über Revolut",
     "changelogTitle": "Was gibt's Neues?",
-    "changelogSubtitle": "Die neuesten Funktionen mit Liebe hinzugefügt.",
+    "changelogSubtitle": "Die neuesten Funktionen, mit Liebe hinzugefügt.",
+    "footer": "Hergestellt mit 🇪🇺❤️🐻 von einem unabhängigen Entwickler",
     "noCosts": "Noch keine Kostendaten verfügbar.",
     "categories": {
       "hosting": "Hosting",
@@ -991,6 +1003,21 @@
     },
     "changelog": {
       "items": [
+        {
+          "date": "Jan 2026",
+          "title": "Immersives Premium-Redesign",
+          "description": "Vollständige Überarbeitung der Benutzeroberfläche im 'Glassmorphism'-Stil, mit dynamischen Farbverläufen und verbesserter Flüssigkeit auf Mobilgeräten."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Schnell-Hinzufügen 2.0",
+          "description": "Neues ultraschnelles Eingabesystem mit intelligenten Vorschlägen je nach Mahlzeitentyp, um Ihre Menüs in Sekunden zu erstellen."
+        },
+        {
+          "date": "Jan 2026",
+          "title": "Erweitertes Berechtigungssystem",
+          "description": "Überarbeitete Gastzugriffsverwaltung mit einem sicheren Token-System, das eine Zusammenarbeit ohne Konto ermöglicht."
+        },
         {
           "date": "Jan 2026",
           "title": "Regalsortierung",

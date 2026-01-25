@@ -105,21 +105,29 @@ export function PeopleTab({
     }
   }, []);
 
-  const stats = plan.people.reduce(
-    (acc, person) => {
-      const status = person.status;
-      const adults = person.guest_adults || 0;
-      const children = person.guest_children || 0;
+  // Memoize stats calculation to prevent re-computation on every render
+  const stats = useMemo(
+    () =>
+      plan.people.reduce(
+        (acc, person) => {
+          const status = person.status;
+          const adults = person.guest_adults || 0;
+          const children = person.guest_children || 0;
 
-      if (status === "confirmed") {
-        acc.confirmed += 1 + adults + children;
-      } else if (status === "declined") acc.declined++;
-      else if (status === "maybe") acc.maybe++;
-      else acc.pending++;
-      return acc;
-    },
-    { confirmed: 0, declined: 0, maybe: 0, pending: 0 }
+          if (status === "confirmed") {
+            acc.confirmed += 1 + adults + children;
+          } else if (status === "declined") acc.declined++;
+          else if (status === "maybe") acc.maybe++;
+          else acc.pending++;
+          return acc;
+        },
+        { confirmed: 0, declined: 0, maybe: 0, pending: 0 }
+      ),
+    [plan.people]
   );
+
+  // Memoize all names array to prevent new array creation on every render
+  const allNames = useMemo(() => plan.people.map((p) => p.name), [plan.people]);
 
   return (
     <div className="space-y-4">
@@ -192,7 +200,7 @@ export function PeopleTab({
                     <div className="relative">
                       <PersonAvatar
                         person={person}
-                        allNames={plan.people.map((p) => p.name)}
+                        allNames={allNames}
                         size="md"
                         className="shadow-sm ring-1 ring-gray-100"
                       />
@@ -253,6 +261,7 @@ export function PeopleTab({
                             })
                           }
                           className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900"
+                          aria-label={t("editPerson", { name: getDisplayName(person) })}
                         >
                           <Pencil size={14} />
                         </button>

@@ -166,6 +166,7 @@ export function QuickListInput({
                   <button
                     onClick={() => onRemove(item, index)}
                     className="rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 active:scale-90"
+                    aria-label={`Remove ${item.name}`}
                   >
                     <Trash2 size={18} />
                   </button>
