@@ -351,11 +351,31 @@
       "shareTitle": "Del adgang",
       "shareNavigatorTitle": "Begivenhed - {name}",
       "shareNavigatorText": "Tilslut dig begivenheden \"{name}\" på CoList!",
+      "backToEvents": "Tilbage til begivenheder",
+      "openMenu": "Åbn menu",
       "filter": {
         "all": "Hele menuen",
         "unassigned": "Skal tages ({count})",
         "allMeals": "Alle måltider"
       }
+    },
+    "ReadOnly": {
+      "title": "Skrivebeskyttet tilstand",
+      "getAccess": "Få adgang"
+    },
+    "MetaPills": {
+      "editAddress": "Rediger adresse",
+      "save": "Gem",
+      "daysCount": "{count, plural, one {# dag} other {# dage}}"
+    },
+    "Properties": {
+      "title": "Egenskaber",
+      "guestCount": "{count, plural, one {# gæst} other {# gæster}}",
+      "adultsCount": "{count} voksne",
+      "childrenCount": "{count, plural, one {# barn} other {# børn}}",
+      "editEvent": "Rediger",
+      "shareAccess": "Del adgang",
+      "deleteEvent": "Slet"
     },
     "TabBar": {
       "navigation": "Hovednavigation",
@@ -387,7 +407,8 @@
       "cancel": "Annuller",
       "expand": "Udfold",
       "collapse": "Skjul",
-      "noMealsDesc": "Tilføj dit første måltid for at begynde at organisere menuen."
+      "noMealsDesc": "Tilføj dit første måltid for at begynde at organisere menuen.",
+      "shareEvent": "Del begivenhed"
     },
     "Service": {
       "editService": "Rediger ret {name}",

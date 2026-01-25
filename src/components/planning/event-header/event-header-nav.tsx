@@ -3,6 +3,7 @@
 import { ChevronLeft, MoreHorizontal } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface EventHeaderNavProps {
   isScrolled: boolean;
@@ -20,6 +21,8 @@ interface EventHeaderNavProps {
  * - Gray/white buttons when scrolled (over white header)
  */
 export function EventHeaderNav({ isScrolled, onMenuClick }: EventHeaderNavProps) {
+  const t = useTranslations("EventDashboard.Header");
+
   // Dark text for contrast, subtle background adapts to scroll state
   const buttonClasses = cn(
     "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-105 active:scale-95 border shadow-sm text-[#1a0a33]/80",
@@ -29,12 +32,12 @@ export function EventHeaderNav({ isScrolled, onMenuClick }: EventHeaderNavProps)
   return (
     <div className="flex items-center justify-between gap-4 py-1">
       {/* Back button - navigates to events list */}
-      <Link href="/event" className={buttonClasses} aria-label="Back to events">
+      <Link href="/event" className={buttonClasses} aria-label={t("backToEvents")}>
         <ChevronLeft className="h-5 w-5" strokeWidth={2} />
       </Link>
 
       {/* Menu button - opens profile drawer */}
-      <button onClick={onMenuClick} className={buttonClasses} aria-label="Open menu">
+      <button onClick={onMenuClick} className={buttonClasses} aria-label={t("openMenu")}>
         <MoreHorizontal className="h-5 w-5" strokeWidth={2} />
       </button>
     </div>

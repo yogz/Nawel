@@ -351,11 +351,31 @@
       "shareTitle": "Toegang delen",
       "shareNavigatorTitle": "Evenement - {name}",
       "shareNavigatorText": "Doe mee met het evenement \"{name}\" op CoList!",
+      "backToEvents": "Terug naar evenementen",
+      "openMenu": "Menu openen",
       "filter": {
         "all": "Volledig menu",
         "unassigned": "Te nemen ({count})",
         "allMeals": "Alle maaltijden"
       }
+    },
+    "ReadOnly": {
+      "title": "Alleen-lezen modus",
+      "getAccess": "Toegang krijgen"
+    },
+    "MetaPills": {
+      "editAddress": "Adres bewerken",
+      "save": "Opslaan",
+      "daysCount": "{count, plural, one {# dag} other {# dagen}}"
+    },
+    "Properties": {
+      "title": "Eigenschappen",
+      "guestCount": "{count, plural, one {# gast} other {# gasten}}",
+      "adultsCount": "{count} volwassenen",
+      "childrenCount": "{count, plural, one {# kind} other {# kinderen}}",
+      "editEvent": "Bewerken",
+      "shareAccess": "Toegang delen",
+      "deleteEvent": "Verwijderen"
     },
     "TabBar": {
       "navigation": "Hoofdnavigatie",
@@ -387,7 +407,8 @@
       "cancel": "Annuleren",
       "expand": "Uitklappen",
       "collapse": "Inklappen",
-      "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren."
+      "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren.",
+      "shareEvent": "Evenement delen"
     },
     "Service": {
       "editService": "Gang bewerken {name}",

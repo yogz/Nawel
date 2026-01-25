@@ -351,11 +351,31 @@
       "shareTitle": "Κοινοποίηση πρόσβασης",
       "shareNavigatorTitle": "Εκδήλωση - {name}",
       "shareNavigatorText": "Ελάτε στην εκδήλωση \"{name}\" στο CoList!",
+      "backToEvents": "Επιστροφή στις εκδηλώσεις",
+      "openMenu": "Άνοιγμα μενού",
       "filter": {
         "all": "Πλήρες μενού",
         "unassigned": "Προς ανάληψη ({count})",
         "allMeals": "Όλα τα γεύματα"
       }
+    },
+    "ReadOnly": {
+      "title": "Λειτουργία μόνο για ανάγνωση",
+      "getAccess": "Λήψη πρόσβασης"
+    },
+    "MetaPills": {
+      "editAddress": "Επεξεργασία διεύθυνσης",
+      "save": "Αποθήκευση",
+      "daysCount": "{count, plural, one {# ημέρα} other {# ημέρες}}"
+    },
+    "Properties": {
+      "title": "Ιδιότητες",
+      "guestCount": "{count, plural, one {# καλεσμένος} other {# καλεσμένοι}}",
+      "adultsCount": "{count} ενήλικες",
+      "childrenCount": "{count, plural, one {# παιδί} other {# παιδιά}}",
+      "editEvent": "Επεξεργασία",
+      "shareAccess": "Κοινοποίηση πρόσβασης",
+      "deleteEvent": "Διαγραφή"
     },
     "TabBar": {
       "navigation": "Κύρια πλοήγηση",
@@ -387,7 +407,8 @@
       "cancel": "Ακύρωση",
       "expand": "Ανάπτυξη",
       "collapse": "Σύμπτυξη",
-      "noMealsDesc": "Προσθέστε το πρώτο σας γεύμα για να ξεκινήσετε την οργάνωση του μενού."
+      "noMealsDesc": "Προσθέστε το πρώτο σας γεύμα για να ξεκινήσετε την οργάνωση του μενού.",
+      "shareEvent": "Κοινοποίηση εκδήλωσης"
     },
     "Service": {
       "editService": "Επεξεργασία πιάτου {name}",

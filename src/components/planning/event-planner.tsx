@@ -32,6 +32,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react
 import { useGuestToken } from "@/hooks/use-guest-token";
 import { useCurrentPerson } from "@/hooks/use-current-person";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import confetti from "canvas-confetti";
 import {
   PointerSensor,
@@ -114,6 +115,7 @@ export function EventPlanner({
     setActiveItemId,
   } = useEventState(initialPlan, initialWriteEnabled);
 
+  const t = useTranslations("EventDashboard.ReadOnly");
   const { data: session, isPending: isSessionLoading, refetch } = useSession();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
@@ -412,13 +414,13 @@ export function EventPlanner({
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-white text-xs font-bold">
                 👁
               </div>
-              <p className="text-sm font-medium text-amber-800">Mode lecture seule</p>
+              <p className="text-sm font-medium text-amber-800">{t("title")}</p>
             </div>
             <button
               onClick={() => setSheet({ type: "guest-access" })}
               className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600"
             >
-              Obtenir l'accès
+              {t("getAccess")}
             </button>
           </div>
         </div>

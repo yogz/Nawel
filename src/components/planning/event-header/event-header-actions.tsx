@@ -60,7 +60,7 @@ export function EventHeaderActions({
       {isCalendarEnabled && (
         <Popover>
           <PopoverTrigger asChild>
-            <button className={buttonClasses} aria-label="Add to calendar">
+            <button className={buttonClasses} aria-label={tPlanning("calendar.addToCalendar")}>
               <Calendar size={16} strokeWidth={2} />
             </button>
           </PopoverTrigger>
@@ -108,7 +108,7 @@ export function EventHeaderActions({
         <button
           onClick={onShareClick}
           className={cn(buttonClasses, showAttention && "btn-shine-attention")}
-          aria-label="Share event"
+          aria-label={tPlanning("shareEvent")}
         >
           <Share size={16} strokeWidth={2} />
         </button>

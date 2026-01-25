@@ -351,11 +351,31 @@
       "shareTitle": "Dela åtkomst",
       "shareNavigatorTitle": "Evenemang - {name}",
       "shareNavigatorText": "Gå med i evenemanget \"{name}\" på CoList!",
+      "backToEvents": "Tillbaka till evenemang",
+      "openMenu": "Öppna meny",
       "filter": {
         "all": "Hela menyn",
         "unassigned": "Att ta ({count})",
         "allMeals": "Alla måltider"
       }
+    },
+    "ReadOnly": {
+      "title": "Skrivskyddat läge",
+      "getAccess": "Få åtkomst"
+    },
+    "MetaPills": {
+      "editAddress": "Redigera adress",
+      "save": "Spara",
+      "daysCount": "{count, plural, one {# dag} other {# dagar}}"
+    },
+    "Properties": {
+      "title": "Egenskaper",
+      "guestCount": "{count, plural, one {# gäst} other {# gäster}}",
+      "adultsCount": "{count} vuxna",
+      "childrenCount": "{count, plural, one {# barn} other {# barn}}",
+      "editEvent": "Redigera",
+      "shareAccess": "Dela åtkomst",
+      "deleteEvent": "Ta bort"
     },
     "TabBar": {
       "navigation": "Huvudnavigering",
@@ -387,7 +407,8 @@
       "cancel": "Avbryt",
       "expand": "Expandera",
       "collapse": "Minimera",
-      "noMealsDesc": "Lägg till din första måltid för att börja organisera menyn."
+      "noMealsDesc": "Lägg till din första måltid för att börja organisera menyn.",
+      "shareEvent": "Dela evenemang"
     },
     "Service": {
       "editService": "Redigera rätt {name}",

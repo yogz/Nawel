@@ -351,11 +351,31 @@
       "shareTitle": "Udostępnij dostęp",
       "shareNavigatorTitle": "Wydarzenie - {name}",
       "shareNavigatorText": "Dołącz do wydarzenia \"{name}\" na CoList!",
+      "backToEvents": "Powrót do wydarzeń",
+      "openMenu": "Otwórz menu",
       "filter": {
         "all": "Pełne menu",
         "unassigned": "Do wzięcia ({count})",
         "allMeals": "Wszystkie posiłki"
       }
+    },
+    "ReadOnly": {
+      "title": "Tryb tylko do odczytu",
+      "getAccess": "Uzyskaj dostęp"
+    },
+    "MetaPills": {
+      "editAddress": "Edytuj adres",
+      "save": "Zapisz",
+      "daysCount": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dni}}"
+    },
+    "Properties": {
+      "title": "Właściwości",
+      "guestCount": "{count, plural, one {# gość} few {# gości} many {# gości} other {# gości}}",
+      "adultsCount": "{count} dorosłych",
+      "childrenCount": "{count, plural, one {# dziecko} few {# dzieci} many {# dzieci} other {# dzieci}}",
+      "editEvent": "Edytuj",
+      "shareAccess": "Udostępnij dostęp",
+      "deleteEvent": "Usuń"
     },
     "TabBar": {
       "navigation": "Nawigacja główna",
@@ -387,7 +407,8 @@
       "cancel": "Anuluj",
       "expand": "Rozwiń",
       "collapse": "Zwiń",
-      "noMealsDesc": "Dodaj swój pierwszy posiłek, aby zacząć organizować menu."
+      "noMealsDesc": "Dodaj swój pierwszy posiłek, aby zacząć organizować menu.",
+      "shareEvent": "Udostępnij wydarzenie"
     },
     "Service": {
       "editService": "Edytuj danie {name}",

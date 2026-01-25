@@ -71,7 +71,7 @@ export function EventPropertiesDrawer({
         <DrawerHeader className="px-0 text-left">
           <div className="flex items-center justify-between gap-3">
             <DrawerTitle className="text-lg font-black tracking-tight">
-              Propriétés de l'événement
+              {t("Properties.title")}
             </DrawerTitle>
             <DrawerClose asChild>
               <button
@@ -145,15 +145,18 @@ export function EventPropertiesDrawer({
                         );
 
                         if (stats.confirmedCount === 0) {
-                          return `${plan.people.length} invités (0 confirmé)`;
+                          return t("Properties.noConfirmed", { total: plan.people.length });
                         }
 
                         return (
                           <>
                             <span className="font-medium text-gray-900">
-                              {stats.confirmedCount} confirmés
+                              {t("Properties.confirmed", { count: stats.confirmedCount })}
                             </span>
-                            <span className="text-gray-500"> / {plan.people.length} invités</span>
+                            <span className="text-gray-500">
+                              {" "}
+                              / {t("Properties.guests", { count: plan.people.length })}
+                            </span>
                           </>
                         );
                       })()}
@@ -174,9 +177,9 @@ export function EventPropertiesDrawer({
 
                       return (
                         <span className="text-xs text-gray-400">
-                          {stats.totalAdults} adulte{stats.totalAdults > 1 ? "s" : ""}
+                          {t("Properties.adults", { count: stats.totalAdults })}
                           {stats.totalChildren > 0 &&
-                            `, ${stats.totalChildren} enfant${stats.totalChildren > 1 ? "s" : ""}`}
+                            `, ${t("Properties.children", { count: stats.totalChildren })}`}
                         </span>
                       );
                     })()}
@@ -198,7 +201,7 @@ export function EventPropertiesDrawer({
                 <div className="p-2 rounded-full bg-violet-50 text-violet-600">
                   <PenLine size={20} />
                 </div>
-                <span className="font-semibold text-gray-700">Modifier</span>
+                <span className="font-semibold text-gray-700">{t("Properties.edit")}</span>
               </Button>
 
               <Button
@@ -212,7 +215,7 @@ export function EventPropertiesDrawer({
                 <div className="p-2 rounded-full bg-blue-50 text-blue-600">
                   <Share2 size={20} />
                 </div>
-                <span className="font-semibold text-gray-700">Partager</span>
+                <span className="font-semibold text-gray-700">{t("Properties.share")}</span>
               </Button>
             </div>
 
@@ -223,7 +226,7 @@ export function EventPropertiesDrawer({
                   onClick={() => setShowDangerZone(true)}
                   className="w-full py-3 text-xs font-black uppercase tracking-widest text-red-500/60 transition-all hover:text-red-500"
                 >
-                  Supprimer l'événement
+                  {t("Properties.deleteEvent")}
                 </button>
               ) : (
                 <div className="animate-in fade-in slide-in-from-bottom-2">
@@ -231,16 +234,15 @@ export function EventPropertiesDrawer({
                     onDelete={handleDelete}
                     onCancel={() => setShowDangerZone(false)}
                     isDeleting={isDeleting}
-                    title="Supprimer l'événement"
-                    warningMessage="Cette action est irréversible. Toutes les données seront perdues."
-                    deleteButtonLabel="Supprimer définitivement"
-                    cancelButtonLabel="Annuler"
+                    title={t("Properties.deleteEvent")}
+                    warningMessage={t("Properties.deleteWarning")}
+                    deleteButtonLabel={t("Properties.deleteConfirm")}
+                    cancelButtonLabel={tCommon("cancel")}
                     confirmationConfig={{
-                      title: "Supprimer l'événement ?",
-                      description:
-                        "Cette action est irréversible. Toutes les données, listes et participants seront supprimés.",
-                      confirmLabel: "Oui, supprimer",
-                      cancelLabel: "Annuler",
+                      title: t("Properties.deleteConfirmTitle"),
+                      description: t("Properties.deleteConfirmDescription"),
+                      confirmLabel: t("Properties.deleteConfirmYes"),
+                      cancelLabel: tCommon("cancel"),
                     }}
                   />
                 </div>

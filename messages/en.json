@@ -327,6 +327,31 @@
     "summaryUrl": "URL"
   },
   "EventDashboard": {
+    "ReadOnly": {
+      "title": "Read-only mode",
+      "getAccess": "Get access"
+    },
+    "MetaPills": {
+      "editAddress": "Edit address",
+      "save": "Save",
+      "daysCount": "{count, plural, one {# day} other {# days}}"
+    },
+    "Properties": {
+      "title": "Event properties",
+      "noConfirmed": "{total} guests (0 confirmed)",
+      "confirmed": "{count} confirmed",
+      "guests": "{count, plural, one {# guest} other {# guests}}",
+      "adults": "{count, plural, one {# adult} other {# adults}}",
+      "children": "{count, plural, one {# child} other {# children}}",
+      "edit": "Edit",
+      "share": "Share",
+      "deleteEvent": "Delete event",
+      "deleteWarning": "This action is irreversible. All data will be lost.",
+      "deleteConfirm": "Delete permanently",
+      "deleteConfirmTitle": "Delete event?",
+      "deleteConfirmDescription": "This action is irreversible. All data, lists, and participants will be deleted.",
+      "deleteConfirmYes": "Yes, delete"
+    },
     "Organizer": {
       "success": "Success",
       "error": "Error",
@@ -351,6 +376,8 @@
       "shareTitle": "Share access",
       "shareNavigatorTitle": "Event - {name}",
       "shareNavigatorText": "Join the event \"{name}\" on CoList!",
+      "backToEvents": "Back to events",
+      "openMenu": "Open menu",
       "filter": {
         "all": "Full menu",
         "unassigned": "To take ({count})",
@@ -370,6 +397,7 @@
       "noMeals": "No meals for now.",
       "addMeal": "Add a meal",
       "addService": "Add a course",
+      "shareEvent": "Share event",
       "calendar": {
         "options": "Calendar options",
         "addToCalendar": "Add to calendar",

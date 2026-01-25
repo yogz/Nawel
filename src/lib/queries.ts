@@ -1,78 +1,83 @@
-import { asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { meals, items, services, people, events, ingredients } from "@drizzle/schema";
+import { events } from "@drizzle/schema";
 import { type PlanData, type Meal, type Person } from "./types";
 
+/**
+ * Fetches the complete event plan with all related data in optimized queries.
+ *
+ * Uses Drizzle's eager loading to fetch all data efficiently:
+ * - Single query for event + people
+ * - Single query for meals + services + items + ingredients
+ *
+ * This replaces the previous N+1 pattern that ran 1 query per meal.
+ */
 export async function fetchPlan(slug: string): Promise<PlanData> {
-  // 1. Trouver l'événement
+  // 1. Fetch event with people in a single query
   const event = await db.query.events.findFirst({
     where: eq(events.slug, slug),
+    with: {
+      people: {
+        orderBy: (people, { asc }) => [asc(people.name)],
+        with: { user: true },
+      },
+    },
   });
 
   if (!event) {
     return { event: null, meals: [], people: [] };
   }
 
-  // 2. Récupérer les convives
-  const peopleList = await db.query.people.findMany({
-    where: eq(people.eventId, event.id),
-    orderBy: asc(people.name),
-    with: { user: true },
-  });
-
-  // 3. Récupérer les repas
+  // 2. Fetch meals with all nested relations in a single query
+  // This replaces the N+1 pattern (was: 1 query per meal)
   const mealRows = await db.query.meals.findMany({
-    where: eq(meals.eventId, event.id),
-    orderBy: asc(meals.date),
-  });
-
-  // 4. Pour chaque repas, récupérer ses services, articles et ingrédients avec les jointures manuelles pour éviter les requêtes trop complexes
-  const mealsWithDetails = await Promise.all(
-    mealRows.map(async (meal) => {
-      const serviceRows = await db.query.services.findMany({
-        where: eq(services.mealId, meal.id),
-        orderBy: asc(services.order),
+    where: (meals, { eq }) => eq(meals.eventId, event.id),
+    orderBy: (meals, { asc }) => [asc(meals.date)],
+    with: {
+      services: {
+        orderBy: (services, { asc }) => [asc(services.order)],
         with: {
           items: {
-            orderBy: asc(items.order),
+            orderBy: (items, { asc }) => [asc(items.order)],
             with: {
               person: {
                 with: { user: true },
               },
               ingredients: {
-                orderBy: asc(ingredients.order),
+                orderBy: (ingredients, { asc }) => [asc(ingredients.order)],
               },
             },
           },
         },
-      });
+      },
+    },
+  });
 
-      // Strip tokens from items' person references for security
-      const secureServiceRows = serviceRows.map((service) => ({
-        ...service,
-        items: service.items.map((item) => ({
-          ...item,
-          person: item.person ? { ...item.person, token: null } : null,
-        })),
-      }));
+  // 3. Strip tokens from items' person references for security
+  const mealsWithSecurePersons = mealRows.map((meal) => ({
+    ...meal,
+    services: meal.services.map((service) => ({
+      ...service,
+      items: service.items.map((item) => ({
+        ...item,
+        person: item.person ? { ...item.person, token: null } : null,
+      })),
+    })),
+  }));
 
-      return {
-        ...meal,
-        services: secureServiceRows,
-      };
-    })
-  );
-
-  // 5. Strip tokens from people for security
+  // 4. Strip tokens from people for security
   // Tokens are sensitive - only the creator knows their token (stored in localStorage)
-  const securePeople = peopleList.map(({ token: _token, ...person }) => ({
+  const securePeople = event.people.map(({ token: _token, ...person }) => ({
     ...person,
     token: null, // Explicitly set to null instead of undefined for type consistency
   }));
 
+  // Extract event without people (people are returned separately)
+  const { people: _people, ...eventWithoutPeople } = event;
+
   return {
-    event,
-    meals: mealsWithDetails as Meal[],
+    event: eventWithoutPeople,
+    meals: mealsWithSecurePersons as Meal[],
     people: securePeople as Person[],
   };
 }

@@ -351,11 +351,31 @@
       "shareTitle": "Erişimi paylaş",
       "shareNavigatorTitle": "Etkinlik - {name}",
       "shareNavigatorText": "CoList'teki \"{name}\" etkinliğine katıl !",
+      "backToEvents": "Etkinliklere dön",
+      "openMenu": "Menüyü aç",
       "filter": {
         "all": "Tam menü",
         "unassigned": "Alınacaklar ({count})",
         "allMeals": "Tüm yemekler"
       }
+    },
+    "ReadOnly": {
+      "title": "Salt okunur mod",
+      "getAccess": "Erişim al"
+    },
+    "MetaPills": {
+      "editAddress": "Adresi düzenle",
+      "save": "Kaydet",
+      "daysCount": "{count, plural, one {# gün} other {# gün}}"
+    },
+    "Properties": {
+      "title": "Özellikler",
+      "guestCount": "{count, plural, one {# misafir} other {# misafir}}",
+      "adultsCount": "{count} yetişkin",
+      "childrenCount": "{count, plural, one {# çocuk} other {# çocuk}}",
+      "editEvent": "Düzenle",
+      "shareAccess": "Erişimi paylaş",
+      "deleteEvent": "Sil"
     },
     "TabBar": {
       "navigation": "Ana navigasyon",
@@ -387,7 +407,8 @@
       "cancel": "İptal",
       "expand": "Genişlet",
       "collapse": "Daralt",
-      "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin."
+      "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin.",
+      "shareEvent": "Etkinliği paylaş"
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
@@ -58,6 +58,7 @@ export function EventMetaPills({
   onUpdateMeal,
 }: EventMetaPillsProps) {
   const format = useFormatter();
+  const t = useTranslations("EventDashboard.MetaPills");
   const isMobile = useIsMobile();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
@@ -214,7 +215,7 @@ export function EventMetaPills({
                 <DrawerContent className="px-4 pb-8">
                   <DrawerHeader className="px-0 text-left">
                     <DrawerTitle className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                      Modifier l&apos;adresse
+                      {t("editAddress")}
                     </DrawerTitle>
                   </DrawerHeader>
                   <div className="flex flex-col gap-3 py-4">
@@ -237,7 +238,7 @@ export function EventMetaPills({
                       }}
                       className="w-full bg-accent text-white"
                     >
-                      Sauvegarder
+                      {t("save")}
                     </Button>
                   </div>
                 </DrawerContent>
@@ -253,7 +254,7 @@ export function EventMetaPills({
                 <PopoverContent className="w-80 p-3" align="start">
                   <div className="flex flex-col gap-2">
                     <h4 className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                      Modifier l&apos;adresse
+                      {t("editAddress")}
                     </h4>
                     <Input
                       defaultValue={meal.address}
@@ -280,7 +281,7 @@ export function EventMetaPills({
         {/* Days Count Pill */}
         <div className={pillClasses}>
           <span className="text-[10px] uppercase font-bold tracking-wider">
-            {mealCount} {mealCount === 1 ? "jour" : "jours"}
+            {t("daysCount", { count: mealCount })}
           </span>
         </div>
       </div>

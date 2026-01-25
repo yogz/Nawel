@@ -327,6 +327,31 @@
     "datePlaceholder": "Data"
   },
   "EventDashboard": {
+    "ReadOnly": {
+      "title": "Modo somente leitura",
+      "getAccess": "Obter acesso"
+    },
+    "MetaPills": {
+      "editAddress": "Editar endereço",
+      "save": "Guardar",
+      "daysCount": "{count, plural, one {# dia} other {# dias}}"
+    },
+    "Properties": {
+      "title": "Propriedades do evento",
+      "noConfirmed": "{total} convidados (0 confirmados)",
+      "confirmed": "{count, plural, one {# confirmado} other {# confirmados}}",
+      "guests": "{count, plural, one {# convidado} other {# convidados}}",
+      "adults": "{count, plural, one {# adulto} other {# adultos}}",
+      "children": "{count, plural, one {# criança} other {# crianças}}",
+      "edit": "Editar",
+      "share": "Partilhar",
+      "deleteEvent": "Eliminar evento",
+      "deleteWarning": "Esta ação é irreversível. Todos os dados serão perdidos.",
+      "deleteConfirm": "Eliminar permanentemente",
+      "deleteConfirmTitle": "Eliminar evento?",
+      "deleteConfirmDescription": "Esta ação é irreversível. Todos os dados, listas e participantes serão eliminados.",
+      "deleteConfirmYes": "Sim, eliminar"
+    },
     "Organizer": {
       "success": "Sucesso",
       "error": "Erro",
@@ -351,6 +376,8 @@
       "shareTitle": "Partilhar acesso",
       "shareNavigatorTitle": "Evento - {name}",
       "shareNavigatorText": "Junta-te ao evento \"{name}\" no CoList!",
+      "backToEvents": "Voltar aos eventos",
+      "openMenu": "Abrir menu",
       "filter": {
         "all": "Menu completo",
         "unassigned": "A tomar ({count})",
@@ -370,6 +397,7 @@
       "noMeals": "Nenhuma refeição por enquanto.",
       "addMeal": "Adicionar refeição",
       "addService": "Adicionar prato",
+      "shareEvent": "Partilhar evento",
       "calendar": {
         "options": "Opções de calendário",
         "addToCalendar": "Adicionar ao calendário",
