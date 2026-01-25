@@ -157,7 +157,7 @@ export function EditEventSheet({
   const hasMeal = !!initialData.mealId;
 
   return (
-    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()} repositionInputs={true}>
+    <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()} repositionInputs={false}>
       <DrawerContent className="px-6">
         <DrawerHeader className="px-0 text-left">
           <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export function EditEventSheet({
             </DrawerClose>
           </div>
         </DrawerHeader>
-        <div className="scrollbar-none min-h-[60vh] flex-1 overflow-y-auto pb-40">
+        <div className="scrollbar-none flex-1 overflow-y-auto pb-40">
           <div className="space-y-4 pb-4">
             {/* Event Name */}
             <div className="space-y-2">

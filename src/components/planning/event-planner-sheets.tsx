@@ -255,7 +255,7 @@ export function EventPlannerSheets({
       <Drawer
         open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
         onOpenChange={(open) => !open && setSheet(null)}
-        repositionInputs={true}
+        repositionInputs={false}
       >
         <DrawerContent
           className={cn(

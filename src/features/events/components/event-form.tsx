@@ -455,7 +455,7 @@ export function EventForm({
   }
 
   return (
-    <Drawer open onOpenChange={(open) => !open && onClose()} repositionInputs={true}>
+    <Drawer open onOpenChange={(open) => !open && onClose()} repositionInputs={false}>
       <DrawerContent className="max-h-[96vh] px-4 sm:px-6">
         <DrawerHeader className="px-0 pb-6 pt-4 text-left">
           <DrawerTitle className="text-xl font-black tracking-tight text-gray-900">

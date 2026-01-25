@@ -236,7 +236,7 @@ export function OrganizerSheets({
       <Drawer
         open={!!sheet}
         onOpenChange={(open) => !open && setSheet(null)}
-        repositionInputs={true}
+        repositionInputs={false}
       >
         <DrawerContent className="px-4 sm:px-6">
           <DrawerHeader className="px-0 pb-3 text-left sm:pb-4">
@@ -258,7 +258,7 @@ export function OrganizerSheets({
               </div>
             )}
           </DrawerHeader>
-          <div className="scrollbar-none min-h-[60vh] flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
+          <div className="scrollbar-none flex-1 touch-pan-y overflow-y-auto overscroll-contain pb-8 sm:pb-20">
             {sheet?.type === "item" && (
               <ItemForm
                 people={plan.people}
