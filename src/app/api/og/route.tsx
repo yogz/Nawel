@@ -15,51 +15,51 @@ export async function GET(request: NextRequest) {
   const translations: Record<string, { viewEvent: string; tagline: string }> = {
     fr: {
       viewEvent: "Voir l'événement",
-      tagline: "Organisez vos repas sans stress",
+      tagline: "Rejoindre le plan repas",
     },
     en: {
       viewEvent: "View event",
-      tagline: "Organize your meals stress-free",
+      tagline: "Join the meal plan",
     },
     es: {
       viewEvent: "Ver evento",
-      tagline: "Organiza tus comidas sin estrés",
+      tagline: "Únete al plan de comidas",
     },
     pt: {
       viewEvent: "Ver evento",
-      tagline: "Organize as suas refeições sem stress",
+      tagline: "Junte-se ao plano de refeições",
     },
     de: {
       viewEvent: "Event ansehen",
-      tagline: "Mahlzeiten stressfrei organiseren",
+      tagline: "Dem Essensplan beitreten",
     },
     el: {
       viewEvent: "Προβολή εκδήλωσης",
-      tagline: "Οργανώστε τα γεύματά σας χωρίς άγχος",
+      tagline: "Μπείτε στο πλάνο γευμάτων",
     },
     it: {
       viewEvent: "Vedi evento",
-      tagline: "Organizza i tuoi pasti senza stress",
+      tagline: "Unisciti al piano pasti",
     },
     nl: {
       viewEvent: "Evenement bekijken",
-      tagline: "Maaltijden stressvrij organiseren",
+      tagline: "Doe mee met het maaltijdplan",
     },
     pl: {
       viewEvent: "Zobacz wydarzenie",
-      tagline: "Organizuj posiłki bez stresu",
+      tagline: "Dołącz do planu posiłków",
     },
     sv: {
       viewEvent: "Visa evenemang",
-      tagline: "Organisera dina måltider utan stress",
+      tagline: "Gå med i måltidsplanen",
     },
     da: {
       viewEvent: "Se begivenhed",
-      tagline: "Organiser dine måltider uden stress",
+      tagline: "Deltag i madplanen",
     },
     tr: {
       viewEvent: "Etkinliği görüntüle",
-      tagline: "Yemeklerinizi stressiz organize edin",
+      tagline: "Yemek planına katıl",
     },
   };
 
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         position: "relative",
       }}
     >
-      {/* Premium Background Gradient */}
+      {/* Premium Background Gradient - Simplified for file size */}
       <div
         style={{
           position: "absolute",
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
           left: 0,
           right: 0,
           bottom: 0,
-          background: "linear-gradient(135deg, #fef2f2 0%, #f5f3ff 50%, #fff7ed 100%)",
+          background: "linear-gradient(135deg, #fef2f2 0%, #fff7ed 100%)",
           display: "flex",
         }}
       />
@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
             fontSize: title.length > 20 ? 60 : 72,
             fontWeight: 900,
             color: "#111827",
-            lineHeight: 1.1,
+            lineHeight: 1.2,
             marginBottom: 20,
             maxWidth: "90%",
             wordWrap: "break-word",
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
             alignItems: "center",
             justifyContent: "center",
             padding: "20px 48px",
-            background: "#111827",
+            background: "#1f2937", // Gray-800 - Softer than pure black
             borderRadius: "9999px",
             color: "white",
             fontSize: 28,
