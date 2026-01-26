@@ -456,8 +456,7 @@
       "validate": "Done",
       "adjust": "I'm bringing guests",
       "adults": "Adults",
-      "children": "Children",
-      "editPerson": "Edit {name}"
+      "children": "Children"
     },
     "Shopping": {
       "notAssociated": "Profile not associated",
@@ -966,7 +965,7 @@
     "description": "Add CoList to your home screen for faster access.",
     "installButton": "Install",
     "closeButton": "Later",
-    "iosInstructions": "To install CoList on your iPhone:",
+    "iosInstructions": "To install CoList on your iPhone (use Safari):",
     "iosStep1": "Tap the share button",
     "iosStep2": "Select \"Add to Home Screen\""
   },

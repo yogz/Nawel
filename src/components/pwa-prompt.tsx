@@ -28,7 +28,7 @@ export function PWAPrompt() {
   useEffect(() => {
     const checkConditions = () => {
       // 0. Only show if cookie consent has been handled
-      if (localStorage.getItem("analytics_consent") === null) return false;
+      if (localStorage.getItem("analytics_consent") === "false") return false;
 
       // 1. Detect if already in standalone mode
       const isStandalone =

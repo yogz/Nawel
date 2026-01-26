@@ -19,7 +19,7 @@ export function StickyCta({ text, variant }: StickyCtaProps) {
   useEffect(() => {
     // Hide if cookie consent is still pending
     const hasConsent = localStorage.getItem("analytics_consent");
-    if (!hasConsent) {
+    if (hasConsent === "false") {
       setIsVisible(false);
       return;
     }
