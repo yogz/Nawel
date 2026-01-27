@@ -33,8 +33,6 @@ interface OrganizerSheetsProps {
   writeKey?: string;
   readOnly?: boolean;
   handlers: OrganizerHandlers;
-  isGenerating: boolean;
-  setIsGenerating: (isGenerating: boolean) => void;
   planningFilter: PlanningFilter;
   setPlanningFilter: (filter: PlanningFilter) => void;
   currentUserId?: string;
@@ -52,8 +50,6 @@ export function OrganizerSheets({
   writeKey,
   readOnly,
   handlers,
-  isGenerating,
-  setIsGenerating,
   planningFilter,
   setPlanningFilter,
   currentUserId,
@@ -90,7 +86,6 @@ export function OrganizerSheets({
     handleDeletePerson,
     handleUnclaimPerson,
     // Ingredient handlers
-    handleGenerateIngredients,
     handleToggleIngredient,
     handleDeleteIngredient,
     handleCreateIngredient,
@@ -278,55 +273,6 @@ export function OrganizerSheets({
                 readOnly={readOnly}
                 // Ingredient props
                 ingredients={itemIngredients}
-                onGenerateIngredients={
-                  sheet.item
-                    ? async (currentName: string, currentNote?: string) => {
-                        setIsGenerating(true);
-                        try {
-                          // Try to extract people count from the note (e.g., "Pour 5 personnes")
-                          let peopleCount = undefined;
-                          if (currentNote) {
-                            const match = currentNote.match(/Pour (\d+) personne/i);
-                            if (match) {
-                              peopleCount = parseInt(match[1]);
-                            }
-                          }
-
-                          await handleGenerateIngredients(
-                            sheet.item!.id,
-                            currentName || sheet.item!.name,
-                            (() => {
-                              const sId = sheet.serviceId || sheet.item?.serviceId;
-                              const s = plan.meals
-                                .flatMap((m) => m.services)
-                                .find((s) => s.id === sId);
-                              return s?.adults;
-                            })(),
-                            (() => {
-                              const sId = sheet.serviceId || sheet.item?.serviceId;
-                              const s = plan.meals
-                                .flatMap((m) => m.services)
-                                .find((s) => s.id === sId);
-                              return s?.children;
-                            })(),
-                            peopleCount ||
-                              (() => {
-                                const sId = sheet.serviceId || sheet.item?.serviceId;
-                                const s = plan.meals
-                                  .flatMap((m) => m.services)
-                                  .find((s) => s.id === sId);
-                                return s?.peopleCount;
-                              })(),
-                            locale
-                          );
-                        } catch (error) {
-                          console.error("Failed to generate ingredients:", error);
-                        } finally {
-                          setIsGenerating(false);
-                        }
-                      }
-                    : undefined
-                }
                 onToggleIngredient={
                   sheet.item
                     ? (id: number, checked: boolean) =>
@@ -358,9 +304,6 @@ export function OrganizerSheets({
                         })
                     : undefined
                 }
-                isGenerating={isGenerating}
-                isAuthenticated={!!currentUserId}
-                onRequestAuth={onAuth}
                 currentUserId={currentUserId}
               />
             )}
@@ -540,67 +483,6 @@ export function OrganizerSheets({
                 onDeleteIngredient={(id) => handleDeleteIngredient(id, sheet.itemId)}
                 onCreateIngredient={(name, qty) => handleCreateIngredient(sheet.itemId, name, qty)}
                 onDeleteAll={() => handleDeleteAllIngredients(sheet.itemId)}
-                onGenerateIngredients={
-                  handleGenerateIngredients
-                    ? async (name, note) => {
-                        setIsGenerating(true);
-                        try {
-                          const adults = (() => {
-                            const found = findItem(sheet.itemId);
-                            const sId = found?.item.serviceId;
-                            const s = plan.meals
-                              .flatMap((m) => m.services)
-                              .find((s) => s.id === sId);
-                            return s?.adults;
-                          })();
-                          const children = (() => {
-                            const found = findItem(sheet.itemId);
-                            const sId = found?.item.serviceId;
-                            const s = plan.meals
-                              .flatMap((m) => m.services)
-                              .find((s) => s.id === sId);
-                            return s?.children;
-                          })();
-                          const peopleCount = (() => {
-                            const found = findItem(sheet.itemId);
-                            const sId = found?.item.serviceId;
-                            const s = plan.meals
-                              .flatMap((m) => m.services)
-                              .find((s) => s.id === sId);
-                            return s?.peopleCount;
-                          })();
-
-                          // Extract people count from note if present
-                          let finalPeopleCount = peopleCount;
-                          if (note) {
-                            const match = note.match(/Pour (\d+) personne/i);
-                            if (match) finalPeopleCount = parseInt(match[1]);
-                          }
-
-                          await handleGenerateIngredients(
-                            sheet.itemId,
-                            name,
-                            adults,
-                            children,
-                            finalPeopleCount,
-                            locale
-                          );
-                        } catch (error) {
-                          console.error("Failed to generate ingredients:", error);
-                        } finally {
-                          setIsGenerating(false);
-                        }
-                      }
-                    : undefined
-                }
-                isGenerating={isGenerating}
-                isAuthenticated={!!currentUserId}
-                onRequestAuth={onAuth}
-                itemNote={
-                  sheet.type === "item-ingredients"
-                    ? findItem(sheet.itemId)?.item.note || undefined
-                    : undefined
-                }
                 onClose={() => setSheet(null)}
                 readOnly={readOnly}
               />

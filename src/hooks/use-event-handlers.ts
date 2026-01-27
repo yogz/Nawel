@@ -67,7 +67,6 @@ export function useEventHandlers(params: UseEventHandlersParams) {
     handleDeleteEvent: eventHandlers.handleDeleteEvent,
 
     // Ingredient handlers
-    handleGenerateIngredients: ingredientHandlers.handleGenerateIngredients,
     handleToggleIngredient: ingredientHandlers.handleToggleIngredient,
     handleDeleteIngredient: ingredientHandlers.handleDeleteIngredient,
     handleCreateIngredient: ingredientHandlers.handleCreateIngredient,

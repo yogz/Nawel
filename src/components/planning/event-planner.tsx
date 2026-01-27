@@ -204,13 +204,10 @@ export function EventPlanner({
     handleUpdateEvent: eventHandlers.handleUpdateEvent,
 
     // Ingredient handlers
-    handleGenerateIngredients: ingredientHandlers.handleGenerateIngredients,
     handleToggleIngredient: ingredientHandlers.handleToggleIngredient,
     handleDeleteIngredient: ingredientHandlers.handleDeleteIngredient,
     handleCreateIngredient: ingredientHandlers.handleCreateIngredient,
     handleDeleteAllIngredients: ingredientHandlers.handleDeleteAllIngredients,
-    handleSaveFeedback: ingredientHandlers.handleSaveFeedback,
-    justGenerated: ingredientHandlers.justGenerated,
   };
 
   // Destructure commonly used handlers for local use
@@ -223,9 +220,6 @@ export function EventPlanner({
     handleUnclaimPerson,
     handleAssign,
   } = handlers;
-
-  // State for ingredient generation
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const searchParams = useSearchParams();
 
@@ -497,8 +491,6 @@ export function EventPlanner({
           writeKey={effectiveWriteKey}
           readOnly={readOnly}
           handlers={handlers}
-          isGenerating={isGenerating}
-          setIsGenerating={setIsGenerating}
           currentUserId={session?.user?.id}
           currentUserImage={session?.user?.image}
           onAuth={() => {

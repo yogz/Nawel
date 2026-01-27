@@ -1,18 +1,14 @@
 "use client";
 
-import { useTransition, useState } from "react";
-import { toast } from "sonner";
+import { useTransition } from "react";
 import {
-  generateIngredientsAction,
   createIngredientAction,
   updateIngredientAction,
   deleteIngredientAction,
   deleteAllIngredientsAction,
 } from "@/app/actions";
-import { saveAIFeedbackAction } from "@/app/actions/item-actions";
 import type { PlanData } from "@/lib/types";
 import type { IngredientHandlerParams } from "@/features/shared/types";
-import { trackAIAction } from "@/lib/analytics";
 
 export function useIngredientHandlers({
   setPlan,
@@ -22,66 +18,6 @@ export function useIngredientHandlers({
   token,
 }: IngredientHandlerParams) {
   const [, startTransition] = useTransition();
-  const [justGenerated, setJustGenerated] = useState<number | null>(null); // itemId
-
-  const handleGenerateIngredients = async (
-    itemId: number,
-    itemName: string,
-    adults?: number,
-    children?: number,
-    peopleCount?: number,
-    locale?: string,
-    note?: string
-  ) => {
-    if (readOnly) {
-      return;
-    }
-
-    const result = await generateIngredientsAction({
-      itemId,
-      itemName,
-      adults,
-      children,
-      peopleCount,
-      slug,
-      key: writeKey,
-      locale,
-      note,
-      token: token ?? undefined,
-    });
-
-    if (!result.success) {
-      toast.error(result.error);
-      return;
-    }
-
-    const generated = result.data;
-
-    setPlan((prev: PlanData) => ({
-      ...prev,
-      meals: prev.meals.map((meal) => ({
-        ...meal,
-        services: meal.services.map((service) => ({
-          ...service,
-          items: service.items.map((item) =>
-            item.id === itemId ? { ...item, ingredients: generated } : item
-          ),
-        })),
-      })),
-    }));
-
-    trackAIAction("ai_ingredients_generated", itemName, generated.length);
-    setJustGenerated(itemId);
-  };
-
-  const handleSaveFeedback = async (itemId: number, rating: number) => {
-    if (readOnly) {
-      return;
-    }
-
-    await saveAIFeedbackAction({ itemId, rating, slug, key: writeKey, token: token ?? undefined });
-    setJustGenerated(null);
-  };
 
   const handleToggleIngredient = (ingredientId: number, itemId: number, checked: boolean) => {
     if (readOnly) {
@@ -230,12 +166,9 @@ export function useIngredientHandlers({
   };
 
   return {
-    handleGenerateIngredients,
     handleToggleIngredient,
     handleDeleteIngredient,
     handleCreateIngredient,
     handleDeleteAllIngredients,
-    handleSaveFeedback,
-    justGenerated,
   };
 }

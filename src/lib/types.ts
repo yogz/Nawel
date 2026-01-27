@@ -137,21 +137,11 @@ export interface OrganizerHandlers {
     token?: string | null
   ) => void;
   handleDeletePerson: (id: number) => void;
-  handleGenerateIngredients: (
-    itemId: number,
-    name: string,
-    adults?: number,
-    children?: number,
-    peopleCount?: number,
-    locale?: string,
-    note?: string
-  ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;
   handleCreateIngredient: (itemId: number, name: string, quantity?: string) => void;
   handleDeleteAllIngredients: (itemId: number) => void;
   handleToggleItemChecked: (itemId: number, checked: boolean) => void;
-  handleSaveFeedback?: (itemId: number, rating: number) => Promise<void>;
   handleUpdateStatus: (
     personId: number,
     status: "confirmed" | "declined" | "maybe",
@@ -163,5 +153,4 @@ export interface OrganizerHandlers {
     guestChildren: number,
     token?: string | null
   ) => void;
-  justGenerated?: number | null;
 }

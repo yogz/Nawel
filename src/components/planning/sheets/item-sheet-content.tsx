@@ -12,10 +12,7 @@ interface ItemSheetContentProps {
   plan: PlanData;
   locale: string;
   readOnly?: boolean;
-  isGenerating: boolean;
-  setIsGenerating: (isGenerating: boolean) => void;
   currentUserId?: string;
-  onAuth: () => void;
   // Handlers - matching OrganizerHandlers types exactly
   findItem: (id: number) => { item: Item; service: Service; mealId?: number } | null | undefined;
   handleUpdateItem: (id: number, data: ItemData) => void;
@@ -23,15 +20,6 @@ interface ItemSheetContentProps {
   handleAssign: (item: Item, personId: number | null) => void;
   handleMoveItem: (itemId: number, serviceId: number, index?: number) => void;
   handleDelete: (item: Item) => void;
-  handleGenerateIngredients: (
-    itemId: number,
-    name: string,
-    adults?: number,
-    children?: number,
-    peopleCount?: number,
-    locale?: string,
-    note?: string
-  ) => Promise<void>;
   handleToggleIngredient: (id: number, itemId: number, checked: boolean) => void;
   handleDeleteIngredient: (id: number, itemId: number) => void;
   handleCreateIngredient: (itemId: number, name: string, quantity?: string) => void;
@@ -44,17 +32,13 @@ export function ItemSheetContent({
   plan,
   locale,
   readOnly,
-  isGenerating,
-  setIsGenerating,
   currentUserId,
-  onAuth,
   findItem,
   handleUpdateItem,
   handleCreateItem,
   handleAssign,
   handleMoveItem,
   handleDelete,
-  handleGenerateIngredients,
   handleToggleIngredient,
   handleDeleteIngredient,
   handleCreateIngredient,
@@ -144,52 +128,6 @@ export function ItemSheetContent({
     return { smartCount: count, countSource: source };
   }, [servicePeopleCount, rsvpConfirmedCount]);
 
-  const handleGenerate = async (
-    currentName: string,
-    currentNote?: string,
-    manualCount?: number
-  ) => {
-    if (!sheet.item) {
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      // Priority 0: Manual Override from the UI (pencil)
-      let finalCount = manualCount;
-
-      // Priority 1: Note in item (server handles this parsing too, but we can do it here to show intent)
-      if (!finalCount && currentNote) {
-        const match = currentNote.match(/Pour (\d+) personne/i);
-        if (match) {
-          finalCount = parseInt(match[1]);
-        }
-      }
-
-      // Priority 2: Smart Count
-      if (!finalCount) {
-        finalCount = smartCount;
-      }
-
-      const sId = sheet.serviceId || sheet.item?.serviceId;
-      const service = getServiceInfo(sId);
-
-      await handleGenerateIngredients(
-        sheet.item.id,
-        currentName || sheet.item.name,
-        undefined, // adults deprecated
-        undefined, // children deprecated
-        finalCount, // This is the single source of truth now
-        locale,
-        currentNote
-      );
-    } catch (error) {
-      console.error("Failed to generate ingredients:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <ItemForm
       people={plan.people}
@@ -211,7 +149,6 @@ export function ItemSheetContent({
       onDelete={sheet.item ? () => handleDelete(sheet.item!) : undefined}
       readOnly={readOnly}
       ingredients={itemIngredients}
-      onGenerateIngredients={sheet.item ? handleGenerate : undefined}
       onToggleIngredient={
         sheet.item
           ? (id: number, checked: boolean) => handleToggleIngredient(id, sheet.item!.id, checked)
@@ -239,10 +176,6 @@ export function ItemSheetContent({
               })
           : undefined
       }
-      isGenerating={isGenerating}
-      isAuthenticated={!!currentUserId}
-      isEmailVerified={!!session?.user.emailVerified}
-      onRequestAuth={onAuth}
       currentUserId={currentUserId}
     />
   );

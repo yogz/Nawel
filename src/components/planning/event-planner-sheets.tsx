@@ -34,8 +34,6 @@ interface EventPlannerSheetsProps {
   writeKey?: string;
   readOnly?: boolean;
   handlers: OrganizerHandlers;
-  isGenerating: boolean;
-  setIsGenerating: (isGenerating: boolean) => void;
   currentUserId?: string;
   currentUserImage?: string | null;
   onAuth: () => void;
@@ -51,8 +49,6 @@ export function EventPlannerSheets({
   writeKey,
   readOnly,
   handlers,
-  isGenerating,
-  setIsGenerating,
   currentUserId,
   currentUserImage,
   onAuth,
@@ -113,17 +109,13 @@ export function EventPlannerSheets({
             plan={plan}
             locale={locale}
             readOnly={readOnly}
-            isGenerating={isGenerating}
-            setIsGenerating={setIsGenerating}
             currentUserId={currentUserId}
-            onAuth={onAuth}
             findItem={handlers.findItem}
             handleUpdateItem={handlers.handleUpdateItem}
             handleCreateItem={handlers.handleCreateItem}
             handleAssign={handlers.handleAssign}
             handleMoveItem={handlers.handleMoveItem}
             handleDelete={handlers.handleDelete}
-            handleGenerateIngredients={handlers.handleGenerateIngredients}
             handleToggleIngredient={handlers.handleToggleIngredient}
             handleDeleteIngredient={handlers.handleDeleteIngredient}
             handleCreateIngredient={handlers.handleCreateIngredient}
@@ -295,18 +287,12 @@ export function EventPlannerSheets({
           setSheet={setSheet}
           locale={locale}
           readOnly={readOnly}
-          isGenerating={isGenerating}
-          setIsGenerating={setIsGenerating}
           currentUserId={currentUserId}
-          onAuth={onAuth}
           findItem={handlers.findItem}
-          handleGenerateIngredients={handlers.handleGenerateIngredients}
           handleToggleIngredient={handlers.handleToggleIngredient}
           handleDeleteIngredient={handlers.handleDeleteIngredient}
           handleCreateIngredient={handlers.handleCreateIngredient}
           handleDeleteAllIngredients={handlers.handleDeleteAllIngredients}
-          handleSaveFeedback={handlers.handleSaveFeedback}
-          justGenerated={handlers.justGenerated}
         />
       )}
 

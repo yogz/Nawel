@@ -123,9 +123,6 @@ export function Organizer({
     handleAssign,
   } = handlers;
 
-  // State for ingredient generation
-  const [isGenerating, setIsGenerating] = useState(false);
-
   const tOrganizer = useTranslations("EventDashboard.Organizer");
   const searchParams = useSearchParams();
 
@@ -328,8 +325,6 @@ export function Organizer({
           writeKey={effectiveWriteKey}
           readOnly={readOnly}
           handlers={handlers}
-          isGenerating={isGenerating}
-          setIsGenerating={setIsGenerating}
           planningFilter={planningFilter}
           setPlanningFilter={setPlanningFilter}
           currentUserId={session?.user?.id}
