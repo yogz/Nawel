@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useTransition } from "react";
+import { useEffect, useMemo, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -21,8 +21,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
 import { updateItemAction } from "@/app/actions/item-actions";
+import { deleteIngredientAction } from "@/app/actions/ingredient-actions";
 import { type AggregatedShoppingItem } from "@/lib/shopping-utils";
-import { type PlanData } from "@/lib/types";
+import { type PlanData, type Ingredient } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -64,6 +65,55 @@ export function ShoppingItemSheet({
       note: "",
     },
   });
+
+  // Collect all ingredients from the source item(s)
+  const sourceIngredients = useMemo(() => {
+    if (!item) return [];
+    const ingredients: Array<Ingredient & { itemId: number }> = [];
+    item.sources.forEach((source) => {
+      if (source.item.ingredients) {
+        source.item.ingredients.forEach((ing) => {
+          ingredients.push({ ...ing, itemId: source.item.id });
+        });
+      }
+    });
+    return ingredients;
+  }, [item]);
+
+  const handleDeleteIngredient = (ingredientId: number) => {
+    if (!item) return;
+
+    // Optimistic update
+    if (setPlan) {
+      setPlan((prev) => ({
+        ...prev,
+        meals: prev.meals.map((meal) => ({
+          ...meal,
+          services: meal.services.map((service) => ({
+            ...service,
+            items: service.items.map((serviceItem) => ({
+              ...serviceItem,
+              ingredients: serviceItem.ingredients?.filter((ing) => ing.id !== ingredientId),
+            })),
+          })),
+        })),
+      }));
+    }
+
+    // Server update
+    startTransition(async () => {
+      try {
+        await deleteIngredientAction({
+          id: ingredientId,
+          slug,
+          key: writeKey,
+        });
+        toast.success(tCommon("deleted"));
+      } catch {
+        toast.error(tCommon("error"));
+      }
+    });
+  };
 
   // Reset form when item changes
   useEffect(() => {
@@ -189,6 +239,37 @@ export function ShoppingItemSheet({
               {...register("note")}
             />
           </div>
+
+          {/* Ingredients list with delete option */}
+          {sourceIngredients.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-foreground">{t("Shopping.ingredientsList")}</Label>
+              <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-input bg-background p-2">
+                {sourceIngredients.map((ing) => (
+                  <div
+                    key={ing.id}
+                    className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 hover:bg-muted/50"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <span className="text-sm text-foreground">{ing.name}</span>
+                      {ing.quantity && (
+                        <span className="ml-2 text-xs text-muted-foreground">{ing.quantity}</span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteIngredient(ing.id)}
+                      disabled={isPending}
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
+                      aria-label={`${tCommon("delete")} ${ing.name}`}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-4">
             <Button
