@@ -23,32 +23,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
 
-/** Citation attribution data */
-interface CitationAttribution {
-  author: string | null;
-  work: string | null;
-  year: number | null;
-  origin: string | null;
-  confidence: string; // "high" | "medium" | "low" in practice
-  origin_type: string | null;
-  origin_qualifier: string | null;
-}
-
-/** Citation item structure from citations-v3.json */
-interface CitationItem {
-  id: string;
-  type: string;
-  tone: string;
-  category: string;
-  tags: string[];
-  attribution: CitationAttribution;
-  original: {
-    lang: string;
-    text: string;
-  };
-  localized: Record<string, string>;
-  rating: number;
-}
+import type { CitationItem } from "@/app/actions/admin-actions";
 
 export function CitationManager() {
   const t = useTranslations("Citations");

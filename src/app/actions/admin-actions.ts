@@ -36,7 +36,7 @@ import fs from "fs";
 import path from "path";
 import { logger } from "@/lib/logger";
 
-interface CitationAttribution {
+export interface CitationAttribution {
   author: string | null;
   work: string | null;
   year: number | null;
@@ -46,7 +46,7 @@ interface CitationAttribution {
   origin_qualifier: string | null;
 }
 
-interface CitationItem {
+export interface CitationItem {
   id: string;
   type: string;
   tone: string;
