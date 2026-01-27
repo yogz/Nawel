@@ -81,11 +81,11 @@ export function InlineItemInput({
         placeholder={displayPlaceholder}
         disabled={isSubmitting}
         className={cn(
-          "relative z-10 h-11 pl-10 pr-12 text-sm transition-all duration-300",
-          "placeholder:text-gray-400 placeholder:transition-opacity",
+          "relative z-10 h-11 pl-10 pr-12 text-sm transition-all duration-300 text-text",
+          "placeholder:text-muted-foreground placeholder:transition-opacity",
           isFocused
-            ? "border-violet-500 bg-white placeholder:opacity-40"
-            : "border-dashed border-gray-300 bg-transparent opacity-70 hover:opacity-100 hover:bg-white/50 hover:border-gray-400",
+            ? "border-accent bg-surface placeholder:opacity-40"
+            : "border-dashed border-border bg-transparent opacity-70 hover:opacity-100 hover:bg-white/5 dark:hover:bg-white/10 hover:border-accent/50",
           isSubmitting && "opacity-50"
         )}
       />

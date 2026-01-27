@@ -152,7 +152,7 @@ export const ServiceSection = memo(function ServiceSection({
                           }
                           onCreate();
                         }}
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 active:scale-95"
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95"
                         aria-label={t("addItemDetails")}
                         title={t("addItemDetails")}
                       >

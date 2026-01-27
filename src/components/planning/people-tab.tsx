@@ -204,10 +204,10 @@ export function PeopleTab({
                         person={person}
                         allNames={allNames}
                         size="md"
-                        className="shadow-sm ring-1 ring-gray-100"
+                        className="shadow-sm ring-1 ring-border"
                       />
                       {person.userId === currentUserId && (
-                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[8px] text-white shadow-sm ring-2 ring-white">
+                        <div className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[8px] text-white shadow-sm ring-2 ring-surface dark:ring-zinc-950">
                           <Sparkles size={8} />
                         </div>
                       )}
@@ -262,7 +262,7 @@ export function PeopleTab({
                               token: guestTokens[person.id] || null,
                             })
                           }
-                          className="flex h-11 w-11 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
+                          className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-all hover:bg-accent/5 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
                           aria-label={t("editPerson", { name: getDisplayName(person) })}
                         >
                           <Pencil size={16} />
@@ -276,7 +276,7 @@ export function PeopleTab({
                               ? `/event/${slug}/shopping/${person.id}?key=${writeKey}`
                               : `/event/${slug}/shopping/${person.id}`
                           }
-                          className="flex h-9 items-center gap-2 rounded-xl bg-white/50 px-3 text-xs font-bold uppercase tracking-wide text-accent transition-all hover:bg-white/80"
+                          className="flex h-9 items-center gap-2 rounded-xl bg-accent/10 px-3 text-xs font-bold uppercase tracking-wide text-accent transition-all hover:bg-accent/20"
                         >
                           <ShoppingCart size={14} />
                           <span className="hidden sm:inline">{t("shoppingList")}</span>
@@ -287,7 +287,7 @@ export function PeopleTab({
                 >
                   {/* Meta Content in middle (Article count) */}
                   <div className="hidden sm:flex items-center gap-3 ml-auto mr-4">
-                    <p className="text-xs font-medium text-gray-500">
+                    <p className="text-xs font-medium text-muted-foreground">
                       {t("articlesCount", { count: personItems.length })}
                     </p>
                   </div>
@@ -295,11 +295,11 @@ export function PeopleTab({
 
                 {/* Mobile Article Count (outside header if space is tight, or just rely on items below) */}
                 <div className="sm:hidden -mt-2 px-2 flex justify-end">
-                  <p className="text-[10px] font-medium text-gray-400">
+                  <p className="text-[10px] font-medium text-muted-foreground">
                     {t("articlesCount", { count: personItems.length })}
                   </p>
                 </div>
-                <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+                <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                   <div className="flex flex-col">
                     {personItems.map(({ item, service, mealTitle }: PersonItem) => (
                       <motion.button
@@ -309,7 +309,7 @@ export function PeopleTab({
                         onClick={() => setSheet({ type: "item", serviceId: service.id, item })}
                         disabled={readOnly}
                         aria-label={t("editItem", { name: item.name })}
-                        className="group relative w-full cursor-pointer px-4 py-3 text-left transition-all duration-200 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:cursor-default"
+                        className="group relative w-full cursor-pointer px-4 py-3 text-left transition-all duration-200 hover:bg-accent/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:cursor-default"
                       >
                         <div className="relative">
                           <div className="mb-1 flex items-center justify-between">
@@ -319,12 +319,12 @@ export function PeopleTab({
                             </p>
                           </div>
                           <div className="flex items-center justify-between">
-                            <p className="text-sm font-semibold text-gray-900 group-hover:text-accent">
+                            <p className="text-sm font-semibold text-text group-hover:text-accent">
                               {item.name}
                             </p>
                             <ChevronRight
                               size={14}
-                              className="text-gray-300 transition-all group-hover:translate-x-0.5 group-hover:text-accent"
+                              className="text-muted-foreground/30 transition-all group-hover:translate-x-0.5 group-hover:text-accent"
                             />
                           </div>
                           {(item.quantity ||
@@ -333,14 +333,14 @@ export function PeopleTab({
                             (item.ingredients && item.ingredients.length > 0)) && (
                             <div className="mt-2 flex flex-wrap items-center gap-2">
                               {item.quantity?.trim() && (
-                                <div className="flex items-center gap-1 rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">
-                                  <Scale size={10} className="text-gray-400" />
+                                <div className="flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                                  <Scale size={10} className="text-muted-foreground/50" />
                                   {item.quantity}
                                 </div>
                               )}
                               {item.price && (
-                                <div className="flex items-center gap-1 rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700">
-                                  <Euro size={10} className="text-green-600" />
+                                <div className="flex items-center gap-1 rounded-md bg-green-500/10 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:text-green-400">
+                                  <Euro size={10} className="text-green-600 dark:text-green-500" />
                                   {item.price.toFixed(2)}
                                 </div>
                               )}
@@ -352,8 +352,11 @@ export function PeopleTab({
                                 </div>
                               )}
                               {item.note && (
-                                <div className="flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium italic text-blue-700">
-                                  <MessageSquare size={10} className="text-blue-400" />
+                                <div className="flex items-center gap-1 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium italic text-blue-700 dark:text-blue-400">
+                                  <MessageSquare
+                                    size={10}
+                                    className="text-blue-600 dark:text-blue-400"
+                                  />
                                   <span className="max-w-[150px] truncate">
                                     {item.note.startsWith("EventDashboard.")
                                       ? tForm("defaultNote", {
@@ -369,7 +372,7 @@ export function PeopleTab({
                             </div>
                           )}
                         </div>
-                        <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-50 group-last:hidden" />
+                        <div className="absolute bottom-0 left-4 right-4 h-px bg-border/30 group-last:hidden" />
                       </motion.button>
                     ))}
                     {personItems.length === 0 && (

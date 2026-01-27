@@ -270,7 +270,10 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       <EmptyState
         icon={<UserX className="h-20 w-20" strokeWidth={1.5} />}
         title={t("notAssociated")}
-        description={t("notAssociatedDesc") || "Vous n'êtes pas encore associé à une personne dans cet événement."}
+        description={
+          t("notAssociatedDesc") ||
+          "Vous n'êtes pas encore associé à une personne dans cet événement."
+        }
       />
     );
   }
@@ -308,7 +311,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       <div className="space-y-4">
         {/* Owner dropdown selector */}
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
-          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
+          <SelectTrigger className="h-12 rounded-2xl border-border bg-surface text-text text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
             <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
@@ -364,20 +367,20 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                   {t("completed")}
                 </span>
               ) : (
-                <span className="text-[10px] font-medium text-gray-400 capitalize">
+                <span className="text-[10px] font-medium text-muted-foreground capitalize">
                   {checkedAll}/{totalAll} {t("items")}
                 </span>
               )
             }
             icon={
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-1 ring-gray-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-white shadow-sm ring-1 ring-white/10">
                 <Users size={20} />
               </div>
             }
             actions={
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end gap-1">
-                  <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
+                  <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
                     <div
                       className={cn(
                         "h-full origin-left rounded-full transition-transform duration-300",
@@ -390,7 +393,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                 </div>
                 <ExternalLink
                   size={14}
-                  className="text-gray-300 transition-colors group-hover:text-accent"
+                  className="text-muted-foreground/30 transition-colors group-hover:text-accent"
                 />
               </div>
             }
@@ -417,7 +420,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                         {t("completed")}
                       </span>
                     ) : (
-                      <span className="text-[10px] font-medium text-gray-400 capitalize">
+                      <span className="text-[10px] font-medium text-muted-foreground capitalize">
                         {checkedItems}/{totalItems} {t("items")}
                       </span>
                     )
@@ -427,13 +430,13 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                       person={person}
                       allNames={plan.people.map((p) => p.name)}
                       size="md"
-                      className="shadow-sm ring-1 ring-gray-100"
+                      className="shadow-sm ring-1 ring-white/10"
                     />
                   }
                   actions={
                     <div className="flex items-center gap-3">
                       <div className="flex flex-col items-end gap-1">
-                        <div className="h-1 w-16 overflow-hidden rounded-full bg-gray-100">
+                        <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
                           <div
                             className={cn(
                               "h-full origin-left rounded-full transition-transform duration-300",
@@ -446,7 +449,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                       </div>
                       <ExternalLink
                         size={14}
-                        className="text-gray-300 transition-colors group-hover:text-accent"
+                        className="text-muted-foreground/30 transition-colors group-hover:text-accent"
                       />
                     </div>
                   }
@@ -465,7 +468,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       {/* Owner dropdown selector */}
       {isOwner && (
         <Select value={selectedPersonId} onValueChange={setSelectedPersonId}>
-          <SelectTrigger className="h-12 rounded-2xl border-gray-200 bg-white text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
+          <SelectTrigger className="h-12 rounded-2xl border-border bg-surface text-text text-base font-medium focus:ring-2 focus:ring-accent/50 sm:h-12">
             <SelectValue placeholder={t("selectGuest")} />
           </SelectTrigger>
           <SelectContent>
@@ -531,7 +534,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
         actions={
           <div className="flex items-center gap-4">
             <div className="text-2xl font-black text-accent/20">{progressPercent}%</div>
-            <div className="relative h-2 w-24 overflow-hidden rounded-full bg-gray-100 hidden sm:block">
+            <div className="relative h-2 w-24 overflow-hidden rounded-full bg-muted hidden sm:block">
               <motion.div
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: progressPercent / 100 }}
@@ -547,7 +550,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
       {fullPageUrl && (
         <Link
           href={fullPageUrl}
-          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-all hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-95 sm:h-auto"
+          className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:border-accent hover:text-accent active:scale-95 sm:h-auto"
         >
           <ExternalLink size={18} className="sm:h-4 sm:w-4" />
           {t("openFullScreen")}
@@ -573,9 +576,9 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent/40">
                   {t(`aisles.${category}` as Parameters<typeof t>[0])}
                 </h3>
-                <div className="h-px flex-1 bg-gradient-to-r from-black/[0.05] to-transparent" />
+                <div className="h-px flex-1 bg-gradient-to-r from-border/30 to-transparent" />
               </div>
-              <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+              <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
                 <div className="flex flex-col">
                   {items.map((aggregatedItem) => {
                     const isChecked = getEffectiveChecked(aggregatedItem);
@@ -592,7 +595,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                         aria-pressed={isChecked}
                         className={clsx(
                           "group relative flex w-full items-center gap-4 px-4 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 active:scale-[0.99]",
-                          isChecked ? "bg-gray-50/50" : "hover:bg-gray-50"
+                          isChecked ? "bg-muted/50" : "hover:bg-accent/5"
                         )}
                       >
                         {/* Checkbox */}
@@ -601,7 +604,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                             "relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all duration-300",
                             isChecked
                               ? "border-green-500 bg-green-500 text-white shadow-sm"
-                              : "border-gray-200 bg-white group-hover:border-gray-300"
+                              : "border-border bg-surface group-hover:border-accent/40"
                           )}
                         >
                           <AnimatePresence mode="wait">
@@ -629,7 +632,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                             <span
                               className={clsx(
                                 "truncate text-base font-semibold tracking-tight transition-all",
-                                isChecked ? "text-gray-400 line-through" : "text-gray-900"
+                                isChecked ? "text-muted-foreground line-through" : "text-text"
                               )}
                             >
                               {itemName}
@@ -678,7 +681,7 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
                         </div>
 
                         {/* Subtle separator */}
-                        <div className="absolute bottom-0 left-4 right-4 h-px bg-gray-50 group-last:hidden" />
+                        <div className="absolute bottom-0 left-4 right-4 h-px bg-border/30 group-last:hidden" />
                       </motion.button>
                     );
                   })}

@@ -112,7 +112,7 @@ export function OrganizerHeader({
       <div className="sticky top-0 z-30">
         <header
           style={{
-            background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 30%, rgba(255, 255, 255, 0) 100%)`,
+            background: `linear-gradient(to bottom, var(--header-fade) 0%, var(--header-fade) 30%, transparent 100%)`,
           }}
           className="w-full px-4 pb-8 pt-5 backdrop-blur-sm transition-all sm:px-4 sm:pb-6 sm:pt-4"
         >
@@ -192,14 +192,14 @@ export function OrganizerHeader({
                     </AnimatePresence>
                   </div>
                 </Link>
-                <h1 className="truncate bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
+                <h1 className="truncate bg-gradient-to-br from-text via-text/80 to-text/60 bg-clip-text text-xl font-black tracking-tight text-transparent drop-shadow-sm">
                   {plan.event?.name || "Événement"}
                 </h1>
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
                 {readOnly && (
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700 shadow-sm sm:h-8 sm:w-8">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 shadow-sm sm:h-8 sm:w-8">
                     <ShieldAlert size={16} className="sm:h-[14px] sm:w-[14px]" />
                   </span>
                 )}
@@ -218,7 +218,7 @@ export function OrganizerHeader({
                           className="text-green-500 duration-300 animate-in zoom-in spin-in-12 group-hover:text-white"
                         />
                       ) : (
-                        <Share size={16} className="text-gray-700 group-hover:text-white" />
+                        <Share size={16} className="text-text group-hover:text-white" />
                       )
                     }
                     iconClassName="h-full w-full group-hover:bg-accent"
@@ -267,17 +267,17 @@ export function PlanningFilters({
         onValueChange={(val) => setPlanningFilter({ type: val as "all" | "unassigned" })}
         className="w-full max-w-[280px]"
       >
-        <TabsList className="h-9 w-full rounded-full border border-white/20 bg-gray-200/30 p-1 backdrop-blur-md">
+        <TabsList className="h-9 w-full rounded-full border border-border/20 bg-muted/30 p-1 backdrop-blur-md">
           <TabsTrigger
             value="all"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-muted-foreground transition-all data-[state=active]:bg-card data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
           >
             <Stars size={12} className="shrink-0" />
             <span className="truncate">{t("all")}</span>
           </TabsTrigger>
           <TabsTrigger
             value="unassigned"
-            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-gray-400 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
+            className="flex-1 gap-1.5 rounded-full py-1.5 text-xs font-black uppercase tracking-tight text-muted-foreground transition-all data-[state=active]:bg-card data-[state=active]:text-accent data-[state=active]:shadow-sm sm:text-[9px]"
           >
             <div className="relative">
               <CircleHelp size={12} className="shrink-0" />

@@ -121,7 +121,7 @@ function ItemRowComponent({
             <p
               className={cn(
                 "text-base font-normal leading-tight transition-colors sm:text-[15px]",
-                "text-gray-900",
+                "text-text",
                 person && "opacity-100"
               )}
             >
@@ -147,13 +147,13 @@ function ItemRowComponent({
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 px-2 py-0.5 text-[10px] font-bold text-green-700 ring-1 ring-green-500/10">
+                <div className="flex items-center gap-1.5 rounded-lg bg-green-50/50 dark:bg-green-900/20 px-2 py-0.5 text-[10px] font-bold text-green-700 dark:text-green-400 ring-1 ring-green-500/10 dark:ring-green-400/20">
                   <Euro size={10} className="text-green-600" strokeWidth={1.8} aria-hidden="true" />
                   {item.price.toFixed(2)}
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 px-2 py-0.5 text-[10px] font-bold text-gray-600 ring-1 ring-gray-200/50">
+                <div className="flex items-center gap-1.5 rounded-lg bg-gray-100/80 dark:bg-gray-800/50 px-2 py-0.5 text-[10px] font-bold text-gray-600 dark:text-gray-300 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
                   <ChefHat
                     size={10}
                     className="text-gray-500"
@@ -164,7 +164,7 @@ function ItemRowComponent({
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 dark:text-blue-400 sm:text-[10px]">
                   <MessageSquare
                     size={13}
                     className="text-blue-600 sm:h-[11px] sm:w-[11px]"

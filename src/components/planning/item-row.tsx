@@ -121,7 +121,7 @@ function ItemRowComponent({
             <p
               className={cn(
                 "text-[16px] font-bold leading-tight transition-colors sm:text-lg",
-                "text-gray-900",
+                "text-text",
                 person && "opacity-100"
               )}
             >
@@ -141,7 +141,7 @@ function ItemRowComponent({
             (item.ingredients && item.ingredients.length > 0)) && (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               {item.quantity?.trim() && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:text-[10px]">
                   <Scale
                     size={13}
                     className="text-gray-600 sm:h-[11px] sm:w-[11px]"
@@ -152,7 +152,7 @@ function ItemRowComponent({
                 </div>
               )}
               {item.price && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-green-700 dark:text-green-400 sm:text-[10px]">
                   <Euro
                     size={13}
                     className="text-green-600 sm:h-[11px] sm:w-[11px]"
@@ -163,7 +163,7 @@ function ItemRowComponent({
                 </div>
               )}
               {item.ingredients && item.ingredients.length > 0 && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-purple-700 dark:text-purple-400 sm:text-[10px]">
                   <ChefHat
                     size={13}
                     className="text-purple-600 sm:h-[11px] sm:w-[11px]"
@@ -174,7 +174,7 @@ function ItemRowComponent({
                 </div>
               )}
               {item.note && (
-                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 sm:text-[10px]">
+                <div className="flex items-center gap-1.5 text-xs font-medium italic text-blue-700 dark:text-blue-400 sm:text-[10px]">
                   <MessageSquare
                     size={13}
                     className="text-blue-600 sm:h-[11px] sm:w-[11px]"

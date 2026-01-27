@@ -122,7 +122,7 @@ export function MealContainer({
                   e.stopPropagation();
                   setIsExpanded(!isExpanded);
                 }}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] text-gray-500 transition-all hover:bg-black/[0.08] active:scale-95"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-gray-500 dark:text-gray-400 transition-all hover:bg-black/[0.08] dark:hover:bg-white/[0.08] active:scale-95"
                 aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <motion.div
@@ -133,7 +133,7 @@ export function MealContainer({
                 </motion.div>
               </button>
               <div className="flex min-w-0 flex-1 flex-col">
-                <h2 className="text-gray-900 truncate text-lg font-bold tracking-tight">
+                <h2 className="text-text truncate text-lg font-bold tracking-tight">
                   {meal.date === "common" ? t("common") : meal.title || meal.date}
                 </h2>
                 <div className="mt-0.5 flex flex-wrap items-center gap-3 text-[11px] sm:text-xs">
@@ -152,7 +152,7 @@ export function MealContainer({
                 </div>
               </div>
               {!readOnly && (
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] text-gray-400 opacity-0 transition-all group-hover:bg-black/[0.06] group-hover:opacity-100 active:scale-95">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.03] dark:bg-white/[0.03] text-gray-400 opacity-0 transition-all group-hover:bg-black/[0.06] dark:group-hover:bg-white/[0.06] group-hover:opacity-100 active:scale-95">
                   <Edit3 className="h-4 w-4" />
                 </div>
               )}

@@ -238,7 +238,7 @@ export function Organizer({
 
   return (
     <div
-      className="flex min-h-screen flex-col text-gray-900"
+      className="flex min-h-screen flex-col text-text"
       style={{
         paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
       }}

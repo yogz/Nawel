@@ -25,7 +25,7 @@ import { useTranslations } from "next-intl";
 import { CitationDisplay } from "../common/citation-display";
 import { AppBranding } from "../common/app-branding";
 import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
-import { Sparkles, Loader2, AlertCircle } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, Package } from "lucide-react";
 import { ShoppingGenerationDialog } from "./shopping-generation-dialog";
 
 interface ShoppingAllPageProps {
@@ -142,6 +142,24 @@ export function ShoppingAllPage({
       }
       return next;
     });
+  };
+
+  // Helper to determine if an aggregated item represents a "Whole Dish" (categorized) vs a "Raw Ingredient" (generated)
+  const isWholeDish = (aggregatedItem: AggregatedShoppingItem) => {
+    // If it has multiple sources, it's likely a common ingredient (e.g. "Sel")
+    if (aggregatedItem.sources.length > 1) return false;
+
+    const source = aggregatedItem.sources[0];
+    if (source.type !== "ingredient") return true; // Items without ingredients are effectively dishes
+
+    // Heuristic: If ingredient name is similar to item name, it's a categorized dish
+    const itemName = source.item.name.toLowerCase().trim();
+    const ingredientName = source.ingredient!.name.toLowerCase().trim();
+    return (
+      itemName === ingredientName ||
+      itemName.includes(ingredientName) ||
+      ingredientName.includes(itemName)
+    );
   };
 
   const categories = useMemo(() => {
@@ -508,6 +526,14 @@ export function ShoppingAllPage({
                                     >
                                       {aggregatedItem.name}
                                     </span>
+                                    {/* Icon for Whole Dish */}
+                                    {isWholeDish(aggregatedItem) && (
+                                      <Package
+                                        size={14}
+                                        className="text-purple-400 mb-0.5"
+                                        strokeWidth={2.5}
+                                      />
+                                    )}
                                     {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
                                       <span className="shrink-0 text-sm font-medium text-muted-foreground">
                                         {formatAggregatedQuantity(
@@ -539,14 +565,16 @@ export function ShoppingAllPage({
                                       </span>
                                     ) : (
                                       <>
-                                        {aggregatedItem.sources[0].type === "ingredient" && (
-                                          <>
-                                            <span className="font-medium">
-                                              {aggregatedItem.sources[0].item.name}
-                                            </span>
-                                            {" · "}
-                                          </>
-                                        )}
+                                        {/* Show connection to parent dish ONLY if it's NOT the dish itself */}
+                                        {!isWholeDish(aggregatedItem) &&
+                                          aggregatedItem.sources[0].type === "ingredient" && (
+                                            <>
+                                              <span className="font-medium">
+                                                {aggregatedItem.sources[0].item.name}
+                                              </span>
+                                              {" · "}
+                                            </>
+                                          )}
                                         {aggregatedItem.sources[0].mealTitle} ·{" "}
                                         {aggregatedItem.sources[0].serviceTitle}
                                       </>
