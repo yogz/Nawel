@@ -94,7 +94,8 @@ export function ShoppingPage({
     aggregated.forEach((item) => {
       // For ingredients, use the category from the first source
       // For items (manual), default to "misc"
-      const category = (item.sources[0].type === "ingredient" && item.sources[0].ingredient?.category) || "misc";
+      const category =
+        (item.sources[0].type === "ingredient" && item.sources[0].ingredient?.category) || "misc";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -335,7 +336,7 @@ export function ShoppingPage({
                 <p className="mt-1 text-xs text-amber-700">{t("generateAllDescription")}</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <Button
-                    onClick={generateAllIngredients}
+                    onClick={() => generateAllIngredients()}
                     disabled={isGeneratingIngredients}
                     className="h-11 gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
                   >
