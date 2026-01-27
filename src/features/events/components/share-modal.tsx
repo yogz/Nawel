@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { trackShareAction } from "@/lib/analytics";
+import { logger } from "@/lib/logger";
 
 export function ShareModal({
   slug,
@@ -57,7 +58,7 @@ export function ShareModal({
         });
         trackShareAction("share_link_copied", "native");
       } catch (err) {
-        console.log("Error sharing", err);
+        logger.error("Error sharing", err);
       }
     } else {
       copyToClipboard();
