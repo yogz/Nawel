@@ -26,7 +26,7 @@ export function LoginForm() {
       <div className="relative z-10 w-full">
         <AuraBackground />
 
-        <div className="relative z-20 w-full overflow-hidden rounded-[32px] bg-white/90 p-8 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] backdrop-blur-3xl transition-all">
+        <div className="relative z-20 w-full overflow-hidden rounded-[32px] bg-white/90 p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] backdrop-blur-3xl transition-all">
           <AuthForm
             isUserMode={isUserMode}
             initialMode={initialMode}
@@ -40,14 +40,14 @@ export function LoginForm() {
       </div>
 
       {isUserMode && (
-        <div className="relative z-20 mt-8 flex flex-col items-center gap-2 text-center">
+        <div className="relative z-20 mt-6 flex flex-col items-center gap-2 text-center">
           <Link
             href="/create-event"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white/60 px-8 text-[11px] font-black uppercase tracking-[0.2em] text-gray-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-gray-900 hover:shadow-md"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-white/60 px-8 text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 shadow-sm backdrop-blur-md transition-all hover:bg-white hover:text-gray-900 hover:shadow-md"
           >
             {t("guestLink")}
           </Link>
-          <p className="text-[10px] font-medium text-gray-500/80">{t("guestWarning")}</p>
+          <p className="text-[9px] font-medium text-gray-500/80">{t("guestWarning")}</p>
         </div>
       )}
     </div>

@@ -255,8 +255,8 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
   return (
     <div className="w-full">
       {/* Mode Toggle */}
-      <div className="mb-6 flex justify-center">
-        <div className="relative flex w-full max-w-[280px] rounded-full bg-gray-100 p-1.5">
+      <div className="mb-5 flex justify-center">
+        <div className="relative flex w-full max-w-[280px] rounded-full bg-gray-100 p-1">
           <motion.div
             className="absolute inset-y-1.5 rounded-full bg-white shadow-sm"
             initial={false}
@@ -264,7 +264,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
               x: authMode === "signin" ? 0 : "100%",
               width: "50%",
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{ type: "spring", stiffness: 350, damping: 35 }}
           />
           <button
             type="button"
@@ -272,7 +272,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
               setAuthMode("signin");
               sendGAEvent("event", "auth_mode_toggle", { target_mode: "signin" });
             }}
-            className={`relative z-10 w-1/2 py-3 text-sm font-bold transition-colors ${
+            className={`relative z-10 w-1/2 py-2.5 text-sm font-bold transition-colors ${
               authMode === "signin" ? "text-gray-900" : "text-gray-500"
             }`}
           >
@@ -284,7 +284,7 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
               setAuthMode("signup");
               sendGAEvent("event", "auth_mode_toggle", { target_mode: "signup" });
             }}
-            className={`relative z-10 w-1/2 py-3 text-sm font-bold transition-colors ${
+            className={`relative z-10 w-1/2 py-2.5 text-sm font-bold transition-colors ${
               authMode === "signup" ? "text-gray-900" : "text-gray-500"
             }`}
           >
@@ -334,20 +334,13 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
             </div>
           ) : (
             <>
-              <h1 className="mb-2 text-center text-[28px] font-black tracking-tight text-[#1a1a1a] sm:text-3xl text-balance">
+              <h1 className="mb-4 text-center text-[28px] font-black tracking-tight text-[#1a1a1a] sm:text-3xl text-balance">
                 {authMode === "signin"
                   ? showMagicLink
                     ? t("signinMagicTitle")
                     : t("signinTitle")
                   : t("signupTitle")}
               </h1>
-              <p className="mb-4 text-center text-sm font-medium text-gray-500">
-                {authMode === "signin"
-                  ? showMagicLink
-                    ? t("signinMagicDescription")
-                    : t("signinDescription")
-                  : t("signupDescription")}
-              </p>
 
               {(authMode === "signup" || !showMagicLink) && (
                 <>
@@ -367,20 +360,18 @@ export function AuthForm({ initialMode, onSuccess, isUserMode = true }: AuthForm
                     {authMode === "signin" ? t("googleButton") : t("googleSignupButton")}
                   </Button>
 
-                  <div className="relative my-4">
+                  <div className="relative my-3">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-gray-100" />
                     </div>
-                    <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-                      <span className="bg-white px-3 text-gray-400 font-bold">
-                        {t("orContinueWith")}
-                      </span>
+                    <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.2em]">
+                      <span className="bg-white px-3 text-gray-400">{t("orContinueWith")}</span>
                     </div>
                   </div>
                 </>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div className="space-y-2">
                   <Label
                     htmlFor="email"
