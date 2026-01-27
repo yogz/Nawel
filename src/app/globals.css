@@ -65,8 +65,7 @@
       );
   }
 
-  /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
-  /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
+  /* Theme Aurore - Vibrant, animé et immersif - CoList Style (LIGHT DEFAULT) */
   .theme-aurora {
     /* Lighter, more premium palette */
     /* Vibrant violet immersion */
@@ -102,7 +101,7 @@
     overflow-x: hidden;
   }
 
-  /* Subtler Orbs */
+  /* Subtler Orbs for Light Mode */
   .theme-aurora::before {
     content: "";
     position: fixed;
@@ -121,7 +120,82 @@
   }
 
   .theme-aurora::after {
-    /* Removed secondary orbs for cleaner look */
+    content: none;
+  }
+
+  /* Theme Dark - Premium Zinc Palette */
+  .theme-dark {
+    /* Zinc 950 Base */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Zinc 600/700 for Primary - slightly desaturated for dark mode */
+    --primary: 240 5.9% 90%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    /* Desaturated Accent */
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    /* Custom Theme Vars */
+    --surface: #09090b; /* Zinc 950 */
+    --text: #fafafa;
+    --header-fade: #09090b;
+
+    /* Elevated Surfaces (Cards) - Zinc 900 */
+    /* Lighter than background to create depth without relying on shadow */
+    --card-bg: #18181b;
+    --card-border: #27272a; /* Zinc 800 */
+    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+
+    --glass-bg: rgba(24, 24, 27, 0.7); /* Zinc 900 alpha */
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    --glass-blur: 16px;
+
+    /* Background Setup */
+    background-color: #09090b;
+    color: #fafafa;
+    background-image: none; /* No gradients in dark mode for cleaner look */
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Subtle Glow for Dark Mode - Optional Premium Touch */
+  .theme-dark::before {
+    content: "";
+    position: fixed;
+    top: -20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    z-index: -1;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+    filter: blur(80px);
+    pointer-events: none;
+  }
+
+  .theme-dark::after {
     content: none;
   }
 
@@ -144,8 +218,7 @@
   @media (prefers-reduced-motion: reduce) {
     .theme-aurora::before,
     .theme-aurora::after,
-    .theme-christmas::before,
-    .theme-christmas::after {
+    .theme-dark::before {
       animation: none !important;
       filter: blur(20px) !important;
     }
@@ -213,6 +286,12 @@
       0 4px 20px -2px rgba(0, 0, 0, 0.1);
   }
 
+  /* Dark Mode Overrides for Glass Panel */
+  .theme-dark .glass-panel {
+    @apply bg-zinc-950/60 border-white/5;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
   /* Theme-specific Overrides - Keep minimal */
   .theme-aurora .premium-card {
     border-color: rgba(200, 180, 230, 0.3);
@@ -231,210 +310,6 @@
     filter: brightness(1.1);
     box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
     transform: scale(1.05);
-  }
-
-  /* Theme Todo-List Minimal - Sobre, Net, Utilitaire */
-  .theme-none {
-    /* Monochrome Base - Ultra minimal */
-    --surface: #fafafa;
-    --muted: #f5f5f5;
-    --muted-foreground: #6b7280;
-
-    /* Single Accent - Blue for actions only */
-    --accent: 217 91% 60%;
-    /* #2563eb - Blue 600 */
-    --accent-foreground: #ffffff;
-
-    /* Typography - High contrast, readable */
-    --text: #111827;
-    /* Gray 900 - Sharp black */
-    --header-fade: #fafafa;
-
-    /* Cards - Flat, minimal, no shadows */
-    --card-bg: #ffffff;
-    --card-border: #e5e7eb;
-    /* Gray 200 - Solid border */
-    --card-shadow: none;
-    --card-shadow-hover: none;
-
-    /* Glass Effect - Disabled */
-    --glass-bg: #ffffff;
-    --glass-border: #e5e7eb;
-    --glass-shadow: none;
-
-    background: #fafafa;
-    background-attachment: fixed;
-    color: #111827;
-  }
-
-  /* No background effects */
-  .theme-none::before {
-    display: none;
-  }
-
-  /* ===== CARDS - Flat list style ===== */
-  .theme-none .premium-card {
-    border: 1px solid #e5e7eb;
-    background: #ffffff;
-    box-shadow: none;
-    border-radius: 6px;
-    transition:
-      background-color 0.15s ease,
-      border-color 0.15s ease;
-  }
-
-  .theme-none .premium-card:hover {
-    border-color: #d1d5db;
-    box-shadow: none;
-    transform: none;
-    background: #fafafa;
-  }
-
-  /* ===== BUTTONS - Outline/text style ===== */
-  .theme-none .btn-prominent,
-  .theme-none button[class*="bg-primary"],
-  .theme-none button[class*="bg-accent"],
-  .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]),
-  .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) {
-    background: transparent;
-    color: #2563eb !important;
-    border: 1px solid #2563eb;
-    box-shadow: none;
-    border-radius: 6px;
-    font-weight: 600;
-    transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
-  }
-
-  /* Text inside outline buttons */
-  .theme-none .btn-prominent *,
-  .theme-none [class*="bg-primary"]:not([class*="bg-primary/"]) *,
-  .theme-none [class*="bg-accent"]:not([class*="bg-accent/"]) * {
-    color: #2563eb !important;
-  }
-
-  .theme-none .btn-prominent:hover,
-  .theme-none button[class*="bg-primary"]:hover,
-  .theme-none button[class*="bg-accent"]:hover {
-    background: #2563eb;
-    color: #ffffff !important;
-    transform: none;
-    box-shadow: none;
-  }
-
-  .theme-none .btn-prominent:hover *,
-  .theme-none button[class*="bg-primary"]:hover *,
-  .theme-none button[class*="bg-accent"]:hover * {
-    color: #ffffff !important;
-  }
-
-  /* ===== HEADERS - Plain text, no gradients ===== */
-  .theme-none .text-gradient-header {
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    background-clip: unset !important;
-    color: #111827 !important;
-    -webkit-text-fill-color: currentColor !important;
-  }
-
-  /* ===== CONTRAST - Muted text ===== */
-  .theme-none .text-muted-foreground,
-  .theme-none .text-gray-500,
-  .theme-none .text-gray-600 {
-    color: #6b7280;
-    font-weight: 400;
-  }
-
-  /* Accent Text */
-  .theme-none .text-accent {
-    color: #2563eb;
-  }
-
-  /* ===== INPUTS - Minimal borders ===== */
-  .theme-none input,
-  .theme-none textarea,
-  .theme-none select {
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    color: #111827;
-    transition: border-color 0.15s ease;
-  }
-
-  .theme-none input:focus,
-  .theme-none textarea:focus,
-  .theme-none select:focus {
-    border-color: #2563eb;
-    outline: none;
-    box-shadow: none;
-  }
-
-  /* ===== MOBILE-FIRST: Condensed spacing ===== */
-  .theme-none .premium-card {
-    padding: 12px;
-  }
-
-  .theme-none button,
-  .theme-none [role="button"] {
-    padding: 8px 12px;
-    font-size: 14px;
-    min-height: 36px;
-  }
-
-  .theme-none input,
-  .theme-none textarea,
-  .theme-none select {
-    padding: 8px 10px;
-    font-size: 16px;
-    /* Prevent iOS zoom */
-    min-height: 40px;
-  }
-
-  /* Tighter gaps between items */
-  .theme-none .gap-4 {
-    gap: 12px;
-  }
-
-  .theme-none .gap-3 {
-    gap: 8px;
-  }
-
-  .theme-none .space-y-4 > * + * {
-    margin-top: 12px;
-  }
-
-  .theme-none .space-y-3 > * + * {
-    margin-top: 8px;
-  }
-
-  /* Compact list items */
-  .theme-none .py-4 {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  .theme-none .py-3 {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  .theme-none .px-4 {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  /* Desktop: slightly more breathing room */
-  @media (min-width: 640px) {
-    .theme-none .premium-card {
-      padding: 16px;
-    }
-
-    .theme-none button,
-    .theme-none [role="button"] {
-      padding: 10px 16px;
-      font-size: 14px;
-    }
   }
 
   /* Theme Aurore - Vibrant, animé et immersif - CoList Style */
@@ -463,340 +338,6 @@
     /* Light grey/blue surface */
     --text: 280 50% 10%;
     --header-fade: #bc63e9;
-  }
-
-  /* Theme Lisibilité - Contraste maximal et accessibilité renforcée */
-  .theme-readable {
-    /* Base Colors Overrides */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 45 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 100%;
-    --accent: 45 100% 50%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 45 100% 50%;
-    --radius: 0.125rem;
-
-    /* Theme-specific tokens */
-    --surface: #000000;
-    --text: #ffffff;
-    --header-fade: #000000;
-
-    --card-bg: #0a0a0a;
-    --card-border: white;
-    --card-shadow: none;
-    --card-shadow-hover: none;
-
-    --glass-bg: #000000;
-    --glass-border: white;
-    --glass-shadow: none;
-
-    background: #000000 !important;
-    color: #ffffff !important;
-
-    /* Typography Overrides */
-    font-size: 1.125rem !important;
-    /* 18px base instead of 20px for better layout consistency */
-    line-height: 1.6 !important;
-    letter-spacing: 0.02em !important;
-    font-weight: 500 !important;
-  }
-
-  /* Force borders and visibility on components - Readable special handling */
-  .theme-readable .premium-card {
-    border: 3px solid white !important;
-    border-radius: 4px !important;
-    margin-bottom: 1.5rem !important;
-  }
-
-  /* Global color overrides for theme-readable to prevent black-on-black or white cards */
-  .theme-readable
-    *:not(button):not([class*="btn-"]):not([class*="bg-primary"]):not([class*="bg-accent"]) {
-    color: #ffffff !important;
-  }
-
-  /* Specific background overrides for common background classes */
-  .theme-readable [class*="bg-white"],
-  .theme-readable [class*="bg-gray-"],
-  .theme-readable [class*="bg-slate-"],
-  .theme-readable [class*="bg-zinc-"],
-  .theme-readable [class*="bg-neutral-"],
-  .theme-readable [class*="bg-stone-"],
-  .theme-readable [class*="bg-background"],
-  .theme-readable [class*="bg-surface"],
-  .theme-readable [class*="bg-card"],
-  .theme-readable [class*="bg-muted"] {
-    background-color: #000000 !important;
-    background-image: none !important;
-  }
-
-  /* Force borders on all containers in Readable mode */
-  .theme-readable .premium-card,
-  .theme-readable [class*="card"],
-  .theme-readable [class*="rounded-"],
-  .theme-readable section,
-  .theme-readable article {
-    border: 2px solid white !important;
-  }
-
-  /* Specific override for common dark text classes in Tailwind */
-  .theme-readable [class*="text-gray-"],
-  .theme-readable [class*="text-slate-"],
-  .theme-readable [class*="text-zinc-"],
-  .theme-readable [class*="text-black"],
-  .theme-readable [class*="text-neutral-"] {
-    color: #ffffff !important;
-  }
-
-  .theme-readable .glass {
-    border: 3px solid white !important;
-  }
-
-  .theme-readable button:not(.btn-readable),
-  .theme-readable [role="button"] {
-    border: 3px solid white !important;
-    background: #1a1a1a !important;
-    color: white !important;
-    font-size: 1.15rem !important;
-    font-weight: 800 !important;
-    padding: 0.75rem 1.5rem !important;
-    min-height: 3.5rem !important;
-  }
-
-  .theme-readable .btn-readable,
-  .theme-readable .btn-prominent,
-  .theme-readable button[class*="primary"],
-  .theme-readable button[class*="accent"],
-  .theme-readable [class*="bg-primary"],
-  .theme-readable [class*="bg-accent"] {
-    background: hsl(45 100% 50%) !important;
-    color: black !important;
-    border: 4px solid white !important;
-    text-transform: uppercase !important;
-  }
-
-  /* Ensure text inside primary elements is black */
-  .theme-readable [class*="bg-primary"] *,
-  .theme-readable [class*="bg-accent"] *,
-  .theme-readable .btn-readable * {
-    color: black !important;
-  }
-
-  .theme-readable input,
-  .theme-readable textarea,
-  .theme-readable select {
-    border: 3px solid white !important;
-    background: #000000 !important;
-    color: white !important;
-    font-size: 1.25rem !important;
-    padding: 1rem !important;
-    border-radius: 4px !important;
-  }
-
-  .theme-readable label {
-    font-size: 1.25rem !important;
-    font-weight: 800 !important;
-    color: hsl(45 100% 50%) !important;
-    margin-bottom: 0.5rem !important;
-    display: block !important;
-  }
-
-  .theme-readable svg {
-    stroke-width: 3px !important;
-    stroke: white !important;
-  }
-
-  .theme-readable .text-gray-500,
-  .theme-readable .text-muted-foreground,
-  .theme-readable .text-gray-600 {
-    color: #ffffff !important;
-    /* Force white for muted text - improved contrast */
-    opacity: 0.95 !important;
-    font-weight: 700 !important;
-  }
-
-  /* Theme Christmas - Magical Winter Wonderland */
-  .theme-christmas {
-    --surface: #fefcfa;
-    --muted: #fce7e7;
-    --accent: 0 74% 42%;
-    --text: #450a0a;
-    --gold: #d4af37;
-    --green: #15803d;
-    --header-fade: #fefcfa;
-
-    --card-bg: rgba(255, 255, 255, 0.85);
-    --card-border: rgba(185, 28, 28, 0.1);
-    --card-shadow: 0 4px 24px rgba(185, 28, 28, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-    --card-shadow-hover:
-      0 12px 32px rgba(185, 28, 28, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-
-    --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(254, 242, 242, 0.6) 100%);
-    --glass-border: rgba(185, 28, 28, 0.15);
-    --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 4px 16px rgba(185, 28, 28, 0.05);
-
-    background: linear-gradient(180deg, #fefcfa 0%, #fff5f5 50%, #f0fdf4 100%);
-    background-attachment: fixed;
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  /* Animated gradient orbs - red and green */
-  .theme-christmas::before {
-    content: "";
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    z-index: -1;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(185, 28, 28, 0.12) 0%, transparent 35%),
-      radial-gradient(circle at 80% 30%, rgba(21, 128, 61, 0.1) 0%, transparent 35%),
-      radial-gradient(circle at 40% 80%, rgba(212, 175, 55, 0.08) 0%, transparent 30%),
-      radial-gradient(circle at 70% 70%, rgba(185, 28, 28, 0.1) 0%, transparent 35%),
-      radial-gradient(circle at 10% 60%, rgba(21, 128, 61, 0.08) 0%, transparent 30%);
-    filter: blur(60px);
-    animation: christmas-mesh 25s ease-in-out infinite alternate;
-    pointer-events: none;
-  }
-
-  /* Twinkling stars overlay */
-  .theme-christmas::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    background-image:
-      radial-gradient(2px 2px at 10% 10%, rgba(212, 175, 55, 0.8), transparent),
-      radial-gradient(2px 2px at 30% 25%, rgba(255, 255, 255, 0.9), transparent),
-      radial-gradient(1px 1px at 50% 15%, rgba(212, 175, 55, 0.7), transparent),
-      radial-gradient(2px 2px at 70% 35%, rgba(255, 255, 255, 0.8), transparent),
-      radial-gradient(1px 1px at 85% 20%, rgba(212, 175, 55, 0.6), transparent),
-      radial-gradient(2px 2px at 15% 45%, rgba(255, 255, 255, 0.7), transparent),
-      radial-gradient(1px 1px at 90% 50%, rgba(212, 175, 55, 0.8), transparent),
-      radial-gradient(2px 2px at 25% 60%, rgba(255, 255, 255, 0.6), transparent),
-      radial-gradient(1px 1px at 60% 55%, rgba(212, 175, 55, 0.7), transparent),
-      radial-gradient(2px 2px at 45% 75%, rgba(255, 255, 255, 0.8), transparent);
-    background-size: 100% 100%;
-    animation: twinkle 4s ease-in-out infinite alternate;
-    pointer-events: none;
-    opacity: 0.6;
-  }
-
-  @keyframes christmas-mesh {
-    0% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-
-    25% {
-      transform: translate(3%, 5%) rotate(2deg) scale(1.05);
-    }
-
-    50% {
-      transform: translate(-2%, 3%) rotate(-1deg) scale(0.98);
-    }
-
-    75% {
-      transform: translate(4%, -2%) rotate(3deg) scale(1.02);
-    }
-
-    100% {
-      transform: translate(0, 0) rotate(0deg) scale(1);
-    }
-  }
-
-  @keyframes twinkle {
-    0% {
-      opacity: 0.4;
-    }
-
-    50% {
-      opacity: 0.8;
-    }
-
-    100% {
-      opacity: 0.5;
-    }
-  }
-
-  /* Theme Christmas Overrides */
-  .theme-christmas .btn-festive,
-  .theme-christmas .btn-prominent {
-    background: linear-gradient(135deg, hsl(0 74% 42%), hsl(0 74% 35%));
-    color: white;
-    box-shadow:
-      0 4px 15px rgba(185, 28, 28, 0.3),
-      0 0 20px rgba(185, 28, 28, 0.1);
-    border: none;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .theme-christmas .btn-festive::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    animation: shimmer 3s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
-      left: -100%;
-    }
-
-    100% {
-      left: 100%;
-    }
-  }
-
-  .theme-christmas .btn-festive:hover {
-    filter: brightness(1.1);
-    box-shadow:
-      0 6px 20px rgba(185, 28, 28, 0.4),
-      0 0 30px rgba(185, 28, 28, 0.15);
-    transform: scale(1.02);
-  }
-
-  /* Soft falling snow - subtle layer */
-  .theme-christmas .snow-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 50;
-    background-image:
-      radial-gradient(3px 3px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
-      radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.6), transparent),
-      radial-gradient(4px 4px at 50px 160px, rgba(255, 255, 255, 0.7), transparent),
-      radial-gradient(3px 3px at 90px 40px, rgba(255, 255, 255, 0.8), transparent),
-      radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
-      radial-gradient(3px 3px at 160px 120px, rgba(255, 255, 255, 0.7), transparent);
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    animation: snow-fall 12s linear infinite;
-    opacity: 0.6;
   }
 
   @keyframes snow-fall {

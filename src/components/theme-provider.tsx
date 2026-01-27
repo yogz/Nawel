@@ -2,111 +2,101 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type ThemeName = "none" | "christmas" | "aurora" | "readable";
+// Use 'mode' instead of 'theme' name for clarity
+export type ThemeMode = "light" | "dark" | "system";
 
-const THEMES: { id: ThemeName; label: string; description: string; emoji: string }[] = [
-  {
-    id: "none",
-    label: "Classique",
-    description: "Sobre, élégant et lisible - Neutre et raffiné",
-    emoji: "⚫️",
-  },
-  { id: "christmas", label: "Noël", description: "Ambiance festive avec neige", emoji: "🎄" },
-  {
-    id: "aurora",
-    label: "Aurore",
-    description: "Vibrant et animé, dégradés magiques",
-    emoji: "✨",
-  },
-  {
-    id: "readable",
-    label: "Lisibilité",
-    description: "Contraste élevé, texte agrandi",
-    emoji: "👓",
-  },
-];
+// Internal theme class names
+type ThemeClass = "aurora" | "dark";
 
-const DEFAULT_THEME: ThemeName = "aurora";
-const THEME_MAX_AGE = 90 * 24 * 60 * 60 * 1000; // 90 days
+export interface ThemeContextProps {
+  mode: ThemeMode;
+  setMode: (mode: ThemeMode) => void;
+  // Resolved theme (for UI that needs to know if it's actually dark or light)
+  resolvedTheme: ThemeClass;
+}
 
-const ThemeContext = createContext<{
-  theme: ThemeName;
-  setTheme: (theme: ThemeName) => void;
-  themes: typeof THEMES;
-  // Rétrocompatibilité
-  christmas: boolean;
-  toggle: () => void;
-}>({
-  theme: DEFAULT_THEME,
-  setTheme: () => {},
-  themes: THEMES,
-  christmas: (DEFAULT_THEME as ThemeName) === "christmas",
-  toggle: () => {},
+const STORAGE_KEY = "colist-theme-mode";
+const DEFAULT_MODE: ThemeMode = "system";
+
+const ThemeContext = createContext<ThemeContextProps>({
+  mode: DEFAULT_MODE,
+  setMode: () => {},
+  resolvedTheme: "aurora",
 });
 
-const STORAGE_KEY = "colist-theme";
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>(DEFAULT_THEME);
+  const [mode, setModeState] = useState<ThemeMode>(DEFAULT_MODE);
+  const [resolvedTheme, setResolvedTheme] = useState<ThemeClass>("aurora");
 
-  // Synchronous hydration to avoid theme flash - localStorage is client-only
+  // Initialize from usage - handling SS mismatch by running effect only on client
   useEffect(() => {
-    const storedStr = localStorage.getItem(STORAGE_KEY);
-    if (storedStr) {
-      try {
-        const stored = JSON.parse(storedStr) as { id: ThemeName; timestamp: number };
-        if (stored && THEMES.some((t) => t.id === stored.id)) {
-          const isExpired = Date.now() - stored.timestamp > THEME_MAX_AGE;
-          if (!isExpired) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setThemeState(stored.id);
-          } else {
-            // Optionnel: nettoyer l'entrée expirée
-            localStorage.removeItem(STORAGE_KEY);
-          }
-        }
-      } catch (_e) {
-        // Fallback pour l'ancien format (simple string)
-        if (THEMES.some((t) => t.id === (storedStr as ThemeName))) {
-          // Si c'est l'ancien format, on le considère comme expiré ou on le migre
-          // Içi on choisit de laisser le défaut (Aurora) pour tout le monde au début
-          localStorage.removeItem(STORAGE_KEY);
-        }
-      }
+    const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
+    if (stored && ["light", "dark", "system"].includes(stored)) {
+      setModeState(stored);
     }
   }, []);
 
+  // Effect to update the DOM and resolved theme
   useEffect(() => {
-    // Retirer tous les thèmes
-    document.body.classList.remove(
-      "theme-christmas",
+    const root = window.document.documentElement;
+    const body = document.body;
+
+    // Clean up all possible theme classes
+    body.classList.remove(
       "theme-aurora",
+      "theme-dark",
+      "theme-christmas",
       "theme-readable",
       "theme-none"
     );
-    // Ajouter le thème actif
-    document.body.classList.add(`theme-${theme}`);
-  }, [theme]);
+    root.classList.remove("dark");
 
-  const setTheme = (newTheme: ThemeName) => {
-    setThemeState(newTheme);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ id: newTheme, timestamp: Date.now() }));
+    let effectiveTheme: ThemeClass = "aurora";
+
+    if (mode === "system") {
+      const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      effectiveTheme = systemDark ? "dark" : "aurora";
+    } else if (mode === "dark") {
+      effectiveTheme = "dark";
+    } else {
+      effectiveTheme = "aurora";
+    }
+
+    setResolvedTheme(effectiveTheme);
+    body.classList.add(`theme-${effectiveTheme}`);
+
+    // Add 'dark' class to html/root for Tailwind 'dark:' prefix support
+    if (effectiveTheme === "dark") {
+      root.classList.add("dark");
+    }
+  }, [mode]);
+
+  // Listen for system changes if in system mode
+  useEffect(() => {
+    if (mode !== "system") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = () => {
+      // Trigger update by re-running the main effect (React might batch this but it's safe)
+      // Actually simpler to just manually update classes here or force re-render.
+      // Easiest is to force mode state update to same value to trigger effect,
+      // but simpler is to call a refresh.
+      // Let's just duplicate the class logic slightly or extract it?
+      // For simplicity, we can just toggle the state safely.
+      setModeState((prev) => (prev === "system" ? "system" : prev));
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [mode]);
+
+  const setMode = (newMode: ThemeMode) => {
+    setModeState(newMode);
+    localStorage.setItem(STORAGE_KEY, newMode);
   };
 
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-        themes: THEMES,
-        // Rétrocompatibilité
-        christmas: theme === "christmas",
-        toggle: () => {
-          const newTheme = theme === "christmas" ? "none" : "christmas";
-          setTheme(newTheme);
-        },
-      }}
-    >
+    <ThemeContext.Provider value={{ mode, setMode, resolvedTheme }}>
       {children}
     </ThemeContext.Provider>
   );

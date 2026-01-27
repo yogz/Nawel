@@ -41,7 +41,9 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
   // All hooks must be called unconditionally and in the same order
   const router = useRouter();
   const { data: session, isPending: sessionPending, refetch } = useSession();
-  const { theme, setTheme } = useThemeMode();
+  const { mode, setMode, resolvedTheme } = useThemeMode();
+  // Derived theme for avatar rendering compatibility
+  const theme = resolvedTheme; // "aurora" or "dark"
   const tCommon = useTranslations("common");
   const tProfile = useTranslations("Profile");
   const t = useTranslations("Translations");
@@ -345,30 +347,42 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-500">
                   {t("profile.theme")}
                 </Label>
-                <div className="flex gap-2 rounded-2xl bg-black/5 p-1.5 ring-1 ring-black/5">
+                <div className="grid grid-cols-3 gap-1 rounded-2xl bg-black/5 p-1.5 ring-1 ring-black/5">
                   <button
-                    onClick={() => setTheme("aurora")}
+                    onClick={() => setMode("light")}
                     className={clsx(
-                      "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
-                      theme === "aurora"
-                        ? "bg-white text-accent shadow-sm"
+                      "flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
+                      mode === "light"
+                        ? "bg-white text-orange-500 shadow-sm"
                         : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
                     )}
                   >
-                    <span>✨</span>
-                    <span>Aurore</span>
+                    <span>☀️</span>
+                    <span className="hidden sm:inline">Jour</span>
                   </button>
                   <button
-                    onClick={() => setTheme("none")}
+                    onClick={() => setMode("system")}
                     className={clsx(
-                      "flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
-                      theme === "none"
-                        ? "bg-white text-gray-900 shadow-sm"
+                      "flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
+                      mode === "system"
+                        ? "bg-white text-blue-500 shadow-sm"
                         : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
                     )}
                   >
-                    <span>⚫️</span>
-                    <span>Classique</span>
+                    <span>🌗</span>
+                    <span className="hidden sm:inline">Auto</span>
+                  </button>
+                  <button
+                    onClick={() => setMode("dark")}
+                    className={clsx(
+                      "flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-black transition-all",
+                      mode === "dark"
+                        ? "bg-zinc-800 text-white shadow-sm" // Inverted style for active dark
+                        : "text-muted-foreground hover:bg-black/5 hover:text-foreground"
+                    )}
+                  >
+                    <span>🌙</span>
+                    <span className="hidden sm:inline">Nuit</span>
                   </button>
                 </div>
               </div>
