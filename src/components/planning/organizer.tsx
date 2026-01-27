@@ -14,7 +14,7 @@ import {
 } from "@dnd-kit/core";
 import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../layout";
-import { useThemeMode } from "../theme-provider";
+
 import { validateWriteKeyAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";

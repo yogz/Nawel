@@ -96,7 +96,7 @@ export function PlanningTab({
 }: PlanningTabProps) {
   const t = useTranslations("EventDashboard.Planning");
   const tSettings = useTranslations("EventDashboard.Settings");
-  const { theme: _theme } = useThemeMode();
+  // Theme hook removed
   const isMobile = useIsMobile();
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -155,9 +155,7 @@ export function PlanningTab({
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
-      <AriaLiveRegion>
-        {plan.meals.length > 0 && `${plan.meals.length} repas`}
-      </AriaLiveRegion>
+      <AriaLiveRegion>{plan.meals.length > 0 && `${plan.meals.length} repas`}</AriaLiveRegion>
       <motion.div
         variants={isMobile ? {} : containerVariants}
         initial={isMobile ? false : "hidden"}

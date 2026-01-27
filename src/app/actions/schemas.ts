@@ -252,6 +252,14 @@ export const deleteAllIngredientsSchema = baseInput.extend({
 
 export const generateAllIngredientsSchema = baseInput.extend({
   locale: z.string().optional(),
+  items: z
+    .array(
+      z.object({
+        id: z.number().int().positive(),
+        action: z.enum(["generate", "categorize"]),
+      })
+    )
+    .optional(),
 });
 
 export const saveAIFeedbackSchema = baseInput.extend({

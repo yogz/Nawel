@@ -57,7 +57,7 @@ export function useShoppingGeneration({
     return items;
   }, [plan.meals]);
 
-  const generateAllIngredients = async () => {
+  const generateAllIngredients = async (selectedIds?: Set<number>) => {
     if (readOnly || itemsWithoutIngredients.length === 0) {
       return;
     }
@@ -65,12 +65,23 @@ export function useShoppingGeneration({
     setIsGenerating(true);
     setProgress({ current: 0, total: itemsWithoutIngredients.length });
 
+    // Prepare items with actions
+    const itemsPayload = itemsWithoutIngredients.map((item) => ({
+      id: item.id,
+      action: selectedIds
+        ? selectedIds.has(item.id)
+          ? ("generate" as const)
+          : ("categorize" as const)
+        : ("generate" as const), // Default to generate if no selection passed (legacy behavior)
+    }));
+
     try {
       const result = await generateAllIngredientsAction({
         slug,
         key: writeKey,
         token: token ?? undefined,
         locale,
+        items: itemsPayload,
       });
 
       if (!result.success) {

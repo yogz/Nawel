@@ -26,6 +26,7 @@ import { CitationDisplay } from "../common/citation-display";
 import { AppBranding } from "../common/app-branding";
 import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
 import { Sparkles, Loader2, AlertCircle } from "lucide-react";
+import { ShoppingGenerationDialog } from "./shopping-generation-dialog";
 
 interface ShoppingAllPageProps {
   initialPlan: PlanData;
@@ -48,6 +49,7 @@ export function ShoppingAllPage({
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Build shopping list from ALL assigned items (global view)
   const shoppingList = useMemo(() => {
@@ -94,7 +96,8 @@ export function ShoppingAllPage({
     aggregated.forEach((item) => {
       // For ingredients, use the category from the first source
       // For items (manual), default to "misc"
-      const category = (item.sources[0].type === "ingredient" && item.sources[0].ingredient?.category) || "misc";
+      const category =
+        (item.sources[0].type === "ingredient" && item.sources[0].ingredient?.category) || "misc";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -330,7 +333,7 @@ export function ShoppingAllPage({
                 <p className="mt-1 text-xs text-amber-700">{t("generateAllDescription")}</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <Button
-                    onClick={generateAllIngredients}
+                    onClick={() => setIsDialogOpen(true)}
                     disabled={isGeneratingIngredients}
                     className="h-11 gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
                   >
@@ -620,6 +623,20 @@ export function ShoppingAllPage({
           <AppBranding variant="icon-text" logoSize={24} noLink />
         </div>
       </main>
+
+      {/* Generation Dialog */}
+      {writeEnabled && (
+        <ShoppingGenerationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          items={itemsWithoutIngredients}
+          onConfirm={async (selectedIds) => {
+            await generateAllIngredients(selectedIds);
+            setIsDialogOpen(false);
+          }}
+          isGenerating={isGeneratingIngredients}
+        />
+      )}
     </div>
   );
 }

@@ -16,7 +16,7 @@ interface UserNavProps {
 }
 
 export function UserNav({ showLabel }: UserNavProps) {
-  const { theme } = useThemeMode();
+  const { resolvedTheme } = useThemeMode();
   const { data: session, isPending } = useSession();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showProfileDrawer, setShowProfileDrawer] = useState(false);
@@ -88,7 +88,7 @@ export function UserNav({ showLabel }: UserNavProps) {
                 user: user,
               },
               [],
-              theme
+              resolvedTheme
             );
 
             if (avatar.type === "image") {

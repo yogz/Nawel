@@ -40,7 +40,7 @@ export function OrganizerHeader({
   slug,
   writeKey,
 }: OrganizerHeaderProps) {
-  const { theme } = useThemeMode();
+  // Theme hook removed as it was only used for Christmas garland
   const t = useTranslations("EventDashboard.Header");
   const [copied, setCopied] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
@@ -102,14 +102,6 @@ export function OrganizerHeader({
 
   return (
     <>
-      {theme === "christmas" && (
-        <div className="christmas-garland">
-          {Array.from({ length: 14 }).map((_, i) => (
-            <div key={i} className="christmas-light" />
-          ))}
-        </div>
-      )}
-
       {readOnly && (
         <div className="flex items-center gap-2 bg-amber-100 px-4 py-3 text-sm text-amber-800">
           <ShieldAlert size={16} />

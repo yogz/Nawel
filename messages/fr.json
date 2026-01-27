@@ -503,7 +503,15 @@
       "generateAllDescription": "Générez automatiquement les ingrédients pour tous les plats sans ingrédients en une seule action.",
       "generateAllButton": "Générer les ingrédients",
       "generating": "Génération en cours...",
-      "generatingProgress": "Génération... ({current}/{total})"
+      "generatingProgress": "Génération... ({current}/{total})",
+      "generateDialog": {
+        "title": "Génération Intelligente",
+        "description": "Sélectionnez les plats pour lesquels vous souhaitez que l'IA détaille tous les ingrédients.",
+        "selectAll": "Tout sélectionner",
+        "deselectAll": "Tout désélectionner",
+        "categorizeNotice": "Les <bold>{count}</bold> autres articles seront simplement classés dans la bonne catégorie.",
+        "confirmButton": "Générer ({generateCount}) & Classer ({categorizeCount})"
+      }
     },
     "Settings": {
       "ambiance": "Ambiance",

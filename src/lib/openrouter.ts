@@ -244,6 +244,114 @@ FALLBACK :
   }
 }
 
+// JSON Schema pour la catégorisation simple
+const CATEGORIZE_SCHEMA = {
+  type: "json_schema",
+  jsonSchema: {
+    name: "categorize_items",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        items: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: "Nom de l'article" },
+              category: {
+                type: "string",
+                description: "Catégorie (slug)",
+                enum: [
+                  "fruits-vegetables",
+                  "meat-fish",
+                  "dairy-eggs",
+                  "bakery",
+                  "pantry-savory",
+                  "pantry-sweet",
+                  "beverages",
+                  "frozen",
+                  "household-cleaning",
+                  "misc",
+                ],
+              },
+            },
+            required: ["name", "category"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["items"],
+      additionalProperties: false,
+    },
+  },
+} as const;
+
+export async function categorizeItems(
+  itemNames: string[]
+): Promise<Array<{ name: string; category: string }>> {
+  if (itemNames.length === 0) return [];
+
+  // Sanitize inputs
+  const sanitizedNames = itemNames.map((n) => sanitizeInput(n)).filter((n) => n.length > 0);
+
+  if (sanitizedNames.length === 0) return [];
+
+  const systemPrompt = `Tu es un expert en classement de produits de supermarché.
+TA MISSION : Associer chaque article à la meilleure catégorie possible parmi cette liste stricte :
+- fruits-vegetables (Fruits & Légumes)
+- meat-fish (Boucherie & Poissonnerie)
+- dairy-eggs (Crémerie & Œufs)
+- bakery (Boulangerie)
+- pantry-savory (Épicerie Salée)
+- pantry-sweet (Épicerie Sucrée)
+- beverages (Boissons)
+- frozen (Surgelés)
+- household-cleaning (Hygiène & Entretien)
+- misc (Tout le reste)
+
+Si un article est ambigu, choisis "misc".
+`;
+  const userPrompt = `Classe ces articles :\n${sanitizedNames.map((n) => `- ${n}`).join("\n")}`;
+
+  logger.debug("\n--- AI CATEGORIZATION REQUEST ---");
+  logger.debug("Items:", sanitizedNames.join(", "));
+
+  try {
+    const result = await callWithFallback({
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+      temperature: 0.1,
+      maxTokens: 500,
+      responseFormat: CATEGORIZE_SCHEMA,
+    });
+
+    const rawContent = result.choices?.[0]?.message?.content;
+    const content = typeof rawContent === "string" ? rawContent : "{}";
+    const parsed = JSON.parse(content);
+    const items = parsed.items ?? parsed;
+
+    if (Array.isArray(items)) {
+      return items.filter(
+        (i): i is { name: string; category: string } =>
+          typeof i.name === "string" && typeof i.category === "string"
+      );
+    }
+    return [];
+  } catch (error) {
+    console.error("Categorization failed:", error);
+    return [];
+  }
+}
+
 // Interface pour les résultats de test de modèle
 export interface ModelTestResult {
   model: string;

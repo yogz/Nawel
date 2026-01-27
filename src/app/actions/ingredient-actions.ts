@@ -4,7 +4,15 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
-import { ingredients, ingredientCache, items, people, services, meals, events } from "@drizzle/schema";
+import {
+  ingredients,
+  ingredientCache,
+  items,
+  people,
+  services,
+  meals,
+  events,
+} from "@drizzle/schema";
 import { eq, and, sql, notInArray } from "drizzle-orm";
 import { verifyAccess } from "./shared";
 import {
@@ -349,18 +357,26 @@ export const deleteAllIngredientsAction = createSafeAction(
   }
 );
 
-type BatchGenerateResult = {
-  success: true;
-  data: {
-    processed: number;
-    failed: number;
-    errors: Array<{ itemId: number; itemName: string; error: string }>;
-  };
-} | { success: false; error: string };
+type BatchGenerateResult =
+  | {
+      success: true;
+      data: {
+        processed: number;
+        failed: number;
+        errors: Array<{ itemId: number; itemName: string; error: string }>;
+      };
+    }
+  | { success: false; error: string };
 
 // Helper function to process a single item (extracted from generateIngredientsAction logic)
 async function processItemGeneration(
-  item: { id: number; name: string; quantity: string | null; note: string | null; serviceId: number },
+  item: {
+    id: number;
+    name: string;
+    quantity: string | null;
+    note: string | null;
+    serviceId: number;
+  },
   service: { peopleCount: number; adults: number; children: number; mealId: number },
   meal: { adults: number; children: number },
   eventId: number,
@@ -600,7 +616,15 @@ export const generateAllIngredientsAction = createSafeAction(
           )
         );
 
-      if (itemsWithoutIngredients.length === 0) {
+      let itemsToProcess = itemsWithoutIngredients;
+
+      // Filter based on input.items if provided
+      if (input.items && input.items.length > 0) {
+        const inputItemIds = new Set(input.items.map((i) => i.id));
+        itemsToProcess = itemsWithoutIngredients.filter((i) => inputItemIds.has(i.item.id));
+      }
+
+      if (itemsToProcess.length === 0) {
         return {
           success: true,
           data: {
@@ -611,21 +635,81 @@ export const generateAllIngredientsAction = createSafeAction(
         };
       }
 
-      // Process items in batches with concurrency limit (max 3 at a time to avoid API rate limits)
-      const CONCURRENCY_LIMIT = 3;
+      // Split into "generate" and "categorize" lists
+      const toGenerate: typeof itemsToProcess = [];
+      const toCategorize: typeof itemsToProcess = [];
+
+      itemsToProcess.forEach((entry) => {
+        // If specific actions provided, use them. Otherwise default to 'generate'
+        const action = input.items?.find((i) => i.id === entry.item.id)?.action || "generate";
+
+        if (action === "generate") {
+          toGenerate.push(entry);
+        } else {
+          toCategorize.push(entry);
+        }
+      });
+
       const results: Array<
-        | { success: true; itemId: number }
-        | { success: false; itemId: number; error: string }
+        { success: true; itemId: number } | { success: false; itemId: number; error: string }
       > = [];
 
-      for (let i = 0; i < itemsWithoutIngredients.length; i += CONCURRENCY_LIMIT) {
-        const batch = itemsWithoutIngredients.slice(i, i + CONCURRENCY_LIMIT);
+      // 1. Process "Generate" (Full Breakdown)
+      // Process items in batches with concurrency limit (max 3 at a time to avoid API rate limits)
+      const CONCURRENCY_LIMIT = 3;
+
+      for (let i = 0; i < toGenerate.length; i += CONCURRENCY_LIMIT) {
+        const batch = toGenerate.slice(i, i + CONCURRENCY_LIMIT);
         const batchResults = await Promise.all(
           batch.map(({ item, service, meal }) =>
             processItemGeneration(item, service, meal, event.id, input.locale || "fr")
           )
         );
         results.push(...batchResults);
+      }
+
+      // 2. Process "Categorize" (Simple Classification)
+      if (toCategorize.length > 0) {
+        const categorizedItems = await import("@/lib/openrouter").then((m) =>
+          m.categorizeItems(toCategorize.map((entry) => entry.item.name))
+        );
+
+        // Map results back to items
+        for (const entry of toCategorize) {
+          try {
+            const match = categorizedItems.find(
+              (c) =>
+                c.name.toLowerCase().trim() === entry.item.name.toLowerCase().trim() ||
+                entry.item.name.toLowerCase().includes(c.name.toLowerCase())
+            );
+
+            const category = match?.category || "misc"; // Default to misc if AI failed for this item
+
+            // Insert single ingredient representing the item itself
+            await db.delete(ingredients).where(eq(ingredients.itemId, entry.item.id));
+
+            await db.insert(ingredients).values({
+              itemId: entry.item.id,
+              name: entry.item.name, // Use original name
+              quantity: entry.item.quantity || "1", // Use item quantity or 1
+              category: category,
+              order: 0,
+              checked: false,
+            });
+
+            results.push({ success: true, itemId: entry.item.id });
+          } catch (error) {
+            console.error(
+              `[generateAllIngredientsAction] Error categorizing item ${entry.item.id}:`,
+              error
+            );
+            results.push({
+              success: false,
+              itemId: entry.item.id,
+              error: "Erreur de catégorisation",
+            });
+          }
+        }
       }
 
       const processed = results.filter((r) => r.success).length;

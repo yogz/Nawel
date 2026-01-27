@@ -27,7 +27,7 @@ interface SettingsTabProps {
 export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
   const _tShared = useTranslations("EventDashboard.Shared");
-  const { theme, setTheme, themes } = useThemeMode();
+  const { mode, setMode, themes } = useThemeMode();
   const [showDangerZone, setShowDangerZone] = useState(false);
 
   return (

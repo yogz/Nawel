@@ -27,7 +27,7 @@ export function PersonEditForm({
   readOnly?: boolean;
   currentUserId?: string;
 }) {
-  const { theme } = useThemeMode();
+  const { resolvedTheme } = useThemeMode();
   const t = useTranslations("EventDashboard.PersonForm");
   const tCommon = useTranslations("EventDashboard.Shared");
   const [name, setName] = useState(person.name);
@@ -74,7 +74,7 @@ export function PersonEditForm({
               image: selectedImage,
             },
             allPeople.map((p) => p.name),
-            theme
+            resolvedTheme
           );
           if (avatar.type === "image") {
             return (
@@ -165,23 +165,25 @@ export function PersonEditForm({
                 </div>
               )}
             </button>
-            {(THEME_EMOJIS[theme] || THEME_EMOJIS.classic).map((emoji) => (
-              <button
-                key={emoji}
-                onClick={() => {
-                  setSelectedEmoji(emoji);
-                  setSelectedImage(null);
-                }}
-                className={clsx(
-                  "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
-                  selectedEmoji === emoji
-                    ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-                    : "bg-gray-50 hover:bg-gray-100"
-                )}
-              >
-                {emoji}
-              </button>
-            ))}
+            {(THEME_EMOJIS[resolvedTheme as keyof typeof THEME_EMOJIS] || THEME_EMOJIS.classic).map(
+              (emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => {
+                    setSelectedEmoji(emoji);
+                    setSelectedImage(null);
+                  }}
+                  className={clsx(
+                    "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
+                    selectedEmoji === emoji
+                      ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
+                      : "bg-gray-50 hover:bg-gray-100"
+                  )}
+                >
+                  {emoji}
+                </button>
+              )
+            )}
           </div>
           <p className="mt-1 text-center text-[10px] italic text-gray-400">
             {t("defaultEmoji")}{" "}
@@ -189,7 +191,7 @@ export function PersonEditForm({
               name,
               allPeople.map((p) => p.name),
               null,
-              theme
+              resolvedTheme
             )}
           </p>
         </div>

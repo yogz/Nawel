@@ -78,7 +78,7 @@ export function EventPlannerHeader({
   writeKey: _writeKey,
   handlers,
 }: EventPlannerHeaderProps) {
-  const { theme } = useThemeMode();
+  // Theme hook removed (was for christmas)
   const t = useTranslations("EventDashboard.Header");
   const tShared = useTranslations("EventDashboard.Shared");
 
@@ -106,13 +106,6 @@ export function EventPlannerHeader({
   return (
     <>
       {/* Christmas Theme Garland */}
-      {theme === "christmas" && (
-        <div className="christmas-garland">
-          {Array.from({ length: 14 }).map((_, i) => (
-            <div key={i} className="christmas-light" />
-          ))}
-        </div>
-      )}
 
       {/* Read-only banner is rendered by EventPlanner component to avoid duplication */}
 
