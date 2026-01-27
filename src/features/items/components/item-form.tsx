@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Loader2, Plus, CircleHelp } from "lucide-react";
+import { Trash2, ChevronDown, Loader2, Plus, CircleHelp, X } from "lucide-react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 
@@ -456,7 +456,7 @@ export function ItemForm({
                 <span
                   key={ing.id}
                   className={clsx(
-                    "rounded-lg px-2 py-1 text-[10px] font-medium",
+                    "group/ing flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-medium",
                     ing.checked
                       ? "bg-green-100 text-green-700 line-through"
                       : "border border-gray-100 bg-white text-gray-600"
@@ -464,6 +464,19 @@ export function ItemForm({
                 >
                   {ing.name}
                   {ing.quantity && ` (${ing.quantity})`}
+                  {!readOnly && onDeleteIngredient && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteIngredient(ing.id);
+                      }}
+                      className="ml-0.5 rounded-full p-0.5 text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
+                      aria-label={`${tCommon("delete")} ${ing.name}`}
+                    >
+                      <X size={10} />
+                    </button>
+                  )}
                 </span>
               ))}
             </div>
