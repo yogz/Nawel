@@ -101,9 +101,10 @@ export function PWAPrompt() {
     let timer: NodeJS.Timeout;
 
     // 3. Handle Android/Chrome beforeinstallprompt
-    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+    const handleBeforeInstallPrompt = (e: Event) => {
+      const installPromptEvent = e as BeforeInstallPromptEvent;
+      installPromptEvent.preventDefault();
+      setDeferredPrompt(installPromptEvent);
 
       if (!session) return;
       timer = setTimeout(() => setShowPrompt(true), 15000); // Shorter delay since it's the 2nd visit
