@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useTranslations } from "next-intl";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
 import { toast } from "sonner";
 
 import {
@@ -256,15 +257,13 @@ export function ShoppingItemSheet({
                         <span className="ml-2 text-xs text-muted-foreground">{ing.quantity}</span>
                       )}
                     </div>
-                    <button
-                      type="button"
+                    <CloseButton
+                      size="sm"
+                      variant="danger"
                       onClick={() => handleDeleteIngredient(ing.id)}
                       disabled={isPending}
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
                       aria-label={`${tCommon("delete")} ${ing.name}`}
-                    >
-                      <X size={14} />
-                    </button>
+                    />
                   </div>
                 ))}
               </div>

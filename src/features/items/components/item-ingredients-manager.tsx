@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { type Ingredient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X, Plus, Trash2, CheckCircle2, Circle } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, Circle, X } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
 import { useTranslations } from "next-intl";
 import {
   AlertDialog,
@@ -88,7 +89,7 @@ export function ItemIngredientsManager({
           {ingredients.length > 0 && !readOnly && (
             <>
               <button
-                className="rounded-full p-2 text-red-500 transition-colors hover:bg-red-50"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50"
                 aria-label={tShared("deleteAll")}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -122,15 +123,13 @@ export function ItemIngredientsManager({
               </AlertDialog>
             </>
           )}
-          <button
+          <CloseButton
+            size="lg"
             onClick={(e) => {
               e.stopPropagation();
               onClose();
             }}
-            className="rounded-full bg-gray-100 p-2 text-gray-500 transition-colors hover:bg-gray-200"
-          >
-            <X size={24} />
-          </button>
+          />
         </div>
       </div>
 
@@ -183,15 +182,14 @@ export function ItemIngredientsManager({
               </div>
 
               {!readOnly && (
-                <button
+                <CloseButton
+                  size="sm"
+                  variant="danger"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDeleteIngredient(ing.id);
                   }}
-                  className="p-2 text-gray-300 transition-colors hover:text-red-500"
-                >
-                  <X size={20} />
-                </button>
+                />
               )}
             </div>
           ))

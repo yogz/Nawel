@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, ChevronDown, Loader2, Plus, CircleHelp, X } from "lucide-react";
+import { Trash2, ChevronDown, Loader2, Plus, CircleHelp } from "lucide-react";
+import { CloseButton } from "@/components/ui/close-button";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 
@@ -465,17 +466,16 @@ export function ItemForm({
                   {ing.name}
                   {ing.quantity && ` (${ing.quantity})`}
                   {!readOnly && onDeleteIngredient && (
-                    <button
-                      type="button"
+                    <CloseButton
+                      size="xs"
+                      variant="danger"
                       onClick={(e) => {
                         e.stopPropagation();
                         onDeleteIngredient(ing.id);
                       }}
-                      className="ml-0.5 rounded-full p-0.5 text-gray-400 transition-colors hover:bg-red-100 hover:text-red-500"
+                      className="ml-0.5"
                       aria-label={`${tCommon("delete")} ${ing.name}`}
-                    >
-                      <X size={10} />
-                    </button>
+                    />
                   )}
                 </span>
               ))}
