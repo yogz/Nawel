@@ -7,6 +7,9 @@ const client = new OpenRouter({
 
 // Modèles gratuits avec fallback automatique
 const FREE_MODELS = [
+  "mistralai/devstral-2512:free",
+  "google/gemma-3n-e2b-it:free",
+  "google/gemini-2.0-flash-exp:free",
   "mistralai/mistral-small-3.1-24b-instruct:free",
   "qwen/qwen3-4b:free",
   "qwen/qwen3-next-80b-a3b-instruct:free",
@@ -76,6 +79,8 @@ export const AVAILABLE_FREE_MODELS = [
   "openai/gpt-oss-20b:free",
   "z-ai/glm-4.5-air:free",
   "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+  "google/gemma-3n-e2b-it:free",
+  "google/gemini-2.0-flash-exp:free",
   "qwen/qwen3-4b:free",
   "qwen/qwen3-next-80b-a3b-instruct:free",
   "mistralai/mistral-small-3.1-24b-instruct:free",

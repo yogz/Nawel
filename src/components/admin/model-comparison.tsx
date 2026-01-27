@@ -23,6 +23,7 @@ export function ModelComparison() {
   const [userPrompt, setUserPrompt] = useState(getDefaultUserPrompt("Boeuf bourguignon"));
   // Initialize with all models - no effect needed
   const [selectedModels, setSelectedModels] = useState<string[]>(() => [...AVAILABLE_FREE_MODELS]);
+  const [manualModel, setManualModel] = useState("");
   const [results, setResults] = useState<ModelTestResult[]>([]);
   const [isPending, startTransition] = useTransition();
 
@@ -40,6 +41,17 @@ export function ModelComparison() {
     setSelectedModels((prev) =>
       prev.includes(model) ? prev.filter((m) => m !== model) : [...prev, model]
     );
+  };
+
+  const handleAddManualModel = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualModel.trim()) return;
+
+    const modelToAdd = manualModel.trim();
+    if (!selectedModels.includes(modelToAdd)) {
+      setSelectedModels((prev) => [...prev, modelToAdd]);
+    }
+    setManualModel("");
   };
 
   const selectAllModels = () => setSelectedModels([...AVAILABLE_FREE_MODELS]);
@@ -173,7 +185,32 @@ export function ModelComparison() {
               {getModelShortName(model)}
             </button>
           ))}
+
+          {/* Custom models not in AVAILABLE_FREE_MODELS */}
+          {selectedModels
+            .filter((m) => !(AVAILABLE_FREE_MODELS as readonly string[]).includes(m))
+            .map((model) => (
+              <button
+                key={model}
+                onClick={() => toggleModel(model)}
+                className="rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-white transition-colors"
+              >
+                {getModelShortName(model)}
+              </button>
+            ))}
         </div>
+
+        <form onSubmit={handleAddManualModel} className="mt-4 flex gap-2">
+          <Input
+            value={manualModel}
+            onChange={(e) => setManualModel(e.target.value)}
+            placeholder="ID du modèle (ex: openai/gpt-4o-mini)"
+            className="max-w-md"
+          />
+          <Button type="submit" variant="secondary" size="sm">
+            Ajouter
+          </Button>
+        </form>
 
         <div className="mt-6">
           <Button onClick={runComparison} disabled={isPending || selectedModels.length === 0}>
