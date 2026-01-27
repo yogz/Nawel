@@ -27,6 +27,7 @@ import { AppBranding } from "../common/app-branding";
 import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
 import { Sparkles, Loader2, AlertCircle, Package } from "lucide-react";
 import { ShoppingGenerationDialog } from "./shopping-generation-dialog";
+import { ShoppingItemSheet } from "./shopping-item-sheet";
 
 interface ShoppingAllPageProps {
   initialPlan: PlanData;
@@ -50,6 +51,7 @@ export function ShoppingAllPage({
   const [copied, setCopied] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<AggregatedShoppingItem | null>(null);
 
   // Build shopping list from ALL assigned items (global view)
   const shoppingList = useMemo(() => {
@@ -520,9 +522,18 @@ export function ShoppingAllPage({
                                   <div className="flex items-baseline gap-2 overflow-hidden">
                                     <span
                                       className={clsx(
-                                        "truncate text-base font-semibold",
-                                        isChecked ? "text-green-700 line-through" : "text-text"
+                                        "truncate text-base font-semibold transition-colors",
+                                        isChecked ? "text-green-700 line-through" : "text-text",
+                                        // Make clickable if it's a dish and write access is enabled
+                                        isWholeDish(aggregatedItem) &&
+                                          writeEnabled &&
+                                          "cursor-pointer hover:text-accent hover:underline"
                                       )}
+                                      onClick={() => {
+                                        if (isWholeDish(aggregatedItem) && writeEnabled) {
+                                          setEditingItem(aggregatedItem);
+                                        }
+                                      }}
                                     >
                                       {aggregatedItem.name}
                                     </span>
