@@ -7,9 +7,10 @@ const client = new OpenRouter({
 
 // Modèles gratuits avec fallback automatique
 const FREE_MODELS = [
-  "mistralai/devstral-2512:free",
-  "mistralai/mistral-7b-instruct:free",
-  "openai/gpt-oss-20b:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "qwen/qwen3-4b:free",
+  "qwen/qwen3-next-80b-a3b-instruct:free",
+  "nvidia/nemotron-nano-9b-v2:free",
 ] as const;
 
 type ChatParams = Parameters<typeof client.chat.send>[0];
@@ -76,6 +77,7 @@ export const AVAILABLE_FREE_MODELS = [
   "z-ai/glm-4.5-air:free",
   "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
   "qwen/qwen3-4b:free",
+  "qwen/qwen3-next-80b-a3b-instruct:free",
   "mistralai/mistral-small-3.1-24b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
 ] as const;
