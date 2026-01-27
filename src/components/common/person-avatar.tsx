@@ -49,8 +49,8 @@ export function PersonAvatar({
   rounded = "full",
   className,
 }: PersonAvatarProps) {
-  const { theme } = useThemeMode();
-  const avatar = renderAvatar(person, allNames, theme);
+  const { resolvedTheme } = useThemeMode();
+  const avatar = renderAvatar(person, allNames, resolvedTheme);
   const displayName = getDisplayName(person);
 
   const imageSizes = { xs: 20, sm: 24, md: 40, lg: 48, xl: 56 };
