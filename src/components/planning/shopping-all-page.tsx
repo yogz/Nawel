@@ -148,8 +148,8 @@ export function ShoppingAllPage({
 
   // Helper to determine if an aggregated item represents a "Whole Dish" (categorized) vs a "Raw Ingredient" (generated)
   const isWholeDish = (aggregatedItem: AggregatedShoppingItem) => {
-    // If it has multiple sources, it's likely a common ingredient (e.g. "Sel")
-    if (aggregatedItem.sources.length > 1) return false;
+    // If it has multiple sources, we still check if they are all items or consistent ingredients
+    // removing the length check which was too aggressive
 
     const source = aggregatedItem.sources[0];
     if (source.type !== "ingredient") return true; // Items without ingredients are effectively dishes
