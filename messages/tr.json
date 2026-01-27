@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Yükleniyor...",
     "save": "Kaydet",
+    "saved": "Kaydedildi!",
+    "error": "Bir hata oluştu",
     "back": "Geri",
     "languages": {
       "fr": "Fransızca",
@@ -668,6 +670,12 @@
     "Sheets": {
       "addItem": "Ürün ekle",
       "editItem": "Ürünü düzenle",
+      "editItemDescription": "Bu öğenin ayrıntılarını düzenleyin.",
+      "itemName": "Öğe adı",
+      "itemNamePlaceholder": "Örn: Şampuan, Alüminyum folyo...",
+      "quantity": "Miktar",
+      "note": "Not",
+      "notePlaceholder": "Tercih edilen marka, açıklamalar...",
       "addService": "Bölüm ekle",
       "editService": "Bölümü düzenle",
       "editMeal": "Yemeği düzenle",

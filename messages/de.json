@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Laden...",
     "save": "Speichern",
+    "saved": "Gespeichert!",
+    "error": "Ein Fehler ist aufgetreten",
     "back": "Zurück",
     "languages": {
       "fr": "Französisch",
@@ -668,6 +670,12 @@
     "Sheets": {
       "addItem": "Artikel hinzufügen",
       "editItem": "Artikel bearbeiten",
+      "editItemDescription": "Bearbeiten Sie die Details dieses Artikels.",
+      "itemName": "Artikelname",
+      "itemNamePlaceholder": "z.B. Shampoo, Alufolie...",
+      "quantity": "Menge",
+      "note": "Notiz",
+      "notePlaceholder": "Bevorzugte Marke, Anmerkungen...",
       "addService": "Gang hinzufügen",
       "editService": "Gang bearbeiten",
       "editMeal": "Mahlzeit bearbeiten",

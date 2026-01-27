@@ -71,12 +71,12 @@ export function ShoppingGenerationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md gap-0 overflow-hidden p-0 sm:rounded-2xl">
-        <DialogHeader className="bg-gradient-to-b from-purple-50 to-white px-6 pb-6 pt-8 text-left">
+      <DialogContent className="max-w-md gap-0 overflow-hidden border-border bg-card p-0 sm:rounded-2xl">
+        <DialogHeader className="bg-gradient-to-b from-purple-50 to-transparent px-6 pb-6 pt-8 text-left dark:from-purple-950/30 dark:to-transparent">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg shadow-purple-500/20">
             <Sparkles className="text-white" size={24} />
           </div>
-          <DialogTitle className="text-center text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
+          <DialogTitle className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-center text-xl font-bold text-transparent dark:from-purple-400 dark:to-pink-400">
             {t("generateDialog.title")}
           </DialogTitle>
           <DialogDescription className="text-center text-muted-foreground">
@@ -112,7 +112,9 @@ export function ShoppingGenerationDialog({
                   animate={{ opacity: 1, y: 0 }}
                   className={clsx(
                     "group relative flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-all hover:bg-muted/50",
-                    isSelected ? "border-purple-200 bg-purple-50/50" : "border-gray-100 bg-white"
+                    isSelected
+                      ? "border-purple-200 bg-purple-50/50 dark:border-purple-800 dark:bg-purple-950/30"
+                      : "border-border bg-card"
                   )}
                   onClick={() => handleToggle(item.id)}
                 >
@@ -121,7 +123,7 @@ export function ShoppingGenerationDialog({
                       "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-all",
                       isSelected
                         ? "border-purple-500 bg-purple-500 text-white"
-                        : "border-gray-300 bg-white group-hover:border-purple-400"
+                        : "border-muted-foreground/30 bg-background group-hover:border-purple-400"
                     )}
                   >
                     {isSelected && <Check size={12} strokeWidth={3} />}
@@ -130,7 +132,7 @@ export function ShoppingGenerationDialog({
                     <p
                       className={clsx(
                         "font-medium leading-none transition-colors",
-                        isSelected ? "text-purple-900" : "text-gray-700"
+                        isSelected ? "text-purple-900 dark:text-purple-100" : "text-foreground"
                       )}
                     >
                       {item.name}
@@ -145,7 +147,7 @@ export function ShoppingGenerationDialog({
           </div>
         </div>
 
-        <DialogFooter className="border-t bg-gray-50/50 p-6">
+        <DialogFooter className="border-t border-border bg-muted/30 p-6">
           <div className="flex w-full flex-col gap-3">
             <AnimatePresence>
               {unselectedCount > 0 && (
@@ -153,7 +155,7 @@ export function ShoppingGenerationDialog({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700"
+                  className="flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/50 dark:text-amber-300"
                 >
                   <AlertCircle size={14} className="shrink-0" />
                   <p>

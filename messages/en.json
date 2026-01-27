@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Loading...",
     "save": "Save",
+    "saved": "Saved!",
+    "error": "An error occurred",
     "back": "Back",
     "languages": {
       "fr": "French",
@@ -674,6 +676,12 @@
     "Sheets": {
       "addItem": "Add item",
       "editItem": "Edit item",
+      "editItemDescription": "Edit the details of this item.",
+      "itemName": "Item name",
+      "itemNamePlaceholder": "e.g. Shampoo, Aluminum foil...",
+      "quantity": "Quantity",
+      "note": "Note",
+      "notePlaceholder": "Preferred brand, remarks...",
       "addService": "Add course",
       "editService": "Edit course",
       "editMeal": "Edit meal",

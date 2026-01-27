@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Laden...",
     "save": "Opslaan",
+    "saved": "Opgeslagen!",
+    "error": "Er is een fout opgetreden",
     "back": "Terug",
     "languages": {
       "fr": "Frans",
@@ -667,6 +669,12 @@
     "Sheets": {
       "addItem": "Item toevoegen",
       "editItem": "Item bewerken",
+      "editItemDescription": "Bewerk de details van dit artikel.",
+      "itemName": "Artikelnaam",
+      "itemNamePlaceholder": "Bijv: Shampoo, Aluminiumfolie...",
+      "quantity": "Hoeveelheid",
+      "note": "Notitie",
+      "notePlaceholder": "Voorkeursmerk, opmerkingen...",
       "addService": "Gang toevoegen",
       "editService": "Gang bewerken",
       "editMeal": "Maaltijd bewerken",

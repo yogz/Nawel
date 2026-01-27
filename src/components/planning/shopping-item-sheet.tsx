@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 
 import { updateItemAction } from "@/app/actions/item-actions";
 import { type AggregatedShoppingItem } from "@/lib/shopping-utils";
+import { type PlanData } from "@/lib/types";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -35,6 +36,7 @@ interface ShoppingItemSheetProps {
   onOpenChange: (open: boolean) => void;
   slug: string;
   writeKey?: string;
+  setPlan?: (updater: (prev: PlanData) => PlanData) => void;
 }
 
 export function ShoppingItemSheet({
@@ -43,8 +45,10 @@ export function ShoppingItemSheet({
   onOpenChange,
   slug,
   writeKey,
+  setPlan,
 }: ShoppingItemSheetProps) {
   const t = useTranslations("EventDashboard");
+  const tCommon = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
   const {
@@ -78,6 +82,46 @@ export function ShoppingItemSheet({
     if (!item) return;
 
     startTransition(async () => {
+      // Optimistic update
+      if (setPlan) {
+        setPlan((prev) => ({
+          ...prev,
+          meals: prev.meals.map((meal) => ({
+            ...meal,
+            services: meal.services.map((service) => ({
+              ...service,
+              items: service.items.map((serviceItem) => {
+                const matchingSource = item.sources.find((s) => s.item.id === serviceItem.id);
+                if (!matchingSource) {
+                  return serviceItem;
+                }
+                return {
+                  ...serviceItem,
+                  name: values.name,
+                  quantity: values.quantity || null,
+                  note: values.note || null,
+                  // Also update ingredient name if it's a categorized item
+                  ingredients: serviceItem.ingredients?.map((ing) => {
+                    // If it's a "whole dish" ingredient (name matches item), update it too
+                    if (
+                      ing.name.toLowerCase().trim() === serviceItem.name.toLowerCase().trim() ||
+                      serviceItem.name.toLowerCase().includes(ing.name.toLowerCase())
+                    ) {
+                      return {
+                        ...ing,
+                        name: values.name,
+                        quantity: values.quantity || ing.quantity,
+                      };
+                    }
+                    return ing;
+                  }),
+                };
+              }),
+            })),
+          })),
+        }));
+      }
+
       try {
         const promises = item.sources.map((source) =>
           updateItemAction({
@@ -92,42 +136,56 @@ export function ShoppingItemSheet({
         );
 
         await Promise.all(promises);
-        toast.success(t("common.saved"));
+        toast.success(tCommon("saved"));
         onOpenChange(false);
-      } catch (error) {
-        toast.error(t("common.error"));
+      } catch {
+        toast.error(tCommon("error"));
       }
     });
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md">
+      <SheetContent className="w-full border-border bg-card sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>{t("Sheets.editItem")}</SheetTitle>
+          <SheetTitle className="text-foreground">{t("Sheets.editItem")}</SheetTitle>
           <SheetDescription>{t("Sheets.editItemDescription")}</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">{t("Sheets.itemName")}</Label>
-            <Input id="name" placeholder={t("Sheets.itemNamePlaceholder")} {...register("name")} />
-            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quantity">{t("Sheets.quantity")}</Label>
-              <Input id="quantity" placeholder="Ex: 2, 500g..." {...register("quantity")} />
-            </div>
+            <Label htmlFor="name" className="text-foreground">
+              {t("Sheets.itemName")}
+            </Label>
+            <Input
+              id="name"
+              placeholder={t("Sheets.itemNamePlaceholder")}
+              className="border-input bg-background text-foreground placeholder:text-muted-foreground"
+              {...register("name")}
+            />
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="note">{t("Sheets.note")}</Label>
+            <Label htmlFor="quantity" className="text-foreground">
+              {t("Sheets.quantity")}
+            </Label>
+            <Input
+              id="quantity"
+              placeholder="Ex: 2, 500g..."
+              className="border-input bg-background text-foreground placeholder:text-muted-foreground"
+              {...register("quantity")}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="note" className="text-foreground">
+              {t("Sheets.note")}
+            </Label>
             <Textarea
               id="note"
               placeholder={t("Sheets.notePlaceholder")}
-              className="resize-none"
+              className="resize-none border-input bg-background text-foreground placeholder:text-muted-foreground"
               {...register("note")}
             />
           </div>
@@ -138,12 +196,13 @@ export function ShoppingItemSheet({
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
+              className="border-input"
             >
-              {t("common.cancel")}
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("common.save")}
+              {tCommon("save")}
             </Button>
           </div>
         </form>

@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Caricamento...",
     "save": "Salva",
+    "saved": "Salvato!",
+    "error": "Si è verificato un errore",
     "back": "Indietro",
     "languages": {
       "fr": "Francese",
@@ -668,6 +670,12 @@
     "Sheets": {
       "addItem": "Aggiungi articolo",
       "editItem": "Modifica articolo",
+      "editItemDescription": "Modifica i dettagli di questo articolo.",
+      "itemName": "Nome articolo",
+      "itemNamePlaceholder": "Es: Shampoo, Carta stagnola...",
+      "quantity": "Quantità",
+      "note": "Nota",
+      "notePlaceholder": "Marca preferita, osservazioni...",
       "addService": "Aggiungi portata",
       "editService": "Modifica portata",
       "editMeal": "Modifica pasto",

@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Indlæser...",
     "save": "Gem",
+    "saved": "Gemt!",
+    "error": "Der opstod en fejl",
     "back": "Tilbage",
     "languages": {
       "fr": "Fransk",
@@ -667,6 +669,12 @@
     "Sheets": {
       "addItem": "Tilføj vare",
       "editItem": "Rediger vare",
+      "editItemDescription": "Rediger detaljerne for denne vare.",
+      "itemName": "Varenavn",
+      "itemNamePlaceholder": "F.eks: Shampoo, Aluminiumfolie...",
+      "quantity": "Mængde",
+      "note": "Note",
+      "notePlaceholder": "Foretrukket mærke, bemærkninger...",
       "addService": "Tilføj ret",
       "editService": "Rediger ret",
       "editMeal": "Rediger måltid",

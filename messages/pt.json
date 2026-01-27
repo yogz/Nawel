@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Carregando...",
     "save": "Guardar",
+    "saved": "Guardado!",
+    "error": "Ocorreu um erro",
     "back": "Voltar",
     "languages": {
       "fr": "Francês",
@@ -668,6 +670,12 @@
     "Sheets": {
       "addItem": "Adicionar um artigo",
       "editItem": "Modificar o artigo",
+      "editItemDescription": "Edite os detalhes deste artigo.",
+      "itemName": "Nome do artigo",
+      "itemNamePlaceholder": "Ex: Shampoo, Papel alumínio...",
+      "quantity": "Quantidade",
+      "note": "Nota",
+      "notePlaceholder": "Marca preferida, observações...",
       "addService": "Adicionar um prato",
       "editService": "Modificar o prato",
       "editMeal": "Modificar a refeição",

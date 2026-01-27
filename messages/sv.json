@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Laddar...",
     "save": "Spara",
+    "saved": "Sparat!",
+    "error": "Ett fel uppstod",
     "back": "Tillbaka",
     "languages": {
       "fr": "Franska",
@@ -667,6 +669,12 @@
     "Sheets": {
       "addItem": "Lägg till artikel",
       "editItem": "Redigera artikel",
+      "editItemDescription": "Redigera detaljerna för denna artikel.",
+      "itemName": "Artikelnamn",
+      "itemNamePlaceholder": "T.ex: Schampo, Aluminiumfolie...",
+      "quantity": "Kvantitet",
+      "note": "Anteckning",
+      "notePlaceholder": "Föredraget märke, anmärkningar...",
       "addService": "Lägg till rätt",
       "editService": "Redigera rätt",
       "editMeal": "Redigera måltid",

@@ -3,6 +3,8 @@
     "title": "CoList",
     "loading": "Ładowanie...",
     "save": "Zapisz",
+    "saved": "Zapisano!",
+    "error": "Wystąpił błąd",
     "back": "Wstecz",
     "languages": {
       "fr": "Francuski",
@@ -668,6 +670,12 @@
     "Sheets": {
       "addItem": "Dodaj przedmiot",
       "editItem": "Edytuj przedmiot",
+      "editItemDescription": "Edytuj szczegóły tego artykułu.",
+      "itemName": "Nazwa artykułu",
+      "itemNamePlaceholder": "Np: Szampon, Folia aluminiowa...",
+      "quantity": "Ilość",
+      "note": "Notatka",
+      "notePlaceholder": "Preferowana marka, uwagi...",
       "addService": "Dodaj danie",
       "editService": "Edytuj danie",
       "editMeal": "Edytuj posiłek",

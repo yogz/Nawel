@@ -286,7 +286,7 @@ export function ShoppingAllPage({
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/20 bg-white/80 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-card/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <Link
             href={backUrl}
@@ -314,7 +314,7 @@ export function ShoppingAllPage({
 
       <main className="mx-auto max-w-2xl px-4 py-6">
         {/* Progress card */}
-        <div className="mb-6 rounded-2xl border border-white/20 bg-white/80 p-4 shadow-lg backdrop-blur-sm">
+        <div className="mb-6 rounded-2xl border border-border/50 bg-card/80 p-4 shadow-lg backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">{t("totalProgress")}</p>
@@ -329,7 +329,7 @@ export function ShoppingAllPage({
           </div>
 
           {/* Progress bar */}
-          <div className="h-2 overflow-hidden rounded-full bg-gray-100">
+          <div className="h-2 overflow-hidden rounded-full bg-muted">
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-accent to-primary"
               initial={{ width: 0 }}
@@ -341,16 +341,18 @@ export function ShoppingAllPage({
 
         {/* Generation Banner */}
         {writeEnabled && itemsWithoutCount > 0 && (
-          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 shadow-lg backdrop-blur-sm">
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 shadow-lg backdrop-blur-sm dark:border-amber-800 dark:bg-amber-950/50">
             <div className="flex items-start gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
-                <AlertCircle size={18} className="text-amber-600" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/50">
+                <AlertCircle size={18} className="text-amber-600 dark:text-amber-400" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-amber-900">
+                <p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
                   {t("itemsWithoutIngredients", { count: itemsWithoutCount })}
                 </p>
-                <p className="mt-1 text-xs text-amber-700">{t("generateAllDescription")}</p>
+                <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
+                  {t("generateAllDescription")}
+                </p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <Button
                     onClick={() => setIsDialogOpen(true)}
@@ -389,13 +391,13 @@ export function ShoppingAllPage({
                 "relative flex shrink-0 flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95",
                 activeCategory === "all"
                   ? "text-accent"
-                  : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-600"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
               {activeCategory === "all" && (
                 <motion.div
                   layoutId="cat-tab-bg"
-                  className="absolute inset-0 rounded-2xl bg-white shadow-md shadow-accent/5 ring-1 ring-black/[0.05]"
+                  className="absolute inset-0 rounded-2xl bg-card shadow-md shadow-accent/5 ring-1 ring-border"
                 />
               )}
               <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -416,13 +418,13 @@ export function ShoppingAllPage({
                   "relative flex shrink-0 flex-col items-center justify-center rounded-2xl px-5 py-2 transition-all active:scale-95",
                   activeCategory === cat
                     ? "text-accent"
-                    : "text-gray-500 hover:bg-gray-100/50 hover:text-gray-600"
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
                 )}
               >
                 {activeCategory === cat && (
                   <motion.div
                     layoutId="cat-tab-bg"
-                    className="absolute inset-0 rounded-2xl bg-white shadow-md shadow-accent/5 ring-1 ring-black/[0.05]"
+                    className="absolute inset-0 rounded-2xl bg-card shadow-md shadow-accent/5 ring-1 ring-border"
                   />
                 )}
                 <span className="relative text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -442,8 +444,8 @@ export function ShoppingAllPage({
 
         {/* Shopping list grouped by category */}
         {allItems.length === 0 ? (
-          <div className="rounded-2xl border border-white/20 bg-white/80 p-8 text-center shadow-lg backdrop-blur-sm">
-            <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+          <div className="rounded-2xl border border-border/50 bg-card/80 p-8 text-center shadow-lg backdrop-blur-sm">
+            <ShoppingBag className="mx-auto mb-3 h-12 w-12 text-muted-foreground/50" />
             <p className="text-muted-foreground">{t("noShopping")}</p>
           </div>
         ) : (
@@ -463,7 +465,7 @@ export function ShoppingAllPage({
                       onClick={() => toggleCategoryCollapse(category)}
                       className="flex w-full items-center gap-2 px-1 focus:outline-none"
                     >
-                      <span className="h-px flex-1 bg-gray-200" />
+                      <span className="h-px flex-1 bg-border" />
                       <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-accent">
                         {t(`aisles.${category}`)} ({categoryStats[category]?.checked || 0}/
                         {categoryStats[category]?.total || 0})
@@ -471,7 +473,7 @@ export function ShoppingAllPage({
                           <ChevronDown size={14} />
                         </motion.div>
                       </div>
-                      <span className="h-px flex-1 bg-gray-200" />
+                      <span className="h-px flex-1 bg-border" />
                     </button>
 
                     <motion.div
@@ -494,8 +496,8 @@ export function ShoppingAllPage({
                               className={clsx(
                                 "group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
                                 isChecked
-                                  ? "border-green-200 bg-green-50 shadow-sm"
-                                  : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
+                                  ? "border-green-200 bg-green-50 shadow-sm dark:border-green-800 dark:bg-green-950/50"
+                                  : "border-border/50 bg-card/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
                                 !writeEnabled && "cursor-default"
                               )}
                             >
@@ -509,7 +511,7 @@ export function ShoppingAllPage({
                                   "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
                                   isChecked
                                     ? "border-green-500 bg-green-500 text-white"
-                                    : "border-gray-300",
+                                    : "border-muted-foreground/30",
                                   !writeEnabled && "cursor-default"
                                 )}
                               >
@@ -523,7 +525,9 @@ export function ShoppingAllPage({
                                     <span
                                       className={clsx(
                                         "truncate text-base font-semibold transition-colors",
-                                        isChecked ? "text-green-700 line-through" : "text-text",
+                                        isChecked
+                                          ? "text-green-700 line-through dark:text-green-400"
+                                          : "text-foreground",
                                         // Make clickable if it's a dish and write access is enabled
                                         isWholeDish(aggregatedItem) &&
                                           writeEnabled &&
@@ -558,7 +562,7 @@ export function ShoppingAllPage({
                                   {hasMultipleSources && (
                                     <button
                                       onClick={() => toggleExpanded(aggregatedItem.id)}
-                                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
+                                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted"
                                       aria-label={isExpanded ? t("seeLess") : t("seeSources")}
                                     >
                                       <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
@@ -598,7 +602,7 @@ export function ShoppingAllPage({
                                   <motion.div
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}
-                                    className="mt-3 space-y-2 border-t border-black/5 pt-3"
+                                    className="mt-3 space-y-2 border-t border-border pt-3"
                                   >
                                     {aggregatedItem.sources.map((source, sIdx) => (
                                       <div
@@ -606,7 +610,7 @@ export function ShoppingAllPage({
                                         className="flex items-center justify-between gap-2"
                                       >
                                         <div className="min-w-0 flex-1">
-                                          <p className="truncate text-xs font-medium text-text">
+                                          <p className="truncate text-xs font-medium text-foreground">
                                             {source.type === "ingredient" ? (
                                               <>
                                                 <span className="text-muted-foreground">
@@ -623,7 +627,7 @@ export function ShoppingAllPage({
                                           </p>
                                         </div>
                                         {source.originalQuantity && (
-                                          <span className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                                          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
                                             {source.originalQuantity}
                                           </span>
                                         )}
@@ -645,7 +649,7 @@ export function ShoppingAllPage({
 
         {/* Read-only notice */}
         {!writeEnabled && allItems.length > 0 && (
-          <div className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-700">
+          <div className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
             {t("readOnlyNotice")}
           </div>
         )}
@@ -683,6 +687,7 @@ export function ShoppingAllPage({
         onOpenChange={(open) => !open && setEditingItem(null)}
         slug={slug}
         writeKey={writeKey}
+        setPlan={setPlan}
       />
     </div>
   );
