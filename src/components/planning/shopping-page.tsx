@@ -19,6 +19,7 @@ import { CitationDisplay } from "../common/citation-display";
 import { AppBranding } from "../common/app-branding";
 import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
 import { Sparkles, Loader2, AlertCircle } from "lucide-react";
+import { ShoppingGenerationDialog } from "./shopping-generation-dialog";
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -44,6 +45,7 @@ export function ShoppingPage({
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Build shopping list from person's assigned items, grouped by category
   const shoppingList = useMemo(() => {
@@ -336,7 +338,7 @@ export function ShoppingPage({
                 <p className="mt-1 text-xs text-amber-700">{t("generateAllDescription")}</p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <Button
-                    onClick={() => generateAllIngredients()}
+                    onClick={() => setIsDialogOpen(true)}
                     disabled={isGeneratingIngredients}
                     className="h-11 gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
                   >
@@ -627,6 +629,20 @@ export function ShoppingPage({
           <AppBranding variant="icon-text" logoSize={24} noLink />
         </div>
       </main>
+
+      {/* Generation Dialog */}
+      {writeEnabled && (
+        <ShoppingGenerationDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          items={itemsWithoutIngredients}
+          onConfirm={async (selectedIds) => {
+            await generateAllIngredients(selectedIds);
+            setIsDialogOpen(false);
+          }}
+          isGenerating={isGeneratingIngredients}
+        />
+      )}
     </div>
   );
 }
