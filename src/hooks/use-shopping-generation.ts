@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { generateAllIngredientsAction } from "@/app/actions";
-import type { PlanData, Item } from "@/lib/types";
+import type { PlanData } from "@/lib/types";
 import { trackAIAction } from "@/lib/analytics";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 interface UseShoppingGenerationParams {
   plan: PlanData;
@@ -27,10 +27,10 @@ export function useShoppingGeneration({
   personId,
 }: UseShoppingGenerationParams) {
   const params = useParams();
+  const router = useRouter();
   const locale = (params.locale as string) || "fr";
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
-  const [, startTransition] = useTransition();
 
   // Find all items without ingredients (filtered by personId if provided)
   const itemsWithoutIngredients = useMemo(() => {
@@ -111,14 +111,6 @@ export function useShoppingGeneration({
 
       const { processed, failed, errors } = result.data;
 
-      // Refresh plan data by re-fetching (we'll need to trigger a refresh)
-      // For now, we'll use optimistic updates where possible
-      startTransition(() => {
-        // Trigger a page refresh to get updated data
-        // In a real implementation, you might want to refetch the plan data
-        window.location.reload();
-      });
-
       if (failed > 0) {
         toast.warning(
           `${processed} plats traités, ${failed} échecs. ${errors.map((e) => e.itemName).join(", ")}`
@@ -131,6 +123,9 @@ export function useShoppingGeneration({
 
       setIsGenerating(false);
       setProgress(null);
+
+      // Refresh the page data from the server
+      router.refresh();
     } catch (error) {
       console.error("Failed to generate all ingredients:", error);
       toast.error("Erreur lors de la génération des ingrédients");

@@ -748,7 +748,9 @@ export const generateAllIngredientsAction = createSafeAction(
           error: r.error,
         }));
 
+      // Revalidate both event and shopping pages
       revalidatePath(`/event/${input.slug}`);
+      revalidatePath(`/event/${input.slug}/shopping`, "layout");
       return {
         success: true,
         data: {
