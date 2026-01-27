@@ -273,26 +273,6 @@ export function OrganizerSheets({
                 readOnly={readOnly}
                 // Ingredient props
                 ingredients={itemIngredients}
-                onToggleIngredient={
-                  sheet.item
-                    ? (id: number, checked: boolean) =>
-                        handleToggleIngredient(id, sheet.item!.id, checked)
-                    : undefined
-                }
-                onDeleteIngredient={
-                  sheet.item
-                    ? (id: number) => handleDeleteIngredient(id, sheet.item!.id)
-                    : undefined
-                }
-                onCreateIngredient={
-                  sheet.item
-                    ? (name: string, qty?: string) =>
-                        handleCreateIngredient(sheet.item!.id, name, qty)
-                    : undefined
-                }
-                onDeleteAllIngredients={
-                  sheet.item ? () => handleDeleteAllIngredients(sheet.item!.id) : undefined
-                }
                 onManageIngredients={
                   sheet.item
                     ? () =>
