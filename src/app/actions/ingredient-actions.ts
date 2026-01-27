@@ -135,20 +135,32 @@ export const generateIngredientsAction = createSafeAction(
         guestSource = "Article (champ quantité)";
         finalPeopleCount = 0;
       } else {
-        // 2. Smart Count Logic
-        const mealServiceCount = input.peopleCount || 0;
+        // 2. Smart Count Logic with adults/children support
+        const inputAdults = input.adults || 0;
+        const inputChildren = input.children || 0;
 
-        finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
+        // Use adults + children * 0.5 for effective portion count
+        if (inputAdults > 0 || inputChildren > 0) {
+          const effectiveCount = inputAdults + inputChildren * 0.5;
+          finalPeopleCount = Math.ceil(effectiveCount); // Round up for cache key
+          guestSource = "Configuration (Adultes/Enfants)";
+          // Simple description with just the total portions
+          guestDescription = `${effectiveCount} portions`;
+        } else {
+          // Fallback to legacy peopleCount
+          const mealServiceCount = input.peopleCount || 0;
+          finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
 
-        // If no explicit count passed (0), fallback to RSVP if available
-        if (mealServiceCount === 0 && rsvpCount > 0) {
-          finalPeopleCount = rsvpCount;
-          guestSource = "Participants confirmés (RSVP)";
-        } else if (mealServiceCount > 0) {
-          guestSource = "Configuration (Manuel/Service)";
+          // If no explicit count passed (0), fallback to RSVP if available
+          if (mealServiceCount === 0 && rsvpCount > 0) {
+            finalPeopleCount = rsvpCount;
+            guestSource = "Participants confirmés (RSVP)";
+          } else if (mealServiceCount > 0) {
+            guestSource = "Configuration (Manuel/Service)";
+          }
+
+          guestDescription = `${finalPeopleCount} portions`;
         }
-
-        guestDescription = `${finalPeopleCount} personne${finalPeopleCount > 1 ? "s" : ""}`;
       }
 
       const systemPrompt = tAi("systemPrompt", { guestDescription });
@@ -416,14 +428,27 @@ async function processItemGeneration(
       guestDescription = item.quantity;
       finalPeopleCount = 0;
     } else {
-      const mealServiceCount = service.peopleCount || 0;
-      finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
+      // Use adults + children * 0.5 for effective portion count
+      const serviceAdults = service.adults || 0;
+      const serviceChildren = service.children || 0;
+      const effectiveCount = serviceAdults + serviceChildren * 0.5;
 
-      if (mealServiceCount === 0 && rsvpCount > 0) {
-        finalPeopleCount = rsvpCount;
+      // If we have explicit adults/children, use that
+      if (serviceAdults > 0 || serviceChildren > 0) {
+        finalPeopleCount = Math.ceil(effectiveCount); // Round up for cache key
+        // Simple description with just the total portions
+        guestDescription = `${effectiveCount} portions`;
+      } else {
+        // Fallback to legacy peopleCount or RSVP
+        const mealServiceCount = service.peopleCount || 0;
+        finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
+
+        if (mealServiceCount === 0 && rsvpCount > 0) {
+          finalPeopleCount = rsvpCount;
+        }
+
+        guestDescription = `${finalPeopleCount} portions`;
       }
-
-      guestDescription = `${finalPeopleCount} personne${finalPeopleCount > 1 ? "s" : ""}`;
     }
 
     const systemPrompt = tAi("systemPrompt", { guestDescription });

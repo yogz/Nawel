@@ -14,6 +14,7 @@ import {
   Bug,
   Package,
   Megaphone,
+  Sparkles,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -29,6 +30,7 @@ const navItems = [
   { href: "/admin/citations", label: "Citations", icon: Quote },
   { href: "/admin/costs", label: "Coûts", icon: Database }, // Shared Database icon for now
   { href: "/admin/cache", label: "Cache IA", icon: Package }, // Changed Database to Package to free up icon
+  { href: "/admin/prompts", label: "Prompts IA", icon: Sparkles },
   { href: "/admin/models", label: "Modèles", icon: FlaskConical },
   { href: "/admin/users", label: "Utilisateurs", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: Bug },
