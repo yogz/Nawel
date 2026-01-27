@@ -584,6 +584,7 @@ export const updateCitationAdminAction = createSafeAction(
 export type AdminFeedback = {
   id: number;
   userId: string | null;
+  personId: number | null;
   content: string;
   userAgent: string | null;
   url: string | null;
@@ -591,6 +592,9 @@ export type AdminFeedback = {
   user?: {
     name: string;
     email: string;
+  } | null;
+  person?: {
+    name: string;
   } | null;
 };
 
@@ -600,6 +604,7 @@ export const getAllFeedbackAction = withErrorThrower(async (): Promise<AdminFeed
   const allFeedback = await db.query.feedback.findMany({
     with: {
       user: true,
+      person: true,
     },
     orderBy: (feedback, { desc }) => [desc(feedback.createdAt)],
   });
@@ -607,6 +612,7 @@ export const getAllFeedbackAction = withErrorThrower(async (): Promise<AdminFeed
   return allFeedback.map((f) => ({
     id: f.id,
     userId: f.userId,
+    personId: f.personId,
     content: f.content,
     userAgent: f.userAgent,
     url: f.url,
@@ -615,6 +621,11 @@ export const getAllFeedbackAction = withErrorThrower(async (): Promise<AdminFeed
       ? {
           name: f.user.name,
           email: f.user.email,
+        }
+      : null,
+    person: f.person
+      ? {
+          name: f.person.name,
         }
       : null,
   }));

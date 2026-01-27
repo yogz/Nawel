@@ -297,12 +297,7 @@ export function Organizer({
             )}
 
             {tab === "shopping" && (
-              <ShoppingTab
-                plan={plan}
-                slug={slug}
-                writeKey={effectiveWriteKey}
-                currentUserId={session?.user?.id}
-              />
+              <ShoppingTab plan={plan} slug={slug} writeKey={effectiveWriteKey} isOwner={isOwner} />
             )}
           </Suspense>
         </main>

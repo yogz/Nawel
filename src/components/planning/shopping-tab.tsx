@@ -30,23 +30,24 @@ interface ShoppingTabProps {
   plan: PlanData;
   slug: string;
   writeKey?: string;
-  currentUserId?: string;
+  isOwner?: boolean;
+  currentPersonId?: number;
 }
 
-export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTabProps) {
+export function ShoppingTab({ plan, slug, writeKey, isOwner, currentPersonId }: ShoppingTabProps) {
   const t = useTranslations("EventDashboard.Shopping");
   const [isPending, startTransition] = useTransition();
 
   // Optimistic state: track items being toggled for instant UI feedback
   const [optimisticToggles, setOptimisticToggles] = useState<Set<string>>(new Set());
 
-  // Check if current user is the event owner
-  const isOwner = currentUserId && plan.event?.ownerId === currentUserId;
-
-  // Find the person linked to the current user
+  // Find the person linked to the current user (authenticated or guest)
   const currentPerson = useMemo(() => {
-    return plan.people.find((p) => p.userId === currentUserId);
-  }, [plan.people, currentUserId]);
+    if (currentPersonId) {
+      return plan.people.find((p) => p.id === currentPersonId);
+    }
+    return null;
+  }, [plan.people, currentPersonId]);
 
   // Get all people with assigned items (for owner view)
   const peopleWithItems = useMemo(() => {

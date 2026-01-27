@@ -56,7 +56,12 @@ export function AdminFeedbackList({ initialFeedback }: { initialFeedback: AdminF
                 <div className="mb-3 flex flex-wrap items-center gap-3">
                   <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
                     <User className="h-4 w-4" />
-                    <span>{feedback.user?.name || "Utilisateur inconnu"}</span>
+                    <span>
+                      {feedback.user?.name ||
+                        (feedback.person?.name
+                          ? `${feedback.person.name} (Invité)`
+                          : "Utilisateur inconnu")}
+                    </span>
                   </div>
                   <span className="text-xs text-muted-foreground">{feedback.user?.email}</span>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">

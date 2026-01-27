@@ -279,11 +279,13 @@ export function EventMetaPills({
           ))}
 
         {/* Days Count Pill */}
-        <div className={pillClasses}>
-          <span className="text-[10px] uppercase font-bold tracking-wider">
-            {t("daysCount", { count: mealCount })}
-          </span>
-        </div>
+        {mealCount > 1 && (
+          <div className={pillClasses}>
+            <span className="text-[10px] uppercase font-bold tracking-wider">
+              {t("daysCount", { count: mealCount })}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,14 +7,21 @@ import { useSession } from "@/lib/auth-client";
 import { BugReportForm } from "./bug-report-form";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCurrentPerson } from "@/hooks/use-current-person";
 
 export function BugReportButton() {
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
+  const currentPerson = useCurrentPerson(
+    [], // Does not need list here, just needs to check local storage token
+    session?.user?.id
+  );
+
+  // Need to be mounted to check local storage
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("Feedback");
-
-  // Don't show anything if pending or not logged in
-  if (isPending || !session) return null;
 
   return (
     <>
@@ -37,7 +44,7 @@ export function BugReportButton() {
         </motion.div>
       </AnimatePresence>
 
-      <BugReportForm isOpen={isOpen} onOpenChange={setIsOpen} />
+      <BugReportForm isOpen={isOpen} onOpenChange={setIsOpen} personId={currentPerson?.id} />
     </>
   );
 }

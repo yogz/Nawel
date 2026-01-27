@@ -306,6 +306,7 @@ export const ingredientCache = pgTable(
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  personId: integer("person_id").references(() => people.id, { onDelete: "set null" }),
   content: text("content").notNull(),
   email: text("email"),
   userAgent: text("user_agent"),
@@ -317,6 +318,10 @@ export const feedbackRelations = relations(feedback, ({ one }) => ({
   user: one(user, {
     fields: [feedback.userId],
     references: [user.id],
+  }),
+  person: one(people, {
+    fields: [feedback.personId],
+    references: [people.id],
   }),
 }));
 

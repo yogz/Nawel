@@ -351,6 +351,7 @@ export const updateCitationAdminSchema = z.object({
 export const submitFeedbackSchema = z.object({
   content: safeText(2000),
   url: z.string().optional(),
+  personId: z.number().int().positive().optional(),
 });
 
 export const deleteFeedbackAdminSchema = z.object({

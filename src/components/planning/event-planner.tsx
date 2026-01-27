@@ -463,7 +463,8 @@ export function EventPlanner({
                 plan={plan}
                 slug={slug}
                 writeKey={effectiveWriteKey}
-                currentUserId={session?.user?.id}
+                isOwner={isOwner}
+                currentPersonId={currentPerson?.id}
               />
             )}
           </Suspense>

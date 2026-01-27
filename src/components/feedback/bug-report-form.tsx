@@ -20,9 +20,10 @@ import { toast } from "sonner";
 interface BugReportFormProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  personId?: number;
 }
 
-export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
+export function BugReportForm({ isOpen, onOpenChange, personId }: BugReportFormProps) {
   const t = useTranslations("Feedback");
   const commonT = useTranslations("common");
   const pathname = usePathname();
@@ -39,6 +40,7 @@ export function BugReportForm({ isOpen, onOpenChange }: BugReportFormProps) {
       const result = await submitFeedbackAction({
         content: content.trim(),
         url: typeof window !== "undefined" ? window.location.href : pathname,
+        personId,
       });
 
       if (result.success) {

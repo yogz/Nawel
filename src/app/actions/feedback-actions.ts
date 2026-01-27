@@ -5,8 +5,9 @@ import { headers } from "next/headers";
 import { createSafeAction } from "@/lib/action-utils";
 import { submitFeedbackSchema, submitContactSchema } from "./schemas";
 import { db } from "@/lib/db";
-import { feedback } from "@drizzle/schema";
+import { feedback, people } from "@drizzle/schema";
 import { getTranslations } from "next-intl/server";
+import { eq } from "drizzle-orm";
 
 /**
  * Submits user feedback or bug report.
@@ -23,17 +24,29 @@ export const submitFeedbackAction = createSafeAction(submitFeedbackSchema, async
     namespace: "Translations",
   });
 
-  if (!session) {
-    throw new Error(t("actions.notLoggedInProfile")); // Generic unauthorized message
-  }
-
   try {
-    await db.insert(feedback).values({
-      userId: session.user.id,
-      content: data.content,
+    let content = data.content;
+    let userId = session?.user?.id;
+
+    console.log("Submitting feedback:", {
+      userId,
+      personId: data.personId,
+      content,
       url: data.url,
-      userAgent: currentHeaders.get("user-agent"),
     });
+
+    const result = await db
+      .insert(feedback)
+      .values({
+        userId: userId,
+        personId: data.personId,
+        content: content,
+        url: data.url,
+        userAgent: currentHeaders.get("user-agent"),
+      })
+      .returning();
+
+    console.log("Feedback submitted successfully:", result);
 
     return { success: true };
   } catch (error: unknown) {
