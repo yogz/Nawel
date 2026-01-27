@@ -107,12 +107,25 @@ export function EventPropertiesDrawer({
                     </span>
                   </div>
                 )}
-                {firstMeal?.address && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <MapPin size={16} className="text-violet-500" />
-                    <span className="line-clamp-1">{firstMeal.address}</span>
-                  </div>
-                )}
+                {(() => {
+                  const mealWithAddress = plan.meals.find((m) => m.address);
+                  const address = mealWithAddress?.address;
+                  if (!address) return null;
+
+                  return (
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <MapPin size={16} className="text-violet-500" />
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="line-clamp-1 hover:text-violet-600 hover:underline transition-colors"
+                      >
+                        {address}
+                      </a>
+                    </div>
+                  );
+                })()}
                 <div className="flex items-start gap-2 text-sm text-gray-600">
                   <Users size={16} className="text-violet-500 mt-0.5" />
                   <div className="flex flex-col">
