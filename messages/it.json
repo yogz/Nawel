@@ -485,6 +485,8 @@
       "viewAllList": "Visualizza l'elenco completo",
       "allListTitle": "Lista della spesa globale",
       "allListDescription": "Tutti gli articoli da acquistare da parte di tutti gli ospiti",
+      "individualListTitle": "Spesa - {name}",
+      "individualListDescription": "Lista della spesa di {name} per {event}",
       "back": "Indietro",
       "shareList": "Condividi questa lista",
       "readOnlyNotice": "Modalità sola lettura. Richiedi il link di modifica per spuntare gli articoli.",

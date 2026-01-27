@@ -485,6 +485,8 @@
       "viewAllList": "Visa hela listan",
       "allListTitle": "Global inköpslista",
       "allListDescription": "Alla artiklar som ska köpas av alla gäster",
+      "individualListTitle": "Inköp - {name}",
+      "individualListDescription": "Inköpslista för {name} till {event}",
       "back": "Bakåt",
       "shareList": "Dela denna lista",
       "readOnlyNotice": "Skrivskyddat läge. Be om redigeringslänken för att checka av artiklar.",

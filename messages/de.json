@@ -485,6 +485,8 @@
       "viewAllList": "Vollständige Liste anzeigen",
       "allListTitle": "Globale Einkaufsliste",
       "allListDescription": "Alle Artikel, die von allen Gästen gekauft werden müssen",
+      "individualListTitle": "Einkaufen - {name}",
+      "individualListDescription": "Einkaufsliste von {name} für {event}",
       "back": "Zurück",
       "shareList": "Diese Liste teilen",
       "readOnlyNotice": "Schreibgeschützter Modus. Fordern Sie den Bearbeitungslink an, um Artikel abzuhaken.",

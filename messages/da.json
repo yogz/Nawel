@@ -485,6 +485,8 @@
       "viewAllList": "Se hele listen",
       "allListTitle": "Global indkøbsliste",
       "allListDescription": "Alle varer der skal købes af alle gæster",
+      "individualListTitle": "Shopping - {name}",
+      "individualListDescription": "Indkøbsliste for {name} til {event}",
       "back": "Tilbage",
       "shareList": "Del denne liste",
       "readOnlyNotice": "Skrivebeskyttet tilstand. Bed om redigeringslinket for at afkrydse varer.",

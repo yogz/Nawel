@@ -485,6 +485,8 @@
       "viewAllList": "Zobacz pełną listę",
       "allListTitle": "Globalna lista zakupów",
       "allListDescription": "Wszystkie przedmioty do kupienia przez wszystkich gości",
+      "individualListTitle": "Zakupy - {name}",
+      "individualListDescription": "Lista zakupów {name} na {event}",
       "back": "Wstecz",
       "shareList": "Udostępnij tę listę",
       "readOnlyNotice": "Tryb tylko do odczytu. Poproś o link do edycji, aby odznaczać przedmioty.",

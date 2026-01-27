@@ -485,6 +485,8 @@
       "viewAllList": "Tam listeyi gör",
       "allListTitle": "Genel alışveriş listesi",
       "allListDescription": "Tüm davetliler tarafından alınacak tüm ürünler",
+      "individualListTitle": "Alışveriş - {name}",
+      "individualListDescription": "{name} için {event} alışveriş listesi",
       "back": "Geri",
       "shareList": "Bu listeyi paylaş",
       "readOnlyNotice": "Salt okunur mod. Ürünleri işaretlemek için düzenleme bağlantısını isteyin.",

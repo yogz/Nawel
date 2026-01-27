@@ -485,6 +485,8 @@
       "viewAllList": "Voir la liste complète",
       "allListTitle": "Liste de courses globale",
       "allListDescription": "Tous les articles à acheter par l'ensemble des convives",
+      "individualListTitle": "Courses - {name}",
+      "individualListDescription": "Liste de courses de {name} pour {event}",
       "back": "Retour",
       "shareList": "Partager cette liste",
       "readOnlyNotice": "Mode lecture seule. Demandez le lien d'édition pour cocher les articles.",

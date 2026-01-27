@@ -485,6 +485,8 @@
       "viewAllList": "Bekijk volledige lijst",
       "allListTitle": "Globale boodschappenlijst",
       "allListDescription": "Alle artikelen die door alle gasten gekocht moeten worden",
+      "individualListTitle": "Boodschappen - {name}",
+      "individualListDescription": "Boodschappenlijst van {name} voor {event}",
       "back": "Terug",
       "shareList": "Deel deze lijst",
       "readOnlyNotice": "Alleen-lezen modus. Vraag om de bewerkingslink om artikelen af te vinken.",

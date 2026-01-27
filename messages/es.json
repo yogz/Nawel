@@ -485,6 +485,8 @@
       "viewAllList": "Ver la lista completa",
       "allListTitle": "Lista de compras global",
       "allListDescription": "Todos los artículos para comprar por todos los invitados",
+      "individualListTitle": "Compras - {name}",
+      "individualListDescription": "Lista de compras de {name} para {event}",
       "back": "Volver",
       "shareList": "Compartir esta lista",
       "readOnlyNotice": "Modo de solo lectura. Solicita el enlace de edición para marcar artículos.",
