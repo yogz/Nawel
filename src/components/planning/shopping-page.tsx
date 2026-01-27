@@ -185,40 +185,41 @@ export function ShoppingPage({
       return;
     }
 
-    startTransition(async () => {
-      const newChecked = !aggregatedItem.checked;
+    const newChecked = !aggregatedItem.checked;
 
-      // Optimistic update
-      setPlan((prev) => ({
-        ...prev,
-        meals: prev.meals.map((meal) => ({
-          ...meal,
-          services: meal.services.map((service) => ({
-            ...service,
-            items: service.items.map((item) => {
-              const matchingSource = aggregatedItem.sources.find((s) => s.item.id === item.id);
-              if (!matchingSource) {
-                return item;
-              }
+    // Optimistic update - IMMEDIATE (outside transition)
+    setPlan((prev) => ({
+      ...prev,
+      meals: prev.meals.map((meal) => ({
+        ...meal,
+        services: meal.services.map((service) => ({
+          ...service,
+          items: service.items.map((item) => {
+            const matchingSource = aggregatedItem.sources.find((s) => s.item.id === item.id);
+            if (!matchingSource) {
+              return item;
+            }
 
-              if (matchingSource.type === "item") {
-                return { ...item, checked: newChecked };
-              } else {
-                return {
-                  ...item,
-                  ingredients: item.ingredients?.map((ing) => {
-                    const isPartOfGroup = aggregatedItem.sources.some(
-                      (s) => s.type === "ingredient" && s.ingredient?.id === ing.id
-                    );
-                    return isPartOfGroup ? { ...ing, checked: newChecked } : ing;
-                  }),
-                };
-              }
-            }),
-          })),
+            if (matchingSource.type === "item") {
+              return { ...item, checked: newChecked };
+            } else {
+              return {
+                ...item,
+                ingredients: item.ingredients?.map((ing) => {
+                  const isPartOfGroup = aggregatedItem.sources.some(
+                    (s) => s.type === "ingredient" && s.ingredient?.id === ing.id
+                  );
+                  return isPartOfGroup ? { ...ing, checked: newChecked } : ing;
+                }),
+              };
+            }
+          }),
         })),
-      }));
+      })),
+    }));
 
+    // Server update - in background (inside transition)
+    startTransition(async () => {
       const promises = aggregatedItem.sources.map((source) => {
         if (source.type === "ingredient") {
           return updateIngredientAction({
@@ -502,17 +503,25 @@ export function ShoppingPage({
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: idx * 0.02 }}
+                              onClick={() => {
+                                if (writeEnabled) {
+                                  setEditingItem(aggregatedItem);
+                                }
+                              }}
                               className={clsx(
                                 "group relative flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all",
                                 isChecked
-                                  ? "border-green-200 bg-green-50 shadow-sm"
-                                  : "border-white/20 bg-white/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
-                                !writeEnabled && "cursor-default"
+                                  ? "border-green-200 bg-green-50 shadow-sm dark:border-green-800 dark:bg-green-950/50"
+                                  : "border-border/50 bg-card/80 shadow-sm hover:border-accent/20 hover:bg-accent/5",
+                                writeEnabled && "cursor-pointer"
                               )}
                             >
                               {/* Checkbox */}
                               <button
-                                onClick={() => handleToggle(aggregatedItem)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggle(aggregatedItem);
+                                }}
                                 disabled={isPending || !writeEnabled}
                                 aria-label={`${isChecked ? t("uncheck") : t("check")} ${aggregatedItem.name}`}
                                 aria-pressed={isChecked}
@@ -520,7 +529,7 @@ export function ShoppingPage({
                                   "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all",
                                   isChecked
                                     ? "border-green-500 bg-green-500 text-white"
-                                    : "border-gray-300",
+                                    : "border-muted-foreground/30",
                                   !writeEnabled && "cursor-default"
                                 )}
                               >
@@ -536,17 +545,8 @@ export function ShoppingPage({
                                         "truncate text-base font-semibold transition-colors",
                                         isChecked
                                           ? "text-green-700 line-through dark:text-green-400"
-                                          : "text-foreground",
-                                        // Make clickable if it's a dish and write access is enabled
-                                        isWholeDish(aggregatedItem) &&
-                                          writeEnabled &&
-                                          "cursor-pointer hover:text-accent hover:underline"
+                                          : "text-foreground"
                                       )}
-                                      onClick={() => {
-                                        if (isWholeDish(aggregatedItem) && writeEnabled) {
-                                          setEditingItem(aggregatedItem);
-                                        }
-                                      }}
                                     >
                                       {aggregatedItem.name}
                                     </span>
@@ -570,8 +570,11 @@ export function ShoppingPage({
 
                                   {hasMultipleSources && (
                                     <button
-                                      onClick={() => toggleExpanded(aggregatedItem.id)}
-                                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-black/5"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleExpanded(aggregatedItem.id);
+                                      }}
+                                      className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted"
                                       aria-label={isExpanded ? t("seeLess") : t("seeSources")}
                                     >
                                       <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>

@@ -23,6 +23,9 @@ interface ShoppingGenerationDialogProps {
     name: string;
     mealTitle: string;
     serviceTitle: string;
+    adults?: number;
+    children?: number;
+    effectiveCount?: number;
   }>;
   onConfirm: (selectedItemIds: Set<number>) => Promise<void>;
   isGenerating: boolean;
@@ -139,6 +142,12 @@ export function ShoppingGenerationDialog({
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {item.mealTitle} · {item.serviceTitle}
+                      {item.effectiveCount !== undefined && item.effectiveCount > 0 && (
+                        <span className="ml-1 font-medium text-purple-600 dark:text-purple-400">
+                          · {item.adults ?? 0} ad.{item.children ? ` + ${item.children} enf.` : ""}{" "}
+                          ({item.effectiveCount} portions)
+                        </span>
+                      )}
                     </p>
                   </div>
                 </motion.div>

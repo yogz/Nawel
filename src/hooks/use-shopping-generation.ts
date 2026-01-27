@@ -37,17 +37,28 @@ export function useShoppingGeneration({
       name: string;
       mealTitle: string;
       serviceTitle: string;
+      adults: number;
+      children: number;
+      effectiveCount: number; // adults + children * 0.5
     }> = [];
 
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
           if (!item.ingredients || item.ingredients.length === 0) {
+            // Get people count from service, with fallback to peopleCount or default
+            const adults = service.adults ?? service.peopleCount ?? 0;
+            const children = service.children ?? 0;
+            const effectiveCount = adults + children * 0.5;
+
             items.push({
               id: item.id,
               name: item.name,
               mealTitle: meal.title || meal.date,
               serviceTitle: service.title,
+              adults,
+              children,
+              effectiveCount,
             });
           }
         });
