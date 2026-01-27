@@ -38,7 +38,7 @@ export function CitationManager() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Local state for items
-  const [items, setItems] = useState(citationsDataV3.items);
+  const [items, setItems] = useState<CitationItem[]>(citationsDataV3.items as CitationItem[]);
 
   const categories = useMemo(() => {
     const cats = new Set(items.map((i) => i.category));
@@ -240,9 +240,10 @@ export function CitationManager() {
         updates,
       });
 
-      if (result?.success) {
+      if (result?.success && result.item) {
         // Mettre à jour l'item dans le state local
-        setItems((prev) => prev.map((item) => (item.id === activeItem.id ? result.item : item)));
+        const updatedItem = result.item;
+        setItems((prev: CitationItem[]) => prev.map((item) => (item.id === activeItem.id ? updatedItem : item)));
         setIsEditing(false);
         setEditedItem(null);
         toast.success("Citation mise à jour");

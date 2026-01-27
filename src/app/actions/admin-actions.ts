@@ -501,7 +501,7 @@ export const deleteCitationAdminAction = createSafeAction(
 
 export const updateCitationAdminAction = createSafeAction(
   updateCitationAdminSchema,
-  async (input) => {
+  async (input): Promise<{ success: true; item: CitationItem }> => {
     await requireAdmin();
 
     const filePath = path.join(process.cwd(), "src/data/citations-v3.json");
