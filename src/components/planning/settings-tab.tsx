@@ -27,8 +27,29 @@ interface SettingsTabProps {
 export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabProps) {
   const t = useTranslations("EventDashboard.Settings");
   const _tShared = useTranslations("EventDashboard.Shared");
-  const { mode, setMode, themes } = useThemeMode();
+  const { mode, setMode } = useThemeMode();
   const [showDangerZone, setShowDangerZone] = useState(false);
+
+  const THEME_OPTIONS = [
+    {
+      id: "light",
+      label: "Clair (Aurore)",
+      description: "Vibrant et lumineux",
+      emoji: "✨",
+    },
+    {
+      id: "dark",
+      label: "Sombre",
+      description: "Élégant et reposant",
+      emoji: "🌙",
+    },
+    {
+      id: "system",
+      label: "Automatique",
+      description: "Suit votre système",
+      emoji: "🌗",
+    },
+  ] as const;
 
   return (
     <div className="space-y-8 duration-500 animate-in fade-in slide-in-from-bottom-4">
@@ -41,12 +62,12 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
           <Sparkles size={14} /> {t("ambiance")}
         </h3>
         <div className="grid grid-cols-1 gap-3">
-          {themes.map((t) => (
+          {THEME_OPTIONS.map((t) => (
             <button
               key={t.id}
-              onClick={() => setTheme(t.id)}
+              onClick={() => setMode(t.id)}
               className={`flex items-center justify-between rounded-2xl border p-4 transition-all ${
-                theme === t.id
+                mode === t.id
                   ? "border-accent/30 bg-accent/10 ring-2 ring-accent/20"
                   : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
               }`}
@@ -58,7 +79,7 @@ export function SettingsTab({ onDeleteEvent, readOnly, isOwner }: SettingsTabPro
                   <p className="text-[10px] font-medium text-gray-500">{t.description}</p>
                 </div>
               </div>
-              {theme === t.id && (
+              {mode === t.id && (
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white">
                   <Check size={14} />
                 </div>
