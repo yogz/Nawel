@@ -13,12 +13,7 @@ export function DashboardHeader() {
   // It seems only used for christmas check.
   return (
     <div className="sticky top-0 z-30">
-      <header
-        style={{
-          background: `linear-gradient(to bottom, var(--event-gradient-start) 0%, var(--event-gradient-start) 30%, rgba(255, 255, 255, 0) 100%)`,
-        }}
-        className="w-full px-4 pb-8 pt-6 backdrop-blur-sm transition-all duration-300 sm:px-4 sm:pb-6 sm:pt-5"
-      >
+      <header className="header-gradient w-full px-4 pb-8 pt-6 backdrop-blur-sm transition-all duration-300 sm:px-4 sm:pb-6 sm:pt-5">
         <div className="mx-auto max-w-3xl">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 flex-1 items-center gap-3">

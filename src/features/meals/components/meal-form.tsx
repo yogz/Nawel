@@ -225,7 +225,7 @@ export function MealForm({
               key={s}
               className={clsx(
                 "h-1 flex-1 rounded-full transition-all duration-500",
-                s <= step ? "bg-accent shadow-[0_0_8px_rgba(255,107,107,0.4)]" : "bg-gray-100"
+                s <= step ? "bg-accent step-indicator-active" : "bg-gray-100"
               )}
             />
           ))}

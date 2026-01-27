@@ -113,9 +113,7 @@ export function EventPlannerHeader({
       <header
         className={cn(
           "sticky top-0 z-[100] w-full transition-all duration-500 overflow-visible",
-          isScrolled
-            ? "bg-[#E6D9F8]/80 backdrop-blur-xl border-b border-white/20 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.5),0_4px_20px_-2px_rgba(0,0,0,0.1)]"
-            : "bg-transparent"
+          isScrolled ? "header-scrolled" : "bg-transparent"
         )}
       >
         <div

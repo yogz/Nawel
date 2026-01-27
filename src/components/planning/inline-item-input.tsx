@@ -65,7 +65,7 @@ export function InlineItemInput({
         className={cn(
           "absolute inset-0 rounded-md transition-all duration-300",
           isFocused
-            ? "bg-white shadow-[0_0_20px_rgba(124,58,237,0.1)] ring-2 ring-violet-500/20"
+            ? "bg-white input-focus-glow is-focused ring-2 ring-violet-500/20"
             : "bg-transparent"
         )}
       />

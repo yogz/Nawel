@@ -43,6 +43,27 @@
     --event-gradient-mid: #e3e8fa;
     --event-gradient-end: #f5e2d8;
 
+    /* Brand colors for external services */
+    --brand-buymeacoffee: #ffdd00;
+    --brand-revolut: #000000;
+
+    /* Chart colors (matching Tailwind palette) */
+    --chart-blue: 217 91% 60%;
+    --chart-cyan: 189 94% 43%;
+    --chart-indigo: 226 70% 55%;
+    --chart-violet: 262 83% 58%;
+    --chart-purple: 271 91% 65%;
+    --chart-pink: 330 81% 60%;
+    --chart-orange: 25 95% 53%;
+    --chart-emerald: 160 84% 39%;
+    --chart-slate: 215 16% 47%;
+
+    /* Shadows with accent color */
+    --shadow-accent-glow: 0 0 8px hsl(var(--accent) / 0.4);
+    --shadow-input-focus: 0 0 20px hsl(var(--accent) / 0.1);
+    --shadow-button-accent: 0 20px 40px -15px hsl(var(--accent) / 0.3);
+    --shadow-button-accent-hover: 0 25px 45px -15px hsl(var(--accent) / 0.4);
+
     /*
      * Computed gradient for reuse
      * IMMERSIVE STATUS BAR: The gradient uses multiple layers:
@@ -275,9 +296,9 @@
     box-shadow: var(--glass-shadow, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
   }
 
-  /* 
+  /*
    * Crystal System - Standardized Glass
-   * Used for Header, TabBar, and other floating surfaces 
+   * Used for Header, TabBar, and other floating surfaces
    */
   .glass-panel {
     @apply bg-white/60 backdrop-blur-xl border-b border-white/20;
@@ -290,6 +311,93 @@
   .theme-dark .glass-panel {
     @apply bg-zinc-950/60 border-white/5;
     box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /*
+   * Header Gradient System
+   * For dashboard and event page headers
+   */
+  .header-gradient {
+    background: linear-gradient(
+      to bottom,
+      var(--event-gradient-start) 0%,
+      var(--event-gradient-start) 30%,
+      transparent 100%
+    );
+  }
+
+  .header-scrolled {
+    @apply backdrop-blur-xl border-b border-white/20;
+    background-color: hsl(var(--event-gradient-start) / 0.8);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.5),
+      0 4px 20px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .theme-dark .header-scrolled {
+    @apply bg-zinc-900/80 border-white/5;
+  }
+
+  /*
+   * Glass Button - For user nav and similar components
+   */
+  .glass-button {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .theme-dark .glass-button {
+    background: rgba(24, 24, 27, 0.5);
+  }
+
+  /*
+   * Brand Button Styles
+   */
+  .btn-buymeacoffee {
+    @apply border-none shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98];
+    background-color: var(--brand-buymeacoffee);
+    color: #000000;
+  }
+
+  .btn-buymeacoffee:hover {
+    background-color: hsl(from var(--brand-buymeacoffee) h s l / 0.95);
+  }
+
+  .btn-revolut {
+    @apply border-none shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98];
+    background-color: var(--brand-revolut);
+    color: #ffffff;
+  }
+
+  .btn-revolut:hover {
+    background-color: hsl(from var(--brand-revolut) h s l / 0.9);
+  }
+
+  /*
+   * Input Focus Glow
+   */
+  .input-focus-glow:focus,
+  .input-focus-glow.is-focused {
+    box-shadow: var(--shadow-input-focus);
+  }
+
+  /*
+   * Progress Step Indicator
+   */
+  .step-indicator-active {
+    box-shadow: var(--shadow-accent-glow);
+  }
+
+  /*
+   * Accent Shadow Button
+   */
+  .btn-accent-shadow {
+    box-shadow: var(--shadow-button-accent);
+  }
+
+  .btn-accent-shadow:hover {
+    box-shadow: var(--shadow-button-accent-hover);
   }
 
   /* Theme-specific Overrides - Keep minimal */

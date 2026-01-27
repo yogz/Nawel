@@ -46,14 +46,12 @@ export const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
 
       // Reset to max size
       let currentSize = maxSize;
-      measure.style.fontSize = `${currentSize}px`;
-      input.style.fontSize = `${currentSize}px`;
+      container.style.setProperty("--auto-size-font", `${currentSize}px`);
 
       // Shrink until it fits or hits minimum
       while (measure.scrollWidth > container.clientWidth && currentSize > minSize) {
         currentSize -= step;
-        measure.style.fontSize = `${currentSize}px`;
-        input.style.fontSize = `${currentSize}px`;
+        container.style.setProperty("--auto-size-font", `${currentSize}px`);
       }
     }, [maxSize, minSize, step]);
 
@@ -78,24 +76,29 @@ export const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
     );
 
     return (
-      <div ref={containerRef} className="relative w-full overflow-hidden">
+      <div
+        ref={containerRef}
+        className="relative w-full overflow-hidden"
+        style={{ ["--auto-size-font" as string]: `${maxSize}px` }}
+      >
         {/* Hidden measurement span */}
         <span
           ref={measureRef}
           aria-hidden="true"
           className={cn(
-            "pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap",
+            "pointer-events-none invisible absolute left-0 top-0 whitespace-nowrap text-[length:var(--auto-size-font)]",
             className
           )}
-          style={{ fontSize: `${maxSize}px` }}
         />
         {/* Actual input */}
         <input
           ref={setRefs}
           value={value}
           onChange={handleChange}
-          className={cn("w-full bg-transparent outline-none", className)}
-          style={{ fontSize: `${maxSize}px` }}
+          className={cn(
+            "w-full bg-transparent outline-none text-[length:var(--auto-size-font)]",
+            className
+          )}
           {...props}
         />
       </div>

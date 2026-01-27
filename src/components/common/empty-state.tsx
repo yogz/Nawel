@@ -55,9 +55,7 @@ export function EmptyState({
           }}
           className="relative rounded-3xl bg-white/50 p-6 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl"
         >
-          <div className="flex items-center justify-center text-accent/20">
-            {icon}
-          </div>
+          <div className="flex items-center justify-center text-accent/20">{icon}</div>
           {action && (
             <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 shadow-lg ring-1 ring-accent/20">
               <PlusIcon className="h-5 w-5 text-accent" strokeWidth={2.5} />
@@ -85,7 +83,7 @@ export function EmptyState({
         <Button
           variant="premium"
           size="lg"
-          className="h-14 w-full max-w-xs rounded-full bg-accent text-lg font-black uppercase tracking-widest text-white shadow-[0_20px_40px_-15px_rgba(var(--accent-rgb),0.3)] transition-all hover:scale-[1.02] hover:shadow-[0_25px_45px_-15px_rgba(var(--accent-rgb),0.4)] active:scale-95"
+          className="btn-accent-shadow h-14 w-full max-w-xs rounded-full bg-accent text-lg font-black uppercase tracking-widest text-white transition-all hover:scale-[1.02] active:scale-95"
           icon={action.icon || <PlusIcon size={24} />}
           onClick={action.onClick}
         >

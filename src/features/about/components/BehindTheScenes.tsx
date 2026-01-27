@@ -190,43 +190,43 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     other: CircleEllipsis,
   };
 
-  // Chart config for shadcn/ui
+  // Chart config for shadcn/ui - colors reference CSS variables
   const chartConfig = {
     hosting: {
       label: t("categories.hosting"),
-      color: "hsl(217, 91%, 60%)", // blue-500
+      color: "hsl(var(--chart-blue))",
     },
     domain: {
       label: t("categories.domain"),
-      color: "hsl(189, 94%, 43%)", // cyan-500
+      color: "hsl(var(--chart-cyan))",
     },
     ai: {
       label: t("categories.ai"),
-      color: "hsl(271, 91%, 65%)", // purple-500
+      color: "hsl(var(--chart-purple))",
     },
     email: {
       label: t("categories.email"),
-      color: "hsl(330, 81%, 60%)", // pink-500
+      color: "hsl(var(--chart-pink))",
     },
     dev: {
       label: t("categories.dev"),
-      color: "hsl(25, 95%, 53%)", // orange-500
+      color: "hsl(var(--chart-orange))",
     },
     services: {
       label: t("categories.services"),
-      color: "hsl(160, 84%, 39%)", // emerald-500
+      color: "hsl(var(--chart-emerald))",
     },
     database: {
       label: t("categories.database"),
-      color: "hsl(226, 70%, 55%)", // indigo-500
+      color: "hsl(var(--chart-indigo))",
     },
     api: {
       label: t("categories.api"),
-      color: "hsl(262, 83%, 58%)", // violet-500
+      color: "hsl(var(--chart-violet))",
     },
     other: {
       label: t("categories.other"),
-      color: "hsl(215, 16%, 47%)", // slate-400
+      color: "hsl(var(--chart-slate))",
     },
   };
 
@@ -409,7 +409,9 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                         indicator="dot"
                         labelFormatter={(_, payload) => {
                           if (payload && payload[0]) {
-                            const itemPayload = payload[0].payload as Record<string, unknown> | undefined;
+                            const itemPayload = payload[0].payload as
+                              | Record<string, unknown>
+                              | undefined;
                             const total = CATEGORIES.reduce(
                               (sum, cat) => sum + ((itemPayload?.[cat] as number) || 0),
                               0
@@ -427,7 +429,8 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                         }}
                         formatter={(value, name) => {
                           const Icon = CATEGORY_ICONS[name as string];
-                          const displayValue = typeof value === "number" ? value.toFixed(2) : String(value ?? "");
+                          const displayValue =
+                            typeof value === "number" ? value.toFixed(2) : String(value ?? "");
                           return (
                             <div className="flex w-full items-center justify-between gap-4">
                               <div className="flex items-center gap-2">
@@ -483,10 +486,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
               <p className="text-text/70">{t("supportDescription")}</p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-3 md:w-auto">
-              <Button
-                className="group h-12 rounded-2xl border-none bg-[#FFDD00] px-8 text-black shadow-lg transition-transform hover:scale-[1.02] hover:bg-[#FFDD00]/95 active:scale-[0.98]"
-                asChild
-              >
+              <Button className="btn-buymeacoffee group h-12 rounded-2xl px-8" asChild>
                 <a
                   href="https://www.buymeacoffee.com/colist"
                   target="_blank"
@@ -504,10 +504,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   <ArrowUpRight className="ml-2 h-4 w-4 opacity-50 transition-opacity group-hover:opacity-100" />
                 </a>
               </Button>
-              <Button
-                className="group h-12 rounded-2xl border-none bg-black px-8 text-white shadow-lg transition-transform hover:scale-[1.02] hover:bg-black/90 active:scale-[0.98]"
-                asChild
-              >
+              <Button className="btn-revolut group h-12 rounded-2xl px-8" asChild>
                 <a
                   href="https://revolut.me/yogzgo"
                   target="_blank"

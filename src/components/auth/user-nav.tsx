@@ -67,17 +67,10 @@ export function UserNav({ showLabel }: UserNavProps) {
         onClick={() => setShowProfileDrawer(true)}
         className={cn(
           "group flex h-10 items-center gap-2 transition-all hover:opacity-90 active:scale-95",
-          showLabel ? "rounded-[32px] pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5" : "w-10"
-        )}
-        style={
           showLabel
-            ? {
-                background: "rgba(255, 255, 255, 0.5)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-              }
-            : undefined
-        }
+            ? "glass-button rounded-[32px] pl-1 pr-4 shadow-lg shadow-accent/10 sm:pr-5"
+            : "w-10"
+        )}
       >
         <div className="relative h-8 w-8 overflow-hidden rounded-[32px] border border-white/50 shadow-sm transition-all group-hover:scale-110">
           {(() => {
