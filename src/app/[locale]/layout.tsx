@@ -260,10 +260,6 @@ export default async function RootLayout({
                 duration={1500}
                 expand={false}
                 closeButton
-                toastOptions={{
-                  role: "status",
-                  "aria-live": "polite",
-                }}
               />
             </ErrorBoundary>
           </ThemeProvider>
