@@ -29,6 +29,8 @@ export function ItemForm({
   onMoveService,
   onDelete,
   readOnly,
+  smartCount,
+  countSource,
   // Ingredient props
   ingredients,
   onManageIngredients,
@@ -51,6 +53,8 @@ export function ItemForm({
   onMoveService?: (targetServiceId: number) => void;
   onDelete?: () => void;
   readOnly?: boolean;
+  smartCount?: number;
+  countSource?: string;
   // Ingredient props
   ingredients?: Ingredient[];
   onManageIngredients?: () => void;
@@ -68,7 +72,7 @@ export function ItemForm({
       return defaultNote;
     }
     if (storedNote.startsWith("EventDashboard.")) {
-      return t("defaultNote", { count: servicePeopleCount || 0 });
+      return t("defaultNote", { count: smartCount || servicePeopleCount || 0 });
     }
     return storedNote;
   };
