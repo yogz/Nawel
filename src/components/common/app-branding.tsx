@@ -93,17 +93,12 @@ export function AppBranding({
         />
         <div
           className={cn(
-            "flex items-baseline leading-none tracking-[-0.02em]",
+            "font-brand flex items-baseline leading-none tracking-[-0.02em]",
             textSizeClasses[textSize]
           )}
-          style={{ fontFamily: "'Poppins', 'Futura', 'Sofia Pro', system-ui, sans-serif" }}
         >
-          <span className="font-normal" style={{ color: "#1A1A1B" }}>
-            Co
-          </span>
-          <span className="font-light" style={{ color: "#1A1A1B" }}>
-            List
-          </span>
+          <span className="text-brand font-normal">Co</span>
+          <span className="text-brand font-light">List</span>
         </div>
       </div>
     );

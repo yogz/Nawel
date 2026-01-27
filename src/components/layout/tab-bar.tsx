@@ -64,12 +64,7 @@ export function TabBar({ active, onChange, hasWriteAccess }: TabBarProps) {
   }, []);
 
   return (
-    <div
-      className="pointer-events-none fixed left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]"
-      style={{
-        bottom: `calc(1.5rem + env(safe-area-inset-bottom))`,
-      }}
-    >
+    <div className="safe-area-bottom-nav pointer-events-none fixed left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
       <nav
         id="navigation"
         className="pointer-events-auto flex items-center justify-around gap-2 rounded-full glass-panel border border-white/20 p-2 shadow-xl transition-all duration-300"

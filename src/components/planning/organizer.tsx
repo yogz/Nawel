@@ -237,12 +237,7 @@ export function Organizer({
   }, [writeKey, slug, setReadOnly]);
 
   return (
-    <div
-      className="flex min-h-screen flex-col text-text"
-      style={{
-        paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
-      }}
-    >
+    <div className="safe-area-pb-tabbar flex min-h-screen flex-col text-text">
       <OrganizerHeader
         readOnly={readOnly}
         tab={tab}

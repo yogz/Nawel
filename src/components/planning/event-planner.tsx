@@ -375,12 +375,7 @@ export function EventPlanner({
   }, []);
 
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{
-        paddingBottom: `calc(6rem + env(safe-area-inset-bottom, 0px))`,
-      }}
-    >
+    <div className="safe-area-pb-tabbar flex min-h-screen flex-col">
       {/* Background gradient is rendered by layout.tsx - see z-index hierarchy in globals.css */}
       <EventPlannerHeader
         readOnly={readOnly}

@@ -400,6 +400,47 @@
     box-shadow: var(--shadow-button-accent-hover);
   }
 
+  /*
+   * Safe Area Padding
+   * For sticky headers that need to account for notch/status bar
+   */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-area-bottom-nav {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .safe-area-pb-tabbar {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /*
+   * Brand Typography
+   */
+  .font-brand {
+    font-family: "Poppins", "Futura", "Sofia Pro", system-ui, sans-serif;
+  }
+
+  .text-brand {
+    color: var(--brand-text, #1a1a1b);
+  }
+
+  /*
+   * Header Padding States
+   * CSS variables for animated padding in headers
+   */
+  .header-padding-default {
+    --header-pt: 1.25rem;
+    --header-pb: 1.5rem;
+  }
+
+  .header-padding-scrolled {
+    --header-pt: 1.1rem;
+    --header-pb: 1rem;
+  }
+
   /* Theme-specific Overrides - Keep minimal */
   .theme-aurora .premium-card {
     border-color: rgba(200, 180, 230, 0.3);

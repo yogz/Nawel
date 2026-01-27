@@ -52,11 +52,7 @@ export function LandingDefault() {
   ];
 
   return (
-    <div
-      ref={containerRef}
-      className="relative bg-white text-gray-900"
-      style={{ position: "relative" }}
-    >
+    <div ref={containerRef} className="relative bg-white text-gray-900">
       <HeroSection
         heroOpacity={heroOpacity}
         heroScale={heroScale}

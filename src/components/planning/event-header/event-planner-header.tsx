@@ -116,18 +116,14 @@ export function EventPlannerHeader({
           isScrolled ? "header-scrolled" : "bg-transparent"
         )}
       >
-        <div
-          className="mx-auto w-full lg:max-w-4xl transition-all duration-500"
-          style={{
-            paddingTop: `env(safe-area-inset-top, 0px)`,
-          }}
-        >
+        <div className="safe-area-top mx-auto w-full lg:max-w-4xl transition-all duration-500">
           <div className="mx-auto max-w-3xl">
             <motion.div
               initial={false}
-              animate={{
-                paddingTop: isScrolled ? "1.1rem" : "1.25rem",
-                paddingBottom: isScrolled ? "1rem" : "1.5rem",
+              animate={isScrolled ? "scrolled" : "default"}
+              variants={{
+                default: { paddingTop: "1.25rem", paddingBottom: "1.5rem" },
+                scrolled: { paddingTop: "1.1rem", paddingBottom: "1rem" },
               }}
               transition={{
                 duration: 0.4,
