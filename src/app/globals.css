@@ -144,60 +144,109 @@
     content: none;
   }
 
-  /* Theme Dark - Premium Zinc Palette */
+  /*
+   * =============================================================================
+   * THEME DARK - Premium Zinc Palette with Brand Identity
+   * =============================================================================
+   * Design principles:
+   * 1. Maintain brand identity (purple accent) in dark mode
+   * 2. Use elevated surfaces (lighter backgrounds) for depth hierarchy
+   * 3. Reduce saturation slightly for comfort on dark backgrounds
+   * 4. Ensure WCAG AA contrast ratios (4.5:1 for text)
+   * =============================================================================
+   */
   .theme-dark {
-    /* Zinc 950 Base */
+    /* Base colors - Zinc 950 */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
+    /* Cards - Zinc 900 (elevated from background) */
+    --card: 240 6% 10%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
+    /* Popovers - Zinc 900 */
+    --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
 
-    /* Zinc 600/700 for Primary - slightly desaturated for dark mode */
-    --primary: 240 5.9% 90%;
-    --primary-foreground: 240 5.9% 10%;
+    /* Primary - Light for dark mode CTAs */
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 6% 10%;
 
-    --secondary: 240 3.7% 15.9%;
+    /* Secondary - Zinc 800 */
+    --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted - Zinc 800 with better contrast foreground */
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%; /* Passes WCAG AA on dark */
 
-    /* Desaturated Accent */
-    --accent: 240 3.7% 15.9%;
+    /*
+     * ACCENT - Maintain purple brand identity!
+     * Slightly desaturated and lighter for dark mode comfort
+     */
+    --accent: 280 60% 65%;
     --accent-foreground: 0 0% 98%;
+    --accent-rgb: 178, 132, 224; /* Updated for dark mode */
 
-    --destructive: 0 62.8% 30.6%;
+    /* Destructive - Brighter red for visibility on dark */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    /* Borders & Inputs - Zinc 700/800 */
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
+    --ring: 280 60% 65%; /* Match accent for focus rings */
+
+    /* Status colors - adjusted for dark mode */
+    --success: 142 70% 45%;
+    --warning: 38 92% 50%;
+    --info: 217 90% 61%;
 
     /* Custom Theme Vars */
     --surface: #09090b; /* Zinc 950 */
     --text: #fafafa;
     --header-fade: #09090b;
+    --status-bar-color: #09090b;
+    --brand-text: #fafafa;
+
+    /* Event gradients for dark mode - subtle purple tint */
+    --event-gradient-start: #18181b;
+    --event-gradient-mid: #1a1a2e;
+    --event-gradient-end: #16161a;
+
+    /* Chart colors - reduced saturation for dark mode comfort */
+    --chart-blue: 217 80% 55%;
+    --chart-cyan: 189 75% 45%;
+    --chart-indigo: 226 60% 55%;
+    --chart-violet: 262 70% 60%;
+    --chart-purple: 271 70% 65%;
+    --chart-pink: 330 70% 60%;
+    --chart-orange: 25 85% 55%;
+    --chart-emerald: 160 70% 42%;
+    --chart-slate: 215 20% 55%;
 
     /* Elevated Surfaces (Cards) - Zinc 900 */
-    /* Lighter than background to create depth without relying on shadow */
     --card-bg: #18181b;
     --card-border: #27272a; /* Zinc 800 */
-    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
-    --glass-bg: rgba(24, 24, 27, 0.7); /* Zinc 900 alpha */
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    --glass-blur: 16px;
+    /* Glass morphism for dark mode */
+    --glass-bg: rgba(24, 24, 27, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    --glass-blur: 20px;
+
+    /* Shadows - darker with subtle light edge */
+    --shadow-accent-glow: 0 0 12px hsl(var(--accent) / 0.3);
+    --shadow-input-focus: 0 0 20px hsl(var(--accent) / 0.15);
+    --shadow-button-accent: 0 20px 40px -15px hsl(var(--accent) / 0.25);
+    --shadow-button-accent-hover: 0 25px 45px -15px hsl(var(--accent) / 0.35);
 
     /* Background Setup */
     background-color: #09090b;
     color: #fafafa;
-    background-image: none; /* No gradients in dark mode for cleaner look */
+    background-image: none;
     position: relative;
     overflow-x: hidden;
   }
@@ -428,6 +477,60 @@
   }
 
   /*
+   * =============================================================================
+   * DARK MODE COMPONENT OVERRIDES
+   * =============================================================================
+   */
+
+  /* Premium Card - Dark mode uses elevation instead of shadows */
+  .theme-dark .premium-card {
+    background: var(--card-bg);
+    border-color: var(--card-border);
+    box-shadow: var(--card-shadow);
+  }
+
+  .theme-dark .premium-card:hover {
+    border-color: hsl(var(--accent) / 0.3);
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  /* Header gradient - dark mode subtle gradient */
+  .theme-dark .header-gradient {
+    background: linear-gradient(
+      to bottom,
+      var(--event-gradient-start) 0%,
+      var(--event-gradient-start) 30%,
+      transparent 100%
+    );
+  }
+
+  /* Buy Me A Coffee button - invert for dark mode */
+  .theme-dark .btn-buymeacoffee {
+    background-color: var(--brand-buymeacoffee);
+    color: #000000;
+  }
+
+  /* Step indicator - brighter glow in dark mode */
+  .theme-dark .step-indicator-active {
+    box-shadow: 0 0 12px hsl(var(--accent) / 0.5);
+  }
+
+  /* Input focus glow - more visible in dark mode */
+  .theme-dark .input-focus-glow:focus,
+  .theme-dark .input-focus-glow.is-focused {
+    box-shadow: 0 0 24px hsl(var(--accent) / 0.2);
+  }
+
+  /* Button accent shadow - adjusted for dark backgrounds */
+  .theme-dark .btn-accent-shadow {
+    box-shadow: 0 20px 40px -15px hsl(var(--accent) / 0.25);
+  }
+
+  .theme-dark .btn-accent-shadow:hover {
+    box-shadow: 0 25px 45px -15px hsl(var(--accent) / 0.35);
+  }
+
+  /*
    * Header Padding States
    * CSS variables for animated padding in headers
    */
@@ -503,6 +606,11 @@
     @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-600 bg-clip-text text-transparent;
     font-weight: 900;
     letter-spacing: -0.02em;
+  }
+
+  /* Dark mode: light gradient for headers */
+  .theme-dark .text-gradient-header {
+    @apply from-gray-100 via-gray-200 to-gray-400;
   }
 
   /*
@@ -831,26 +939,30 @@
     --radius: 1.25rem;
   }
 
+  /*
+   * Shadcn/Radix .dark class - Synced with .theme-dark for consistency
+   */
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 240 6% 10%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --primary-foreground: 240 6% 10%;
+    --secondary: 240 4% 16%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.1%;
-    --accent: 0 0% 98%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 62.8% 30.6%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 65%;
+    /* Maintain brand purple accent */
+    --accent: 280 60% 65%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
+    --ring: 280 60% 65%;
   }
 
   .btn-shine {

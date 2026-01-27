@@ -676,6 +676,14 @@ export function ShoppingAllPage({
           isGenerating={isGeneratingIngredients}
         />
       )}
+
+      <ShoppingItemSheet
+        item={editingItem}
+        open={!!editingItem}
+        onOpenChange={(open) => !open && setEditingItem(null)}
+        slug={slug}
+        writeKey={writeKey}
+      />
     </div>
   );
 }
