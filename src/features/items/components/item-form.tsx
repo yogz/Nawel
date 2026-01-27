@@ -33,6 +33,10 @@ export function ItemForm({
   countSource,
   // Ingredient props
   ingredients,
+  onToggleIngredient,
+  onDeleteIngredient,
+  onCreateIngredient,
+  onDeleteAllIngredients,
   onManageIngredients,
   // Current user for default person selection
   currentUserId,
@@ -57,6 +61,10 @@ export function ItemForm({
   countSource?: string;
   // Ingredient props
   ingredients?: Ingredient[];
+  onToggleIngredient?: (id: number, checked: boolean) => void;
+  onDeleteIngredient?: (id: number) => void;
+  onCreateIngredient?: (name: string, quantity?: string) => void;
+  onDeleteAllIngredients?: () => void;
   onManageIngredients?: () => void;
   // Current user for default person selection
   currentUserId?: string;

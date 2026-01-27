@@ -89,6 +89,7 @@ type EventPageAction =
   | "share_opened"
   | "share_link_copied"
   | "ai_ingredients_generated"
+  | "ai_ingredients_generated_batch"
   | "filter_changed"
   | "drag_drop_used";
 
@@ -222,7 +223,7 @@ export function trackShareAction(action: "share_opened" | "share_link_copied", m
  * Track AI features
  */
 export function trackAIAction(
-  action: "ai_ingredients_generated",
+  action: "ai_ingredients_generated" | "ai_ingredients_generated_batch",
   itemName?: string,
   ingredientCount?: number
 ) {
