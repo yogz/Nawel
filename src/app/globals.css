@@ -160,8 +160,8 @@
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
-    /* Cards - Zinc 900 (elevated from background) */
-    --card: 240 6% 10%;
+    /* Cards - Zinc 800 (elevated from background for better contrast) */
+    --card: 240 4% 16%;
     --card-foreground: 0 0% 98%;
 
     /* Popovers - Zinc 900 */
@@ -225,11 +225,11 @@
     --chart-emerald: 160 70% 42%;
     --chart-slate: 215 20% 55%;
 
-    /* Elevated Surfaces (Cards) - Zinc 900 */
-    --card-bg: #18181b;
-    --card-border: #27272a; /* Zinc 800 */
-    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    --card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    /* Elevated Surfaces (Cards) - Zinc 800 for better contrast */
+    --card-bg: #27272a;
+    --card-border: #3f3f46; /* Zinc 700 */
+    --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --card-shadow-hover: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 
     /* Glass morphism for dark mode */
     --glass-bg: rgba(24, 24, 27, 0.8);
@@ -945,7 +945,7 @@
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 6% 10%;
+    --card: 240 4% 16%;
     --card-foreground: 0 0% 98%;
     --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
