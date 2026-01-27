@@ -48,8 +48,17 @@ export default function ContactForm() {
     }
   };
   const handleFormSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    handleSubmit(new Event("submit") as any);
+    if (e) {
+      handleSubmit(e);
+    } else {
+      // Create a synthetic form event
+      const syntheticEvent = {
+        preventDefault: () => {},
+        currentTarget: null,
+        target: null,
+      } as unknown as React.FormEvent;
+      handleSubmit(syntheticEvent);
+    }
   };
 
   const handleKeyDownEmail = (e: React.KeyboardEvent) => {
@@ -63,7 +72,12 @@ export default function ContactForm() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (email.trim() && content.trim()) {
-        handleSubmit(new Event("submit") as any);
+        const syntheticEvent = {
+          preventDefault: () => {},
+          currentTarget: null,
+          target: null,
+        } as unknown as React.FormEvent;
+        handleSubmit(syntheticEvent);
       }
     }
   };

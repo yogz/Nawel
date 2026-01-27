@@ -109,7 +109,7 @@ function ItemRowComponent({
       disabled={readOnly}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.96] active:bg-gray-100 sm:px-3 sm:py-4",
+        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 hover:z-20 hover:translate-x-1 hover:scale-[1.01] hover:rounded-xl hover:bg-white hover:shadow-lg active:scale-[0.97] active:bg-gray-100 active:shadow-md sm:px-3 sm:py-4",
         !readOnly &&
           "cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
       )}
@@ -209,7 +209,7 @@ function ItemRowComponent({
             <div
               role="button"
               tabIndex={0}
-              className="group relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-8"
+              className="group relative flex h-11 cursor-pointer items-center gap-1.5 rounded-full border-2 border-dashed border-gray-300 bg-transparent px-2.5 py-1 pr-3 transition-all duration-300 hover:border-accent hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 active:scale-95 sm:h-11"
               onClick={(e) => {
                 e.stopPropagation();
                 // If user has a person and handleAssign is available, assign directly
@@ -235,8 +235,8 @@ function ItemRowComponent({
               }}
               aria-label={t("takeAction")}
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent">
-                <Plus size={16} className="transition-colors duration-300" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300 group-hover:text-accent">
+                <Plus size={18} className="transition-colors duration-300" />
               </div>
               <span className="text-xs font-black uppercase tracking-wider text-gray-600 transition-colors duration-300 group-hover:text-accent sm:text-[10px]">
                 {t("takeAction")}

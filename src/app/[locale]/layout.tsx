@@ -11,6 +11,10 @@ import { SnowOverlay } from "@/components/snow-overlay";
 import { CookieConsent } from "@/components/common/cookie-consent";
 import { AnalyticsSessionSync } from "@/components/analytics/analytics-session-sync";
 import { AnalyticsMonitor } from "@/components/analytics/analytics-monitor";
+import { AnimationController } from "@/components/common/animation-controller";
+import { ErrorBoundary } from "@/components/common/error-boundary";
+import { NetworkStatus } from "@/components/common/network-status";
+import { SkipLinks } from "@/components/common/skip-links";
 import { Toaster } from "sonner";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, getMessages, setRequestLocale } from "next-intl/server";
@@ -237,16 +241,31 @@ export default async function RootLayout({
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <JsonLd locale={locale} />
-            <VerificationBanner />
-            {children}
-            <BugReportButton />
-            <SnowOverlay />
-            {/* <CookieConsent /> - Disabled: set it to true by default for now */}
-            <AnalyticsSessionSync />
-            <AnalyticsMonitor />
-            <PWAPrompt />
-            <Toaster position="top-center" richColors duration={1500} expand={false} closeButton />
+            <ErrorBoundary>
+              <SkipLinks />
+              <AnimationController />
+              <JsonLd locale={locale} />
+              <VerificationBanner />
+              {children}
+              <BugReportButton />
+              <SnowOverlay />
+              {/* <CookieConsent /> - Disabled: set it to true by default for now */}
+              <AnalyticsSessionSync />
+              <AnalyticsMonitor />
+              <NetworkStatus />
+              <PWAPrompt />
+              <Toaster
+                position="top-center"
+                richColors
+                duration={1500}
+                expand={false}
+                closeButton
+                toastOptions={{
+                  role: "status",
+                  "aria-live": "polite",
+                }}
+              />
+            </ErrorBoundary>
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

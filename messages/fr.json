@@ -225,7 +225,9 @@
       "body": "Vous avez demandé la réinitialisation de votre mot de passe CoList. Cliquez sur le bouton ci-dessous pour continuer.",
       "button": "Réinitialiser le mot de passe",
       "footer": "Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email en toute sécurité."
-    }
+    },
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "FAQ": {
     "title": "Questions Fréquentes",
@@ -737,6 +739,15 @@
     "retryButton": "Réessayer",
     "homeButton": "Retour à l'accueil",
     "errorId": "Error ID"
+  },
+  "NetworkStatus": {
+    "offline": "Vous êtes hors ligne",
+    "backOnline": "Vous êtes de nouveau en ligne"
+  },
+  "SkipLinks": {
+    "navigation": "Navigation de raccourci",
+    "skipToContent": "Aller au contenu principal",
+    "skipToNavigation": "Aller à la navigation"
   },
   "Citations": {
     "anonymous": "Anonyme",

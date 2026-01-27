@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { setAnalyticsConsent } from "@/lib/analytics";
-import { useLandingVariant } from "@/hooks/use-landing-variant";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Cookie, Shield, ChartBar, ArrowLeft, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -27,15 +26,14 @@ export function CookieConsent() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [view, setView] = useState<"main" | "customize">("main");
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
-  const variant = useLandingVariant();
-
-  // Track variant only if/when consent is given
+  
+  // Track variant (always "landing-c" now) only if/when consent is given
   useEffect(() => {
     const consent = localStorage.getItem("analytics_consent") === "true";
-    if (consent && variant) {
-      sendGAEvent("event", "landing_variant_assigned", { variant });
+    if (consent) {
+      sendGAEvent("event", "landing_variant_assigned", { variant: "landing-c" });
     }
-  }, [variant]);
+  }, []);
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -51,9 +49,7 @@ export function CookieConsent() {
 
   const handleAccept = () => {
     setAnalyticsConsent(true);
-    if (variant) {
-      sendGAEvent("event", "landing_variant_assigned", { variant });
-    }
+    sendGAEvent("event", "landing_variant_assigned", { variant: "landing-c" });
     setHasInteracted(true);
     setIsOpen(false);
   };
@@ -70,8 +66,8 @@ export function CookieConsent() {
 
   const handleSaveCustom = () => {
     setAnalyticsConsent(analyticsEnabled);
-    if (analyticsEnabled && variant) {
-      sendGAEvent("event", "landing_variant_assigned", { variant });
+    if (analyticsEnabled) {
+      sendGAEvent("event", "landing_variant_assigned", { variant: "landing-c" });
     }
     setHasInteracted(true);
     setIsOpen(false);

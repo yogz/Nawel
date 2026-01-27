@@ -27,6 +27,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PersonAvatar } from "../common/person-avatar";
 import { SectionHeader } from "./section-header";
+import { EmptyState } from "../common/empty-state";
+import { Package } from "lucide-react";
 
 interface PeopleTabProps {
   plan: PlanData;
@@ -260,10 +262,10 @@ export function PeopleTab({
                               token: guestTokens[person.id] || null,
                             })
                           }
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900"
+                          className="flex h-11 w-11 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-black/5 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
                           aria-label={t("editPerson", { name: getDisplayName(person) })}
                         >
-                          <Pencil size={14} />
+                          <Pencil size={16} />
                         </button>
                       )}
 
@@ -371,9 +373,16 @@ export function PeopleTab({
                       </motion.button>
                     ))}
                     {personItems.length === 0 && (
-                      <div className="p-8 text-center bg-gray-50/30">
-                        <p className="text-sm font-medium text-gray-400">{t("noItems")}</p>
-                      </div>
+                      <EmptyState
+                        icon={<Package className="h-20 w-20" strokeWidth={1.5} />}
+                        title={t("noItems")}
+                        description={
+                          t("noItemsDesc") ||
+                          "Aucun article assigné pour le moment. Les articles que vous assignez apparaîtront ici."
+                        }
+                        variant="compact"
+                        className="py-8"
+                      />
                     )}
                   </div>
                 </div>

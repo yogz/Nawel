@@ -34,6 +34,7 @@ const AuthModal = lazy(() => import("../auth/auth-modal").then((m) => ({ default
 // Custom Hooks
 import { useEventState } from "@/hooks/use-event-state";
 import { useEventHandlers } from "@/hooks/use-event-handlers";
+import { ErrorBoundary } from "../common/error-boundary";
 
 // Loading skeleton for tabs
 function TabSkeleton() {
@@ -259,7 +260,7 @@ export function Organizer({
       />
 
       <div className="mx-auto w-full max-w-3xl flex-1">
-        <main className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
+        <main id="main-content" className="space-y-4 px-4 py-6 sm:px-3 sm:py-4">
           <Suspense fallback={<TabSkeleton />}>
             {tab === "planning" && (
               <PlanningTab

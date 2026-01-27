@@ -43,7 +43,7 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     requireEmailVerification: false, // Allow auto-login before verification; banner will remind them
-    sendResetPassword: async ({ user, url, token }: { user: any; url: string; token: string }) => {
+    sendResetPassword: async ({ user, url, token }: { user: { email: string; language?: string | null }; url: string; token: string }) => {
       const locale = user.language || "fr";
       const t = await getTranslations({
         locale,
@@ -163,7 +163,7 @@ export const auth = betterAuth({
       url,
       token,
     }: {
-      user: any;
+      user: { email: string; language?: string | null };
       url: string;
       token: string;
     }) => {

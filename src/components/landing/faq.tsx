@@ -5,17 +5,18 @@ import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { trackFaqInteraction } from "@/lib/analytics";
+import { logger } from "@/lib/logger";
 
 export function Faq() {
   const t = useTranslations("FAQ");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const handleToggle = (index: number) => {
-    console.log(`[FAQ] Toggle requested for index: ${index}. Current openIndex: ${openIndex}`);
+    logger.debug(`[FAQ] Toggle requested for index: ${index}. Current openIndex: ${openIndex}`);
     const isOpening = openIndex !== index;
     setOpenIndex(isOpening ? index : null);
     trackFaqInteraction(index, isOpening ? "opened" : "closed");
-    console.log(`[FAQ] New intended state: ${isOpening ? index : "null"}`);
+    logger.debug(`[FAQ] New intended state: ${isOpening ? index : "null"}`);
   };
 
   const questions = [

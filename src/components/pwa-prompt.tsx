@@ -17,6 +17,14 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
+interface WindowWithMSStream extends Window {
+  MSStream?: unknown;
+}
+
 export function PWAPrompt() {
   const t = useTranslations("PWAPrompt");
   const { data: session } = useSession();
@@ -33,7 +41,7 @@ export function PWAPrompt() {
       // 1. Detect if already in standalone mode
       const isStandalone =
         window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone ||
+        (window.navigator as NavigatorWithStandalone).standalone === true ||
         document.referrer.includes("android-app://");
 
       if (isStandalone) return false;
@@ -87,13 +95,13 @@ export function PWAPrompt() {
 
     // 2. Detect iOS
     const ua = window.navigator.userAgent;
-    const ios = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
+    const ios = /iPad|iPhone|iPod/.test(ua) && !(window as WindowWithMSStream).MSStream;
     setIsIOS(ios);
 
     let timer: NodeJS.Timeout;
 
     // 3. Handle Android/Chrome beforeinstallprompt
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
       e.preventDefault();
       setDeferredPrompt(e);
 

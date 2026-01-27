@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { logger } from "@/lib/logger";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "../ui/drawer";
 import { X } from "lucide-react";
 import { ShareModal } from "@/features/events/components/share-modal";
@@ -61,7 +62,7 @@ export function OrganizerSheets({
   onDismissGuestPrompt,
   onJoinNew,
 }: OrganizerSheetsProps) {
-  console.log("[OrganizerSheets] Rendered with sheet:", sheet);
+  logger.debug("[OrganizerSheets] Rendered with sheet:", sheet);
   const tCommon = useTranslations("EventDashboard.Shared");
   const t = useTranslations("EventDashboard.Sheets");
   const searchParams = useSearchParams();

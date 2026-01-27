@@ -71,6 +71,7 @@ export function TabBar({ active, onChange, hasWriteAccess }: TabBarProps) {
       }}
     >
       <nav
+        id="navigation"
         className="pointer-events-auto flex items-center justify-around gap-2 rounded-full glass-panel border border-white/20 p-2 shadow-xl transition-all duration-300"
         role="tablist"
         aria-label={t("navigation")}

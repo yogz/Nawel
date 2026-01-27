@@ -1,6 +1,7 @@
 "use client";
 
 import { sendGAEvent } from "@next/third-parties/google";
+import { logger } from "./logger";
 
 /**
  * Centralized analytics tracking for the event page
@@ -121,7 +122,7 @@ export function trackEvent({
   const isDebugMode = typeof window !== "undefined" && localStorage.getItem("ga_debug") === "true";
 
   if (IS_DEV || isDebugMode) {
-    console.log("%c[Analytics]", "color: #10b981; font-weight: bold", {
+    logger.debug("[Analytics]", {
       action,
       category,
       label,
@@ -145,7 +146,7 @@ export function trackEvent({
     });
   } catch (error) {
     // Silently fail if GA is not available (e.g., ad blockers)
-    console.debug("[Analytics] Failed to track event:", action, error);
+    logger.debug("[Analytics] Failed to track event:", action, error);
   }
 }
 
@@ -260,7 +261,7 @@ export function trackLandingEvent(
 ) {
   // Debug mode - log instead of sending
   if (IS_DEV) {
-    console.log("[Analytics Debug] Landing:", { action, ...params });
+    logger.debug("[Analytics Debug] Landing:", { action, ...params });
     return;
   }
 
@@ -272,7 +273,7 @@ export function trackLandingEvent(
   try {
     sendGAEvent("event", action, params);
   } catch (error) {
-    console.debug("[Analytics] Failed to track landing event:", action, error);
+    logger.debug("[Analytics] Failed to track landing event:", action, error);
   }
 }
 
@@ -282,7 +283,7 @@ export function trackLandingEvent(
 export function trackPerformance(metric: string, value: number, context?: string) {
   // Debug mode - log instead of sending
   if (IS_DEV) {
-    console.log("[Analytics Debug] Performance:", { metric, value, context });
+    logger.debug("[Analytics Debug] Performance:", { metric, value, context });
     return;
   }
 
@@ -299,7 +300,7 @@ export function trackPerformance(metric: string, value: number, context?: string
       event_label: context,
     });
   } catch (error) {
-    console.debug("[Analytics] Failed to track performance:", metric, error);
+    logger.debug("[Analytics] Failed to track performance:", metric, error);
   }
 }
 
@@ -311,7 +312,7 @@ export function trackError(error: Error | string, context?: string, fatal = fals
 
   // Debug mode - log instead of sending
   if (IS_DEV) {
-    console.log("[Analytics Debug] Error:", { error: errorMessage, context, fatal });
+    logger.debug("[Analytics Debug] Error:", { error: errorMessage, context, fatal });
     return;
   }
 
@@ -327,7 +328,7 @@ export function trackError(error: Error | string, context?: string, fatal = fals
       context,
     });
   } catch (err) {
-    console.debug("[Analytics] Failed to track error:", errorMessage, err);
+    logger.debug("[Analytics] Failed to track error:", errorMessage, err);
   }
 }
 

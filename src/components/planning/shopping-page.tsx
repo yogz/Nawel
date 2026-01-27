@@ -92,7 +92,7 @@ export function ShoppingPage({
     aggregated.forEach((item) => {
       // For ingredients, use the category from the first source
       // For items (manual), default to "misc"
-      const category = (item.sources[0].ingredient as any)?.category || "misc";
+      const category = (item.sources[0].type === "ingredient" && item.sources[0].ingredient?.category) || "misc";
       if (!grouped[category]) {
         grouped[category] = [];
       }

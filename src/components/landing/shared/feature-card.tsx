@@ -91,13 +91,37 @@ export function FeatureCard({
             : "aspect-[16/10] rounded-2xl bg-gray-200 shadow-xl shadow-gray-200 ring-1 ring-gray-900/5 sm:rounded-3xl sm:shadow-2xl"
         }`}
       >
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes={isAlt ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 100vw, 50vw"}
-          className={`object-cover object-top ${isAlt ? "" : "transition-transform duration-700 hover:scale-105"}`}
-        />
+        <picture>
+          {/* AVIF source if available */}
+          {image.endsWith(".png") && (
+            <source
+              type="image/avif"
+              srcSet={image.replace(".png", ".avif")}
+            />
+          )}
+          {image.endsWith(".webp") && (
+            <source
+              type="image/avif"
+              srcSet={image.replace(".webp", ".avif")}
+            />
+          )}
+          {/* WebP fallback for PNG */}
+          {image.endsWith(".png") && (
+            <source
+              type="image/webp"
+              srcSet={image.replace(".png", ".webp")}
+            />
+          )}
+          {/* Fallback to original */}
+          <Image
+            src={image}
+            alt={title}
+            fill
+            sizes={isAlt ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 640px) 100vw, 50vw"}
+            className={`object-cover object-top ${isAlt ? "" : "transition-transform duration-700 hover:scale-105"}`}
+            loading="lazy"
+          />
+        </picture>
         <div
           className={`pointer-events-none absolute inset-0 ${
             isAlt

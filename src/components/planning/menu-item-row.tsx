@@ -107,7 +107,7 @@ function ItemRowComponent({
       }}
       aria-label={readOnly ? undefined : t("editItem", { name: item.name })}
       className={cn(
-        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 active:scale-[0.99] sm:px-5 sm:py-4",
+        "group relative flex w-full items-center justify-between gap-4 px-4 py-4 text-left transition-all duration-300 active:scale-[0.97] active:shadow-md sm:px-5 sm:py-4",
         "hover:bg-accent/[0.03]",
         !readOnly &&
           "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
@@ -216,7 +216,7 @@ function ItemRowComponent({
           ) : (
             <button
               type="button"
-              className="group relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-accent/10 transition-all duration-300 hover:bg-accent/20 active:scale-95"
+              className="group relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-accent/10 transition-all duration-300 hover:bg-accent/20 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2"
               onClick={(e) => {
                 e.stopPropagation();
                 if (currentPerson && handleAssign) {
@@ -229,7 +229,7 @@ function ItemRowComponent({
               aria-label={t("takeAction")}
               title={t("takeAction")}
             >
-              <Plus size={16} className="text-accent" strokeWidth={2.5} />
+              <Plus size={18} className="text-accent" strokeWidth={2.5} />
             </button>
           )}
         </div>

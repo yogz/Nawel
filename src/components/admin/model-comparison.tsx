@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { logger } from "@/lib/logger";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,13 +50,10 @@ export function ModelComparison() {
       return;
     }
 
-    if (process.env.NODE_ENV === "development") {
-      console.group("🧪 Model Comparison Test");
-      console.log("📋 Selected models:", selectedModels);
-      console.log("📝 System Prompt:\n", systemPrompt);
-      console.log("💬 User Prompt:", userPrompt);
-      console.groupEnd();
-    }
+    logger.debug("🧪 Model Comparison Test");
+    logger.debug("📋 Selected models:", selectedModels);
+    logger.debug("📝 System Prompt:\n", systemPrompt);
+    logger.debug("💬 User Prompt:", userPrompt);
 
     startTransition(async () => {
       try {
@@ -65,21 +63,17 @@ export function ModelComparison() {
         setResults(sortedResults);
 
         // Log results
-        if (process.env.NODE_ENV === "development") {
-          console.group("📊 Model Comparison Results");
-          sortedResults.forEach((result, index) => {
-            const status = result.success ? "✅" : "❌";
-            console.group(`${status} #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
-            if (result.success) {
-              console.log("Ingredients:", result.ingredients);
-              console.log("Raw response:", result.rawResponse);
-            } else {
-              console.error("Error:", result.error);
-            }
-            console.groupEnd();
-          });
-          console.groupEnd();
-        }
+        logger.debug("📊 Model Comparison Results");
+        sortedResults.forEach((result, index) => {
+          const status = result.success ? "✅" : "❌";
+          logger.debug(`${status} #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
+          if (result.success) {
+            logger.debug("Ingredients:", result.ingredients);
+            logger.debug("Raw response:", result.rawResponse);
+          } else {
+            logger.error("Error:", result.error);
+          }
+        });
       } catch (error) {
         console.error("Test failed:", error);
       }

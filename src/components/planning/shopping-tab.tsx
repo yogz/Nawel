@@ -24,6 +24,7 @@ import {
 import { useTranslations } from "next-intl";
 import { SectionHeader } from "./section-header";
 import { PersonAvatar } from "../common/person-avatar";
+import { EmptyState } from "../common/empty-state";
 
 interface ShoppingTabProps {
   plan: PlanData;
@@ -266,24 +267,27 @@ export function ShoppingTab({ plan, slug, writeKey, currentUserId }: ShoppingTab
   // Non-owner user not linked to any person
   if (!isOwner && !currentPerson) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <UserX className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">{t("notAssociated")}</h3>
-        <p className="text-sm text-muted-foreground">{t("notAssociatedDesc")}</p>
-      </div>
+      <EmptyState
+        icon={<UserX className="h-20 w-20" strokeWidth={1.5} />}
+        title={t("notAssociated")}
+        description={t("notAssociatedDesc") || "Vous n'êtes pas encore associé à une personne dans cet événement."}
+      />
     );
   }
 
   // No items assigned at all
   if (peopleWithItems.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <ShoppingCart className="mb-4 h-16 w-16 text-gray-200" />
-        <h3 className="mb-2 text-lg font-bold text-text">{t("noShopping")}</h3>
-        <p className="text-sm text-muted-foreground">
-          {isOwner ? t("noShoppingOwnerDesc") : t("noShoppingUserDesc")}
-        </p>
-      </div>
+      <EmptyState
+        icon={<ShoppingCart className="h-20 w-20" strokeWidth={1.5} />}
+        title={t("noShopping")}
+        description={
+          isOwner
+            ? t("noShoppingOwnerDesc") ||
+              "Aucune liste de courses pour le moment. Assignez des articles aux personnes pour générer leurs listes."
+            : t("noShoppingUserDesc") || "Aucun article assigné pour le moment."
+        }
+      />
     );
   }
 

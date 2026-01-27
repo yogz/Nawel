@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
+import { OptimizedHeroImage } from "./optimized-hero-image";
 
 interface HeroSectionProps {
   heroOpacity: MotionValue<number>;
@@ -110,15 +111,24 @@ export function HeroSection({
         <LanguageSelector variant="compact" showSearch />
       </div>
       <div className="absolute inset-0 -z-10">
-        <Image
-          src={heroImage}
-          alt="Hero Aura"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-60"
-          priority
-          fetchPriority="high"
-        />
+        {/* Use optimized image with AVIF/WebP and responsive srcset if available */}
+        {heroImage.includes("aura-hero") || heroImage.includes("alt_hero") ? (
+          <OptimizedHeroImage
+            baseName={heroImage.replace(/^\//, "")}
+            alt="Hero Aura"
+            className="object-cover opacity-60"
+          />
+        ) : (
+          <Image
+            src={heroImage}
+            alt="Hero Aura"
+            fill
+            sizes="100vw"
+            className="object-cover opacity-60"
+            priority
+            fetchPriority="high"
+          />
+        )}
         <div className={`absolute inset-0 ${gradientClasses}`} />
       </div>
 

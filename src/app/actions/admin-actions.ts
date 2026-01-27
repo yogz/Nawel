@@ -34,6 +34,37 @@ import {
 } from "./schemas";
 import fs from "fs";
 import path from "path";
+import { logger } from "@/lib/logger";
+
+interface CitationAttribution {
+  author: string | null;
+  work: string | null;
+  year: number | null;
+  origin: string | null;
+  confidence: string;
+  origin_type: string | null;
+  origin_qualifier: string | null;
+}
+
+interface CitationItem {
+  id: string;
+  type: string;
+  tone: string;
+  category: string;
+  tags: string[];
+  attribution: CitationAttribution;
+  original: {
+    lang: string;
+    text: string;
+  };
+  localized: Record<string, string>;
+  rating: number;
+}
+
+interface CitationsData {
+  version?: number;
+  items: CitationItem[];
+}
 
 async function requireAdmin() {
   const session = await auth.api.getSession({
@@ -395,15 +426,13 @@ export const testModelsAction = withErrorThrower(
   ): Promise<ModelTestResult[]> => {
     await requireAdmin();
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("\n========== MODEL COMPARISON TEST ==========");
-      console.log("Models:", models);
-      console.log("\n--- System Prompt ---");
-      console.log(systemPrompt);
-      console.log("\n--- User Prompt ---");
-      console.log(userPrompt);
-      console.log("============================================\n");
-    }
+    logger.debug("\n========== MODEL COMPARISON TEST ==========");
+    logger.debug("Models:", models);
+    logger.debug("\n--- System Prompt ---");
+    logger.debug(systemPrompt);
+    logger.debug("\n--- User Prompt ---");
+    logger.debug(userPrompt);
+    logger.debug("============================================\n");
 
     // Test tous les modèles en parallèle
     const results = await Promise.all(
@@ -411,24 +440,22 @@ export const testModelsAction = withErrorThrower(
     );
 
     // Log des résultats
-    if (process.env.NODE_ENV === "development") {
-      console.log("\n========== RESULTS ==========");
-      results
-        .sort((a, b) => a.responseTimeMs - b.responseTimeMs)
-        .forEach((result, index) => {
-          const status = result.success ? "✓" : "✗";
-          console.log(`\n[${status}] #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
-          if (result.success) {
-            console.log("Ingredients:", JSON.stringify(result.ingredients, null, 2));
-          } else {
-            console.log("Error:", result.error);
-          }
-          if (result.rawResponse) {
-            console.log("Raw:", result.rawResponse);
-          }
-        });
-      console.log("\n==============================\n");
-    }
+    logger.debug("\n========== RESULTS ==========");
+    results
+      .sort((a, b) => a.responseTimeMs - b.responseTimeMs)
+      .forEach((result, index) => {
+        const status = result.success ? "✓" : "✗";
+        logger.debug(`\n[${status}] #${index + 1} ${result.model} (${result.responseTimeMs}ms)`);
+        if (result.success) {
+          logger.debug("Ingredients:", JSON.stringify(result.ingredients, null, 2));
+        } else {
+          logger.debug("Error:", result.error);
+        }
+        if (result.rawResponse) {
+          logger.debug("Raw:", result.rawResponse);
+        }
+      });
+    logger.debug("\n==============================\n");
 
     return results;
   }
@@ -484,11 +511,9 @@ export const updateCitationAdminAction = createSafeAction(
     }
 
     const fileContent = fs.readFileSync(filePath, "utf8");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const citationsData = JSON.parse(fileContent) as { version?: number; items: any[] };
+    const citationsData = JSON.parse(fileContent) as CitationsData;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const itemIndex = citationsData.items.findIndex((item: any) => item.id === input.id);
+    const itemIndex = citationsData.items.findIndex((item) => item.id === input.id);
 
     if (itemIndex === -1) {
       throw new Error("Citation introuvable.");

@@ -225,7 +225,9 @@
       "button": "Reset Password",
       "footer": "If you did not request a password reset, you can safely ignore this email."
     },
-    "guestWarning": "Limited features"
+    "guestWarning": "Limited features",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "FAQ": {
     "title": "Frequently Asked Questions",

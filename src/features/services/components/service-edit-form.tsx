@@ -55,7 +55,13 @@ export function ServiceEditForm({
   const [peopleCount, setPeopleCount] = useState(service?.peopleCount || 0);
   const [showDetails, setShowDetails] = useState(false);
   const skipSaveRef = useRef(false);
-  const stateRef = useRef({ title, description, adults, children, peopleCount });
+  const stateRef = useRef<{
+    title: string;
+    description: string;
+    adults: number;
+    children: number;
+    peopleCount: number;
+  }>({ title, description, adults, children, peopleCount });
 
   useEffect(() => {
     stateRef.current = { title, description, adults, children, peopleCount };
@@ -70,9 +76,8 @@ export function ServiceEditForm({
       description: currDescription,
       adults: currAdults,
       children: currChildren,
-      adultsCount: _adultsCount, // Not used but present in some types
       peopleCount: currCount,
-    } = stateRef.current as any;
+    } = stateRef.current;
     const hasChanged =
       currTitle !== (service?.title || "") ||
       currDescription !== (service?.description || "") ||
@@ -81,7 +86,7 @@ export function ServiceEditForm({
       currCount !== (service?.peopleCount || 0);
 
     if (hasChanged && currTitle.trim()) {
-      (onSubmit as any)(
+      onSubmit(
         service.id,
         currTitle,
         currDescription,
