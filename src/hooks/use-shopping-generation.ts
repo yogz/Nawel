@@ -14,6 +14,7 @@ interface UseShoppingGenerationParams {
   writeKey?: string;
   token?: string;
   readOnly?: boolean;
+  personId?: number; // Filter items by person (for shopping page)
 }
 
 export function useShoppingGeneration({
@@ -23,6 +24,7 @@ export function useShoppingGeneration({
   writeKey,
   token,
   readOnly,
+  personId,
 }: UseShoppingGenerationParams) {
   const params = useParams();
   const locale = (params.locale as string) || "fr";
@@ -30,7 +32,7 @@ export function useShoppingGeneration({
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
   const [, startTransition] = useTransition();
 
-  // Find all items without ingredients
+  // Find all items without ingredients (filtered by personId if provided)
   const itemsWithoutIngredients = useMemo(() => {
     const items: Array<{
       id: number;
@@ -45,6 +47,11 @@ export function useShoppingGeneration({
     plan.meals.forEach((meal) => {
       meal.services.forEach((service) => {
         service.items.forEach((item) => {
+          // Skip items not assigned to the person (if personId is provided)
+          if (personId !== undefined && item.personId !== personId) {
+            return;
+          }
+
           if (!item.ingredients || item.ingredients.length === 0) {
             // Get people count from service, with fallback to peopleCount or default
             const adults = service.adults ?? service.peopleCount ?? 0;
@@ -66,7 +73,7 @@ export function useShoppingGeneration({
     });
 
     return items;
-  }, [plan.meals]);
+  }, [plan.meals, personId]);
 
   const generateAllIngredients = async (selectedIds?: Set<number>) => {
     if (readOnly || itemsWithoutIngredients.length === 0) {

@@ -264,7 +264,7 @@ export function ShoppingPage({
 
   const backUrl = writeKey ? `/event/${slug}?key=${writeKey}` : `/event/${slug}`;
 
-  // Hook for batch ingredient generation
+  // Hook for batch ingredient generation (filtered to this person's items only)
   const {
     itemsWithoutIngredients,
     isGenerating: isGeneratingIngredients,
@@ -277,6 +277,7 @@ export function ShoppingPage({
     slug,
     writeKey,
     readOnly: !writeEnabled,
+    personId: person.id,
   });
 
   return (
