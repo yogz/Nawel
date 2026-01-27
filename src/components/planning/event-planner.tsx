@@ -386,6 +386,7 @@ export function EventPlanner({
         sheet={sheet}
         slug={slug}
         writeKey={effectiveWriteKey}
+        isOwner={isOwner}
         handlers={handlers}
       />
 

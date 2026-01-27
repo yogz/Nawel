@@ -32,6 +32,7 @@ interface EventPropertiesDrawerProps {
   onClose: () => void;
   plan: PlanData;
   setSheet: (sheet: Sheet) => void;
+  isOwner?: boolean;
   handlers: {
     handleDeleteEvent: () => Promise<void>;
   };
@@ -42,6 +43,7 @@ export function EventPropertiesDrawer({
   onClose,
   plan,
   setSheet,
+  isOwner,
   handlers,
 }: EventPropertiesDrawerProps) {
   const t = useTranslations("EventDashboard");
@@ -204,26 +206,31 @@ export function EventPropertiesDrawer({
             </div>
 
             {/* Actions */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="h-auto flex-col gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
-                onClick={() => {
-                  setSheet({ type: "event-edit" });
-                  onClose();
-                }}
-              >
-                <div className="rounded-full bg-violet-50 p-2 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
-                  <PenLine size={20} />
-                </div>
-                <span className="font-semibold text-gray-700 dark:text-zinc-300">
-                  {t("Properties.edit")}
-                </span>
-              </Button>
+            <div className={cn("grid gap-3", isOwner ? "grid-cols-2" : "grid-cols-1")}>
+              {isOwner && (
+                <Button
+                  variant="outline"
+                  className="h-auto flex-col gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                  onClick={() => {
+                    setSheet({ type: "event-edit" });
+                    onClose();
+                  }}
+                >
+                  <div className="rounded-full bg-violet-50 p-2 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                    <PenLine size={20} />
+                  </div>
+                  <span className="font-semibold text-gray-700 dark:text-zinc-300">
+                    {t("Properties.edit")}
+                  </span>
+                </Button>
+              )}
 
               <Button
                 variant="outline"
-                className="h-auto flex-col gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                className={cn(
+                  "h-auto gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700",
+                  isOwner ? "flex-col" : "flex-row justify-center"
+                )}
                 onClick={() => {
                   setSheet({ type: "share" });
                   onClose();
@@ -239,34 +246,36 @@ export function EventPropertiesDrawer({
             </div>
 
             {/* Danger Zone */}
-            <div className="border-t border-gray-100 pt-4 dark:border-zinc-700">
-              {!showDangerZone ? (
-                <button
-                  onClick={() => setShowDangerZone(true)}
-                  className="w-full py-3 text-xs font-black uppercase tracking-widest text-red-500/60 transition-all hover:text-red-500"
-                >
-                  {t("Properties.deleteEvent")}
-                </button>
-              ) : (
-                <div className="animate-in fade-in slide-in-from-bottom-2">
-                  <DangerZoneContent
-                    onDelete={handleDelete}
-                    onCancel={() => setShowDangerZone(false)}
-                    isDeleting={isDeleting}
-                    title={t("Properties.deleteEvent")}
-                    warningMessage={t("Properties.deleteWarning")}
-                    deleteButtonLabel={t("Properties.deleteConfirm")}
-                    cancelButtonLabel={tCommon("cancel")}
-                    confirmationConfig={{
-                      title: t("Properties.deleteConfirmTitle"),
-                      description: t("Properties.deleteConfirmDescription"),
-                      confirmLabel: t("Properties.deleteConfirmYes"),
-                      cancelLabel: tCommon("cancel"),
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            {isOwner && (
+              <div className="border-t border-gray-100 pt-4 dark:border-zinc-700">
+                {!showDangerZone ? (
+                  <button
+                    onClick={() => setShowDangerZone(true)}
+                    className="w-full py-3 text-xs font-black uppercase tracking-widest text-red-500/60 transition-all hover:text-red-500"
+                  >
+                    {t("Properties.deleteEvent")}
+                  </button>
+                ) : (
+                  <div className="animate-in fade-in slide-in-from-bottom-2">
+                    <DangerZoneContent
+                      onDelete={handleDelete}
+                      onCancel={() => setShowDangerZone(false)}
+                      isDeleting={isDeleting}
+                      title={t("Properties.deleteEvent")}
+                      warningMessage={t("Properties.deleteWarning")}
+                      deleteButtonLabel={t("Properties.deleteConfirm")}
+                      cancelButtonLabel={tCommon("cancel")}
+                      confirmationConfig={{
+                        title: t("Properties.deleteConfirmTitle"),
+                        description: t("Properties.deleteConfirmDescription"),
+                        confirmLabel: t("Properties.deleteConfirmYes"),
+                        cancelLabel: tCommon("cancel"),
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </DrawerContent>

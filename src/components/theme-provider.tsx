@@ -16,7 +16,7 @@ export interface ThemeContextProps {
 }
 
 const STORAGE_KEY = "colist-theme-mode";
-const DEFAULT_MODE: ThemeMode = "system";
+const DEFAULT_MODE: ThemeMode = "light";
 
 const ThemeContext = createContext<ThemeContextProps>({
   mode: DEFAULT_MODE,

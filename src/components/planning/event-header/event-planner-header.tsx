@@ -23,6 +23,7 @@ interface EventPlannerHeaderProps {
   sheet: Sheet | null;
   slug: string;
   writeKey?: string;
+  isOwner?: boolean;
   handlers: {
     handleUpdateEvent?: (name: string) => void;
     handleUpdateMeal?: (
@@ -76,6 +77,7 @@ export function EventPlannerHeader({
   sheet: _sheet,
   slug: _slug,
   writeKey: _writeKey,
+  isOwner,
   handlers,
 }: EventPlannerHeaderProps) {
   // Theme hook removed (was for christmas)
@@ -207,6 +209,7 @@ export function EventPlannerHeader({
         onClose={() => setShowPropertiesDrawer(false)}
         plan={plan}
         setSheet={setSheet}
+        isOwner={isOwner}
         handlers={handlers}
       />
     </>
