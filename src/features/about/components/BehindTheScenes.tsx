@@ -409,13 +409,14 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                         indicator="dot"
                         labelFormatter={(_, payload) => {
                           if (payload && payload[0]) {
+                            const itemPayload = payload[0].payload as Record<string, unknown> | undefined;
                             const total = CATEGORIES.reduce(
-                              (sum, cat) => sum + ((payload[0].payload[cat] as number) || 0),
+                              (sum, cat) => sum + ((itemPayload?.[cat] as number) || 0),
                               0
                             );
                             return (
                               <div className="flex flex-col gap-2">
-                                <span className="font-bold">{payload[0].payload.month}</span>
+                                <span className="font-bold">{itemPayload?.month as string}</span>
                                 <span className="text-sm font-semibold text-primary">
                                   Total: {total.toFixed(2)} €
                                 </span>
