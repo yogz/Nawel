@@ -427,6 +427,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                         }}
                         formatter={(value, name) => {
                           const Icon = CATEGORY_ICONS[name as string];
+                          const displayValue = typeof value === "number" ? value.toFixed(2) : String(value ?? "");
                           return (
                             <div className="flex w-full items-center justify-between gap-4">
                               <div className="flex items-center gap-2">
@@ -435,7 +436,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                                   {chartConfig[name as keyof typeof chartConfig]?.label || name}
                                 </span>
                               </div>
-                              <span className="font-mono font-medium">{value} €</span>
+                              <span className="font-mono font-medium">{displayValue} €</span>
                             </div>
                           );
                         }}
