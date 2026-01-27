@@ -245,7 +245,7 @@ export function OrganizerSheets({
                 </div>
                 <DrawerClose asChild>
                   <button
-                    className="touch-manipulation rounded-full bg-gray-50 p-2 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                    className="touch-manipulation rounded-full bg-gray-50 p-2 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                     aria-label={tCommon("close") || "Fermer"}
                   >
                     <X size={18} />

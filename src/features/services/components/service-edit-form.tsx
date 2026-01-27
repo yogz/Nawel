@@ -86,14 +86,7 @@ export function ServiceEditForm({
       currCount !== (service?.peopleCount || 0);
 
     if (hasChanged && currTitle.trim()) {
-      onSubmit(
-        service.id,
-        currTitle,
-        currDescription,
-        currAdults,
-        currChildren,
-        currCount
-      );
+      onSubmit(service.id, currTitle, currDescription, currAdults, currChildren, currCount);
     }
   };
 
@@ -113,7 +106,7 @@ export function ServiceEditForm({
       <div className="space-y-2">
         <Label
           htmlFor="service-title"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
         >
           {t("label")}
         </Label>
@@ -126,14 +119,14 @@ export function ServiceEditForm({
           required
           autoCapitalize="sentences"
           enterKeyHint="done"
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
         />
       </div>
 
       <div className="space-y-2">
         <Label
           htmlFor="service-description"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
         >
           {t("descriptionLabel") || "Description (ex: Apéro, Entrées...)"}
         </Label>
@@ -144,7 +137,7 @@ export function ServiceEditForm({
           onBlur={handleBlurSave}
           placeholder={t("descriptionPlaceholder") || "Détails du service"}
           autoCapitalize="sentences"
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
         />
       </div>
 
@@ -152,9 +145,9 @@ export function ServiceEditForm({
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
-          className="group flex w-full items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+          className="group flex w-full items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
         >
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200 dark:bg-zinc-800 dark:group-hover:bg-zinc-700">
             <ChevronDown
               className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
             />
@@ -163,7 +156,7 @@ export function ServiceEditForm({
         </button>
 
         {showDetails && (
-          <div className="space-y-4 border-t border-gray-100 pt-4">
+          <div className="space-y-4 border-t border-gray-100 pt-4 dark:border-zinc-700">
             {onDelete && (
               <div className="pt-2">
                 <Button

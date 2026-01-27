@@ -9,7 +9,7 @@ export function AuthModal({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <Drawer open={open} onOpenChange={(isOpen) => !isOpen && onClose()} repositionInputs={true}>
-      <DrawerContent className="px-6 h-[95vh] bg-[#fdfcff] max-h-[95vh]">
+      <DrawerContent className="h-[95vh] max-h-[95vh] bg-[#fdfcff] px-6 dark:bg-zinc-900">
         <DrawerHeader className="px-0 text-left mb-6">
           <DrawerTitle className="sr-only">{t("signinTitle")}</DrawerTitle>
         </DrawerHeader>

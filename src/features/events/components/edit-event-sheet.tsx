@@ -164,7 +164,7 @@ export function EditEventSheet({
             <DrawerTitle>{t("editTitle")}</DrawerTitle>
             <DrawerClose asChild>
               <button
-                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                 aria-label={tCommon("close") || "Fermer"}
               >
                 <X size={16} />
@@ -178,7 +178,7 @@ export function EditEventSheet({
             <div className="space-y-2">
               <Label
                 htmlFor="name"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
               >
                 {t("nameLabel")}
               </Label>
@@ -189,7 +189,7 @@ export function EditEventSheet({
                 placeholder={t("namePlaceholder")}
                 autoCapitalize="sentences"
                 enterKeyHint="next"
-                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+                className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
               />
             </div>
 
@@ -199,7 +199,7 @@ export function EditEventSheet({
                 <div className="space-y-2">
                   <Label
                     htmlFor="date"
-                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
                   >
                     {tMeal("dateLabel")}
                   </Label>
@@ -208,14 +208,14 @@ export function EditEventSheet({
                       value={date}
                       onChange={setDate}
                       placeholder={tMeal("datePlaceholder") || "Choisir une date"}
-                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12"
+                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-12"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label
                     htmlFor="time"
-                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
                   >
                     {tMeal("timeLabel")}
                   </Label>
@@ -224,7 +224,7 @@ export function EditEventSheet({
                       value={time}
                       onChange={setTime}
                       placeholder={tMeal("timePlaceholder") || "Choisir l'heure"}
-                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12"
+                      className="h-14 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-12"
                     />
                   </div>
                 </div>
@@ -236,12 +236,12 @@ export function EditEventSheet({
               <div className="space-y-2">
                 <Label
                   htmlFor="adults"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                 >
                   {tCommon("adultsLabel")}
                 </Label>
                 <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
                     <SelectValue placeholder={tCommon("adultsLabel")} />
                   </SelectTrigger>
                   <SelectContent className="z-[110] max-h-[300px] rounded-xl">
@@ -256,7 +256,7 @@ export function EditEventSheet({
               <div className="space-y-2">
                 <Label
                   htmlFor="children"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                 >
                   {tCommon("childrenLabel")}
                 </Label>
@@ -264,7 +264,7 @@ export function EditEventSheet({
                   value={String(children)}
                   onValueChange={(val) => setChildren(parseInt(val))}
                 >
-                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                  <SelectTrigger className="h-12 rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
                     <SelectValue placeholder={tCommon("childrenLabel")} />
                   </SelectTrigger>
                   <SelectContent className="z-[110] max-h-[300px] rounded-xl">
@@ -283,7 +283,7 @@ export function EditEventSheet({
               <div className="space-y-2">
                 <Label
                   htmlFor="address"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                 >
                   {tMeal("addressLabel")}
                 </Label>
@@ -296,9 +296,9 @@ export function EditEventSheet({
                     autoComplete="street-address"
                     autoCapitalize="sentences"
                     enterKeyHint="next"
-                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                    className="h-12 rounded-xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
                   />
-                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-zinc-500" />
                 </div>
               </div>
             )}
@@ -307,7 +307,7 @@ export function EditEventSheet({
             <div className="space-y-2">
               <Label
                 htmlFor="description"
-                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
               >
                 {t("descriptionLabel")}
               </Label>
@@ -317,7 +317,7 @@ export function EditEventSheet({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("descriptionPlaceholder")}
                 autoCapitalize="sentences"
-                className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+                className="min-h-[70px] resize-none rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
                 rows={2}
               />
             </div>
@@ -328,10 +328,10 @@ export function EditEventSheet({
                 <Button
                   type="button"
                   variant="premium"
-                  className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
+                  className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100 dark:ring-zinc-700"
                   icon={<X size={16} />}
                 >
-                  <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+                  <span className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500">
                     {tCommon("cancel")}
                   </span>
                 </Button>
@@ -345,7 +345,7 @@ export function EditEventSheet({
                 icon={<Check size={16} />}
                 shine
               >
-                <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                <span className="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-zinc-300">
                   {isPending ? tCommon("saving") : tCommon("save")}
                 </span>
               </Button>

@@ -47,7 +47,7 @@ export function PersonForm({
       <div className="space-y-2">
         <Label
           htmlFor="person-name"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
         >
           {t("label")}
         </Label>
@@ -65,13 +65,13 @@ export function PersonForm({
           autoComplete="name"
           autoCapitalize="words"
           enterKeyHint="done"
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
         />
       </div>
 
       {currentUserId && (
         <div className="flex items-center space-x-3 px-1">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-gray-100 bg-white shadow-sm ring-accent/20 focus-within:ring-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md border-2 border-gray-100 bg-white shadow-sm ring-accent/20 focus-within:ring-2 dark:border-zinc-700 dark:bg-zinc-800">
             <input
               type="checkbox"
               id="is-me"
@@ -82,7 +82,7 @@ export function PersonForm({
           </div>
           <Label
             htmlFor="is-me"
-            className="flex cursor-pointer items-center gap-1.5 text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent"
+            className="flex cursor-pointer items-center gap-1.5 text-xs font-bold tracking-tight text-gray-600 transition-colors hover:text-accent dark:text-zinc-400"
           >
             {t("isMe")}{" "}
             {isMe && currentUserImage ? (
@@ -111,7 +111,7 @@ export function PersonForm({
           disabled={(readOnly && !isJoin) || !name.trim()}
           shine
         >
-          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-zinc-300">
             {t("addButton")}
           </span>
         </Button>

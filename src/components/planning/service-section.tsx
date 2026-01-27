@@ -84,7 +84,7 @@ export const ServiceSection = memo(function ServiceSection({
         actions={
           <div className="flex items-center gap-3">
             {filteredItems.length > 0 && (
-              <span className="text-xs font-medium text-gray-400">
+              <span className="text-xs font-medium text-gray-400 dark:text-zinc-500">
                 {filteredItems.length} {t("items")}
               </span>
             )}
@@ -94,7 +94,7 @@ export const ServiceSection = memo(function ServiceSection({
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95"
+              className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95 dark:text-zinc-500 dark:hover:bg-white/5 dark:hover:text-zinc-300"
               aria-label={isExpanded ? t("collapse") : t("expand")}
             >
               <motion.div

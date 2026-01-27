@@ -266,7 +266,7 @@ export function MealForm({
               <div className="space-y-2">
                 <Label
                   htmlFor="title"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                 >
                   {t("titleLabel")}
                 </Label>
@@ -284,14 +284,14 @@ export function MealForm({
                   placeholder={t("titlePlaceholder")}
                   autoCapitalize="sentences"
                   enterKeyHint="next"
-                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+                  className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label
                   htmlFor="address"
-                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                  className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                 >
                   {t("addressLabel")}
                 </Label>
@@ -312,7 +312,7 @@ export function MealForm({
                     autoComplete="street-address"
                     autoCapitalize="sentences"
                     enterKeyHint="next"
-                    className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20"
+                    className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 pl-10 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
                   />
                   <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 </div>
@@ -322,7 +322,7 @@ export function MealForm({
                 <div className="flex-[3] space-y-2">
                   <Label
                     htmlFor="date"
-                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
                   >
                     {t("dateLabel")}
                   </Label>
@@ -343,7 +343,7 @@ export function MealForm({
                         }
                       }}
                       onBlur={handleBlurSave}
-                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-12 sm:pl-11"
                     />
                     <CalendarIcon className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
                   </div>
@@ -352,7 +352,7 @@ export function MealForm({
                 <div className="flex-[2] space-y-2">
                   <Label
                     htmlFor="time"
-                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                    className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
                   >
                     {t("timeLabel")}
                   </Label>
@@ -375,7 +375,7 @@ export function MealForm({
                       }}
                       enterKeyHint="next"
                       onBlur={handleBlurSave}
-                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-12 sm:pl-11"
+                      className="h-14 w-full touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 pl-12 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-12 sm:pl-11"
                     />
                     <Clock className="pointer-events-none absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-400 sm:left-3.5 sm:h-4 sm:w-4" />
                   </div>
@@ -386,12 +386,12 @@ export function MealForm({
                 <div className="space-y-2">
                   <Label
                     htmlFor="adults"
-                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                   >
                     {tCommon("adultsLabel")}
                   </Label>
                   <Select value={String(adults)} onValueChange={(val) => setAdults(parseInt(val))}>
-                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
                       <SelectValue placeholder={tCommon("adultsLabel")} />
                     </SelectTrigger>
                     <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
@@ -406,7 +406,7 @@ export function MealForm({
                 <div className="space-y-2">
                   <Label
                     htmlFor="children"
-                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+                    className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
                   >
                     {tCommon("childrenLabel")}
                   </Label>
@@ -414,7 +414,7 @@ export function MealForm({
                     value={String(children)}
                     onValueChange={(val) => setChildren(parseInt(val))}
                   >
-                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+                    <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
                       <SelectValue placeholder={tCommon("childrenLabel")} />
                     </SelectTrigger>
                     <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
@@ -452,7 +452,7 @@ export function MealForm({
                     variant="premium"
                     className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
                   >
-                    <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+                    <span className="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-zinc-400">
                       {tCommon("cancel")}
                     </span>
                   </Button>
@@ -466,7 +466,7 @@ export function MealForm({
                   icon={isPending ? <Loader2 className="animate-spin" /> : <Sparkles size={18} />}
                   shine={!isPending}
                 >
-                  <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+                  <span className="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-zinc-300">
                     {isCommon ? (isPending ? t("creating") : t("createButton")) : tCommon("next")}
                   </span>
                 </Button>
@@ -579,7 +579,7 @@ export function MealForm({
               className="flex-1 py-6 pr-6 shadow-sm ring-1 ring-gray-100"
               icon={<ArrowLeft size={16} />}
             >
-              <span className="text-xs font-black uppercase tracking-widest text-gray-500">
+              <span className="text-xs font-black uppercase tracking-widest text-gray-500 dark:text-zinc-400">
                 {tCommon("back")}
               </span>
             </Button>
@@ -592,7 +592,7 @@ export function MealForm({
               icon={isPending ? <Loader2 className="animate-spin" /> : <Sparkles />}
               shine={!isPending}
             >
-              <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+              <span className="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-zinc-300">
                 {isPending ? t("creating") : t("createButton")}
               </span>
             </Button>

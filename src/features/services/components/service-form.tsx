@@ -126,7 +126,7 @@ export function ServiceForm({
     <div className="space-y-4">
       {!forceNewMeal && meals.length > 0 && (
         <div className="space-y-2">
-          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500">
             {t("selectMealLabel")}
           </Label>
           <Select
@@ -175,7 +175,7 @@ export function ServiceForm({
             <div className="space-y-2">
               <Label
                 htmlFor="date"
-                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
               >
                 Date
               </Label>
@@ -202,7 +202,7 @@ export function ServiceForm({
             <div className="space-y-2">
               <Label
                 htmlFor="meal-time"
-                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]"
+                className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-[10px]"
               >
                 {tMeal("timeLabel")}
               </Label>
@@ -230,7 +230,7 @@ export function ServiceForm({
           <div className="space-y-2">
             <Label
               htmlFor="meal-title"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
             >
               {tMeal("titleLabel")}
             </Label>
@@ -255,7 +255,7 @@ export function ServiceForm({
           <div className="space-y-2">
             <Label
               htmlFor="meal-address"
-              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+              className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
             >
               {tMeal("addressLabel")}
             </Label>
@@ -287,7 +287,7 @@ export function ServiceForm({
       <div className="space-y-4">
         <Label
           htmlFor="service-title"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
         >
           {t("label")}
         </Label>
@@ -309,14 +309,14 @@ export function ServiceForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
         />
       </div>
 
       <div className="space-y-4">
         <Label
           htmlFor="service-description"
-          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+          className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
         >
           {t("descriptionLabel") || "Description (ex: Apéro, Entrées...)"}
         </Label>
@@ -337,7 +337,7 @@ export function ServiceForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="done"
-          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20"
+          className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
         />
       </div>
 
@@ -345,7 +345,7 @@ export function ServiceForm({
         <div className="space-y-2">
           <Label
             htmlFor="adults"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
           >
             {tCommon("adultsLabel")}
           </Label>
@@ -358,7 +358,7 @@ export function ServiceForm({
             }}
             disabled={readOnly}
           >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
               <SelectValue placeholder={tCommon("adultsLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
@@ -373,7 +373,7 @@ export function ServiceForm({
         <div className="space-y-2">
           <Label
             htmlFor="children"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
           >
             {tCommon("childrenLabel")}
           </Label>
@@ -386,7 +386,7 @@ export function ServiceForm({
             }}
             disabled={readOnly}
           >
-            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white">
+            <SelectTrigger className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800">
               <SelectValue placeholder={tCommon("childrenLabel")} />
             </SelectTrigger>
             <SelectContent className="z-[110] max-h-[300px] rounded-2xl">
@@ -414,7 +414,7 @@ export function ServiceForm({
           }
           shine={!isPending}
         >
-          <span className="text-sm font-black uppercase tracking-widest text-gray-700">
+          <span className="text-sm font-black uppercase tracking-widest text-gray-700 dark:text-zinc-300">
             {isPending ? t("adding") : t("addButton")}
           </span>
         </Button>

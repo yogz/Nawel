@@ -249,7 +249,7 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
-          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:text-base"
+          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-10 sm:text-base"
         />
       </div>
 
@@ -287,7 +287,7 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="sentences"
           enterKeyHint="next"
-          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-10 sm:text-base"
+          className="h-12 touch-manipulation rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-10 sm:text-base"
         />
       </div>
 
@@ -308,7 +308,7 @@ export function ItemForm({
           disabled={readOnly}
           autoCapitalize="none"
           enterKeyHint="next"
-          className="h-11 flex-1 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:text-sm"
+          className="h-11 flex-1 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-9 sm:text-sm"
           aria-label={t("quantityLabel")}
         />
         <Input
@@ -329,7 +329,7 @@ export function ItemForm({
           }}
           disabled={readOnly}
           enterKeyHint="done"
-          className="h-11 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-9 sm:w-24 sm:text-sm"
+          className="h-11 w-28 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-9 sm:w-24 sm:text-sm"
           aria-label={t("priceLabel")}
         />
       </div>
@@ -351,7 +351,7 @@ export function ItemForm({
               "flex shrink-0 touch-manipulation snap-start flex-col items-center gap-2 rounded-[20px] p-3 transition-all active:scale-95 sm:gap-1.5 sm:p-2",
               !currentPersonId
                 ? "bg-amber-50 ring-2 ring-amber-200"
-                : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 active:bg-gray-100"
+                : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 active:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:hover:ring-zinc-600 dark:active:bg-zinc-800"
             )}
           >
             <div
@@ -386,7 +386,7 @@ export function ItemForm({
                   "flex min-w-[68px] shrink-0 touch-manipulation snap-start flex-col items-center gap-2 rounded-[20px] p-2.5 transition-all active:scale-95 sm:min-w-[60px] sm:gap-1.5 sm:p-2",
                   isSelected
                     ? "bg-accent/5 ring-2 ring-accent/30"
-                    : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 active:bg-gray-100"
+                    : "bg-gray-50 hover:bg-white hover:shadow-sm hover:ring-1 hover:ring-gray-200 active:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:hover:ring-zinc-600 dark:active:bg-zinc-800"
                 )}
               >
                 <div
@@ -431,7 +431,7 @@ export function ItemForm({
       {/* Expandable details */}
       {/* Ingredients Section - Simplified for Mobile First */}
       {isEditMode && (
-        <div className="space-y-2.5 rounded-2xl border border-gray-100 bg-gray-50/50 p-3.5 transition-all hover:bg-white hover:shadow-sm">
+        <div className="space-y-2.5 rounded-2xl border border-gray-100 bg-gray-50/50 p-3.5 transition-all hover:bg-white hover:shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50 dark:hover:bg-zinc-800">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
@@ -444,7 +444,7 @@ export function ItemForm({
               variant="outline"
               size="sm"
               onClick={onManageIngredients}
-              className="rounded-xl border-gray-200 bg-white px-4 text-xs font-bold uppercase tracking-widest text-accent shadow-sm active:scale-95"
+              className="rounded-xl border-gray-200 bg-white px-4 text-xs font-bold uppercase tracking-widest text-accent shadow-sm active:scale-95 dark:border-zinc-600 dark:bg-zinc-700"
             >
               {ingredients && ingredients.length > 0 ? tCommon("edit") : t("Ingredients.add")}
             </Button>
@@ -460,7 +460,7 @@ export function ItemForm({
                     "group/ing flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-medium",
                     ing.checked
                       ? "bg-green-100 text-green-700 line-through"
-                      : "border border-gray-100 bg-white text-gray-600"
+                      : "border border-gray-100 bg-white text-gray-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                   )}
                 >
                   {ing.name}
@@ -493,7 +493,7 @@ export function ItemForm({
         }}
         className="group flex w-full touch-manipulation items-center justify-center gap-2 py-2 text-[11px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600 active:scale-95 sm:gap-1.5 sm:py-1 sm:text-[10px]"
       >
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 transition-colors active:bg-gray-200 group-hover:bg-gray-200 sm:h-5 sm:w-5">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 transition-colors active:bg-gray-200 group-hover:bg-gray-200 dark:bg-zinc-700 dark:active:bg-zinc-600 dark:group-hover:bg-zinc-600 sm:h-5 sm:w-5">
           <ChevronDown
             className={clsx(
               "h-3.5 w-3.5 transition-transform duration-300 sm:h-3 sm:w-3",
@@ -505,7 +505,7 @@ export function ItemForm({
       </button>
 
       {showDetails && (
-        <div className="space-y-5 border-t border-gray-100 pt-5 sm:space-y-4 sm:pt-4">
+        <div className="space-y-5 border-t border-gray-100 pt-5 dark:border-zinc-700 sm:space-y-4 sm:pt-4">
           {isEditMode && allServices && allServices.length > 1 && (
             <div className="space-y-3 sm:space-y-2">
               <Label className="ml-1 text-[11px] font-black uppercase tracking-widest text-gray-400 sm:text-[10px]">
@@ -519,7 +519,7 @@ export function ItemForm({
                 }}
                 disabled={readOnly}
               >
-                <SelectTrigger className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 sm:h-11 sm:text-sm">
+                <SelectTrigger className="h-14 touch-manipulation rounded-xl border-gray-100 bg-gray-50/50 text-base focus:bg-white focus:ring-2 focus:ring-accent/20 dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800 sm:h-11 sm:text-sm">
                   <SelectValue placeholder={t("movePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">

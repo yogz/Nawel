@@ -75,7 +75,7 @@ export function EventPropertiesDrawer({
             </DrawerTitle>
             <DrawerClose asChild>
               <button
-                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                className="rounded-full bg-gray-50 p-1.5 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                 aria-label={tCommon("close")}
               >
                 <X size={16} />
@@ -87,11 +87,13 @@ export function EventPropertiesDrawer({
         <div className="scrollbar-none min-h-[40vh] flex-1 overflow-y-auto pb-10">
           <div className="space-y-6">
             {/* Event Summary Card */}
-            <div className="rounded-2xl bg-gray-50 p-4 space-y-4">
+            <div className="space-y-4 rounded-2xl bg-gray-50 p-4 dark:bg-zinc-800">
               <div>
-                <h3 className="text-xl font-bold text-gray-900">{plan.event?.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-zinc-100">
+                  {plan.event?.name}
+                </h3>
                 {plan.event?.description && (
-                  <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                  <p className="mt-1 line-clamp-2 text-sm text-gray-500 dark:text-zinc-400">
                     {plan.event.description}
                   </p>
                 )}
@@ -99,8 +101,8 @@ export function EventPropertiesDrawer({
 
               <div className="space-y-2">
                 {firstMeal?.date && (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar size={16} className="text-violet-500" />
+                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-zinc-400">
+                    <Calendar size={16} className="text-violet-500 dark:text-violet-400" />
                     <span>
                       {format(new Date(firstMeal.date), "PPP", { locale: dateLocale })}
                       {firstMeal.time && ` • ${firstMeal.time}`}
@@ -113,21 +115,21 @@ export function EventPropertiesDrawer({
                   if (!address) return null;
 
                   return (
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin size={16} className="text-violet-500" />
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-zinc-400">
+                      <MapPin size={16} className="text-violet-500 dark:text-violet-400" />
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="line-clamp-1 hover:text-violet-600 hover:underline transition-colors"
+                        className="line-clamp-1 transition-colors hover:text-violet-600 hover:underline dark:hover:text-violet-400"
                       >
                         {address}
                       </a>
                     </div>
                   );
                 })()}
-                <div className="flex items-start gap-2 text-sm text-gray-600">
-                  <Users size={16} className="text-violet-500 mt-0.5" />
+                <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-zinc-400">
+                  <Users size={16} className="mt-0.5 text-violet-500 dark:text-violet-400" />
                   <div className="flex flex-col">
                     <span>
                       {(() => {
@@ -163,10 +165,10 @@ export function EventPropertiesDrawer({
 
                         return (
                           <>
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-gray-900 dark:text-zinc-100">
                               {t("Properties.confirmed", { count: stats.confirmedCount })}
                             </span>
-                            <span className="text-gray-500">
+                            <span className="text-gray-500 dark:text-zinc-400">
                               {" "}
                               / {t("Properties.guests", { count: plan.people.length })}
                             </span>
@@ -189,7 +191,7 @@ export function EventPropertiesDrawer({
                       if (stats.totalAdults === 0 && stats.totalChildren === 0) return null;
 
                       return (
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-400 dark:text-zinc-500">
                           {t("Properties.adults", { count: stats.totalAdults })}
                           {stats.totalChildren > 0 &&
                             `, ${t("Properties.children", { count: stats.totalChildren })}`}
@@ -205,35 +207,39 @@ export function EventPropertiesDrawer({
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="h-auto flex-col gap-2 rounded-2xl py-4 border-gray-100 bg-white hover:bg-gray-50 active:scale-95 transition-all"
+                className="h-auto flex-col gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 onClick={() => {
                   setSheet({ type: "event-edit" });
                   onClose();
                 }}
               >
-                <div className="p-2 rounded-full bg-violet-50 text-violet-600">
+                <div className="rounded-full bg-violet-50 p-2 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
                   <PenLine size={20} />
                 </div>
-                <span className="font-semibold text-gray-700">{t("Properties.edit")}</span>
+                <span className="font-semibold text-gray-700 dark:text-zinc-300">
+                  {t("Properties.edit")}
+                </span>
               </Button>
 
               <Button
                 variant="outline"
-                className="h-auto flex-col gap-2 rounded-2xl py-4 border-gray-100 bg-white hover:bg-gray-50 active:scale-95 transition-all"
+                className="h-auto flex-col gap-2 rounded-2xl border-gray-100 bg-white py-4 transition-all hover:bg-gray-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 onClick={() => {
                   setSheet({ type: "share" });
                   onClose();
                 }}
               >
-                <div className="p-2 rounded-full bg-blue-50 text-blue-600">
+                <div className="rounded-full bg-blue-50 p-2 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
                   <Share2 size={20} />
                 </div>
-                <span className="font-semibold text-gray-700">{t("Properties.share")}</span>
+                <span className="font-semibold text-gray-700 dark:text-zinc-300">
+                  {t("Properties.share")}
+                </span>
               </Button>
             </div>
 
             {/* Danger Zone */}
-            <div className="pt-4 border-t border-gray-100">
+            <div className="border-t border-gray-100 pt-4 dark:border-zinc-700">
               {!showDangerZone ? (
                 <button
                   onClick={() => setShowDangerZone(true)}

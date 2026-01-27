@@ -105,7 +105,7 @@ export function PersonEditForm({
         <div className="space-y-2">
           <Label
             htmlFor="edit-person-name"
-            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400"
+            className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500"
           >
             {t("nameLabel")}
           </Label>
@@ -122,12 +122,12 @@ export function PersonEditForm({
             onBlur={handleBlurSave}
             disabled={readOnly}
             enterKeyHint="done"
-            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white"
+            className="h-12 rounded-2xl border-gray-100 bg-gray-50/50 text-base focus:bg-white dark:border-zinc-700 dark:bg-zinc-800/50 dark:focus:bg-zinc-800"
           />
         </div>
 
         <div className="space-y-3">
-          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <Label className="ml-1 text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-zinc-500">
             {t("emojiLabel")}
           </Label>
           <div className="no-scrollbar grid max-h-48 grid-cols-6 gap-2 overflow-y-auto p-1">
@@ -146,7 +146,7 @@ export function PersonEditForm({
                 "relative flex aspect-square items-center justify-center overflow-hidden rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
                 selectedEmoji === null
                   ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-                  : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                  : "bg-gray-50 text-gray-400 hover:bg-gray-100 dark:bg-zinc-800 dark:text-zinc-500 dark:hover:bg-zinc-700"
               )}
             >
               {person.user?.image ? (
@@ -177,7 +177,7 @@ export function PersonEditForm({
                     "flex aspect-square items-center justify-center rounded-xl text-lg transition-all",
                     selectedEmoji === emoji
                       ? "bg-accent text-white shadow-md ring-2 ring-accent/20"
-                      : "bg-gray-50 hover:bg-gray-100"
+                      : "bg-gray-50 hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                   )}
                 >
                   {emoji}
@@ -185,7 +185,7 @@ export function PersonEditForm({
               )
             )}
           </div>
-          <p className="mt-1 text-center text-[10px] italic text-gray-400">
+          <p className="mt-1 text-center text-[10px] italic text-gray-400 dark:text-zinc-500">
             {t("defaultEmoji")}{" "}
             {getPersonEmoji(
               name,
@@ -201,9 +201,9 @@ export function PersonEditForm({
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
-          className="group flex w-full items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600"
+          className="group flex w-full items-center justify-center gap-1.5 py-1 text-[10px] font-black uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-600 dark:text-zinc-500 dark:hover:text-zinc-300"
         >
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200">
+          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-gray-200 dark:bg-zinc-800 dark:group-hover:bg-zinc-700">
             <ChevronDown
               className={clsx("h-3 w-3 transition-transform", showDetails && "rotate-180")}
             />
@@ -212,7 +212,7 @@ export function PersonEditForm({
         </button>
 
         {showDetails && (
-          <div className="space-y-4 border-t border-gray-100 pt-4">
+          <div className="space-y-4 border-t border-gray-100 pt-4 dark:border-zinc-700">
             {onDelete && (
               <div className="pt-2">
                 <Button

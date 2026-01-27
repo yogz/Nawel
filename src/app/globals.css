@@ -209,10 +209,27 @@
     --status-bar-color: #09090b;
     --brand-text: #fafafa;
 
-    /* Event gradients for dark mode - subtle purple tint */
-    --event-gradient-start: #18181b;
-    --event-gradient-mid: #1a1a2e;
-    --event-gradient-end: #16161a;
+    /* Event gradients for dark mode - deep purple tones */
+    --event-gradient-start: #1a1625;
+    --event-gradient-mid: #251a35;
+    --event-gradient-end: #1e1528;
+    --status-bar-color: #1a1625;
+
+    /* Dark mode header gradient */
+    --event-header-gradient:
+      linear-gradient(
+        to bottom,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-start) 5%,
+        transparent 20%
+      ),
+      radial-gradient(
+        ellipse 120% 100% at 50% 0%,
+        var(--event-gradient-start) 0%,
+        var(--event-gradient-mid) 35%,
+        var(--event-gradient-end) 60%,
+        rgba(9, 9, 11, 0) 100%
+      );
 
     /* Chart colors - reduced saturation for dark mode comfort */
     --chart-blue: 217 80% 55%;
