@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Contact",
       "behindTheScenes": "Behind the Scenes"
-    }
+    },
+    "ctaFooterButton": "Get started now"
   },
   "LandingAlt": {
     "badge": "Meal planning, finally relaxing.",
@@ -460,7 +461,8 @@
       "validate": "Done",
       "adjust": "I'm bringing guests",
       "adults": "Adults",
-      "children": "Children"
+      "children": "Children",
+      "noItemsDesc": "No items assigned yet. Items you assign will appear here."
     },
     "Shopping": {
       "notAssociated": "Profile not associated",
@@ -505,7 +507,15 @@
       "generateAllDescription": "Automatically generate ingredients for all dishes without ingredients in one action.",
       "generateAllButton": "Generate ingredients",
       "generating": "Generating...",
-      "generatingProgress": "Generating... ({current}/{total})"
+      "generatingProgress": "Generating... ({current}/{total})",
+      "generateDialog": {
+        "title": "Smart Generation",
+        "description": "Select the dishes for which you want the AI to list all ingredients.",
+        "selectAll": "Select all",
+        "deselectAll": "Deselect all",
+        "categorizeNotice": "The <bold>{count}</bold> other items will simply be sorted into the correct category.",
+        "confirmButton": "Generate ({generateCount}) & Sort ({categorizeCount})"
+      }
     },
     "Settings": {
       "ambiance": "Ambiance",
@@ -804,7 +814,8 @@
       "claimed": "Profile linked successfully ✓",
       "errorClaim": "Error linking profile ❌",
       "unclaimed": "Profile unlinked successfully ✓",
-      "errorUnclaim": "Error unlinking profile ❌"
+      "errorUnclaim": "Error unlinking profile ❌",
+      "statusUpdated": "Status updated"
     },
     "item": {
       "added": "{name} added! ✨",
@@ -1064,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "You are offline",
+    "backOnline": "You are back online"
+  },
+  "SkipLinks": {
+    "navigation": "Shortcut navigation",
+    "skipToContent": "Skip to main content",
+    "skipToNavigation": "Skip to navigation"
   }
 }

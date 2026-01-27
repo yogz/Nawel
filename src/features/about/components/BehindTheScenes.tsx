@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { LanguageSelector } from "@/components/common/language-selector";
+import { AppBranding } from "@/components/common/app-branding";
 
 interface Cost {
   id: number;
@@ -592,7 +593,13 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
           </div>
         </motion.section>
 
-        <motion.footer variants={itemVariants} className="border-t border-black/5 pt-8 text-center">
+        <motion.footer
+          variants={itemVariants}
+          className="space-y-6 border-t border-black/5 pt-12 text-center"
+        >
+          <div className="flex justify-center">
+            <AppBranding logoSize={24} variant="icon-text" noLink />
+          </div>
           <p className="text-text/40 flex items-center justify-center gap-2 text-sm">
             {t("footer")}
           </p>

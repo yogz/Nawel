@@ -1,12 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { AppBranding } from "../common/app-branding";
 
 export function DashboardFooter() {
   const t = useTranslations("Dashboard");
 
   return (
-    <footer className="mt-8 py-6 text-center">
+    <footer className="mt-8 py-6 text-center space-y-6">
+      <div className="flex justify-center">
+        <AppBranding logoSize={24} variant="icon-text" noLink />
+      </div>
       <button
         onClick={() => {
           window.dispatchEvent(new Event("start-tour-dashboard"));

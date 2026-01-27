@@ -469,8 +469,8 @@ export function EventPlanner({
           </Suspense>
         </main>
 
-        <footer className="mt-12 mb-8 flex flex-col items-center gap-4 transition-opacity duration-700">
-          <AppBranding variant="icon-text" logoSize={24} href="https://www.colist.fr" />
+        <footer className="mt-12 mb-8 flex flex-col items-center gap-6 transition-opacity duration-700">
+          <AppBranding variant="icon-text" logoSize={24} noLink />
         </footer>
 
         <TabBar active={tab} onChange={setTab} hasWriteAccess={!readOnly} />

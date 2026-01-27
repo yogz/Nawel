@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Kontakt",
       "behindTheScenes": "Bag kulisserne"
-    }
+    },
+    "ctaFooterButton": "Kom i gang nu"
   },
   "LandingAlt": {
     "badge": "Måltidsplanlægning, endelig afslappende.",
@@ -227,7 +228,9 @@
       "button": "Nulstil adgangskode",
       "footer": "Hvis du ikke har anmodet om denne nulstilling, kan du roligt ignorere denne e-mail."
     },
-    "guestWarning": "Begrænsede funktioner"
+    "guestWarning": "Begrænsede funktioner",
+    "showPassword": "Vis adgangskode",
+    "hidePassword": "Skjul adgangskode"
   },
   "FAQ": {
     "title": "Ofte Stillede Spørgsmål",
@@ -458,7 +461,8 @@
       "statusUpdated": "Status opdateret",
       "validate": "Bekræft",
       "adults": "Voksne",
-      "children": "Børn"
+      "children": "Børn",
+      "noItemsDesc": "Ingen varer tildelt endnu. Varer, du tildeler, vil blive vist her."
     },
     "Shopping": {
       "notAssociated": "Profil ikke tilknyttet",
@@ -498,6 +502,19 @@
         "frozen": "Frost",
         "household-cleaning": "Rengøring & Pleje",
         "misc": "Diverse"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Ingen retter uden ingredienser} one {1 ret har ingen ingredienser} other {# retter har ingen ingredienser}}",
+      "generateAllDescription": "Generer automatisk ingredienser til alle retter uden ingredienser i én handling.",
+      "generateAllButton": "Generer ingredienser",
+      "generating": "Genererer...",
+      "generatingProgress": "Genererer... ({current}/{total})",
+      "generateDialog": {
+        "title": "Intelligent Generering",
+        "description": "Vælg de retter, som du ønsker AI skal detaljere alle ingredienser for.",
+        "selectAll": "Vælg alle",
+        "deselectAll": "Fravælg alle",
+        "categorizeNotice": "De <bold>{count}</bold> øvrige artikler vil blot blive sorteret i den rigtige kategori.",
+        "confirmButton": "Generer ({generateCount}) & Sorter ({categorizeCount})"
       }
     },
     "Settings": {
@@ -797,7 +814,8 @@
       "claimed": "Profil kædet sammen korrekt ✓",
       "errorClaim": "Fejl ved sammenkædning af profil ❌",
       "unclaimed": "Profil afkoblet korrekt ✓",
-      "errorUnclaim": "Fejl ved afkoblingen af profil ❌"
+      "errorUnclaim": "Fejl ved afkoblingen af profil ❌",
+      "statusUpdated": "Status opdateret"
     },
     "item": {
       "added": "{name} tilføjet! ✨",
@@ -1057,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Du er offline",
+    "backOnline": "Du er online igen"
+  },
+  "SkipLinks": {
+    "navigation": "Genvejsnavigation",
+    "skipToContent": "Gå til hovedindhold",
+    "skipToNavigation": "Gå til navigation"
   }
 }

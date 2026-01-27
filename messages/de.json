@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Kontakt",
       "behindTheScenes": "Hinter den Kulissen"
-    }
+    },
+    "ctaFooterButton": "Jetzt anfangen"
   },
   "LandingAlt": {
     "badge": "Essensplanung, endlich entspannend.",
@@ -227,7 +228,9 @@
       "button": "Passwort zurücksetzen",
       "footer": "Wenn Sie diese Zurücksetzung nicht angefordert haben, können Sie diese E-Mail ignorieren."
     },
-    "guestWarning": "Eingeschränkte Funktionen"
+    "guestWarning": "Eingeschränkte Funktionen",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort ausblenden"
   },
   "FAQ": {
     "title": "Häufig gestellte Fragen",
@@ -443,7 +446,7 @@
       "me": "Ich",
       "editItem": "Artikel bearbeiten {name}",
       "edit": "Bearbeiten",
-      "editPerson": "{name} bearbeiten",
+      "editPerson": "Bearbeiten {name}",
       "absent": "Abgesagt",
       "add": "Hinzufügen",
       "adjust": "Ich komme nicht alleine",
@@ -459,7 +462,7 @@
       "validate": "Bestätigen",
       "adults": "Erwachsene",
       "children": "Kinder",
-      "editPerson": "Bearbeiten {name}"
+      "noItemsDesc": "Noch keine Artikel zugewiesen. Die von Ihnen zugewiesenen Artikel werden hier angezeigt."
     },
     "Shopping": {
       "notAssociated": "Profil nicht verknüpft",
@@ -499,6 +502,19 @@
         "frozen": "Tiefkühlkost",
         "household-cleaning": "Haushalt & Reinigung",
         "misc": "Sonstiges"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Keine Gerichte ohne Zutaten} one {1 Gericht hat keine Zutaten} other {# Gerichte haben keine Zutaten}}",
+      "generateAllDescription": "Generieren Sie automatisch die Zutaten für alle Gerichte ohne Zutaten in einer Aktion.",
+      "generateAllButton": "Zutaten generieren",
+      "generating": "Generierung läuft...",
+      "generatingProgress": "Generierung... ({current}/{total})",
+      "generateDialog": {
+        "title": "Intelligente Generierung",
+        "description": "Wählen Sie die Gerichte aus, für die die KI alle Zutaten detailliert auflisten soll.",
+        "selectAll": "Alles auswählen",
+        "deselectAll": "Alles abwählen",
+        "categorizeNotice": "Die <bold>{count}</bold> anderen Artikel werden einfach in die richtige Kategorie eingeordnet.",
+        "confirmButton": "Generieren ({generateCount}) & Einordnen ({categorizeCount})"
       }
     },
     "Settings": {
@@ -798,7 +814,8 @@
       "claimed": "Profil erfolgreich verknüpft ✓",
       "errorClaim": "Fehler beim Verknüpfen des Profils ❌",
       "unclaimed": "Profil erfolgreich entfernt ✓",
-      "errorUnclaim": "Fehler beim Entfernen des Profils ❌"
+      "errorUnclaim": "Fehler beim Entfernen des Profils ❌",
+      "statusUpdated": "Status aktualisiert"
     },
     "item": {
       "added": "{name} hinzugefügt! ✨",
@@ -1058,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Sie sind offline",
+    "backOnline": "Sie sind wieder online"
+  },
+  "SkipLinks": {
+    "navigation": "Kurzbefehl-Navigation",
+    "skipToContent": "Zum Hauptinhalt springen",
+    "skipToNavigation": "Zur Navigation springen"
   }
 }

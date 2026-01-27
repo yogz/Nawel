@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-// import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
+import Joyride, { Step, CallBackProps, STATUS, ACTIONS, EVENTS } from "react-joyride";
 import { useTranslations } from "next-intl";
 
 interface OnboardingTourProps {
@@ -24,7 +24,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
     };
 
     // Listen for manual trigger
-    window.addEventListener(`start-tour-${tourKey}`, handleStart);
+    window.addEventListener(`start-tour-${tourKey}`, handleStart as any);
 
     // Only run the tour if the user hasn't seen it yet
     const hasSeenTour = localStorage.getItem(`has_seen_tour_${tourKey}`);
@@ -33,15 +33,13 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
       const timer = setTimeout(() => setRun(true), 1500);
       return () => {
         clearTimeout(timer);
-        window.removeEventListener(`start-tour-${tourKey}`, handleStart);
+        window.removeEventListener(`start-tour-${tourKey}`, handleStart as any);
       };
     }
 
-    return () => window.removeEventListener(`start-tour-${tourKey}`, handleStart);
+    return () => window.removeEventListener(`start-tour-${tourKey}`, handleStart as any);
   }, [tourKey]);
 
-  // Commented out to fix React 19 compatibility
-  /*
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status, action, index, type } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
@@ -81,7 +79,31 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
           },
         ]
       : [];
-  */
 
-  return null;
+  return (
+    <Joyride
+      key={tourInstance}
+      steps={steps}
+      run={run}
+      stepIndex={stepIndex}
+      continuous
+      scrollToFirstStep
+      showProgress
+      showSkipButton
+      callback={handleJoyrideCallback}
+      locale={{
+        back: t("back"),
+        close: t("last"),
+        last: t("last"),
+        next: t("next"),
+        skip: t("skip"),
+      }}
+      styles={{
+        options: {
+          primaryColor: "#0ea5e9", // Adjust to match theme
+          zIndex: 1000,
+        },
+      }}
+    />
+  );
 }

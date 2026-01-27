@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Contact",
       "behindTheScenes": "Achter de schermen"
-    }
+    },
+    "ctaFooterButton": "Nu beginnen"
   },
   "LandingAlt": {
     "badge": "Maaltijdplanning, eindelijk ontspannend.",
@@ -227,7 +228,9 @@
       "button": "Wachtwoord herstellen",
       "footer": "Als je dit herstel niet hebt aangevraagd, kun je deze e-mail veilig negeren."
     },
-    "guestWarning": "Beperkte functies"
+    "guestWarning": "Beperkte functies",
+    "showPassword": "Wachtwoord tonen",
+    "hidePassword": "Wachtwoord verbergen"
   },
   "FAQ": {
     "title": "Veelgestelde Vragen",
@@ -458,7 +461,8 @@
       "statusUpdated": "Status bijgewerkt",
       "validate": "Valideren",
       "adults": "Volwassenen",
-      "children": "Kinderen"
+      "children": "Kinderen",
+      "noItemsDesc": "Nog geen items toegewezen. Items die u toewijst, verschijnen hier."
     },
     "Shopping": {
       "notAssociated": "Profiel niet geassocieerd",
@@ -498,6 +502,19 @@
         "frozen": "Diepvries",
         "household-cleaning": "Huishouden & Reiniging",
         "misc": "Overig"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Geen gerechten zonder ingrediënten} one {1 gerecht heeft geen ingrediënten} other {# gerechten hebben geen ingrediënten}}",
+      "generateAllDescription": "Genereer automatisch de ingrediënten voor alle gerechten zonder ingrediënten in één actie.",
+      "generateAllButton": "Ingrediënten genereren",
+      "generating": "Bezig met genereren...",
+      "generatingProgress": "Genereren... ({current}/{total})",
+      "generateDialog": {
+        "title": "Intelligente Generatie",
+        "description": "Selecteer de gerechten waarvoor u de IA alle ingrediënten wilt laten detailleren.",
+        "selectAll": "Alles selecteren",
+        "deselectAll": "Alles deselecteren",
+        "categorizeNotice": "De <bold>{count}</bold> andere artikelen worden gewoon in de juiste categorie ingedeeld.",
+        "confirmButton": "Genereren ({generateCount}) & Indelen ({categorizeCount})"
       }
     },
     "Settings": {
@@ -797,7 +814,8 @@
       "claimed": "Profiel succesvol gekoppeld ✓",
       "errorClaim": "Fout bij koppelen profiel ❌",
       "unclaimed": "Profiel succesvol ontkoppeld ✓",
-      "errorUnclaim": "Fout bij ontkoppelen profiel ❌"
+      "errorUnclaim": "Fout bij ontkoppelen profiel ❌",
+      "statusUpdated": "Status bijgewerkt"
     },
     "item": {
       "added": "{name} toegevoegd! ✨",
@@ -1057,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "U bent offline",
+    "backOnline": "U bent weer online"
+  },
+  "SkipLinks": {
+    "navigation": "Sneltoetsnavigatie",
+    "skipToContent": "Ga naar de hoofdinhoud",
+    "skipToNavigation": "Ga naar de navigatie"
   }
 }

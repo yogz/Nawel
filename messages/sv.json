@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Kontakt",
       "behindTheScenes": "Bakom kulisserna"
-    }
+    },
+    "ctaFooterButton": "Börja nu"
   },
   "LandingAlt": {
     "badge": "Måltidsplanering, äntligen avslappnande.",
@@ -227,7 +228,9 @@
       "button": "Återställ lösenord",
       "footer": "Om du inte har begärt detta kan du säkert ignorera detta e-postmeddelande."
     },
-    "guestWarning": "Begränsade funktioner"
+    "guestWarning": "Begränsade funktioner",
+    "showPassword": "Visa lösenord",
+    "hidePassword": "Dölj lösenord"
   },
   "FAQ": {
     "title": "Vanliga Frågor",
@@ -458,7 +461,8 @@
       "statusUpdated": "Status uppdaterad",
       "validate": "Bekräfta",
       "adults": "Vuxna",
-      "children": "Barn"
+      "children": "Barn",
+      "noItemsDesc": "Inga artiklar tilldelade ännu. Artiklar du tilldelar kommer att visas här."
     },
     "Shopping": {
       "notAssociated": "Profil ej kopplad",
@@ -498,6 +502,19 @@
         "frozen": "Fryst",
         "household-cleaning": "Hygien & Rengöring",
         "misc": "Övrigt"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Inga rätter utan ingredienser} one {1 rätt har inga ingredienser} other {# rätter har inga ingredienser}}",
+      "generateAllDescription": "Generera automatiskt ingredienser för alla rätter utan ingredienser i en enda handling.",
+      "generateAllButton": "Generera ingredienser",
+      "generating": "Genererar...",
+      "generatingProgress": "Genererar... ({current}/{total})",
+      "generateDialog": {
+        "title": "Intelligent Generering",
+        "description": "Välj de rätter som du vill att AI ska detaljera alla ingredienser för.",
+        "selectAll": "Välj alla",
+        "deselectAll": "Avmarkera alla",
+        "categorizeNotice": "De <bold>{count}</bold> andra artiklarna kommer helt enkelt att sorteras i rätt kategori.",
+        "confirmButton": "Generera ({generateCount}) & Sortera ({categorizeCount})"
       }
     },
     "Settings": {
@@ -797,7 +814,8 @@
       "claimed": "Profil länkad framgångsrikt ✓",
       "errorClaim": "Fel vid länkning av profil ❌",
       "unclaimed": "Profil frånkopplad framgångsrikt ✓",
-      "errorUnclaim": "Fel vid frånkoppling av profil ❌"
+      "errorUnclaim": "Fel vid frånkoppling av profil ❌",
+      "statusUpdated": "Status uppdaterad"
     },
     "item": {
       "added": "{name} tillagd! ✨",
@@ -1057,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Du är offline",
+    "backOnline": "Du är online igen"
+  },
+  "SkipLinks": {
+    "navigation": "Genvägsnavigation",
+    "skipToContent": "Gå till huvudinnehållet",
+    "skipToNavigation": "Gå till navigationen"
   }
 }

@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "İletişim",
       "behindTheScenes": "Sahne arkası"
-    }
+    },
+    "ctaFooterButton": "Şimdi başla"
   },
   "LandingAlt": {
     "badge": "Basitleştirilmiş paylaşımlı yemek organizasyonu.",
@@ -227,7 +228,9 @@
       "button": "Şifreyi sıfırla",
       "footer": "Bu sıfırlamayı siz istemediyseniz, bu e-postayı güvenle görmezden gelebilirsiniz."
     },
-    "guestWarning": "Sınırlı özellikler"
+    "guestWarning": "Sınırlı özellikler",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle"
   },
   "FAQ": {
     "title": "Sıkça Sorulan Sorular",
@@ -443,7 +446,7 @@
       "me": "Ben",
       "editItem": "{name} ürününü düzenle",
       "edit": "Düzenle",
-      "editPerson": "{name} kişisini düzenle",
+      "editPerson": "{name} Düzenle",
       "absent": "Gelmiyorum",
       "add": "Ekle",
       "adjust": "Yalnız gelmiyorum",
@@ -459,7 +462,7 @@
       "validate": "Onayla",
       "adults": "Yetişkinler",
       "children": "Çocuklar",
-      "editPerson": "{name} Düzenle"
+      "noItemsDesc": "Henüz atanmış öğe yok. Atadığınız öğeler burada görünecektir."
     },
     "Shopping": {
       "notAssociated": "Profil ilişkilendirilmemiş",
@@ -499,6 +502,19 @@
         "frozen": "Dondurulmuş Gıdalar",
         "household-cleaning": "Temizlik & Hijyen",
         "misc": "Diğer"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Malzemesiz yemek yok} one {1 yemeğin malzemesi yok} other {# yemeğin malzemesi yok}}",
+      "generateAllDescription": "Tüm malzemesiz yemekler için malzemeleri tek bir işlemle otomatik olarak oluşturun.",
+      "generateAllButton": "Malzemeleri oluştur",
+      "generating": "Oluşturuluyor...",
+      "generatingProgress": "Oluşturuluyor... ({current}/{total})",
+      "generateDialog": {
+        "title": "Akıllı Oluşturma",
+        "description": "Yapay zekanın tüm malzemeleri detaylandırmasını istediğiniz yemekleri seçin.",
+        "selectAll": "Hepsini seç",
+        "deselectAll": "Seçimleri kaldır",
+        "categorizeNotice": "Diğer <bold>{count}</bold> öğe basitçe doğru kategoriye ayrılacaktır.",
+        "confirmButton": "Oluştur ({generateCount}) ve Sınıflandır ({categorizeCount})"
       }
     },
     "Settings": {
@@ -798,7 +814,8 @@
       "claimed": "Profil başarıyla ilişkilendirildi ✓",
       "errorClaim": "İlişkilendirme hatası ❌",
       "unclaimed": "Profil başarıyla ayrıldı ✓",
-      "errorUnclaim": "Bağlantıyı kesme hatası ❌"
+      "errorUnclaim": "Bağlantıyı kesme hatası ❌",
+      "statusUpdated": "Durum güncellendi"
     },
     "item": {
       "added": "{name} eklendi ! ✨",
@@ -1058,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Çevrimdışısınız",
+    "backOnline": "Tekrar çevrimiçisiniz"
+  },
+  "SkipLinks": {
+    "navigation": "Kısayol navigasyonu",
+    "skipToContent": "Ana içeriğe atla",
+    "skipToNavigation": "Navigasyona atla"
   }
 }

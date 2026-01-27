@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Contacto",
       "behindTheScenes": "Nos Bastidores"
-    }
+    },
+    "ctaFooterButton": "Começar agora"
   },
   "LandingAlt": {
     "badge": "Organização de refeições, finalmente relaxante.",
@@ -227,7 +228,9 @@
       "button": "Redefinir senha",
       "footer": "Se você não solicitou essa redefinição, pode ignorar este e-mail com segurança."
     },
-    "guestWarning": "Funcionalidades limitadas"
+    "guestWarning": "Funcionalidades limitadas",
+    "showPassword": "Mostrar palavra-passe",
+    "hidePassword": "Ocultar palavra-passe"
   },
   "FAQ": {
     "title": "Perguntas Frequentes",
@@ -459,7 +462,7 @@
       "validate": "Validar",
       "adults": "Adultos",
       "children": "Crianças",
-      "editPerson": "Editar {name}"
+      "noItemsDesc": "Nenhum item atribuído ainda. Os itens que atribuir aparecerão aqui."
     },
     "Shopping": {
       "notAssociated": "Perfil não associado",
@@ -499,6 +502,19 @@
         "frozen": "Congelados",
         "household-cleaning": "Higiene & Limpeza",
         "misc": "Diversos"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Nenhum prato sem ingredientes} one {1 prato não tem ingredientes} other {# pratos não têm ingredientes}}",
+      "generateAllDescription": "Gere automaticamente os ingredientes para todos os pratos sem ingredientes numa única ação.",
+      "generateAllButton": "Gerar ingredientes",
+      "generating": "Gerando...",
+      "generatingProgress": "Gerando... ({current}/{total})",
+      "generateDialog": {
+        "title": "Geração Inteligente",
+        "description": "Selecione os pratos para os quais deseja que a IA detalhe todos os ingredientes.",
+        "selectAll": "Selecionar tudo",
+        "deselectAll": "Desmarcar tudo",
+        "categorizeNotice": "Os outros <bold>{count}</bold> artigos serão simplesmente classificados na categoria correta.",
+        "confirmButton": "Gerar ({generateCount}) e Classificar ({categorizeCount})"
       }
     },
     "Settings": {
@@ -798,7 +814,8 @@
       "claimed": "Perfil vinculado com sucesso ✓",
       "errorClaim": "Erro ao vincular perfil ❌",
       "unclaimed": "Perfil desvinculado com sucesso ✓",
-      "errorUnclaim": "Erro ao desvincular perfil ❌"
+      "errorUnclaim": "Erro ao desvincular perfil ❌",
+      "statusUpdated": "Estado atualizado"
     },
     "item": {
       "added": "{name} adicionado! ✨",
@@ -1058,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Está offline",
+    "backOnline": "Está novamente online"
+  },
+  "SkipLinks": {
+    "navigation": "Navegação de atalho",
+    "skipToContent": "Ir para o conteúdo principal",
+    "skipToNavigation": "Ir para a navegação"
   }
 }

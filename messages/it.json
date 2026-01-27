@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Contatto",
       "behindTheScenes": "Dietro le quinte"
-    }
+    },
+    "ctaFooterButton": "Inizia ora"
   },
   "LandingAlt": {
     "badge": "Pianificazione dei pasti, finalmente rilassante.",
@@ -227,7 +228,9 @@
       "button": "Reimposta password",
       "footer": "Se non hai richiesto questa reimpostazione, puoi ignorare tranquillamente questa email."
     },
-    "guestWarning": "Funzionalità limitate"
+    "guestWarning": "Funzionalità limitate",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password"
   },
   "FAQ": {
     "title": "Domande Frequenti",
@@ -459,7 +462,7 @@
       "validate": "Conferma",
       "adults": "Adulti",
       "children": "Bambini",
-      "editPerson": "Modifica {name}"
+      "noItemsDesc": "Nessun articolo ancora assegnato. Gli articoli assegnati appariranno qui."
     },
     "Shopping": {
       "notAssociated": "Profilo non associato",
@@ -499,6 +502,19 @@
         "frozen": "Surgelati",
         "household-cleaning": "Igiene & Pulizia",
         "misc": "Varie"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Nessun piatto senza ingredienti} one {1 piatto non ha ingredienti} other {# piatti non hanno ingredienti}}",
+      "generateAllDescription": "Genera automaticamente gli ingredienti per tutti i piatti senza ingredienti in un'unica azione.",
+      "generateAllButton": "Genera ingredienti",
+      "generating": "Generazione in corso...",
+      "generatingProgress": "Generazione... ({current}/{total})",
+      "generateDialog": {
+        "title": "Generazione Intelligente",
+        "description": "Seleziona i piatti per i quali desideri che l'IA dettagli tutti gli ingredienti.",
+        "selectAll": "Seleziona tutto",
+        "deselectAll": "Deseleziona tutto",
+        "categorizeNotice": "Gli altri <bold>{count}</bold> articoli saranno semplicemente classificati nella categoria corretta.",
+        "confirmButton": "Genera ({generateCount}) e Classifica ({categorizeCount})"
       }
     },
     "Settings": {
@@ -798,7 +814,8 @@
       "claimed": "Profilo collegato con successo ✓",
       "errorClaim": "Errore nel collegamento del profilo ❌",
       "unclaimed": "Profilo scollegato con successo ✓",
-      "errorUnclaim": "Errore nello scollegamento del profilo ❌"
+      "errorUnclaim": "Errore nello scollegamento del profilo ❌",
+      "statusUpdated": "Stato aggiornato"
     },
     "item": {
       "added": "{name} aggiunto! ✨",
@@ -1058,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Sei offline",
+    "backOnline": "Sei di nuovo online"
+  },
+  "SkipLinks": {
+    "navigation": "Navigazione rapida",
+    "skipToContent": "Vai al contenuto principale",
+    "skipToNavigation": "Vai alla navigazione"
   }
 }

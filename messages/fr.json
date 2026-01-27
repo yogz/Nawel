@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Contact",
       "behindTheScenes": "En coulisses"
-    }
+    },
+    "ctaFooterButton": "Commencer maintenant"
   },
   "LandingAlt": {
     "badge": "L'organisation de repas partagés, simplifiée.",
@@ -460,7 +461,8 @@
       "validate": "Valider",
       "adjust": "Je ne viens pas seul",
       "adults": "Adultes",
-      "children": "Enfants"
+      "children": "Enfants",
+      "noItemsDesc": "Aucun article assigné pour le moment. Les articles que vous assignez apparaîtront ici."
     },
     "Shopping": {
       "notAssociated": "Profil non associé",
@@ -821,7 +823,8 @@
       "claimed": "Profil associé avec succès ✓",
       "errorClaim": "Erreur lors de l'association ❌",
       "unclaimed": "Profil dissocié avec succès ✓",
-      "errorUnclaim": "Erreur lors de la déliaison ❌"
+      "errorUnclaim": "Erreur lors de la déliaison ❌",
+      "statusUpdated": "Statut mis à jour"
     },
     "item": {
       "added": "{name} ajouté ! ✨",

@@ -50,7 +50,8 @@
       "instagram": "Instagram",
       "contact": "Kontakt",
       "behindTheScenes": "Kulisy"
-    }
+    },
+    "ctaFooterButton": "Zacznij teraz"
   },
   "LandingAlt": {
     "badge": "Planowanie posiłków, w końcu relaksujące.",
@@ -227,7 +228,9 @@
       "button": "Resetuj hasło",
       "footer": "Jeśli nie prosiłeś o zresetowanie hasła, możesz bezpiecznie zignorować tę wiadomość."
     },
-    "guestWarning": "Ograniczone funkcje"
+    "guestWarning": "Ograniczone funkcje",
+    "showPassword": "Pokaż hasło",
+    "hidePassword": "Ukryj hasło"
   },
   "FAQ": {
     "title": "Najczęściej Zadawane Pytania",
@@ -459,7 +462,7 @@
       "validate": "Zatwierdź",
       "adults": "Dorośli",
       "children": "Dzieci",
-      "editPerson": "Edytuj {name}"
+      "noItemsDesc": "Nie przypisano jeszcze żadnych przedmiotów. Przypisane przedmioty pojawią się tutaj."
     },
     "Shopping": {
       "notAssociated": "Profil niepowiązany",
@@ -499,6 +502,19 @@
         "frozen": "Mrożonki",
         "household-cleaning": "Środki czystości",
         "misc": "Różne"
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Brak dań bez składników} one {1 danie nie ma składników} other {# dania nie mają składników}}",
+      "generateAllDescription": "Automatycznie generuj składniki dla wszystkich dań bez składników w jednej akcji.",
+      "generateAllButton": "Generuj składniki",
+      "generating": "Generowanie...",
+      "generatingProgress": "Generowanie... ({current}/{total})",
+      "generateDialog": {
+        "title": "Inteligentne Generowanie",
+        "description": "Wybierz dania, dla których chcesz, aby SI szczegółowo opisała wszystkie składniki.",
+        "selectAll": "Zaznacz wszystko",
+        "deselectAll": "Odznacz wszystko",
+        "categorizeNotice": "Pozostałe <bold>{count}</bold> artykuły zostaną po prostu przypisane do odpowiedniej kategorii.",
+        "confirmButton": "Generuj ({generateCount}) i Klasyfikuj ({categorizeCount})"
       }
     },
     "Settings": {
@@ -798,7 +814,8 @@
       "claimed": "Profil powiązany pomyślnie ✓",
       "errorClaim": "Błąd powiązania profilu ❌",
       "unclaimed": "Profil odłączony pomyślnie ✓",
-      "errorUnclaim": "Błąd odłączenia profilu ❌"
+      "errorUnclaim": "Błąd odłączenia profilu ❌",
+      "statusUpdated": "Status zaktualizowany"
     },
     "item": {
       "added": "{name} dodany! ✨",
@@ -1058,5 +1075,14 @@
         }
       ]
     }
+  },
+  "NetworkStatus": {
+    "offline": "Jesteś offline",
+    "backOnline": "Jesteś z powrotem online"
+  },
+  "SkipLinks": {
+    "navigation": "Nawigacja skrótów",
+    "skipToContent": "Przejdź do treści głównej",
+    "skipToNavigation": "Przejdź do nawigacji"
   }
 }
