@@ -250,6 +250,10 @@ export const deleteAllIngredientsSchema = baseInput.extend({
   itemId: z.number().int().positive(),
 });
 
+export const generateAllIngredientsSchema = baseInput.extend({
+  locale: z.string().optional(),
+});
+
 export const saveAIFeedbackSchema = baseInput.extend({
   itemId: z.number().int().positive(),
   rating: z.number().int().min(1).max(10),

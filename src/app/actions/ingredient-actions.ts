@@ -4,11 +4,12 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
-import { ingredients, ingredientCache, items, people } from "@drizzle/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { ingredients, ingredientCache, items, people, services, meals, events } from "@drizzle/schema";
+import { eq, and, sql, notInArray } from "drizzle-orm";
 import { verifyAccess } from "./shared";
 import {
   generateIngredientsSchema,
+  generateAllIngredientsSchema,
   createIngredientSchema,
   updateIngredientSchema,
   deleteIngredientSchema,
@@ -345,5 +346,318 @@ export const deleteAllIngredientsAction = createSafeAction(
 
     revalidatePath(`/event/${input.slug}`);
     return { success: true };
+  }
+);
+
+type BatchGenerateResult = {
+  success: true;
+  data: {
+    processed: number;
+    failed: number;
+    errors: Array<{ itemId: number; itemName: string; error: string }>;
+  };
+} | { success: false; error: string };
+
+// Helper function to process a single item (extracted from generateIngredientsAction logic)
+async function processItemGeneration(
+  item: { id: number; name: string; quantity: string | null; note: string | null; serviceId: number },
+  service: { peopleCount: number; adults: number; children: number; mealId: number },
+  meal: { adults: number; children: number },
+  eventId: number,
+  locale: string
+): Promise<{ success: true; itemId: number } | { success: false; itemId: number; error: string }> {
+  try {
+    const t = await getTranslations({
+      locale: locale || "fr",
+      namespace: "Translations",
+    });
+    const tAi = await getTranslations({
+      locale: locale || "fr",
+      namespace: "EventDashboard.AI",
+    });
+
+    // Delete existing ingredients for this item
+    await db.delete(ingredients).where(eq(ingredients.itemId, item.id));
+
+    const normalizedName = normalizeDishName(item.name);
+
+    // Calculate RSVP count
+    const eventPeople = await db.query.people.findMany({
+      where: eq(people.eventId, eventId),
+    });
+
+    let rsvpCount = 0;
+    for (const p of eventPeople) {
+      if (p.status === "confirmed") {
+        rsvpCount += 1 + (p.guest_adults || 0) + (p.guest_children || 0);
+      }
+    }
+
+    let finalPeopleCount = 4;
+    let guestDescription = "";
+
+    if (item.quantity) {
+      guestDescription = item.quantity;
+      finalPeopleCount = 0;
+    } else {
+      const mealServiceCount = service.peopleCount || 0;
+      finalPeopleCount = mealServiceCount > 0 ? mealServiceCount : 4;
+
+      if (mealServiceCount === 0 && rsvpCount > 0) {
+        finalPeopleCount = rsvpCount;
+      }
+
+      guestDescription = `${finalPeopleCount} personne${finalPeopleCount > 1 ? "s" : ""}`;
+    }
+
+    const systemPrompt = tAi("systemPrompt", { guestDescription });
+    let userPrompt = tAi("userPrompt", { itemName: item.name });
+    if (item.note && item.note.trim()) {
+      userPrompt += `\n\n${tAi("noteIndication", { note: item.note.trim() })}`;
+    }
+
+    const cacheCount = finalPeopleCount > 0 ? finalPeopleCount : 0;
+
+    const [cached] = await db
+      .select()
+      .from(ingredientCache)
+      .where(
+        and(
+          eq(ingredientCache.dishName, normalizedName),
+          eq(ingredientCache.peopleCount, cacheCount)
+        )
+      )
+      .limit(1);
+
+    let generatedIngredients: GeneratedIngredient[];
+    let finalCacheId: number | undefined = cached?.id;
+
+    if (cached && cached.confirmations >= AI_CACHE_MIN_CONFIRMATIONS) {
+      generatedIngredients = JSON.parse(cached.ingredients);
+    } else {
+      try {
+        generatedIngredients = await generateFromAI(item.name, cacheCount, {
+          description: item.quantity || undefined,
+          note: item.note || undefined,
+          systemPrompt,
+          userPrompt,
+        });
+      } catch (aiError) {
+        console.error(`[AI] Generation failed for item ${item.id}:`, aiError);
+        return {
+          success: false,
+          itemId: item.id,
+          error: tAi.has("generationError")
+            ? tAi("generationError")
+            : t("actions.ingredientsGenerationFailed"),
+        };
+      }
+
+      if (!generatedIngredients || generatedIngredients.length === 0) {
+        return {
+          success: false,
+          itemId: item.id,
+          error: t("actions.ingredientsGenerationFailed"),
+        };
+      }
+
+      if (generatedIngredients.length >= 3) {
+        if (cached) {
+          const cachedIngredients: GeneratedIngredient[] = JSON.parse(cached.ingredients);
+          if (ingredientsMatch(generatedIngredients, cachedIngredients)) {
+            const newConfirmations = cached.confirmations + 1;
+            await db
+              .update(ingredientCache)
+              .set({
+                confirmations: newConfirmations,
+                updatedAt: new Date(),
+              })
+              .where(eq(ingredientCache.id, cached.id));
+          } else {
+            await db
+              .update(ingredientCache)
+              .set({
+                ingredients: JSON.stringify(generatedIngredients),
+                confirmations: 1,
+                updatedAt: new Date(),
+              })
+              .where(eq(ingredientCache.id, cached.id));
+          }
+        } else {
+          const [newCache] = await db
+            .insert(ingredientCache)
+            .values({
+              dishName: normalizedName,
+              peopleCount: cacheCount,
+              ingredients: JSON.stringify(generatedIngredients),
+              confirmations: 1,
+            })
+            .returning();
+          finalCacheId = newCache.id;
+        }
+      }
+    }
+
+    if (!generatedIngredients || generatedIngredients.length === 0) {
+      return {
+        success: false,
+        itemId: item.id,
+        error: t("actions.ingredientsGenerationFailed"),
+      };
+    }
+
+    // Insert all ingredients
+    await db.transaction(async (tx) => {
+      if (finalCacheId) {
+        await tx.update(items).set({ cacheId: finalCacheId }).where(eq(items.id, item.id));
+      }
+
+      for (let i = 0; i < generatedIngredients.length; i++) {
+        const ing = generatedIngredients[i];
+        await tx.insert(ingredients).values({
+          itemId: item.id,
+          name: ing.name,
+          quantity: ing.quantity || null,
+          category: ing.category || "misc",
+          order: i,
+        });
+      }
+    });
+
+    return { success: true, itemId: item.id };
+  } catch (error) {
+    console.error(`[generateAllIngredientsAction] Error processing item ${item.id}:`, error);
+    const t = await getTranslations({
+      locale: locale || "fr",
+      namespace: "Translations",
+    });
+    return {
+      success: false,
+      itemId: item.id,
+      error: t("actions.ingredientsGenerationFailed"),
+    };
+  }
+}
+
+export const generateAllIngredientsAction = createSafeAction(
+  generateAllIngredientsSchema,
+  async (input): Promise<BatchGenerateResult> => {
+    try {
+      const t = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "Translations",
+      });
+
+      // Require authenticated user for AI generation
+      const session = await auth.api.getSession({
+        headers: await headers(),
+      });
+      if (!session) {
+        return {
+          success: false,
+          error: t("actions.notLoggedInAI"),
+        };
+      }
+
+      if (!session.user.emailVerified) {
+        return {
+          success: false,
+          error: t("actions.emailNotVerifiedAI"),
+        };
+      }
+
+      const { event } = await verifyAccess(
+        input.slug,
+        "ingredient:generate",
+        input.key,
+        input.token
+      );
+
+      // Find all items without ingredients for this event
+      // First, get all item IDs that have ingredients
+      const itemsWithIngredients = await db
+        .selectDistinct({ itemId: ingredients.itemId })
+        .from(ingredients);
+
+      const itemIdsWithIngredients = itemsWithIngredients.map((i) => i.itemId).filter(Boolean);
+
+      // Then find items without ingredients by excluding those IDs
+      const itemsWithoutIngredients = await db
+        .select({
+          item: items,
+          service: services,
+          meal: meals,
+        })
+        .from(items)
+        .innerJoin(services, eq(items.serviceId, services.id))
+        .innerJoin(meals, eq(services.mealId, meals.id))
+        .where(
+          and(
+            eq(meals.eventId, event.id),
+            itemIdsWithIngredients.length > 0
+              ? notInArray(items.id, itemIdsWithIngredients)
+              : undefined
+          )
+        );
+
+      if (itemsWithoutIngredients.length === 0) {
+        return {
+          success: true,
+          data: {
+            processed: 0,
+            failed: 0,
+            errors: [],
+          },
+        };
+      }
+
+      // Process items in batches with concurrency limit (max 3 at a time to avoid API rate limits)
+      const CONCURRENCY_LIMIT = 3;
+      const results: Array<
+        | { success: true; itemId: number }
+        | { success: false; itemId: number; error: string }
+      > = [];
+
+      for (let i = 0; i < itemsWithoutIngredients.length; i += CONCURRENCY_LIMIT) {
+        const batch = itemsWithoutIngredients.slice(i, i + CONCURRENCY_LIMIT);
+        const batchResults = await Promise.all(
+          batch.map(({ item, service, meal }) =>
+            processItemGeneration(item, service, meal, event.id, input.locale || "fr")
+          )
+        );
+        results.push(...batchResults);
+      }
+
+      const processed = results.filter((r) => r.success).length;
+      const failed = results.filter((r) => !r.success).length;
+      const errors = results
+        .filter((r): r is { success: false; itemId: number; error: string } => !r.success)
+        .map((r) => ({
+          itemId: r.itemId,
+          itemName:
+            itemsWithoutIngredients.find((i) => i.item.id === r.itemId)?.item.name || "Unknown",
+          error: r.error,
+        }));
+
+      revalidatePath(`/event/${input.slug}`);
+      return {
+        success: true,
+        data: {
+          processed,
+          failed,
+          errors,
+        },
+      };
+    } catch (error) {
+      console.error("[generateAllIngredientsAction] Unexpected error:", error);
+      const t = await getTranslations({
+        locale: input.locale || "fr",
+        namespace: "Translations",
+      });
+      return {
+        success: false,
+        error: t("actions.ingredientsGenerationFailed"),
+      };
+    }
   }
 );

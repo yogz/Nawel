@@ -498,7 +498,12 @@
         "frozen": "Frozen",
         "household-cleaning": "Household & Cleaning",
         "misc": "Misc"
-      }
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {No dishes without ingredients} one {1 dish has no ingredients} other {# dishes have no ingredients}}",
+      "generateAllDescription": "Automatically generate ingredients for all dishes without ingredients in one action.",
+      "generateAllButton": "Generate ingredients",
+      "generating": "Generating...",
+      "generatingProgress": "Generating... ({current}/{total})"
     },
     "Settings": {
       "ambiance": "Ambiance",

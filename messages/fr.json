@@ -498,7 +498,12 @@
         "frozen": "Surgelés",
         "household-cleaning": "Hygiène & Entretien",
         "misc": "Divers"
-      }
+      },
+      "itemsWithoutIngredients": "{count, plural, =0 {Aucun plat sans ingrédients} one {1 plat n'a pas d'ingrédients} other {# plats n'ont pas d'ingrédients}}",
+      "generateAllDescription": "Générez automatiquement les ingrédients pour tous les plats sans ingrédients en une seule action.",
+      "generateAllButton": "Générer les ingrédients",
+      "generating": "Génération en cours...",
+      "generatingProgress": "Génération... ({current}/{total})"
     },
     "Settings": {
       "ambiance": "Ambiance",

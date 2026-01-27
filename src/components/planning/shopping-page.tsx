@@ -17,6 +17,8 @@ import {
 } from "@/lib/shopping-utils";
 import { CitationDisplay } from "../common/citation-display";
 import { AppBranding } from "../common/app-branding";
+import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
+import { Sparkles, Loader2, AlertCircle } from "lucide-react";
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -233,6 +235,21 @@ export function ShoppingPage({
 
   const backUrl = writeKey ? `/event/${slug}?key=${writeKey}` : `/event/${slug}`;
 
+  // Hook for batch ingredient generation
+  const {
+    itemsWithoutIngredients,
+    isGenerating: isGeneratingIngredients,
+    progress: generationProgress,
+    generateAllIngredients,
+    count: itemsWithoutCount,
+  } = useShoppingGeneration({
+    plan,
+    setPlan,
+    slug,
+    writeKey,
+    readOnly: !writeEnabled,
+  });
+
   return (
     <div className="min-h-screen bg-surface">
       {/* Header */}
@@ -303,6 +320,47 @@ export function ShoppingPage({
             />
           </div>
         </div>
+
+        {/* Generation Banner */}
+        {writeEnabled && itemsWithoutCount > 0 && (
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 shadow-lg backdrop-blur-sm">
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100">
+                <AlertCircle size={18} className="text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-900">
+                  {t("itemsWithoutIngredients", { count: itemsWithoutCount })}
+                </p>
+                <p className="mt-1 text-xs text-amber-700">{t("generateAllDescription")}</p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <Button
+                    onClick={generateAllIngredients}
+                    disabled={isGeneratingIngredients}
+                    className="h-11 gap-2 rounded-xl border-none bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 text-sm font-bold text-white shadow-md transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {isGeneratingIngredients ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        {generationProgress
+                          ? t("generatingProgress", {
+                              current: generationProgress.current,
+                              total: generationProgress.total,
+                            })
+                          : t("generating")}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={16} />
+                        {t("generateAllButton")}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Category Tabs */}
         {categories.length > 1 && (
