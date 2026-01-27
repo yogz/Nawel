@@ -56,7 +56,7 @@
     "react-day-picker": "^9.13.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
-    "react-joyride": "^2.9.3",
+    "react-joyride": "^3.0.0-7",
     "react-swipeable": "^7.0.2",
     "recharts": "^3.6.0",
     "resend": "^6.6.0",

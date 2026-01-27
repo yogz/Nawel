@@ -59,11 +59,17 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
     tourKey === "dashboard"
       ? [
           {
+            target: "#dashboard-title",
+            content: t("steps.dashboard.welcome.content"),
+            title: t("steps.dashboard.welcome.title"),
+            placement: "bottom",
+            disableBeacon: true,
+          },
+          {
             target: "#new-event-card",
             title: t("steps.dashboard.create.title"),
             content: t("steps.dashboard.create.content"),
             placement: "auto",
-            disableBeacon: true,
           },
           {
             target: "#user-nav-avatar",
@@ -91,6 +97,7 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
       showProgress
       showSkipButton
       callback={handleJoyrideCallback}
+      tooltipComponent={Tooltip}
       locale={{
         back: t("back"),
         close: t("last"),
@@ -100,10 +107,81 @@ export function OnboardingTour({ tourKey }: OnboardingTourProps) {
       }}
       styles={{
         options: {
-          primaryColor: "#0ea5e9", // Adjust to match theme
+          primaryColor: "#a855f7", // Violet accent
           zIndex: 1000,
+          overlayColor: "rgba(0, 0, 0, 0.4)",
+        },
+        spotlight: {
+          borderRadius: 24,
         },
       }}
     />
+  );
+}
+
+function Tooltip({
+  continuous,
+  index,
+  step,
+  backProps,
+  closeProps,
+  primaryProps,
+  skipProps,
+  tooltipProps,
+  isLastStep,
+}: any) {
+  return (
+    <div
+      {...tooltipProps}
+      className="max-w-[320px] overflow-hidden rounded-[24px] border border-white/40 bg-white/80 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:max-w-sm"
+    >
+      <div className="space-y-4">
+        {step.title && (
+          <h3 className="text-lg font-black tracking-tight text-gray-900">{step.title}</h3>
+        )}
+        <div className="text-sm font-medium leading-relaxed text-gray-600">{step.content}</div>
+
+        <div className="flex items-center justify-between pt-2">
+          <div>
+            {!isLastStep && (
+              <button
+                {...skipProps}
+                className="text-xs font-bold uppercase tracking-widest text-gray-400 transition-colors hover:text-gray-900"
+              >
+                {skipProps.title}
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {index > 0 && (
+              <button
+                {...backProps}
+                className="flex h-10 items-center justify-center rounded-full bg-gray-100 px-4 text-xs font-bold uppercase tracking-widest text-gray-600 transition-all hover:bg-gray-200 active:scale-95"
+              >
+                {backProps.title}
+              </button>
+            )}
+            <button
+              {...primaryProps}
+              className="flex h-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 px-6 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-purple-500/25 transition-all hover:scale-105 hover:shadow-purple-500/40 active:scale-95"
+            >
+              {primaryProps.title}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress indicators */}
+      <div className="mt-6 flex gap-1">
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className={`h-1 flex-1 rounded-full transition-all duration-500 ${
+              i <= index ? "bg-purple-500" : "bg-gray-200"
+            }`}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
