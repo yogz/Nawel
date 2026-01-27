@@ -4,7 +4,15 @@ import { useState, useMemo, useTransition } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Share2, ShoppingBag, CheckCircle, ChevronDown } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Share2,
+  ShoppingBag,
+  CheckCircle,
+  ChevronDown,
+  Package,
+} from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
@@ -20,6 +28,7 @@ import { AppBranding } from "../common/app-branding";
 import { useShoppingGeneration } from "@/hooks/use-shopping-generation";
 import { Sparkles, Loader2, AlertCircle } from "lucide-react";
 import { ShoppingGenerationDialog } from "./shopping-generation-dialog";
+import { ShoppingItemSheet } from "./shopping-item-sheet";
 
 interface ShoppingPageProps {
   initialPlan: PlanData;
@@ -46,6 +55,7 @@ export function ShoppingPage({
   const [copied, setCopied] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<AggregatedShoppingItem | null>(null);
 
   // Build shopping list from person's assigned items, grouped by category
   const shoppingList = useMemo(() => {
@@ -144,6 +154,21 @@ export function ShoppingPage({
       }
       return next;
     });
+  };
+
+  // Helper to determine if an aggregated item represents a "Whole Dish" (categorized) vs a "Raw Ingredient" (generated)
+  const isWholeDish = (aggregatedItem: AggregatedShoppingItem) => {
+    const source = aggregatedItem.sources[0];
+    if (source.type !== "ingredient") return true; // Items without ingredients are effectively dishes
+
+    // Heuristic: If ingredient name is similar to item name, it's a categorized dish
+    const itemName = source.item.name.toLowerCase().trim();
+    const ingredientName = source.ingredient!.name.toLowerCase().trim();
+    return (
+      itemName === ingredientName ||
+      itemName.includes(ingredientName) ||
+      ingredientName.includes(itemName)
+    );
   };
 
   const categories = useMemo(() => {
@@ -508,12 +533,31 @@ export function ShoppingPage({
                                   <div className="flex items-baseline gap-2 overflow-hidden">
                                     <span
                                       className={clsx(
-                                        "truncate text-base font-semibold",
-                                        isChecked ? "text-green-700 line-through" : "text-text"
+                                        "truncate text-base font-semibold transition-colors",
+                                        isChecked
+                                          ? "text-green-700 line-through dark:text-green-400"
+                                          : "text-foreground",
+                                        // Make clickable if it's a dish and write access is enabled
+                                        isWholeDish(aggregatedItem) &&
+                                          writeEnabled &&
+                                          "cursor-pointer hover:text-accent hover:underline"
                                       )}
+                                      onClick={() => {
+                                        if (isWholeDish(aggregatedItem) && writeEnabled) {
+                                          setEditingItem(aggregatedItem);
+                                        }
+                                      }}
                                     >
                                       {aggregatedItem.name}
                                     </span>
+                                    {/* Icon for Whole Dish */}
+                                    {isWholeDish(aggregatedItem) && (
+                                      <Package
+                                        size={14}
+                                        className="mb-0.5 text-purple-400"
+                                        strokeWidth={2.5}
+                                      />
+                                    )}
                                     {(aggregatedItem.quantity !== null || aggregatedItem.unit) && (
                                       <span className="shrink-0 text-sm font-medium text-muted-foreground">
                                         {formatAggregatedQuantity(
@@ -643,6 +687,16 @@ export function ShoppingPage({
           isGenerating={isGeneratingIngredients}
         />
       )}
+
+      {/* Edit Item Sheet */}
+      <ShoppingItemSheet
+        item={editingItem}
+        open={!!editingItem}
+        onOpenChange={(open) => !open && setEditingItem(null)}
+        slug={slug}
+        writeKey={writeKey}
+        setPlan={setPlan}
+      />
     </div>
   );
 }
