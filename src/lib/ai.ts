@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import type { LanguageModel } from "ai";
+import { wrapLanguageModel } from "ai";
 
 /**
  * Vercel AI Gateway Configuration
@@ -12,38 +12,22 @@ const vercelAiGateway = createOpenAI({
 });
 
 const geminiModel = vercelAiGateway("google/gemini-2.0-flash-lite");
-const mistralModel = vercelAiGateway("mistral/mistral-nemo");
 
-class FallbackLanguageModel {
-  specificationVersion = "v3" as const;
-  provider = "fallback";
-  modelId = "fallback-model";
-
-  constructor(
-    private primary: any,
-    private secondary: any
-  ) {}
-
-  async doGenerate(options: any) {
-    try {
-      return await this.primary.doGenerate(options);
-    } catch (error) {
-      console.warn("Primary model failed, failing back to secondary", error);
-      return await this.secondary.doGenerate(options);
-    }
-  }
-
-  async doStream(options: any) {
-    try {
-      return await this.primary.doStream(options);
-    } catch (error) {
-      console.warn("Primary model failed, failing back to secondary", error);
-      return await this.secondary.doStream(options);
-    }
-  }
-}
-
-export const aiModel = new FallbackLanguageModel(
-  geminiModel,
-  mistralModel
-) as unknown as LanguageModel;
+export const aiModel = wrapLanguageModel({
+  model: geminiModel,
+  middleware: {
+    specificationVersion: "v3",
+    transformParams: async ({ params }) => {
+      return {
+        ...params,
+        providerOptions: {
+          ...params.providerOptions,
+          gateway: {
+            ...params.providerOptions?.gateway,
+            models: ["mistral/mistral-nemo"],
+          },
+        },
+      };
+    },
+  },
+});
