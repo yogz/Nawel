@@ -46,7 +46,7 @@ export async function generateIngredients(
 
   try {
     const { object } = await generateObject({
-      model: aiModel as any,
+      model: aiModel,
       schema: ingredientsSchema,
       system: systemWithFormatting,
       prompt: userPrompt,
@@ -81,7 +81,7 @@ export async function categorizeItems(
 
   try {
     const { object } = await generateObject({
-      model: aiModel as any,
+      model: aiModel,
       schema: categorizationSchema,
       system: systemWithFormatting,
       prompt: userPrompt,
@@ -119,7 +119,7 @@ export async function testModelWithPrompt(
 
   try {
     const { object } = await generateObject({
-      model: aiModel as any,
+      model: aiModel,
       schema: ingredientsSchema,
       system: systemPrompt,
       prompt: userPrompt,
