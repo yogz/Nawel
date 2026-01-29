@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useTransition } from "react";
+import { useState, useMemo, useTransition, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
 import { motion } from "framer-motion";
 import {
@@ -52,6 +52,11 @@ export function ShoppingAllPage({
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AggregatedShoppingItem | null>(null);
+
+  // Sync state with props when initialPlan changes (e.g. after router.refresh())
+  useEffect(() => {
+    setPlan(initialPlan);
+  }, [initialPlan]);
 
   // Build shopping list from ALL assigned items (global view)
   const shoppingList = useMemo(() => {
