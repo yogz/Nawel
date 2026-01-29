@@ -26,6 +26,7 @@
     "close": "Close",
     "chooseLanguage": "Choose a language",
     "searchPlaceholder": "Search...",
+    "delete": "Delete",
     "noLanguageFound": "No language found"
   },
   "Landing": {
