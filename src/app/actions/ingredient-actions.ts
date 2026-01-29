@@ -28,6 +28,7 @@ import { generateIngredients as generateFromAI, type GeneratedIngredient } from 
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth-config";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
+import { getSystemPrompt, getUserPrompt, getNoteIndication } from "@/lib/prompts";
 
 // Normalize dish name for cache key (lowercase, trimmed, no extra spaces)
 function normalizeDishName(name: string): string {
@@ -163,13 +164,14 @@ export const generateIngredientsAction = createSafeAction(
         }
       }
 
-      const systemPrompt = tAi("systemPrompt", { guestDescription });
+      const locale = input.locale || "fr";
+      const systemPrompt = getSystemPrompt(locale, { guestDescription });
 
       // Build user prompt with optional note indication
       const noteFromInput = input.note || item?.note;
-      let userPrompt = tAi("userPrompt", { itemName: input.itemName });
+      let userPrompt = getUserPrompt(locale, { itemName: input.itemName });
       if (noteFromInput && noteFromInput.trim()) {
-        userPrompt += `\n\n${tAi("noteIndication", { note: noteFromInput.trim() })}`;
+        userPrompt += `\n\n${getNoteIndication(locale, { note: noteFromInput.trim() })}`;
       }
 
       // Check cache for this dish + people count
@@ -451,10 +453,10 @@ async function processItemGeneration(
       }
     }
 
-    const systemPrompt = tAi("systemPrompt", { guestDescription });
-    let userPrompt = tAi("userPrompt", { itemName: item.name });
+    const systemPrompt = getSystemPrompt(locale, { guestDescription });
+    let userPrompt = getUserPrompt(locale, { itemName: item.name });
     if (item.note && item.note.trim()) {
-      userPrompt += `\n\n${tAi("noteIndication", { note: item.note.trim() })}`;
+      userPrompt += `\n\n${getNoteIndication(locale, { note: item.note.trim() })}`;
     }
 
     const cacheCount = finalPeopleCount > 0 ? finalPeopleCount : 0;
@@ -696,7 +698,10 @@ export const generateAllIngredientsAction = createSafeAction(
       // 2. Process "Categorize" (Simple Classification)
       if (toCategorize.length > 0) {
         const categorizedItems = await import("@/lib/openrouter").then((m) =>
-          m.categorizeItems(toCategorize.map((entry) => entry.item.name))
+          m.categorizeItems(
+            toCategorize.map((entry) => entry.item.name),
+            input.locale || "fr"
+          )
         );
 
         // Map results back to items

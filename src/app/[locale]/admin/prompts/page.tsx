@@ -2,7 +2,14 @@ import { auth } from "@/lib/auth-config";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import {
+  getSystemPrompt,
+  getUserPrompt,
+  getNoteIndication,
+  getCategorizationSystemPrompt,
+  getCategorizationUserPrompt,
+} from "@/lib/prompts";
 
 export const dynamic = "force-dynamic";
 
@@ -29,33 +36,17 @@ export default async function AdminPromptsPage(props: { params: Promise<{ locale
     );
   }
 
-  // Get the AI prompts from translations
-  const tAi = await getTranslations({ locale, namespace: "EventDashboard.AI" });
+  const systemPrompt = getSystemPrompt(locale, { guestDescription: "{guestDescription}" });
+  const userPrompt = getUserPrompt(locale, { itemName: "{itemName}" });
+  const noteIndication = getNoteIndication(locale, { note: "{note}" });
 
-  const systemPrompt = tAi("systemPrompt", { guestDescription: "{guestDescription}" });
-  const userPrompt = tAi("userPrompt", { itemName: "{itemName}" });
-  const noteIndication = tAi("noteIndication", { note: "{note}" });
-
-  // Categorization prompt (hardcoded in openrouter.ts)
-  const categorizationSystemPrompt = `Tu es un expert en classement de produits de supermarché.
-TA MISSION : Associer chaque article à la meilleure catégorie possible parmi cette liste stricte :
-- fruits-vegetables (Fruits & Légumes)
-- meat-fish (Boucherie & Poissonnerie)
-- dairy-eggs (Crémerie & Œufs)
-- bakery (Boulangerie)
-- pantry-savory (Épicerie Salée)
-- pantry-sweet (Épicerie Sucrée)
-- beverages (Boissons)
-- frozen (Surgelés)
-- household-cleaning (Hygiène & Entretien)
-- misc (Tout le reste)
-
-Si un article est ambigu, choisis "misc".`;
-
-  const categorizationUserPrompt = `Classe ces articles :
-- {item1}
-- {item2}
-- ...`;
+  // Categorization prompt
+  const categorizationSystemPrompt = getCategorizationSystemPrompt(locale);
+  const categorizationUserPrompt = getCategorizationUserPrompt(locale, [
+    "{item1}",
+    "{item2}",
+    "...",
+  ]);
 
   return (
     <div className="min-h-screen bg-surface">
@@ -176,8 +167,8 @@ Si un article est ambigu, choisis "misc".`;
           <section className="rounded-xl bg-muted/50 p-4">
             <h3 className="mb-2 text-sm font-semibold text-muted-foreground">Fichiers source</h3>
             <ul className="space-y-1 text-xs text-muted-foreground font-mono">
-              <li>• messages/{locale}.json → EventDashboard.AI</li>
-              <li>• src/lib/openrouter.ts → categorizeItems()</li>
+              <li>• src/lib/prompts.ts (Source unique)</li>
+              <li>• src/lib/openrouter.ts → Logique d'appel</li>
               <li>• src/app/actions/ingredient-actions.ts</li>
             </ul>
           </section>
