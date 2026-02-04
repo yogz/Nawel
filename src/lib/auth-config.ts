@@ -6,8 +6,18 @@ import * as schema from "@drizzle/schema";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
+import { Redis } from "@upstash/redis";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+// Upstash Redis for rate limiting
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
 
 // Parse trusted origins from environment variable, with safe defaults for development
 const getTrustedOrigins = (): string[] => {
@@ -43,7 +53,15 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     requireEmailVerification: false, // Allow auto-login before verification; banner will remind them
-    sendResetPassword: async ({ user, url, token }: { user: { email: string; language?: string | null }; url: string; token: string }) => {
+    sendResetPassword: async ({
+      user,
+      url,
+      token,
+    }: {
+      user: { email: string; language?: string | null };
+      url: string;
+      token: string;
+    }) => {
       const locale = user.language || "fr";
       const t = await getTranslations({
         locale,
@@ -210,6 +228,51 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * SESSION_EXPIRE_DAYS,
     updateAge: 60 * 60 * 24 * SESSION_REFRESH_DAYS,
+  },
+  // Upstash Redis for rate limiting storage
+  ...(redis && {
+    secondaryStorage: {
+      get: async (key: string) => {
+        const value = await redis.get<string>(key);
+        return value ?? null;
+      },
+      set: async (key: string, value: string, ttl?: number) => {
+        if (ttl) {
+          await redis.set(key, value, { ex: ttl });
+        } else {
+          await redis.set(key, value);
+        }
+      },
+      delete: async (key: string) => {
+        await redis.del(key);
+      },
+    },
+  }),
+  // Rate limiting configuration
+  rateLimit: {
+    enabled: true,
+    window: 60, // 1 minute window
+    max: 100, // max 100 requests per window (general)
+    storage: redis ? "secondary-storage" : "memory",
+    customRules: {
+      // Stricter limits for auth endpoints to prevent brute force
+      "/sign-in/email": {
+        window: 60,
+        max: 5, // 5 attempts per minute
+      },
+      "/sign-in/magic-link": {
+        window: 60,
+        max: 5,
+      },
+      "/sign-up/email": {
+        window: 60,
+        max: 3, // 3 sign-ups per minute
+      },
+      "/forgot-password": {
+        window: 300, // 5 minute window
+        max: 3, // 3 attempts per 5 minutes
+      },
+    },
   },
   logger: {
     level: process.env.NODE_ENV === "production" ? "error" : "warn",

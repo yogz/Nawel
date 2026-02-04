@@ -28,6 +28,7 @@ import { generateIngredients as generateFromAI, type GeneratedIngredient } from 
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth-config";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
+import { checkAIRateLimit, checkAIBatchRateLimit } from "@/lib/redis";
 import { getSystemPrompt, getUserPrompt, getNoteIndication } from "@/lib/prompts";
 
 // Normalize dish name for cache key (lowercase, trimmed, no extra spaces)
@@ -90,6 +91,15 @@ export const generateIngredientsAction = createSafeAction(
         return {
           success: false,
           error: t("actions.emailNotVerifiedAI"),
+        };
+      }
+
+      // Check AI rate limit (30 generations per hour per user)
+      const rateLimit = await checkAIRateLimit(session.user.id);
+      if (!rateLimit.success) {
+        return {
+          success: false,
+          error: t("actions.rateLimitExceeded", { minutes: Math.ceil(rateLimit.retryAfter / 60) }),
         };
       }
 
@@ -606,6 +616,15 @@ export const generateAllIngredientsAction = createSafeAction(
         return {
           success: false,
           error: t("actions.emailNotVerifiedAI"),
+        };
+      }
+
+      // Check AI batch rate limit (5 batch generations per hour per user)
+      const rateLimit = await checkAIBatchRateLimit(session.user.id);
+      if (!rateLimit.success) {
+        return {
+          success: false,
+          error: t("actions.rateLimitExceeded", { minutes: Math.ceil(rateLimit.retryAfter / 60) }),
         };
       }
 

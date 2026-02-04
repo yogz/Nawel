@@ -869,6 +869,7 @@
       "notLoggedInAI": "Devi essere connesso per utilizzare la generazione AI.",
       "emailNotVerifiedAI": "Devi verificare la tua email per usare la generazione AI.",
       "ingredientsGenerationFailed": "Nessun ingrediente generato. Riprova.",
+      "rateLimitExceeded": "Troppe richieste. Riprova tra {minutes} minuto/i.",
       "confirmationRequired": "Conferma richiesta.",
       "deleteError": "Si è verificato un errore durante l'eliminazione del tuo account.",
       "errorSubmitFeedback": "Errore durante l'invio del feedback."

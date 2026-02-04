@@ -869,6 +869,7 @@
       "notLoggedInAI": "YZ oluşturmayı kullanmak için giriş yapmalısınız.",
       "emailNotVerifiedAI": "YZ oluşturmayı kullanmak için e-postanızı doğrulamalısınız.",
       "ingredientsGenerationFailed": "Hiçbir malzeme oluşturulamadı. Tekrar deneyin.",
+      "rateLimitExceeded": "Çok fazla istek. Lütfen {minutes} dakika sonra tekrar deneyin.",
       "confirmationRequired": "Onay gereklidir.",
       "deleteError": "Hesabınız silinirken bir hata oluştu.",
       "errorSubmitFeedback": "Geri bildirim gönderilirken hata oluştu."

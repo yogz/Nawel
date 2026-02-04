@@ -869,6 +869,7 @@
       "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
       "emailNotVerifiedAI": "Sie müssen Ihre E-Mail verifizieren, um die KI-Generierung zu nutzen.",
       "ingredientsGenerationFailed": "Keine Zutaten generiert. Versuchen Sie es erneut.",
+      "rateLimitExceeded": "Zu viele Anfragen. Bitte versuchen Sie es in {minutes} Minute(n) erneut.",
       "confirmationRequired": "Bestätigung ist erforderlich.",
       "deleteError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten.",
       "errorSubmitFeedback": "Fehler beim Senden des Feedbacks."

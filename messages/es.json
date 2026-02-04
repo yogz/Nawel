@@ -869,6 +869,7 @@
       "notLoggedInAI": "Debes estar conectado para usar la generación por IA.",
       "emailNotVerifiedAI": "Debes verificar tu correo electrónico para usar la generación por IA.",
       "ingredientsGenerationFailed": "No se generaron ingredientes. Inténtalo de nuevo.",
+      "rateLimitExceeded": "Demasiadas solicitudes. Inténtalo de nuevo en {minutes} minuto(s).",
       "confirmationRequired": "Se requiere confirmación.",
       "deleteError": "Ocurrió un error al eliminar tu cuenta.",
       "errorSubmitFeedback": "Error al enviar los comentarios."

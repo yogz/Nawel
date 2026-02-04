@@ -869,6 +869,7 @@
       "notLoggedInAI": "U moet aangemeld zijn om AI-generatie te gebruiken.",
       "emailNotVerifiedAI": "U moet uw e-mail verifiëren om AI-generatie te gebruiken.",
       "ingredientsGenerationFailed": "Geen ingrediënten gegenereerd. Probeer opnieuw.",
+      "rateLimitExceeded": "Te veel verzoeken. Probeer het opnieuw over {minutes} minuut/minuten.",
       "confirmationRequired": "Bevestiging vereist.",
       "deleteError": "Er is een fout opgetreden bij het verwijderen van je account.",
       "errorSubmitFeedback": "Fout bij het verzenden van feedback."

@@ -870,6 +870,7 @@
       "notLoggedInAI": "You must be logged in to use AI generation.",
       "emailNotVerifiedAI": "You must verify your email to use AI generation.",
       "ingredientsGenerationFailed": "No ingredients generated. Try again.",
+      "rateLimitExceeded": "Too many requests. Please try again in {minutes} minute(s).",
       "confirmationRequired": "Confirmation is required.",
       "deleteError": "An error occurred while deleting your account.",
       "errorSubmitFeedback": "Error submitting feedback."

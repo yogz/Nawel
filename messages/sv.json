@@ -869,6 +869,7 @@
       "notLoggedInAI": "Du måste vara inloggad för att använda AI-generering.",
       "emailNotVerifiedAI": "Du måste verifiera din e-post för att använda AI-generering.",
       "ingredientsGenerationFailed": "Inga ingredienser genererade. Försök igen.",
+      "rateLimitExceeded": "För många förfrågningar. Försök igen om {minutes} minut(er).",
       "confirmationRequired": "Bekräftelse krävs.",
       "deleteError": "Ett fel uppstod när ditt konto skulle raderas.",
       "errorSubmitFeedback": "Fel vid inskickande av feedback."

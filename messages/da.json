@@ -869,6 +869,7 @@
       "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
       "emailNotVerifiedAI": "Du skal verificere din e-mail for at bruge AI-generering.",
       "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
+      "rateLimitExceeded": "For mange anmodninger. Prøv igen om {minutes} minut(ter).",
       "confirmationRequired": "Bekræftelse er påkrævet.",
       "deleteError": "Der opstod en fejl under sletning af din konto.",
       "errorSubmitFeedback": "Fejl ved afsendelse af feedback."
