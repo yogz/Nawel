@@ -6,7 +6,7 @@ import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import { AppBranding } from "@/components/common/app-branding";
 import { useSession } from "@/lib/auth-client";
 

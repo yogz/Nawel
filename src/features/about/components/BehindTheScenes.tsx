@@ -24,6 +24,7 @@ import {
   Code2,
   Puzzle,
   CircleEllipsis,
+  HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -155,6 +156,27 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     },
     {} as Record<string, number>
   );
+
+  const OTHER_PROJECTS = [
+    {
+      id: "milou",
+      url: "https://www.milou.studio/",
+      emoji: "💪",
+      gradient: "from-blue-500/10 via-cyan-500/5 to-transparent",
+    },
+    {
+      id: "tenisfranz",
+      url: "https://tenis-franz.vercel.app/",
+      emoji: "🎾",
+      gradient: "from-amber-500/10 via-emerald-500/5 to-transparent",
+    },
+    {
+      id: "maurice",
+      url: "https://www.ecrireavecmaurice.fr/",
+      emoji: "✍️",
+      gradient: "from-rose-500/10 via-purple-500/5 to-transparent",
+    },
+  ] as const;
 
   const CATEGORIES = [
     "hosting",
@@ -344,6 +366,63 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </div>
               </div>
             </div>
+          </div>
+        </motion.section>
+
+        {/* Other Projects Section */}
+        <motion.section
+          variants={itemVariants}
+          className="space-y-8"
+          aria-labelledby="other-projects-heading"
+        >
+          <div className="text-center md:text-left">
+            <h2 id="other-projects-heading" className="mb-2 text-3xl font-bold text-text">
+              {t("otherProjectsTitle")}
+            </h2>
+            <p className="text-lg text-muted-foreground">{t("otherProjectsSubtitle")}</p>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-text/80">
+              {t("otherProjectsIntro")}
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {OTHER_PROJECTS.map((project) => {
+              const projectTitle = t(`otherProjects.${project.id}.title`);
+              const projectDescription = t(`otherProjects.${project.id}.description`);
+              return (
+                <article key={project.id} itemScope itemType="https://schema.org/CreativeWork">
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer external"
+                    title={`${projectTitle} — ${projectDescription}`}
+                    itemProp="url"
+                    className={`group relative block h-full overflow-hidden rounded-3xl border border-white/40 bg-gradient-to-br ${project.gradient} bg-white/70 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 space-y-3">
+                        <div className="text-4xl" aria-hidden="true">
+                          {project.emoji}
+                        </div>
+                        <h3 className="text-xl font-bold text-text" itemProp="name">
+                          {projectTitle}
+                        </h3>
+                        <p
+                          className="text-sm leading-relaxed text-muted-foreground"
+                          itemProp="description"
+                        >
+                          {projectDescription}
+                        </p>
+                      </div>
+                      <ArrowUpRight
+                        aria-hidden="true"
+                        className="h-5 w-5 shrink-0 text-primary opacity-50 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+                      />
+                    </div>
+                    <meta itemProp="creator" content="Nicolas" />
+                  </a>
+                </article>
+              );
+            })}
           </div>
         </motion.section>
 
@@ -551,6 +630,41 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </div>
               </div>
             ))}
+          </div>
+        </motion.section>
+
+        {/* FAQ Section */}
+        <motion.section variants={itemVariants} className="space-y-8" aria-labelledby="faq-heading">
+          <div className="text-center md:text-left">
+            <h2 id="faq-heading" className="mb-2 text-3xl font-bold text-text">
+              {t("faqTitle")}
+            </h2>
+            <p className="text-lg text-muted-foreground">{t("faqSubtitle")}</p>
+          </div>
+          <div className="space-y-3">
+            {(["whoCreatedColist", "otherProjects", "whyColist", "isItFree"] as const).map(
+              (key) => (
+                <details
+                  key={key}
+                  className="group rounded-2xl border border-white/40 bg-white/70 p-5 shadow-sm backdrop-blur-sm transition-all duration-300 hover:shadow-md"
+                >
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-4 font-semibold text-text">
+                    <span className="flex items-start gap-3">
+                      <HelpCircle
+                        aria-hidden="true"
+                        className="mt-0.5 h-5 w-5 shrink-0 text-primary"
+                      />
+                      <span>{t(`faq.${key}.question`)}</span>
+                    </span>
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-90"
+                    />
+                  </summary>
+                  <p className="mt-4 pl-8 leading-relaxed text-text/80">{t(`faq.${key}.answer`)}</p>
+                </details>
+              )
+            )}
           </div>
         </motion.section>
 

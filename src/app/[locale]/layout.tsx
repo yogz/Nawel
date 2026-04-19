@@ -3,8 +3,7 @@ import { routing, type Locale } from "@/i18n/routing";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import "../globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SnowOverlay } from "@/components/snow-overlay";
@@ -170,38 +169,12 @@ export default async function RootLayout({
         <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Google Consent Mode v2 - Default State */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              
-              // Define default consent state based on localStorage to avoid flashes
-              // DEFAULT TO GRANTED: set it to true by default for now
-              var consent = 'granted';
-              try {
-                if (localStorage.getItem('analytics_consent') === 'false') {
-                  consent = 'denied';
-                }
-              } catch (e) {}
-
-              gtag('consent', 'default', {
-                'analytics_storage': consent,
-                'ad_storage': consent,
-                'ad_user_data': consent,
-                'ad_personalization': consent,
-                'wait_for_update': 500
-              });
-              
-              // Enable GA4 Debug Mode if requested
-              try {
-                if (localStorage.getItem('ga_debug') === 'true') {
-                  window['ga-disable-${process.env.NEXT_PUBLIC_GA_ID || "G-F0RFQNG8SP"}'] = false;
-                }
-              } catch (e) {}
-            `,
-          }}
+        {/* Umami Analytics — privacy-friendly, cookieless */}
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id="383d4d2b-6e94-4215-b02e-39ddc800134b"
+          strategy="afterInteractive"
+          defer
         />
 
         <script
@@ -265,8 +238,6 @@ export default async function RootLayout({
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />
-        <Analytics />
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-F0RFQNG8SP"} />
       </body>
     </html>
   );

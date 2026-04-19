@@ -2,7 +2,7 @@
 
 import { UserPlus, UserCircle, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import { Button } from "@/components/ui/button";
 
 export function GuestAccessSheetContent({

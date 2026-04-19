@@ -1019,6 +1019,47 @@
     "changelogSubtitle": "De nieuwste functies met liefde toegevoegd.",
     "footer": "Gemaakt με 🇪🇺❤️🐻 door een onafhankelijke ontwikkelaar",
     "noCosts": "Nog geen kostengegevens beschikbaar.",
+    "metaTitle": "Achter de schermen — Nicolas, maker van CoList",
+    "metaDescription": "Ontdek het verhaal achter CoList: wie het heeft gemaakt, wat het kost en mijn andere projecten (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Zelfstandig webontwikkelaar",
+    "personDescription": "Nicolas is een Franse zelfstandige webontwikkelaar, maker van CoList, Milou, TenisFranz en Maurice.",
+    "otherProjectsTitle": "Mijn andere projecten",
+    "otherProjectsSubtitle": "Andere creaties waaraan ik heb gewerkt.",
+    "otherProjectsIntro": "Naast CoList ontwerp en ontwikkel ik verschillende andere webapplicaties. Elk ontstaat uit een concrete behoefte en ik onderhoud ze als zelfstandige ontwikkelaar.",
+    "faqTitle": "Veelgestelde vragen",
+    "faqSubtitle": "Alles wat je moet weten over CoList en de projecten erachter.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Wie heeft CoList gemaakt?",
+        "answer": "CoList is gemaakt door Nicolas, een Franse zelfstandige webontwikkelaar. De app is ontstaan uit persoonlijke frustratie bij het organiseren van maaltijden met familie en vrienden."
+      },
+      "otherProjects": {
+        "question": "Welke andere projecten heeft Nicolas gemaakt?",
+        "answer": "Nicolas is ook de maker van Milou (mobiele app voor zelfstandige sportcoaches), TenisFranz (voorspelling van tennismatchresultaten) en Maurice (online schrijfassistent)."
+      },
+      "whyColist": {
+        "question": "Waarom is CoList gemaakt?",
+        "answer": "Om het organiseren van gedeelde maaltijden te vereenvoudigen: weten wie wat meebrengt, dubbele items vermijden en de mentale belasting verminderen. De app is mobile-first en gasten hoeven zich niet te registreren."
+      },
+      "isItFree": {
+        "question": "Is CoList gratis?",
+        "answer": "Ja, CoList is volledig gratis. Als je het project wilt steunen, kun je een koffie aanbieden of bijdragen via Revolut vanaf de pagina Achter de schermen."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Gratis mobiele app voor zelfstandige sportcoaches: beheer van boekingen, planningen en klantpakketten."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Voorspelling van winstkansen tussen twee tennisspelers op verschillende ondergronden."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Online schrijfassistent om je schrijfprojecten te begeleiden en te structureren."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domeinen",

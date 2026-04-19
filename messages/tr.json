@@ -1019,6 +1019,47 @@
     "changelogSubtitle": "Sevgiyle eklenen en son özellikler.",
     "footer": "Bağımsız bir geliştirici tarafından 🇪🇺❤️🐻 ile yapılmıştır",
     "noCosts": "Şu anda maliyet verisi bulunmamaktadır.",
+    "metaTitle": "Perde arkası — Nicolas, CoList'in yaratıcısı",
+    "metaDescription": "CoList'in arkasındaki hikâyeyi keşfedin: kim yarattı, işletmesi ne kadara mal oluyor ve diğer projelerim (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Bağımsız web geliştiricisi",
+    "personDescription": "Nicolas, CoList, Milou, TenisFranz ve Maurice'in yaratıcısı olan Fransız bağımsız bir web geliştiricisidir.",
+    "otherProjectsTitle": "Diğer projelerim",
+    "otherProjectsSubtitle": "Üzerinde çalıştığım diğer yaratımlar.",
+    "otherProjectsIntro": "CoList'in yanı sıra başka web uygulamaları tasarlayıp geliştiriyorum. Her biri somut bir ihtiyaçtan doğuyor ve onları bağımsız geliştirici olarak sürdürüyorum.",
+    "faqTitle": "Sıkça sorulan sorular",
+    "faqSubtitle": "CoList ve arkasındaki projeler hakkında bilmeniz gereken her şey.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "CoList'i kim yarattı?",
+        "answer": "CoList, Fransız bağımsız bir web geliştiricisi olan Nicolas tarafından yaratıldı. Uygulama, aile ve arkadaşlarla yemek organize etme konusundaki kişisel bir hayal kırıklığından doğdu."
+      },
+      "otherProjects": {
+        "question": "Nicolas başka hangi projeleri yarattı?",
+        "answer": "Nicolas aynı zamanda Milou (bağımsız spor antrenörleri için mobil uygulama), TenisFranz (tenis maç sonucu tahmini) ve Maurice (çevrimiçi yazma asistanı) yaratıcısıdır."
+      },
+      "whyColist": {
+        "question": "CoList neden oluşturuldu?",
+        "answer": "Ortak yemeklerin organizasyonunu basitleştirmek için: kimin ne getirdiğini bilmek, çift öğelerden kaçınmak ve zihinsel yükü azaltmak. Uygulama mobile-first düşünülmüştür ve konukların kayıt olmasına gerek yoktur."
+      },
+      "isItFree": {
+        "question": "CoList ücretsiz mi?",
+        "answer": "Evet, CoList tamamen ücretsizdir. Projeye destek olmak isterseniz, Perde arkası sayfasından bir kahve ikram edebilir veya Revolut aracılığıyla katkıda bulunabilirsiniz."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Bağımsız spor antrenörleri için ücretsiz mobil uygulama: rezervasyon, program ve müşteri paketi yönetimi."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "İki tenisçi arasındaki farklı zeminlerdeki galibiyet olasılıklarını tahmin eder."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Yazı projelerinizi desteklemek ve yapılandırmak için çevrimiçi yazma asistanı."
+      }
+    },
     "categories": {
       "hosting": "Barındırma",
       "domain": "Alan Adları",

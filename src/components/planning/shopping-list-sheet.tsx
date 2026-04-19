@@ -9,7 +9,7 @@ import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/ty
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import {
   aggregateShoppingList,
   formatAggregatedQuantity,

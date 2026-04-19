@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import { toast } from "sonner";
 
 interface AuthFormProps {

@@ -1019,6 +1019,47 @@
     "changelogSubtitle": "Najnowsze funkcje dodane z miłością.",
     "footer": "Wykonane z 🇪🇺❤️🐻 przez niezależnego programistę",
     "noCosts": "Brak danych o kosztach w tej chwili.",
+    "metaTitle": "Za kulisami — Nicolas, twórca CoList",
+    "metaDescription": "Odkryj historię CoList: kto go stworzył, ile kosztuje jego utrzymanie i moje inne projekty (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Niezależny programista webowy",
+    "personDescription": "Nicolas jest francuskim niezależnym programistą webowym, twórcą CoList, Milou, TenisFranz i Maurice.",
+    "otherProjectsTitle": "Moje inne projekty",
+    "otherProjectsSubtitle": "Inne dzieła, nad którymi pracowałem.",
+    "otherProjectsIntro": "Oprócz CoList projektuję i tworzę kilka innych aplikacji internetowych. Każda wynika z konkretnej potrzeby, a utrzymuję je jako niezależny programista.",
+    "faqTitle": "Często zadawane pytania",
+    "faqSubtitle": "Wszystko, co musisz wiedzieć o CoList i projektach za nim.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Kto stworzył CoList?",
+        "answer": "CoList został stworzony przez Nicolasa, francuskiego niezależnego programistę webowego. Aplikacja powstała z osobistej frustracji związanej z organizacją posiłków z rodziną i przyjaciółmi."
+      },
+      "otherProjects": {
+        "question": "Jakie inne projekty stworzył Nicolas?",
+        "answer": "Nicolas jest również twórcą Milou (aplikacja mobilna dla niezależnych trenerów sportowych), TenisFranz (przewidywanie wyników meczów tenisowych) i Maurice (internetowy asystent pisania)."
+      },
+      "whyColist": {
+        "question": "Dlaczego powstał CoList?",
+        "answer": "Aby uprościć organizację wspólnych posiłków: wiedzieć, kto co przynosi, unikać duplikatów i zmniejszyć obciążenie psychiczne. Aplikacja jest zaprojektowana mobile-first, a goście nie muszą się rejestrować."
+      },
+      "isItFree": {
+        "question": "Czy CoList jest darmowy?",
+        "answer": "Tak, CoList jest całkowicie darmowy. Jeśli chcesz wesprzeć projekt, możesz postawić kawę lub wesprzeć przez Revolut ze strony Za kulisami."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Bezpłatna aplikacja mobilna dla niezależnych trenerów sportowych: zarządzanie rezerwacjami, harmonogramami i pakietami klientów."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Przewidywanie prawdopodobieństwa zwycięstwa między dwoma tenisistami na różnych nawierzchniach."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Internetowy asystent pisania wspierający i porządkujący Twoje projekty redakcyjne."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domeny",

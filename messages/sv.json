@@ -1019,6 +1019,47 @@
     "changelogSubtitle": "De senaste funktionerna tillagda med kärlek.",
     "footer": "Gjord med 🇪🇺❤️🐻 av en självständig utvecklare",
     "noCosts": "Ingen kostnadsdata tillgänglig än.",
+    "metaTitle": "Bakom kulisserna — Nicolas, skaparen av CoList",
+    "metaDescription": "Upptäck historien bakom CoList: vem som skapade det, vad det kostar att driva, och mina andra projekt (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Självständig webbutvecklare",
+    "personDescription": "Nicolas är en fransk självständig webbutvecklare och skaparen av CoList, Milou, TenisFranz och Maurice.",
+    "otherProjectsTitle": "Mina andra projekt",
+    "otherProjectsSubtitle": "Andra skapelser jag har arbetat på.",
+    "otherProjectsIntro": "Utöver CoList designar och utvecklar jag flera andra webbapplikationer. Var och en utgår från ett konkret behov, och jag underhåller dem som självständig utvecklare.",
+    "faqTitle": "Vanliga frågor",
+    "faqSubtitle": "Allt du behöver veta om CoList och projekten bakom.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Vem skapade CoList?",
+        "answer": "CoList skapades av Nicolas, en fransk självständig webbutvecklare. Appen föddes ur en personlig frustration kring att organisera måltider med familj och vänner."
+      },
+      "otherProjects": {
+        "question": "Vilka andra projekt har Nicolas skapat?",
+        "answer": "Nicolas är också skaparen av Milou (mobilapp för självständiga idrottscoacher), TenisFranz (förutsägelse av tennismatch-resultat) och Maurice (online skrivassistent)."
+      },
+      "whyColist": {
+        "question": "Varför skapades CoList?",
+        "answer": "För att förenkla organiseringen av gemensamma måltider: veta vem som tar med vad, undvika dubbletter och minska mental belastning. Appen är mobile-first och gäster behöver inte registrera sig."
+      },
+      "isItFree": {
+        "question": "Är CoList gratis?",
+        "answer": "Ja, CoList är helt gratis. Om du vill stödja projektet kan du bjuda på en kaffe eller bidra via Revolut från sidan Bakom kulisserna."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Gratis mobilapp för självständiga idrottscoacher: hantera bokningar, scheman och kundpaket."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Förutsäg vinstsannolikheten mellan två tennisspelare på olika underlag."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Online skrivassistent för att stödja och strukturera dina skrivprojekt."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domäner",

@@ -1020,6 +1020,47 @@
     "changelogSubtitle": "The latest features added with love.",
     "footer": "Made with 🇪🇺❤️🐻 by an independent developer",
     "noCosts": "No cost data available yet.",
+    "metaTitle": "Behind the scenes — Nicolas, creator of CoList",
+    "metaDescription": "Discover the story behind CoList: who built it, how much it costs to run, and my other projects (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Independent web developer",
+    "personDescription": "Nicolas is a French independent web developer, creator of CoList, Milou, TenisFranz and Maurice.",
+    "otherProjectsTitle": "My other projects",
+    "otherProjectsSubtitle": "Other creations I've worked on.",
+    "otherProjectsIntro": "Beyond CoList, I design and build several other web applications. Each one starts from a real-world need, and I maintain them as an independent developer.",
+    "faqTitle": "Frequently asked questions",
+    "faqSubtitle": "Everything you need to know about CoList and the projects behind it.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Who created CoList?",
+        "answer": "CoList was created by Nicolas, a French independent web developer. The app was born from a personal frustration around organizing meals with family and friends."
+      },
+      "otherProjects": {
+        "question": "What other projects has Nicolas built?",
+        "answer": "Nicolas is also the creator of Milou (mobile app for independent sports coaches), TenisFranz (tennis match outcome predictions) and Maurice (online writing assistant)."
+      },
+      "whyColist": {
+        "question": "Why was CoList created?",
+        "answer": "To simplify organizing shared meals: know who brings what, avoid duplicates and reduce mental load. The app is mobile-first and guests don't need to sign up."
+      },
+      "isItFree": {
+        "question": "Is CoList free?",
+        "answer": "Yes, CoList is entirely free. If you'd like to support the project, you can buy a coffee or contribute via Revolut from the Behind the scenes page."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Free mobile app for independent sports coaches: manage bookings, schedules and client packages."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Predict win probabilities between two tennis players across different court surfaces."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Online writing assistant to support and structure your writing projects."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domains",
