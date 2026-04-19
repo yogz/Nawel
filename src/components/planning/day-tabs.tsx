@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { CalendarDays, Stars, Package } from "lucide-react";

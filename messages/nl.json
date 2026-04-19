@@ -764,7 +764,8 @@
     "actionRetry": "Probeer het over enkele ogenblikken opnieuw.",
     "retryButton": "Opnieuw proberen",
     "homeButton": "Terug naar home",
-    "errorId": "Fout ID"
+    "errorId": "Fout ID",
+    "serviceUnavailable": "Dienst tijdelijk niet beschikbaar. Probeer het zo dadelijk opnieuw."
   },
   "Citations": {
     "anonymous": "Anoniem",

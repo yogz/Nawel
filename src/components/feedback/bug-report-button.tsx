@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/auth-client";
 import { BugReportForm } from "./bug-report-form";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { useCurrentPerson } from "@/hooks/use-current-person";
 
 export function BugReportButton() {

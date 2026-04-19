@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Wifi, WifiOff, CheckCircle2 } from "lucide-react";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 import { useTranslations } from "next-intl";
@@ -43,9 +43,7 @@ export function NetworkStatus() {
         >
           <div
             className={`flex items-center gap-3 rounded-full px-4 py-2.5 shadow-lg backdrop-blur-sm ${
-              isOnline
-                ? "bg-green-500/90 text-white"
-                : "bg-amber-500/90 text-white"
+              isOnline ? "bg-green-500/90 text-white" : "bg-amber-500/90 text-white"
             }`}
           >
             {isOnline ? (

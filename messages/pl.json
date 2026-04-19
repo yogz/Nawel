@@ -764,7 +764,8 @@
     "actionRetry": "Spróbuj ponownie za chwilę.",
     "retryButton": "Spróbuj ponownie",
     "homeButton": "Powrót do strony głównej",
-    "errorId": "ID błędu"
+    "errorId": "ID błędu",
+    "serviceUnavailable": "Usługa chwilowo niedostępna. Spróbuj ponownie za chwilę."
   },
   "Citations": {
     "anonymous": "Anonimowy",

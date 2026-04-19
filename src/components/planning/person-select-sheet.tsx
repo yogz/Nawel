@@ -60,6 +60,10 @@ export function PersonSelectSheet({
                   <img
                     src={avatar.src}
                     alt={getDisplayName(person)}
+                    width={40}
+                    height={40}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                 );

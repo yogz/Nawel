@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Check, X, Minus, Plus, Users, HelpCircle, CircleDashed } from "lucide-react";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";

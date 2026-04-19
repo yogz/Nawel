@@ -765,7 +765,8 @@
     "actionRetry": "Try again in a few moments.",
     "retryButton": "Try again",
     "homeButton": "Back to home",
-    "errorId": "Error ID"
+    "errorId": "Error ID",
+    "serviceUnavailable": "Service temporarily unavailable. Please try again shortly."
   },
   "Citations": {
     "anonymous": "Anonymous",

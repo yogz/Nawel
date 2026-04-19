@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   createCostAction,
   deleteCostAction,
@@ -24,6 +25,7 @@ import type { Cost } from "@/lib/types";
 export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
   const [costs, setCosts] = useState(initialCosts);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +48,7 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
 
       if (result.success) {
         toast.success("Coût ajouté !");
-        window.location.reload();
+        router.refresh();
       } else {
         toast.error("Erreur lors de l'ajout");
       }
@@ -77,7 +79,7 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
       const result = await toggleCostActiveAction({ id, isActive: !currentActive });
       if (result.success) {
         toast.success(`Coût ${currentActive ? "arrêté" : "redémarré"}`);
-        window.location.reload();
+        router.refresh();
       }
     });
   };

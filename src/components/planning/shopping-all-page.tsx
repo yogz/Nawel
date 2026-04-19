@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useTransition, useEffect } from "react";
 import { Link } from "@/i18n/navigation";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   ArrowLeft,
   Check,

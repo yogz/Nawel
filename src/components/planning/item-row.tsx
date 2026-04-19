@@ -14,7 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "../ui/button";
 import { SwipeableCard } from "../ui/swipeable-card";
@@ -258,6 +258,8 @@ function ItemRowComponent({
                   <img
                     src={avatar.src}
                     alt={getDisplayName(person)}
+                    width={28}
+                    height={28}
                     className="h-7 w-7 rounded object-cover sm:h-6 sm:w-6"
                     loading="lazy"
                     decoding="async"

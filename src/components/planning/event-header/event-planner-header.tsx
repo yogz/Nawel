@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/components/theme-provider";
 import { EventPropertiesDrawer } from "./event-properties-drawer";

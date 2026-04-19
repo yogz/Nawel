@@ -20,9 +20,10 @@ import { RSVPSummary } from "@/features/people/components/rsvp-summary";
 import { RSVPControl } from "@/features/people/components/rsvp-control";
 import { useTransition, useState, useEffect } from "react";
 import { getDisplayName } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import clsx from "clsx";
 import { type PlanData, type Person, type Item, type Service, type Sheet } from "@/lib/types";
+import { getLegacyPersonTokens } from "@/lib/guest-token";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PersonAvatar } from "../common/person-avatar";
@@ -97,14 +98,14 @@ export function PeopleTab({
   const [guestTokens, setGuestTokens] = useState<Record<number, string>>({});
   const [editingPersonId, setEditingPersonId] = useState<number | null>(null);
 
-  // Load guest tokens on mount
   useEffect(() => {
-    try {
-      const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
-      setGuestTokens(tokens);
-    } catch (e) {
-      console.error("Failed to load guest tokens", e);
+    const raw = getLegacyPersonTokens();
+    const numericMap: Record<number, string> = {};
+    for (const [id, token] of Object.entries(raw)) {
+      const n = Number(id);
+      if (!Number.isNaN(n)) numericMap[n] = token;
     }
+    setGuestTokens(numericMap);
   }, []);
 
   // Memoize stats calculation to prevent re-computation on every render

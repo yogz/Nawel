@@ -764,7 +764,8 @@
     "actionRetry": "Versuchen Sie es in wenigen Augenblicken erneut.",
     "retryButton": "Erneut versuchen",
     "homeButton": "Zurück zur Startseite",
-    "errorId": "Fehler-ID"
+    "errorId": "Fehler-ID",
+    "serviceUnavailable": "Dienst vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut."
   },
   "Citations": {
     "anonymous": "Anonym",

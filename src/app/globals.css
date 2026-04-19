@@ -641,6 +641,8 @@
    */
   html {
     background-color: var(--status-bar-color);
+    /* Suppress the grey flash on tap in iOS Safari — we handle active states via Tailwind/framer-motion */
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {

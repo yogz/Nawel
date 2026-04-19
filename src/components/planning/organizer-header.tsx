@@ -12,7 +12,7 @@ import { useThemeMode } from "../theme-provider";
 import { AppBranding } from "@/components/common/app-branding";
 import { CitationDisplay } from "../common/citation-display";
 import { Link } from "@/i18n/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
 
 interface OrganizerHeaderProps {

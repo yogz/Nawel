@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { trackFaqInteraction } from "@/lib/analytics";
 import { logger } from "@/lib/logger";
 

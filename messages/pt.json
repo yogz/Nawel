@@ -764,7 +764,8 @@
     "actionRetry": "Tente novamente daqui a instantes.",
     "retryButton": "Tentar novamente",
     "homeButton": "Voltar ao início",
-    "errorId": "ID do erro"
+    "errorId": "ID do erro",
+    "serviceUnavailable": "Serviço temporariamente indisponível. Tente novamente dentro de momentos."
   },
   "Citations": {
     "anonymous": "Anónimo",

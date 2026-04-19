@@ -2,7 +2,7 @@
 
 import { useSession, authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Mail, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 

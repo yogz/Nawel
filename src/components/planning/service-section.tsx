@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { cn, getServiceIcon } from "@/lib/utils";
 import { useTranslatedServiceTitle } from "@/hooks/use-translated-service-title";
 import { splitServiceTitle } from "@/lib/service-utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { InlineItemInput } from "./inline-item-input";
 
 import { SectionHeader } from "./section-header";

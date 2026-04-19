@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   Mail,
   Loader2,
@@ -28,17 +29,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { submitFeedbackAction } from "@/app/actions/feedback-actions";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { LanguageSelector } from "@/components/common/language-selector";
 import { AppBranding } from "@/components/common/app-branding";
 import type { Cost } from "@/lib/types";
+
+const CostsChart = dynamic(() => import("./CostsChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[250px] w-full animate-pulse rounded-xl bg-muted/30 sm:h-[300px]" />
+  ),
+});
 
 interface ChangelogItem {
   date: string;
@@ -324,6 +324,10 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                     <img
                       src="/me.jpg"
                       alt="Nicolas"
+                      width={96}
+                      height={96}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
                     />
                   </div>
@@ -449,85 +453,13 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                 </h3>
               </div>
 
-              <ChartContainer config={chartConfig} className="h-[250px] w-full sm:h-[300px]">
-                <BarChart accessibilityLayer data={chartData} margin={{ left: -20, right: 0 }}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(value) => value}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        indicator="dot"
-                        labelFormatter={(_, payload) => {
-                          if (payload && payload[0]) {
-                            const itemPayload = payload[0].payload as
-                              | Record<string, unknown>
-                              | undefined;
-                            const total = CATEGORIES.reduce(
-                              (sum, cat) => sum + ((itemPayload?.[cat] as number) || 0),
-                              0
-                            );
-                            return (
-                              <div className="flex flex-col gap-2">
-                                <span className="font-bold">{itemPayload?.month as string}</span>
-                                <span className="text-sm font-semibold text-primary">
-                                  Total: {total.toFixed(2)} €
-                                </span>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                        formatter={(value, name) => {
-                          const Icon = CATEGORY_ICONS[name as string];
-                          const displayValue =
-                            typeof value === "number" ? value.toFixed(2) : String(value ?? "");
-                          return (
-                            <div className="flex w-full items-center justify-between gap-4">
-                              <div className="flex items-center gap-2">
-                                {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
-                                <span className="text-muted-foreground">
-                                  {chartConfig[name as keyof typeof chartConfig]?.label || name}
-                                </span>
-                              </div>
-                              <span className="font-mono font-medium">{displayValue} €</span>
-                            </div>
-                          );
-                        }}
-                      />
-                    }
-                  />
-                  <ChartLegend content={<ChartLegendContent />} />
-                  {(() => {
-                    // Find the last category (top of stack) that has data
-                    const lastCategoryWithData = [...CATEGORIES]
-                      .reverse()
-                      .find((c) => (categoryTotals[c] || 0) > 0);
-
-                    return CATEGORIES.map((cat) => {
-                      if ((categoryTotals[cat] || 0) === 0) {
-                        return null;
-                      }
-                      return (
-                        <Bar
-                          key={cat}
-                          dataKey={cat}
-                          stackId="a"
-                          fill={`var(--color-${cat})`}
-                          radius={cat === lastCategoryWithData ? [4, 4, 0, 0] : 0}
-                        />
-                      );
-                    });
-                  })()}
-                </BarChart>
-              </ChartContainer>
+              <CostsChart
+                chartData={chartData}
+                chartConfig={chartConfig}
+                categories={CATEGORIES}
+                categoryTotals={categoryTotals}
+                categoryIcons={CATEGORY_ICONS}
+              />
             </div>
           </div>
         </motion.section>
@@ -556,6 +488,10 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                   <img
                     src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg"
                     alt="Buy Me a Coffee"
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
                     className="mr-3 h-6 w-6"
                   />
                   <span className="text-base font-bold uppercase tracking-tight">

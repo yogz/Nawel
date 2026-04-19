@@ -14,6 +14,7 @@ import {
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
 import { trackPersonAction } from "@/lib/analytics";
+import { setLegacyPersonToken } from "@/lib/guest-token";
 
 export function usePersonHandlers({
   plan,
@@ -46,15 +47,8 @@ export function usePersonHandlers({
           key: writeKey,
         });
 
-        // Store anonymous token if present (for guest RSVP)
         if (created.token) {
-          try {
-            const tokens = JSON.parse(localStorage.getItem("colist_guest_tokens") || "{}");
-            tokens[created.id] = created.token;
-            localStorage.setItem("colist_guest_tokens", JSON.stringify(tokens));
-          } catch (e) {
-            console.error("Failed to save guest token", e);
-          }
+          setLegacyPersonToken(created.id, created.token);
         }
 
         setPlan((prev: PlanData) => ({

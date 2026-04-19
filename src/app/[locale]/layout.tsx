@@ -139,6 +139,7 @@ import { BugReportButton } from "@/components/feedback/bug-report-button";
 import { VerificationBanner } from "@/components/auth/verification-banner";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PWAPrompt } from "@/components/pwa-prompt";
+import { MotionProvider } from "@/components/common/motion-provider";
 
 export default async function RootLayout({
   children,
@@ -214,27 +215,29 @@ export default async function RootLayout({
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <ErrorBoundary>
-              <SkipLinks />
-              <AnimationController />
-              <JsonLd locale={locale} />
-              <VerificationBanner />
-              {children}
-              <BugReportButton />
-              <SnowOverlay />
-              {/* <CookieConsent /> - Disabled: set it to true by default for now */}
-              <AnalyticsSessionSync />
-              <AnalyticsMonitor />
-              <NetworkStatus />
-              <PWAPrompt />
-              <Toaster
-                position="top-center"
-                richColors
-                duration={1500}
-                expand={false}
-                closeButton
-              />
-            </ErrorBoundary>
+            <MotionProvider>
+              <ErrorBoundary>
+                <SkipLinks />
+                <AnimationController />
+                <JsonLd locale={locale} />
+                <VerificationBanner />
+                {children}
+                <BugReportButton />
+                <SnowOverlay />
+                {/* <CookieConsent /> - Disabled: set it to true by default for now */}
+                <AnalyticsSessionSync />
+                <AnalyticsMonitor />
+                <NetworkStatus />
+                <PWAPrompt />
+                <Toaster
+                  position="top-center"
+                  richColors
+                  duration={1500}
+                  expand={false}
+                  closeButton
+                />
+              </ErrorBoundary>
+            </MotionProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
         <SpeedInsights />

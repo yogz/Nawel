@@ -2,7 +2,7 @@
 
 import { useMemo, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Check, ShoppingBag, ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/types";
@@ -141,6 +141,10 @@ export function ShoppingListSheet({
                   <img
                     src={avatar.src}
                     alt={getDisplayName(person)}
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                 );
