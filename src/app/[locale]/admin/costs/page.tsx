@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCostsAction } from "@/app/actions/admin-actions";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminCostList } from "@/components/admin/admin-cost-list";
+import type { Cost } from "@/lib/types";
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 
@@ -34,7 +35,7 @@ export default async function AdminCostsPage(props: { params: Promise<{ locale: 
           </div>
         </div>
         <Suspense fallback={<div>Chargement des coûts...</div>}>
-          <AdminCostList initialCosts={costs as any} />
+          <AdminCostList initialCosts={(costs ?? []) as Cost[]} />
         </Suspense>
       </main>
     </div>

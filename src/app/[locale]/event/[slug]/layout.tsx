@@ -25,8 +25,6 @@ import type { Viewport } from "next";
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   // IMPORTANT: This must match --status-bar-color in globals.css (#E6D9F8)
   themeColor: "#E6D9F8",

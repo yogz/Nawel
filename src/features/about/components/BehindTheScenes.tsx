@@ -7,15 +7,11 @@ import {
   Mail,
   Loader2,
   Send,
-  Target,
-  CreditCard,
   TrendingUp,
   ArrowUpRight,
-  CheckCircle2,
   ChevronRight,
   Sparkles,
   Coffee,
-  Euro,
   Heart,
   Server,
   Globe,
@@ -25,6 +21,7 @@ import {
   Puzzle,
   CircleEllipsis,
   HelpCircle,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,16 +38,12 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { LanguageSelector } from "@/components/common/language-selector";
 import { AppBranding } from "@/components/common/app-branding";
+import type { Cost } from "@/lib/types";
 
-interface Cost {
-  id: number;
-  amount: number;
-  category: string;
-  description: string | null;
-  date: Date | string; // Handle both Date objects and string timestamps
-  frequency: "once" | "monthly" | "yearly";
-  isActive: boolean;
-  stoppedAt: Date | string | null;
+interface ChangelogItem {
+  date: string;
+  title: string;
+  description: string;
 }
 
 interface BehindTheScenesProps {
@@ -68,7 +61,9 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || isSubmitting) return;
+    if (!content.trim() || isSubmitting) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -136,7 +131,9 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
         2,
         "0"
       )}`;
-      if (!acc[monthKey]) acc[monthKey] = {};
+      if (!acc[monthKey]) {
+        acc[monthKey] = {};
+      }
       acc[monthKey][occ.category] = (acc[monthKey][occ.category] || 0) + occ.amount;
       return acc;
     },
@@ -189,19 +186,8 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
     "services",
     "other",
   ] as const;
-  const CATEGORY_COLORS: Record<string, string> = {
-    hosting: "bg-blue-500",
-    domain: "bg-cyan-500",
-    database: "bg-indigo-500",
-    api: "bg-violet-500",
-    ai: "bg-purple-500",
-    email: "bg-pink-500",
-    dev: "bg-orange-500",
-    services: "bg-emerald-500",
-    other: "bg-slate-400",
-  };
 
-  const CATEGORY_ICONS: Record<string, any> = {
+  const CATEGORY_ICONS: Record<string, LucideIcon> = {
     hosting: Server,
     domain: Globe,
     database: Database,
@@ -278,14 +264,6 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
 
     return dataPoint;
   });
-
-  const maxMonthCost = Math.max(
-    ...lastMonths.map((m) => {
-      const costs = monthlyCategoryCosts[m] || {};
-      return Object.values(costs).reduce((sum, a) => sum + a, 0);
-    }),
-    10
-  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -534,7 +512,9 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
                       .find((c) => (categoryTotals[c] || 0) > 0);
 
                     return CATEGORIES.map((cat) => {
-                      if ((categoryTotals[cat] || 0) === 0) return null;
+                      if ((categoryTotals[cat] || 0) === 0) {
+                        return null;
+                      }
                       return (
                         <Bar
                           key={cat}
@@ -617,7 +597,7 @@ export function BehindTheScenes({ costs }: BehindTheScenesProps) {
           </div>
 
           <div className="space-y-4">
-            {t.raw("changelog.items").map((item: any, i: number) => (
+            {(t.raw("changelog.items") as ChangelogItem[]).map((item, i) => (
               <div key={i} className="group flex gap-6">
                 <div className="flex flex-col items-center">
                   <div className="mt-2 h-3 w-3 rounded-full bg-primary" />
