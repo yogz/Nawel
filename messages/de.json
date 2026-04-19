@@ -869,6 +869,7 @@
       "notLoggedInAI": "Sie müssen angemeldet sein, um die KI-Generierung zu nutzen.",
       "emailNotVerifiedAI": "Sie müssen Ihre E-Mail verifizieren, um die KI-Generierung zu nutzen.",
       "ingredientsGenerationFailed": "Keine Zutaten generiert. Versuchen Sie es erneut.",
+      "rateLimitExceeded": "Zu viele Anfragen. Bitte versuchen Sie es in {minutes} Minute(n) erneut.",
       "confirmationRequired": "Bestätigung ist erforderlich.",
       "deleteError": "Beim Löschen Ihres Kontos ist ein Fehler aufgetreten.",
       "errorSubmitFeedback": "Fehler beim Senden des Feedbacks."
@@ -1018,6 +1019,47 @@
     "changelogSubtitle": "Die neuesten Funktionen, mit Liebe hinzugefügt.",
     "footer": "Hergestellt mit 🇪🇺❤️🐻 von einem unabhängigen Entwickler",
     "noCosts": "Noch keine Kostendaten verfügbar.",
+    "metaTitle": "Hinter den Kulissen — Nicolas, Entwickler von CoList",
+    "metaDescription": "Entdecke die Hintergründe von CoList: Wer hat es entwickelt, was kostet es, und meine anderen Projekte (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Selbstständiger Webentwickler",
+    "personDescription": "Nicolas ist ein französischer, selbstständiger Webentwickler und Schöpfer von CoList, Milou, TenisFranz und Maurice.",
+    "otherProjectsTitle": "Meine anderen Projekte",
+    "otherProjectsSubtitle": "Weitere Kreationen, an denen ich gearbeitet habe.",
+    "otherProjectsIntro": "Neben CoList entwerfe und entwickle ich mehrere weitere Webanwendungen. Jede entsteht aus einem konkreten Bedürfnis, und ich betreue sie als Selbstständiger.",
+    "faqTitle": "Häufig gestellte Fragen",
+    "faqSubtitle": "Alles, was du über CoList und die Projekte dahinter wissen musst.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Wer hat CoList entwickelt?",
+        "answer": "CoList wurde von Nicolas entwickelt, einem französischen selbstständigen Webentwickler. Die App entstand aus einer persönlichen Frustration rund um die Organisation von Mahlzeiten mit Familie und Freunden."
+      },
+      "otherProjects": {
+        "question": "Welche anderen Projekte hat Nicolas entwickelt?",
+        "answer": "Nicolas ist auch der Entwickler von Milou (mobile App für selbstständige Sporttrainer), TenisFranz (Vorhersage von Tennismatch-Ergebnissen) und Maurice (Online-Schreibassistent)."
+      },
+      "whyColist": {
+        "question": "Warum wurde CoList entwickelt?",
+        "answer": "Um die Organisation gemeinsamer Mahlzeiten zu vereinfachen: wissen, wer was mitbringt, Dopplungen vermeiden und die mentale Belastung reduzieren. Die App ist mobile-first und Gäste müssen sich nicht registrieren."
+      },
+      "isItFree": {
+        "question": "Ist CoList kostenlos?",
+        "answer": "Ja, CoList ist komplett kostenlos. Wenn du das Projekt unterstützen möchtest, kannst du einen Kaffee ausgeben oder über Revolut direkt von der Hinter-den-Kulissen-Seite beitragen."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Kostenlose mobile App für selbstständige Sporttrainer: Buchungen, Terminpläne und Kundenpakete verwalten."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Vorhersage der Siegeswahrscheinlichkeiten zwischen zwei Tennisspielern auf verschiedenen Belägen."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Online-Schreibassistent zur Unterstützung und Strukturierung Ihrer Schreibprojekte."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domänen",

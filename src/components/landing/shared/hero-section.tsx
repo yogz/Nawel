@@ -5,7 +5,7 @@ import { ChevronDown, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { LanguageSelector } from "@/components/common/language-selector";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import { trackDiscoverClick } from "@/lib/analytics";
 import { AuthNavButton } from "./auth-nav-button";
 import { useState, useEffect } from "react";

@@ -869,6 +869,7 @@
       "notLoggedInAI": "Du skal være logget ind for at bruge AI-generering.",
       "emailNotVerifiedAI": "Du skal verificere din e-mail for at bruge AI-generering.",
       "ingredientsGenerationFailed": "Ingen ingredienser genereret. Prøv igen.",
+      "rateLimitExceeded": "For mange anmodninger. Prøv igen om {minutes} minut(ter).",
       "confirmationRequired": "Bekræftelse er påkrævet.",
       "deleteError": "Der opstod en fejl under sletning af din konto.",
       "errorSubmitFeedback": "Fejl ved afsendelse af feedback."
@@ -1018,6 +1019,47 @@
     "changelogSubtitle": "De seneste funktioner tilføjet med kærlighed.",
     "footer": "Lavet med 🇪🇺❤️🐻 af en selvstændig udvikler",
     "noCosts": "Ingen omkostningsdata tilgængelige endnu.",
+    "metaTitle": "Bag kulisserne — Nicolas, skaberen af CoList",
+    "metaDescription": "Opdag historien bag CoList: hvem har skabt det, hvad koster det at drive, og mine andre projekter (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Selvstændig webudvikler",
+    "personDescription": "Nicolas er en fransk selvstændig webudvikler og skaberen af CoList, Milou, TenisFranz og Maurice.",
+    "otherProjectsTitle": "Mine andre projekter",
+    "otherProjectsSubtitle": "Andre kreationer, jeg har arbejdet på.",
+    "otherProjectsIntro": "Ud over CoList designer og udvikler jeg flere andre webapplikationer. Hver af dem udspringer af et konkret behov, og jeg vedligeholder dem som selvstændig udvikler.",
+    "faqTitle": "Ofte stillede spørgsmål",
+    "faqSubtitle": "Alt hvad du skal vide om CoList og projekterne bag.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Hvem har skabt CoList?",
+        "answer": "CoList er skabt af Nicolas, en fransk selvstændig webudvikler. Appen opstod af en personlig frustration omkring organisering af måltider med familie og venner."
+      },
+      "otherProjects": {
+        "question": "Hvilke andre projekter har Nicolas skabt?",
+        "answer": "Nicolas er også skaberen af Milou (mobilapp til selvstændige sportstrænere), TenisFranz (forudsigelse af tenniskamp-resultater) og Maurice (online skriveassistent)."
+      },
+      "whyColist": {
+        "question": "Hvorfor blev CoList skabt?",
+        "answer": "For at forenkle organiseringen af fælles måltider: vide hvem der tager hvad med, undgå dubletter og reducere mental belastning. Appen er mobile-first, og gæster behøver ikke oprette en konto."
+      },
+      "isItFree": {
+        "question": "Er CoList gratis?",
+        "answer": "Ja, CoList er helt gratis. Hvis du vil støtte projektet, kan du købe en kaffe eller bidrage via Revolut fra siden Bag kulisserne."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Gratis mobilapp til selvstændige sportstrænere: administration af bookinger, tidsplaner og kundepakker."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Forudsig sejrssandsynligheder mellem to tennisspillere på forskellige underlag."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Online skriveassistent til at understøtte og strukturere dine skriveprojekter."
+      }
+    },
     "categories": {
       "hosting": "Hosting",
       "domain": "Domæner",

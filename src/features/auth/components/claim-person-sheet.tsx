@@ -6,7 +6,7 @@ import { type Person } from "@/lib/types";
 import { renderAvatar, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 
 export function ClaimPersonSheetContent({
   unclaimed,

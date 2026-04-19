@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { setAnalyticsConsent } from "@/lib/analytics";
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 import { Cookie, Shield, ChartBar, ArrowLeft, Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -26,7 +26,7 @@ export function CookieConsent() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [view, setView] = useState<"main" | "customize">("main");
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
-  
+
   // Track variant (always "landing-c" now) only if/when consent is given
   useEffect(() => {
     const consent = localStorage.getItem("analytics_consent") === "true";

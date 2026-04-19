@@ -879,6 +879,7 @@
       "notLoggedInAI": "Vous devez être connecté pour utiliser la génération IA.",
       "emailNotVerifiedAI": "Vous devez vérifier votre email pour utiliser la génération IA.",
       "ingredientsGenerationFailed": "Aucun ingrédient généré. Réessayez.",
+      "rateLimitExceeded": "Trop de demandes. Réessayez dans {minutes} minute(s).",
       "confirmationRequired": "La confirmation est requise.",
       "deleteError": "Une erreur est survenue lors de la suppression de votre compte.",
       "errorSubmitFeedback": "Erreur lors de l'envoi du feedback."
@@ -1028,6 +1029,47 @@
     "changelogSubtitle": "Les dernières fonctionnalités ajoutées avec amour.",
     "footer": "Fait avec 🇪🇺❤️🐻 par un indépendant",
     "noCosts": "Aucune donnée de coût disponible pour le moment.",
+    "metaTitle": "En coulisses — Nicolas, créateur de CoList",
+    "metaDescription": "Découvrez les coulisses de CoList : qui l'a créé, combien ça coûte, et mes autres projets (Milou, TenisFranz, Maurice).",
+    "personJobTitle": "Développeur web indépendant",
+    "personDescription": "Nicolas est un développeur web indépendant français, créateur de CoList, Milou, TenisFranz et Maurice.",
+    "otherProjectsTitle": "Mes autres projets",
+    "otherProjectsSubtitle": "D'autres créations sur lesquelles j'ai travaillé.",
+    "otherProjectsIntro": "En dehors de CoList, je conçois et développe plusieurs autres applications web. Chacune part d'un besoin concret, et je les maintiens en tant qu'indépendant.",
+    "faqTitle": "Questions fréquentes",
+    "faqSubtitle": "Tout ce qu'il faut savoir sur CoList et les projets derrière.",
+    "faq": {
+      "whoCreatedColist": {
+        "question": "Qui a créé CoList ?",
+        "answer": "CoList a été créé par Nicolas, un développeur web indépendant français. L'application est née d'une frustration personnelle autour de l'organisation des repas en famille et entre amis."
+      },
+      "otherProjects": {
+        "question": "Quels autres projets a créés Nicolas ?",
+        "answer": "Nicolas est également le créateur de Milou (application mobile pour coachs sportifs indépendants), TenisFranz (prédiction de résultats de matchs de tennis) et Maurice (assistant d'écriture en ligne)."
+      },
+      "whyColist": {
+        "question": "Pourquoi CoList a-t-il été créé ?",
+        "answer": "Pour simplifier l'organisation des repas conviviaux : savoir qui apporte quoi, éviter les doublons et réduire la charge mentale. L'application est pensée mobile-first et sans inscription obligatoire pour les invités."
+      },
+      "isItFree": {
+        "question": "CoList est-il gratuit ?",
+        "answer": "Oui, CoList est entièrement gratuit. Si vous souhaitez soutenir le projet, vous pouvez offrir un café ou contribuer via Revolut depuis la page En coulisses."
+      }
+    },
+    "otherProjects": {
+      "milou": {
+        "title": "Milou",
+        "description": "Application mobile gratuite pour coachs sportifs indépendants : gestion des réservations, plannings et forfaits clients."
+      },
+      "tenisfranz": {
+        "title": "TenisFranz",
+        "description": "Prédiction des probabilités de victoire entre deux joueurs de tennis sur différentes surfaces."
+      },
+      "maurice": {
+        "title": "Maurice",
+        "description": "Assistant d'écriture en ligne pour accompagner et structurer vos projets rédactionnels."
+      }
+    },
     "categories": {
       "hosting": "Hébergement",
       "domain": "Domaines",

@@ -1,6 +1,6 @@
 "use client";
 
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent, setUmamiUserId } from "@/lib/umami";
 import { logger } from "./logger";
 
 /**
@@ -31,18 +31,6 @@ export function setAnalyticsConsent(consent: boolean) {
   hasConsent = consent;
   if (typeof window !== "undefined") {
     localStorage.setItem("analytics_consent", consent ? "true" : "false");
-
-    // Update Google Consent Mode v2
-    if (window.gtag) {
-      window.gtag("consent", "update", {
-        analytics_storage: consent ? "granted" : "denied",
-        ad_storage: consent ? "granted" : "denied",
-        ad_user_data: consent ? "granted" : "denied",
-        ad_personalization: consent ? "granted" : "denied",
-      });
-    }
-
-    // Dispatch custom event for reactive UI components (like PWA prompt)
     window.dispatchEvent(new Event("analytics-consent-updated"));
   }
 }
@@ -63,11 +51,7 @@ export function getAnalyticsConsent(): boolean {
  * Set User ID for cross-device tracking (GDPR compliant)
  */
 export function setAnalyticsUserId(userId: string | null) {
-  if (typeof window !== "undefined" && window.gtag && userId) {
-    window.gtag("config", process.env.NEXT_PUBLIC_GA_ID || "G-F0RFQNG8SP", {
-      user_id: userId,
-    });
-  }
+  setUmamiUserId(userId);
 }
 
 type EventPageAction =
@@ -120,7 +104,8 @@ export function trackEvent({
   ...extra
 }: TrackEventParams) {
   // Check consent
-  const isDebugMode = typeof window !== "undefined" && localStorage.getItem("ga_debug") === "true";
+  const isDebugMode =
+    typeof window !== "undefined" && localStorage.getItem("analytics_debug") === "true";
 
   if (IS_DEV || isDebugMode) {
     logger.debug("[Analytics]", {
@@ -294,11 +279,10 @@ export function trackPerformance(metric: string, value: number, context?: string
   }
 
   try {
-    sendGAEvent("timing_complete", {
-      name: metric,
+    sendGAEvent("event", "performance_timing", {
+      metric,
       value: Math.round(value),
-      event_category: "performance",
-      event_label: context,
+      context,
     });
   } catch (error) {
     logger.debug("[Analytics] Failed to track performance:", metric, error);
@@ -323,7 +307,7 @@ export function trackError(error: Error | string, context?: string, fatal = fals
   }
 
   try {
-    sendGAEvent("exception", {
+    sendGAEvent("event", "exception", {
       description: errorMessage,
       fatal,
       context,

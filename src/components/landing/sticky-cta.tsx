@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 
-import { sendGAEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@/lib/umami";
 
 interface StickyCtaProps {
   text: string;
