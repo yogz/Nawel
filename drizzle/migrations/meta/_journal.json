@@ -134,6 +134,13 @@
       "when": 1769251690893,
       "tag": "0018_modern_rogue",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1776670731813,
+      "tag": "0019_dizzy_the_phantom",
+      "breakpoints": true
     }
   ]
 }
