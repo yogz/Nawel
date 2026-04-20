@@ -19,7 +19,7 @@ import { auth } from "./auth-config";
 import { headers } from "next/headers";
 import { db } from "./db";
 import { people } from "@drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or, gt, isNull } from "drizzle-orm";
 
 // ============================================================================
 // TYPES
@@ -179,7 +179,12 @@ export async function buildPermissionContext(
 
   if (personToken && hasValidKey) {
     const person = await db.query.people.findFirst({
-      where: and(eq(people.eventId, event.id), eq(people.token, personToken)),
+      where: and(
+        eq(people.eventId, event.id),
+        eq(people.token, personToken),
+        // NULL tokenExpiresAt = legacy/grandfathered; new rows carry a 30-day expiry
+        or(isNull(people.tokenExpiresAt), gt(people.tokenExpiresAt, new Date()))
+      ),
     });
     if (person) {
       hasValidToken = true;

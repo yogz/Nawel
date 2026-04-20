@@ -9,7 +9,7 @@
  * Format v1 (legacy):   plain string token — treated as valid, no expiration.
  */
 
-const DEFAULT_TTL_DAYS = 30;
+const DEFAULT_TTL_DAYS = 180;
 const LEGACY_GLOBAL_KEY = "colist_guest_tokens";
 
 interface StoredToken {

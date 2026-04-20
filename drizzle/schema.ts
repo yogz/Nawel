@@ -10,7 +10,7 @@ import {
   boolean,
   uuid,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // ============================================
 // Better Auth Tables
@@ -174,6 +174,10 @@ export const people = pgTable(
     guest_adults: integer("guest_adults").notNull().default(0), // Additional adults (excluding self)
     guest_children: integer("guest_children").notNull().default(0), // Children count
     token: uuid("token").defaultRandom(), // Secret token for anonymous modification
+    // Expiration for `token`. NULL = legacy/no expiration (grandfathered).
+    // New tokens default to 180 days (covers seasonal planning ahead of events);
+    // validation treats NULL as valid.
+    tokenExpiresAt: timestamp("token_expires_at").default(sql`now() + interval '180 days'`),
   },
   (table) => ({
     eventIdIdx: index("people_event_id_idx").on(table.eventId),
