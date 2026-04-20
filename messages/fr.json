@@ -765,7 +765,8 @@
     "actionRetry": "Réessayez dans quelques instants.",
     "retryButton": "Réessayer",
     "homeButton": "Retour à l'accueil",
-    "errorId": "Error ID"
+    "errorId": "Error ID",
+    "serviceUnavailable": "Service temporairement indisponible. Veuillez réessayer dans quelques instants."
   },
   "NetworkStatus": {
     "offline": "Vous êtes hors ligne",

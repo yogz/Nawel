@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Suspense } from "react";
 import { VerifyEmailForm } from "@/components/auth/verify-email-form";
 

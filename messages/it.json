@@ -764,7 +764,8 @@
     "actionRetry": "Riprova tra qualche istante.",
     "retryButton": "Riprova",
     "homeButton": "Torna alla home",
-    "errorId": "ID Errore"
+    "errorId": "ID Errore",
+    "serviceUnavailable": "Servizio temporaneamente non disponibile. Riprova tra qualche istante."
   },
   "Citations": {
     "anonymous": "Anonimo",

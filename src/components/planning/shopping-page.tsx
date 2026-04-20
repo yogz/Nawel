@@ -3,7 +3,7 @@
 import { useState, useMemo, useTransition, useEffect } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import {
   ArrowLeft,
   Check,
@@ -310,6 +310,10 @@ export function ShoppingPage({
                     <img
                       src={avatar.src}
                       alt={getDisplayName(person)}
+                      width={32}
+                      height={32}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   );

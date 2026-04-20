@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { logger } from "@/lib/logger";
+import { sendGAEvent } from "@/lib/umami";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -31,25 +33,28 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === "development") {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
-    }
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    logger.error("ErrorBoundary caught an error:", error.message, {
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
 
-    // Call optional error handler
+    sendGAEvent("event", "react_error_boundary", {
+      message: error.message.slice(0, 200),
+      name: error.name,
+      url: typeof window !== "undefined" ? window.location.pathname : "unknown",
+    });
+
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
-
-    // TODO: Send error to error tracking service (e.g., Sentry)
   }
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Use custom fallback if provided
       if (this.props.fallback) {
@@ -67,13 +72,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 /**
  * Default error fallback UI component
  */
-function ErrorFallback({
-  error,
-  onReset,
-}: {
-  error: Error | null;
-  onReset: () => void;
-}) {
+function ErrorFallback({ error, onReset }: { error: Error | null; onReset: () => void }) {
   const t = useTranslations("Error");
 
   return (

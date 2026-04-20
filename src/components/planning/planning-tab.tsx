@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import { motion, type Variants } from "framer-motion";
+import { m as motion, type Variants } from "framer-motion";
 import { useThemeMode } from "../theme-provider";
 import { PlusIcon, Calendar, Coffee, ArrowUpRight } from "lucide-react";
 import { MealContainer } from "./meal-container";

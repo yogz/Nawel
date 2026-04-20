@@ -5,7 +5,7 @@ import { Plus, Loader2, ArrowRight, CornerDownLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface InlineItemInputProps {
   onAdd: (name: string) => Promise<void> | void;

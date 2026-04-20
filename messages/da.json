@@ -764,7 +764,8 @@
     "actionRetry": "Prøv igen om et øjeblik.",
     "retryButton": "Prøv igen",
     "homeButton": "Tilbage til forsiden",
-    "errorId": "Fejl-ID"
+    "errorId": "Fejl-ID",
+    "serviceUnavailable": "Tjenesten er midlertidigt utilgængelig. Prøv igen om lidt."
   },
   "Citations": {
     "anonymous": "Anonym",

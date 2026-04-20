@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { sendGAEvent } from "@/lib/umami";
 import { AppBranding } from "@/components/common/app-branding";
 import { useSession } from "@/lib/auth-client";
+import { setGuestToken } from "@/lib/guest-token";
 
 export default function CreateEventClient() {
   const t = useTranslations("CreateEvent");
@@ -59,9 +60,7 @@ export default function CreateEventClient() {
         });
 
         if (result.guestToken) {
-          localStorage.setItem(`event_token_${result.slug}`, result.guestToken); // Use slug or id depending on how auth usually works, assuming slug for public access
-          // Also store broadly if generic binding is needed, though specific event binding is safer
-          // localStorage.setItem("nawel_guest_token", result.guestToken);
+          setGuestToken(result.slug, result.guestToken);
         }
 
         router.push(`/event/${result.slug}?key=${result.adminKey}&new=true`);

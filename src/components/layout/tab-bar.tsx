@@ -4,7 +4,7 @@ import { CalendarRange, Users, ShoppingCart } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { trackTabChange } from "@/lib/analytics";
 
 const authenticatedTabs = [

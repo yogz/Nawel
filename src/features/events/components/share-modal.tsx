@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Copy, Check, Share2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { trackShareAction } from "@/lib/analytics";
 import { logger } from "@/lib/logger";

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type MotionValue } from "framer-motion";
+import { m as motion, type MotionValue } from "framer-motion";
 import { ChevronDown, Sparkles } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";

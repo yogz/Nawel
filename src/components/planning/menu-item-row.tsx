@@ -5,7 +5,7 @@ import { type Item, type Person } from "@/lib/types";
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { Scale, Euro, MessageSquare, ChefHat, Plus, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 import { SwipeableCard } from "../ui/swipeable-card";
 import { cn } from "@/lib/utils";
@@ -198,6 +198,8 @@ function ItemRowComponent({
                         <img
                           src={avatar.src}
                           alt={getDisplayName(person)}
+                          width={20}
+                          height={20}
                           className="h-full w-full object-cover"
                           loading="lazy"
                           decoding="async"

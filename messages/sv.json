@@ -764,7 +764,8 @@
     "actionRetry": "Försök igen om ett ögonblick.",
     "retryButton": "Försök igen",
     "homeButton": "Tillbaka till start",
-    "errorId": "Fel-ID"
+    "errorId": "Fel-ID",
+    "serviceUnavailable": "Tjänsten är tillfälligt otillgänglig. Försök igen om en stund."
   },
   "Citations": {
     "anonymous": "Anonym",

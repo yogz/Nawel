@@ -7,6 +7,7 @@ import {
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { toOpenGraphLocale, getAlternateOpenGraphLocales } from "@/lib/locale-utils";
 import type { Metadata } from "next";
+import type { Cost } from "@/lib/types";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
@@ -82,7 +83,7 @@ export default async function BehindTheScenesPage(props: { params: Promise<{ loc
           <div className="flex min-h-screen items-center justify-center">Chargement...</div>
         }
       >
-        <BehindTheScenes costs={costs as any} />
+        <BehindTheScenes costs={(costs ?? []) as Cost[]} />
       </Suspense>
     </div>
   );

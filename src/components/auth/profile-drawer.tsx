@@ -12,7 +12,7 @@ import { Loader2, User, Check, LogOut, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useThemeMode } from "../theme-provider";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { THEME_EMOJIS, renderAvatar } from "@/lib/utils";

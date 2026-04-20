@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   createCostAction,
   deleteCostAction,
@@ -19,21 +20,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-
-interface Cost {
-  id: number;
-  amount: number;
-  category: string;
-  description: string | null;
-  date: Date;
-  frequency: "once" | "monthly" | "yearly";
-  isActive: boolean;
-  stoppedAt: Date | null;
-}
+import type { Cost } from "@/lib/types";
 
 export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
   const [costs, setCosts] = useState(initialCosts);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +48,7 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
 
       if (result.success) {
         toast.success("Coût ajouté !");
-        window.location.reload();
+        router.refresh();
       } else {
         toast.error("Erreur lors de l'ajout");
       }
@@ -64,7 +56,9 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Supprimer ce coût ?")) return;
+    if (!confirm("Supprimer ce coût ?")) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await deleteCostAction({ id });
@@ -77,13 +71,15 @@ export function AdminCostList({ initialCosts }: { initialCosts: Cost[] }) {
 
   const handleToggleActive = async (id: number, currentActive: boolean) => {
     const action = currentActive ? "arrêter" : "redémarrer";
-    if (!confirm(`Voulez-vous ${action} ce coût récurrent ?`)) return;
+    if (!confirm(`Voulez-vous ${action} ce coût récurrent ?`)) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await toggleCostActiveAction({ id, isActive: !currentActive });
       if (result.success) {
         toast.success(`Coût ${currentActive ? "arrêté" : "redémarré"}`);
-        window.location.reload();
+        router.refresh();
       }
     });
   };

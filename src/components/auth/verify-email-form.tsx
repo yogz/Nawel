@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { verifyEmail } from "@/lib/auth-client";
 import { useRouter } from "@/i18n/navigation";
-import { motion } from "framer-motion";
+import { m as motion } from "framer-motion";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";

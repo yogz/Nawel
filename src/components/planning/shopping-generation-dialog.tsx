@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 
 interface ShoppingGenerationDialogProps {
   open: boolean;

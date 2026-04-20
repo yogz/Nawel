@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Send } from "lucide-react";
 import { trackDemoView, trackDemoStep } from "@/lib/analytics";
 import { useTrackView } from "@/hooks/use-track-view";

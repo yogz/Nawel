@@ -764,7 +764,8 @@
     "actionRetry": "Birkaç dakika sonra tekrar deneyin.",
     "retryButton": "Tekrar dene",
     "homeButton": "Anasayfaya dön",
-    "errorId": "Hata ID"
+    "errorId": "Hata ID",
+    "serviceUnavailable": "Hizmet geçici olarak kullanılamıyor. Lütfen birazdan tekrar deneyin."
   },
   "Citations": {
     "anonymous": "Anonim",

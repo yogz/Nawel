@@ -18,7 +18,7 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { deleteCitationAdminAction, updateCitationAdminAction } from "@/app/actions/admin-actions";
@@ -243,7 +243,9 @@ export function CitationManager() {
       if (result?.success && result.item) {
         // Mettre à jour l'item dans le state local
         const updatedItem = result.item;
-        setItems((prev: CitationItem[]) => prev.map((item) => (item.id === activeItem.id ? updatedItem : item)));
+        setItems((prev: CitationItem[]) =>
+          prev.map((item) => (item.id === activeItem.id ? updatedItem : item))
+        );
         setIsEditing(false);
         setEditedItem(null);
         toast.success("Citation mise à jour");

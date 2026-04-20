@@ -12,6 +12,23 @@ export class DatabaseError extends Error {
 }
 
 /**
+ * Well-known error codes surfaced to the client for i18n.
+ * The client inspects `error.code` (or a prefix on `error.message`)
+ * to render a translated message.
+ */
+export const ERROR_CODES = {
+  SERVICE_UNAVAILABLE: "error.serviceUnavailable",
+} as const;
+
+export class ServiceUnavailableError extends Error {
+  readonly code = ERROR_CODES.SERVICE_UNAVAILABLE;
+  constructor() {
+    super(ERROR_CODES.SERVICE_UNAVAILABLE);
+    this.name = "ServiceUnavailableError";
+  }
+}
+
+/**
  * Checks if an error is likely related to a database connection or availability issue.
  * Specifically targets errors from the 'postgres' driver.
  */

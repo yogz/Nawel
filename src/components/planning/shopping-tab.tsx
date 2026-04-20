@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { ShoppingCart, ExternalLink, Check, UserX, Users } from "lucide-react";
 import { renderAvatar, getDisplayName, cn } from "@/lib/utils";
 import clsx from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { type PlanData, type Item, type Ingredient, type Person } from "@/lib/types";
 import { updateIngredientAction, toggleItemCheckedAction } from "@/app/actions";
 import {
@@ -337,6 +337,10 @@ export function ShoppingTab({ plan, slug, writeKey, isOwner, currentPersonId }: 
                             <img
                               src={avatar.src}
                               alt={getDisplayName(person)}
+                              width={16}
+                              height={16}
+                              loading="lazy"
+                              decoding="async"
                               className="h-full w-full object-cover"
                             />
                           </div>
@@ -494,6 +498,10 @@ export function ShoppingTab({ plan, slug, writeKey, isOwner, currentPersonId }: 
                             <img
                               src={avatar.src}
                               alt={getDisplayName(person)}
+                              width={16}
+                              height={16}
+                              loading="lazy"
+                              decoding="async"
                               className="h-full w-full object-cover"
                             />
                           </div>

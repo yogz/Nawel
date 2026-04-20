@@ -764,7 +764,8 @@
     "actionRetry": "Δοκιμάστε ξανά σε λίγα λεπτά.",
     "retryButton": "Δοκιμάστε ξανά",
     "homeButton": "Επιστροφή στην αρχική",
-    "errorId": "Error ID"
+    "errorId": "Error ID",
+    "serviceUnavailable": "Η υπηρεσία δεν είναι προσωρινά διαθέσιμη. Παρακαλώ δοκιμάστε ξανά σε λίγο."
   },
   "Citations": {
     "anonymous": "Ανώνυμο",

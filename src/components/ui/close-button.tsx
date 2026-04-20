@@ -36,7 +36,9 @@ const CloseButton = React.forwardRef<HTMLButtonElement, CloseButtonProps>(
         ref={ref}
         type="button"
         className={cn(
-          "flex items-center justify-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          // Expand touch target to WCAG 2.5.5 minimum (44×44px) via ::before while keeping visual size
+          "relative flex items-center justify-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+          "before:absolute before:left-1/2 before:top-1/2 before:h-11 before:w-11 before:-translate-x-1/2 before:-translate-y-1/2 before:content-['']",
           sizeClasses[size],
           variantClasses[variant],
           className

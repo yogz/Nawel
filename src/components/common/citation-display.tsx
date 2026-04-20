@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import citationsDataV3 from "@/data/citations-v3.json";
-import { motion, AnimatePresence } from "framer-motion";
+import { m as motion, AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
 import { cn } from "@/lib/utils";

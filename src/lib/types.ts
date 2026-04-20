@@ -6,6 +6,7 @@ import {
   type people,
   type events,
   type ingredients,
+  type costs,
 } from "@drizzle/schema";
 
 export type Meal = InferSelectModel<typeof meals> & {
@@ -38,6 +39,10 @@ export type Item = InferSelectModel<typeof items> & {
 };
 
 export type Event = InferSelectModel<typeof events>;
+
+export type Cost = Omit<InferSelectModel<typeof costs>, "frequency"> & {
+  frequency: "once" | "monthly" | "yearly";
+};
 
 export type PlanData = {
   event: Event | null;

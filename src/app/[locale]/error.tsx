@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { ShieldAlert, RefreshCcw, Home } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { logger } from "@/lib/logger";
+import { sendGAEvent } from "@/lib/umami";
 
 export default function Error({
   error,
@@ -18,8 +20,18 @@ export default function Error({
   const isDbError = isDatabaseError(error);
 
   useEffect(() => {
-    // Log the error
-    console.error("Application Error:", error);
+    logger.error("Application Error:", error.message, {
+      digest: error.digest,
+      stack: error.stack,
+      isDbError,
+    });
+
+    sendGAEvent("event", "app_error", {
+      message: error.message.slice(0, 200),
+      digest: error.digest,
+      is_db_error: isDbError,
+      url: typeof window !== "undefined" ? window.location.pathname : "unknown",
+    });
   }, [error, isDbError]);
 
   return (
