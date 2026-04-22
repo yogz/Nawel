@@ -12,13 +12,37 @@ import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { cancelOutingSchema, createOutingSchema, updateOutingSchema } from "./schemas";
 
+export type FormActionState = {
+  errors?: Record<string, string[]>;
+  message?: string;
+};
+
 async function getSessionUser() {
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user ?? null;
 }
 
-export async function createOutingAction(input: unknown) {
-  const data = createOutingSchema.parse(input);
+function formDataToObject(formData: FormData): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
+  for (const [key, value] of formData.entries()) {
+    obj[key] = typeof value === "string" ? value : "";
+  }
+  // Checkbox inputs post "on" or are absent — treat presence as true.
+  if (formData.has("showOnProfile")) {
+    obj.showOnProfile = true;
+  }
+  return obj;
+}
+
+export async function createOutingAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = createOutingSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const data = parsed.data;
   const user = await getSessionUser();
   // Side-effect only: tag the creator's device so they can RSVP "yes" later
   // and so the Phase 4 magic-link reclaim flow has an anchor.
@@ -56,21 +80,28 @@ export async function createOutingAction(input: unknown) {
   redirect(`/sortie/${shortId}`);
 }
 
-export async function updateOutingAction(input: unknown) {
-  const data = updateOutingSchema.parse(input);
+export async function updateOutingAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = updateOutingSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const data = parsed.data;
   const user = await getSessionUser();
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, data.shortId),
   });
   if (!outing) {
-    throw new Error("Sortie introuvable.");
+    return { message: "Sortie introuvable." };
   }
 
   // Authorization: logged-in creator only in Phase 2. Anonymous creators
   // must reclaim via magic link (Phase 4) before they can edit.
   if (!user || outing.creatorUserId !== user.id) {
-    throw new Error("Tu n'as pas les droits pour modifier cette sortie.");
+    return { message: "Tu n'as pas les droits pour modifier cette sortie." };
   }
 
   const title = sanitizeText(data.title, 200);
@@ -94,19 +125,27 @@ export async function updateOutingAction(input: unknown) {
   redirect(`/sortie/${data.shortId}`);
 }
 
-export async function cancelOutingAction(input: unknown) {
-  const { shortId } = cancelOutingSchema.parse(input);
+export async function cancelOutingAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = cancelOutingSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId } = parsed.data;
   const user = await getSessionUser();
   const outing = await db.query.outings.findFirst({ where: eq(outings.shortId, shortId) });
   if (!outing) {
-    throw new Error("Sortie introuvable.");
+    return { message: "Sortie introuvable." };
   }
   if (!user || outing.creatorUserId !== user.id) {
-    throw new Error("Tu n'as pas les droits pour annuler cette sortie.");
+    return { message: "Tu n'as pas les droits pour annuler cette sortie." };
   }
   await db
     .update(outings)
     .set({ status: "cancelled", cancelledAt: new Date(), updatedAt: new Date() })
     .where(eq(outings.id, outing.id));
   revalidatePath(`/sortie/${shortId}`);
+  return {};
 }

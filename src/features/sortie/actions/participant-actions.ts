@@ -9,14 +9,30 @@ import { sanitizeStrictText } from "@/lib/sanitize";
 import { outings, participants } from "@drizzle/sortie-schema";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { rsvpSchema } from "./schemas";
+import type { FormActionState } from "./outing-actions";
 
 async function getSessionUser() {
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user ?? null;
 }
 
-export async function rsvpAction(input: unknown) {
-  const data = rsvpSchema.parse(input);
+function formDataToRsvp(formData: FormData): Record<string, unknown> {
+  const obj: Record<string, unknown> = {};
+  for (const [key, value] of formData.entries()) {
+    obj[key] = typeof value === "string" ? value : "";
+  }
+  return obj;
+}
+
+export async function rsvpAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = rsvpSchema.safeParse(formDataToRsvp(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const data = parsed.data;
   const user = await getSessionUser();
   const cookieTokenHash = await ensureParticipantTokenHash();
 
@@ -24,15 +40,15 @@ export async function rsvpAction(input: unknown) {
     where: eq(outings.shortId, data.shortId),
   });
   if (!outing) {
-    throw new Error("Sortie introuvable.");
+    return { message: "Sortie introuvable." };
   }
   if (outing.status === "cancelled") {
-    throw new Error("Cette sortie est annulée.");
+    return { message: "Cette sortie est annulée." };
   }
   // After the RSVP deadline the list is frozen — Phase 3 will allow
   // late "interested" responses, not here.
   if (outing.deadlineAt < new Date() && outing.status !== "open") {
-    throw new Error("Les réponses sont closes pour cette sortie.");
+    return { message: "Les réponses sont closes pour cette sortie." };
   }
 
   const displayName = user
@@ -73,4 +89,5 @@ export async function rsvpAction(input: unknown) {
   }
 
   revalidatePath(`/sortie/${data.shortId}`);
+  return {};
 }
