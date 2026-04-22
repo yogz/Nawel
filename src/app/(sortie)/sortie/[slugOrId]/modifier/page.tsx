@@ -6,6 +6,7 @@ import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { EditOutingForm } from "@/features/sortie/components/edit-outing-form";
+import { CancelOutingButton } from "@/features/sortie/components/cancel-outing-button";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -69,6 +70,16 @@ export default async function EditOutingPage({ params }: Props) {
         deadlineAt={outing.deadlineAt}
         ticketUrl={outing.eventLink}
       />
+
+      {outing.status !== "cancelled" && (
+        <section className="mt-12 border-t border-encre-100 pt-8">
+          <h2 className="mb-2 font-serif text-xl text-encre-700">Zone sensible</h2>
+          <p className="mb-4 text-sm text-encre-400">
+            Annuler la sortie prévient tous les inscrits par email. L&apos;opération est définitive.
+          </p>
+          <CancelOutingButton shortId={outing.shortId} outingTitle={outing.title} />
+        </section>
+      )}
     </main>
   );
 }

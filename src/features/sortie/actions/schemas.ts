@@ -72,3 +72,7 @@ export const rsvpSchema = z.object({
   extraChildren: z.coerce.number().int().min(0).max(10).default(0),
   email: z.union([z.literal(""), z.string().email().max(255)]).transform((v) => v || undefined),
 });
+
+export const cancelOutingSchema = z.object({
+  shortId: shortIdSchema,
+});
