@@ -88,6 +88,8 @@ export async function rsvpAction(
     });
   }
 
-  revalidatePath(`/sortie/${data.shortId}`);
+  // Revalidate the bare-shortId form; the public page's canonical redirect
+  // takes care of both the /<shortId> and /<slug-shortId> cache entries.
+  revalidatePath(`/${data.shortId}`);
   return {};
 }

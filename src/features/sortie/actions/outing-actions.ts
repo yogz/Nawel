@@ -10,6 +10,7 @@ import { sanitizeStrictText, sanitizeText } from "@/lib/sanitize";
 import { outings } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { createOutingSchema, updateOutingSchema } from "./schemas";
 
 export type FormActionState = {
@@ -76,8 +77,13 @@ export async function createOutingAction(
   // by the participant row at RSVP time — but we don't create a participant
   // here. The creator is not automatically "yes"; they RSVP like anyone else.
 
-  revalidatePath(`/sortie/${shortId}`);
-  redirect(`/sortie/${shortId}`);
+  // User-facing URLs on sortie.colist.fr are / -prefixed — the /sortie internal
+  // prefix only exists after proxy.ts rewrites. Redirecting to /sortie/… would
+  // send the browser to sortie.colist.fr/sortie/<id>, rewritten again to
+  // /sortie/sortie/<id>, which doesn't exist → 404.
+  const path = `/${canonicalPathSegment({ slug, shortId })}`;
+  revalidatePath(path);
+  redirect(path);
 }
 
 export async function updateOutingAction(
@@ -121,6 +127,7 @@ export async function updateOutingAction(
     })
     .where(eq(outings.id, outing.id));
 
-  revalidatePath(`/sortie/${data.shortId}`);
-  redirect(`/sortie/${data.shortId}`);
+  const path = `/${canonicalPathSegment({ slug, shortId: data.shortId })}`;
+  revalidatePath(path);
+  redirect(path);
 }
