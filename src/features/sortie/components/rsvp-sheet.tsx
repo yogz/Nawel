@@ -62,13 +62,18 @@ export function RsvpSheet({
 
   // Close the sheet once the action finishes with no errors. The state object
   // carries either { errors } or { message } on failure — empty means success.
+  // Deferred via queueMicrotask because setState-in-effect triggers the
+  // cascading-render lint; the microtask lets React finish its current pass
+  // before we mutate the Dialog's open prop.
   const wasPending = useRef(false);
   useEffect(() => {
     const justFinished = wasPending.current && !pending;
     wasPending.current = pending;
     if (justFinished && !state.errors && !state.message) {
-      setOpen(false);
-      router.refresh();
+      queueMicrotask(() => {
+        setOpen(false);
+        router.refresh();
+      });
     }
   }, [pending, state, router]);
 

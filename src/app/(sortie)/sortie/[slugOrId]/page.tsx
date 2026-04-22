@@ -10,6 +10,7 @@ import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
+import { ReclaimForm } from "@/features/sortie/components/reclaim-form";
 import { RsvpSheet } from "@/features/sortie/components/rsvp-sheet";
 import { ShareActions } from "@/features/sortie/components/share-actions";
 
@@ -145,6 +146,12 @@ export default async function OutingPublicPage({ params }: Props) {
           ? `Organisé par ${outing.creatorAnonName ?? "un membre CoList"}.`
           : ""}
       </p>
+
+      {!isCreator && outing.creatorAnonEmail && (
+        <div className="mt-8 flex justify-center">
+          <ReclaimForm shortId={outing.shortId} />
+        </div>
+      )}
     </main>
   );
 }
