@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
 import { DateTimePicker } from "./date-time-picker";
 import { FormField } from "./form-field";
+import { TimeslotListEditor } from "./timeslot-list-editor";
 
 const INITIAL: FormActionState = {};
 
@@ -14,8 +15,11 @@ type Props = {
   isLoggedIn: boolean;
 };
 
+type Mode = "fixed" | "vote";
+
 export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
   const [state, formAction, pending] = useActionState(createOutingAction, INITIAL);
+  const [mode, setMode] = useState<Mode>("fixed");
   const errors = state.errors ?? {};
 
   return (
@@ -29,16 +33,32 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         error={errors.title?.[0]}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <DateField label="Date et heure" name="startsAt" required error={errors.startsAt?.[0]} />
-        <DateField
-          label="Réponse avant"
-          name="rsvpDeadline"
-          required
-          helper="La liste se fige après cette date."
-          error={errors.rsvpDeadline?.[0]}
-        />
-      </div>
+      <ModeToggle mode={mode} onChange={setMode} />
+      <input type="hidden" name="mode" value={mode} />
+
+      {mode === "fixed" ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <DateField label="Date et heure" name="startsAt" required error={errors.startsAt?.[0]} />
+          <DateField
+            label="Réponse avant"
+            name="rsvpDeadline"
+            required
+            helper="La liste se fige après cette date."
+            error={errors.rsvpDeadline?.[0]}
+          />
+        </div>
+      ) : (
+        <>
+          <TimeslotListEditor hiddenInputName="timeslots" error={errors.timeslots?.[0]} />
+          <DateField
+            label="Fin du sondage"
+            name="rsvpDeadline"
+            required
+            helper="Les votes se ferment après cette date."
+            error={errors.rsvpDeadline?.[0]}
+          />
+        </>
+      )}
 
       <FormField
         label="Lieu"
@@ -100,6 +120,54 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         </Button>
       </div>
     </form>
+  );
+}
+
+function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (mode: Mode) => void }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <Label className="text-[13px] font-medium text-encre-500">Format</Label>
+      <div className="grid grid-cols-2 gap-0 rounded-md border border-ivoire-400 bg-ivoire-50 p-0.5 text-sm">
+        <ModeButton
+          active={mode === "fixed"}
+          onClick={() => onChange("fixed")}
+          title="Date fixe"
+          hint="Tu fixes la date"
+        />
+        <ModeButton
+          active={mode === "vote"}
+          onClick={() => onChange("vote")}
+          title="Sondage"
+          hint="Le groupe vote"
+        />
+      </div>
+    </div>
+  );
+}
+
+function ModeButton({
+  active,
+  onClick,
+  title,
+  hint,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  hint: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex flex-col items-start rounded-md px-3 py-2 text-left transition-colors ${
+        active ? "bg-bordeaux-600 text-ivoire-100" : "text-encre-500 hover:bg-ivoire-100"
+      }`}
+    >
+      <span className="text-sm font-medium">{title}</span>
+      <span className={`text-xs ${active ? "text-ivoire-200" : "text-encre-400"}`}>{hint}</span>
+    </button>
   );
 }
 

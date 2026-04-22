@@ -62,14 +62,21 @@ export default async function EditOutingPage({ params }: Props) {
         <h1 className="font-serif text-4xl leading-tight text-encre-700">Les détails</h1>
       </header>
 
-      <EditOutingForm
-        shortId={outing.shortId}
-        title={outing.title}
-        venue={outing.location}
-        startsAt={outing.fixedDatetime}
-        deadlineAt={outing.deadlineAt}
-        ticketUrl={outing.eventLink}
-      />
+      {outing.mode === "vote" && !outing.chosenTimeslotId ? (
+        <div className="rounded-lg border border-ivoire-400 bg-ivoire-50 p-4 text-sm text-encre-500">
+          Le sondage est encore ouvert. Tu pourras modifier les détails une fois un créneau choisi.
+          En attendant, tu peux toujours annuler.
+        </div>
+      ) : (
+        <EditOutingForm
+          shortId={outing.shortId}
+          title={outing.title}
+          venue={outing.location}
+          startsAt={outing.fixedDatetime}
+          deadlineAt={outing.deadlineAt}
+          ticketUrl={outing.eventLink}
+        />
+      )}
 
       {outing.status !== "cancelled" && (
         <section className="mt-12 border-t border-encre-100 pt-8">

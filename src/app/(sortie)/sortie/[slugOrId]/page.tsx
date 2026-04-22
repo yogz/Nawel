@@ -16,6 +16,8 @@ import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
 import { ReclaimForm } from "@/features/sortie/components/reclaim-form";
 import { RsvpSheet } from "@/features/sortie/components/rsvp-sheet";
 import { ShareActions } from "@/features/sortie/components/share-actions";
+import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
+import { VotingSection } from "@/features/sortie/components/voting-section";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -155,16 +157,59 @@ export default async function OutingPublicPage({ params }: Props) {
         </div>
       </section>
 
+      {outing.mode === "vote" && outing.timeslots.length > 0 && (
+        <VotingSection
+          shortId={outing.shortId}
+          chosenTimeslotId={outing.chosenTimeslotId}
+          isCreator={isCreator}
+          totalVoters={countVoters(outing.timeslots)}
+          timeslots={outing.timeslots.map((t) => ({
+            id: t.id,
+            startsAt: t.startsAt,
+            yesCount: t.votes.filter((v) => v.available).length,
+            noCount: t.votes.filter((v) => !v.available).length,
+          }))}
+        />
+      )}
+
       {!deadlinePassed && (
         <div className="mt-8 flex justify-center">
-          <RsvpSheet
-            shortId={outing.shortId}
-            existingResponse={me ? (me.response as "yes" | "no" | "handle_own") : null}
-            existingName={me?.anonName ?? session?.user?.name ?? undefined}
-            existingExtraAdults={me?.extraAdults ?? 0}
-            existingExtraChildren={me?.extraChildren ?? 0}
-            existingEmail={me?.anonEmail ?? undefined}
-          />
+          {outing.mode === "vote" && !outing.chosenTimeslotId ? (
+            <VoteRsvpSheet
+              shortId={outing.shortId}
+              timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
+              existingVotes={
+                me
+                  ? Object.fromEntries(
+                      outing.timeslots.flatMap((t) =>
+                        t.votes
+                          .filter((v) => v.participantId === me.id)
+                          .map((v) => [t.id, v.available])
+                      )
+                    )
+                  : {}
+              }
+              existingName={me?.anonName ?? session?.user?.name ?? undefined}
+              existingEmail={me?.anonEmail ?? undefined}
+              hasVoted={Boolean(
+                me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
+              )}
+            />
+          ) : (
+            <RsvpSheet
+              shortId={outing.shortId}
+              existingResponse={
+                me &&
+                (me.response === "yes" || me.response === "no" || me.response === "handle_own")
+                  ? (me.response as "yes" | "no" | "handle_own")
+                  : null
+              }
+              existingName={me?.anonName ?? session?.user?.name ?? undefined}
+              existingExtraAdults={me?.extraAdults ?? 0}
+              existingExtraChildren={me?.extraChildren ?? 0}
+              existingEmail={me?.anonEmail ?? undefined}
+            />
+          )}
         </div>
       )}
 
@@ -208,6 +253,16 @@ export default async function OutingPublicPage({ params }: Props) {
       )}
     </main>
   );
+}
+
+function countVoters(timeslots: Array<{ votes: Array<{ participantId: string }> }>): number {
+  const unique = new Set<string>();
+  for (const t of timeslots) {
+    for (const v of t.votes) {
+      unique.add(v.participantId);
+    }
+  }
+  return unique.size;
 }
 
 function CancelledView({ title }: { title: string }) {
