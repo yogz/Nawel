@@ -11,6 +11,7 @@ import { outings } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { createOutingSchema, updateOutingSchema } from "./schemas";
 
 export type FormActionState = {
@@ -44,6 +45,13 @@ export async function createOutingAction(
     return { errors: parsed.error.flatten().fieldErrors };
   }
   const data = parsed.data;
+
+  const ip = await getClientIp();
+  const gate = await rateLimit({ key: `create:${ip}`, limit: 5, windowSeconds: 900 });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
   const user = await getSessionUser();
   // Creator's device cookie hash — lets anon creators edit their own outing
   // from the same browser, and is the target a magic-link reclaim flips when
@@ -99,6 +107,12 @@ export async function updateOutingAction(
   const data = parsed.data;
   const user = await getSessionUser();
   const cookieTokenHash = await ensureParticipantTokenHash();
+
+  const actorKey = user ? `user:${user.id}` : `cookie:${cookieTokenHash}`;
+  const gate = await rateLimit({ key: `update:${actorKey}`, limit: 20, windowSeconds: 3600 });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, data.shortId),
