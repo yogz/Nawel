@@ -17,6 +17,20 @@ export function hashToken(raw: string): string {
   return createHash("sha256").update(raw).digest("hex");
 }
 
+/**
+ * Read-only: returns the hash if a cookie already exists, else null. Safe to
+ * call from Server Components (which can't set cookies).
+ */
+export async function readParticipantTokenHash(): Promise<string | null> {
+  const store = await cookies();
+  const raw = store.get(COOKIE_NAME)?.value;
+  return raw ? hashToken(raw) : null;
+}
+
+/**
+ * Read-or-create: returns the hash, setting the cookie on first visit. Must
+ * be called from a Server Action or Route Handler.
+ */
 export async function ensureParticipantTokenHash(): Promise<string> {
   const store = await cookies();
   const existing = store.get(COOKIE_NAME)?.value;
