@@ -12,11 +12,12 @@ import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
   buildOutingDiff,
+  sendOutingCancelledEmails,
   sendOutingModifiedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
-import { createOutingSchema, updateOutingSchema } from "./schemas";
+import { cancelOutingSchema, createOutingSchema, updateOutingSchema } from "./schemas";
 
 export type FormActionState = {
   errors?: Record<string, string[]>;
@@ -181,4 +182,50 @@ export async function updateOutingAction(
   const path = `/${canonicalPathSegment({ slug, shortId: data.shortId })}`;
   revalidatePath(path);
   redirect(path);
+}
+
+export async function cancelOutingAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = cancelOutingSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId } = parsed.data;
+  const user = await getSessionUser();
+  const cookieTokenHash = await ensureParticipantTokenHash();
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  const isOwner =
+    (user && outing.creatorUserId === user.id) ||
+    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  if (!isOwner) {
+    return { message: "Tu n'as pas les droits pour annuler cette sortie." };
+  }
+
+  if (outing.status === "cancelled") {
+    // Idempotent: already cancelled, just redirect back.
+    const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+    redirect(`/${canonical}`);
+  }
+
+  await db
+    .update(outings)
+    .set({ status: "cancelled", cancelledAt: new Date(), updatedAt: new Date() })
+    .where(eq(outings.id, outing.id));
+
+  await sendOutingCancelledEmails({
+    outing: { id: outing.id, title: outing.title },
+  });
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}`);
+  redirect(`/${canonical}`);
 }

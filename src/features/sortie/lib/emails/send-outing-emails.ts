@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { sendSortieEmail } from "@/lib/resend-sortie";
 import { participants } from "@drizzle/sortie-schema";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
-import { outingModifiedEmail, rsvpReceivedEmail } from "./templates";
+import { outingCancelledEmail, outingModifiedEmail, rsvpReceivedEmail } from "./templates";
 
 const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
 
@@ -164,5 +164,30 @@ export async function sendOutingModifiedEmails(args: {
       .map((p) => p.anonEmail ?? p.user?.email ?? null)
       .filter((e): e is string => !!e)
       .map((email) => safeSend({ to: email, subject, html, trigger: "outing-modified" }))
+  );
+}
+
+/**
+ * Sent to every non-"no" participant (yes + handle_own) when the creator
+ * cancels the outing.
+ */
+export async function sendOutingCancelledEmails(args: {
+  outing: { id: string; title: string };
+}): Promise<void> {
+  const recipients = await db.query.participants.findMany({
+    where: and(eq(participants.outingId, args.outing.id), ne(participants.response, "no")),
+    with: { user: { columns: { email: true } } },
+  });
+
+  const { subject, html } = outingCancelledEmail({
+    outingTitle: args.outing.title,
+    homeUrl: BASE_URL,
+  });
+
+  await Promise.all(
+    recipients
+      .map((p) => p.anonEmail ?? p.user?.email ?? null)
+      .filter((e): e is string => !!e)
+      .map((email) => safeSend({ to: email, subject, html, trigger: "outing-cancelled" }))
   );
 }

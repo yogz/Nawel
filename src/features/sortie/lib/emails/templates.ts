@@ -190,6 +190,33 @@ export function rsvpReceivedEmail(args: {
  * date, venue, deadline, or ticket URL). Lists only the fields that actually
  * changed so the reader doesn't have to diff the email against memory.
  */
+/**
+ * Sent to every non-"no" RSVP when the creator cancels the outing. Tone
+ * stays neutral but not robotic — "on se rattrape au prochain".
+ */
+export function outingCancelledEmail(args: { outingTitle: string; homeUrl: string }): {
+  subject: string;
+  html: string;
+} {
+  const title = escapeHtml(args.outingTitle);
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${title} est annulée</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      Le créateur a annulé la sortie. On se rattrape au prochain&nbsp;?
+    </p>
+    <p style="margin:24px 0 0;">
+      <a href="${escapeHtml(args.homeUrl)}" style="color:#6B1F2A;text-decoration:underline;">Accueil Sortie</a>
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — annulée`,
+    html: renderEmail({
+      preheader: `${args.outingTitle} a été annulée.`,
+      body,
+    }),
+  };
+}
+
 export function outingModifiedEmail(args: {
   outingTitle: string;
   outingUrl: string;
