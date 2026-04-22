@@ -24,7 +24,7 @@
  * - z-200: Sheets/modals
  *
  * To modify status bar color, see:
- * - /src/app/[locale]/event/[slug]/layout.tsx (viewport.themeColor)
+ * - /src/app/(colist)/[locale]/event/[slug]/layout.tsx (viewport.themeColor)
  * - /src/app/globals.css (--status-bar-color)
  */
 
