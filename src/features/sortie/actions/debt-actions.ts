@@ -16,6 +16,10 @@ import {
 } from "@drizzle/sortie-schema";
 import { createHash } from "node:crypto";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import {
+  sendPaymentConfirmedEmail,
+  sendPaymentDeclaredEmail,
+} from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
 import type { FormActionState } from "./outing-actions";
@@ -112,6 +116,10 @@ export async function markDebtPaidAction(
       ipHash: await hashIp(),
       payload: JSON.stringify({ debtId: updated.id }),
     });
+    await sendPaymentDeclaredEmail({
+      outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
+      debtId: updated.id,
+    });
   }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
@@ -154,6 +162,10 @@ export async function confirmDebtPaidAction(
       action: "DEBT_CONFIRMED",
       ipHash: await hashIp(),
       payload: JSON.stringify({ debtId: updated.id }),
+    });
+    await sendPaymentConfirmedEmail({
+      outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
+      debtId: updated.id,
     });
   }
 

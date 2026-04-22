@@ -8,7 +8,29 @@ import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { Redis } from "@upstash/redis";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+// Lazy init — passing undefined to `new Resend()` throws at module-load time,
+// which breaks Next.js page-data collection on preview builds that don't have
+// the API key scoped in. The client is only ever used inside send callbacks.
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+      throw new Error("RESEND_API_KEY is not set");
+    }
+    _resend = new Resend(key);
+  }
+  return _resend;
+}
+const resend = new Proxy({} as Resend, {
+  get(_, prop) {
+    const target = getResend() as unknown as Record<string | symbol, unknown>;
+    const value = target[prop as string];
+    return typeof value === "function"
+      ? (value as (...args: unknown[]) => unknown).bind(target)
+      : value;
+  },
+}) as Resend;
 
 // Upstash Redis for rate limiting
 const redis =
