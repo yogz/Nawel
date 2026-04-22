@@ -9,6 +9,7 @@ export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user?.id ?? null;
   const myOutings = userId ? await listMyOutingsForProfile(userId, 6) : [];
+  const isLoggedIn = Boolean(userId);
 
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 py-20">
@@ -30,6 +31,15 @@ export default async function SortieHome() {
         <Button asChild size="lg" className="px-6">
           <Link href="/nouvelle">Créer une sortie</Link>
         </Button>
+
+        {isLoggedIn && (
+          <Link
+            href="/moi"
+            className="mt-4 text-sm text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-700 hover:underline"
+          >
+            Mon profil →
+          </Link>
+        )}
       </header>
 
       {myOutings.length > 0 && (
