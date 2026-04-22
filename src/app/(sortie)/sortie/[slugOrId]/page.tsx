@@ -11,6 +11,9 @@ import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
 import { RsvpSheet } from "@/features/sortie/components/rsvp-sheet";
+import { ShareActions } from "@/features/sortie/components/share-actions";
+
+const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -96,6 +99,14 @@ export default async function OutingPublicPage({ params }: Props) {
           </Link>
         )}
       </nav>
+
+      <div className="mb-4 flex justify-end">
+        <ShareActions
+          url={`${PUBLIC_BASE}/${canonical}`}
+          title={outing.title}
+          startsAt={outing.fixedDatetime}
+        />
+      </div>
 
       <OutingHero
         title={outing.title}
