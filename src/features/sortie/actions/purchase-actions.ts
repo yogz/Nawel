@@ -16,6 +16,7 @@ import {
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import { sendPurchaseConfirmedEmails } from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -231,6 +232,19 @@ export async function declarePurchaseAction(
       .update(outings)
       .set({ status: "purchased", updatedAt: new Date() })
       .where(eq(outings.id, outing.id));
+  });
+
+  // Fire-and-forget notifications — failures are caught inside the helper so
+  // Resend being down never rolls back the purchase we just wrote.
+  await sendPurchaseConfirmedEmails({
+    outing: {
+      title: outing.title,
+      fixedDatetime: outing.fixedDatetime,
+      slug: outing.slug,
+      shortId: outing.shortId,
+    },
+    buyerParticipantId: me.id,
+    debts: debtsByParticipant,
   });
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
