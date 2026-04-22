@@ -193,6 +193,20 @@ export function PurchaseForm({ shortId, totalPlaces, adultCount, childCount, all
         </div>
       )}
 
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="proof-file" className="text-[13px] font-medium text-encre-500">
+          Preuve d&rsquo;achat <span className="text-encre-300">(facultatif)</span>
+        </Label>
+        <input
+          id="proof-file"
+          name="proofFile"
+          type="file"
+          accept="application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif"
+          className="text-sm text-encre-600 file:mr-3 file:rounded-md file:border file:border-ivoire-400 file:bg-ivoire-50 file:px-3 file:py-2 file:text-sm file:text-encre-600 hover:file:border-or-500"
+        />
+        <p className="text-xs text-encre-400">PDF ou image, 5 Mo max.</p>
+      </div>
+
       <div className="rounded-lg border border-or-500/30 bg-or-50 p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">Total</p>
         <p className="font-serif text-4xl text-encre-700">{formatCents(totalCents)}</p>

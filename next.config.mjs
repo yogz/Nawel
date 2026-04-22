@@ -15,12 +15,18 @@ const nextConfig = {
         protocol: "https",
         hostname: "i.pravatar.cc",
       },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "2mb",
+      // Bumped for purchase-proof uploads (PDF/image, max 5MB enforced in the
+      // action). The 2MB default would reject most phone screenshots.
+      bodySizeLimit: "6mb",
     },
   },
   serverExternalPackages: ["jsdom", "isomorphic-dompurify"],
