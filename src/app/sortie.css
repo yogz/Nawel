@@ -3,56 +3,40 @@
 @tailwind utilities;
 
 /*
- * =============================================================================
- * SORTIE — design tokens scoped to .theme-sortie
- * =============================================================================
- * Imported only from src/app/(sortie)/layout.tsx. Does NOT extend globals.css,
- * so CoList's bundle and Sortie's bundle stay independent and Tailwind JIT
- * tree-shakes each entry point separately.
- *
- * The design system is described in the PR #48 prep work: bordeaux primary,
- * or patiné accent, ivoire surface, Fraunces + Inter typography, "programme
- * de théâtre" mood. See the Frontend-design sub-agent report.
- *
- * Only additions live here. Palette shades and serif family are in
- * tailwind.config.ts so the JIT can emit utility classes (bg-bordeaux-600,
- * text-or-500, font-serif).
- * =============================================================================
+ * Tokens scoped to .theme-sortie. Imported only from (sortie)/layout.tsx so
+ * the Sortie CSS bundle stays independent of globals.css.
  */
 
 @layer base {
   .theme-sortie {
-    /* shadcn semantic tokens — make Button, Input, Card, etc. adopt the
-       Sortie palette without forking any primitive. HSL triplets to match
-       the existing shadcn convention. */
-    --background: 35 50% 94%; /* ivoire-200 */
-    --foreground: 30 22% 10%; /* encre-700 */
-    --card: 35 60% 98%; /* ivoire-50 */
+    --background: 35 50% 94%;
+    --foreground: 30 22% 10%;
+    --card: 35 60% 98%;
     --card-foreground: 30 22% 10%;
     --popover: 35 60% 98%;
     --popover-foreground: 30 22% 10%;
-    --primary: 352 55% 27%; /* bordeaux-600 */
+    --primary: 352 55% 27%;
     --primary-foreground: 35 50% 94%;
-    --secondary: 35 40% 88%; /* ivoire-300 */
+    --secondary: 35 40% 88%;
     --secondary-foreground: 30 22% 10%;
     --muted: 35 30% 85%;
-    --muted-foreground: 33 18% 36%; /* encre-400 */
-    --accent: 33 35% 54%; /* or-500 */
+    --muted-foreground: 33 18% 36%;
+    --accent: 33 35% 54%;
     --accent-foreground: 30 22% 10%;
-    --destructive: 15 52% 47%; /* brique erreur-500 */
+    --destructive: 15 52% 47%;
     --destructive-foreground: 35 50% 94%;
-    --border: 35 25% 78%; /* ivoire-400 */
+    --border: 35 25% 78%;
     --input: 35 25% 78%;
-    --ring: 352 55% 27%; /* bordeaux-600 */
+    --ring: 352 55% 27%;
     --radius: 0.75rem;
 
-    /* Sortie-specific signals */
     --sortie-bordeaux: #6b1f2a;
     --sortie-or: #b8935a;
     --sortie-ivoire: #f5f1e8;
     --sortie-encre: #231e16;
 
-    /* Shadows teintées bordeaux — jamais rgba(0,0,0,x) */
+    /* Shadows are tinted bordeaux instead of rgba(0,0,0,x) — pure-black
+       shadows read as harsh cutouts against the ivoire surface. */
     --shadow-xs: 0 1px 2px rgba(42, 12, 16, 0.04);
     --shadow-sm: 0 1px 3px rgba(42, 12, 16, 0.06), 0 1px 2px rgba(42, 12, 16, 0.04);
     --shadow-md: 0 4px 12px rgba(42, 12, 16, 0.08), 0 2px 4px rgba(42, 12, 16, 0.04);
@@ -61,7 +45,6 @@
       0 24px 48px -12px rgba(107, 31, 42, 0.18), 0 8px 16px -4px rgba(42, 12, 16, 0.08);
     --shadow-or: 0 2px 8px rgba(184, 147, 90, 0.24), 0 0 0 1px rgba(184, 147, 90, 0.16);
 
-    /* Motion */
     --dur-instant: 80ms;
     --dur-fast: 160ms;
     --dur-base: 240ms;
@@ -72,18 +55,17 @@
     --ease-velvet: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /* Safe-area fill (matches themeColor in layout viewport) */
     --status-bar-color: var(--sortie-ivoire);
 
     background-color: var(--sortie-ivoire);
     color: var(--sortie-encre);
+    /* ss01: slashed zero, cv11: single-story 'a' — Inter switches that
+       noticeably improve numeric and body legibility at small sizes. */
     font-feature-settings:
       "ss01" on,
-      "cv11" on; /* Inter: slashed zero + single-story a for legibility */
+      "cv11" on;
   }
 
-  /* Serif by default for the display hierarchy. Inter stays the body font via
-     the html element in layout.tsx. */
   .theme-sortie :is(h1, h2, h3) {
     font-family: var(--font-fraunces), Georgia, serif;
     font-weight: 500;
@@ -97,8 +79,6 @@
 }
 
 @layer components {
-  /* Ornement filet doré + triangle central — remplace les <hr> classiques
-     dans les hero. Utilisé avec la classe .sortie-filet dans le JSX. */
   .sortie-filet {
     display: flex;
     align-items: center;

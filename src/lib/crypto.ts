@@ -1,32 +1,17 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 /**
- * AES-256-GCM application-level encryption for sensitive user data in the
- * sortie schema (IBANs, phone numbers, BICs). Ciphertext format is
- *
- *     keyId:iv(base64url):tag(base64url):ct(base64url)
- *
- * The keyId prefix lets us rotate keys without rewriting every row at once:
- * readers look up the key by id, writers always use the active key. To rotate,
- * add a new SORTIE_IBAN_KEY_<id> env var, switch SORTIE_IBAN_KEY_ID_ACTIVE,
- * then run a background job that re-encrypts old rows.
- *
- * Raw plaintext never hits the DB, Sentry, or logs. Never log the return value
- * of decrypt(); treat it as secret data that exists only inside the request
- * handler.
+ * AES-256-GCM for IBANs, phone numbers, BICs stored in the sortie schema.
+ * Ciphertext is `keyId:iv:tag:ct` in base64url — the keyId prefix lets old
+ * rows stay readable after rotation.
  */
 
 const KEY_ENV_PREFIX = "SORTIE_IBAN_KEY_";
 const ACTIVE_ENV = "SORTIE_IBAN_KEY_ID_ACTIVE";
-
-let cachedKeys: Record<string, Buffer> | null = null;
-let cachedActiveId: string | null = null;
+const IV_BYTES = 12;
+const TAG_BYTES = 16;
 
 function loadKeys(): { keys: Record<string, Buffer>; activeId: string } {
-  if (cachedKeys && cachedActiveId) {
-    return { keys: cachedKeys, activeId: cachedActiveId };
-  }
-
   const activeId = process.env[ACTIVE_ENV];
   if (!activeId) {
     throw new Error(
@@ -58,8 +43,6 @@ function loadKeys(): { keys: Record<string, Buffer>; activeId: string } {
     );
   }
 
-  cachedKeys = keys;
-  cachedActiveId = activeId;
   return { keys, activeId };
 }
 
@@ -68,7 +51,7 @@ export function encryptSecret(plaintext: string): string {
     throw new Error("[sortie/crypto] encryptSecret: empty plaintext");
   }
   const { keys, activeId } = loadKeys();
-  const iv = randomBytes(12);
+  const iv = randomBytes(IV_BYTES);
   const cipher = createCipheriv("aes-256-gcm", keys[activeId], iv);
   const ct = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
@@ -86,17 +69,15 @@ export function decryptSecret(ciphertext: string): string {
   if (!key) {
     throw new Error(`[sortie/crypto] decryptSecret: unknown keyId "${keyId}"`);
   }
-  const decipher = createDecipheriv("aes-256-gcm", key, Buffer.from(ivB, "base64url"));
-  decipher.setAuthTag(Buffer.from(tagB, "base64url"));
+  const iv = Buffer.from(ivB, "base64url");
+  const tag = Buffer.from(tagB, "base64url");
+  // GCM's setAuthTag is permissive on length — a truncated tag with a valid
+  // prefix can still verify and weakens authentication. Enforce canonical sizes.
+  if (iv.length !== IV_BYTES || tag.length !== TAG_BYTES) {
+    throw new Error("[sortie/crypto] decryptSecret: bad iv or tag length");
+  }
+  const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  decipher.setAuthTag(tag);
   const pt = Buffer.concat([decipher.update(Buffer.from(ctB, "base64url")), decipher.final()]);
   return pt.toString("utf8");
-}
-
-/**
- * Test hook — clears the module-level cache so tests can swap env vars
- * mid-run. Never call this in application code.
- */
-export function __resetCryptoCacheForTests(): void {
-  cachedKeys = null;
-  cachedActiveId = null;
 }

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { randomBytes } from "node:crypto";
-import { __resetCryptoCacheForTests, decryptSecret, encryptSecret } from "./crypto";
+import { decryptSecret, encryptSecret } from "./crypto";
 
 function b64key() {
   return randomBytes(32).toString("base64");
@@ -13,12 +13,10 @@ describe("crypto (AES-256-GCM)", () => {
     process.env.SORTIE_IBAN_KEY_ID_ACTIVE = "k1";
     process.env.SORTIE_IBAN_KEY_K1 = b64key();
     delete process.env.SORTIE_IBAN_KEY_K2;
-    __resetCryptoCacheForTests();
   });
 
   afterEach(() => {
     process.env = { ...originalEnv };
-    __resetCryptoCacheForTests();
   });
 
   it("round-trips a plaintext through encrypt/decrypt", () => {
@@ -41,7 +39,6 @@ describe("crypto (AES-256-GCM)", () => {
   it("prefixes ciphertext with the active keyId", () => {
     process.env.SORTIE_IBAN_KEY_ID_ACTIVE = "k2";
     process.env.SORTIE_IBAN_KEY_K2 = b64key();
-    __resetCryptoCacheForTests();
     const ciphertext = encryptSecret("x");
     expect(ciphertext.startsWith("k2:")).toBe(true);
   });
@@ -50,11 +47,9 @@ describe("crypto (AES-256-GCM)", () => {
     const originalActive = process.env.SORTIE_IBAN_KEY_K1!;
     const beforeRotation = encryptSecret("oldValue");
 
-    // rotate: add k2, make k2 active, keep k1 for decryption
     process.env.SORTIE_IBAN_KEY_ID_ACTIVE = "k2";
     process.env.SORTIE_IBAN_KEY_K2 = b64key();
     process.env.SORTIE_IBAN_KEY_K1 = originalActive;
-    __resetCryptoCacheForTests();
 
     expect(decryptSecret(beforeRotation)).toBe("oldValue");
     const afterRotation = encryptSecret("newValue");
@@ -76,20 +71,33 @@ describe("crypto (AES-256-GCM)", () => {
   it("throws when tampered ciphertext is submitted (GCM auth fail)", () => {
     const valid = encryptSecret("payload");
     const [keyId, iv, tag, ct] = valid.split(":");
-    // flip a byte in the ciphertext
     const tampered = ct.slice(0, -2) + (ct.slice(-2) === "AA" ? "BB" : "AA");
     expect(() => decryptSecret(`${keyId}:${iv}:${tag}:${tampered}`)).toThrow();
   });
 
+  it("rejects a truncated authentication tag", () => {
+    const valid = encryptSecret("payload");
+    const [keyId, iv, tag, ct] = valid.split(":");
+    // Chop 4 base64url chars ≈ 3 bytes off the tag — still decodes cleanly
+    // but the resulting Buffer is not 16 bytes.
+    const shortTag = tag.slice(0, -4);
+    expect(() => decryptSecret(`${keyId}:${iv}:${shortTag}:${ct}`)).toThrow(/bad iv or tag length/);
+  });
+
+  it("rejects a truncated iv", () => {
+    const valid = encryptSecret("payload");
+    const [keyId, iv, tag, ct] = valid.split(":");
+    const shortIv = iv.slice(0, -4);
+    expect(() => decryptSecret(`${keyId}:${shortIv}:${tag}:${ct}`)).toThrow(/bad iv or tag length/);
+  });
+
   it("fails loudly when active key id is not configured", () => {
     delete process.env.SORTIE_IBAN_KEY_ID_ACTIVE;
-    __resetCryptoCacheForTests();
     expect(() => encryptSecret("x")).toThrow(/SORTIE_IBAN_KEY_ID_ACTIVE/);
   });
 
   it("fails loudly when the active key buffer is the wrong size", () => {
     process.env.SORTIE_IBAN_KEY_K1 = Buffer.from("short").toString("base64");
-    __resetCryptoCacheForTests();
     expect(() => encryptSecret("x")).toThrow(/32 bytes/);
   });
 });

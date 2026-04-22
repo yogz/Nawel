@@ -4,31 +4,37 @@ import { db } from "@/lib/db";
 import { outings } from "@drizzle/sortie-schema";
 
 /**
- * Public identifier for a sortie, used in URLs like sortie.colist.fr/<shortId>.
- * Uses an alphabet that excludes visually ambiguous characters (0/O, 1/I/l)
- * so users can read one off a screen or dictate it on the phone.
- *
- * 54 symbols × 8 chars ≈ 72 trillion combinations. At 1000 req/s, brute-force
- * takes ~2300 years. The 6-char variant proposed in the functional spec would
- * fall in roughly a year, so we lifted it to 8 on security review.
+ * 8 chars × 54-symbol alphabet ≈ 7×10¹³ combinations — resistant to brute-force
+ * scanning at any realistic rate. The 6-char spec would fall in months.
  */
 
 const ALPHABET = "23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 const LENGTH = 8;
+// Rejection-sampling threshold: 256 - (256 % 54) = 216. Bytes ≥ 216 are
+// rerolled so every symbol is equally likely (54 × 4 = 216 < 256, so without
+// this some symbols would be 25 % more probable than others).
+const MAX_FAIR_BYTE = 256 - (256 % ALPHABET.length);
 
 export function generateShortId(): string {
-  const bytes = randomBytes(LENGTH);
   let out = "";
-  for (let i = 0; i < LENGTH; i++) {
-    out += ALPHABET[bytes[i] % ALPHABET.length];
+  while (out.length < LENGTH) {
+    const buf = randomBytes(LENGTH * 2);
+    for (const byte of buf) {
+      if (byte >= MAX_FAIR_BYTE) {
+        continue;
+      }
+      out += ALPHABET[byte % ALPHABET.length];
+      if (out.length === LENGTH) {
+        break;
+      }
+    }
   }
   return out;
 }
 
 /**
- * Generates a short_id and checks it against the outings table. Retries on the
- * (astronomically unlikely) collision. Throws after `maxRetries` consecutive
- * collisions — the caller should treat that as a fatal error, not a race.
+ * Caller must also handle a unique-constraint violation from the INSERT it
+ * performs afterwards — this check-then-insert is not atomic.
  */
 export async function generateUniqueShortId(maxRetries = 5): Promise<string> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -45,18 +51,13 @@ export async function generateUniqueShortId(maxRetries = 5): Promise<string> {
   throw new Error("[sortie] short_id generation exhausted retries");
 }
 
-/**
- * Produces an ASCII slug from an arbitrary title. Used only for SEO-friendly
- * URL prefixes (/<slug>-<shortId>) — the short_id remains the canonical
- * identifier, so slug collisions are fine.
- */
 export function slugifyAscii(input: string, maxLen = 50): string {
   return input
     .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "") // strip combining marks
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, maxLen)
-    .replace(/-+$/g, ""); // trim trailing dash left by the slice
+    .replace(/-+$/g, "");
 }
