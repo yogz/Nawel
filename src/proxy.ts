@@ -8,11 +8,14 @@ const SORTIE_HOSTS = new Set([
   "sortie.colist.fr",
   "sortie.localhost:3000",
   "sortie.localhost:3001",
+  "sortie.localhost:3100",
 ]);
 
 function isSortieHost(request: NextRequest): boolean {
   const host = request.headers.get("host") ?? "";
-  if (SORTIE_HOSTS.has(host)) return true;
+  if (SORTIE_HOSTS.has(host)) {
+    return true;
+  }
   if (
     process.env.NODE_ENV === "development" &&
     request.nextUrl.searchParams.get("host") === "sortie"

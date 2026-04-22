@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tokens scoped to .theme-sortie. Imported only from (sortie)/layout.tsx so
+ * the Sortie CSS bundle stays independent of globals.css.
+ */
+
+@layer base {
+  .theme-sortie {
+    --background: 35 50% 94%;
+    --foreground: 30 22% 10%;
+    --card: 35 60% 98%;
+    --card-foreground: 30 22% 10%;
+    --popover: 35 60% 98%;
+    --popover-foreground: 30 22% 10%;
+    --primary: 352 55% 27%;
+    --primary-foreground: 35 50% 94%;
+    --secondary: 35 40% 88%;
+    --secondary-foreground: 30 22% 10%;
+    --muted: 35 30% 85%;
+    --muted-foreground: 33 18% 36%;
+    --accent: 33 35% 54%;
+    --accent-foreground: 30 22% 10%;
+    --destructive: 15 52% 47%;
+    --destructive-foreground: 35 50% 94%;
+    --border: 35 25% 78%;
+    --input: 35 25% 78%;
+    --ring: 352 55% 27%;
+    --radius: 0.75rem;
+
+    --sortie-bordeaux: #6b1f2a;
+    --sortie-or: #b8935a;
+    --sortie-ivoire: #f5f1e8;
+    --sortie-encre: #231e16;
+
+    /* Shadows are tinted bordeaux instead of rgba(0,0,0,x) — pure-black
+       shadows read as harsh cutouts against the ivoire surface. */
+    --shadow-xs: 0 1px 2px rgba(42, 12, 16, 0.04);
+    --shadow-sm: 0 1px 3px rgba(42, 12, 16, 0.06), 0 1px 2px rgba(42, 12, 16, 0.04);
+    --shadow-md: 0 4px 12px rgba(42, 12, 16, 0.08), 0 2px 4px rgba(42, 12, 16, 0.04);
+    --shadow-lg: 0 12px 28px rgba(42, 12, 16, 0.1), 0 4px 8px rgba(42, 12, 16, 0.05);
+    --shadow-velvet:
+      0 24px 48px -12px rgba(107, 31, 42, 0.18), 0 8px 16px -4px rgba(42, 12, 16, 0.08);
+    --shadow-or: 0 2px 8px rgba(184, 147, 90, 0.24), 0 0 0 1px rgba(184, 147, 90, 0.16);
+
+    --dur-instant: 80ms;
+    --dur-fast: 160ms;
+    --dur-base: 240ms;
+    --dur-medium: 360ms;
+    --dur-slow: 560ms;
+    --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-silk: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-velvet: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --status-bar-color: var(--sortie-ivoire);
+
+    background-color: var(--sortie-ivoire);
+    color: var(--sortie-encre);
+    /* ss01: slashed zero, cv11: single-story 'a' — Inter switches that
+       noticeably improve numeric and body legibility at small sizes. */
+    font-feature-settings:
+      "ss01" on,
+      "cv11" on;
+  }
+
+  .theme-sortie :is(h1, h2, h3) {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .theme-sortie h1,
+  .theme-sortie .display {
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .sortie-filet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--sortie-or);
+  }
+
+  .sortie-filet::before,
+  .sortie-filet::after {
+    content: "";
+    display: inline-block;
+    width: 48px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .sortie-filet > .sortie-filet-diamond {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    transform: rotate(45deg);
+    background: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-sortie * {
+    transition-duration: var(--dur-fast) !important;
+    animation-duration: var(--dur-fast) !important;
+  }
+}

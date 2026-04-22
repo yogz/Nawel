@@ -8,8 +8,56 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-fraunces)", "Georgia", "serif"],
       },
       colors: {
+        // Sortie design system — bordeaux primary, or patiné accent, ivoire surface.
+        // Kept in the shared config so Tailwind JIT can emit utilities like
+        // `bg-bordeaux-600` or `text-or-700`. CoList doesn't reference these
+        // names today, so no collision.
+        bordeaux: {
+          50: "#FBF4F5",
+          100: "#F4E3E5",
+          200: "#E4BCC1",
+          300: "#CC8A92",
+          400: "#A85560",
+          500: "#8A2C39",
+          600: "#6B1F2A",
+          700: "#541820",
+          800: "#3E1218",
+          900: "#2A0C10",
+        },
+        or: {
+          50: "#FBF6EC",
+          100: "#F3E7CD",
+          200: "#E6D1A3",
+          300: "#D4B77A",
+          400: "#C4A067",
+          500: "#B8935A",
+          600: "#9E7B45",
+          700: "#7E6133",
+          800: "#5E4726",
+          900: "#3F2F19",
+        },
+        ivoire: {
+          50: "#FDFBF5",
+          100: "#F9F5EC",
+          200: "#F5F1E8",
+          300: "#EDE5D2",
+          400: "#DFD2B4",
+        },
+        encre: {
+          50: "#EFEAE0",
+          100: "#D5CCB9",
+          200: "#B8AC94",
+          300: "#8E8168",
+          400: "#6B5F49",
+          500: "#4A4132",
+          600: "#342D22",
+          700: "#231E16",
+          800: "#1A1610",
+          900: "#12100B",
+        },
         surface: "var(--surface)",
         muted: {
           DEFAULT: "hsl(var(--muted))",
