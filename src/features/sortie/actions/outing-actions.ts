@@ -10,6 +10,10 @@ import { sanitizeStrictText, sanitizeText } from "@/lib/sanitize";
 import { outings } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import {
+  buildOutingDiff,
+  sendOutingModifiedEmails,
+} from "@/features/sortie/lib/emails/send-outing-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { createOutingSchema, updateOutingSchema } from "./schemas";
@@ -131,19 +135,48 @@ export async function updateOutingAction(
   const title = sanitizeText(data.title, 200);
   const venue = data.venue ? sanitizeText(data.venue, 200) : null;
   const slug = slugifyAscii(title, 40);
+  const ticketUrl = data.ticketUrl ?? null;
 
   await db
     .update(outings)
     .set({
       title,
       location: venue,
-      eventLink: data.ticketUrl ?? null,
+      eventLink: ticketUrl,
       fixedDatetime: data.startsAt,
       deadlineAt: data.rsvpDeadline,
       slug,
       updatedAt: new Date(),
     })
     .where(eq(outings.id, outing.id));
+
+  const diff = buildOutingDiff(
+    {
+      title: outing.title,
+      location: outing.location,
+      fixedDatetime: outing.fixedDatetime,
+      deadlineAt: outing.deadlineAt,
+      eventLink: outing.eventLink,
+    },
+    {
+      title,
+      location: venue,
+      fixedDatetime: data.startsAt,
+      deadlineAt: data.rsvpDeadline,
+      eventLink: ticketUrl,
+    }
+  );
+  if (diff.length > 0) {
+    await sendOutingModifiedEmails({
+      outing: {
+        id: outing.id,
+        title,
+        slug,
+        shortId: outing.shortId,
+      },
+      diff,
+    });
+  }
 
   const path = `/${canonicalPathSegment({ slug, shortId: data.shortId })}`;
   revalidatePath(path);
