@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth-config";
-import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
+import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
+import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
+import { RsvpSheet } from "@/features/sortie/components/rsvp-sheet";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -65,9 +66,20 @@ export default async function OutingPublicPage({ params }: Props) {
   const session = await auth.api.getSession({ headers: await headers() });
   const isCreator = session?.user?.id === outing.creatorUserId;
 
+  const cookieTokenHash = await readParticipantTokenHash();
+  const me = cookieTokenHash
+    ? await getMyParticipant({
+        outingId: outing.id,
+        cookieTokenHash,
+        userId: session?.user?.id ?? null,
+      })
+    : null;
+
   if (outing.status === "cancelled") {
     return <CancelledView title={outing.title} />;
   }
+
+  const deadlinePassed = outing.deadlineAt < new Date();
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -103,13 +115,20 @@ export default async function OutingPublicPage({ params }: Props) {
         </div>
       </section>
 
-      <div className="mt-8 flex justify-center">
-        <Button asChild size="lg" className="px-10">
-          <a href="#repondre">Je réponds</a>
-        </Button>
-      </div>
+      {!deadlinePassed && (
+        <div className="mt-8 flex justify-center">
+          <RsvpSheet
+            shortId={outing.shortId}
+            existingResponse={me ? (me.response as "yes" | "no" | "handle_own") : null}
+            existingName={me?.anonName ?? session?.user?.name ?? undefined}
+            existingExtraAdults={me?.extraAdults ?? 0}
+            existingExtraChildren={me?.extraChildren ?? 0}
+            existingEmail={me?.anonEmail ?? undefined}
+          />
+        </div>
+      )}
 
-      <p id="repondre" className="mt-6 text-center text-sm text-encre-400">
+      <p className="mt-6 text-center text-sm text-encre-400">
         {outing.creatorAnonName || outing.creatorUserId
           ? `Organisé par ${outing.creatorAnonName ?? "un membre CoList"}.`
           : ""}
