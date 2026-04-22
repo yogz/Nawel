@@ -61,3 +61,37 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
     .orderBy(desc(outings.createdAt))
     .limit(limit);
 }
+
+/**
+ * Public profile view — only surfaces outings the user chose to show
+ * (`showOnProfile`) and excludes cancelled ones. Splits into upcoming vs
+ * past by the current time against `fixedDatetime` (vote-mode outings
+ * with no chosen slot yet count as upcoming).
+ */
+export async function listPublicProfileOutings(userId: string, now = new Date()) {
+  const rows = await db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      startsAt: outings.fixedDatetime,
+      deadlineAt: outings.deadlineAt,
+      status: outings.status,
+    })
+    .from(outings)
+    .where(
+      and(
+        eq(outings.creatorUserId, userId),
+        eq(outings.showOnProfile, true),
+        ne(outings.status, "cancelled")
+      )
+    )
+    .orderBy(desc(outings.createdAt))
+    .limit(50);
+
+  const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
+  const past = rows.filter((r) => r.startsAt && r.startsAt < now);
+  return { upcoming, past };
+}

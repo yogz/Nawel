@@ -25,6 +25,10 @@ export const user = pgTable("user", {
   emoji: text("emoji"),
   role: text("role").default("user"),
   language: text("language").default("fr"),
+  // Optional Sortie handle — populated when the user picks one. Stored
+  // lowercase; the URL slug at `/sortie/@<username>` reads this column
+  // via a lower() match so visitors can type whatever case they want.
+  username: text("username").unique(),
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),

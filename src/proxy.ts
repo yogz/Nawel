@@ -29,6 +29,17 @@ export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (isSortieHost(request)) {
+    // Public profile handles: `sortie.colist.fr/@bob` → internal
+    // `/sortie/profile/bob`. We can't use a `@`-prefixed folder name because
+    // Next.js reserves that for parallel route slots, so we rewrite instead.
+    if (pathname.startsWith("/@") && pathname.length > 2) {
+      const username = pathname.slice(2).split("/")[0]!;
+      const target = `/sortie/profile/${encodeURIComponent(username)}`;
+      const response = NextResponse.rewrite(new URL(`${target}${search}`, request.url));
+      response.headers.set("x-app", "sortie");
+      return response;
+    }
+
     // Route group (sortie)/sortie/* handles these requests. The user sees
     // sortie.colist.fr/<path>, internally Next.js resolves (sortie)/sortie/<path>.
     const target = pathname === "/" ? "/sortie" : `/sortie${pathname}`;
