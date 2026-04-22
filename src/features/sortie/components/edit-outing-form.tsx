@@ -2,8 +2,10 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { updateOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
 import { toDateTimeLocalValue } from "@/features/sortie/lib/date-fr";
+import { DateTimePicker } from "./date-time-picker";
 import { FormField } from "./form-field";
 
 const INITIAL: FormActionState = {};
@@ -35,18 +37,16 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField
+        <DateField
           label="Date et heure"
           name="startsAt"
-          type="datetime-local"
           required
-          defaultValue={startsAt ? toDateTimeLocalValue(startsAt) : ""}
+          defaultValue={startsAt ? toDateTimeLocalValue(startsAt) : undefined}
           error={errors.startsAt?.[0]}
         />
-        <FormField
+        <DateField
           label="Réponse avant"
           name="rsvpDeadline"
-          type="datetime-local"
           required
           defaultValue={toDateTimeLocalValue(deadlineAt)}
           error={errors.rsvpDeadline?.[0]}
@@ -81,5 +81,29 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
         </Button>
       </div>
     </form>
+  );
+}
+
+function DateField({
+  label,
+  name,
+  required,
+  error,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  required?: boolean;
+  error?: string;
+  defaultValue?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
+        {label}
+      </Label>
+      <DateTimePicker name={name} defaultValue={defaultValue} required={required} />
+      {error && <p className="text-xs text-erreur-700">{error}</p>}
+    </div>
   );
 }

@@ -2,7 +2,9 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { createOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
+import { DateTimePicker } from "./date-time-picker";
 import { FormField } from "./form-field";
 
 const INITIAL: FormActionState = {};
@@ -28,17 +30,10 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField
-          label="Date et heure"
-          name="startsAt"
-          type="datetime-local"
-          required
-          error={errors.startsAt?.[0]}
-        />
-        <FormField
+        <DateField label="Date et heure" name="startsAt" required error={errors.startsAt?.[0]} />
+        <DateField
           label="Réponse avant"
           name="rsvpDeadline"
-          type="datetime-local"
           required
           helper="La liste se fige après cette date."
           error={errors.rsvpDeadline?.[0]}
@@ -105,5 +100,35 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         </Button>
       </div>
     </form>
+  );
+}
+
+function DateField({
+  label,
+  name,
+  required,
+  helper,
+  error,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  required?: boolean;
+  helper?: string;
+  error?: string;
+  defaultValue?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
+        {label}
+      </Label>
+      <DateTimePicker name={name} defaultValue={defaultValue} required={required} />
+      {(helper || error) && (
+        <p className={error ? "text-xs text-erreur-700" : "text-xs text-encre-400"}>
+          {error ?? helper}
+        </p>
+      )}
+    </div>
   );
 }
