@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, ne } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -271,4 +271,168 @@ export async function declarePurchaseAction(
   revalidatePath(`/${canonical}`);
   revalidatePath(`/${canonical}/dettes`);
   redirect(`/${canonical}/dettes`);
+}
+
+const cessionSchema = z.object({
+  shortId: shortIdSchema,
+  allocationId: z.string().uuid(),
+  targetParticipantId: z.string().uuid(),
+});
+
+function priceOfAllocation(args: {
+  pricingMode: "unique" | "category" | "nominal";
+  isChild: boolean;
+  uniquePriceCents: number | null;
+  adultPriceCents: number | null;
+  childPriceCents: number | null;
+  nominalPriceCents: number | null;
+}): number {
+  switch (args.pricingMode) {
+    case "unique":
+      return args.uniquePriceCents ?? 0;
+    case "category":
+      return (args.isChild ? args.childPriceCents : args.adultPriceCents) ?? 0;
+    case "nominal":
+      return args.nominalPriceCents ?? 0;
+  }
+}
+
+/**
+ * Transfers a single allocation from the current holder to another confirmed
+ * participant. Recomputes the debt ledger for the whole purchase from the
+ * post-swap allocations so the arithmetic stays consistent — delta patches
+ * would be fragile (especially around zero crossings and changed holders).
+ *
+ * Guardrails:
+ *   - Only the current holder can cede.
+ *   - Target must be a confirmed (`response="yes"`) participant of the
+ *     same outing, and not the buyer (the buyer already paid).
+ *   - Blocked once any debt on this purchase has moved past `pending` —
+ *     reshuffling money that's already been declared paid creates
+ *     reconciliation headaches nobody asked for.
+ */
+export async function cedeAllocationAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = cessionSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId, allocationId, targetParticipantId } = parsed.data;
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  const me = await getCurrentParticipant(outing.id);
+  if (!me) {
+    return { message: "Tu dois être inscrit·e pour céder ta place." };
+  }
+
+  const allocation = await db.query.purchaseAllocations.findFirst({
+    where: eq(purchaseAllocations.id, allocationId),
+    with: { purchase: true },
+  });
+  if (!allocation || allocation.purchase.outingId !== outing.id) {
+    return { message: "Place introuvable." };
+  }
+  if (allocation.participantId !== me.id) {
+    return { message: "Cette place n'est pas la tienne." };
+  }
+  if (allocation.purchase.purchaserParticipantId === targetParticipantId) {
+    return { message: "L'acheteur a déjà payé sa part." };
+  }
+
+  const target = await db.query.participants.findFirst({
+    where: and(
+      eq(participants.id, targetParticipantId),
+      eq(participants.outingId, outing.id),
+      eq(participants.response, "yes")
+    ),
+  });
+  if (!target) {
+    return { message: "Destinataire introuvable parmi les confirmés." };
+  }
+
+  // Hard stop: once someone has declared or confirmed payment, we refuse
+  // to renumber the ledger.
+  const nonPendingDebts = await db
+    .select({ id: debts.id })
+    .from(debts)
+    .where(and(eq(debts.outingId, outing.id), ne(debts.status, "pending")))
+    .limit(1);
+  if (nonPendingDebts.length > 0) {
+    return { message: "Des paiements ont déjà été déclarés — la cession est bloquée." };
+  }
+
+  const gate = await rateLimit({
+    key: `cede:${me.id}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  await db.transaction(async (tx) => {
+    // Flip the allocation.
+    await tx
+      .update(purchaseAllocations)
+      .set({ participantId: targetParticipantId })
+      .where(eq(purchaseAllocations.id, allocationId));
+
+    // Re-derive debts for this purchase from scratch. Delete + insert is
+    // cheaper to reason about than delta patches — and there are at most
+    // N allocations where N is small (≤100).
+    const currentAllocs = await tx
+      .select({
+        participantId: purchaseAllocations.participantId,
+        isChild: purchaseAllocations.isChild,
+        nominalPriceCents: purchaseAllocations.nominalPriceCents,
+      })
+      .from(purchaseAllocations)
+      .where(eq(purchaseAllocations.purchaseId, allocation.purchaseId));
+
+    const perParticipant = new Map<string, number>();
+    for (const a of currentAllocs) {
+      if (a.participantId === allocation.purchase.purchaserParticipantId) {
+        continue;
+      }
+      const cents = priceOfAllocation({
+        pricingMode: allocation.purchase.pricingMode,
+        isChild: a.isChild,
+        uniquePriceCents: allocation.purchase.uniquePriceCents,
+        adultPriceCents: allocation.purchase.adultPriceCents,
+        childPriceCents: allocation.purchase.childPriceCents,
+        nominalPriceCents: a.nominalPriceCents,
+      });
+      perParticipant.set(a.participantId, (perParticipant.get(a.participantId) ?? 0) + cents);
+    }
+
+    // Wipe and re-insert debts tied to this outing. Scoped to outingId
+    // because multiple purchases per outing would share the table —
+    // currently we only have one, but this keeps the logic defensive.
+    await tx.delete(debts).where(eq(debts.outingId, outing.id));
+
+    const rows = Array.from(perParticipant.entries())
+      .filter(([, amount]) => amount > 0)
+      .map(([participantId, amount]) => ({
+        outingId: outing.id,
+        debtorParticipantId: participantId,
+        creditorParticipantId: allocation.purchase.purchaserParticipantId,
+        amountCents: amount,
+      }));
+    if (rows.length > 0) {
+      await tx.insert(debts).values(rows);
+    }
+  });
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}`);
+  revalidatePath(`/${canonical}/dettes`);
+  return {};
 }
