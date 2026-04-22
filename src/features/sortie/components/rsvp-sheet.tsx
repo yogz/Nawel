@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, ExternalLink, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +46,7 @@ export function RsvpSheet({
   existingExtraChildren = 0,
   existingEmail,
 }: Props) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>(existingResponse ? "yes-form" : "pick");
   const [chosen, setChosen] = useState<"yes" | "no" | "handle_own" | null>(
@@ -57,6 +59,26 @@ export function RsvpSheet({
     rsvpAction,
     {} as FormActionState
   );
+
+  // Close the sheet once the action finishes with no errors. The state object
+  // carries either { errors } or { message } on failure — empty means success.
+  const wasPending = useRef(false);
+  useEffect(() => {
+    const justFinished = wasPending.current && !pending;
+    wasPending.current = pending;
+    if (justFinished && !state.errors && !state.message) {
+      setOpen(false);
+      router.refresh();
+    }
+  }, [pending, state, router]);
+
+  // Any error we don't show in-field (shortId, response, extraAdults/Children).
+  const hiddenFieldErrors = state.errors
+    ? Object.entries(state.errors)
+        .filter(([k]) => !["displayName", "email"].includes(k))
+        .flatMap(([, msgs]) => msgs ?? [])
+    : [];
+  const generalError = state.message ?? hiddenFieldErrors[0] ?? null;
 
   const buttonLabel = existingResponse ? "Modifier ma réponse" : "Je réponds";
 
@@ -142,8 +164,8 @@ export function RsvpSheet({
               </div>
             ) : (
               <>
-                <input type="hidden" name="extraAdults" value={0} />
-                <input type="hidden" name="extraChildren" value={0} />
+                <input type="hidden" name="extraAdults" value="0" />
+                <input type="hidden" name="extraChildren" value="0" />
               </>
             )}
 
@@ -163,9 +185,9 @@ export function RsvpSheet({
               )}
             </div>
 
-            {state.message && (
+            {generalError && (
               <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
-                {state.message}
+                {generalError}
               </p>
             )}
 
