@@ -36,22 +36,34 @@ const positivePriceCents = z.coerce.number().int().min(1).max(MAX_CENTS);
 //  - category: one price for adults, another for children (uses is_child)
 //  - nominal:  the buyer types a per-seat price (used for rare cases like
 //              one senior + one student + one normal)
+//
+// `ghostBuyer` is the "je n'assiste pas, je prends juste les billets" path:
+// the buyer pays upfront but gets no allocation — their extras are dropped
+// too (they were tied to the buyer attending).
+const ghostBuyerFlag = z
+  .union([z.literal("on"), z.literal("true"), z.literal(""), z.literal("false")])
+  .optional()
+  .transform((v) => v === "on" || v === "true");
+
 const declarePurchaseSchema = z.discriminatedUnion("pricingMode", [
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("unique"),
     uniquePriceCents: positivePriceCents,
+    ghostBuyer: ghostBuyerFlag,
   }),
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("category"),
     adultPriceCents: positivePriceCents,
     childPriceCents: priceCents,
+    ghostBuyer: ghostBuyerFlag,
   }),
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("nominal"),
     allocationPriceCents: z.array(priceCents).min(1).max(100),
+    ghostBuyer: ghostBuyerFlag,
   }),
 ]);
 
@@ -138,7 +150,15 @@ export async function declarePurchaseAction(
     return { message: "Aucun confirmé — rien à acheter." };
   }
 
-  const plan = buildAllocationPlan(yesRows);
+  // Ghost-buyer flow: drop the buyer's row entirely (self + extras) from the
+  // allocation plan. Downstream the buyer simply won't appear in the
+  // allocations table, and the debt computation naturally skips them.
+  const planRows = data.ghostBuyer ? yesRows.filter((r) => r.id !== me.id) : yesRows;
+  if (planRows.length === 0) {
+    return { message: "Personne à servir — tu es seul·e confirmé·e et tu n'assistes pas." };
+  }
+
+  const plan = buildAllocationPlan(planRows);
   const totalPlaces = plan.length;
 
   if (data.pricingMode === "nominal" && data.allocationPriceCents.length !== plan.length) {

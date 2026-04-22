@@ -15,12 +15,18 @@ export type AllocationRowView = {
   isChild: boolean;
 };
 
-type Props = {
-  shortId: string;
+export type PurchaseView = {
   totalPlaces: number;
   adultCount: number;
   childCount: number;
   allocations: AllocationRowView[];
+};
+
+type Props = {
+  shortId: string;
+  normalView: PurchaseView;
+  ghostView: PurchaseView;
+  canGhost: boolean;
 };
 
 const MODE_COPY: Record<Mode, { title: string; hint: string }> = {
@@ -41,16 +47,25 @@ function formatCents(cents: number): string {
   return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 }
 
-export function PurchaseForm({ shortId, totalPlaces, adultCount, childCount, allocations }: Props) {
+export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     declarePurchaseAction,
     {} as FormActionState
   );
   const [mode, setMode] = useState<Mode>("unique");
+  const [ghostBuyer, setGhostBuyer] = useState(false);
   const [uniquePrice, setUniquePrice] = useState("");
   const [adultPrice, setAdultPrice] = useState("");
   const [childPrice, setChildPrice] = useState("");
-  const [nominalPrices, setNominalPrices] = useState<string[]>(() => allocations.map(() => ""));
+  // The nominal prices array is keyed by index, so we need to reset it when
+  // the active view flips (ghost adds/removes buyer seats). `useMemo` on the
+  // view plus the key below gets us a fresh state array without a useEffect.
+  const view = ghostBuyer && canGhost ? ghostView : normalView;
+  const { totalPlaces, adultCount, childCount, allocations } = view;
+  const [nominalPricesByKey, setNominalPricesByKey] = useState<Record<string, string>>({});
+  const nominalPrices = allocations.map(
+    (_, i) => nominalPricesByKey[`${ghostBuyer ? "g" : "n"}:${i}`] ?? ""
+  );
 
   const errors = state.errors ?? {};
 
@@ -74,14 +89,35 @@ export function PurchaseForm({ shortId, totalPlaces, adultCount, childCount, all
   ]);
 
   const canSubmit =
-    (mode === "unique" && parseEuros(uniquePrice) > 0) ||
-    (mode === "category" && parseEuros(adultPrice) > 0) ||
-    (mode === "nominal" && nominalPrices.every((v) => v.trim() !== ""));
+    totalPlaces > 0 &&
+    ((mode === "unique" && parseEuros(uniquePrice) > 0) ||
+      (mode === "category" && parseEuros(adultPrice) > 0) ||
+      (mode === "nominal" && nominalPrices.every((v) => v.trim() !== "")));
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
       <input type="hidden" name="shortId" value={shortId} />
       <input type="hidden" name="pricingMode" value={mode} />
+      <input type="hidden" name="ghostBuyer" value={ghostBuyer ? "on" : "false"} />
+
+      {canGhost && (
+        <label className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3 text-sm text-encre-500">
+          <input
+            type="checkbox"
+            checked={ghostBuyer}
+            onChange={(e) => setGhostBuyer(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-bordeaux-600"
+          />
+          <span className="flex flex-col">
+            <span className="font-medium text-encre-700">
+              Je n&rsquo;assiste pas, je prends juste les billets
+            </span>
+            <span className="text-xs text-encre-400">
+              Tes places ne sont pas comptées. Tout le monde te doit sa part.
+            </span>
+          </span>
+        </label>
+      )}
 
       <div className="rounded-lg bg-ivoire-50 p-4">
         <p className="text-sm text-encre-500">Places à couvrir</p>
@@ -163,29 +199,30 @@ export function PurchaseForm({ shortId, totalPlaces, adultCount, childCount, all
         <div className="flex flex-col gap-2 rounded-lg bg-ivoire-50 p-4">
           <p className="text-sm text-encre-500">Un tarif par place</p>
           <ul className="flex flex-col divide-y divide-ivoire-400">
-            {allocations.map((a, i) => (
-              <li
-                key={`${a.participantId}-${i}`}
-                className="flex items-center justify-between gap-3 py-2"
-              >
-                <span className="text-sm text-encre-600">
-                  {a.displayName}
-                  {a.isChild && <span className="ml-2 text-xs text-encre-400">(enfant)</span>}
-                </span>
-                <EuroInput
-                  value={nominalPrices[i] ?? ""}
-                  onChange={(next) =>
-                    setNominalPrices((prev) => prev.map((v, j) => (j === i ? next : v)))
-                  }
-                  className="w-28"
-                />
-                <input
-                  type="hidden"
-                  name="allocationPriceCents"
-                  value={parseEuros(nominalPrices[i] ?? "")}
-                />
-              </li>
-            ))}
+            {allocations.map((a, i) => {
+              const key = `${ghostBuyer ? "g" : "n"}:${i}`;
+              return (
+                <li
+                  key={`${a.participantId}-${i}`}
+                  className="flex items-center justify-between gap-3 py-2"
+                >
+                  <span className="text-sm text-encre-600">
+                    {a.displayName}
+                    {a.isChild && <span className="ml-2 text-xs text-encre-400">(enfant)</span>}
+                  </span>
+                  <EuroInput
+                    value={nominalPricesByKey[key] ?? ""}
+                    onChange={(next) => setNominalPricesByKey((prev) => ({ ...prev, [key]: next }))}
+                    className="w-28"
+                  />
+                  <input
+                    type="hidden"
+                    name="allocationPriceCents"
+                    value={parseEuros(nominalPricesByKey[key] ?? "")}
+                  />
+                </li>
+              );
+            })}
           </ul>
           {errors.allocationPriceCents?.[0] && (
             <p className="text-xs text-erreur-700">{errors.allocationPriceCents[0]}</p>

@@ -73,23 +73,35 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
       extraAdults: p.extraAdults,
       extraChildren: p.extraChildren,
     }));
-  const plan = buildAllocationPlan(yesRows);
 
   const nameByParticipant = new Map(
     outing.participants.map((p) => [p.id, p.anonName ?? "Quelqu'un"])
   );
-  const seatCountByParticipant = new Map<string, number>();
-  const allocations: AllocationRowView[] = plan.map((entry) => {
-    const nth = (seatCountByParticipant.get(entry.participantId) ?? 0) + 1;
-    seatCountByParticipant.set(entry.participantId, nth);
-    const baseName = nameByParticipant.get(entry.participantId) ?? "Quelqu'un";
-    const displayName = nth === 1 ? baseName : `${baseName} (+${nth - 1})`;
-    return { participantId: entry.participantId, displayName, isChild: entry.isChild };
-  });
 
-  const totalPlaces = plan.length;
-  const adultCount = plan.filter((a) => !a.isChild).length;
-  const childCount = plan.filter((a) => a.isChild).length;
+  // Compute two views: normal (buyer included) and ghost (buyer excluded).
+  // The form flips between them based on the checkbox without another round
+  // trip; the server re-derives from scratch at submit time so a tampered
+  // checkbox can't mis-seat anyone.
+  function buildView(rowsSubset: typeof yesRows) {
+    const plan = buildAllocationPlan(rowsSubset);
+    const seatCount = new Map<string, number>();
+    const allocations: AllocationRowView[] = plan.map((entry) => {
+      const nth = (seatCount.get(entry.participantId) ?? 0) + 1;
+      seatCount.set(entry.participantId, nth);
+      const baseName = nameByParticipant.get(entry.participantId) ?? "Quelqu'un";
+      const displayName = nth === 1 ? baseName : `${baseName} (+${nth - 1})`;
+      return { participantId: entry.participantId, displayName, isChild: entry.isChild };
+    });
+    return {
+      totalPlaces: plan.length,
+      adultCount: plan.filter((a) => !a.isChild).length,
+      childCount: plan.filter((a) => a.isChild).length,
+      allocations,
+    };
+  }
+
+  const normalView = buildView(yesRows);
+  const ghostView = buildView(yesRows.filter((r) => r.id !== me.id));
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -113,10 +125,9 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
 
       <PurchaseForm
         shortId={outing.shortId}
-        totalPlaces={totalPlaces}
-        adultCount={adultCount}
-        childCount={childCount}
-        allocations={allocations}
+        normalView={normalView}
+        ghostView={ghostView}
+        canGhost={ghostView.totalPlaces > 0}
       />
     </main>
   );
