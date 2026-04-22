@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { and, eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
+import { debts, purchases } from "@drizzle/sortie-schema";
 import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
@@ -86,6 +89,30 @@ export default async function OutingPublicPage({ params }: Props) {
 
   const deadlinePassed = outing.deadlineAt < new Date();
 
+  // Money-layer context: does a purchase exist, does the viewer have debts or
+  // credits on this outing? Drives the "Déclarer l'achat" / "Voir les dettes"
+  // CTAs further down.
+  const existingPurchase = await db.query.purchases.findFirst({
+    where: eq(purchases.outingId, outing.id),
+  });
+  const myMoneyRow = me
+    ? await db.query.debts.findFirst({
+        where: and(
+          eq(debts.outingId, outing.id),
+          // OR (debtor or creditor) — Drizzle builder:
+          // we use two queries rather than OR to keep the types clean.
+          eq(debts.debtorParticipantId, me.id)
+        ),
+      })
+    : null;
+  const myCreditRow = me
+    ? await db.query.debts.findFirst({
+        where: and(eq(debts.outingId, outing.id), eq(debts.creditorParticipantId, me.id)),
+      })
+    : null;
+  const viewerIsConfirmed = me?.response === "yes";
+  const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
+
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-6 flex items-center justify-between">
@@ -139,6 +166,33 @@ export default async function OutingPublicPage({ params }: Props) {
             existingEmail={me?.anonEmail ?? undefined}
           />
         </div>
+      )}
+
+      {viewerIsConfirmed && (
+        <nav className="mt-8 flex flex-wrap justify-center gap-3 text-sm" aria-label="Argent">
+          {!existingPurchase && (
+            <Link
+              href={`/${canonical}/achat`}
+              className="inline-flex items-center rounded-full border border-bordeaux-600 bg-bordeaux-50 px-4 py-2 text-bordeaux-700 transition-colors hover:bg-bordeaux-100"
+            >
+              Déclarer l&rsquo;achat
+            </Link>
+          )}
+          {viewerHasMoneyRow && (
+            <Link
+              href={`/${canonical}/dettes`}
+              className="inline-flex items-center rounded-full border border-ivoire-400 bg-ivoire-50 px-4 py-2 text-encre-600 transition-colors hover:border-or-500 hover:text-bordeaux-700"
+            >
+              Voir les dettes
+            </Link>
+          )}
+          <Link
+            href={`/${canonical}/paiement`}
+            className="inline-flex items-center rounded-full border border-ivoire-400 bg-ivoire-50 px-4 py-2 text-encre-600 transition-colors hover:border-or-500 hover:text-bordeaux-700"
+          >
+            Mes moyens de paiement
+          </Link>
+        </nav>
       )}
 
       <p className="mt-6 text-center text-sm text-encre-400">
