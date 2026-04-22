@@ -11,6 +11,7 @@ export default defineConfig({
     include: ["**/*.test.ts", "**/*.test.tsx"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@drizzle": path.resolve(__dirname, "./drizzle"),
     },
   },
 });
