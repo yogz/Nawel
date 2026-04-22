@@ -8,15 +8,36 @@ if (!process.env.DATABASE_URL) {
   dotenv.config({ path: ".env" });
 }
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is not set");
+// Avoid throwing at module load time so Next.js can still collect page data
+// for routes that import `db` in environments where DATABASE_URL hasn't been
+// provisioned (Vercel preview builds without the production scope, CI, etc.).
+// The connection itself is lazy — the real error surfaces at first query.
+type DbClient = ReturnType<typeof drizzle<typeof schema>>;
+
+let cached: DbClient | null = null;
+
+function resolveClient(): DbClient {
+  if (cached) {
+    return cached;
+  }
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+  // Configuration optimisée pour serverless (Vercel)
+  const client = postgres(url, {
+    max: 1,
+    idle_timeout: 20,
+    max_lifetime: 60 * 30,
+  });
+  cached = drizzle(client, { schema });
+  return cached;
 }
 
-// Configuration optimisée pour serverless (Vercel)
-const client = postgres(process.env.DATABASE_URL, {
-  max: 1, // Limite à 1 connexion pour serverless
-  idle_timeout: 20, // Ferme les connexions inactives après 20s
-  max_lifetime: 60 * 30, // Max 30 minutes de vie pour une connexion
-});
-
-export const db = drizzle(client, { schema });
+export const db = new Proxy({} as DbClient, {
+  get(_, prop, receiver) {
+    const target = resolveClient() as unknown as Record<string | symbol, unknown>;
+    const value = target[prop as string];
+    return typeof value === "function" ? (value as Function).bind(target) : value;
+  },
+}) as DbClient;
