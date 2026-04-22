@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
-import * as schema from "@drizzle/schema";
+import * as schema from "@drizzle/schema-index";
 
 // Charger les variables d'environnement si elles ne sont pas déjà chargées
 if (!process.env.DATABASE_URL) {
