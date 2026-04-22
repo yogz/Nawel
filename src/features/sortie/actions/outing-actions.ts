@@ -10,7 +10,7 @@ import { sanitizeStrictText, sanitizeText } from "@/lib/sanitize";
 import { outings } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
-import { cancelOutingSchema, createOutingSchema, updateOutingSchema } from "./schemas";
+import { createOutingSchema, updateOutingSchema } from "./schemas";
 
 export type FormActionState = {
   errors?: Record<string, string[]>;
@@ -123,29 +123,4 @@ export async function updateOutingAction(
 
   revalidatePath(`/sortie/${data.shortId}`);
   redirect(`/sortie/${data.shortId}`);
-}
-
-export async function cancelOutingAction(
-  _prev: FormActionState,
-  formData: FormData
-): Promise<FormActionState> {
-  const parsed = cancelOutingSchema.safeParse(formDataToObject(formData));
-  if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
-  }
-  const { shortId } = parsed.data;
-  const user = await getSessionUser();
-  const outing = await db.query.outings.findFirst({ where: eq(outings.shortId, shortId) });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
-  }
-  if (!user || outing.creatorUserId !== user.id) {
-    return { message: "Tu n'as pas les droits pour annuler cette sortie." };
-  }
-  await db
-    .update(outings)
-    .set({ status: "cancelled", cancelledAt: new Date(), updatedAt: new Date() })
-    .where(eq(outings.id, outing.id));
-  revalidatePath(`/sortie/${shortId}`);
-  return {};
 }

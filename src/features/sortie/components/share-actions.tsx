@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { Copy, MessageCircle } from "lucide-react";
 
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "Europe/Paris",
+});
+
 type Props = {
   url: string;
   title: string;
@@ -21,7 +28,7 @@ export function ShareActions({ url, title, startsAt }: Props) {
       setJustCopied(true);
       window.setTimeout(() => setJustCopied(false), 1800);
     } catch {
-      // Fallback: open a prompt so the user can copy manually.
+      // navigator.clipboard requires a secure context — fall back to prompt.
       window.prompt("Copie ce lien :", url);
     }
   }
@@ -52,14 +59,6 @@ export function ShareActions({ url, title, startsAt }: Props) {
 
 function buildWhatsAppMessage(args: { title: string; url: string; startsAt: Date | null }): string {
   const { title, url, startsAt } = args;
-  // Short, warm, no corporate branding — spec says: "🎭 [Titre] le [date]. Tu viens ? [lien]"
-  const dateBit = startsAt
-    ? ` le ${new Intl.DateTimeFormat("fr-FR", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        timeZone: "Europe/Paris",
-      }).format(startsAt)}`
-    : "";
+  const dateBit = startsAt ? ` le ${dateFormatter.format(startsAt)}` : "";
   return `🎭 ${title}${dateBit}. Tu viens ? ${url}`;
 }

@@ -51,8 +51,24 @@ export async function generateUniqueShortId(maxRetries = 5): Promise<string> {
   throw new Error("[sortie] short_id generation exhausted retries");
 }
 
+// Slugs that could be mistaken for identity/auth paths get a neutral prefix
+// to kill any external-phishing angle on shared links.
+const SLUG_BLOCKLIST = new Set([
+  "login",
+  "signin",
+  "signup",
+  "auth",
+  "oauth",
+  "admin",
+  "account",
+  "reset",
+  "settings",
+  "security",
+  "verify",
+]);
+
 export function slugifyAscii(input: string, maxLen = 50): string {
-  return input
+  const raw = input
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
@@ -60,4 +76,5 @@ export function slugifyAscii(input: string, maxLen = 50): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, maxLen)
     .replace(/-+$/g, "");
+  return SLUG_BLOCKLIST.has(raw) ? `event-${raw}` : raw;
 }

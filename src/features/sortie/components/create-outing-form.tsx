@@ -2,10 +2,8 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { createOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
+import { FormField } from "./form-field";
 
 const INITIAL: FormActionState = {};
 
@@ -20,7 +18,7 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
-      <Field
+      <FormField
         label="Titre de la sortie"
         name="title"
         required
@@ -30,14 +28,14 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
+        <FormField
           label="Date et heure"
           name="startsAt"
           type="datetime-local"
           required
           error={errors.startsAt?.[0]}
         />
-        <Field
+        <FormField
           label="Réponse avant"
           name="rsvpDeadline"
           type="datetime-local"
@@ -47,27 +45,25 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         />
       </div>
 
-      <Field
+      <FormField
         label="Lieu"
         name="venue"
         maxLength={200}
         placeholder="Salle Richelieu · Paris 1er"
-        helper="Facultatif."
         error={errors.venue?.[0]}
       />
 
-      <Field
+      <FormField
         label="Lien billetterie"
         name="ticketUrl"
         type="url"
         placeholder="https://…"
-        helper="Facultatif."
         error={errors.ticketUrl?.[0]}
       />
 
       {!isLoggedIn && (
         <>
-          <Field
+          <FormField
             label="Ton prénom"
             name="creatorDisplayName"
             required
@@ -75,11 +71,11 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
             maxLength={100}
             error={errors.creatorDisplayName?.[0]}
           />
-          <Field
+          <FormField
             label="Ton email"
             name="creatorEmail"
             type="email"
-            helper="Facultatif — pour reprendre la main si tu changes d'appareil."
+            helper="Pour reprendre la main si tu changes d'appareil."
             error={errors.creatorEmail?.[0]}
           />
         </>
@@ -109,69 +105,5 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         </Button>
       </div>
     </form>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  required = false,
-  maxLength,
-  placeholder,
-  defaultValue,
-  helper,
-  error,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  maxLength?: number;
-  placeholder?: string;
-  defaultValue?: string;
-  helper?: string;
-  error?: string;
-}) {
-  const isTextarea = type === "textarea";
-  const describedBy = `${name}-help`;
-
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
-        {label}
-        {!required && <span className="ml-1 text-encre-300">(facultatif)</span>}
-      </Label>
-      {isTextarea ? (
-        <Textarea
-          id={name}
-          name={name}
-          required={required}
-          maxLength={maxLength}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          aria-describedby={helper || error ? describedBy : undefined}
-        />
-      ) : (
-        <Input
-          id={name}
-          name={name}
-          type={type}
-          required={required}
-          maxLength={maxLength}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          aria-describedby={helper || error ? describedBy : undefined}
-        />
-      )}
-      {(helper || error) && (
-        <p
-          id={describedBy}
-          className={error ? "text-xs text-erreur-700" : "text-xs text-encre-400"}
-        >
-          {error ?? helper}
-        </p>
-      )}
-    </div>
   );
 }

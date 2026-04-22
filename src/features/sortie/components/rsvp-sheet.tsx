@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Check, ExternalLink, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,14 +58,6 @@ export function RsvpSheet({
     {} as FormActionState
   );
 
-  // Close and reset on successful submit: empty state object means the
-  // server accepted without errors.
-  useEffect(() => {
-    if (!pending && state && !state.errors && !state.message) {
-      return;
-    }
-  }, [pending, state]);
-
   const buttonLabel = existingResponse ? "Modifier ma réponse" : "Je réponds";
 
   return (
@@ -93,12 +85,7 @@ export function RsvpSheet({
                 type="button"
                 onClick={() => {
                   setChosen(opt.id);
-                  if (opt.id === "yes") {
-                    setStep("yes-form");
-                  } else {
-                    // Non/handle_own: auto-submit immediately with a minimal form.
-                    setStep("yes-form");
-                  }
+                  setStep("yes-form");
                 }}
                 className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-100 p-4 text-left transition-colors hover:border-or-500 hover:bg-ivoire-50"
               >
@@ -137,7 +124,7 @@ export function RsvpSheet({
               )}
             </div>
 
-            {chosen === "yes" && (
+            {chosen === "yes" ? (
               <div className="flex flex-col gap-3 rounded-lg bg-ivoire-50 p-4">
                 <p className="text-sm text-encre-500">Tu viens avec quelqu&rsquo;un ?</p>
                 <GuestCountStepper
@@ -153,9 +140,7 @@ export function RsvpSheet({
                   onChange={setChildren}
                 />
               </div>
-            )}
-
-            {chosen !== "yes" && (
+            ) : (
               <>
                 <input type="hidden" name="extraAdults" value={0} />
                 <input type="hidden" name="extraChildren" value={0} />

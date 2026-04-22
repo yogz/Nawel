@@ -9,12 +9,7 @@ type Participant = {
   response: string;
 };
 
-type Props = {
-  participants: Participant[];
-  resolveUserName?: (userId: string) => string | null;
-};
-
-export function ParticipantList({ participants, resolveUserName }: Props) {
+export function ParticipantList({ participants }: { participants: Participant[] }) {
   const yesList = participants.filter((p) => p.response === "yes");
   const totalHeads = yesList.reduce((acc, p) => acc + 1 + p.extraAdults + p.extraChildren, 0);
 
@@ -41,15 +36,12 @@ export function ParticipantList({ participants, resolveUserName }: Props) {
 
       <ul className="flex flex-col gap-1">
         {yesList.map((p) => {
-          const name = p.userId
-            ? (resolveUserName?.(p.userId) ?? "Quelqu'un")
-            : (p.anonName ?? "Quelqu'un");
           const extras = formatExtras(p.extraAdults, p.extraChildren);
           return (
             <li key={p.id} className="flex items-baseline gap-2 text-encre-600">
               <span className="inline-block size-1.5 shrink-0 rotate-45 bg-or-500" aria-hidden />
               <span>
-                {name}
+                {p.anonName ?? "Quelqu'un"}
                 {extras && <span className="text-encre-400"> {extras}</span>}
               </span>
             </li>

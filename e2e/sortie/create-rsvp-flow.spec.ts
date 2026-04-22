@@ -1,11 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-/**
- * End-to-end: create an outing anonymously, RSVP yes with guests, modify.
- * Requires the dev DB to have the sortie schema applied (migration 0020).
- */
+// Requires migration 0020 applied — the create path queries sortie.outings.
 
-async function createOuting(page: import("@playwright/test").Page, title: string) {
+async function createOuting(page: Page, title: string) {
   await page.goto("/nouvelle?host=sortie");
 
   await page.getByLabel("Titre de la sortie").fill(title);

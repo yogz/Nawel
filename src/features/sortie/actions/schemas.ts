@@ -7,6 +7,23 @@ const shortIdSchema = z
   .trim()
   .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
 
+// z.string().url() accepts javascript: — refine to http/https so a malicious
+// creator can't turn the "Voir la billetterie" link into an XSS payload.
+const safeHttpUrl = z
+  .string()
+  .url()
+  .max(2048)
+  .refine((u) => {
+    try {
+      const p = new URL(u).protocol;
+      return p === "https:" || p === "http:";
+    } catch {
+      return false;
+    }
+  }, "L'URL doit commencer par https:// ou http://");
+
+const optionalSafeUrl = z.union([z.literal(""), safeHttpUrl]).transform((v) => v || undefined);
+
 export const createOutingSchema = z
   .object({
     title: trimmedString.min(1).max(200),
@@ -17,9 +34,7 @@ export const createOutingSchema = z
       .transform((v) => v || undefined),
     startsAt: z.coerce.date(),
     rsvpDeadline: z.coerce.date(),
-    ticketUrl: z
-      .union([z.literal(""), z.string().url().max(2048)])
-      .transform((v) => v || undefined),
+    ticketUrl: optionalSafeUrl,
     creatorDisplayName: trimmedString.min(1).max(100),
     creatorEmail: z
       .union([z.literal(""), z.string().email().max(255)])
@@ -30,8 +45,6 @@ export const createOutingSchema = z
     message: "La deadline doit être avant la date de la sortie.",
     path: ["rsvpDeadline"],
   });
-
-export type CreateOutingInput = z.infer<typeof createOutingSchema>;
 
 export const updateOutingSchema = z
   .object({
@@ -44,16 +57,12 @@ export const updateOutingSchema = z
       .transform((v) => v || undefined),
     startsAt: z.coerce.date(),
     rsvpDeadline: z.coerce.date(),
-    ticketUrl: z
-      .union([z.literal(""), z.string().url().max(2048)])
-      .transform((v) => v || undefined),
+    ticketUrl: optionalSafeUrl,
   })
   .refine((data) => data.rsvpDeadline < data.startsAt, {
     message: "La deadline doit être avant la date de la sortie.",
     path: ["rsvpDeadline"],
   });
-
-export type UpdateOutingInput = z.infer<typeof updateOutingSchema>;
 
 export const rsvpSchema = z.object({
   shortId: shortIdSchema,
@@ -62,17 +71,4 @@ export const rsvpSchema = z.object({
   extraAdults: z.coerce.number().int().min(0).max(10).default(0),
   extraChildren: z.coerce.number().int().min(0).max(10).default(0),
   email: z.union([z.literal(""), z.string().email().max(255)]).transform((v) => v || undefined),
-});
-
-export type RsvpInput = z.infer<typeof rsvpSchema>;
-
-export const claimIdentitySchema = z.object({
-  shortId: shortIdSchema,
-  participantId: z.string().uuid(),
-});
-
-export type ClaimIdentityInput = z.infer<typeof claimIdentitySchema>;
-
-export const cancelOutingSchema = z.object({
-  shortId: shortIdSchema,
 });

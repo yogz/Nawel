@@ -2,10 +2,9 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { updateOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
 import { toDateTimeLocalValue } from "@/features/sortie/lib/date-fr";
+import { FormField } from "./form-field";
 
 const INITIAL: FormActionState = {};
 
@@ -26,7 +25,7 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
     <form action={formAction} className="flex flex-col gap-6">
       <input type="hidden" name="shortId" value={shortId} />
 
-      <Field
+      <FormField
         label="Titre"
         name="title"
         required
@@ -36,7 +35,7 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field
+        <FormField
           label="Date et heure"
           name="startsAt"
           type="datetime-local"
@@ -44,7 +43,7 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
           defaultValue={startsAt ? toDateTimeLocalValue(startsAt) : ""}
           error={errors.startsAt?.[0]}
         />
-        <Field
+        <FormField
           label="Réponse avant"
           name="rsvpDeadline"
           type="datetime-local"
@@ -54,7 +53,7 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
         />
       </div>
 
-      <Field
+      <FormField
         label="Lieu"
         name="venue"
         maxLength={200}
@@ -62,7 +61,7 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
         error={errors.venue?.[0]}
       />
 
-      <Field
+      <FormField
         label="Lien billetterie"
         name="ticketUrl"
         type="url"
@@ -82,41 +81,5 @@ export function EditOutingForm({ shortId, title, venue, startsAt, deadlineAt, ti
         </Button>
       </div>
     </form>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  required = false,
-  maxLength,
-  defaultValue,
-  error,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  maxLength?: number;
-  defaultValue?: string;
-  error?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
-        {label}
-        {!required && <span className="ml-1 text-encre-300">(facultatif)</span>}
-      </Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        maxLength={maxLength}
-        defaultValue={defaultValue}
-      />
-      {error && <p className="text-xs text-erreur-700">{error}</p>}
-    </div>
   );
 }
