@@ -9,6 +9,7 @@ import {
   outingModifiedEmail,
   rsvpClosedEmail,
   rsvpReceivedEmail,
+  timeslotPickedEmail,
 } from "./templates";
 
 const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
@@ -276,5 +277,41 @@ export async function sendJ1ReminderEmails(args: {
       .map((p) => p.anonEmail ?? p.user?.email ?? null)
       .filter((e): e is string => !!e)
       .map((email) => safeSend({ to: email, subject, html, trigger: "j1-reminder" }))
+  );
+}
+
+/**
+ * Fired when the creator picks a winning timeslot on a vote-mode outing.
+ * Reaches every participant who didn't say outright "no" — including those
+ * still in "interested" status, since they need the prompt to reconfirm.
+ */
+export async function sendTimeslotPickedEmails(args: {
+  outing: {
+    id: string;
+    title: string;
+    slug: string | null;
+    shortId: string;
+    location: string | null;
+    fixedDatetime: Date;
+  };
+}): Promise<void> {
+  const recipients = await db.query.participants.findMany({
+    where: and(eq(participants.outingId, args.outing.id), ne(participants.response, "no")),
+    with: { user: { columns: { email: true } } },
+  });
+
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const { subject, html } = timeslotPickedEmail({
+    outingTitle: args.outing.title,
+    outingUrl: `${BASE_URL}${canonical}`,
+    fixedDatetime: args.outing.fixedDatetime,
+    location: args.outing.location,
+  });
+
+  await Promise.all(
+    recipients
+      .map((p) => p.anonEmail ?? p.user?.email ?? null)
+      .filter((e): e is string => !!e)
+      .map((email) => safeSend({ to: email, subject, html, trigger: "timeslot-picked" }))
   );
 }

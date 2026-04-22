@@ -12,6 +12,11 @@ type Props = {
   minuteStep?: number;
   required?: boolean;
   placeholder?: string;
+  // Fired whenever the user picks a new date or time. The argument is the
+  // same local-ISO string that lands in the hidden input (empty when the
+  // value was cleared). Added for the vote-mode timeslot editor, which
+  // needs to mirror each slot's value into a JSON-encoded array field.
+  onChange?: (value: string) => void;
 };
 
 const DISPLAY = new Intl.DateTimeFormat("fr-FR", {
@@ -50,11 +55,24 @@ export function DateTimePicker({
   minuteStep = 15,
   required = false,
   placeholder = "Choisir une date",
+  onChange,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<Date | null>(parseLocalIsoString(defaultValue));
   const timeOptions = useMemo(() => buildTimeOptions(minuteStep), [minuteStep]);
   const timeListRef = useRef<HTMLDivElement>(null);
+
+  // Mirror the current value to the onChange callback whenever it shifts.
+  // Keep the callback in a ref so parents that pass an inline closure (very
+  // common) don't re-fire the effect on every render — only a committed value
+  // change should trigger it.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  useEffect(() => {
+    onChangeRef.current?.(value ? toLocalIsoString(value) : "");
+  }, [value]);
 
   const selectedTime = value
     ? `${String(value.getHours()).padStart(2, "0")}:${String(value.getMinutes()).padStart(2, "0")}`

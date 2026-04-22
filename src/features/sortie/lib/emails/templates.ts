@@ -218,6 +218,48 @@ export function outingCancelledEmail(args: { outingTitle: string; homeUrl: strin
 }
 
 /**
+ * Fired to every non-"no" participant when the creator picks a winning
+ * timeslot on a vote-mode outing. Voters who said available on that slot
+ * read "tu es confirmé·e"; voters who didn't vote on it read "tu dois
+ * reconfirmer". The recipient's own derived state isn't embedded here —
+ * this is a single template that reads well for both cases.
+ */
+export function timeslotPickedEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  fixedDatetime: Date;
+  location: string | null;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
+  const locationLine = args.location
+    ? `<br /><span style="color:#8E8168;">${escapeHtml(args.location)}</span>`
+    : "";
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">La date est fixée</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      <strong>${title}</strong>${locationLine}
+    </p>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      Le créateur a choisi&nbsp;: <strong>${when}</strong>.
+    </p>
+    <p style="margin:0 0 24px;color:#4A4132;line-height:1.6;">
+      Si tu avais voté disponible, ta place est confirmée. Sinon, c'est le moment de re-RSVP.
+    </p>
+    <p style="margin:0;">
+      <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Voir la sortie</a>
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — ${when}`,
+    html: renderEmail({
+      preheader: `Le créneau a été choisi : ${when}.`,
+      body,
+    }),
+  };
+}
+
+/**
  * Fired once per outing by the hourly sweeper the moment the RSVP deadline
  * is crossed. Reaches only confirmed attendees (yes + handle_own) so no-shows
  * don't get a useless ping.
