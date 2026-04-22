@@ -38,3 +38,9 @@ next-env.d.ts
 /data/sqlite.db-journal
 /data/sqlite.db-shm
 /data/sqlite.db-wal
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

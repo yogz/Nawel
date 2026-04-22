@@ -4,8 +4,12 @@ import "../sortie.css";
 
 const fraunces = Fraunces({
   subsets: ["latin", "latin-ext"],
-  axes: ["opsz", "SOFT"],
-  weight: ["400", "500", "600"],
+  // Variable font: weight must stay "variable" (not a list) so the opsz axis
+  // for optical sizing can be declared. Trade-off: slightly larger font
+  // payload than a static cut, but it lets Fraunces scale beautifully from
+  // 16px body accents to 96px display titles.
+  weight: "variable",
+  axes: ["opsz"],
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-fraunces",
