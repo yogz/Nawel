@@ -31,6 +31,17 @@ export const outingMode = sortie.enum("outing_mode", ["fixed", "vote"]);
 
 export const rsvpResponse = sortie.enum("rsvp_response", ["yes", "no", "handle_own", "interested"]);
 
+export const pricingMode = sortie.enum("pricing_mode", ["unique", "category", "nominal"]);
+
+export const paymentMethodType = sortie.enum("payment_method_type", [
+  "lydia",
+  "revolut",
+  "wero",
+  "iban",
+]);
+
+export const debtStatus = sortie.enum("debt_status", ["pending", "declared_paid", "confirmed"]);
+
 // === outings ===
 
 export const outings = sortie.table(
@@ -160,15 +171,186 @@ export const magicLinks = sortie.table(
   })
 );
 
+// === purchaser_payment_methods ===
+
+export const purchaserPaymentMethods = sortie.table(
+  "purchaser_payment_methods",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    participantId: uuid("participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "cascade" }),
+    type: paymentMethodType("type").notNull(),
+    // AES-256-GCM ciphertext for IBAN or phone number.
+    valueEncrypted: text("value_encrypted").notNull(),
+    // Non-sensitive preview for the UI ("FR76 **** 1234" or "+33 6 ** ** ** 42").
+    valuePreview: varchar("value_preview", { length: 80 }).notNull(),
+    // Optional human label shown next to the method ("Lydia principal").
+    displayLabel: varchar("display_label", { length: 100 }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    participantIdx: index("sortie_payment_methods_participant_idx").on(t.participantId),
+  })
+);
+
+// === purchases ===
+
+export const purchases = sortie.table(
+  "purchases",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    outingId: uuid("outing_id")
+      .notNull()
+      .references(() => outings.id, { onDelete: "cascade" }),
+    purchaserParticipantId: uuid("purchaser_participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "restrict" }),
+    totalPlaces: integer("total_places").notNull(),
+    pricingMode: pricingMode("pricing_mode").notNull(),
+    // Populated iff pricingMode == "unique".
+    uniquePriceCents: integer("unique_price_cents"),
+    // Populated iff pricingMode == "category".
+    adultPriceCents: integer("adult_price_cents"),
+    childPriceCents: integer("child_price_cents"),
+    // Preuve d'achat — Vercel Blob URL, set by Phase 3.B.
+    proofFileUrl: text("proof_file_url"),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    outingIdx: index("sortie_purchases_outing_idx").on(t.outingId),
+    purchaserIdx: index("sortie_purchases_purchaser_idx").on(t.purchaserParticipantId),
+  })
+);
+
+// === purchase_allocations ===
+
+export const purchaseAllocations = sortie.table(
+  "purchase_allocations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    purchaseId: uuid("purchase_id")
+      .notNull()
+      .references(() => purchases.id, { onDelete: "cascade" }),
+    participantId: uuid("participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "restrict" }),
+    isChild: boolean("is_child").notNull().default(false),
+    // Populated iff the parent purchase uses pricingMode == "nominal".
+    nominalPriceCents: integer("nominal_price_cents"),
+  },
+  (t) => ({
+    purchaseIdx: index("sortie_allocations_purchase_idx").on(t.purchaseId),
+    participantIdx: index("sortie_allocations_participant_idx").on(t.participantId),
+  })
+);
+
+// === debts ===
+
+export const debts = sortie.table(
+  "debts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    outingId: uuid("outing_id")
+      .notNull()
+      .references(() => outings.id, { onDelete: "cascade" }),
+    debtorParticipantId: uuid("debtor_participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "restrict" }),
+    creditorParticipantId: uuid("creditor_participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "restrict" }),
+    amountCents: integer("amount_cents").notNull(),
+    status: debtStatus("status").notNull().default("pending"),
+    declaredAt: timestamp("declared_at", { withTimezone: true }),
+    confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    outingIdx: index("sortie_debts_outing_idx").on(t.outingId),
+    debtorIdx: index("sortie_debts_debtor_idx").on(t.debtorParticipantId),
+    creditorIdx: index("sortie_debts_creditor_idx").on(t.creditorParticipantId),
+  })
+);
+
+// === audit_log (append-only) ===
+
+export const auditLog = sortie.table(
+  "audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    outingId: uuid("outing_id").references(() => outings.id, { onDelete: "set null" }),
+    actorParticipantId: uuid("actor_participant_id").references(() => participants.id, {
+      onDelete: "set null",
+    }),
+    actorUserId: text("actor_user_id").references(() => user.id, { onDelete: "set null" }),
+    action: varchar("action", { length: 64 }).notNull(),
+    // SHA-256 of the request IP + a per-run pepper — lets us spot repeated abuse
+    // without retaining raw addresses.
+    ipHash: varchar("ip_hash", { length: 64 }),
+    // Before/after snapshots for sensitive actions (IBAN_REVEALED, DEBT_CONFIRMED).
+    payload: text("payload"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    outingIdx: index("sortie_audit_outing_idx").on(t.outingId),
+    actionIdx: index("sortie_audit_action_idx").on(t.action),
+  })
+);
+
 // === Relations ===
 
 export const outingsRelations = relations(outings, ({ many, one }) => ({
   participants: many(participants),
   timeslots: many(outingTimeslots),
   magicLinks: many(magicLinks),
+  purchases: many(purchases),
+  debts: many(debts),
   creatorUser: one(user, {
     fields: [outings.creatorUserId],
     references: [user.id],
+  }),
+}));
+
+export const purchasesRelations = relations(purchases, ({ one, many }) => ({
+  outing: one(outings, { fields: [purchases.outingId], references: [outings.id] }),
+  purchaser: one(participants, {
+    fields: [purchases.purchaserParticipantId],
+    references: [participants.id],
+  }),
+  allocations: many(purchaseAllocations),
+}));
+
+export const purchaseAllocationsRelations = relations(purchaseAllocations, ({ one }) => ({
+  purchase: one(purchases, {
+    fields: [purchaseAllocations.purchaseId],
+    references: [purchases.id],
+  }),
+  participant: one(participants, {
+    fields: [purchaseAllocations.participantId],
+    references: [participants.id],
+  }),
+}));
+
+export const debtsRelations = relations(debts, ({ one }) => ({
+  outing: one(outings, { fields: [debts.outingId], references: [outings.id] }),
+  debtor: one(participants, {
+    fields: [debts.debtorParticipantId],
+    references: [participants.id],
+    relationName: "debtor",
+  }),
+  creditor: one(participants, {
+    fields: [debts.creditorParticipantId],
+    references: [participants.id],
+    relationName: "creditor",
+  }),
+}));
+
+export const purchaserPaymentMethodsRelations = relations(purchaserPaymentMethods, ({ one }) => ({
+  participant: one(participants, {
+    fields: [purchaserPaymentMethods.participantId],
+    references: [participants.id],
   }),
 }));
 
