@@ -1,6 +1,12 @@
-import { and, eq, or } from "drizzle-orm";
+import { and, eq, ne, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { debts, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
+import {
+  debts,
+  participants,
+  purchaseAllocations,
+  purchases,
+  purchaserPaymentMethods,
+} from "@drizzle/sortie-schema";
 
 type PersonRef = {
   id: string;
@@ -104,4 +110,70 @@ export async function getMyCredits(outingId: string, participantId: string) {
     .from(debts)
     .where(and(eq(debts.outingId, outingId), eq(debts.creditorParticipantId, participantId)));
   return attachNames(rows);
+}
+
+export type MyAllocationRow = {
+  id: string;
+  purchaseId: string;
+  isChild: boolean;
+  nominalPriceCents: number | null;
+  buyerParticipantId: string;
+  pricingMode: "unique" | "category" | "nominal";
+  uniquePriceCents: number | null;
+  adultPriceCents: number | null;
+  childPriceCents: number | null;
+};
+
+/**
+ * Pulls every allocation currently assigned to `participantId` on this
+ * outing, plus enough of the parent purchase to re-price a seat when the
+ * holder cedes it. Used by the cession UI so the user sees "what I hold"
+ * next to "what I owe".
+ */
+export async function getMyAllocations(
+  outingId: string,
+  participantId: string
+): Promise<MyAllocationRow[]> {
+  const rows = await db
+    .select({
+      id: purchaseAllocations.id,
+      purchaseId: purchaseAllocations.purchaseId,
+      isChild: purchaseAllocations.isChild,
+      nominalPriceCents: purchaseAllocations.nominalPriceCents,
+      buyerParticipantId: purchases.purchaserParticipantId,
+      pricingMode: purchases.pricingMode,
+      uniquePriceCents: purchases.uniquePriceCents,
+      adultPriceCents: purchases.adultPriceCents,
+      childPriceCents: purchases.childPriceCents,
+    })
+    .from(purchaseAllocations)
+    .innerJoin(purchases, eq(purchases.id, purchaseAllocations.purchaseId))
+    .where(
+      and(eq(purchases.outingId, outingId), eq(purchaseAllocations.participantId, participantId))
+    );
+  return rows;
+}
+
+/**
+ * Lists other confirmed participants (response="yes") on this outing so
+ * the cession UI can offer a target. Excludes the holder themselves —
+ * ceding to yourself is a no-op.
+ */
+export async function listCessionTargets(
+  outingId: string,
+  excludeParticipantId: string
+): Promise<{ id: string; name: string }[]> {
+  const rows = await db.query.participants.findMany({
+    where: and(
+      eq(participants.outingId, outingId),
+      eq(participants.response, "yes"),
+      ne(participants.id, excludeParticipantId)
+    ),
+    with: { user: { columns: { name: true } } },
+    columns: { id: true, anonName: true },
+  });
+  return rows.map((p) => ({
+    id: p.id,
+    name: p.anonName ?? p.user?.name ?? "Quelqu'un",
+  }));
 }

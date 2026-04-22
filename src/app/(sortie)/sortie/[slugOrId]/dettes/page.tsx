@@ -8,8 +8,14 @@ import { participants, purchases } from "@drizzle/sortie-schema";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
-import { getMyCredits, getMyDebts } from "@/features/sortie/queries/debt-queries";
+import {
+  getMyAllocations,
+  getMyCredits,
+  getMyDebts,
+  listCessionTargets,
+} from "@/features/sortie/queries/debt-queries";
 import { DebtRow } from "@/features/sortie/components/debt-row";
+import { CessionForm, formatAllocationLabel } from "@/features/sortie/components/cession-form";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -54,14 +60,22 @@ export default async function DebtsPage({ params }: Props) {
     notFound();
   }
 
-  const [myDebts, myCredits, purchase] = await Promise.all([
+  const [myDebts, myCredits, purchase, myAllocations, cessionTargets] = await Promise.all([
     getMyDebts(outing.id, me.id),
     getMyCredits(outing.id, me.id),
     db.query.purchases.findFirst({
       where: eq(purchases.outingId, outing.id),
       columns: { proofFileUrl: true },
     }),
+    getMyAllocations(outing.id, me.id),
+    listCessionTargets(outing.id, me.id),
   ]);
+
+  // Cession is blocked if any debt on this outing has advanced past
+  // pending — reshuffling money that's already been declared creates
+  // reconciliation trouble. Same rule the server enforces.
+  const cessionLocked =
+    myDebts.some((d) => d.status !== "pending") || myCredits.some((d) => d.status !== "pending");
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -136,6 +150,29 @@ export default async function DebtsPage({ params }: Props) {
             </Link>{" "}
             pour qu&rsquo;on puisse te rembourser.
           </p>
+        </section>
+      )}
+
+      {myAllocations.length > 0 && (
+        <section className="mb-10">
+          <h2 className="mb-4 font-serif text-xl text-encre-700">Mes places</h2>
+          <ul className="flex flex-col gap-3">
+            {myAllocations.map((a) => (
+              <li
+                key={a.id}
+                className="flex flex-col gap-2 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3"
+              >
+                <span className="text-sm text-encre-700">{formatAllocationLabel(a)}</span>
+                <CessionForm
+                  shortId={outing.shortId}
+                  allocationId={a.id}
+                  label={formatAllocationLabel(a)}
+                  targets={cessionTargets}
+                  locked={cessionLocked}
+                />
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
