@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -14,6 +14,7 @@ import {
   purchaseAllocations,
   purchases,
 } from "@drizzle/sortie-schema";
+import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -24,17 +25,47 @@ const shortIdSchema = z
   .trim()
   .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
 
-// Phase 3.A: unique-price mode only. Category + per-seat modes in 3.B.
-const declarePurchaseSchema = z.object({
-  shortId: shortIdSchema,
-  pricingMode: z.literal("unique"),
-  uniquePriceCents: z.coerce.number().int().min(1).max(10_000_00),
-});
+const MAX_CENTS = 10_000_00;
+const priceCents = z.coerce.number().int().min(0).max(MAX_CENTS);
+const positivePriceCents = z.coerce.number().int().min(1).max(MAX_CENTS);
+
+// Three pricing modes covered end to end:
+//  - unique:   one price for every seat
+//  - category: one price for adults, another for children (uses is_child)
+//  - nominal:  the buyer types a per-seat price (used for rare cases like
+//              one senior + one student + one normal)
+const declarePurchaseSchema = z.discriminatedUnion("pricingMode", [
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("unique"),
+    uniquePriceCents: positivePriceCents,
+  }),
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("category"),
+    adultPriceCents: positivePriceCents,
+    childPriceCents: priceCents,
+  }),
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("nominal"),
+    allocationPriceCents: z.array(priceCents).min(1).max(100),
+  }),
+]);
 
 function formDataToObject(formData: FormData): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
   for (const [k, v] of formData.entries()) {
+    if (k === "allocationPriceCents") {
+      continue;
+    }
     obj[k] = typeof v === "string" ? v : "";
+  }
+  // `allocationPriceCents` may appear N times (one per seat input). FormData
+  // entries() collapses duplicates; getAll() preserves the full ordered list.
+  const multi = formData.getAll("allocationPriceCents").map(String);
+  if (multi.length > 0) {
+    obj.allocationPriceCents = multi;
   }
   return obj;
 }
@@ -86,23 +117,63 @@ export async function declarePurchaseAction(
     return { message: gate.message };
   }
 
-  // Pull every "yes" participant + their counts so we can auto-allocate seats
-  // and compute one debt row per non-buyer participant.
   const yesRows = await db
     .select({
       id: participants.id,
+      respondedAt: participants.respondedAt,
       extraAdults: participants.extraAdults,
       extraChildren: participants.extraChildren,
     })
     .from(participants)
-    .where(and(eq(participants.outingId, outing.id), eq(participants.response, "yes")));
+    .where(and(eq(participants.outingId, outing.id), eq(participants.response, "yes")))
+    .orderBy(asc(participants.respondedAt), asc(participants.id));
 
   if (yesRows.length === 0) {
     return { message: "Aucun confirmé — rien à acheter." };
   }
 
-  const totalPlaces = yesRows.reduce((acc, p) => acc + 1 + p.extraAdults + p.extraChildren, 0);
-  const priceCents = data.uniquePriceCents;
+  const plan = buildAllocationPlan(yesRows);
+  const totalPlaces = plan.length;
+
+  if (data.pricingMode === "nominal" && data.allocationPriceCents.length !== plan.length) {
+    return {
+      message:
+        "Le nombre de tarifs renseignés ne correspond plus aux confirmés. Recharge la page et réessaie.",
+    };
+  }
+
+  // Per-seat price resolver: everything downstream (debt rows, allocation
+  // rows) reads from here, so mode-specific logic stays in one place.
+  const priceFor = (index: number, isChild: boolean): number => {
+    switch (data.pricingMode) {
+      case "unique":
+        return data.uniquePriceCents;
+      case "category":
+        return isChild ? data.childPriceCents : data.adultPriceCents;
+      case "nominal":
+        return data.allocationPriceCents[index]!;
+    }
+  };
+
+  const allocationRows: (typeof purchaseAllocations.$inferInsert)[] = plan.map((entry, i) => ({
+    purchaseId: "__placeholder__",
+    participantId: entry.participantId,
+    isChild: entry.isChild,
+    nominalPriceCents: data.pricingMode === "nominal" ? data.allocationPriceCents[i] : null,
+  }));
+
+  // Aggregate each non-buyer's total into a single debt row.
+  const debtsByParticipant = new Map<string, number>();
+  plan.forEach((entry, i) => {
+    if (entry.participantId === me.id) {
+      return;
+    }
+    const amount = priceFor(i, entry.isChild);
+    debtsByParticipant.set(
+      entry.participantId,
+      (debtsByParticipant.get(entry.participantId) ?? 0) + amount
+    );
+  });
 
   await db.transaction(async (tx) => {
     const [purchase] = await tx
@@ -111,42 +182,32 @@ export async function declarePurchaseAction(
         outingId: outing.id,
         purchaserParticipantId: me.id,
         totalPlaces,
-        pricingMode: "unique",
-        uniquePriceCents: priceCents,
+        pricingMode: data.pricingMode,
+        uniquePriceCents: data.pricingMode === "unique" ? data.uniquePriceCents : null,
+        adultPriceCents: data.pricingMode === "category" ? data.adultPriceCents : null,
+        childPriceCents: data.pricingMode === "category" ? data.childPriceCents : null,
       })
       .returning({ id: purchases.id });
 
-    // Flat allocation: one row per seat. isChild marks the children so we
-    // keep the info around for when Phase 3.B introduces category pricing.
-    const allocationRows: (typeof purchaseAllocations.$inferInsert)[] = [];
-    const debtRows: (typeof debts.$inferInsert)[] = [];
-
-    for (const p of yesRows) {
-      const adultSeats = 1 + p.extraAdults;
-      const childSeats = p.extraChildren;
-      for (let i = 0; i < adultSeats; i++) {
-        allocationRows.push({ purchaseId: purchase.id, participantId: p.id, isChild: false });
-      }
-      for (let i = 0; i < childSeats; i++) {
-        allocationRows.push({ purchaseId: purchase.id, participantId: p.id, isChild: true });
-      }
-      if (p.id !== me.id) {
-        const seats = adultSeats + childSeats;
-        debtRows.push({
-          outingId: outing.id,
-          debtorParticipantId: p.id,
-          creditorParticipantId: me.id,
-          amountCents: seats * priceCents,
-        });
-      }
-    }
-
     if (allocationRows.length > 0) {
-      await tx.insert(purchaseAllocations).values(allocationRows);
+      await tx
+        .insert(purchaseAllocations)
+        .values(allocationRows.map((a) => ({ ...a, purchaseId: purchase.id })));
     }
-    if (debtRows.length > 0) {
-      await tx.insert(debts).values(debtRows);
+
+    if (debtsByParticipant.size > 0) {
+      await tx.insert(debts).values(
+        Array.from(debtsByParticipant.entries())
+          .filter(([, amount]) => amount > 0)
+          .map(([participantId, amount]) => ({
+            outingId: outing.id,
+            debtorParticipantId: participantId,
+            creditorParticipantId: me.id,
+            amountCents: amount,
+          }))
+      );
     }
+
     await tx
       .update(outings)
       .set({ status: "purchased", updatedAt: new Date() })

@@ -8,7 +8,8 @@ import { participants, purchases } from "@drizzle/sortie-schema";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
-import { PurchaseForm } from "@/features/sortie/components/purchase-form";
+import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
+import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -51,12 +52,9 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     : null;
 
   if (!me || me.response !== "yes") {
-    // Only confirmed attendees can declare a purchase; anyone else shouldn't
-    // know the route exists.
     notFound();
   }
 
-  // Idempotency: once a purchase is logged, kick visitors to the debt view.
   const existing = await db.query.purchases.findFirst({
     where: eq(purchases.outingId, outing.id),
   });
@@ -64,9 +62,34 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     redirect(`/${canonical}/dettes`);
   }
 
-  const totalPlaces = outing.participants
+  // Build the same allocation plan the action will rebuild on submit, so
+  // nominal-mode rows are in the canonical order and the client displays a
+  // friendly name for each seat.
+  const yesRows = outing.participants
     .filter((p) => p.response === "yes")
-    .reduce((acc, p) => acc + 1 + p.extraAdults + p.extraChildren, 0);
+    .map((p) => ({
+      id: p.id,
+      respondedAt: p.respondedAt,
+      extraAdults: p.extraAdults,
+      extraChildren: p.extraChildren,
+    }));
+  const plan = buildAllocationPlan(yesRows);
+
+  const nameByParticipant = new Map(
+    outing.participants.map((p) => [p.id, p.anonName ?? "Quelqu'un"])
+  );
+  const seatCountByParticipant = new Map<string, number>();
+  const allocations: AllocationRowView[] = plan.map((entry) => {
+    const nth = (seatCountByParticipant.get(entry.participantId) ?? 0) + 1;
+    seatCountByParticipant.set(entry.participantId, nth);
+    const baseName = nameByParticipant.get(entry.participantId) ?? "Quelqu'un";
+    const displayName = nth === 1 ? baseName : `${baseName} (+${nth - 1})`;
+    return { participantId: entry.participantId, displayName, isChild: entry.isChild };
+  });
+
+  const totalPlaces = plan.length;
+  const adultCount = plan.filter((a) => !a.isChild).length;
+  const childCount = plan.filter((a) => a.isChild).length;
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -86,13 +109,15 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
         <h1 className="font-serif text-4xl leading-tight text-encre-700">
           Combien ça a coûté&nbsp;?
         </h1>
-        <p className="mt-3 text-encre-500">
-          Pour l&rsquo;instant, prix unique par place. On gère le détail des catégories et les
-          tarifs nominatifs dans la prochaine mise à jour.
-        </p>
       </header>
 
-      <PurchaseForm shortId={outing.shortId} totalPlaces={totalPlaces} />
+      <PurchaseForm
+        shortId={outing.shortId}
+        totalPlaces={totalPlaces}
+        adultCount={adultCount}
+        childCount={childCount}
+        allocations={allocations}
+      />
     </main>
   );
 }
