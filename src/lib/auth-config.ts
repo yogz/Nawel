@@ -30,16 +30,38 @@ const getTrustedOrigins = (): string[] => {
   }
   // Development-only defaults (production should always set BETTER_AUTH_TRUSTED_ORIGINS)
   if (process.env.NODE_ENV === "development") {
-    return ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"];
+    return [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://127.0.0.1:3000",
+      "http://sortie.localhost:3000",
+      "http://sortie.localhost:3001",
+    ];
   }
   // Production: only trust the configured base URL
   return process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL.replace(/\/$/, "")] : [];
 };
 
+// Cookie domain for cross-subdomain session sharing between www.colist.fr and sortie.colist.fr.
+// Intentionally undefined in development (localhost doesn't support cross-subdomain cookies cleanly).
+const COOKIE_DOMAIN = process.env.NODE_ENV === "production" ? ".colist.fr" : undefined;
+
 export const auth = betterAuth({
   baseURL: (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, ""),
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: getTrustedOrigins(),
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+      domain: COOKIE_DOMAIN,
+    },
+    useSecureCookies: process.env.NODE_ENV === "production",
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
