@@ -42,6 +42,10 @@ export const outings = sortie.table(
     creatorUserId: text("creator_user_id").references(() => user.id, { onDelete: "set null" }),
     creatorAnonName: varchar("creator_anon_name", { length: 100 }),
     creatorAnonEmail: varchar("creator_anon_email", { length: 255 }),
+    // SHA-256 hash of the anon creator's device cookie. Lets the original
+    // device edit the outing, and gets reset by a magic-link reclaim from
+    // another device.
+    creatorCookieTokenHash: varchar("creator_cookie_token_hash", { length: 64 }),
     title: varchar("title", { length: 200 }).notNull(),
     location: varchar("location", { length: 200 }),
     eventLink: text("event_link"),
@@ -58,6 +62,7 @@ export const outings = sortie.table(
   (t) => ({
     shortIdIdx: index("sortie_outings_short_id_idx").on(t.shortId),
     creatorUserIdx: index("sortie_outings_creator_user_idx").on(t.creatorUserId),
+    creatorCookieIdx: index("sortie_outings_creator_cookie_idx").on(t.creatorCookieTokenHash),
     deadlineIdx: index("sortie_outings_deadline_idx").on(t.deadlineAt),
   })
 );

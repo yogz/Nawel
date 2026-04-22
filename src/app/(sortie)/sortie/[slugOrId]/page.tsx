@@ -67,9 +67,10 @@ export default async function OutingPublicPage({ params }: Props) {
   }
 
   const session = await auth.api.getSession({ headers: await headers() });
-  const isCreator = session?.user?.id === outing.creatorUserId;
-
   const cookieTokenHash = await readParticipantTokenHash();
+  const isCreator =
+    (session?.user && session.user.id === outing.creatorUserId) ||
+    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
   const me = cookieTokenHash
     ? await getMyParticipant({
         outingId: outing.id,

@@ -1,0 +1,2 @@
+ALTER TABLE "sortie"."outings" ADD COLUMN "creator_cookie_token_hash" varchar(64);--> statement-breakpoint
+CREATE INDEX "sortie_outings_creator_cookie_idx" ON "sortie"."outings" USING btree ("creator_cookie_token_hash");
