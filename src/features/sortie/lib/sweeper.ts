@@ -75,12 +75,14 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     }
   }
 
-  // --- 2. J-1 reminders for outings happening in ~24h. ----------------------
-  // Window is [now+23h, now+25h] — the cron runs hourly, so at most one tick
-  // should catch any given outing. The `reminder_j1_sent_at IS NULL` clause
-  // is the real idempotency guarantee; the window is just a cheap prefilter.
-  const reminderLo = new Date(now.getTime() + 23 * 60 * 60 * 1000);
-  const reminderHi = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+  // --- 2. J-1 reminders for outings happening in the next ~48h. -------------
+  // Vercel Hobby caps crons at daily, so the tick fires once every 24h. We
+  // widen the window to [now, now+48h] so that whichever morning tick first
+  // sees an outing within 2 days sends the reminder; the stamp then prevents
+  // a second send the next morning. Net effect: confirmed attendees get a
+  // heads-up 24h–48h before their event, never after.
+  const reminderLo = now;
+  const reminderHi = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
   const reminding = await db.query.outings.findMany({
     where: and(
