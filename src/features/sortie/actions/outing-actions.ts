@@ -11,6 +11,7 @@ import { outings } from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { createOutingSchema, updateOutingSchema } from "./schemas";
 
 export type FormActionState = {
@@ -44,10 +45,18 @@ export async function createOutingAction(
     return { errors: parsed.error.flatten().fieldErrors };
   }
   const data = parsed.data;
+
+  const ip = await getClientIp();
+  const gate = await rateLimit({ key: `create:${ip}`, limit: 5, windowSeconds: 900 });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
   const user = await getSessionUser();
-  // Side-effect only: tag the creator's device so they can RSVP "yes" later
-  // and so the Phase 4 magic-link reclaim flow has an anchor.
-  await ensureParticipantTokenHash();
+  // Creator's device cookie hash — lets anon creators edit their own outing
+  // from the same browser, and is the target a magic-link reclaim flips when
+  // the creator switches device.
+  const cookieTokenHash = await ensureParticipantTokenHash();
 
   const shortId = await generateUniqueShortId();
   const title = sanitizeText(data.title, 200);
@@ -71,6 +80,7 @@ export async function createOutingAction(
     creatorUserId: user?.id ?? null,
     creatorAnonName: user ? null : creatorDisplayName,
     creatorAnonEmail: user ? null : (data.creatorEmail ?? null),
+    creatorCookieTokenHash: user ? null : cookieTokenHash,
   });
 
   // We tagged the creator's device with the same cookie hash that will be used
@@ -96,6 +106,13 @@ export async function updateOutingAction(
   }
   const data = parsed.data;
   const user = await getSessionUser();
+  const cookieTokenHash = await ensureParticipantTokenHash();
+
+  const actorKey = user ? `user:${user.id}` : `cookie:${cookieTokenHash}`;
+  const gate = await rateLimit({ key: `update:${actorKey}`, limit: 20, windowSeconds: 3600 });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, data.shortId),
@@ -104,9 +121,10 @@ export async function updateOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  // Authorization: logged-in creator only in Phase 2. Anonymous creators
-  // must reclaim via magic link (Phase 4) before they can edit.
-  if (!user || outing.creatorUserId !== user.id) {
+  const isOwner =
+    (user && outing.creatorUserId === user.id) ||
+    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  if (!isOwner) {
     return { message: "Tu n'as pas les droits pour modifier cette sortie." };
   }
 

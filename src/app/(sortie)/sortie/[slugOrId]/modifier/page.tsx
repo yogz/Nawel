@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
+import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { EditOutingForm } from "@/features/sortie/components/edit-outing-form";
 
 type Props = {
@@ -28,7 +29,11 @@ export default async function EditOutingPage({ params }: Props) {
   }
 
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user || session.user.id !== outing.creatorUserId) {
+  const cookieTokenHash = await readParticipantTokenHash();
+  const isCreator =
+    (session?.user && session.user.id === outing.creatorUserId) ||
+    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  if (!isCreator) {
     // Soft 404 — don't leak that the outing exists to random visitors.
     notFound();
   }

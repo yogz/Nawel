@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth-config";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { outings, participants } from "@drizzle/sortie-schema";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { rsvpSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
 
@@ -35,6 +36,15 @@ export async function rsvpAction(
   const data = parsed.data;
   const user = await getSessionUser();
   const cookieTokenHash = await ensureParticipantTokenHash();
+
+  const gate = await rateLimit({
+    key: `rsvp:${cookieTokenHash}`,
+    limit: 20,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, data.shortId),
