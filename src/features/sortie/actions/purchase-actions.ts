@@ -17,6 +17,7 @@ import {
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import type { FormActionState } from "./outing-actions";
 
@@ -59,7 +60,11 @@ function formDataToObject(formData: FormData): Record<string, unknown> {
     if (k === "allocationPriceCents") {
       continue;
     }
-    obj[k] = typeof v === "string" ? v : "";
+    // Skip File entries; they're handled separately via formData.get(name).
+    if (typeof v !== "string") {
+      continue;
+    }
+    obj[k] = v;
   }
   // `allocationPriceCents` may appear N times (one per seat input). FormData
   // entries() collapses duplicates; getAll() preserves the full ordered list.
@@ -142,6 +147,19 @@ export async function declarePurchaseAction(
     };
   }
 
+  // Optional proof upload — if present, validate + push to Vercel Blob before
+  // we write the purchase row, so a broken upload doesn't leave a purchase
+  // without its proof.
+  let proofFileUrl: string | null = null;
+  const proofFile = formData.get("proofFile");
+  if (proofFile instanceof File && proofFile.size > 0) {
+    const upload = await uploadPurchaseProof(proofFile);
+    if (!upload.ok) {
+      return { message: upload.message };
+    }
+    proofFileUrl = upload.url;
+  }
+
   // Per-seat price resolver: everything downstream (debt rows, allocation
   // rows) reads from here, so mode-specific logic stays in one place.
   const priceFor = (index: number, isChild: boolean): number => {
@@ -186,6 +204,7 @@ export async function declarePurchaseAction(
         uniquePriceCents: data.pricingMode === "unique" ? data.uniquePriceCents : null,
         adultPriceCents: data.pricingMode === "category" ? data.adultPriceCents : null,
         childPriceCents: data.pricingMode === "category" ? data.childPriceCents : null,
+        proofFileUrl,
       })
       .returning({ id: purchases.id });
 

@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
-import { participants } from "@drizzle/sortie-schema";
+import { participants, purchases } from "@drizzle/sortie-schema";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
@@ -54,9 +54,13 @@ export default async function DebtsPage({ params }: Props) {
     notFound();
   }
 
-  const [myDebts, myCredits] = await Promise.all([
+  const [myDebts, myCredits, purchase] = await Promise.all([
     getMyDebts(outing.id, me.id),
     getMyCredits(outing.id, me.id),
+    db.query.purchases.findFirst({
+      where: eq(purchases.outingId, outing.id),
+      columns: { proofFileUrl: true },
+    }),
   ]);
 
   return (
@@ -75,6 +79,18 @@ export default async function DebtsPage({ params }: Props) {
           L&rsquo;argent
         </p>
         <h1 className="font-serif text-4xl leading-tight text-encre-700">Où en est-on&nbsp;?</h1>
+        {purchase?.proofFileUrl && (
+          <p className="mt-4 text-sm">
+            <a
+              href={purchase.proofFileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-bordeaux-700 underline-offset-4 hover:underline"
+            >
+              Voir la preuve d&rsquo;achat ↗
+            </a>
+          </p>
+        )}
       </header>
 
       {myDebts.length > 0 && (
