@@ -136,3 +136,92 @@ export function paymentConfirmedEmail(args: {
     }),
   };
 }
+
+/**
+ * Sent to the outing creator when someone RSVPs. Includes the response type
+ * and any +1 counts so the organizer can eyeball the headcount from their
+ * inbox without reloading the page.
+ */
+export function rsvpReceivedEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  responderName: string;
+  response: "yes" | "no" | "handle_own";
+  extraAdults: number;
+  extraChildren: number;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const name = escapeHtml(args.responderName);
+  const label =
+    args.response === "yes"
+      ? "a dit oui"
+      : args.response === "no"
+        ? "ne peut pas venir"
+        : "gère sa place";
+  const guests: string[] = [];
+  if (args.extraAdults > 0) {
+    guests.push(`+${args.extraAdults} adulte${args.extraAdults > 1 ? "s" : ""}`);
+  }
+  if (args.extraChildren > 0) {
+    guests.push(`+${args.extraChildren} enfant${args.extraChildren > 1 ? "s" : ""}`);
+  }
+  const guestsLine = guests.length > 0 ? ` (${guests.join(", ")})` : "";
+
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${name} ${label}</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      Pour <strong>${title}</strong>${guestsLine}.
+    </p>
+    <p style="margin:24px 0 0;">
+      <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Voir les réponses</a>
+    </p>
+  `;
+  return {
+    subject: `${args.responderName} ${label} — ${args.outingTitle}`,
+    html: renderEmail({
+      preheader: `${args.responderName} ${label}${guestsLine} pour ${args.outingTitle}.`,
+      body,
+    }),
+  };
+}
+
+/**
+ * Sent to every non-"no" RSVP when the creator edits a material field (title,
+ * date, venue, deadline, or ticket URL). Lists only the fields that actually
+ * changed so the reader doesn't have to diff the email against memory.
+ */
+export function outingModifiedEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  changes: Array<{ label: string; before: string | null; after: string | null }>;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const rows = args.changes
+    .map(
+      (c) => `
+      <li style="list-style:none;padding:8px 0;border-bottom:1px solid #EDE5D2;">
+        <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#7E6133;">${escapeHtml(c.label)}</span><br />
+        <span style="color:#8E8168;text-decoration:line-through;">${c.before ? escapeHtml(c.before) : "—"}</span><br />
+        <span style="color:#342D22;">${c.after ? escapeHtml(c.after) : "—"}</span>
+      </li>`
+    )
+    .join("");
+
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${title} a changé</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      Le créateur a mis à jour ${args.changes.length > 1 ? "quelques détails" : "un détail"} de la sortie&nbsp;:
+    </p>
+    <ul style="margin:8px 0 24px;padding:0;">${rows}</ul>
+    <p style="margin:24px 0 0;">
+      <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Revoir la sortie</a>
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — mise à jour`,
+    html: renderEmail({
+      preheader: `${args.changes.map((c) => c.label).join(", ")} ont changé.`,
+      body,
+    }),
+  };
+}
