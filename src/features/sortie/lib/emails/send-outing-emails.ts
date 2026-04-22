@@ -3,7 +3,13 @@ import { db } from "@/lib/db";
 import { sendSortieEmail } from "@/lib/resend-sortie";
 import { participants } from "@drizzle/sortie-schema";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
-import { outingCancelledEmail, outingModifiedEmail, rsvpReceivedEmail } from "./templates";
+import {
+  j1ReminderEmail,
+  outingCancelledEmail,
+  outingModifiedEmail,
+  rsvpClosedEmail,
+  rsvpReceivedEmail,
+} from "./templates";
 
 const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
 
@@ -189,5 +195,86 @@ export async function sendOutingCancelledEmails(args: {
       .map((p) => p.anonEmail ?? p.user?.email ?? null)
       .filter((e): e is string => !!e)
       .map((email) => safeSend({ to: email, subject, html, trigger: "outing-cancelled" }))
+  );
+}
+
+/**
+ * Fired by the sweeper the first time it observes `deadlineAt < NOW()` for
+ * an `open` outing. Reaches only confirmed attendees (yes + handle_own) so
+ * the people who said no don't get a useless "la liste est arrêtée" ping.
+ */
+export async function sendRsvpClosedEmails(args: {
+  outing: {
+    id: string;
+    title: string;
+    slug: string | null;
+    shortId: string;
+    fixedDatetime: Date | null;
+    location: string | null;
+  };
+}): Promise<void> {
+  const recipients = await db.query.participants.findMany({
+    where: and(
+      eq(participants.outingId, args.outing.id),
+      ne(participants.response, "no"),
+      ne(participants.response, "interested")
+    ),
+    with: { user: { columns: { email: true } } },
+  });
+
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const { subject, html } = rsvpClosedEmail({
+    outingTitle: args.outing.title,
+    outingUrl: `${BASE_URL}${canonical}`,
+    fixedDatetime: args.outing.fixedDatetime,
+    location: args.outing.location,
+  });
+
+  await Promise.all(
+    recipients
+      .map((p) => p.anonEmail ?? p.user?.email ?? null)
+      .filter((e): e is string => !!e)
+      .map((email) => safeSend({ to: email, subject, html, trigger: "rsvp-closed" }))
+  );
+}
+
+/**
+ * Fired once per outing by the sweeper when fixedDatetime is ~24h away.
+ * Reaches confirmed attendees (yes + handle_own). The caller is responsible
+ * for stamping `reminder_j1_sent_at` before this runs so a partial failure
+ * doesn't re-fire the whole batch on the next cron tick.
+ */
+export async function sendJ1ReminderEmails(args: {
+  outing: {
+    id: string;
+    title: string;
+    slug: string | null;
+    shortId: string;
+    fixedDatetime: Date;
+    location: string | null;
+  };
+}): Promise<void> {
+  const recipients = await db.query.participants.findMany({
+    where: and(
+      eq(participants.outingId, args.outing.id),
+      ne(participants.response, "no"),
+      ne(participants.response, "interested")
+    ),
+    with: { user: { columns: { email: true } } },
+  });
+
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const { subject, html } = j1ReminderEmail({
+    outingTitle: args.outing.title,
+    outingUrl: `${BASE_URL}${canonical}`,
+    fixedDatetime: args.outing.fixedDatetime,
+    location: args.outing.location,
+  });
+
+  await Promise.all(
+    recipients
+      .map((p) => p.anonEmail ?? p.user?.email ?? null)
+      .filter((e): e is string => !!e)
+      .map((email) => safeSend({ to: email, subject, html, trigger: "j1-reminder" }))
   );
 }

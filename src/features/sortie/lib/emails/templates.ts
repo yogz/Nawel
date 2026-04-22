@@ -217,6 +217,80 @@ export function outingCancelledEmail(args: { outingTitle: string; homeUrl: strin
   };
 }
 
+/**
+ * Fired once per outing by the hourly sweeper the moment the RSVP deadline
+ * is crossed. Reaches only confirmed attendees (yes + handle_own) so no-shows
+ * don't get a useless ping.
+ */
+export function rsvpClosedEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  fixedDatetime: Date | null;
+  location: string | null;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const dateLine = args.fixedDatetime
+    ? `<strong>${escapeHtml(formatOutingDateConversational(args.fixedDatetime))}</strong>`
+    : "à la date prévue";
+  const locationLine = args.location
+    ? ` · <span style="color:#4A4132;">${escapeHtml(args.location)}</span>`
+    : "";
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${title} — la liste est arrêtée</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      La deadline est passée, plus personne ne peut répondre. Rendez-vous ${dateLine}${locationLine}.
+    </p>
+    <p style="margin:24px 0 0;">
+      <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Voir la sortie</a>
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — la liste est arrêtée`,
+    html: renderEmail({
+      preheader: `La liste est arrêtée. ${args.fixedDatetime ? formatOutingDateConversational(args.fixedDatetime) : "À bientôt"}.`,
+      body,
+    }),
+  };
+}
+
+/**
+ * Fired exactly once per outing by the sweeper when fixedDatetime is ~24h
+ * away. Idempotency enforced by the reminder_j1_sent_at timestamp — if
+ * this email fails to send, we still stamp (we don't want to retry forever
+ * and a missed reminder is better than a duplicated one).
+ */
+export function j1ReminderEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  fixedDatetime: Date;
+  location: string | null;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
+  const locationLine = args.location
+    ? `<br /><span style="color:#8E8168;">${escapeHtml(args.location)}</span>`
+    : "";
+  const body = `
+    <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">C'est demain</h1>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      <strong>${title}</strong>${locationLine}
+    </p>
+    <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
+      ${when}. À demain.
+    </p>
+    <p style="margin:24px 0 0;">
+      <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Détails de la sortie</a>
+    </p>
+  `;
+  return {
+    subject: `Demain — ${args.outingTitle}`,
+    html: renderEmail({
+      preheader: `${args.outingTitle} c'est demain. ${when}.`,
+      body,
+    }),
+  };
+}
+
 export function outingModifiedEmail(args: {
   outingTitle: string;
   outingUrl: string;
