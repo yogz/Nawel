@@ -67,6 +67,9 @@ export const outings = sortie.table(
     status: outingStatus("status").notNull().default("open"),
     showOnProfile: boolean("show_on_profile").notNull().default(true),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    // Stamped by the hourly sweeper once the J-1 reminder email has been sent,
+    // so the cron can't double-send if it overlaps its own 1-hour window.
+    reminderJ1SentAt: timestamp("reminder_j1_sent_at", { withTimezone: true }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
