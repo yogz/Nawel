@@ -38,7 +38,9 @@ export async function generateUniqueShortId(maxRetries = 5): Promise<string> {
       .from(outings)
       .where(eq(outings.shortId, candidate))
       .limit(1);
-    if (!existing) return candidate;
+    if (!existing) {
+      return candidate;
+    }
   }
   throw new Error("[sortie] short_id generation exhausted retries");
 }

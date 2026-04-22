@@ -12,7 +12,9 @@ const SORTIE_HOSTS = new Set([
 
 function isSortieHost(request: NextRequest): boolean {
   const host = request.headers.get("host") ?? "";
-  if (SORTIE_HOSTS.has(host)) return true;
+  if (SORTIE_HOSTS.has(host)) {
+    return true;
+  }
   if (
     process.env.NODE_ENV === "development" &&
     request.nextUrl.searchParams.get("host") === "sortie"

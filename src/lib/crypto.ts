@@ -23,7 +23,9 @@ let cachedKeys: Record<string, Buffer> | null = null;
 let cachedActiveId: string | null = null;
 
 function loadKeys(): { keys: Record<string, Buffer>; activeId: string } {
-  if (cachedKeys && cachedActiveId) return { keys: cachedKeys, activeId: cachedActiveId };
+  if (cachedKeys && cachedActiveId) {
+    return { keys: cachedKeys, activeId: cachedActiveId };
+  }
 
   const activeId = process.env[ACTIVE_ENV];
   if (!activeId) {
@@ -34,8 +36,12 @@ function loadKeys(): { keys: Record<string, Buffer>; activeId: string } {
 
   const keys: Record<string, Buffer> = {};
   for (const [envName, value] of Object.entries(process.env)) {
-    if (!envName.startsWith(KEY_ENV_PREFIX) || envName === ACTIVE_ENV) continue;
-    if (!value) continue;
+    if (!envName.startsWith(KEY_ENV_PREFIX) || envName === ACTIVE_ENV) {
+      continue;
+    }
+    if (!value) {
+      continue;
+    }
     const id = envName.slice(KEY_ENV_PREFIX.length).toLowerCase();
     const buf = Buffer.from(value, "base64");
     if (buf.length !== 32) {
@@ -58,7 +64,9 @@ function loadKeys(): { keys: Record<string, Buffer>; activeId: string } {
 }
 
 export function encryptSecret(plaintext: string): string {
-  if (!plaintext) throw new Error("[sortie/crypto] encryptSecret: empty plaintext");
+  if (!plaintext) {
+    throw new Error("[sortie/crypto] encryptSecret: empty plaintext");
+  }
   const { keys, activeId } = loadKeys();
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", keys[activeId], iv);

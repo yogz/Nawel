@@ -41,7 +41,9 @@ export async function readParticipantTokenHash(): Promise<string | null> {
 export async function ensureParticipantTokenHash(): Promise<string> {
   const store = await cookies();
   const existing = store.get(COOKIE_NAME)?.value;
-  if (existing) return hashToken(existing);
+  if (existing) {
+    return hashToken(existing);
+  }
 
   const raw = generateRawToken();
   store.set(COOKIE_NAME, raw, {

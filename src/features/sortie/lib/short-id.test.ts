@@ -16,7 +16,9 @@ describe("short-id / generateShortId", () => {
 
   it("has high entropy: 10 000 ids produce zero collisions", () => {
     const seen = new Set<string>();
-    for (let i = 0; i < 10_000; i++) seen.add(generateShortId());
+    for (let i = 0; i < 10_000; i++) {
+      seen.add(generateShortId());
+    }
     expect(seen.size).toBe(10_000);
   });
 });

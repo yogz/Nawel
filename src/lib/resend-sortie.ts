@@ -19,7 +19,9 @@ let client: Resend | null = null;
 function getClient(): Resend {
   if (!client) {
     const key = process.env.RESEND_API_KEY;
-    if (!key) throw new Error("[sortie/resend] RESEND_API_KEY is not set");
+    if (!key) {
+      throw new Error("[sortie/resend] RESEND_API_KEY is not set");
+    }
     client = new Resend(key);
   }
   return client;
