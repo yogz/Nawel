@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { fr } from "date-fns/locale";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,10 +19,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createOutingAction } from "@/features/sortie/actions/outing-actions";
 import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
+import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 
@@ -708,20 +707,8 @@ function DateStep({
         </h1>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border-2 border-bordeaux-100 bg-white">
-        <CalendarPicker
-          mode="single"
-          selected={date ?? undefined}
-          onSelect={(d) => {
-            if (d) {
-              onDateChange(d);
-            }
-          }}
-          locale={fr}
-          weekStartsOn={1}
-          fromDate={new Date()}
-          className="mx-auto [--cell-size:2.5rem]"
-        />
+      <div className="rounded-3xl border-2 border-bordeaux-100 bg-white p-4">
+        <SortieCalendar selected={date} onSelect={(d) => onDateChange(d)} />
       </div>
 
       {date ? (
@@ -879,24 +866,17 @@ function DeadlineSection({
                 Date précise
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
-              <CalendarPicker
-                mode="single"
-                selected={deadline ?? undefined}
+            <PopoverContent align="start" className="theme-sortie w-[320px] bg-ivoire-50 p-4">
+              <SortieCalendar
+                selected={deadline ?? null}
                 onSelect={(d) => {
-                  if (d) {
-                    // Copy the auto-deadline's time so the user only has
-                    // to pick a date, not also a time.
-                    const next = new Date(d);
-                    next.setHours(autoDeadline.getHours(), autoDeadline.getMinutes(), 0, 0);
-                    onDeadlineChange(next);
-                    setCalendarOpen(false);
-                  }
+                  // Copy the auto-deadline's time so the user only has
+                  // to pick a date, not also a time.
+                  const next = new Date(d);
+                  next.setHours(autoDeadline.getHours(), autoDeadline.getMinutes(), 0, 0);
+                  onDeadlineChange(next);
+                  setCalendarOpen(false);
                 }}
-                locale={fr}
-                weekStartsOn={1}
-                toDate={startsAt}
-                className="[--cell-size:2.25rem]"
               />
             </PopoverContent>
           </Popover>
