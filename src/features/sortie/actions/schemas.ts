@@ -41,6 +41,13 @@ const timeslotVoteInputSchema = z.object({
   available: z.boolean(),
 });
 
+// When the user doesn't set a deadline explicitly we auto-derive it: 24h
+// before the event (fixed mode) or 24h before the earliest timeslot (vote
+// mode). The field is exposed as optional on the form so first-timers only
+// have to think about *when* their sortie is, not also *until when do
+// people respond*. Power-users can still override via the modifier page.
+const DEFAULT_DEADLINE_OFFSET_MS = 24 * 60 * 60 * 1000;
+
 export const createOutingSchema = z
   .object({
     title: trimmedString.min(1).max(200),
@@ -64,7 +71,11 @@ export const createOutingSchema = z
         return raw;
       }
     }, z.array(timeslotInputSchema).min(2).max(8).optional()),
-    rsvpDeadline: z.coerce.date(),
+    // Optional on the form — derived server-side when missing.
+    rsvpDeadline: z
+      .union([z.literal(""), z.coerce.date()])
+      .optional()
+      .transform((v) => (v instanceof Date ? v : undefined)),
     ticketUrl: optionalSafeUrl,
     creatorDisplayName: trimmedString.min(1).max(100),
     creatorEmail: z
@@ -82,7 +93,7 @@ export const createOutingSchema = z
         });
         return;
       }
-      if (data.rsvpDeadline >= data.startsAt) {
+      if (data.rsvpDeadline && data.rsvpDeadline >= data.startsAt) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["rsvpDeadline"],
@@ -102,7 +113,7 @@ export const createOutingSchema = z
         (min, t) => (t.startsAt < min ? t.startsAt : min),
         data.timeslots[0].startsAt
       );
-      if (data.rsvpDeadline >= earliest) {
+      if (data.rsvpDeadline && data.rsvpDeadline >= earliest) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["rsvpDeadline"],
@@ -111,6 +122,33 @@ export const createOutingSchema = z
       }
     }
   });
+
+/**
+ * Derives the RSVP/vote closure deadline when the creator didn't set one.
+ * Keeps the logic outside the Zod schema so the inferred type of the parsed
+ * object stays clean (no `Date | undefined` → narrow gymnastics at the call
+ * site).
+ */
+export function resolveDeadline(data: {
+  rsvpDeadline: Date | undefined;
+  mode: "fixed" | "vote";
+  startsAt: Date | undefined;
+  timeslots: { startsAt: Date }[] | undefined;
+}): Date {
+  if (data.rsvpDeadline) {
+    return data.rsvpDeadline;
+  }
+  let anchor: Date | null = null;
+  if (data.mode === "fixed" && data.startsAt) {
+    anchor = data.startsAt;
+  } else if (data.mode === "vote" && data.timeslots && data.timeslots.length > 0) {
+    anchor = data.timeslots.reduce(
+      (min, t) => (t.startsAt < min ? t.startsAt : min),
+      data.timeslots[0].startsAt
+    );
+  }
+  return anchor ? new Date(anchor.getTime() - DEFAULT_DEADLINE_OFFSET_MS) : new Date();
+}
 
 export const updateOutingSchema = z
   .object({
@@ -156,7 +194,7 @@ export const voteRsvpSchema = z.object({
     } catch {
       return raw;
     }
-  }, z.array(timeslotVoteInputSchema).min(1).max(8)),
+  }, z.array(timeslotVoteInputSchema).min(0).max(8).default([])),
 });
 
 export const pickTimeslotSchema = z.object({

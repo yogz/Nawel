@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { Beer, Moon, Plus, Utensils } from "lucide-react";
+import { Film, Image as ImageIcon, Music, Plus, Theater } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
@@ -156,12 +156,13 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
     <>
       <header className="mb-8">
         <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
-        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le move ?</p>
+        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme ?</p>
       </header>
-      <div className="mb-12 grid grid-cols-3 gap-3">
-        <VibeButton href="/nouvelle?vibe=bar" icon={<Beer size={24} />} label="Bar" />
-        <VibeButton href="/nouvelle?vibe=resto" icon={<Utensils size={24} />} label="Resto" />
-        <VibeButton href="/nouvelle?vibe=chill" icon={<Moon size={24} />} label="Chill" />
+      <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <VibeButton href="/nouvelle?vibe=theatre" icon={<Theater size={24} />} label="Théâtre" />
+        <VibeButton href="/nouvelle?vibe=concert" icon={<Music size={24} />} label="Concert" />
+        <VibeButton href="/nouvelle?vibe=cine" icon={<Film size={24} />} label="Ciné" />
+        <VibeButton href="/nouvelle?vibe=expo" icon={<ImageIcon size={24} />} label="Expo" />
       </div>
     </>
   );

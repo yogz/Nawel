@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, ExternalLink, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,32 +11,16 @@ import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { GuestCountStepper } from "./guest-count-stepper";
 
+type Response = "yes" | "no" | "handle_own";
+
 type Props = {
   shortId: string;
-  existingResponse?: "yes" | "no" | "handle_own" | null;
+  existingResponse?: Response | null;
   existingName?: string;
   existingExtraAdults?: number;
   existingExtraChildren?: number;
   existingEmail?: string;
 };
-
-type Step = "pick" | "yes-form";
-
-const OPTIONS: {
-  id: "yes" | "no" | "handle_own";
-  icon: React.ReactNode;
-  title: string;
-  hint: string;
-}[] = [
-  { id: "yes", icon: <Check size={20} />, title: "J'en suis", hint: "Confirme ta place." },
-  { id: "no", icon: <X size={20} />, title: "Je ne peux pas", hint: "On se rattrape au prochain." },
-  {
-    id: "handle_own",
-    icon: <ExternalLink size={20} />,
-    title: "Je gère ma place",
-    hint: "Je prends mon billet de mon côté.",
-  },
-];
 
 export function RsvpSheet({
   shortId,
@@ -48,12 +32,15 @@ export function RsvpSheet({
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>(existingResponse ? "yes-form" : "pick");
-  const [chosen, setChosen] = useState<"yes" | "no" | "handle_own" | null>(
-    existingResponse ?? null
-  );
+  const [chosen, setChosen] = useState<Response | null>(existingResponse ?? null);
   const [adults, setAdults] = useState(existingExtraAdults);
   const [children, setChildren] = useState(existingExtraChildren);
+  // Extras (+1 adults / +1 children) are edge cases — a "Avec quelqu'un ?"
+  // toggle hides the steppers by default so the common path (tap Yes, type
+  // your name, submit) stays two taps and one keystroke.
+  const [showExtras, setShowExtras] = useState(
+    existingExtraAdults > 0 || existingExtraChildren > 0
+  );
 
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     rsvpAction,
@@ -62,9 +49,6 @@ export function RsvpSheet({
 
   // Close the sheet once the action finishes with no errors. The state object
   // carries either { errors } or { message } on failure — empty means success.
-  // Deferred via queueMicrotask because setState-in-effect triggers the
-  // cascading-render lint; the microtask lets React finish its current pass
-  // before we mutate the Dialog's open prop.
   const wasPending = useRef(false);
   useEffect(() => {
     const justFinished = wasPending.current && !pending;
@@ -77,7 +61,7 @@ export function RsvpSheet({
     }
   }, [pending, state, router]);
 
-  // Any error we don't show in-field (shortId, response, extraAdults/Children).
+  // Any error we don't show in-field (shortId, response, extras).
   const hiddenFieldErrors = state.errors
     ? Object.entries(state.errors)
         .filter(([k]) => !["displayName", "email"].includes(k))
@@ -96,127 +80,160 @@ export function RsvpSheet({
       </SheetTrigger>
       <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
         <SheetHeader className="mb-6 text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">
-            {step === "pick" ? "Tu viens ?" : chosen === "yes" ? "Super." : "C'est noté."}
-          </SheetTitle>
-          {step === "yes-form" && chosen === "yes" && (
-            <p className="text-sm text-encre-400">Deux trois infos et c&rsquo;est fait.</p>
-          )}
+          <SheetTitle className="font-serif text-2xl text-encre-700">Tu viens ?</SheetTitle>
         </SheetHeader>
 
-        {step === "pick" && (
-          <div className="flex flex-col gap-3">
-            {OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => {
-                  setChosen(opt.id);
-                  setStep("yes-form");
-                }}
-                className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-100 p-4 text-left transition-colors hover:border-or-500 hover:bg-ivoire-50"
-              >
-                <span className="grid size-8 shrink-0 place-items-center rounded-full border border-or-500 text-or-700">
-                  {opt.icon}
-                </span>
-                <span className="flex flex-col">
-                  <span className="font-medium text-encre-700">{opt.title}</span>
-                  <span className="text-sm text-encre-400">{opt.hint}</span>
-                </span>
-              </button>
-            ))}
+        <form action={formAction} className="flex flex-col gap-5">
+          <input type="hidden" name="shortId" value={shortId} />
+          <input type="hidden" name="response" value={chosen ?? ""} />
+
+          <div className="grid grid-cols-2 gap-3">
+            <ResponsePill
+              active={chosen === "yes"}
+              onClick={() => setChosen("yes")}
+              icon={<Check size={20} strokeWidth={2.5} />}
+              label="J'en suis"
+              tone="yes"
+            />
+            <ResponsePill
+              active={chosen === "no"}
+              onClick={() => setChosen("no")}
+              icon={<X size={20} strokeWidth={2.5} />}
+              label="Je peux pas"
+              tone="no"
+            />
           </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setChosen("handle_own")}
+            className={`self-start text-xs underline-offset-4 hover:underline ${
+              chosen === "handle_own" ? "text-bordeaux-700" : "text-encre-400"
+            }`}
+          >
+            Je gère ma place de mon côté{chosen === "handle_own" ? " ✓" : ""}
+          </button>
 
-        {step === "yes-form" && chosen !== null && (
-          <form action={formAction} className="flex flex-col gap-5">
-            <input type="hidden" name="shortId" value={shortId} />
-            <input type="hidden" name="response" value={chosen} />
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="displayName" className="text-[13px] font-medium text-encre-500">
+              Ton prénom
+            </Label>
+            <Input
+              id="displayName"
+              name="displayName"
+              required
+              defaultValue={existingName}
+              maxLength={100}
+              placeholder="Claire"
+              autoComplete="given-name"
+            />
+            {state.errors?.displayName?.[0] && (
+              <p className="text-xs text-erreur-700">{state.errors.displayName[0]}</p>
+            )}
+          </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="displayName" className="text-[13px] font-medium text-encre-500">
-                Ton prénom
-              </Label>
-              <Input
-                id="displayName"
-                name="displayName"
-                required
-                defaultValue={existingName}
-                maxLength={100}
-                placeholder="Claire"
-                autoComplete="given-name"
-              />
-              {state.errors?.displayName?.[0] && (
-                <p className="text-xs text-erreur-700">{state.errors.displayName[0]}</p>
+          {chosen === "yes" && (
+            <div className="flex flex-col gap-3">
+              {!showExtras ? (
+                <button
+                  type="button"
+                  onClick={() => setShowExtras(true)}
+                  className="self-start text-sm text-bordeaux-700 underline-offset-4 hover:underline"
+                >
+                  + Avec quelqu&rsquo;un ?
+                </button>
+              ) : (
+                <div className="flex flex-col gap-3 rounded-lg bg-ivoire-50 p-4">
+                  <p className="text-sm text-encre-500">Tu viens avec quelqu&rsquo;un&nbsp;?</p>
+                  <GuestCountStepper
+                    label="Adultes en plus"
+                    name="extraAdults"
+                    value={adults}
+                    onChange={setAdults}
+                  />
+                  <GuestCountStepper
+                    label="Enfants en plus"
+                    name="extraChildren"
+                    value={children}
+                    onChange={setChildren}
+                  />
+                </div>
+              )}
+              {!showExtras && (
+                <>
+                  <input type="hidden" name="extraAdults" value="0" />
+                  <input type="hidden" name="extraChildren" value="0" />
+                </>
               )}
             </div>
+          )}
 
-            {chosen === "yes" ? (
-              <div className="flex flex-col gap-3 rounded-lg bg-ivoire-50 p-4">
-                <p className="text-sm text-encre-500">Tu viens avec quelqu&rsquo;un ?</p>
-                <GuestCountStepper
-                  label="Adultes en plus"
-                  name="extraAdults"
-                  value={adults}
-                  onChange={setAdults}
-                />
-                <GuestCountStepper
-                  label="Enfants en plus"
-                  name="extraChildren"
-                  value={children}
-                  onChange={setChildren}
-                />
-              </div>
-            ) : (
-              <>
-                <input type="hidden" name="extraAdults" value="0" />
-                <input type="hidden" name="extraChildren" value="0" />
-              </>
+          {chosen !== "yes" && (
+            <>
+              <input type="hidden" name="extraAdults" value="0" />
+              <input type="hidden" name="extraChildren" value="0" />
+            </>
+          )}
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
+              Ton email <span className="text-encre-300">(facultatif)</span>
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              defaultValue={existingEmail}
+              placeholder="pour être prévenu·e des changements"
+            />
+            {state.errors?.email?.[0] && (
+              <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
             )}
+          </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
-                Ton email <span className="text-encre-300">(facultatif)</span>
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={existingEmail}
-                placeholder="pour être prévenu·e des changements"
-              />
-              {state.errors?.email?.[0] && (
-                <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
-              )}
-            </div>
+          {generalError && (
+            <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
+              {generalError}
+            </p>
+          )}
 
-            {generalError && (
-              <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
-                {generalError}
-              </p>
-            )}
-
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep("pick")}
-                className="text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-              >
-                ← Changer d&rsquo;avis
-              </button>
-              <Button type="submit" size="lg" disabled={pending}>
-                {pending
-                  ? "On y va…"
-                  : chosen === "yes"
-                    ? "Je confirme"
-                    : chosen === "no"
-                      ? "C'est noté"
-                      : "OK"}
-              </Button>
-            </div>
-          </form>
-        )}
+          <div className="flex justify-end">
+            <Button type="submit" size="lg" disabled={pending || !chosen}>
+              {pending ? "On y va…" : "Je confirme"}
+            </Button>
+          </div>
+        </form>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function ResponsePill({
+  active,
+  onClick,
+  icon,
+  label,
+  tone,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  tone: "yes" | "no";
+}) {
+  const palette = active
+    ? tone === "yes"
+      ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+      : "border-encre-600 bg-encre-600 text-ivoire-50"
+    : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex h-20 flex-col items-center justify-center gap-1 rounded-xl border-2 text-base font-semibold transition-all ${palette}`}
+    >
+      <span>{icon}</span>
+      <span>{label}</span>
+    </button>
   );
 }

@@ -22,6 +22,7 @@ import {
   cancelOutingSchema,
   createOutingSchema,
   pickTimeslotSchema,
+  resolveDeadline,
   updateOutingSchema,
 } from "./schemas";
 
@@ -90,7 +91,12 @@ export async function createOutingAction(
       location: venue,
       eventLink: data.ticketUrl ?? null,
       fixedDatetime: data.mode === "fixed" ? (data.startsAt ?? null) : null,
-      deadlineAt: data.rsvpDeadline,
+      deadlineAt: resolveDeadline({
+        rsvpDeadline: data.rsvpDeadline,
+        mode: data.mode,
+        startsAt: data.startsAt,
+        timeslots: data.timeslots,
+      }),
       mode: data.mode,
       status: "open",
       showOnProfile: data.showOnProfile,

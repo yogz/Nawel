@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +25,6 @@ type Props = {
   hasVoted: boolean;
 };
 
-type VoteState = "yes" | "no" | null;
-
 export function VoteRsvpSheet({
   shortId,
   timeslots,
@@ -37,13 +35,15 @@ export function VoteRsvpSheet({
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [votes, setVotes] = useState<Record<string, VoteState>>(() => {
-    const init: Record<string, VoteState> = {};
+  // Single toggle per slot: true = available, undefined = not selected.
+  // We no longer track an explicit "not available" state — unselected rows
+  // are implicit no, and submitting with zero selections registers the
+  // participant as unavailable. One tap per slot instead of two.
+  const [selected, setSelected] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
     for (const t of timeslots) {
-      if (t.id in existingVotes) {
-        init[t.id] = existingVotes[t.id] ? "yes" : "no";
-      } else {
-        init[t.id] = null;
+      if (existingVotes[t.id] === true) {
+        init[t.id] = true;
       }
     }
     return init;
@@ -73,19 +73,24 @@ export function VoteRsvpSheet({
     : [];
   const generalError = state.message ?? hiddenFieldErrors[0] ?? null;
 
-  // Only include slots the participant actually opined on — not voting on a
-  // slot is distinct from voting "not available" and lets the creator see
-  // who still owes an answer.
   const serializedVotes = JSON.stringify(
-    Object.entries(votes)
-      .filter(([, v]) => v !== null)
-      .map(([timeslotId, v]) => ({ timeslotId, available: v === "yes" }))
+    Object.entries(selected)
+      .filter(([, v]) => v)
+      .map(([timeslotId]) => ({ timeslotId, available: true }))
   );
 
-  const hasAnyVote = Object.values(votes).some((v) => v !== null);
+  const selectedCount = Object.values(selected).filter(Boolean).length;
 
-  function setVote(timeslotId: string, next: VoteState) {
-    setVotes((prev) => ({ ...prev, [timeslotId]: next }));
+  function toggle(timeslotId: string) {
+    setSelected((prev) => {
+      const next = { ...prev };
+      if (next[timeslotId]) {
+        delete next[timeslotId];
+      } else {
+        next[timeslotId] = true;
+      }
+      return next;
+    });
   }
 
   return (
@@ -97,9 +102,9 @@ export function VoteRsvpSheet({
       </SheetTrigger>
       <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
         <SheetHeader className="mb-6 text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">Tes disponibilités</SheetTitle>
+          <SheetTitle className="font-serif text-2xl text-encre-700">Quand tu peux ?</SheetTitle>
           <p className="text-sm text-encre-400">
-            Coche les créneaux où tu peux. Tu pourras modifier tant que les votes sont ouverts.
+            Tape les créneaux qui te vont. Rien sélectionné = tu peux pas.
           </p>
         </SheetHeader>
 
@@ -108,30 +113,36 @@ export function VoteRsvpSheet({
           <input type="hidden" name="votes" value={serializedVotes} />
 
           <ul className="flex flex-col gap-2">
-            {timeslots.map((ts) => (
-              <li
-                key={ts.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3"
-              >
-                <span className="text-sm text-encre-700">
-                  {formatOutingDateConversational(ts.startsAt)}
-                </span>
-                <div className="flex gap-2">
-                  <VoteButton
-                    active={votes[ts.id] === "yes"}
-                    variant="yes"
-                    onClick={() => setVote(ts.id, votes[ts.id] === "yes" ? null : "yes")}
-                    label="Dispo"
-                  />
-                  <VoteButton
-                    active={votes[ts.id] === "no"}
-                    variant="no"
-                    onClick={() => setVote(ts.id, votes[ts.id] === "no" ? null : "no")}
-                    label="Pas dispo"
-                  />
-                </div>
-              </li>
-            ))}
+            {timeslots.map((ts) => {
+              const active = !!selected[ts.id];
+              return (
+                <li key={ts.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggle(ts.id)}
+                    aria-pressed={active}
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl border p-4 text-left transition-all ${
+                      active
+                        ? "border-bordeaux-600 bg-bordeaux-50 text-bordeaux-700"
+                        : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300"
+                    }`}
+                  >
+                    <span className="text-sm font-medium">
+                      {formatOutingDateConversational(ts.startsAt)}
+                    </span>
+                    <span
+                      className={`grid size-6 place-items-center rounded-full border-2 transition-all ${
+                        active
+                          ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                          : "border-encre-200"
+                      }`}
+                    >
+                      {active && <Check size={14} strokeWidth={3} />}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="flex flex-col gap-1.5">
@@ -175,44 +186,16 @@ export function VoteRsvpSheet({
           )}
 
           <div className="flex items-center justify-end">
-            <Button type="submit" size="lg" disabled={pending || !hasAnyVote}>
-              {pending ? "On y va…" : "Envoyer mes votes"}
+            <Button type="submit" size="lg" disabled={pending}>
+              {pending
+                ? "On y va…"
+                : selectedCount === 0
+                  ? "Je peux aucun"
+                  : `Envoyer (${selectedCount})`}
             </Button>
           </div>
         </form>
       </SheetContent>
     </Sheet>
-  );
-}
-
-function VoteButton({
-  active,
-  variant,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  variant: "yes" | "no";
-  onClick: () => void;
-  label: string;
-}) {
-  const palette =
-    variant === "yes"
-      ? active
-        ? "bg-bordeaux-600 text-ivoire-100"
-        : "text-encre-500 hover:bg-ivoire-100"
-      : active
-        ? "bg-encre-600 text-ivoire-100"
-        : "text-encre-500 hover:bg-ivoire-100";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`inline-flex items-center gap-1 rounded-full border border-ivoire-400 px-3 py-1.5 text-xs transition-colors ${palette}`}
-    >
-      {variant === "yes" ? <Check size={12} /> : <X size={12} />}
-      {label}
-    </button>
   );
 }

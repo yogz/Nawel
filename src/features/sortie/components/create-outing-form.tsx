@@ -39,27 +39,15 @@ export function CreateOutingForm({ defaultCreatorName, defaultTitle, isLoggedIn 
       <input type="hidden" name="mode" value={mode} />
 
       {mode === "fixed" ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          <DateField label="Date et heure" name="startsAt" required error={errors.startsAt?.[0]} />
-          <DateField
-            label="Réponse avant"
-            name="rsvpDeadline"
-            required
-            helper="La liste se fige après cette date."
-            error={errors.rsvpDeadline?.[0]}
-          />
-        </div>
+        <DateField
+          label="Date et heure"
+          name="startsAt"
+          required
+          helper="Les réponses se ferment 24h avant."
+          error={errors.startsAt?.[0]}
+        />
       ) : (
-        <>
-          <TimeslotListEditor hiddenInputName="timeslots" error={errors.timeslots?.[0]} />
-          <DateField
-            label="Fin du sondage"
-            name="rsvpDeadline"
-            required
-            helper="Les votes se ferment après cette date."
-            error={errors.rsvpDeadline?.[0]}
-          />
-        </>
+        <TimeslotListEditor hiddenInputName="timeslots" error={errors.timeslots?.[0]} />
       )}
 
       <FormField
