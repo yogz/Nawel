@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { Film, Image as ImageIcon, Mic2, Music, Plus, Theater } from "lucide-react";
+import { Film, Image as ImageIcon, Mic2, MoreHorizontal, Music, Plus, Theater } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
@@ -94,15 +94,20 @@ export default async function SortieHome() {
         </details>
       )}
 
-      {/* Floating CTA: sticky bottom-right. On larger screens it sits at a
-          roomier offset so it doesn't collide with reach-zone thumbs. */}
+      {/* Floating CTA: sticky bottom-right. Safe-area inset lets it sit
+          above the iOS home indicator instead of getting clipped by the
+          34pt gesture zone. Icon-only on small screens keeps it from
+          eating the right edge of list cards at 360px. */}
       <Link
         href="/nouvelle"
         aria-label="Nouvelle sortie"
-        className="fixed right-5 bottom-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-bordeaux-600 pr-6 pl-5 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 active:scale-95 sm:right-8 sm:bottom-8"
+        style={{
+          bottom: "max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem))",
+        }}
+        className="fixed right-5 z-50 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 active:scale-95 sm:right-8 sm:w-auto sm:justify-start sm:pr-6 sm:pl-5"
       >
-        <Plus size={20} strokeWidth={2.5} />
-        <span className="text-base font-semibold">Nouvelle sortie</span>
+        <Plus size={22} strokeWidth={2.5} />
+        <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
       </Link>
     </main>
   );
@@ -158,12 +163,13 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
         <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
         <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme ?</p>
       </header>
-      <div className="mb-12 grid grid-cols-3 gap-3 sm:grid-cols-5">
+      <div className="mb-12 grid grid-cols-3 gap-3 sm:grid-cols-6">
         <VibeButton href="/nouvelle?vibe=theatre" icon={<Theater size={24} />} label="Théâtre" />
         <VibeButton href="/nouvelle?vibe=opera" icon={<Mic2 size={24} />} label="Opéra" />
         <VibeButton href="/nouvelle?vibe=concert" icon={<Music size={24} />} label="Concert" />
         <VibeButton href="/nouvelle?vibe=cine" icon={<Film size={24} />} label="Ciné" />
         <VibeButton href="/nouvelle?vibe=expo" icon={<ImageIcon size={24} />} label="Expo" />
+        <VibeButton href="/nouvelle" icon={<MoreHorizontal size={24} />} label="Autre" />
       </div>
     </>
   );
@@ -173,10 +179,10 @@ function VibeButton({ href, icon, label }: { href: string; icon: React.ReactNode
   return (
     <Link
       href={href}
-      className="flex h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-encre-100 bg-white text-encre-600 shadow-[var(--shadow-sm)] transition-all duration-[var(--dur-fast)] hover:-translate-y-0.5 hover:border-bordeaux-300 hover:text-bordeaux-600 active:scale-95"
+      className="flex h-20 flex-col items-center justify-center gap-1.5 rounded-2xl border border-encre-100 bg-white text-encre-600 shadow-[var(--shadow-sm)] transition-colors duration-[var(--dur-fast)] active:scale-95 [@media(hover:hover)]:hover:border-bordeaux-300 [@media(hover:hover)]:hover:text-bordeaux-600"
     >
       <span className="text-bordeaux-600">{icon}</span>
-      <span className="text-sm font-semibold">{label}</span>
+      <span className="text-xs font-semibold">{label}</span>
     </Link>
   );
 }

@@ -70,6 +70,11 @@ export const outings = sortie.table(
     // Stamped by the hourly sweeper once the J-1 reminder email has been sent,
     // so the cron can't double-send if it overlaps its own 1-hour window.
     reminderJ1SentAt: timestamp("reminder_j1_sent_at", { withTimezone: true }),
+    // Poster / banner image for the event. Populated by the ticket-link
+    // paster from the target page's `og:image`, or left null when the
+    // creator types everything by hand. Stored as a URL (we don't rehost
+    // the image — it's the ticket site's CDN).
+    heroImageUrl: text("hero_image_url"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

@@ -89,7 +89,7 @@ export function RsvpSheet({
 
           <div className="grid grid-cols-2 gap-3">
             <ResponsePill
-              active={chosen === "yes"}
+              active={chosen === "yes" || chosen === "handle_own"}
               onClick={() => setChosen("yes")}
               icon={<Check size={20} strokeWidth={2.5} />}
               label="J'en suis"
@@ -103,15 +103,6 @@ export function RsvpSheet({
               tone="no"
             />
           </div>
-          <button
-            type="button"
-            onClick={() => setChosen("handle_own")}
-            className={`self-start text-xs underline-offset-4 hover:underline ${
-              chosen === "handle_own" ? "text-bordeaux-700" : "text-encre-400"
-            }`}
-          >
-            Je gère ma place de mon côté{chosen === "handle_own" ? " ✓" : ""}
-          </button>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="displayName" className="text-[13px] font-medium text-encre-500">
@@ -131,7 +122,7 @@ export function RsvpSheet({
             )}
           </div>
 
-          {chosen === "yes" && (
+          {(chosen === "yes" || chosen === "handle_own") && (
             <div className="flex flex-col gap-3">
               {!showExtras ? (
                 <button
@@ -164,6 +155,22 @@ export function RsvpSheet({
                   <input type="hidden" name="extraChildren" value="0" />
                 </>
               )}
+
+              <label className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3 text-sm text-encre-500">
+                <input
+                  type="checkbox"
+                  checked={chosen === "handle_own"}
+                  onChange={(e) => setChosen(e.target.checked ? "handle_own" : "yes")}
+                  className="mt-0.5 h-4 w-4 accent-bordeaux-600"
+                />
+                <span className="flex flex-col">
+                  <span className="font-medium text-encre-700">Je prends mon billet moi-même</span>
+                  <span className="text-xs text-encre-400">
+                    Coche si tu ne veux pas qu&rsquo;on achète ta place. Sinon, quelqu&rsquo;un du
+                    groupe prendra pour toi — tu rembourseras après.
+                  </span>
+                </span>
+              </label>
             </div>
           )}
 
@@ -196,7 +203,14 @@ export function RsvpSheet({
             </p>
           )}
 
-          <div className="flex justify-end">
+          {/* Sticky footer keeps the submit button visible when iOS Safari
+              covers the bottom of the sheet with the soft keyboard — the
+              name input is right above, so tapping submit used to mean
+              scrolling past the keyboard first. */}
+          <div
+            className="sticky -mx-6 -mb-6 flex justify-end border-t border-ivoire-400 bg-ivoire-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+            style={{ bottom: 0 }}
+          >
             <Button type="submit" size="lg" disabled={pending || !chosen}>
               {pending ? "On y va…" : "Je confirme"}
             </Button>

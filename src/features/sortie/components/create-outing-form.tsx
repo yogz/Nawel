@@ -1,14 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useActionState, useMemo, useState } from "react";
+import { Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
 import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
 import { DateTimePicker } from "./date-time-picker";
 import { FormField } from "./form-field";
-import { TicketLinkPaster } from "./ticket-link-paster";
-import { TimeslotListEditor } from "./timeslot-list-editor";
+
+// Heavy client components deferred off the critical path. The paster only
+// matters when the user clicks "J'ai le lien"; the timeslot editor only
+// matters when they flip mode to vote. Skipping SSR for both — they're
+// form inputs, no SEO value, and the skeleton is invisible (they're
+// hidden until interaction anyway).
+const TicketLinkPaster = dynamic(
+  () => import("./ticket-link-paster").then((m) => m.TicketLinkPaster),
+  { ssr: false }
+);
+const TimeslotListEditor = dynamic(
+  () => import("./timeslot-list-editor").then((m) => m.TimeslotListEditor),
+  { ssr: false }
+);
 
 const INITIAL: FormActionState = {};
 
@@ -31,6 +45,11 @@ export function CreateOutingForm({
 }: Props) {
   const [state, formAction, pending] = useActionState(createOutingAction, INITIAL);
   const [mode, setMode] = useState<Mode>("fixed");
+  // Auto-open the paster when the user arrived via a vibe chip — they were
+  // primed by the chip ("Théâtre → Fnac Spectacles…") so showing the tool
+  // inline has high intent match. Without a vibe they see a discreet link
+  // instead, since a blank URL input at the top was confusing first-timers.
+  const [showPaster, setShowPaster] = useState(Boolean(pasterHint));
   const errors = state.errors ?? {};
 
   // Track startsAt so we can preview the auto-deadline to the user and let
@@ -58,14 +77,23 @@ export function CreateOutingForm({
   const [pastedTitle, setPastedTitle] = useState<string | undefined>(defaultTitle);
   const [pastedVenue, setPastedVenue] = useState<string | undefined>();
   const [pastedTicketUrl, setPastedTicketUrl] = useState<string | undefined>();
+  const [pastedHeroImage, setPastedHeroImage] = useState<string | undefined>();
   const [pasteKey, setPasteKey] = useState(0);
 
-  function handlePasted(data: { title: string | null; venue: string | null; ticketUrl: string }) {
+  function handlePasted(data: {
+    title: string | null;
+    venue: string | null;
+    image: string | null;
+    ticketUrl: string;
+  }) {
     if (data.title) {
       setPastedTitle(data.title);
     }
     if (data.venue) {
       setPastedVenue(data.venue);
+    }
+    if (data.image) {
+      setPastedHeroImage(data.image);
     }
     setPastedTicketUrl(data.ticketUrl);
     setPasteKey((k) => k + 1);
@@ -73,7 +101,22 @@ export function CreateOutingForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
-      <TicketLinkPaster onParsed={handlePasted} placeholder={pasterPlaceholder} hint={pasterHint} />
+      {showPaster ? (
+        <TicketLinkPaster
+          onParsed={handlePasted}
+          placeholder={pasterPlaceholder}
+          hint={pasterHint}
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setShowPaster(true)}
+          className="inline-flex items-center gap-1.5 self-start text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+        >
+          <Link2 size={14} />
+          J&rsquo;ai le lien billetterie (remplir auto)
+        </button>
+      )}
 
       <FormField
         key={`title-${pasteKey}`}
@@ -140,8 +183,36 @@ export function CreateOutingForm({
         type="url"
         defaultValue={pastedTicketUrl}
         placeholder="https://…"
+        helper="Quelqu'un achètera les places pour le groupe ? On s'occupe de la comptabilité après."
         error={errors.ticketUrl?.[0]}
       />
+
+      {/* Hero image captured by the paster. Invisible to the user — they
+          see a thumbnail above if one was detected. */}
+      <input type="hidden" name="heroImageUrl" value={pastedHeroImage ?? ""} />
+      {pastedHeroImage && (
+        <div className="flex items-center gap-3 rounded-lg border border-encre-100 bg-white p-3">
+          {/* eslint-disable-next-line @next/next/no-img-element -- remote
+              ticket-site URLs, next/image remote patterns would need each
+              domain whitelisted. Safe here: the URL passed through our
+              SSRF-guarded paster. */}
+          <img
+            src={pastedHeroImage}
+            alt=""
+            className="h-14 w-14 shrink-0 rounded-md object-cover"
+          />
+          <div className="flex flex-1 flex-col gap-0.5 text-xs">
+            <span className="font-semibold text-encre-700">Image détectée depuis le lien</span>
+            <button
+              type="button"
+              onClick={() => setPastedHeroImage(undefined)}
+              className="self-start text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+            >
+              Retirer
+            </button>
+          </div>
+        </div>
+      )}
 
       {!isLoggedIn && (
         <>
@@ -157,7 +228,7 @@ export function CreateOutingForm({
             label="Ton email"
             name="creatorEmail"
             type="email"
-            helper="Pour reprendre la main si tu changes d'appareil."
+            helper="Pour qu'on te prévienne si quelqu'un répond."
             error={errors.creatorEmail?.[0]}
           />
         </>

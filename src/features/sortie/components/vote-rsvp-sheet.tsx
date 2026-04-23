@@ -185,7 +185,10 @@ export function VoteRsvpSheet({
             </p>
           )}
 
-          <div className="flex items-center justify-end">
+          <div
+            className="sticky -mx-6 -mb-6 flex items-center justify-end border-t border-ivoire-400 bg-ivoire-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+            style={{ bottom: 0 }}
+          >
             <Button type="submit" size="lg" disabled={pending}>
               {pending
                 ? "On y va…"

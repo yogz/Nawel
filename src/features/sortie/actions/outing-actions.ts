@@ -90,6 +90,7 @@ export async function createOutingAction(
       title,
       location: venue,
       eventLink: data.ticketUrl ?? null,
+      heroImageUrl: data.heroImageUrl ?? null,
       fixedDatetime: data.mode === "fixed" ? (data.startsAt ?? null) : null,
       deadlineAt: resolveDeadline({
         rsvpDeadline: data.rsvpDeadline,
