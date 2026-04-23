@@ -186,15 +186,17 @@ export async function castVoteAction(
     .where(eq(outingTimeslots.outingId, outing.id));
   const validIds = new Set(validSlots.map((s) => s.id));
   const filtered = data.votes.filter((v) => validIds.has(v.timeslotId));
-  if (filtered.length === 0) {
-    return { message: "Aucun créneau valide sélectionné." };
-  }
 
   const displayName = user
     ? (user.name ?? "").slice(0, 100) || sanitizeStrictText(data.displayName, 100)
     : sanitizeStrictText(data.displayName, 100);
 
-  const response = filtered.some((v) => v.available) ? "interested" : "no";
+  // Simplified vote UX: selecting at least one slot = interested, selecting
+  // nothing = "I can't make any" (response "no"). No more "Pas dispo"
+  // toggle — unvoted = implicit no, which keeps the matrix at one tap per
+  // slot instead of two.
+  const response: "interested" | "no" =
+    filtered.length > 0 && filtered.some((v) => v.available) ? "interested" : "no";
 
   const existing = await db.query.participants.findFirst({
     where: and(
@@ -235,13 +237,15 @@ export async function castVoteAction(
   // means we can't UPSERT-with-conflict cheaply, and a handful of rows per
   // participant keeps the write cost negligible.
   await db.delete(timeslotVotes).where(eq(timeslotVotes.participantId, participantId));
-  await db.insert(timeslotVotes).values(
-    filtered.map((v) => ({
-      participantId,
-      timeslotId: v.timeslotId,
-      available: v.available,
-    }))
-  );
+  if (filtered.length > 0) {
+    await db.insert(timeslotVotes).values(
+      filtered.map((v) => ({
+        participantId,
+        timeslotId: v.timeslotId,
+        available: v.available,
+      }))
+    );
+  }
 
   revalidatePath(`/${data.shortId}`);
   return {};

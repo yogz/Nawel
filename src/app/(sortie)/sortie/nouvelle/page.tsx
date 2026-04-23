@@ -11,9 +11,10 @@ export const metadata = {
 // vibe chips on the home page useful — clicking "Resto" lands you in a
 // form that's already half-filled in.
 const VIBE_TITLES: Record<string, string> = {
-  bar: "Apéro au bar",
-  resto: "Dîner au resto",
-  chill: "Soirée chill",
+  theatre: "Une pièce de théâtre",
+  concert: "Un concert",
+  cine: "Au cinéma",
+  expo: "Une expo",
 };
 
 type Props = {
