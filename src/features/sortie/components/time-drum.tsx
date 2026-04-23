@@ -1,83 +1,94 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useState } from "react";
 
 type Props = {
   selected: string | null;
   onSelect: (time: string) => void;
-  startHour?: number;
-  endHour?: number;
-  stepMinutes?: number;
 };
 
+// Cultural curtain times cluster tightly around these slots — 95% of
+// evening concerts, theater shows, operas start here. Giving six first-
+// class presets kills the 27-chip horizontal scroll the wizard shipped
+// with and leaves "Autre heure" as the escape hatch for daytime
+// matinées, late shows, and anything outside the cluster.
+const PRESETS = ["19:00", "19:30", "20:00", "20:30", "21:00"] as const;
+
 /**
- * Horizontal chip picker for a time of day. Replaced the iOS-wheel drum
- * because users couldn't tell which row was "in the band" — the chips
- * make the selected slot unambiguous (solid cobalt pill vs outlined
- * others) and big enough to hit with a thumb.
- *
- * Default range covers cultural-outing start times: 17:00 → 23:30 in
- * 15-minute steps.
+ * Time selector: five preset chips + an "Autre heure" that reveals a
+ * native `<input type="time" step="900">`. Native means iOS renders its
+ * wheel and Android renders its clock without any JS — the two
+ * platforms that lose nothing from custom wheel attempts. Export name
+ * stays `TimeDrum` for historical-import-stability; the visual shape
+ * is now a preset grid, not a wheel.
  */
-export function TimeDrum({
-  selected,
-  onSelect,
-  startHour = 17,
-  endHour = 23,
-  stepMinutes = 15,
-}: Props) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
+export function TimeDrum({ selected, onSelect }: Props) {
+  const isPreset = selected !== null && (PRESETS as readonly string[]).includes(selected);
+  const [customOpen, setCustomOpen] = useState(selected !== null && !isPreset);
 
-  const times = useMemo(() => {
-    const out: string[] = [];
-    for (let h = startHour; h <= endHour; h++) {
-      for (let m = 0; m < 60; m += stepMinutes) {
-        out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
-      }
-    }
-    return out;
-  }, [startHour, endHour, stepMinutes]);
-
-  // Center the selected chip on mount so the user sees it without
-  // needing to scroll. `inline: "center"` on a horizontal scroller
-  // handles this cleanly.
-  useEffect(() => {
-    if (!scrollerRef.current) {
-      return;
-    }
-    const target = selected ?? "20:00";
-    const node = scrollerRef.current.querySelector<HTMLElement>(`[data-t="${target}"]`);
-    if (node) {
-      requestAnimationFrame(() => {
-        node.scrollIntoView({ behavior: "auto", inline: "center", block: "nearest" });
-      });
-    }
-  }, [selected]);
+  function pick(t: string) {
+    setCustomOpen(false);
+    onSelect(t);
+  }
 
   return (
-    <div
-      ref={scrollerRef}
-      className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
-      {times.map((t) => {
-        const isSelected = selected === t;
-        return (
-          <button
-            key={t}
-            type="button"
-            data-t={t}
-            onClick={() => onSelect(t)}
-            aria-pressed={isSelected}
-            className={`flex h-16 w-20 shrink-0 items-center justify-center rounded-2xl border-2 text-xl font-black tabular-nums tracking-tight transition-colors [scroll-snap-align:center] ${
-              isSelected
-                ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                : "border-encre-100 bg-white text-encre-400 active:scale-95"
-            }`}
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-3 gap-2">
+        {PRESETS.map((t) => {
+          const isSelected = !customOpen && selected === t;
+          return (
+            <button
+              key={t}
+              type="button"
+              onClick={() => pick(t)}
+              aria-pressed={isSelected}
+              className={`flex h-14 items-center justify-center rounded-xl border-2 text-lg font-black tabular-nums tracking-tight transition-colors ${
+                isSelected
+                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                  : "border-encre-100 bg-white text-encre-700 active:scale-95"
+              }`}
+            >
+              {t.replace(":", "h")}
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => {
+            setCustomOpen(true);
+            if (!selected || (PRESETS as readonly string[]).includes(selected)) {
+              onSelect("20:00");
+            }
+          }}
+          aria-pressed={customOpen}
+          className={`flex h-14 items-center justify-center rounded-xl border-2 text-sm font-bold transition-colors ${
+            customOpen
+              ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+              : "border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 active:scale-95"
+          }`}
+        >
+          Autre heure
+        </button>
+      </div>
+
+      {customOpen && (
+        <div className="flex items-center gap-3 rounded-xl border border-encre-100 bg-white p-3">
+          <label
+            htmlFor="custom-time-input"
+            className="text-xs font-black uppercase tracking-[0.12em] text-encre-400"
           >
-            {t.replace(":", "h")}
-          </button>
-        );
-      })}
+            Heure
+          </label>
+          <input
+            id="custom-time-input"
+            type="time"
+            step="900"
+            value={selected ?? "20:00"}
+            onChange={(e) => onSelect(e.target.value)}
+            className="ml-auto rounded-md border border-encre-100 bg-ivoire-50 px-3 py-2 text-lg font-black tabular-nums tracking-tight text-encre-700"
+          />
+        </div>
+      )}
     </div>
   );
 }
