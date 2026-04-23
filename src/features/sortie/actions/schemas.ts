@@ -244,3 +244,11 @@ export const pickTimeslotSchema = z.object({
 export const cancelOutingSchema = z.object({
   shortId: shortIdSchema,
 });
+
+export const archiveOutingSchema = z.object({
+  shortId: shortIdSchema,
+});
+
+export const unarchiveOutingSchema = z.object({
+  shortId: shortIdSchema,
+});

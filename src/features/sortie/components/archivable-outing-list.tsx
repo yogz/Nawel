@@ -1,0 +1,146 @@
+"use client";
+
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  archiveOutingAction,
+  unarchiveOutingAction,
+  type FormActionState,
+} from "@/features/sortie/actions/outing-actions";
+import { SwipeableArchivableCard } from "./swipeable-archivable-card";
+
+type MinimalRow = {
+  id: string;
+  shortId: string;
+  title: string;
+};
+
+type Props<R extends MinimalRow> = {
+  rows: R[];
+  /** Past outings use a softer verb ("Retirer" + eye-off icon) — same
+   * DB action, different wording. The expert UX review specifically
+   * called out that "Annuler" on a past outing is nonsense. */
+  isPast?: boolean;
+  renderRow: (row: R) => ReactNode;
+  listClassName?: string;
+};
+
+/**
+ * Client wrapper that renders a list of outing rows with swipe-to-archive
+ * gesture + an undo toast. Takes a render-prop so callers can keep using
+ * their own card component (plain list on /moi, OutingProfileCard on
+ * /@username) — we only add the gesture layer.
+ *
+ * Optimistic pattern: on commit, hide the row locally + show a 5s undo
+ * toast + fire the server action in the background. Undo calls
+ * unarchiveOutingAction. The server-action revalidates /moi so a
+ * subsequent navigation picks up the persisted state.
+ */
+export function ArchivableOutingList<R extends MinimalRow>({
+  rows,
+  isPast,
+  renderRow,
+  listClassName,
+}: Props<R>) {
+  const [optimisticArchived, setOptimisticArchived] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<{ shortId: string; title: string; isPast: boolean } | null>(
+    null
+  );
+  const toastTimerRef = useRef<number | null>(null);
+
+  const visible = useMemo(
+    () => rows.filter((r) => !optimisticArchived.has(r.shortId)),
+    [rows, optimisticArchived]
+  );
+
+  function scheduleDismiss() {
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+    }
+    toastTimerRef.current = window.setTimeout(() => setToast(null), 5000);
+  }
+
+  async function handleCommit(row: R) {
+    setOptimisticArchived((prev) => {
+      const next = new Set(prev);
+      next.add(row.shortId);
+      return next;
+    });
+    setToast({ shortId: row.shortId, title: row.title, isPast: Boolean(isPast) });
+    scheduleDismiss();
+
+    const form = new FormData();
+    form.append("shortId", row.shortId);
+    // Fire-and-forget: if the server rejects, the local state still
+    // hides the card for the session, and the next page load will
+    // reveal the mismatch. Non-critical error path — archival is
+    // idempotent and low-stakes.
+    await archiveOutingAction({} as FormActionState, form);
+  }
+
+  async function handleUndo() {
+    if (!toast) {
+      return;
+    }
+    const shortId = toast.shortId;
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
+    setToast(null);
+
+    const form = new FormData();
+    form.append("shortId", shortId);
+    await unarchiveOutingAction({} as FormActionState, form);
+    setOptimisticArchived((prev) => {
+      const next = new Set(prev);
+      next.delete(shortId);
+      return next;
+    });
+  }
+
+  if (visible.length === 0 && !toast) {
+    return null;
+  }
+
+  return (
+    <>
+      <ul className={listClassName ?? "flex flex-col gap-3"}>
+        {visible.map((row) => (
+          <li key={row.id}>
+            <SwipeableArchivableCard onCommit={() => handleCommit(row)} isPast={isPast}>
+              {renderRow(row)}
+            </SwipeableArchivableCard>
+          </li>
+        ))}
+      </ul>
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            role="status"
+            aria-live="polite"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            // `pb-[env(safe-area-inset-bottom)]`-ish via calc — sits
+            // above the iOS home indicator without overlapping it.
+            style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
+            className="fixed left-1/2 z-50 flex max-w-[90vw] -translate-x-1/2 items-center gap-4 rounded-full bg-encre-700 px-5 py-3 text-sm text-ivoire-50 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]"
+          >
+            <span className="truncate">
+              {toast.isPast ? "Retirée de ton profil" : "Sortie archivée"}
+            </span>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="text-xs font-black uppercase tracking-[0.12em] text-or-300 underline-offset-4 hover:underline"
+            >
+              Annuler
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

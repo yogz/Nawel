@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."outings" ADD COLUMN "hidden_from_profile_at" timestamp with time zone;

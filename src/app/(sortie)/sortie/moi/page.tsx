@@ -4,11 +4,15 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
-import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
+import {
+  listArchivedOutings,
+  listPublicProfileOutings,
+} from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 
 export const metadata = {
   title: "Mon profil",
@@ -54,6 +58,7 @@ export default async function ProfileSettingsPage() {
   });
 
   const { upcoming, past } = await listPublicProfileOutings(session.user.id);
+  const archived = await listArchivedOutings(session.user.id);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
   // and prod (sortie.colist.fr) both produce a correct shareable URL without
@@ -109,55 +114,86 @@ export default async function ProfileSettingsPage() {
         )}
       </section>
 
-      {(upcoming.length > 0 || past.length > 0) && (
+      {(upcoming.length > 0 || past.length > 0 || archived.length > 0) && (
         <section>
           <h2 className="mb-4 font-serif text-xl text-encre-700">Mes sorties visibles</h2>
-          {upcoming.length > 0 && <OutingList title="À venir" rows={upcoming} />}
-          {past.length > 0 && <OutingList title="Passées" rows={past} />}
+          <p className="mb-4 text-xs text-encre-400">
+            Glisse une sortie vers la gauche pour l&rsquo;archiver — elle disparaît de ton profil
+            mais reste visible pour les invités.
+          </p>
+          {upcoming.length > 0 && (
+            <OutingListBlock title="À venir" rows={upcoming} isPast={false} />
+          )}
+          {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
+          {archived.length > 0 && (
+            <div className="mb-6">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
+                Archivées
+              </p>
+              <ul className="flex flex-col gap-2">
+                {archived.map((o) => (
+                  <li key={o.id}>
+                    <OutingRowCard outing={o} muted />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       )}
     </main>
   );
 }
 
-function OutingList({
+type OutingRow = {
+  id: string;
+  shortId: string;
+  slug: string | null;
+  title: string;
+  location: string | null;
+  startsAt: Date | null;
+};
+
+function OutingListBlock({
   title,
   rows,
+  isPast,
 }: {
   title: string;
-  rows: {
-    id: string;
-    shortId: string;
-    slug: string | null;
-    title: string;
-    location: string | null;
-    startsAt: Date | null;
-  }[];
+  rows: OutingRow[];
+  isPast: boolean;
 }) {
   return (
     <div className="mb-6">
       <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
         {title}
       </p>
-      <ul className="flex flex-col gap-2">
-        {rows.map((o) => {
-          const canonical = o.slug ? `${o.slug}-${o.shortId}` : o.shortId;
-          return (
-            <li key={o.id}>
-              <Link
-                href={`/${canonical}`}
-                className="flex flex-col gap-0.5 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3 transition-colors hover:border-or-500"
-              >
-                <span className="text-sm font-medium text-encre-700">{o.title}</span>
-                <span className="text-xs text-encre-400">
-                  {o.startsAt ? formatOutingDateConversational(o.startsAt) : "Date à définir"}
-                  {o.location ? ` · ${o.location}` : ""}
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <ArchivableOutingList
+        rows={rows}
+        isPast={isPast}
+        listClassName="flex flex-col gap-2"
+        renderRow={(o) => <OutingRowCard outing={o} />}
+      />
     </div>
+  );
+}
+
+function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: boolean }) {
+  const canonical = outing.slug ? `${outing.slug}-${outing.shortId}` : outing.shortId;
+  return (
+    <Link
+      href={`/${canonical}`}
+      className={`flex flex-col gap-0.5 rounded-xl border bg-ivoire-50 p-3 transition-colors hover:border-or-500 ${
+        muted ? "border-ivoire-300 opacity-75" : "border-ivoire-400"
+      }`}
+    >
+      <span className={`text-sm font-medium ${muted ? "text-encre-500" : "text-encre-700"}`}>
+        {outing.title}
+      </span>
+      <span className="text-xs text-encre-400">
+        {outing.startsAt ? formatOutingDateConversational(outing.startsAt) : "Date à définir"}
+        {outing.location ? ` · ${outing.location}` : ""}
+      </span>
+    </Link>
   );
 }

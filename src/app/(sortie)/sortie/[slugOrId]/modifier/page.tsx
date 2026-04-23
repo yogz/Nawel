@@ -44,6 +44,10 @@ export default async function EditOutingPage({ params }: Props) {
     redirect(`/${canonical}/modifier`);
   }
 
+  // Hide the cancel CTA once the event itself is in the past — "Annuler"
+  // has no meaningful semantics after the fact and would only confuse.
+  const isPastEvent = outing.fixedDatetime !== null && outing.fixedDatetime < new Date();
+
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8">
@@ -78,13 +82,17 @@ export default async function EditOutingPage({ params }: Props) {
         />
       )}
 
-      {outing.status !== "cancelled" && (
+      {outing.status !== "cancelled" && !isPastEvent && (
         <section className="mt-12 border-t border-encre-100 pt-8">
           <h2 className="mb-2 font-serif text-xl text-encre-700">Zone sensible</h2>
           <p className="mb-4 text-sm text-encre-400">
             Annuler la sortie prévient tous les inscrits par email. L&apos;opération est définitive.
           </p>
-          <CancelOutingButton shortId={outing.shortId} outingTitle={outing.title} />
+          <CancelOutingButton
+            shortId={outing.shortId}
+            outingTitle={outing.title}
+            confirmedCount={outing.participants.filter((p) => p.response === "yes").length}
+          />
         </section>
       )}
     </main>
