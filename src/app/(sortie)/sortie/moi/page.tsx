@@ -169,10 +169,9 @@ function OutingListBlock({
         {title}
       </p>
       <ArchivableOutingList
-        rows={rows}
+        items={rows.map((o) => ({ row: o, node: <OutingRowCard outing={o} /> }))}
         isPast={isPast}
         listClassName="flex flex-col gap-2"
-        renderRow={(o) => <OutingRowCard outing={o} />}
       />
     </div>
   );

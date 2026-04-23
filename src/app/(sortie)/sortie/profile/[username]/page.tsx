@@ -226,19 +226,21 @@ function OutingSection({
       </p>
       {isSelf ? (
         <ArchivableOutingList
-          rows={outings}
+          items={outings.map((o) => ({
+            row: o,
+            node: (
+              <OutingProfileCard
+                outing={o}
+                showRsvp={showRsvp}
+                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
+                loggedInName={loggedInName}
+                outingBaseUrl={PUBLIC_BASE}
+                isPast={isPast}
+              />
+            ),
+          }))}
           isPast={isPast}
           listClassName="flex flex-col gap-4"
-          renderRow={(o) => (
-            <OutingProfileCard
-              outing={o}
-              showRsvp={showRsvp}
-              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
-              loggedInName={loggedInName}
-              outingBaseUrl={PUBLIC_BASE}
-              isPast={isPast}
-            />
-          )}
         />
       ) : (
         <ul className="flex flex-col gap-4">

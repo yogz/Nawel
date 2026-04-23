@@ -15,21 +15,31 @@ type MinimalRow = {
   title: string;
 };
 
+type Item<R extends MinimalRow> = {
+  row: R;
+  node: ReactNode;
+};
+
 type Props<R extends MinimalRow> = {
-  rows: R[];
+  /**
+   * Pre-rendered items. We take the JSX here rather than a `renderRow`
+   * function because this component is a Client Component — RSC forbids
+   * passing functions from Server → Client, and a render-prop crashes in
+   * prod with "Functions cannot be passed directly to Client Components".
+   */
+  items: Array<Item<R>>;
   /** Past outings use a softer verb ("Retirer" + eye-off icon) — same
    * DB action, different wording. The expert UX review specifically
    * called out that "Annuler" on a past outing is nonsense. */
   isPast?: boolean;
-  renderRow: (row: R) => ReactNode;
   listClassName?: string;
 };
 
 /**
  * Client wrapper that renders a list of outing rows with swipe-to-archive
- * gesture + an undo toast. Takes a render-prop so callers can keep using
- * their own card component (plain list on /moi, OutingProfileCard on
- * /@username) — we only add the gesture layer.
+ * gesture + an undo toast. Callers render the cards themselves on the
+ * server (plain list on /moi, OutingProfileCard on /@username) and pass
+ * the resulting JSX in — we only add the gesture layer.
  *
  * Optimistic pattern: on commit, hide the row locally + show a 5s undo
  * toast + fire the server action in the background. Undo calls
@@ -37,9 +47,8 @@ type Props<R extends MinimalRow> = {
  * subsequent navigation picks up the persisted state.
  */
 export function ArchivableOutingList<R extends MinimalRow>({
-  rows,
+  items,
   isPast,
-  renderRow,
   listClassName,
 }: Props<R>) {
   const [optimisticArchived, setOptimisticArchived] = useState<Set<string>>(new Set());
@@ -49,8 +58,8 @@ export function ArchivableOutingList<R extends MinimalRow>({
   const toastTimerRef = useRef<number | null>(null);
 
   const visible = useMemo(
-    () => rows.filter((r) => !optimisticArchived.has(r.shortId)),
-    [rows, optimisticArchived]
+    () => items.filter(({ row }) => !optimisticArchived.has(row.shortId)),
+    [items, optimisticArchived]
   );
 
   function scheduleDismiss() {
@@ -106,10 +115,10 @@ export function ArchivableOutingList<R extends MinimalRow>({
   return (
     <>
       <ul className={listClassName ?? "flex flex-col gap-3"}>
-        {visible.map((row) => (
+        {visible.map(({ row, node }) => (
           <li key={row.id}>
             <SwipeableArchivableCard onCommit={() => handleCommit(row)} isPast={isPast}>
-              {renderRow(row)}
+              {node}
             </SwipeableArchivableCard>
           </li>
         ))}
