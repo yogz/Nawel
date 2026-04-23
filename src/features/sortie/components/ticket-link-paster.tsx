@@ -31,6 +31,27 @@ type Props = {
  * tailored message + explicit "continuer à la main" action. The URL
  * itself is still carried forward so the ticketUrl field is saved.
  */
+/**
+ * Extract the first http(s) URL from an arbitrary blob. Handles:
+ *   - raw URL already clean
+ *   - URL embedded in a WhatsApp-style message
+ *   - trailing punctuation (`!`, `.`, `,`, `;`, `)`, `]`, `}`) — often
+ *     leaked from the surrounding sentence
+ *   - adjacent double-quotes / backticks / angle brackets
+ * Returns null when nothing remotely URL-shaped is in the blob.
+ */
+function extractFirstUrl(raw: string): string | null {
+  const match = raw.match(/https?:\/\/[^\s<>()[\]{}"'`]+/i);
+  if (!match) {
+    return null;
+  }
+  let url = match[0];
+  while (url.length > 0 && /[.,;!?:)\]}>"'`]$/.test(url)) {
+    url = url.slice(0, -1);
+  }
+  return url || null;
+}
+
 export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
   const [url, setUrl] = useState("");
   const [pending, setPending] = useState(false);
@@ -45,8 +66,21 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
   }
 
   async function handleParse() {
-    if (!url.trim()) {
+    const raw = url.trim();
+    if (!raw) {
       return;
+    }
+    // Pull the first http(s) URL out of the blob in case the user pasted
+    // a whole WhatsApp message ("check ça les potes: https://… — c'est ce
+    // soir"). We also echo the clean URL back into the field so the user
+    // sees what we're fetching.
+    const cleaned = extractFirstUrl(raw);
+    if (!cleaned) {
+      setError("Aucun lien http(s) détecté dans ce que tu as collé.");
+      return;
+    }
+    if (cleaned !== raw) {
+      setUrl(cleaned);
     }
     setError(null);
     setNoDataStaged(null);
@@ -55,7 +89,7 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
       const res = await fetch("/api/sortie/parse-ticket-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: cleaned }),
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { error?: string } | null;

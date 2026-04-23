@@ -5,8 +5,23 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const inputSchema = z.object({
-  url: z.string().url().max(2048),
+  // Accept any string up to 4 KB — we extract the first http(s) URL
+  // server-side so the client can paste a whole WhatsApp snippet and
+  // still get a usable parse. Validated as URL AFTER extraction.
+  url: z.string().min(1).max(4096),
 });
+
+function extractFirstUrl(raw: string): string | null {
+  const match = raw.match(/https?:\/\/[^\s<>()[\]{}"'`]+/i);
+  if (!match) {
+    return null;
+  }
+  let url = match[0];
+  while (url.length > 0 && /[.,;!?:)\]}>"'`]$/.test(url)) {
+    url = url.slice(0, -1);
+  }
+  return url || null;
+}
 
 // Hostnames we refuse to fetch. Not a full SSRF defence (a sophisticated
 // attacker could point DNS at 127.0.0.1), but it catches the obvious probes
@@ -410,9 +425,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
   }
 
+  // Pull the first http(s) URL from the input — the client already does
+  // this for UX echo, but we repeat it here so the API is safe to call
+  // with messy input directly.
+  const extracted = extractFirstUrl(parsed.data.url);
+  if (!extracted) {
+    return NextResponse.json({ error: "invalid_url" }, { status: 400 });
+  }
   let target: URL;
   try {
-    target = new URL(parsed.data.url);
+    target = new URL(extracted);
   } catch {
     return NextResponse.json({ error: "invalid_url" }, { status: 400 });
   }
