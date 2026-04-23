@@ -15,7 +15,7 @@ import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
 import { ReclaimForm } from "@/features/sortie/components/reclaim-form";
-import { RsvpSheet } from "@/features/sortie/components/rsvp-sheet";
+import { RsvpPrompt } from "@/features/sortie/components/rsvp-prompt";
 import { ShareActions } from "@/features/sortie/components/share-actions";
 import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
 import { VotingSection } from "@/features/sortie/components/voting-section";
@@ -180,30 +180,32 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {!deadlinePassed && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8">
           {outing.mode === "vote" && !outing.chosenTimeslotId ? (
-            <VoteRsvpSheet
-              shortId={outing.shortId}
-              timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
-              existingVotes={
-                me
-                  ? Object.fromEntries(
-                      outing.timeslots.flatMap((t) =>
-                        t.votes
-                          .filter((v) => v.participantId === me.id)
-                          .map((v) => [t.id, v.available])
+            <div className="flex justify-center">
+              <VoteRsvpSheet
+                shortId={outing.shortId}
+                timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
+                existingVotes={
+                  me
+                    ? Object.fromEntries(
+                        outing.timeslots.flatMap((t) =>
+                          t.votes
+                            .filter((v) => v.participantId === me.id)
+                            .map((v) => [t.id, v.available])
+                        )
                       )
-                    )
-                  : {}
-              }
-              existingName={me?.anonName ?? session?.user?.name ?? undefined}
-              existingEmail={me?.anonEmail ?? undefined}
-              hasVoted={Boolean(
-                me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
-              )}
-            />
+                    : {}
+                }
+                existingName={me?.anonName ?? session?.user?.name ?? undefined}
+                existingEmail={me?.anonEmail ?? undefined}
+                hasVoted={Boolean(
+                  me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
+                )}
+              />
+            </div>
           ) : (
-            <RsvpSheet
+            <RsvpPrompt
               shortId={outing.shortId}
               existingResponse={
                 me &&
@@ -211,10 +213,11 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
                   ? (me.response as "yes" | "no" | "handle_own")
                   : null
               }
-              existingName={me?.anonName ?? session?.user?.name ?? undefined}
+              existingName={me?.anonName ?? undefined}
               existingExtraAdults={me?.extraAdults ?? 0}
               existingExtraChildren={me?.extraChildren ?? 0}
               existingEmail={me?.anonEmail ?? undefined}
+              loggedInName={session?.user?.name ?? undefined}
               outingTitle={outing.title}
               outingUrl={`${PUBLIC_BASE}/${canonical}`}
               outingDate={outing.fixedDatetime}
