@@ -127,27 +127,24 @@ export function CreateWizard({
     creatorEmail: "",
   });
   const [pasteFailed, setPasteFailed] = useState(false);
-  // Tracks whether the paster auto-filled the venue. We skip the
-  // dedicated venue step in that case — the user already saw + can edit
-  // the venue inline on the confirm card, asking a second time is just
-  // friction. Not a function of `draft.venue` directly so mid-flow edits
-  // (clearing it to ""}) don't flicker the step machine.
-  const [venueFromPaste, setVenueFromPaste] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Step filtering builds the actual flow based on what we already know:
   //   - Paste branch vs manual entry (paster success vs fallback)
   //   - Skip `name` for logged-in users (session has the identity)
-  //   - Skip `venue` when the paster already found it (no double-ask)
+  //   - Skip `venue` once we have one (from the paster or typed inline on
+  //     the confirm card) — asking again is pure friction. Guard on
+  //     `step !== "venue"` so the step doesn't disappear while the user
+  //     is actively typing into it.
   const steps = useMemo<Step[]>(() => {
     const usePasteBranch = (draft.title.length > 0 || draft.ticketUrl.length > 0) && !pasteFailed;
     const base = usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
     let filtered = isLoggedIn ? base.filter((s) => s !== "name") : base;
-    if (venueFromPaste) {
+    if (draft.venue.trim().length > 0 && step !== "venue") {
       filtered = filtered.filter((s) => s !== "venue");
     }
     return filtered;
-  }, [draft.title, draft.ticketUrl, pasteFailed, isLoggedIn, venueFromPaste]);
+  }, [draft.title, draft.ticketUrl, draft.venue, pasteFailed, isLoggedIn, step]);
 
   const stepIndex = steps.indexOf(step);
   const progress = ((stepIndex + 1) / steps.length) * 100;
@@ -290,12 +287,6 @@ export function CreateWizard({
                     date: parsedDate ?? d.date,
                     time: parsedTime ?? d.time,
                   }));
-                  // Skip the dedicated venue step when the paster found
-                  // one — user already saw + can edit it on the confirm
-                  // card. Asking again is pure friction.
-                  if (data.venue && data.venue.trim().length > 0) {
-                    setVenueFromPaste(true);
-                  }
                   setPasteFailed(false);
                   goToStep("confirm");
                 }}
