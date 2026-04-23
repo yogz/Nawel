@@ -84,6 +84,7 @@ export function CreateOutingForm({
     title: string | null;
     venue: string | null;
     image: string | null;
+    startsAt: string | null;
     ticketUrl: string;
   }) {
     if (data.title) {

@@ -8,6 +8,7 @@ type Parsed = {
   title: string | null;
   venue: string | null;
   image: string | null;
+  startsAt: string | null;
   ticketUrl: string;
 };
 

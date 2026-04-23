@@ -48,6 +48,9 @@ type Parsed = {
   title?: string;
   venue?: string;
   image?: string;
+  // ISO start datetime, when we can pull it from schema.org/Event JSON-LD.
+  // Lets the wizard pre-select date + time for the user.
+  startsAt?: string;
 };
 
 // HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
@@ -136,6 +139,96 @@ function decodeHtmlEntities(raw: string): string {
 // only care about a handful of `<meta>` tags at the top of the document —
 // adding `cheerio` or `node-html-parser` just for this doubles the cold-
 // start cost of the route.
+// JSON-LD is the structured-data format Google-friendly ticket sites
+// (leuropeen.paris, Fnac Spectacles, Opéra de Paris, Allociné, and any
+// Schema.org-aware CMS) embed to describe their events. It gives us the
+// venue name, start date and performer name directly — no regex heuristics
+// on the marketing copy. We ignore malformed scripts rather than failing
+// the whole request: any one valid event in the document wins.
+type JsonLdHit = {
+  title?: string;
+  venue?: string;
+  startsAt?: string;
+};
+
+function isEventType(raw: unknown): boolean {
+  const types = Array.isArray(raw) ? raw : [raw];
+  return types.some(
+    (t) =>
+      typeof t === "string" &&
+      (t === "Event" || t === "Festival" || t.endsWith("Event") || t === "PerformingArtsTheater")
+  );
+}
+
+function extractJsonLd(html: string): JsonLdHit | null {
+  // Grab every JSON-LD script in the document (sites often ship multiple
+  // — Organization, WebSite, Event — and we only care about the event).
+  const scripts = html.match(
+    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+  );
+  if (!scripts) {
+    return null;
+  }
+
+  for (const tag of scripts) {
+    const bodyMatch = tag.match(/>\s*([\s\S]*?)\s*<\/script>/);
+    if (!bodyMatch) {
+      continue;
+    }
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(bodyMatch[1]!);
+    } catch {
+      continue;
+    }
+    // Normalize to a flat list of candidates. Real-world JSON-LD is often
+    // wrapped in `@graph` or is an array at the top level.
+    const queue: unknown[] = [];
+    const push = (item: unknown) => {
+      if (Array.isArray(item)) {
+        item.forEach(push);
+        return;
+      }
+      if (item && typeof item === "object") {
+        queue.push(item);
+        const graph = (item as { "@graph"?: unknown })["@graph"];
+        if (graph) {
+          push(graph);
+        }
+      }
+    };
+    push(parsed);
+
+    for (const candidate of queue) {
+      if (!candidate || typeof candidate !== "object") {
+        continue;
+      }
+      const obj = candidate as Record<string, unknown>;
+      if (!isEventType(obj["@type"])) {
+        continue;
+      }
+      const name = typeof obj.name === "string" ? obj.name.trim() : undefined;
+      let venue: string | undefined;
+      const location = obj.location;
+      if (location && typeof location === "object") {
+        const first = Array.isArray(location) ? location[0] : location;
+        if (first && typeof first === "object") {
+          const n = (first as { name?: unknown }).name;
+          if (typeof n === "string") {
+            venue = n.trim();
+          }
+        }
+      } else if (typeof location === "string") {
+        venue = location.trim();
+      }
+      const startDate = obj.startDate;
+      const startsAt = typeof startDate === "string" ? startDate : undefined;
+      return { title: name, venue, startsAt };
+    }
+  }
+  return null;
+}
+
 function extractOg(html: string): Parsed {
   const get = (prop: string): string | undefined => {
     // `property` is the OG canonical attribute, but many sites use `name` —
@@ -158,20 +251,29 @@ function extractOg(html: string): Parsed {
     return m2 ? decodeHtmlEntities(m2[1]!.trim()) : undefined;
   };
 
-  const title = get("og:title") ?? get("twitter:title");
+  const ogTitle = get("og:title") ?? get("twitter:title");
   const description = get("og:description") ?? get("twitter:description");
   const image = get("og:image") ?? get("twitter:image");
 
-  // Heuristic: OG descriptions from ticket sites usually contain the venue
-  // in the first sentence (e.g. "Rigoletto — Opéra Bastille, Paris"). Take
-  // the short first line if it's under 200 chars, otherwise skip — we'd
-  // rather the user type the venue than auto-fill a paragraph.
-  let venue: string | undefined;
-  if (description && description.length <= 200) {
+  // Structured data first — it's canonical when present. Name wins over
+  // og:title only if the latter duplicates the venue as a suffix
+  // ("NOAM · L'Européen" → prefer the bare "NOAM" from JSON-LD).
+  const jsonLd = extractJsonLd(html);
+  let title = ogTitle;
+  if (jsonLd?.title) {
+    if (!title || (jsonLd.venue && title.includes(jsonLd.venue))) {
+      title = decodeHtmlEntities(jsonLd.title);
+    }
+  }
+
+  // Venue: JSON-LD first, fall back to the description heuristic used
+  // before ("first short sentence often carries the venue").
+  let venue = jsonLd?.venue ? decodeHtmlEntities(jsonLd.venue) : undefined;
+  if (!venue && description && description.length <= 200) {
     venue = description.split(/[.\n]/)[0]?.trim();
   }
 
-  return { title, venue, image };
+  return { title, venue, image, startsAt: jsonLd?.startsAt };
 }
 
 export async function POST(request: NextRequest) {
@@ -242,6 +344,7 @@ export async function POST(request: NextRequest) {
       title: og.title ?? null,
       venue: og.venue ?? null,
       image: og.image ?? null,
+      startsAt: og.startsAt ?? null,
       ticketUrl: target.toString(),
     });
   } catch (err) {

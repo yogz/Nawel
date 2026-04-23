@@ -146,8 +146,17 @@ export function CreateWizard({
     if (draft.heroImageUrl) {
       fd.set("heroImageUrl", draft.heroImageUrl);
     }
+    // The server schema requires `creatorDisplayName` (min length 1) for
+    // both branches — the action ignores it for logged-in users but the
+    // Zod validator doesn't know that, so we have to ship *something*.
+    // Fall back to "Moi" if the user somehow has no name on file.
+    fd.set(
+      "creatorDisplayName",
+      isLoggedIn
+        ? defaultCreatorName?.trim() || "Moi"
+        : draft.creatorDisplayName.trim() || "Anonyme"
+    );
     if (!isLoggedIn) {
-      fd.set("creatorDisplayName", draft.creatorDisplayName);
       if (draft.creatorEmail) {
         fd.set("creatorEmail", draft.creatorEmail);
       }
@@ -187,12 +196,26 @@ export function CreateWizard({
                 hint={pasterHint}
                 vibeKey={vibeKey}
                 onParsed={(data) => {
+                  // JSON-LD often ships a full startsAt — split it back
+                  // into the wizard's date + time fields so step 3 lands
+                  // pre-selected on the right day and hour.
+                  let parsedDate: Date | null = null;
+                  let parsedTime: string | null = null;
+                  if (data.startsAt) {
+                    const d = new Date(data.startsAt);
+                    if (!Number.isNaN(d.getTime())) {
+                      parsedDate = d;
+                      parsedTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                    }
+                  }
                   setDraft((d) => ({
                     ...d,
                     title: data.title ?? d.title,
                     venue: data.venue ?? d.venue,
                     ticketUrl: data.ticketUrl,
                     heroImageUrl: data.image ?? d.heroImageUrl,
+                    date: parsedDate ?? d.date,
+                    time: parsedTime ?? d.time,
                   }));
                   setPasteFailed(false);
                   goToStep("confirm");
@@ -303,6 +326,7 @@ function PasteStep({
     title: string | null;
     venue: string | null;
     image: string | null;
+    startsAt: string | null;
     ticketUrl: string;
   }) => void;
   onManual: () => void;
@@ -438,7 +462,7 @@ function ConfirmPasteStep({
           <img
             src={draft.heroImageUrl}
             alt=""
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover"
+            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
         )}
         <div className="flex flex-col gap-2 p-5">
@@ -810,7 +834,7 @@ function CommitStep({
           <img
             src={draft.heroImageUrl}
             alt=""
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover"
+            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
         )}
         <div className="relative p-6">
