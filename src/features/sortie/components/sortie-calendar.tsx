@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
@@ -59,6 +59,10 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
 
   const rows = useMemo(() => buildMonthGrid(viewDate), [viewDate]);
 
+  // Horizontal swipe handler state — ref (not state) because we don't
+  // need a re-render on touch start; just the final delta at touch end.
+  const touchStartRef = useRef<number | null>(null);
+
   function goPrev() {
     const next = new Date(viewDate);
     next.setMonth(next.getMonth() - 1);
@@ -111,37 +115,69 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
         </button>
       </div>
 
-      {/* Weekday labels */}
-      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-wider text-encre-300">
+      {/* Weekday labels. Tracking bumped to match the year eyebrow above
+          so both uppercase micro-labels share a rhythm. */}
+      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-[0.18em] text-encre-300">
         {WEEKDAY_LABELS.map((w, i) => (
           <span key={`${w}-${i}`}>{w}</span>
         ))}
       </div>
 
-      {/* Day grid */}
-      <div className="grid grid-cols-7 gap-1">
+      {/* Day grid — horizontal swipe between months via native touch on
+          the container. `min-h-11` (44px) on each button guarantees the
+          Apple HIG tap minimum even when the cell width falls to ~43px
+          on iPhone SE. Cells are no longer square at the narrowest
+          widths; that's the right trade. */}
+      <div
+        className="grid grid-cols-7 gap-1 touch-pan-y"
+        onTouchStart={(e) => {
+          touchStartRef.current = e.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(e) => {
+          const start = touchStartRef.current;
+          touchStartRef.current = null;
+          if (start === null) {
+            return;
+          }
+          const end = e.changedTouches[0]?.clientX ?? start;
+          const dx = end - start;
+          if (Math.abs(dx) < 50) {
+            return;
+          }
+          if (dx > 0) {
+            goPrev();
+          } else {
+            goNext();
+          }
+        }}
+      >
         {rows.map((cell) => {
           const isSelected = selected ? sameDay(cell.date, selected) : false;
           const isToday = sameDay(cell.date, today);
           const isPast = cell.date.getTime() < minDate.getTime();
           const isOutside = !cell.inMonth;
+          // Outside-month cells used to silently select themselves, so
+          // tapping May 1 while viewing April would change the date
+          // without advancing the month header — classic mobile
+          // calendar footgun. Disable them outright.
+          const disabled = isPast || isOutside;
           return (
             <button
               key={cell.date.toISOString()}
               type="button"
-              onClick={() => !isPast && onSelect(cell.date)}
-              disabled={isPast}
+              onClick={() => !disabled && onSelect(cell.date)}
+              disabled={disabled}
               aria-pressed={isSelected}
               aria-current={isToday ? "date" : undefined}
-              className={`relative flex aspect-square items-center justify-center rounded-xl text-base font-bold transition-colors ${
+              className={`relative flex aspect-square min-h-11 items-center justify-center rounded-xl text-base font-bold transition-colors ${
                 isSelected
                   ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-sm)]"
                   : isPast
                     ? "cursor-not-allowed text-encre-200"
                     : isOutside
-                      ? "text-encre-200 hover:bg-ivoire-100"
+                      ? "cursor-not-allowed text-encre-100"
                       : isToday
-                        ? "text-bordeaux-700 hover:bg-bordeaux-50"
+                        ? "text-bordeaux-700 ring-2 ring-inset ring-or-400 hover:bg-bordeaux-50"
                         : "text-encre-700 hover:bg-bordeaux-50 active:scale-95"
               }`}
             >
@@ -149,7 +185,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
               {isToday && !isSelected && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-or-500"
+                  className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-or-500"
                 />
               )}
             </button>
