@@ -24,7 +24,6 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createOutingAction } from "@/features/sortie/actions/outing-actions";
 import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
-import { DayStrip } from "../day-strip";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 
@@ -692,15 +691,27 @@ function DateStep({
   onDeadlineChange: (deadline: Date | null) => void;
   onNext: () => void;
 }) {
-  const shortcuts = useMemo(() => buildDateShortcuts(), []);
+  // Calendar-only flow. The previous iteration layered a shortcut chip
+  // row + day strip on top; for cultural outings (dates dictated by the
+  // venue) both were decision noise. Single tall affordance = the
+  // calendar card. Time presets stay because curtain times cluster
+  // around 19h30 / 20h / 20h30 and presets beat a picker there.
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  function pickShortcut(target: Date) {
-    onDateChange(target);
-    if (!time) {
-      onTimeChange("20:00");
-    }
-  }
+  const weekdayMonth = date
+    ? new Intl.DateTimeFormat("fr-FR", {
+        weekday: "short",
+        timeZone: "Europe/Paris",
+      })
+        .format(date)
+        .replace(".", "")
+        .toUpperCase()
+    : null;
+  const monthName = date
+    ? new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: "Europe/Paris" })
+        .format(date)
+        .replace(".", "")
+    : null;
 
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
@@ -714,25 +725,60 @@ function DateStep({
         </h1>
       </div>
 
-      {/* Full-calendar CTA promoted above the strip. Cultural outings are
-          usually known in advance (show dates are fixed by the venue, not
-          chosen by the creator). The strip stays as a shortcut; the
-          calendar button is primary. */}
+      {/* Stateful card — the only way to pick a date now. Left tile shows
+          the picked day in big typography, or an empty "Aucune date"
+          state with a coral pulse to draw the first tap. Never
+          auto-selects today (would leak "today" sorties on submit). */}
       <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border-2 border-bordeaux-600 bg-bordeaux-50 text-base font-bold text-bordeaux-700 transition-colors active:scale-[0.98] hover:bg-bordeaux-100"
+            className="flex h-[88px] items-center gap-4 rounded-3xl border-2 border-bordeaux-600 bg-bordeaux-50 px-5 text-left transition-colors active:scale-[0.99] hover:bg-bordeaux-100"
           >
-            <CalendarDays size={18} />
-            {date
-              ? new Intl.DateTimeFormat("fr-FR", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  timeZone: "Europe/Paris",
-                }).format(date)
-              : "Ouvrir le calendrier"}
+            <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-bordeaux-600 text-ivoire-50">
+              {date ? (
+                <>
+                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-ivoire-200">
+                    {weekdayMonth}
+                  </span>
+                  <span className="text-3xl font-black leading-none tracking-tight">
+                    {date.getDate()}
+                  </span>
+                  <span className="text-[10px] font-semibold text-ivoire-200">{monthName}</span>
+                </>
+              ) : (
+                <span className="relative grid place-items-center">
+                  <CalendarDays size={28} strokeWidth={2.25} />
+                  <span
+                    aria-hidden="true"
+                    className="absolute -top-1 -right-1 h-2 w-2 animate-pulse rounded-full bg-or-500"
+                  />
+                </span>
+              )}
+            </div>
+            <div className="flex flex-1 flex-col">
+              {date ? (
+                <>
+                  <span className="text-lg font-black leading-tight tracking-tight text-encre-700">
+                    {new Intl.DateTimeFormat("fr-FR", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                      timeZone: "Europe/Paris",
+                    }).format(date)}
+                  </span>
+                  <span className="mt-0.5 text-xs font-bold text-bordeaux-700">Modifier</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-lg font-black text-encre-700">Choisir la date</span>
+                  <span className="mt-0.5 text-xs text-encre-500">
+                    N&rsquo;importe quelle date à venir
+                  </span>
+                </>
+              )}
+            </div>
+            <ArrowRight size={16} className="text-bordeaux-600" />
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
@@ -752,34 +798,6 @@ function DateStep({
           />
         </PopoverContent>
       </Popover>
-
-      <div className="flex flex-wrap gap-2">
-        {shortcuts.map((s) => {
-          const active = date ? isSameDay(date, s.date) : false;
-          return (
-            <button
-              key={s.label}
-              type="button"
-              onClick={() => pickShortcut(s.date)}
-              aria-pressed={active}
-              className={`inline-flex h-10 items-center rounded-full border-2 px-4 text-sm font-bold transition-colors ${
-                active
-                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-100 bg-white text-encre-700 active:scale-95"
-              }`}
-            >
-              {s.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div>
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
-          Ou choisis un jour proche
-        </p>
-        <DayStrip selected={date} onSelect={onDateChange} />
-      </div>
 
       {date && (
         <div className="mt-2">
@@ -974,52 +992,6 @@ function describeOffset(offsetMs: number): string {
     return "2 semaines avant";
   }
   return "3 semaines avant";
-}
-
-function buildDateShortcuts(): { label: string; date: Date }[] {
-  const base = new Date();
-  base.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(base);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  // "Ce weekend" = the nearest upcoming Saturday (this week's if still
-  // ahead, else next week's). "Vendredi prochain" in French almost
-  // always means Friday of the *following* week — never this week's.
-  // Two different semantics, two different helpers.
-  const weekend = nearestUpcomingWeekday(base, 6);
-  const friday = nextWeekWeekday(base, 5);
-  return [
-    { label: "Demain", date: tomorrow },
-    { label: "Ce weekend", date: weekend },
-    { label: "Vendredi prochain", date: friday },
-  ];
-}
-
-function nearestUpcomingWeekday(from: Date, targetDay: number): Date {
-  const d = new Date(from);
-  let delta = (targetDay - d.getDay() + 7) % 7;
-  if (delta === 0) {
-    delta = 7;
-  }
-  d.setDate(d.getDate() + delta);
-  return d;
-}
-
-function nextWeekWeekday(from: Date, targetDay: number): Date {
-  // "Next week" semantics — always at least 7 days away. Monday+Friday
-  // in the same week isn't "vendredi prochain", it's "vendredi".
-  const d = nearestUpcomingWeekday(from, targetDay);
-  if ((d.getTime() - from.getTime()) / 86400000 < 7) {
-    d.setDate(d.getDate() + 7);
-  }
-  return d;
-}
-
-function isSameDay(a: Date, b: Date): boolean {
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
 }
 
 function VenueStep({

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Link2, Loader2, Wand2 } from "lucide-react";
+import { ArrowRight, Link2, Loader2, Wand2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+
+type SpaHint = { siteName: string; alternate: string | null } | null;
 
 type Parsed = {
   title: string | null;
@@ -10,6 +12,7 @@ type Parsed = {
   image: string | null;
   startsAt: string | null;
   ticketUrl: string;
+  spaHint?: SpaHint;
 };
 
 type Props = {
@@ -19,21 +22,34 @@ type Props = {
 };
 
 /**
- * "Coller un lien de billetterie" shortcut. User pastes a Fnac/Allociné/
- * Ticketmaster URL, we fetch it server-side and extract OpenGraph metadata
- * to pre-populate the create form. Skipping date extraction — date formats
- * vary wildly across ticket sites, so the user still picks it by hand.
+ * "Coller un lien de billetterie" shortcut. User pastes a URL, we fetch
+ * it server-side and extract OpenGraph / JSON-LD metadata to pre-fill
+ * the create form.
+ *
+ * When the server finds nothing useful (pathé.fr, ugc.fr and other
+ * client-rendered shells), we stop auto-advancing and show the user a
+ * tailored message + explicit "continuer à la main" action. The URL
+ * itself is still carried forward so the ticketUrl field is saved.
  */
 export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
   const [url, setUrl] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Staged result: when the server returns *some* data but nothing
+  // useful, we keep it here and prompt the user rather than silently
+  // dropping them onto an empty confirm card.
+  const [noDataStaged, setNoDataStaged] = useState<Parsed | null>(null);
+
+  function isUsefulData(data: Parsed): boolean {
+    return Boolean(data.title || data.venue || data.image || data.startsAt);
+  }
 
   async function handleParse() {
     if (!url.trim()) {
       return;
     }
     setError(null);
+    setNoDataStaged(null);
     setPending(true);
     try {
       const res = await fetch("/api/sortie/parse-ticket-url", {
@@ -46,9 +62,12 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
         throw new Error(body?.error ?? "fetch_failed");
       }
       const data = (await res.json()) as Parsed;
-      onParsed(data);
-      if (!data.title) {
-        setError("Aucune info détectée — remplis à la main.");
+      if (isUsefulData(data)) {
+        onParsed(data);
+      } else {
+        // Stage the URL so the user can continue with it, but don't
+        // advance automatically — an empty confirm card feels broken.
+        setNoDataStaged(data);
       }
     } catch (err) {
       const code = err instanceof Error ? err.message : "fetch_failed";
@@ -65,6 +84,8 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
       setPending(false);
     }
   }
+
+  const spaHint = noDataStaged?.spaHint ?? null;
 
   return (
     <div className="rounded-xl border border-encre-100 bg-white p-4">
@@ -84,7 +105,11 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
           <Input
             type="url"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => {
+              setUrl(e.target.value);
+              setNoDataStaged(null);
+              setError(null);
+            }}
             placeholder={placeholder ?? "https://www.fnacspectacles.com/place-de-spectacle/..."}
             className="pl-9"
             onKeyDown={(e) => {
@@ -105,7 +130,35 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
           Remplir
         </button>
       </div>
+
       {error && <p className="mt-2 text-xs text-erreur-700">{error}</p>}
+
+      {noDataStaged && (
+        <div className="mt-3 rounded-lg border border-encre-100 bg-ivoire-50 p-3">
+          <p className="text-sm text-encre-600">
+            {spaHint?.siteName
+              ? `${spaHint.siteName} ne partage pas ses infos (site en JavaScript).`
+              : "Aucune info récupérable depuis ce lien."}
+            {spaHint?.alternate && (
+              <>
+                {" "}
+                Essaie plutôt un lien <strong>{spaHint.alternate}</strong> pour le même événement.
+              </>
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              onParsed(noDataStaged);
+              setNoDataStaged(null);
+            }}
+            className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-bordeaux-700 underline-offset-4 hover:underline"
+          >
+            Continuer et remplir à la main
+            <ArrowRight size={12} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -53,6 +53,18 @@ type Parsed = {
   startsAt?: string;
 };
 
+// Hosts known to ship an empty HTML shell with client-side rendering
+// only — Googlebot itself gets nothing back. When the extraction
+// produces no title/venue/image AND the host is one of these, we tag
+// the response so the client can show a tailored "saisis à la main"
+// hint instead of the generic "aucune info". Pure UX sugar.
+const SPA_HOSTS: Record<string, { name: string; alternate?: string }> = {
+  "pathe.fr": { name: "Pathé", alternate: "Allociné" },
+  "www.pathe.fr": { name: "Pathé", alternate: "Allociné" },
+  "ugc.fr": { name: "UGC", alternate: "Allociné" },
+  "www.ugc.fr": { name: "UGC", alternate: "Allociné" },
+};
+
 // HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
 // hex) are handled generically; named entities only cover the Western
 // European accented set + typographic punctuation we actually run into
@@ -455,12 +467,21 @@ export async function POST(request: NextRequest) {
     );
     const og = extractOg(html);
 
+    // Hint the client when we got nothing usable AND the host is a
+    // known SPA — the user sees a specific message ("Pathé ne partage
+    // pas ses infos…") instead of a vague "Aucune info".
+    const nothingUseful = !og.title && !og.venue && !og.image && !og.startsAt;
+    const spa = SPA_HOSTS[target.hostname.toLowerCase()] ?? null;
+    const spaHint =
+      nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
+
     return NextResponse.json({
       title: og.title ?? null,
       venue: og.venue ?? null,
       image: og.image ?? null,
       startsAt: og.startsAt ?? null,
       ticketUrl: target.toString(),
+      spaHint,
     });
   } catch (err) {
     clearTimeout(timeout);
