@@ -73,6 +73,17 @@ function isSafeHttpUrl(raw: string): boolean {
   }
 }
 
+// Minimal email check — mirrors the shape Zod's `.email()` accepts
+// without trying to be RFC-complete. Used both inline (to disable the
+// Next button when the field is non-empty but invalid) and at submit
+// (to drop a lingering invalid value rather than send it to the server).
+function isValidEmail(raw: string): boolean {
+  if (!raw || raw.length > 255) {
+    return false;
+  }
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw);
+}
+
 /**
  * Dapp-style create wizard. Replaces the long scroll form at /nouvelle
  * with full-screen step cards, big tap targets, gesture-first publish.
@@ -109,12 +120,15 @@ export function CreateWizard({
   const [error, setError] = useState<string | null>(null);
 
   // If the paste step succeeded we show a confirm screen; otherwise we
-  // skip straight to manual title entry. Tracked separately so the back
-  // button can revisit the right previous step.
+  // skip straight to manual title entry. Logged-in users never see the
+  // `name` step — we already know their identity from the session, so
+  // filtering it out avoids the step machine needing an in-render
+  // `setState` hack to skip it.
   const steps = useMemo<Step[]>(() => {
     const usePasteBranch = (draft.title.length > 0 || draft.ticketUrl.length > 0) && !pasteFailed;
-    return usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
-  }, [draft.title, draft.ticketUrl, pasteFailed]);
+    const base = usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
+    return isLoggedIn ? base.filter((s) => s !== "name") : base;
+  }, [draft.title, draft.ticketUrl, pasteFailed, isLoggedIn]);
 
   const stepIndex = steps.indexOf(step);
   const progress = ((stepIndex + 1) / steps.length) * 100;
@@ -183,7 +197,10 @@ export function CreateWizard({
         : draft.creatorDisplayName.trim() || "Anonyme"
     );
     if (!isLoggedIn) {
-      if (draft.creatorEmail) {
+      // Same pre-filter pattern as URLs — if the typed email doesn't
+      // pass a basic shape check, drop it rather than sending an
+      // invalid value the server would reject with "Invalid input".
+      if (draft.creatorEmail && isValidEmail(draft.creatorEmail)) {
         fd.set("creatorEmail", draft.creatorEmail);
       }
     } else {
@@ -292,7 +309,7 @@ export function CreateWizard({
                 onSkip={() => advanceFrom("venue")}
               />
             )}
-            {step === "name" && !isLoggedIn && (
+            {step === "name" && (
               <NameStep
                 name={draft.creatorDisplayName}
                 email={draft.creatorEmail}
@@ -303,12 +320,6 @@ export function CreateWizard({
                 onNext={() => advanceFrom("name")}
               />
             )}
-            {step === "name" &&
-              isLoggedIn &&
-              (() => {
-                setStep("commit");
-                return null;
-              })()}
             {step === "commit" && (
               <CommitStep draft={draft} isLoggedIn={isLoggedIn} error={error} onPublish={publish} />
             )}
@@ -797,20 +808,25 @@ function NameStep({
         </span>
       </label>
       {wantEmail && (
-        <Input
-          value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
-          type="email"
-          placeholder="ton@email.com"
-          className="h-14 rounded-xl border-2 border-encre-100 bg-white text-base"
-        />
+        <div className="flex flex-col gap-1.5">
+          <Input
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            type="email"
+            placeholder="ton@email.com"
+            className="h-14 rounded-xl border-2 border-encre-100 bg-white text-base"
+          />
+          {email.length > 0 && !isValidEmail(email) && (
+            <p className="text-xs text-erreur-700">Email invalide.</p>
+          )}
+        </div>
       )}
 
       <div className="mt-auto">
         <Button
           type="button"
           size="lg"
-          disabled={!name.trim()}
+          disabled={!name.trim() || (wantEmail && email.length > 0 && !isValidEmail(email))}
           onClick={onNext}
           className="h-16 w-full rounded-full text-base font-bold"
         >
