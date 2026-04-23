@@ -29,6 +29,12 @@ export function ParticipantList({ participants }: { participants: Participant[] 
       ? `${yesList[0]!.anonName ?? "Quelqu'un"} a déjà dit oui.`
       : `${numberToFrenchCap(yesList.length)} d'entre vous ont déjà dit oui.`;
 
+  // When the only yes is an anonymous no-name, the headline already says
+  // "Quelqu'un a déjà dit oui." — repeating "Quelqu'un" as a bullet below
+  // just looks broken. Skip the list in that one case; the totals line still
+  // surfaces any accompanying guests.
+  const hideList = yesList.length === 1 && !yesList[0]!.anonName;
+
   return (
     <div>
       <p className="mb-4 text-center font-serif text-xl text-encre-700">{headline}</p>
@@ -39,20 +45,22 @@ export function ParticipantList({ participants }: { participants: Participant[] 
         </p>
       )}
 
-      <ul className="flex flex-col gap-1">
-        {yesList.map((p) => {
-          const extras = formatExtras(p.extraAdults, p.extraChildren);
-          return (
-            <li key={p.id} className="flex items-baseline gap-2 text-encre-600">
-              <span className="inline-block size-1.5 shrink-0 rotate-45 bg-or-500" aria-hidden />
-              <span>
-                {p.anonName ?? "Quelqu'un"}
-                {extras && <span className="text-encre-400"> {extras}</span>}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+      {!hideList && (
+        <ul className="flex flex-col gap-1">
+          {yesList.map((p) => {
+            const extras = formatExtras(p.extraAdults, p.extraChildren);
+            return (
+              <li key={p.id} className="flex items-baseline gap-2 text-encre-600">
+                <span className="inline-block size-1.5 shrink-0 rotate-45 bg-or-500" aria-hidden />
+                <span>
+                  {p.anonName ?? "Quelqu'un"}
+                  {extras && <span className="text-encre-400"> {extras}</span>}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

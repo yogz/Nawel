@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { Copy, MessageCircle } from "lucide-react";
-
-const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-  timeZone: "Europe/Paris",
-});
+import { buildWhatsAppHref } from "@/features/sortie/lib/whatsapp-share";
 
 type Props = {
   url: string;
@@ -19,8 +13,7 @@ type Props = {
 export function ShareActions({ url, title, startsAt }: Props) {
   const [justCopied, setJustCopied] = useState(false);
 
-  const message = buildWhatsAppMessage({ title, url, startsAt });
-  const whatsAppHref = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  const whatsAppHref = buildWhatsAppHref({ title, url, startsAt });
 
   async function copy() {
     try {
@@ -55,10 +48,4 @@ export function ShareActions({ url, title, startsAt }: Props) {
       </a>
     </div>
   );
-}
-
-function buildWhatsAppMessage(args: { title: string; url: string; startsAt: Date | null }): string {
-  const { title, url, startsAt } = args;
-  const dateBit = startsAt ? ` le ${dateFormatter.format(startsAt)}` : "";
-  return `🎭 ${title}${dateBit}. Tu viens ? ${url}`;
 }

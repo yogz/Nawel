@@ -514,11 +514,17 @@ export async function POST(request: NextRequest) {
       signal: controller.signal,
       redirect: "follow",
       headers: {
-        // Some sites gate OG tags behind a real-looking UA. We ship one so
-        // the metadata layer renders for us, but we don't pretend to be a
-        // specific browser version.
-        "User-Agent": "SortieBot/1.0 (+https://sortie.colist.fr)",
-        Accept: "text/html,application/xhtml+xml",
+        // Most French ticket sites (billetterie.chatelet.com, Fnac, etc.)
+        // gate their OG / JSON-LD output behind a realistic mobile
+        // browser UA. Our previous `SortieBot/1.0` identifier was
+        // greeted with a "Cookies appear to be disabled" stub page. A
+        // current-ish iOS Safari string is the sweet spot: we look like
+        // a real viewer (the whole premise of Sortie is mobile users
+        // sharing links), and ticket sites ship their full HTML.
+        "User-Agent":
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
       },
     });
     clearTimeout(timeout);
