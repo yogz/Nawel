@@ -135,15 +135,23 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         )}
       </nav>
 
-      {justCreated && isCreator && <CreateSuccessBanner url={`${PUBLIC_BASE}/${canonical}`} />}
-
-      <div className="mb-4 flex justify-end">
-        <ShareActions
+      {justCreated && isCreator && (
+        <CreateSuccessBanner
           url={`${PUBLIC_BASE}/${canonical}`}
           title={outing.title}
           startsAt={outing.fixedDatetime}
         />
-      </div>
+      )}
+
+      {!(justCreated && isCreator) && (
+        <div className="mb-4 flex justify-end">
+          <ShareActions
+            url={`${PUBLIC_BASE}/${canonical}`}
+            title={outing.title}
+            startsAt={outing.fixedDatetime}
+          />
+        </div>
+      )}
 
       <OutingHero
         title={outing.title}
