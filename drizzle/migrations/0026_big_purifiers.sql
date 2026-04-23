@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "rsvp_invite_token" text;
