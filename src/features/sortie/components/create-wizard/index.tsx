@@ -187,12 +187,26 @@ export function CreateWizard({
                 hint={pasterHint}
                 vibeKey={vibeKey}
                 onParsed={(data) => {
+                  // JSON-LD often ships a full startsAt — split it back
+                  // into the wizard's date + time fields so step 3 lands
+                  // pre-selected on the right day and hour.
+                  let parsedDate: Date | null = null;
+                  let parsedTime: string | null = null;
+                  if (data.startsAt) {
+                    const d = new Date(data.startsAt);
+                    if (!Number.isNaN(d.getTime())) {
+                      parsedDate = d;
+                      parsedTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                    }
+                  }
                   setDraft((d) => ({
                     ...d,
                     title: data.title ?? d.title,
                     venue: data.venue ?? d.venue,
                     ticketUrl: data.ticketUrl,
                     heroImageUrl: data.image ?? d.heroImageUrl,
+                    date: parsedDate ?? d.date,
+                    time: parsedTime ?? d.time,
                   }));
                   setPasteFailed(false);
                   goToStep("confirm");
@@ -303,6 +317,7 @@ function PasteStep({
     title: string | null;
     venue: string | null;
     image: string | null;
+    startsAt: string | null;
     ticketUrl: string;
   }) => void;
   onManual: () => void;
