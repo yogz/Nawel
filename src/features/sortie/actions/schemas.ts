@@ -22,7 +22,14 @@ const safeHttpUrl = z
     }
   }, "L'URL doit commencer par https:// ou http://");
 
-const optionalSafeUrl = z.union([z.literal(""), safeHttpUrl]).transform((v) => v || undefined);
+// `.optional()` is mandatory here — when a form doesn't include the field
+// at all, Zod receives `undefined`, and a bare union would reject that
+// with "Invalid input". The literal "" branch only catches form-posted
+// empty strings, not omitted keys.
+const optionalSafeUrl = z
+  .union([z.literal(""), safeHttpUrl])
+  .optional()
+  .transform((v) => v || undefined);
 
 // Vote mode creators send their timeslots as a JSON-encoded array in a hidden
 // form field — this schema validates one parsed entry. Using coerce.date() so
@@ -100,6 +107,7 @@ export const createOutingSchema = z
     creatorDisplayName: trimmedString.min(1).max(100),
     creatorEmail: z
       .union([z.literal(""), z.string().email().max(255)])
+      .optional()
       .transform((v) => v || undefined),
     showOnProfile: z.boolean().default(true),
   })
@@ -199,7 +207,10 @@ export const rsvpSchema = z.object({
   response: z.enum(["yes", "no", "handle_own"]),
   extraAdults: z.coerce.number().int().min(0).max(10).default(0),
   extraChildren: z.coerce.number().int().min(0).max(10).default(0),
-  email: z.union([z.literal(""), z.string().email().max(255)]).transform((v) => v || undefined),
+  email: z
+    .union([z.literal(""), z.string().email().max(255)])
+    .optional()
+    .transform((v) => v || undefined),
 });
 
 // Vote-mode RSVP — participant ships availability per timeslot instead of a
@@ -209,7 +220,10 @@ export const rsvpSchema = z.object({
 export const voteRsvpSchema = z.object({
   shortId: shortIdSchema,
   displayName: trimmedString.min(1).max(100),
-  email: z.union([z.literal(""), z.string().email().max(255)]).transform((v) => v || undefined),
+  email: z
+    .union([z.literal(""), z.string().email().max(255)])
+    .optional()
+    .transform((v) => v || undefined),
   votes: z.preprocess((raw) => {
     if (typeof raw !== "string" || raw.length === 0) {
       return undefined;

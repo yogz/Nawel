@@ -229,6 +229,106 @@ function extractJsonLd(html: string): JsonLdHit | null {
   return null;
 }
 
+const MONTHS_FR: Record<string, number> = {
+  janvier: 0,
+  fevrier: 1,
+  février: 1,
+  mars: 2,
+  avril: 3,
+  mai: 4,
+  juin: 5,
+  juillet: 6,
+  aout: 7,
+  août: 7,
+  septembre: 8,
+  octobre: 9,
+  novembre: 10,
+  decembre: 11,
+  décembre: 11,
+};
+
+/**
+ * Last-resort date extractor for pages that don't ship JSON-LD but bury
+ * the info in the og:description ("Noam — le 26 juin à 19H30."). Best-
+ * effort regex on the common French patterns; if nothing matches we
+ * return undefined and the wizard falls back to the user picking it.
+ * Infers the year: the event is assumed future, so a match whose
+ * computed date is already past rolls to next year.
+ */
+function extractFrenchDate(text: string): string | undefined {
+  const dm =
+    /(\d{1,2})\s+(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)(?:\s+(\d{4}))?\D+(\d{1,2})\s*[hH]\s*(\d{0,2})/u.exec(
+      text
+    );
+  if (!dm) {
+    return undefined;
+  }
+  const day = parseInt(dm[1]!, 10);
+  const monthName = dm[2]!.toLowerCase();
+  const monthIdx = MONTHS_FR[monthName];
+  if (monthIdx === undefined) {
+    return undefined;
+  }
+  const hour = parseInt(dm[4]!, 10);
+  const minute = dm[5] && dm[5].length > 0 ? parseInt(dm[5], 10) : 0;
+  const now = new Date();
+  const explicitYear = dm[3] ? parseInt(dm[3], 10) : undefined;
+  let year = explicitYear ?? now.getFullYear();
+  // Roll forward if the computed date is already past — events are
+  // always in the future from the creator's standpoint.
+  const candidate = new Date(year, monthIdx, day, hour, minute);
+  if (!explicitYear && candidate.getTime() < now.getTime()) {
+    year += 1;
+  }
+  // Return a local-ISO string (no Z) so the client parses it as a local
+  // time in its own timezone. A plain `.toISOString()` (UTC) would turn
+  // "19h30 Paris" into 17:30Z which then renders back in Paris as… 19h30
+  // again most of the time, but only because of the reverse offset. The
+  // local-ISO form is unambiguous for our use case (the creator typed a
+  // time and it should appear unchanged).
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${year}-${pad(monthIdx + 1)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00`;
+}
+
+/**
+ * Detects "title · venue" / "title — venue" suffix patterns and splits
+ * them — L'Européen ships `og:title = "NOAM · L'Européen"` and
+ * `og:site_name = "L'Européen"`, so whenever the site_name tails the
+ * title we trust it as the venue and strip it out of the displayed
+ * title to avoid `NOAM · L'Européen / L'Européen` duplication.
+ */
+function splitTitleAndVenue(
+  title: string,
+  siteName: string | undefined
+): {
+  title: string;
+  venue: string | undefined;
+} {
+  if (!siteName) {
+    return { title, venue: undefined };
+  }
+  const normSite = siteName.trim();
+  if (!normSite) {
+    return { title, venue: undefined };
+  }
+  // Common separator characters across French ticket sites.
+  const separators = ["·", "•", "—", "–", "-", "|", "@"];
+  for (const sep of separators) {
+    const suffix = ` ${sep} ${normSite}`;
+    if (title.endsWith(suffix)) {
+      return { title: title.slice(0, -suffix.length).trim(), venue: normSite };
+    }
+  }
+  // Also handle glued variants ("NOAM·L'Européen").
+  for (const sep of separators) {
+    const suffix = `${sep} ${normSite}`;
+    if (title.endsWith(suffix)) {
+      return { title: title.slice(0, -suffix.length).trim(), venue: normSite };
+    }
+  }
+  return { title, venue: undefined };
+}
+
 function extractOg(html: string): Parsed {
   const get = (prop: string): string | undefined => {
     // `property` is the OG canonical attribute, but many sites use `name` —
@@ -254,10 +354,10 @@ function extractOg(html: string): Parsed {
   const ogTitle = get("og:title") ?? get("twitter:title");
   const description = get("og:description") ?? get("twitter:description");
   const image = get("og:image") ?? get("twitter:image");
+  const siteName = get("og:site_name");
 
   // Structured data first — it's canonical when present. Name wins over
-  // og:title only if the latter duplicates the venue as a suffix
-  // ("NOAM · L'Européen" → prefer the bare "NOAM" from JSON-LD).
+  // og:title only if the latter duplicates the venue as a suffix.
   const jsonLd = extractJsonLd(html);
   let title = ogTitle;
   if (jsonLd?.title) {
@@ -266,14 +366,29 @@ function extractOg(html: string): Parsed {
     }
   }
 
-  // Venue: JSON-LD first, fall back to the description heuristic used
-  // before ("first short sentence often carries the venue").
+  // Venue priority:
+  //   1. JSON-LD location.name (canonical)
+  //   2. og:site_name when it suffixes the og:title (L'Européen case)
+  //   3. First short sentence of og:description (legacy heuristic)
   let venue = jsonLd?.venue ? decodeHtmlEntities(jsonLd.venue) : undefined;
+  if (!venue && title && siteName) {
+    const split = splitTitleAndVenue(title, siteName);
+    if (split.venue) {
+      venue = split.venue;
+      title = split.title;
+    }
+  }
   if (!venue && description && description.length <= 200) {
     venue = description.split(/[.\n]/)[0]?.trim();
   }
 
-  return { title, venue, image, startsAt: jsonLd?.startsAt };
+  // Start date priority: JSON-LD > natural-language parse of description.
+  let startsAt = jsonLd?.startsAt;
+  if (!startsAt && description) {
+    startsAt = extractFrenchDate(description);
+  }
+
+  return { title, venue, image, startsAt };
 }
 
 export async function POST(request: NextRequest) {
