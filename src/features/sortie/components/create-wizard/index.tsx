@@ -206,8 +206,9 @@ export function CreateWizard({
             {step === "confirm" && (
               <ConfirmPasteStep
                 draft={draft}
+                onTitleChange={(title) => setDraft((d) => ({ ...d, title }))}
+                onVenueChange={(venue) => setDraft((d) => ({ ...d, venue }))}
                 onNext={() => advanceFrom("confirm")}
-                onEdit={() => goToStep("title")}
               />
             )}
             {step === "title" && (
@@ -410,12 +411,14 @@ function PasteStep({
 
 function ConfirmPasteStep({
   draft,
+  onTitleChange,
+  onVenueChange,
   onNext,
-  onEdit,
 }: {
   draft: Draft;
+  onTitleChange: (v: string) => void;
+  onVenueChange: (v: string) => void;
   onNext: () => void;
-  onEdit: () => void;
 }) {
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
@@ -426,6 +429,7 @@ function ConfirmPasteStep({
         <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
           C&rsquo;est bien ça ?
         </h1>
+        <p className="mt-3 text-sm text-encre-400">Tape directement dans la carte pour corriger.</p>
       </div>
 
       <article className="overflow-hidden rounded-3xl border border-encre-100 bg-white shadow-[var(--shadow-md)]">
@@ -437,33 +441,89 @@ function ConfirmPasteStep({
             className="aspect-[16/10] w-full bg-ivoire-100 object-cover"
           />
         )}
-        <div className="p-5">
-          <h2 className="text-2xl font-black leading-tight tracking-tight text-encre-700">
-            {draft.title || "Titre à compléter"}
-          </h2>
-          {draft.venue && <p className="mt-2 text-base text-encre-500">{draft.venue}</p>}
+        <div className="flex flex-col gap-2 p-5">
+          <InlineEditable
+            value={draft.title}
+            onChange={onTitleChange}
+            placeholder="Titre à compléter"
+            className="text-2xl font-black leading-tight tracking-tight text-encre-700"
+            maxLength={200}
+            as="textarea"
+            rows={2}
+          />
+          <InlineEditable
+            value={draft.venue}
+            onChange={onVenueChange}
+            placeholder="Ajouter un lieu (facultatif)"
+            className="text-base text-encre-500"
+            maxLength={200}
+          />
         </div>
       </article>
 
-      <div className="flex flex-col gap-3">
+      <div className="mt-auto">
         <Button
           type="button"
           size="lg"
           onClick={onNext}
-          className="h-16 rounded-full text-base font-bold"
+          disabled={!draft.title.trim()}
+          className="h-16 w-full rounded-full text-base font-bold"
         >
           Oui, on continue
           <ArrowRight size={18} className="ml-2" />
         </Button>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="self-center text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-        >
-          Corriger les infos →
-        </button>
       </div>
     </section>
+  );
+}
+
+/**
+ * Single-line or textarea field styled so it reads as display text until
+ * focused. Uncontrolled border appears on focus; placeholder sits in the
+ * same rhythm as the resolved text. Used on the confirm-paste card so
+ * the title and venue can be corrected inline without leaving the
+ * ritual-style card.
+ */
+function InlineEditable({
+  value,
+  onChange,
+  placeholder,
+  className,
+  maxLength,
+  as = "input",
+  rows = 1,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  className: string;
+  maxLength?: number;
+  as?: "input" | "textarea";
+  rows?: number;
+}) {
+  const shared =
+    "w-full resize-none bg-transparent outline-none transition-colors placeholder:text-encre-300 focus:ring-0";
+  if (as === "textarea") {
+    return (
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        rows={rows}
+        className={`${shared} ${className}`}
+      />
+    );
+  }
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      maxLength={maxLength}
+      className={`${shared} ${className}`}
+    />
   );
 }
 
