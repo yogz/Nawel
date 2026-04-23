@@ -48,12 +48,12 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
         type="button"
         onClick={() => setOpen(true)}
         disabled={pending}
-        className="self-start text-sm text-erreur-700 underline-offset-4 hover:underline disabled:opacity-50"
+        className="self-start text-sm text-destructive underline-offset-4 hover:underline disabled:opacity-50"
       >
         {pending ? "Annulation…" : "Annuler la sortie"}
       </button>
       {state.message && (
-        <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
+        <p className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           {state.message}
         </p>
       )}
@@ -80,7 +80,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
               className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-ivoire-50 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]"
             >
               <div className="mb-4 flex items-start gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-erreur-50 text-erreur-700">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive">
                   <AlertTriangle size={20} />
                 </span>
                 <div className="flex-1">
@@ -122,7 +122,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
                   type="button"
                   onClick={handleConfirm}
                   disabled={pending}
-                  className="inline-flex h-11 items-center justify-center rounded-md bg-erreur-700 px-4 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-erreur-700/90 disabled:opacity-50"
+                  className="inline-flex h-11 items-center justify-center rounded-md bg-destructive px-4 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
                 >
                   {hasAttendees ? "Prévenir et annuler" : "Annuler la sortie"}
                 </button>
