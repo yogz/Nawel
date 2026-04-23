@@ -7,6 +7,7 @@ import { user } from "@drizzle/schema";
 import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { UsernameForm } from "@/features/sortie/components/username-form";
+import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { LoginLink } from "@/features/sortie/components/login-link";
 
 export const metadata = {
@@ -15,7 +16,8 @@ export const metadata = {
 };
 
 export default async function ProfileSettingsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const h = await headers();
+  const session = await auth.api.getSession({ headers: h });
 
   if (!session?.user) {
     return (
@@ -48,10 +50,17 @@ export default async function ProfileSettingsPage() {
 
   const row = await db.query.user.findFirst({
     where: eq(user.id, session.user.id),
-    columns: { id: true, name: true, username: true },
+    columns: { id: true, name: true, username: true, rsvpInviteToken: true },
   });
 
   const { upcoming, past } = await listPublicProfileOutings(session.user.id);
+
+  // Build the absolute origin from request headers so dev (sortie.localhost)
+  // and prod (sortie.colist.fr) both produce a correct shareable URL without
+  // plumbing SORTIE_BASE_URL through every environment.
+  const host = h.get("host") ?? "sortie.colist.fr";
+  const proto = h.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
+  const origin = `${proto}://${host}`;
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -83,6 +92,21 @@ export default async function ProfileSettingsPage() {
       <section className="mb-12">
         <h2 className="mb-4 font-serif text-xl text-encre-700">Nom d&rsquo;utilisateur</h2>
         <UsernameForm currentUsername={row?.username ?? null} />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 font-serif text-xl text-encre-700">Lien privé pour tes amis</h2>
+        {row?.username ? (
+          <InviteLinkManager
+            username={row.username}
+            token={row.rsvpInviteToken ?? null}
+            origin={origin}
+          />
+        ) : (
+          <p className="text-sm text-encre-400">
+            Choisis d&rsquo;abord un nom d&rsquo;utilisateur pour générer ton lien privé.
+          </p>
+        )}
       </section>
 
       {(upcoming.length > 0 || past.length > 0) && (
