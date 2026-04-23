@@ -146,8 +146,17 @@ export function CreateWizard({
     if (draft.heroImageUrl) {
       fd.set("heroImageUrl", draft.heroImageUrl);
     }
+    // The server schema requires `creatorDisplayName` (min length 1) for
+    // both branches — the action ignores it for logged-in users but the
+    // Zod validator doesn't know that, so we have to ship *something*.
+    // Fall back to "Moi" if the user somehow has no name on file.
+    fd.set(
+      "creatorDisplayName",
+      isLoggedIn
+        ? defaultCreatorName?.trim() || "Moi"
+        : draft.creatorDisplayName.trim() || "Anonyme"
+    );
     if (!isLoggedIn) {
-      fd.set("creatorDisplayName", draft.creatorDisplayName);
       if (draft.creatorEmail) {
         fd.set("creatorEmail", draft.creatorEmail);
       }
@@ -453,7 +462,7 @@ function ConfirmPasteStep({
           <img
             src={draft.heroImageUrl}
             alt=""
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover"
+            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
         )}
         <div className="flex flex-col gap-2 p-5">
@@ -825,7 +834,7 @@ function CommitStep({
           <img
             src={draft.heroImageUrl}
             alt=""
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover"
+            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
         )}
         <div className="relative p-6">

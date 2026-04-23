@@ -19,7 +19,7 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
         <img
           src={heroImageUrl}
           alt=""
-          className="mb-6 aspect-[16/10] w-full rounded-2xl bg-ivoire-100 object-cover shadow-[var(--shadow-md)]"
+          className="mb-6 aspect-[16/10] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)]"
         />
       )}
 
