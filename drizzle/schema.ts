@@ -29,6 +29,11 @@ export const user = pgTable("user", {
   // lowercase; the URL slug at `/sortie/@<username>` reads this column
   // via a lower() match so visitors can type whatever case they want.
   username: text("username").unique(),
+  // Private invite token that gates inline RSVP on the public profile page.
+  // Null until the owner mints one from /moi; rotated/revoked at will. The
+  // profile page matches `?k=<token>` server-side against this value and
+  // never exposes it in rendered HTML.
+  rsvpInviteToken: text("rsvp_invite_token"),
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
