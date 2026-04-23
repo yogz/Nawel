@@ -58,6 +58,21 @@ function toLocalIsoString(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+// Mirror of the server's `safeHttpUrl` refinement, kept in sync by hand.
+// The wizard pre-filters URLs so pasted values that happen to be
+// oversized / malformed don't bubble back as a cryptic Zod union error.
+function isSafeHttpUrl(raw: string): boolean {
+  if (!raw || raw.length > 2048) {
+    return false;
+  }
+  try {
+    const u = new URL(raw);
+    return u.protocol === "http:" || u.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Dapp-style create wizard. Replaces the long scroll form at /nouvelle
  * with full-screen step cards, big tap targets, gesture-first publish.
@@ -119,11 +134,19 @@ export function CreateWizard({
 
   function back() {
     const idx = steps.indexOf(step);
-    if (idx <= 0) {
-      router.push("/");
+    if (idx > 0) {
+      setStep(steps[idx - 1]!);
       return;
     }
-    setStep(steps[idx - 1]!);
+    // On the first step, exit the wizard. Prefer `router.back()` so the
+    // user returns to where they came from (typically the home page with
+    // their vibe chip still in view); fall back to a hard push if there's
+    // no history to pop — e.g., /nouvelle was opened directly from a link.
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
   }
 
   async function publish() {
@@ -140,10 +163,13 @@ export function CreateWizard({
     if (draft.venue) {
       fd.set("venue", draft.venue);
     }
-    if (draft.ticketUrl) {
+    // Pre-filter URLs so a quirky one from the paster (non-http/https, too
+    // long, truncated) doesn't bubble up as a cryptic Zod "Invalid input".
+    // The server re-validates anyway — this is just for the happy path.
+    if (draft.ticketUrl && isSafeHttpUrl(draft.ticketUrl)) {
       fd.set("ticketUrl", draft.ticketUrl);
     }
-    if (draft.heroImageUrl) {
+    if (draft.heroImageUrl && isSafeHttpUrl(draft.heroImageUrl)) {
       fd.set("heroImageUrl", draft.heroImageUrl);
     }
     // The server schema requires `creatorDisplayName` (min length 1) for
@@ -170,8 +196,16 @@ export function CreateWizard({
       throw new Error(result.message);
     }
     if (result?.errors) {
-      const first = Object.values(result.errors).flat()[0];
-      setError(first ?? "Un champ manque.");
+      // Surface the offending field name alongside the message — a bare
+      // "Invalid input" with no context was impossible to debug live.
+      const entry = Object.entries(result.errors)[0];
+      const firstField = entry?.[0];
+      const firstMessage = entry?.[1]?.[0];
+      setError(
+        firstField && firstMessage
+          ? `${firstField}: ${firstMessage}`
+          : (firstMessage ?? "Un champ manque.")
+      );
       throw new Error("validation");
     }
   }
