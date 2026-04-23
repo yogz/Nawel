@@ -215,6 +215,9 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
               existingExtraAdults={me?.extraAdults ?? 0}
               existingExtraChildren={me?.extraChildren ?? 0}
               existingEmail={me?.anonEmail ?? undefined}
+              outingTitle={outing.title}
+              outingUrl={`${PUBLIC_BASE}/${canonical}`}
+              outingDate={outing.fixedDatetime}
             />
           )}
         </div>
