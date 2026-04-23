@@ -23,6 +23,11 @@ const VIBE_CONFIG: Record<string, VibeConfig> = {
     pasterPlaceholder: "https://www.fnacspectacles.com/place-de-spectacle/...",
     pasterHint: "Fnac Spectacles, Théâtres Parisiens Associés, Comédie-Française…",
   },
+  opera: {
+    title: "Opéra",
+    pasterPlaceholder: "https://www.operadeparis.fr/saison-...",
+    pasterHint: "Opéra de Paris, Opéra Comique, Théâtre des Champs-Élysées…",
+  },
   concert: {
     title: "Concert",
     pasterPlaceholder: "https://www.ticketmaster.fr/fr/manifestation/...",
