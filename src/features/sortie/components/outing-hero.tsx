@@ -29,9 +29,11 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
         </p>
       )}
 
-      <h1 className="mt-4 text-4xl leading-[1.03] text-encre-700 sm:text-5xl">{title}</h1>
+      <h1 className="mt-4 text-[44px] leading-[0.95] font-black tracking-[-0.035em] text-encre-700 sm:text-6xl">
+        {title}
+      </h1>
 
-      {location && <p className="mt-3 text-lg text-encre-400">{location}</p>}
+      {location && <p className="mt-4 text-lg text-encre-400">{location}</p>}
 
       {ticketUrl && (
         <a
