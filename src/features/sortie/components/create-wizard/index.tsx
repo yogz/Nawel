@@ -4,19 +4,26 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { fr } from "date-fns/locale";
 import {
   ArrowLeft,
   ArrowRight,
   Calendar,
+  CalendarClock,
+  CalendarDays,
   Link2,
   Loader2,
   MapPin,
   PartyPopper,
+  Pencil,
   Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createOutingAction } from "@/features/sortie/actions/outing-actions";
+import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
 import { DayStrip } from "../day-strip";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
@@ -30,6 +37,10 @@ type Draft = {
   heroImageUrl: string;
   date: Date | null;
   time: string | null;
+  // Custom RSVP deadline override. `null` = use the server-side
+  // auto-computed default (24h / 1w / 2w / 3w before depending on how
+  // far out the event is).
+  rsvpDeadline: Date | null;
   creatorDisplayName: string;
   creatorEmail: string;
 };
@@ -113,6 +124,7 @@ export function CreateWizard({
     heroImageUrl: "",
     date: null,
     time: "20:00",
+    rsvpDeadline: null,
     creatorDisplayName: defaultCreatorName ?? "",
     creatorEmail: "",
   });
@@ -183,6 +195,9 @@ export function CreateWizard({
     fd.set("title", draft.title);
     fd.set("mode", "fixed");
     fd.set("startsAt", toLocalIsoString(startsAt));
+    if (draft.rsvpDeadline) {
+      fd.set("rsvpDeadline", toLocalIsoString(draft.rsvpDeadline));
+    }
     if (draft.venue) {
       fd.set("venue", draft.venue);
     }
@@ -311,8 +326,10 @@ export function CreateWizard({
               <DateStep
                 date={draft.date}
                 time={draft.time}
+                deadline={draft.rsvpDeadline}
                 onDateChange={(date) => setDraft((d) => ({ ...d, date }))}
                 onTimeChange={(time) => setDraft((d) => ({ ...d, time }))}
+                onDeadlineChange={(rsvpDeadline) => setDraft((d) => ({ ...d, rsvpDeadline }))}
                 onNext={() => advanceFrom("date")}
               />
             )}
@@ -661,27 +678,25 @@ function TitleStep({
 function DateStep({
   date,
   time,
+  deadline,
   onDateChange,
   onTimeChange,
+  onDeadlineChange,
   onNext,
 }: {
   date: Date | null;
   time: string | null;
+  deadline: Date | null;
   onDateChange: (date: Date) => void;
   onTimeChange: (time: string) => void;
+  onDeadlineChange: (deadline: Date | null) => void;
   onNext: () => void;
 }) {
-  // Short-cut chips target the spontaneous / impulse case (sortie at the
-  // next weekend, next Friday night) — the most-used semantic slots for
-  // 18–28 cultural going-out. "Plus loin" inside the strip still handles
-  // the long-planned case (opera in November).
   const shortcuts = useMemo(() => buildDateShortcuts(), []);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   function pickShortcut(target: Date) {
     onDateChange(target);
-    // Time usually implied — 20h is the curtain time by a mile. Only
-    // seed it when the user hasn't picked one yet so we don't stomp on
-    // a choice they already made.
     if (!time) {
       onTimeChange("20:00");
     }
@@ -698,6 +713,45 @@ function DateStep({
           C&rsquo;est quand ?
         </h1>
       </div>
+
+      {/* Full-calendar CTA promoted above the strip. Cultural outings are
+          usually known in advance (show dates are fixed by the venue, not
+          chosen by the creator). The strip stays as a shortcut; the
+          calendar button is primary. */}
+      <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl border-2 border-bordeaux-600 bg-bordeaux-50 text-base font-bold text-bordeaux-700 transition-colors active:scale-[0.98] hover:bg-bordeaux-100"
+          >
+            <CalendarDays size={18} />
+            {date
+              ? new Intl.DateTimeFormat("fr-FR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  timeZone: "Europe/Paris",
+                }).format(date)
+              : "Ouvrir le calendrier"}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
+          <CalendarPicker
+            mode="single"
+            selected={date ?? undefined}
+            onSelect={(d) => {
+              if (d) {
+                onDateChange(d);
+                setCalendarOpen(false);
+              }
+            }}
+            locale={fr}
+            weekStartsOn={1}
+            fromDate={new Date()}
+            className="[--cell-size:2.25rem]"
+          />
+        </PopoverContent>
+      </Popover>
 
       <div className="flex flex-wrap gap-2">
         {shortcuts.map((s) => {
@@ -720,7 +774,12 @@ function DateStep({
         })}
       </div>
 
-      <DayStrip selected={date} onSelect={onDateChange} />
+      <div>
+        <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
+          Ou choisis un jour proche
+        </p>
+        <DayStrip selected={date} onSelect={onDateChange} />
+      </div>
 
       {date && (
         <div className="mt-2">
@@ -729,6 +788,14 @@ function DateStep({
           </p>
           <TimeDrum selected={time} onSelect={onTimeChange} />
         </div>
+      )}
+
+      {date && time && (
+        <DeadlineSection
+          startsAt={combineDateAndTime(date, time)}
+          deadline={deadline}
+          onDeadlineChange={onDeadlineChange}
+        />
       )}
 
       <div className="mt-auto">
@@ -745,6 +812,168 @@ function DateStep({
       </div>
     </section>
   );
+}
+
+/**
+ * Deadline section — shown below the time picker once the user has
+ * picked date + time. Displays the auto-computed deadline (based on how
+ * far out the event is) and lets the user override via offset chips or
+ * a full calendar popover. Stored as a Date override in the draft;
+ * when null, the server re-computes the default at publish time.
+ */
+function DeadlineSection({
+  startsAt,
+  deadline,
+  onDeadlineChange,
+}: {
+  startsAt: Date;
+  deadline: Date | null;
+  onDeadlineChange: (deadline: Date | null) => void;
+}) {
+  const [editOpen, setEditOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const autoOffsetMs = computeDeadlineOffsetMs(startsAt);
+  const autoDeadline = new Date(startsAt.getTime() - autoOffsetMs);
+  const effective = deadline ?? autoDeadline;
+  const isCustom = deadline !== null;
+
+  const presets = useMemo(
+    () => [
+      { label: "24h avant", offsetMs: 24 * 60 * 60 * 1000 },
+      { label: "3 jours avant", offsetMs: 3 * 24 * 60 * 60 * 1000 },
+      { label: "1 semaine avant", offsetMs: 7 * 24 * 60 * 60 * 1000 },
+      { label: "2 semaines avant", offsetMs: 14 * 24 * 60 * 60 * 1000 },
+    ],
+    []
+  );
+
+  // Determine which preset (if any) matches the current offset so we can
+  // highlight it. An exact match within 1h = same chip.
+  const currentOffsetMs = startsAt.getTime() - effective.getTime();
+  const activePreset = presets.find((p) => Math.abs(p.offsetMs - currentOffsetMs) < 60 * 60 * 1000);
+
+  return (
+    <div className="rounded-2xl border-2 border-encre-100 bg-white p-4">
+      <div className="flex items-start gap-3">
+        <CalendarClock size={18} className="mt-0.5 shrink-0 text-bordeaux-600" />
+        <div className="flex-1">
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-encre-400">
+            Fermeture des réponses
+          </p>
+          <p className="mt-0.5 text-sm font-semibold text-encre-700">
+            {formatDeadline(effective)}
+            {!isCustom && (
+              <span className="ml-1 text-xs font-medium text-encre-400">
+                (auto, {describeOffset(autoOffsetMs)})
+              </span>
+            )}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setEditOpen((v) => !v)}
+          className="inline-flex items-center gap-1 text-xs font-bold text-bordeaux-700 underline-offset-4 hover:underline"
+        >
+          <Pencil size={12} />
+          {editOpen ? "Fermer" : "Changer"}
+        </button>
+      </div>
+
+      {editOpen && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => onDeadlineChange(null)}
+            aria-pressed={!isCustom}
+            className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
+              !isCustom
+                ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                : "border-encre-100 bg-white text-encre-700 active:scale-95"
+            }`}
+          >
+            Auto
+          </button>
+          {presets.map((p) => {
+            const active = activePreset === p;
+            return (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => onDeadlineChange(new Date(startsAt.getTime() - p.offsetMs))}
+                aria-pressed={active}
+                className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
+                  active
+                    ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                    : "border-encre-100 bg-white text-encre-700 active:scale-95"
+                }`}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex h-9 items-center gap-1 rounded-full border-2 border-dashed border-bordeaux-300 bg-transparent px-3 text-xs font-bold text-bordeaux-600 transition-colors active:scale-95 hover:border-bordeaux-600"
+              >
+                <CalendarDays size={12} />
+                Date précise
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
+              <CalendarPicker
+                mode="single"
+                selected={deadline ?? undefined}
+                onSelect={(d) => {
+                  if (d) {
+                    // Copy the auto-deadline's time so the user only has
+                    // to pick a date, not also a time.
+                    const next = new Date(d);
+                    next.setHours(autoDeadline.getHours(), autoDeadline.getMinutes(), 0, 0);
+                    onDeadlineChange(next);
+                    setCalendarOpen(false);
+                  }
+                }}
+                locale={fr}
+                weekStartsOn={1}
+                toDate={startsAt}
+                className="[--cell-size:2.25rem]"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatDeadline(date: Date): string {
+  return new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Paris",
+  })
+    .format(date)
+    .replace(":", "h");
+}
+
+function describeOffset(offsetMs: number): string {
+  const days = Math.round(offsetMs / (24 * 60 * 60 * 1000));
+  if (days <= 1) {
+    return "24h avant";
+  }
+  if (days <= 7) {
+    return "1 semaine avant";
+  }
+  if (days <= 14) {
+    return "2 semaines avant";
+  }
+  return "3 semaines avant";
 }
 
 function buildDateShortcuts(): { label: string; date: Date }[] {
