@@ -90,34 +90,51 @@ export function RsvpPrompt({
   }
 
   // Current response summary rendered when the user already RSVP'd —
-  // big enough to read at a glance, "Modifier" link to drop back to the
-  // two-button picker so they can change their mind in one tap.
+  // same two-button shape as the initial picker so they can switch sides
+  // in one tap. The active side is highlighted; the inactive side takes
+  // them through the switch flow (commit "no" / open yes-sheet).
   if (existingResponse) {
-    const summary = summariseResponse(existingResponse, existingExtraAdults, existingExtraChildren);
+    const isComing = existingResponse !== "no";
     return (
-      <div className="flex flex-col items-center gap-3">
-        <div
-          className={`inline-flex items-center gap-2 rounded-full border-2 px-5 py-3 text-base font-bold ${
-            existingResponse === "no"
-              ? "border-encre-200 bg-encre-50 text-encre-600"
-              : "border-bordeaux-600 bg-bordeaux-50 text-bordeaux-700"
-          }`}
-        >
-          {existingResponse === "no" ? (
-            <X size={18} strokeWidth={2.5} />
-          ) : (
-            <Check size={18} strokeWidth={2.5} />
-          )}
-          {summary}
+      <>
+        <div className="grid grid-cols-2 gap-3">
+          <PageResponseButton
+            icon={<Check size={22} strokeWidth={2.5} />}
+            label={
+              isComing
+                ? summariseResponse(existingResponse, existingExtraAdults, existingExtraChildren)
+                : "J'en suis"
+            }
+            tone="yes"
+            active={isComing}
+            onClick={handleYesTap}
+          />
+          <PageResponseButton
+            icon={<X size={22} strokeWidth={2.5} />}
+            label={isComing ? "Je peux plus" : "Je peux pas"}
+            tone="no"
+            active={!isComing}
+            onClick={handleNoTap}
+          />
         </div>
-        <button
-          type="button"
-          onClick={handleYesTap}
-          className="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-        >
-          <Pencil size={12} />
-          Modifier ma réponse
-        </button>
+
+        {isComing && (
+          <button
+            type="button"
+            onClick={handleYesTap}
+            className="mt-3 inline-flex items-center gap-1 self-center text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+          >
+            <Pencil size={12} />
+            Modifier mes détails
+          </button>
+        )}
+
+        <NoNameSheet
+          open={sheetMode === "no-name-needed"}
+          onOpenChange={(open) => setSheetMode(open ? "no-name-needed" : "idle")}
+          shortId={shortId}
+          onDone={() => setSheetMode("idle")}
+        />
 
         <YesDetailSheet
           open={sheetMode === "yes"}
@@ -149,7 +166,7 @@ export function RsvpPrompt({
             onClose={() => setStub(null)}
           />
         )}
-      </div>
+      </>
     );
   }
 
@@ -216,24 +233,32 @@ function PageResponseButton({
   icon,
   label,
   tone,
+  active = true,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
   tone: "yes" | "no";
+  // `active` drives the "highlighted / muted" style pair. When both
+  // buttons are shown post-RSVP, one is active (current response) and
+  // the other is muted (the switch-to affordance). When both are shown
+  // pre-RSVP the caller passes `active = true` for both and they look
+  // equal-weight — deliberately, since discouraging "no" inflates
+  // silent non-responses.
+  active?: boolean;
   onClick: () => void;
 }) {
-  // Equal weight on both tones on purpose — discouraging "no" inflates
-  // silent non-responses, which is worse than a clear declination.
-  const palette =
-    tone === "yes"
+  const palette = active
+    ? tone === "yes"
       ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)]"
-      : "bg-encre-700 text-ivoire-50 shadow-[var(--shadow-lg)]";
+      : "bg-encre-700 text-ivoire-50 shadow-[var(--shadow-lg)]"
+    : "bg-white text-encre-600 border-2 border-encre-100";
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-20 flex-col items-center justify-center gap-1 rounded-2xl text-base font-black tracking-tight transition-transform active:scale-95 ${palette}`}
+      aria-pressed={active}
+      className={`flex h-20 flex-col items-center justify-center gap-1 rounded-2xl px-3 text-center text-base font-black leading-tight tracking-tight transition-transform active:scale-95 ${palette}`}
     >
       <span>{icon}</span>
       <span>{label}</span>
