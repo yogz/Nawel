@@ -21,12 +21,17 @@ export function ParticipantList({ participants }: { participants: Participant[] 
     );
   }
 
+  // Singular form reads "Un a déjà dit oui." which is broken French —
+  // "un" isolé n'est pas un pronom. Use the person's name when there's
+  // exactly one yes, and fall back to "Quelqu'un" for nameless anons.
+  const headline =
+    yesList.length === 1
+      ? `${yesList[0]!.anonName ?? "Quelqu'un"} a déjà dit oui.`
+      : `${numberToFrenchCap(yesList.length)} d'entre vous ont déjà dit oui.`;
+
   return (
     <div>
-      <p className="mb-4 text-center font-serif text-xl text-encre-700">
-        {numberToFrenchCap(yesList.length)}{" "}
-        {yesList.length === 1 ? "a déjà dit oui." : "d'entre vous ont déjà dit oui."}
-      </p>
+      <p className="mb-4 text-center font-serif text-xl text-encre-700">{headline}</p>
 
       {totalHeads > yesList.length && (
         <p className="mb-4 text-center text-sm text-encre-400">
