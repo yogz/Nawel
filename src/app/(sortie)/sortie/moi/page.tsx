@@ -7,6 +7,7 @@ import { user } from "@drizzle/schema";
 import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { UsernameForm } from "@/features/sortie/components/username-form";
+import { LoginLink } from "@/features/sortie/components/login-link";
 
 export const metadata = {
   title: "Mon profil",
@@ -33,16 +34,13 @@ export default async function ProfileSettingsPage() {
           </p>
           <h1 className="font-serif text-4xl leading-tight text-encre-700">Connexion requise</h1>
         </header>
-        <p className="text-sm text-encre-500">
+        <p className="mb-6 text-sm text-encre-500">
           Pour choisir un nom d&rsquo;utilisateur et afficher tes sorties publiquement, connecte-toi
-          d&rsquo;abord sur{" "}
-          <a
-            href="https://www.colist.fr/login"
-            className="text-bordeaux-700 underline-offset-4 hover:underline"
-          >
-            colist.fr
-          </a>
-          .
+          à ton compte CoList.
+        </p>
+        <LoginLink variant="primary" label="Se connecter" />
+        <p className="mt-4 text-xs text-encre-400">
+          Un email sans mot de passe t&rsquo;arrivera. Tu reviendras ici une fois connecté·e.
         </p>
       </main>
     );

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
+import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
@@ -50,13 +52,23 @@ export default async function PublicProfilePage({ params }: Props) {
   }
 
   const { upcoming, past } = await listPublicProfileOutings(row.id);
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isSelf = session?.user?.id === row.id;
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
-      <nav className="mb-8">
+      <nav className="mb-8 flex items-center justify-between">
         <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
           ← Sortie
         </Link>
+        {isSelf && (
+          <Link
+            href="/moi"
+            className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+          >
+            Modifier mon profil
+          </Link>
+        )}
       </nav>
 
       <header className="mb-10">
@@ -67,7 +79,24 @@ export default async function PublicProfilePage({ params }: Props) {
       </header>
 
       {upcoming.length === 0 && past.length === 0 && (
-        <p className="text-sm text-encre-500">Aucune sortie publique pour l&rsquo;instant.</p>
+        <div className="rounded-lg border border-ivoire-400 bg-ivoire-50 p-5 text-sm text-encre-500">
+          {isSelf ? (
+            <>
+              <p className="mb-3">
+                Ton profil est vide pour l&rsquo;instant. Crée une sortie en cochant « Afficher sur
+                mon profil » et elle apparaîtra ici.
+              </p>
+              <Link
+                href="/nouvelle"
+                className="inline-flex items-center text-bordeaux-700 underline-offset-4 hover:underline"
+              >
+                Créer ma première sortie →
+              </Link>
+            </>
+          ) : (
+            <p>Aucune sortie publique pour l&rsquo;instant.</p>
+          )}
+        </div>
       )}
 
       {upcoming.length > 0 && <OutingList title="À venir" rows={upcoming} />}
