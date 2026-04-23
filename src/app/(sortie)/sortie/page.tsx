@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth-config";
 import { listMyOutingsForProfile } from "@/features/sortie/queries/outing-queries";
 import { UpcomingOutingsList } from "@/features/sortie/components/upcoming-outings-list";
+import { LoginLink } from "@/features/sortie/components/login-link";
 
 export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -32,13 +33,15 @@ export default async function SortieHome() {
           <Link href="/nouvelle">Créer une sortie</Link>
         </Button>
 
-        {isLoggedIn && (
+        {isLoggedIn ? (
           <Link
             href="/moi"
             className="mt-4 text-sm text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-700 hover:underline"
           >
             Mon profil →
           </Link>
+        ) : (
+          <LoginLink className="mt-4" label="Se connecter →" />
         )}
       </header>
 

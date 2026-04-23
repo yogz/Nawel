@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +13,24 @@ type Props = {
 };
 
 export function UsernameForm({ currentUsername }: Props) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     updateUsernameAction,
     {} as FormActionState
   );
   const [value, setValue] = useState(currentUsername ?? "");
+
+  // `revalidatePath` inside the action marks the route's cache stale, but a
+  // `useActionState` form doesn't actually re-fetch on its own — we have to
+  // nudge the router so the page reads the new `currentUsername`.
+  const wasPending = useRef(false);
+  useEffect(() => {
+    const justFinished = wasPending.current && !pending;
+    wasPending.current = pending;
+    if (justFinished && !state.errors && !state.message) {
+      router.refresh();
+    }
+  }, [pending, state, router]);
 
   const justSaved = !pending && !state.errors && !state.message && value !== currentUsername;
 
