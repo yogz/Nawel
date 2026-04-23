@@ -50,6 +50,88 @@ type Parsed = {
   image?: string;
 };
 
+// HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
+// hex) are handled generically; named entities only cover the Western
+// European accented set + typographic punctuation we actually run into
+// ("NOAM &#8226; L&#039;Européen" was the user-reported case — bullet +
+// apostrophe). Anything exotic falls through unchanged.
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: "\u00A0",
+  agrave: "à",
+  aacute: "á",
+  acirc: "â",
+  auml: "ä",
+  Agrave: "À",
+  Aacute: "Á",
+  Acirc: "Â",
+  ccedil: "ç",
+  Ccedil: "Ç",
+  egrave: "è",
+  eacute: "é",
+  ecirc: "ê",
+  euml: "ë",
+  Egrave: "È",
+  Eacute: "É",
+  Ecirc: "Ê",
+  igrave: "ì",
+  iacute: "í",
+  icirc: "î",
+  iuml: "ï",
+  ograve: "ò",
+  oacute: "ó",
+  ocirc: "ô",
+  ouml: "ö",
+  ugrave: "ù",
+  uacute: "ú",
+  ucirc: "û",
+  uuml: "ü",
+  Ugrave: "Ù",
+  yuml: "ÿ",
+  hellip: "…",
+  ndash: "–",
+  mdash: "—",
+  lsquo: "\u2018",
+  rsquo: "\u2019",
+  ldquo: "\u201C",
+  rdquo: "\u201D",
+  bull: "•",
+  middot: "·",
+  laquo: "«",
+  raquo: "»",
+};
+
+function decodeHtmlEntities(raw: string): string {
+  return raw
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex: string) => {
+      const code = parseInt(hex, 16);
+      if (!Number.isFinite(code)) {
+        return "";
+      }
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return "";
+      }
+    })
+    .replace(/&#(\d+);/g, (_, dec: string) => {
+      const code = parseInt(dec, 10);
+      if (!Number.isFinite(code)) {
+        return "";
+      }
+      try {
+        return String.fromCodePoint(code);
+      } catch {
+        return "";
+      }
+    })
+    .replace(/&([a-zA-Z]+);/g, (match, name: string) => NAMED_ENTITIES[name] ?? match);
+}
+
 // Tiny OG-meta extractor. Regex rather than a full HTML parser because we
 // only care about a handful of `<meta>` tags at the top of the document —
 // adding `cheerio` or `node-html-parser` just for this doubles the cold-
@@ -65,7 +147,7 @@ function extractOg(html: string): Parsed {
     );
     const m = html.match(re);
     if (m) {
-      return m[1]!.trim();
+      return decodeHtmlEntities(m[1]!.trim());
     }
     // Try the other attribute order too — content first, then property.
     const re2 = new RegExp(
@@ -73,7 +155,7 @@ function extractOg(html: string): Parsed {
       "i"
     );
     const m2 = html.match(re2);
-    return m2 ? m2[1]!.trim() : undefined;
+    return m2 ? decodeHtmlEntities(m2[1]!.trim()) : undefined;
   };
 
   const title = get("og:title") ?? get("twitter:title");
