@@ -13,6 +13,7 @@ import {
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
@@ -151,6 +152,13 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       )}
 
+      {isSelf && (upcoming.length > 0 || past.length > 0) && (
+        <p className="mb-4 text-xs text-encre-400">
+          Glisse une sortie vers la gauche pour l&rsquo;archiver — elle disparaît de ton profil mais
+          reste visible pour les invités.
+        </p>
+      )}
+
       {upcoming.length > 0 && (
         <OutingSection
           title="À venir"
@@ -159,6 +167,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           myRsvpByOuting={myRsvpByOuting}
           loggedInName={session?.user?.name ?? null}
           isPast={false}
+          isSelf={isSelf}
         />
       )}
       {past.length > 0 && (
@@ -169,6 +178,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           myRsvpByOuting={new Map()}
           loggedInName={session?.user?.name ?? null}
           isPast
+          isSelf={isSelf}
         />
       )}
     </main>
@@ -186,6 +196,7 @@ function OutingSection({
   myRsvpByOuting,
   loggedInName,
   isPast,
+  isSelf,
 }: {
   title: string;
   outings: OutingRow[];
@@ -193,39 +204,58 @@ function OutingSection({
   myRsvpByOuting: Map<string, ParticipantRow>;
   loggedInName: string | null;
   isPast: boolean;
+  isSelf: boolean;
 }) {
+  function resolveMyRsvp(p: ParticipantRow | undefined) {
+    if (!p || (p.response !== "yes" && p.response !== "no" && p.response !== "handle_own")) {
+      return null;
+    }
+    return {
+      response: p.response as RsvpResponse,
+      name: p.anonName ?? loggedInName ?? "",
+      extraAdults: p.extraAdults,
+      extraChildren: p.extraChildren,
+      email: p.anonEmail ?? undefined,
+    };
+  }
+
   return (
     <section className="mb-10">
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
         {title}
       </p>
-      <ul className="flex flex-col gap-4">
-        {outings.map((o) => {
-          const p = myRsvpByOuting.get(o.id);
-          const myRsvp =
-            p && (p.response === "yes" || p.response === "no" || p.response === "handle_own")
-              ? {
-                  response: p.response as RsvpResponse,
-                  name: p.anonName ?? loggedInName ?? "",
-                  extraAdults: p.extraAdults,
-                  extraChildren: p.extraChildren,
-                  email: p.anonEmail ?? undefined,
-                }
-              : null;
-          return (
+      {isSelf ? (
+        <ArchivableOutingList
+          rows={outings}
+          isPast={isPast}
+          listClassName="flex flex-col gap-4"
+          renderRow={(o) => (
+            <OutingProfileCard
+              outing={o}
+              showRsvp={showRsvp}
+              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
+              loggedInName={loggedInName}
+              outingBaseUrl={PUBLIC_BASE}
+              isPast={isPast}
+            />
+          )}
+        />
+      ) : (
+        <ul className="flex flex-col gap-4">
+          {outings.map((o) => (
             <li key={o.id}>
               <OutingProfileCard
                 outing={o}
                 showRsvp={showRsvp}
-                myRsvp={myRsvp}
+                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
                 loggedInName={loggedInName}
                 outingBaseUrl={PUBLIC_BASE}
                 isPast={isPast}
               />
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

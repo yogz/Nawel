@@ -66,6 +66,13 @@ export const outings = sortie.table(
     chosenTimeslotId: uuid("chosen_timeslot_id"),
     status: outingStatus("status").notNull().default("open"),
     showOnProfile: boolean("show_on_profile").notNull().default(true),
+    // When set, the outing is hidden from the creator's own profile lists
+    // (/moi upcoming+past). Soft-archive — the outing itself still exists
+    // and remains visible to attendees at its canonical URL. Distinct from
+    // `showOnProfile` (which gates *public* profile visibility) and from
+    // `cancelled` (which emails attendees). The UX split: swipe → archive,
+    // detail-page button → cancel.
+    hiddenFromProfileAt: timestamp("hidden_from_profile_at", { withTimezone: true }),
     cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
     // Stamped by the hourly sweeper once the J-1 reminder email has been sent,
     // so the cron can't double-send if it overlaps its own 1-hour window.

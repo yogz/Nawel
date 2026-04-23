@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gt, inArray, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants } from "@drizzle/sortie-schema";
 
@@ -59,6 +59,7 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
       and(
         eq(outings.creatorUserId, userId),
         ne(outings.status, "cancelled"),
+        isNull(outings.hiddenFromProfileAt),
         gt(outings.deadlineAt, new Date())
       )
     )
@@ -86,7 +87,13 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       status: outings.status,
     })
     .from(outings)
-    .where(and(eq(outings.creatorUserId, userId), ne(outings.status, "cancelled")))
+    .where(
+      and(
+        eq(outings.creatorUserId, userId),
+        ne(outings.status, "cancelled"),
+        isNull(outings.hiddenFromProfileAt)
+      )
+    )
     .orderBy(desc(outings.createdAt))
     .limit(50);
 
@@ -129,7 +136,8 @@ export async function listPublicProfileOutings(userId: string, now = new Date())
       and(
         eq(outings.creatorUserId, userId),
         eq(outings.showOnProfile, true),
-        ne(outings.status, "cancelled")
+        ne(outings.status, "cancelled"),
+        isNull(outings.hiddenFromProfileAt)
       )
     )
     .orderBy(desc(outings.createdAt))
@@ -138,6 +146,36 @@ export async function listPublicProfileOutings(userId: string, now = new Date())
   const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
   return { upcoming, past };
+}
+
+/**
+ * Archived outings — only visible to the creator in their /moi page
+ * under an "Archivées" section. Cancelled outings are *not* included
+ * here (cancel and archive are distinct semantics).
+ */
+export async function listArchivedOutings(userId: string) {
+  return db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      startsAt: outings.fixedDatetime,
+      deadlineAt: outings.deadlineAt,
+      status: outings.status,
+      hiddenFromProfileAt: outings.hiddenFromProfileAt,
+    })
+    .from(outings)
+    .where(
+      and(
+        eq(outings.creatorUserId, userId),
+        ne(outings.status, "cancelled"),
+        isNotNull(outings.hiddenFromProfileAt)
+      )
+    )
+    .orderBy(desc(outings.hiddenFromProfileAt))
+    .limit(50);
 }
 
 /**
