@@ -30,9 +30,9 @@ const MONTH_SHORT = [
 
 /**
  * Horizontal day strip — shows `daysAhead` day cards (today + next 20 by
- * default) with CSS scroll-snap. A trailing "+ Plus loin" card opens a
+ * default) with CSS scroll-snap. The LEADING "Autre date" card opens a
  * full Shadcn Calendar popover for far-future dates (concerts booked
- * three months ahead, operas announced for next season, etc).
+ * three months ahead, operas announced for next season).
  *
  * Scroll behaviour: auto-centers the initial selection on mount only —
  * re-running `scrollIntoView` on every `selected` change was fighting
@@ -88,6 +88,39 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
       ref={scrollerRef}
       className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-2 [scroll-snap-type:x_mandatory] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
+      {/* Calendar trigger placed FIRST in the strip — cultural outings
+          are disproportionately booked weeks/months ahead (opera next
+          season, concert in 3 months). Burying the calendar behind 21
+          day cards was optimising for the wrong 80%. Still keeps the
+          popover behaviour; the card at the end has been removed. */}
+      <Popover open={farOpen} onOpenChange={setFarOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 transition-colors active:scale-95 hover:border-bordeaux-600 hover:text-bordeaux-700 [scroll-snap-align:start]"
+          >
+            <CalendarPlus size={22} />
+            <span className="text-[11px] font-semibold leading-tight text-center">Autre date</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
+          <Calendar
+            mode="single"
+            selected={selected ?? undefined}
+            onSelect={(day) => {
+              if (day) {
+                onSelect(day);
+                setFarOpen(false);
+              }
+            }}
+            locale={fr}
+            weekStartsOn={1}
+            fromDate={new Date()}
+            className="[--cell-size:2.25rem]"
+          />
+        </PopoverContent>
+      </Popover>
+
       {days.map((d, idx) => {
         const isSelected = selected ? sameDay(d, selected) : false;
         const isToday = idx === 0;
@@ -166,37 +199,6 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
           </span>
         </button>
       )}
-
-      {/* Escape hatch to the full calendar for dates further than 3 weeks
-          out. Shown with a more explicit icon + label so it reads as a
-          real affordance, not a dashed afterthought. */}
-      <Popover open={farOpen} onOpenChange={setFarOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 transition-colors active:scale-95 hover:border-bordeaux-600 hover:text-bordeaux-700 [scroll-snap-align:center]"
-          >
-            <CalendarPlus size={22} />
-            <span className="text-[11px] font-semibold leading-tight text-center">Plus loin</span>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="end" className="theme-sortie w-auto bg-ivoire-50 p-0">
-          <Calendar
-            mode="single"
-            selected={selected ?? undefined}
-            onSelect={(day) => {
-              if (day) {
-                onSelect(day);
-                setFarOpen(false);
-              }
-            }}
-            locale={fr}
-            weekStartsOn={1}
-            fromDate={new Date()}
-            className="[--cell-size:2.25rem]"
-          />
-        </PopoverContent>
-      </Popover>
     </div>
   );
 }

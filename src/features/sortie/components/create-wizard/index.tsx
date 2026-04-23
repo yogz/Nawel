@@ -752,8 +752,12 @@ function buildDateShortcuts(): { label: string; date: Date }[] {
   base.setHours(0, 0, 0, 0);
   const tomorrow = new Date(base);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const weekend = nextWeekdayFrom(base, 6); // Saturday
-  const friday = nextWeekdayFrom(base, 5);
+  // "Ce weekend" = the nearest upcoming Saturday (this week's if still
+  // ahead, else next week's). "Vendredi prochain" in French almost
+  // always means Friday of the *following* week — never this week's.
+  // Two different semantics, two different helpers.
+  const weekend = nearestUpcomingWeekday(base, 6);
+  const friday = nextWeekWeekday(base, 5);
   return [
     { label: "Demain", date: tomorrow },
     { label: "Ce weekend", date: weekend },
@@ -761,10 +765,23 @@ function buildDateShortcuts(): { label: string; date: Date }[] {
   ];
 }
 
-function nextWeekdayFrom(from: Date, targetDay: number): Date {
+function nearestUpcomingWeekday(from: Date, targetDay: number): Date {
   const d = new Date(from);
-  const delta = (targetDay - d.getDay() + 7) % 7 || 7;
+  let delta = (targetDay - d.getDay() + 7) % 7;
+  if (delta === 0) {
+    delta = 7;
+  }
   d.setDate(d.getDate() + delta);
+  return d;
+}
+
+function nextWeekWeekday(from: Date, targetDay: number): Date {
+  // "Next week" semantics — always at least 7 days away. Monday+Friday
+  // in the same week isn't "vendredi prochain", it's "vendredi".
+  const d = nearestUpcomingWeekday(from, targetDay);
+  if ((d.getTime() - from.getTime()) / 86400000 < 7) {
+    d.setDate(d.getDate() + 7);
+  }
   return d;
 }
 
