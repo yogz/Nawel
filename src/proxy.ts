@@ -62,14 +62,11 @@ export const config = {
   // Match all pathnames except for
   // - ... if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
   // - ... the ones containing a dot (e.g. `favicon.ico`)
-  // - ... prefetch requests (next/link background fetches)
-  matcher: [
-    {
-      source: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-  ],
+  //
+  // NOTE: we deliberately do NOT skip prefetch requests. The sortie host
+  // relies on this proxy to rewrite `/@user` and `/moi` to their internal
+  // routes — if prefetches bypass the proxy they resolve as 404 on the
+  // `/[locale]/...` tree and Vercel caches those 404s, breaking subsequent
+  // real navigations.
+  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
 };
