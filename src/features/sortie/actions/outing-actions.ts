@@ -127,7 +127,11 @@ export async function createOutingAction(
   // /sortie/sortie/<id>, which doesn't exist → 404.
   const path = `/${canonicalPathSegment({ slug, shortId })}`;
   revalidatePath(path);
-  redirect(path);
+  // `?from=create` triggers the "preview-as-success" banner on the outing
+  // page — same destination as the public view, but with a contextual
+  // "share this now" affordance overlaid so the creator doesn't have to
+  // wonder whether their sortie went through.
+  redirect(`${path}?from=create`);
 }
 
 export async function updateOutingAction(

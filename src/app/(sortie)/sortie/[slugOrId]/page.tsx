@@ -10,6 +10,7 @@ import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
@@ -23,6 +24,7 @@ const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -54,8 +56,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function OutingPublicPage({ params }: Props) {
+export default async function OutingPublicPage({ params, searchParams }: Props) {
   const { slugOrId } = await params;
+  const { from } = await searchParams;
+  const justCreated = from === "create";
   const shortId = extractShortId(slugOrId);
   if (!shortId) {
     notFound();
@@ -130,6 +134,8 @@ export default async function OutingPublicPage({ params }: Props) {
           </Link>
         )}
       </nav>
+
+      {justCreated && isCreator && <CreateSuccessBanner url={`${PUBLIC_BASE}/${canonical}`} />}
 
       <div className="mb-4 flex justify-end">
         <ShareActions

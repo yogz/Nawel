@@ -7,14 +7,37 @@ export const metadata = {
   title: "Créer une sortie",
 };
 
-// Mapping from the `?vibe=` query param to a prefilled title. Keeps the
-// vibe chips on the home page useful — clicking "Resto" lands you in a
-// form that's already half-filled in.
-const VIBE_TITLES: Record<string, string> = {
-  theatre: "Une pièce de théâtre",
-  concert: "Un concert",
-  cine: "Au cinéma",
-  expo: "Une expo",
+// Each vibe steers three things at once: a title seed, a placeholder URL
+// hinting at the right ticket site, and the helper copy above the paster.
+// Clicking the home-page chip becomes a real head start instead of just a
+// pre-filled string.
+type VibeConfig = {
+  title: string;
+  pasterPlaceholder: string;
+  pasterHint: string;
+};
+
+const VIBE_CONFIG: Record<string, VibeConfig> = {
+  theatre: {
+    title: "Théâtre",
+    pasterPlaceholder: "https://www.fnacspectacles.com/place-de-spectacle/...",
+    pasterHint: "Fnac Spectacles, Théâtres Parisiens Associés, Comédie-Française…",
+  },
+  concert: {
+    title: "Concert",
+    pasterPlaceholder: "https://www.ticketmaster.fr/fr/manifestation/...",
+    pasterHint: "Ticketmaster, Dice, See Tickets, Bandsintown…",
+  },
+  cine: {
+    title: "Ciné",
+    pasterPlaceholder: "https://www.allocine.fr/film/fichefilm_gen_cfilm=...",
+    pasterHint: "Allociné, UGC Illimité, MK2…",
+  },
+  expo: {
+    title: "Expo",
+    pasterPlaceholder: "https://billetterie.parismusees.paris.fr/...",
+    pasterHint: "Parismusées, Pompidou, Louvre, expos en ligne…",
+  },
 };
 
 type Props = {
@@ -23,7 +46,7 @@ type Props = {
 
 export default async function NouvelleSortiePage({ searchParams }: Props) {
   const { vibe } = await searchParams;
-  const defaultTitle = vibe && VIBE_TITLES[vibe] ? VIBE_TITLES[vibe] : undefined;
+  const config = vibe && VIBE_CONFIG[vibe] ? VIBE_CONFIG[vibe] : null;
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user ?? null;
 
@@ -51,7 +74,9 @@ export default async function NouvelleSortiePage({ searchParams }: Props) {
       <CreateOutingForm
         isLoggedIn={Boolean(user)}
         defaultCreatorName={user?.name ?? undefined}
-        defaultTitle={defaultTitle}
+        defaultTitle={config?.title}
+        pasterPlaceholder={config?.pasterPlaceholder}
+        pasterHint={config?.pasterHint}
       />
     </main>
   );

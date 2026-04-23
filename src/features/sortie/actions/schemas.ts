@@ -41,12 +41,28 @@ const timeslotVoteInputSchema = z.object({
   available: z.boolean(),
 });
 
-// When the user doesn't set a deadline explicitly we auto-derive it: 24h
-// before the event (fixed mode) or 24h before the earliest timeslot (vote
-// mode). The field is exposed as optional on the form so first-timers only
-// have to think about *when* their sortie is, not also *until when do
-// people respond*. Power-users can still override via the modifier page.
-const DEFAULT_DEADLINE_OFFSET_MS = 24 * 60 * 60 * 1000;
+// When the user doesn't set a deadline explicitly we derive one based on
+// how far out the event is:
+//   - less than a week away → 24h before   (spontaneous plans)
+//   - 1–4 weeks away        → 1 week       (popular theatre/cinema)
+//   - 1–3 months away       → 2 weeks      (concerts in advance)
+//   - 3+ months away        → 3 weeks      (operas, big venues)
+// The user still sees the computed date on the form and can override.
+// Exposed as a helper so the client-side preview uses the same logic the
+// server does.
+export function computeDeadlineOffsetMs(startsAt: Date, now: Date = new Date()): number {
+  const daysOut = (startsAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000);
+  if (daysOut < 7) {
+    return 24 * 60 * 60 * 1000;
+  }
+  if (daysOut < 30) {
+    return 7 * 24 * 60 * 60 * 1000;
+  }
+  if (daysOut < 90) {
+    return 14 * 24 * 60 * 60 * 1000;
+  }
+  return 21 * 24 * 60 * 60 * 1000;
+}
 
 export const createOutingSchema = z
   .object({
@@ -125,9 +141,10 @@ export const createOutingSchema = z
 
 /**
  * Derives the RSVP/vote closure deadline when the creator didn't set one.
- * Keeps the logic outside the Zod schema so the inferred type of the parsed
- * object stays clean (no `Date | undefined` → narrow gymnastics at the call
- * site).
+ * Scales the offset by how far out the event is — see
+ * `computeDeadlineOffsetMs`. Keeps the logic outside the Zod schema so the
+ * inferred type of the parsed object stays clean (no `Date | undefined` →
+ * narrow gymnastics at the call site).
  */
 export function resolveDeadline(data: {
   rsvpDeadline: Date | undefined;
@@ -147,7 +164,11 @@ export function resolveDeadline(data: {
       data.timeslots[0].startsAt
     );
   }
-  return anchor ? new Date(anchor.getTime() - DEFAULT_DEADLINE_OFFSET_MS) : new Date();
+  if (!anchor) {
+    return new Date();
+  }
+  const offset = computeDeadlineOffsetMs(anchor);
+  return new Date(anchor.getTime() - offset);
 }
 
 export const updateOutingSchema = z
