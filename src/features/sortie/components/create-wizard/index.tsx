@@ -117,18 +117,27 @@ export function CreateWizard({
     creatorEmail: "",
   });
   const [pasteFailed, setPasteFailed] = useState(false);
+  // Tracks whether the paster auto-filled the venue. We skip the
+  // dedicated venue step in that case — the user already saw + can edit
+  // the venue inline on the confirm card, asking a second time is just
+  // friction. Not a function of `draft.venue` directly so mid-flow edits
+  // (clearing it to ""}) don't flicker the step machine.
+  const [venueFromPaste, setVenueFromPaste] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If the paste step succeeded we show a confirm screen; otherwise we
-  // skip straight to manual title entry. Logged-in users never see the
-  // `name` step — we already know their identity from the session, so
-  // filtering it out avoids the step machine needing an in-render
-  // `setState` hack to skip it.
+  // Step filtering builds the actual flow based on what we already know:
+  //   - Paste branch vs manual entry (paster success vs fallback)
+  //   - Skip `name` for logged-in users (session has the identity)
+  //   - Skip `venue` when the paster already found it (no double-ask)
   const steps = useMemo<Step[]>(() => {
     const usePasteBranch = (draft.title.length > 0 || draft.ticketUrl.length > 0) && !pasteFailed;
     const base = usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
-    return isLoggedIn ? base.filter((s) => s !== "name") : base;
-  }, [draft.title, draft.ticketUrl, pasteFailed, isLoggedIn]);
+    let filtered = isLoggedIn ? base.filter((s) => s !== "name") : base;
+    if (venueFromPaste) {
+      filtered = filtered.filter((s) => s !== "venue");
+    }
+    return filtered;
+  }, [draft.title, draft.ticketUrl, pasteFailed, isLoggedIn, venueFromPaste]);
 
   const stepIndex = steps.indexOf(step);
   const progress = ((stepIndex + 1) / steps.length) * 100;
@@ -268,6 +277,12 @@ export function CreateWizard({
                     date: parsedDate ?? d.date,
                     time: parsedTime ?? d.time,
                   }));
+                  // Skip the dedicated venue step when the paster found
+                  // one — user already saw + can edit it on the confirm
+                  // card. Asking again is pure friction.
+                  if (data.venue && data.venue.trim().length > 0) {
+                    setVenueFromPaste(true);
+                  }
                   setPasteFailed(false);
                   goToStep("confirm");
                 }}
@@ -656,6 +671,22 @@ function DateStep({
   onTimeChange: (time: string) => void;
   onNext: () => void;
 }) {
+  // Short-cut chips target the spontaneous / impulse case (sortie at the
+  // next weekend, next Friday night) — the most-used semantic slots for
+  // 18–28 cultural going-out. "Plus loin" inside the strip still handles
+  // the long-planned case (opera in November).
+  const shortcuts = useMemo(() => buildDateShortcuts(), []);
+
+  function pickShortcut(target: Date) {
+    onDateChange(target);
+    // Time usually implied — 20h is the curtain time by a mile. Only
+    // seed it when the user hasn't picked one yet so we don't stomp on
+    // a choice they already made.
+    if (!time) {
+      onTimeChange("20:00");
+    }
+  }
+
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
       <div>
@@ -668,12 +699,37 @@ function DateStep({
         </h1>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {shortcuts.map((s) => {
+          const active = date ? isSameDay(date, s.date) : false;
+          return (
+            <button
+              key={s.label}
+              type="button"
+              onClick={() => pickShortcut(s.date)}
+              aria-pressed={active}
+              className={`inline-flex h-10 items-center rounded-full border-2 px-4 text-sm font-bold transition-colors ${
+                active
+                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                  : "border-encre-100 bg-white text-encre-700 active:scale-95"
+              }`}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+
       <DayStrip selected={date} onSelect={onDateChange} />
 
-      <div className="mt-4">
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">Heure</p>
-        <TimeDrum selected={time} onSelect={onTimeChange} />
-      </div>
+      {date && (
+        <div className="mt-2">
+          <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
+            Heure
+          </p>
+          <TimeDrum selected={time} onSelect={onTimeChange} />
+        </div>
+      )}
 
       <div className="mt-auto">
         <Button
@@ -688,6 +744,35 @@ function DateStep({
         </Button>
       </div>
     </section>
+  );
+}
+
+function buildDateShortcuts(): { label: string; date: Date }[] {
+  const base = new Date();
+  base.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(base);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const weekend = nextWeekdayFrom(base, 6); // Saturday
+  const friday = nextWeekdayFrom(base, 5);
+  return [
+    { label: "Demain", date: tomorrow },
+    { label: "Ce weekend", date: weekend },
+    { label: "Vendredi prochain", date: friday },
+  ];
+}
+
+function nextWeekdayFrom(from: Date, targetDay: number): Date {
+  const d = new Date(from);
+  const delta = (targetDay - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + delta);
+  return d;
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
   );
 }
 
