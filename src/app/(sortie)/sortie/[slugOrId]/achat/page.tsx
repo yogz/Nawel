@@ -8,6 +8,7 @@ import { participants, purchases } from "@drizzle/sortie-schema";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
+import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
 
@@ -75,7 +76,7 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     }));
 
   const nameByParticipant = new Map(
-    outing.participants.map((p) => [p.id, p.anonName ?? "Quelqu'un"])
+    outing.participants.map((p) => [p.id, displayNameOf(p) ?? "Quelqu'un"])
   );
 
   // Compute two views: normal (buyer included) and ghost (buyer excluded).
