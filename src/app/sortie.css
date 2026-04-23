@@ -82,6 +82,14 @@
     letter-spacing: -0.035em;
     font-weight: 800;
   }
+
+  /* iOS Safari zooms to 16px and never zooms back out whenever an input
+     has computed font-size < 16px on focus. Pin the minimum here so the
+     tight `text-[13px]` labels we use on the forms don't accidentally
+     trigger the trap. */
+  .theme-sortie :is(input, select, textarea) {
+    font-size: max(16px, 1rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

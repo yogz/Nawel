@@ -93,6 +93,10 @@ export const createOutingSchema = z
       .optional()
       .transform((v) => (v instanceof Date ? v : undefined)),
     ticketUrl: optionalSafeUrl,
+    // Hero image URL — populated by the paster when it finds an `og:image`
+    // on the ticket site. Same protocol refinement as `ticketUrl` so a
+    // malicious source can't slip a `javascript:` URL through.
+    heroImageUrl: optionalSafeUrl,
     creatorDisplayName: trimmedString.min(1).max(100),
     creatorEmail: z
       .union([z.literal(""), z.string().email().max(255)])
