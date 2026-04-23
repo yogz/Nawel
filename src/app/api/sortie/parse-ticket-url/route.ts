@@ -317,6 +317,55 @@ function extractFrenchDate(text: string): string | undefined {
   return `${year}-${pad(monthIdx + 1)}-${pad(day)}T${pad(hour)}:${pad(minute)}:00`;
 }
 
+// Venue keywords — if a string contains any of these, it's almost
+// certainly a place name. Used to gate two fallbacks that would
+// otherwise be too aggressive: promoting `og:site_name` straight to
+// venue (Opéra national de Paris case), and pulling the first sentence
+// of `og:description` (Antonia Bembo composer-name-as-venue bug). All
+// lowercased; comparison is case-insensitive.
+const VENUE_KEYWORDS = [
+  "opéra",
+  "opera",
+  "théâtre",
+  "theatre",
+  "salle",
+  "auditorium",
+  "philharmonie",
+  "palais",
+  "comédie",
+  "comedie",
+  "scène",
+  "scene",
+  "amphithéâtre",
+  "arène",
+  "arene",
+  "cirque",
+  "maison",
+  "conservatoire",
+  "centre",
+  "cité",
+  "cite",
+  "musée",
+  "musee",
+  "bastille",
+  "zénith",
+  "zenith",
+  "parc",
+  "stade",
+  "arena",
+  "hall",
+  "club",
+  "bataclan",
+];
+
+function looksLikeVenue(s: string | undefined): boolean {
+  if (!s) {
+    return false;
+  }
+  const lower = s.toLowerCase();
+  return VENUE_KEYWORDS.some((k) => lower.includes(k));
+}
+
 /**
  * Detects "title · venue" / "title — venue" suffix patterns and splits
  * them — L'Européen ships `og:title = "NOAM · L'Européen"` and
@@ -393,11 +442,20 @@ function extractOg(html: string): Parsed {
     }
   }
 
-  // Venue priority:
+  // Venue priority (post-2024 revision to stop composer names leaking
+  // in through the description fallback):
   //   1. JSON-LD location.name (canonical)
-  //   2. og:site_name when it suffixes the og:title (L'Européen case)
-  //   3. First short sentence of og:description (legacy heuristic)
+  //   2. og:site_name when it *looks like a venue* (contains "opéra",
+  //      "théâtre", etc. — Opéra national de Paris case)
+  //   3. og:site_name when it suffixes the og:title (L'Européen case —
+  //      "NOAM · L'Européen" → strip from title + venue)
+  //   4. First short sentence of og:description, ONLY when that sentence
+  //      itself looks like a venue. Without this guard we leaked
+  //      "Antonia Bembo" (a composer) onto the Opera page.
   let venue = jsonLd?.venue ? decodeHtmlEntities(jsonLd.venue) : undefined;
+  if (!venue && looksLikeVenue(siteName)) {
+    venue = siteName;
+  }
   if (!venue && title && siteName) {
     const split = splitTitleAndVenue(title, siteName);
     if (split.venue) {
@@ -406,7 +464,10 @@ function extractOg(html: string): Parsed {
     }
   }
   if (!venue && description && description.length <= 200) {
-    venue = description.split(/[.\n]/)[0]?.trim();
+    const firstSentence = description.split(/[.\n]/)[0]?.trim();
+    if (firstSentence && looksLikeVenue(firstSentence)) {
+      venue = firstSentence;
+    }
   }
 
   // Start date priority: JSON-LD > natural-language parse of description.

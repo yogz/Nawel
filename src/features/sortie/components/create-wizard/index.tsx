@@ -691,27 +691,10 @@ function DateStep({
   onDeadlineChange: (deadline: Date | null) => void;
   onNext: () => void;
 }) {
-  // Calendar-only flow. The previous iteration layered a shortcut chip
-  // row + day strip on top; for cultural outings (dates dictated by the
-  // venue) both were decision noise. Single tall affordance = the
-  // calendar card. Time presets stay because curtain times cluster
-  // around 19h30 / 20h / 20h30 and presets beat a picker there.
-  const [calendarOpen, setCalendarOpen] = useState(false);
-
-  const weekdayMonth = date
-    ? new Intl.DateTimeFormat("fr-FR", {
-        weekday: "short",
-        timeZone: "Europe/Paris",
-      })
-        .format(date)
-        .replace(".", "")
-        .toUpperCase()
-    : null;
-  const monthName = date
-    ? new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: "Europe/Paris" })
-        .format(date)
-        .replace(".", "")
-    : null;
+  // Calendar rendered inline — the date is the main artefact of this
+  // step, hiding it behind a popover added an empty tap and didn't help
+  // anyone. The Shadcn Calendar grid fits in ~300px of height, which is
+  // fine on mobile below the title.
 
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
@@ -725,79 +708,35 @@ function DateStep({
         </h1>
       </div>
 
-      {/* Stateful card — the only way to pick a date now. Left tile shows
-          the picked day in big typography, or an empty "Aucune date"
-          state with a coral pulse to draw the first tap. Never
-          auto-selects today (would leak "today" sorties on submit). */}
-      <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="flex h-[88px] items-center gap-4 rounded-3xl border-2 border-bordeaux-600 bg-bordeaux-50 px-5 text-left transition-colors active:scale-[0.99] hover:bg-bordeaux-100"
-          >
-            <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-bordeaux-600 text-ivoire-50">
-              {date ? (
-                <>
-                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-ivoire-200">
-                    {weekdayMonth}
-                  </span>
-                  <span className="text-3xl font-black leading-none tracking-tight">
-                    {date.getDate()}
-                  </span>
-                  <span className="text-[10px] font-semibold text-ivoire-200">{monthName}</span>
-                </>
-              ) : (
-                <span className="relative grid place-items-center">
-                  <CalendarDays size={28} strokeWidth={2.25} />
-                  <span
-                    aria-hidden="true"
-                    className="absolute -top-1 -right-1 h-2 w-2 animate-pulse rounded-full bg-or-500"
-                  />
-                </span>
-              )}
-            </div>
-            <div className="flex flex-1 flex-col">
-              {date ? (
-                <>
-                  <span className="text-lg font-black leading-tight tracking-tight text-encre-700">
-                    {new Intl.DateTimeFormat("fr-FR", {
-                      weekday: "long",
-                      day: "numeric",
-                      month: "long",
-                      timeZone: "Europe/Paris",
-                    }).format(date)}
-                  </span>
-                  <span className="mt-0.5 text-xs font-bold text-bordeaux-700">Modifier</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-lg font-black text-encre-700">Choisir la date</span>
-                  <span className="mt-0.5 text-xs text-encre-500">
-                    N&rsquo;importe quelle date à venir
-                  </span>
-                </>
-              )}
-            </div>
-            <ArrowRight size={16} className="text-bordeaux-600" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
-          <CalendarPicker
-            mode="single"
-            selected={date ?? undefined}
-            onSelect={(d) => {
-              if (d) {
-                onDateChange(d);
-                setCalendarOpen(false);
-              }
-            }}
-            locale={fr}
-            weekStartsOn={1}
-            fromDate={new Date()}
-            className="[--cell-size:2.25rem]"
-          />
-        </PopoverContent>
-      </Popover>
+      <div className="overflow-hidden rounded-3xl border-2 border-bordeaux-100 bg-white">
+        <CalendarPicker
+          mode="single"
+          selected={date ?? undefined}
+          onSelect={(d) => {
+            if (d) {
+              onDateChange(d);
+            }
+          }}
+          locale={fr}
+          weekStartsOn={1}
+          fromDate={new Date()}
+          className="mx-auto [--cell-size:2.5rem]"
+        />
+      </div>
+
+      {date ? (
+        <p className="inline-flex items-center gap-2 self-start rounded-full bg-bordeaux-50 px-4 py-2 text-sm font-bold text-bordeaux-700">
+          <CalendarDays size={14} />
+          {new Intl.DateTimeFormat("fr-FR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            timeZone: "Europe/Paris",
+          }).format(date)}
+        </p>
+      ) : (
+        <p className="text-sm text-encre-400">Choisis une date pour continuer.</p>
+      )}
 
       {date && (
         <div className="mt-2">
