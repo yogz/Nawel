@@ -7,7 +7,22 @@ export const metadata = {
   title: "Créer une sortie",
 };
 
-export default async function NouvelleSortiePage() {
+// Mapping from the `?vibe=` query param to a prefilled title. Keeps the
+// vibe chips on the home page useful — clicking "Resto" lands you in a
+// form that's already half-filled in.
+const VIBE_TITLES: Record<string, string> = {
+  bar: "Apéro au bar",
+  resto: "Dîner au resto",
+  chill: "Soirée chill",
+};
+
+type Props = {
+  searchParams: Promise<{ vibe?: string }>;
+};
+
+export default async function NouvelleSortiePage({ searchParams }: Props) {
+  const { vibe } = await searchParams;
+  const defaultTitle = vibe && VIBE_TITLES[vibe] ? VIBE_TITLES[vibe] : undefined;
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user ?? null;
 
@@ -32,7 +47,11 @@ export default async function NouvelleSortiePage() {
         </p>
       </header>
 
-      <CreateOutingForm isLoggedIn={Boolean(user)} defaultCreatorName={user?.name ?? undefined} />
+      <CreateOutingForm
+        isLoggedIn={Boolean(user)}
+        defaultCreatorName={user?.name ?? undefined}
+        defaultTitle={defaultTitle}
+      />
     </main>
   );
 }

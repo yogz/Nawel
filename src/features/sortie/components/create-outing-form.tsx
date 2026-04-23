@@ -12,12 +12,13 @@ const INITIAL: FormActionState = {};
 
 type Props = {
   defaultCreatorName?: string;
+  defaultTitle?: string;
   isLoggedIn: boolean;
 };
 
 type Mode = "fixed" | "vote";
 
-export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
+export function CreateOutingForm({ defaultCreatorName, defaultTitle, isLoggedIn }: Props) {
   const [state, formAction, pending] = useActionState(createOutingAction, INITIAL);
   const [mode, setMode] = useState<Mode>("fixed");
   const errors = state.errors ?? {};
@@ -29,7 +30,8 @@ export function CreateOutingForm({ defaultCreatorName, isLoggedIn }: Props) {
         name="title"
         required
         maxLength={200}
-        placeholder="Macbeth à la Comédie-Française"
+        defaultValue={defaultTitle}
+        placeholder="Apéro à l'Ultra Brut"
         error={errors.title?.[0]}
       />
 

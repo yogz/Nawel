@@ -1,84 +1,181 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { eq } from "drizzle-orm";
+import { Beer, Moon, Plus, Utensils } from "lucide-react";
+import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
+import { Button } from "@/components/ui/button";
+import { participants } from "@drizzle/sortie-schema";
 import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
 import { UpcomingOutingsList } from "@/features/sortie/components/upcoming-outings-list";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { UserAvatar } from "@/features/sortie/components/user-avatar";
+import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 
 export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });
   const userId = session?.user?.id ?? null;
 
-  if (!userId) {
+  if (!userId || !session) {
     return <PublicHome />;
   }
 
   const { upcoming, past } = await listAllMyOutings(userId);
-  const firstName = session?.user?.name?.split(" ")[0] ?? "Toi";
+  const next = upcoming[0] ?? null;
+
+  // Headline needs a headcount for the next outing — fetch once from the
+  // participants table and compute yes/total in memory (tiny rows, fine).
+  let nextStats: { confirmed: number; total: number } | null = null;
+  if (next) {
+    const rows = await db
+      .select({ response: participants.response })
+      .from(participants)
+      .where(eq(participants.outingId, next.id));
+    nextStats = {
+      confirmed: rows.filter((r) => r.response === "yes").length,
+      total: rows.filter((r) => r.response !== "no").length,
+    };
+  }
+
+  const firstName = session.user.name?.split(" ")[0] ?? "Toi";
 
   return (
-    <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-12">
-      <nav className="mb-10 flex items-center justify-between">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-encre-300">
-          Sortie
-        </p>
-        <Link
-          href="/moi"
-          className="text-sm text-encre-400 transition-colors hover:text-bordeaux-600"
-        >
-          Mon profil →
+    <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
+      <nav className="mb-8 flex items-center justify-end">
+        <Link href="/moi" aria-label="Mon profil">
+          <UserAvatar name={session.user.name} image={session.user.image} size={36} />
         </Link>
       </nav>
 
-      <header className="mb-12">
-        <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
-        <p className="mt-3 text-lg text-encre-400">
-          {upcoming.length > 0
-            ? `${upcoming.length} ${upcoming.length > 1 ? "sorties" : "sortie"} à venir.`
-            : "Prêt·e à lancer ta prochaine sortie ?"}
-        </p>
-      </header>
+      {next && next.startsAt && nextStats ? (
+        <LiveStatusHero
+          slug={next.slug}
+          shortId={next.shortId}
+          title={next.title}
+          location={next.location}
+          startsAt={next.startsAt}
+          confirmed={nextStats.confirmed}
+          total={nextStats.total}
+        />
+      ) : upcoming.length > 0 ? (
+        <header className="mb-12">
+          <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
+          <p className="mt-3 text-lg text-encre-400">
+            {upcoming.length} {upcoming.length > 1 ? "sorties" : "sortie"} à venir.
+          </p>
+        </header>
+      ) : (
+        <EmptyHeroWithVibes firstName={firstName} />
+      )}
 
-      {upcoming.length > 0 && (
-        <section className="mb-12">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-encre-300">
-            À venir
+      {upcoming.length > 1 && (
+        <section className="mb-10">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-encre-300">
+            Autres à venir
           </h2>
-          <UpcomingOutingsList outings={upcoming} />
+          <UpcomingOutingsList outings={upcoming.slice(1)} />
         </section>
       )}
 
       {past.length > 0 && (
-        <section className="mb-12">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-encre-300">
-            Passées
-          </h2>
-          <UpcomingOutingsList outings={past} />
-        </section>
+        <details className="group mb-12 border-t border-encre-100 pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-encre-300 transition-colors hover:text-bordeaux-600">
+            <span>Sorties passées ({past.length})</span>
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-200 group-open:rotate-90"
+            >
+              ›
+            </span>
+          </summary>
+          <div className="mt-4">
+            <UpcomingOutingsList outings={past} />
+          </div>
+        </details>
       )}
 
-      {upcoming.length === 0 && past.length === 0 && (
-        <section className="mb-12 rounded-2xl border border-encre-100 bg-ivoire-50 p-8 text-center">
-          <p className="text-lg text-encre-500">Rien encore.</p>
-          <p className="mt-1 text-sm text-encre-400">
-            Crée ta première sortie — un lien à partager avec tes potes.
-          </p>
-        </section>
-      )}
-
-      {/* Sticky FAB: on mobile it floats bottom-right, on desktop it docks
-          to the top-right of the content area so it's always in reach. */}
+      {/* Floating CTA: sticky bottom-right. On larger screens it sits at a
+          roomier offset so it doesn't collide with reach-zone thumbs. */}
       <Link
         href="/nouvelle"
-        aria-label="Créer une sortie"
+        aria-label="Nouvelle sortie"
         className="fixed right-5 bottom-5 z-50 inline-flex h-14 items-center gap-2 rounded-full bg-bordeaux-600 pr-6 pl-5 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 active:scale-95 sm:right-8 sm:bottom-8"
       >
         <Plus size={20} strokeWidth={2.5} />
-        <span className="text-base font-semibold">Créer</span>
+        <span className="text-base font-semibold">Nouvelle sortie</span>
       </Link>
     </main>
+  );
+}
+
+function LiveStatusHero({
+  slug,
+  shortId,
+  title,
+  location,
+  startsAt,
+  confirmed,
+  total,
+}: {
+  slug: string | null;
+  shortId: string;
+  title: string;
+  location: string | null;
+  startsAt: Date;
+  confirmed: number;
+  total: number;
+}) {
+  const canonical = slug ? `${slug}-${shortId}` : shortId;
+  const headcount =
+    total === 0
+      ? "Personne n'a encore répondu"
+      : `${confirmed} confirmé${confirmed > 1 ? "s" : ""}${total > confirmed ? ` · ${total - confirmed} en attente` : ""}`;
+
+  return (
+    <Link
+      href={`/${canonical}`}
+      className="mb-10 block rounded-3xl border border-encre-100 bg-white p-6 shadow-[var(--shadow-md)] transition-colors hover:border-bordeaux-300"
+    >
+      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-bordeaux-600">
+        Ta prochaine sortie
+      </p>
+      <h1 className="mt-2 text-3xl leading-tight text-encre-700 sm:text-4xl">
+        {relativeOutingHero(startsAt)}
+      </h1>
+      <p className="mt-3 text-base text-encre-500">
+        <span className="font-semibold text-encre-700">{title}</span>
+        {location && <span className="text-encre-400"> · {location}</span>}
+      </p>
+      <p className="mt-1 text-sm text-encre-400">{headcount}</p>
+    </Link>
+  );
+}
+
+function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
+  return (
+    <>
+      <header className="mb-8">
+        <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
+        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le move ?</p>
+      </header>
+      <div className="mb-12 grid grid-cols-3 gap-3">
+        <VibeButton href="/nouvelle?vibe=bar" icon={<Beer size={24} />} label="Bar" />
+        <VibeButton href="/nouvelle?vibe=resto" icon={<Utensils size={24} />} label="Resto" />
+        <VibeButton href="/nouvelle?vibe=chill" icon={<Moon size={24} />} label="Chill" />
+      </div>
+    </>
+  );
+}
+
+function VibeButton({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-encre-100 bg-white text-encre-600 shadow-[var(--shadow-sm)] transition-all duration-[var(--dur-fast)] hover:-translate-y-0.5 hover:border-bordeaux-300 hover:text-bordeaux-600 active:scale-95"
+    >
+      <span className="text-bordeaux-600">{icon}</span>
+      <span className="text-sm font-semibold">{label}</span>
+    </Link>
   );
 }
 
