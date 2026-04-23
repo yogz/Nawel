@@ -63,6 +63,35 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
 }
 
 /**
+ * All outings the user created (upcoming + past), cancelled excluded.
+ * Used on the Sortie home for the logged-in view, where we want to show
+ * the creator every sortie they've organized regardless of the
+ * `showOnProfile` flag (that flag only gates visibility on the public
+ * profile).
+ */
+export async function listAllMyOutings(userId: string, now = new Date()) {
+  const rows = await db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      startsAt: outings.fixedDatetime,
+      deadlineAt: outings.deadlineAt,
+      status: outings.status,
+    })
+    .from(outings)
+    .where(and(eq(outings.creatorUserId, userId), ne(outings.status, "cancelled")))
+    .orderBy(desc(outings.createdAt))
+    .limit(50);
+
+  const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
+  const past = rows.filter((r) => r.startsAt && r.startsAt < now);
+  return { upcoming, past };
+}
+
+/**
  * Public profile view — only surfaces outings the user chose to show
  * (`showOnProfile`) and excludes cancelled ones. Splits into upcoming vs
  * past by the current time against `fixedDatetime` (vote-mode outings

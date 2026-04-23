@@ -1,18 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Inter, Inter_Tight } from "next/font/google";
 import "../sortie.css";
 
-const fraunces = Fraunces({
+const interTight = Inter_Tight({
   subsets: ["latin", "latin-ext"],
-  // Variable font: weight must stay "variable" (not a list) so the opsz axis
-  // for optical sizing can be declared. Trade-off: slightly larger font
-  // payload than a static cut, but it lets Fraunces scale beautifully from
-  // 16px body accents to 96px display titles.
-  weight: "variable",
-  axes: ["opsz"],
-  style: ["normal", "italic"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-fraunces",
+  variable: "--font-inter-tight",
 });
 
 const inter = Inter({
@@ -27,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Sortie",
     default: "Sortie",
   },
-  description: "Organise tes sorties culturelles entre amis.",
+  description: "Organise tes sorties entre amis.",
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
 };
@@ -36,12 +30,12 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#F5F1E8",
+  themeColor: "#FAF7F2",
 };
 
 export default function SortieRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="fr" className={`${interTight.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="theme-sortie font-sans antialiased">{children}</body>
     </html>
   );

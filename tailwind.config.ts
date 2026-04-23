@@ -8,55 +8,60 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        // `font-serif` stays for zero-churn in existing className strings,
+        // but it now points at Inter Tight (bold-weight display face) — the
+        // Sortie rebrand swapped the serif display family for a geometric
+        // sans without dropping the token name.
+        serif: ["var(--font-inter-tight)", "var(--font-inter)", "system-ui", "sans-serif"],
       },
       colors: {
-        // Sortie design system — bordeaux primary, or patiné accent, ivoire surface.
-        // Kept in the shared config so Tailwind JIT can emit utilities like
-        // `bg-bordeaux-600` or `text-or-700`. CoList doesn't reference these
-        // names today, so no collision.
+        // Sortie design system — "Cream & Cobalt" rebrand (2026). The token
+        // names (`bordeaux`, `or`, `ivoire`, `encre`) are kept for zero-churn
+        // but the hex values are now electric cobalt, coral, warm cream and
+        // cool ink. Don't rename them blindly — hundreds of className strings
+        // depend on these keys. Treat the names as opaque ids.
         bordeaux: {
-          50: "#FBF4F5",
-          100: "#F4E3E5",
-          200: "#E4BCC1",
-          300: "#CC8A92",
-          400: "#A85560",
-          500: "#8A2C39",
-          600: "#6B1F2A",
-          700: "#541820",
-          800: "#3E1218",
-          900: "#2A0C10",
+          50: "#EEF2FF",
+          100: "#DDE4FF",
+          200: "#BAC9FF",
+          300: "#8BA5FF",
+          400: "#5A80FF",
+          500: "#4269FF",
+          600: "#2D5BFF",
+          700: "#1F42D6",
+          800: "#142FA6",
+          900: "#0C1E73",
         },
         or: {
-          50: "#FBF6EC",
-          100: "#F3E7CD",
-          200: "#E6D1A3",
-          300: "#D4B77A",
-          400: "#C4A067",
-          500: "#B8935A",
-          600: "#9E7B45",
-          700: "#7E6133",
-          800: "#5E4726",
-          900: "#3F2F19",
+          50: "#FFF3EE",
+          100: "#FFDFD1",
+          200: "#FFB89E",
+          300: "#FF8E6A",
+          400: "#FF7250",
+          500: "#FF6B4A",
+          600: "#E84F2F",
+          700: "#B83D23",
+          800: "#862B1A",
+          900: "#5A1D11",
         },
         ivoire: {
-          50: "#FDFBF5",
-          100: "#F9F5EC",
-          200: "#F5F1E8",
-          300: "#EDE5D2",
-          400: "#DFD2B4",
+          50: "#FFFDF9",
+          100: "#FCFAF4",
+          200: "#FAF7F2",
+          300: "#F1EAD8",
+          400: "#E4DCC4",
         },
         encre: {
-          50: "#EFEAE0",
-          100: "#D5CCB9",
-          200: "#B8AC94",
-          300: "#8E8168",
-          400: "#6B5F49",
-          500: "#4A4132",
-          600: "#342D22",
-          700: "#231E16",
-          800: "#1A1610",
-          900: "#12100B",
+          50: "#ECECEE",
+          100: "#CBCBD0",
+          200: "#9FA0AA",
+          300: "#6C6E7D",
+          400: "#4A4C5A",
+          500: "#2F3140",
+          600: "#1E2030",
+          700: "#121424",
+          800: "#0A0B1A",
+          900: "#06070F",
         },
         surface: "var(--surface)",
         muted: {
