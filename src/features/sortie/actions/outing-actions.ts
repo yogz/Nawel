@@ -118,9 +118,22 @@ export async function createOutingAction(
     );
   }
 
-  // We tagged the creator's device with the same cookie hash that will be used
-  // by the participant row at RSVP time — but we don't create a participant
-  // here. The creator is not automatically "yes"; they RSVP like anyone else.
+  // Auto-RSVP the creator as "yes" (only in fixed mode — in vote mode we
+  // don't know which slots they can make yet). Without this, the outing
+  // page shows an empty participant list right after create, which reads
+  // as "did this even work?" to first-time users. They can always change
+  // their mind via the RSVP sheet — the cookieTokenHash match means it
+  // updates their existing row instead of creating a second one.
+  if (data.mode === "fixed") {
+    await db.insert(participants).values({
+      outingId: insertedOuting.id,
+      userId: user?.id ?? null,
+      anonName: user ? null : creatorDisplayName,
+      anonEmail: user ? null : (data.creatorEmail ?? null),
+      cookieTokenHash,
+      response: "yes",
+    });
+  }
 
   // User-facing URLs on sortie.colist.fr are / -prefixed — the /sortie internal
   // prefix only exists after proxy.ts rewrites. Redirecting to /sortie/… would

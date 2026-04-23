@@ -59,7 +59,9 @@ export default async function SortieHome() {
         />
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
-          <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
+          <h1 className="text-5xl leading-[1.02] font-extrabold tracking-tight text-encre-700 sm:text-6xl">
+            Salut {firstName}.
+          </h1>
           <p className="mt-3 text-lg text-encre-400">
             {upcoming.length} {upcoming.length > 1 ? "sorties" : "sortie"} à venir.
           </p>
@@ -139,19 +141,19 @@ function LiveStatusHero({
   return (
     <Link
       href={`/${canonical}`}
-      className="mb-10 block rounded-3xl border border-encre-100 bg-white p-6 shadow-[var(--shadow-md)] transition-colors hover:border-bordeaux-300"
+      className="relative mb-10 block overflow-hidden rounded-3xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] p-6 shadow-[var(--shadow-velvet)] transition-transform active:scale-[0.99]"
     >
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-bordeaux-600">
+      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-bordeaux-700">
         Ta prochaine sortie
       </p>
-      <h1 className="mt-2 text-3xl leading-tight text-encre-700 sm:text-4xl">
+      <h1 className="mt-2 text-4xl leading-[0.98] font-extrabold tracking-tight text-encre-700 sm:text-5xl">
         {relativeOutingHero(startsAt)}
       </h1>
-      <p className="mt-3 text-base text-encre-500">
-        <span className="font-semibold text-encre-700">{title}</span>
-        {location && <span className="text-encre-400"> · {location}</span>}
+      <p className="mt-4 text-base text-encre-600">
+        <span className="font-bold text-encre-700">{title}</span>
+        {location && <span className="text-encre-500"> · {location}</span>}
       </p>
-      <p className="mt-1 text-sm text-encre-400">{headcount}</p>
+      <p className="mt-1 text-sm text-encre-500">{headcount}</p>
     </Link>
   );
 }
@@ -164,25 +166,66 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
         <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme ?</p>
       </header>
       <div className="mb-12 grid grid-cols-3 gap-3 sm:grid-cols-6">
-        <VibeButton href="/nouvelle?vibe=theatre" icon={<Theater size={24} />} label="Théâtre" />
-        <VibeButton href="/nouvelle?vibe=opera" icon={<Mic2 size={24} />} label="Opéra" />
-        <VibeButton href="/nouvelle?vibe=concert" icon={<Music size={24} />} label="Concert" />
-        <VibeButton href="/nouvelle?vibe=cine" icon={<Film size={24} />} label="Ciné" />
-        <VibeButton href="/nouvelle?vibe=expo" icon={<ImageIcon size={24} />} label="Expo" />
-        <VibeButton href="/nouvelle" icon={<MoreHorizontal size={24} />} label="Autre" />
+        <VibeButton
+          href="/nouvelle?vibe=theatre"
+          icon={<Theater size={24} />}
+          label="Théâtre"
+          bg="#FFE1D7"
+        />
+        <VibeButton
+          href="/nouvelle?vibe=opera"
+          icon={<Mic2 size={24} />}
+          label="Opéra"
+          bg="#D7E0FF"
+        />
+        <VibeButton
+          href="/nouvelle?vibe=concert"
+          icon={<Music size={24} />}
+          label="Concert"
+          bg="#FFEAB3"
+        />
+        <VibeButton
+          href="/nouvelle?vibe=cine"
+          icon={<Film size={24} />}
+          label="Ciné"
+          bg="#E0D4FF"
+        />
+        <VibeButton
+          href="/nouvelle?vibe=expo"
+          icon={<ImageIcon size={24} />}
+          label="Expo"
+          bg="#C9F0D8"
+        />
+        <VibeButton
+          href="/nouvelle"
+          icon={<MoreHorizontal size={24} />}
+          label="Autre"
+          bg="#F1EAD8"
+        />
       </div>
     </>
   );
 }
 
-function VibeButton({ href, icon, label }: { href: string; icon: React.ReactNode; label: string }) {
+function VibeButton({
+  href,
+  icon,
+  label,
+  bg,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  bg: string;
+}) {
   return (
     <Link
       href={href}
-      className="flex h-20 flex-col items-center justify-center gap-1.5 rounded-2xl border border-encre-100 bg-white text-encre-600 shadow-[var(--shadow-sm)] transition-colors duration-[var(--dur-fast)] active:scale-95 [@media(hover:hover)]:hover:border-bordeaux-300 [@media(hover:hover)]:hover:text-bordeaux-600"
+      style={{ backgroundColor: bg }}
+      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-3 text-encre-700 shadow-[var(--shadow-xs)] transition-transform duration-[var(--dur-fast)] active:scale-95 active:rotate-[-1deg]"
     >
-      <span className="text-bordeaux-600">{icon}</span>
-      <span className="text-xs font-semibold">{label}</span>
+      <span className="text-encre-600">{icon}</span>
+      <span className="text-[15px] font-black leading-none tracking-tight">{label}</span>
     </Link>
   );
 }
