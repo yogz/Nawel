@@ -1,16 +1,14 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 import { auth } from "@/lib/auth-config";
-import { CreateOutingForm } from "@/features/sortie/components/create-outing-form";
+import { CreateWizard } from "@/features/sortie/components/create-wizard";
 
 export const metadata = {
-  title: "Créer une sortie",
+  title: "Nouvelle sortie",
 };
 
-// Each vibe steers three things at once: a title seed, a placeholder URL
-// hinting at the right ticket site, and the helper copy above the paster.
-// Clicking the home-page chip becomes a real head start instead of just a
-// pre-filled string.
+// Each vibe chip on the home page seeds the paster placeholder + hint so
+// the create flow feels context-aware: "tu viens pour un opéra → on
+// attend un lien de l'Opéra de Paris".
 type VibeConfig = {
   title: string;
   pasterPlaceholder: string;
@@ -56,33 +54,13 @@ export default async function NouvelleSortiePage({ searchParams }: Props) {
   const user = session?.user ?? null;
 
   return (
-    <main className="mx-auto min-h-[100dvh] max-w-xl px-6 py-14">
-      <nav className="mb-10">
-        <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
-          ← Sortie
-        </Link>
-      </nav>
-
-      <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
-          Nouvelle sortie
-        </p>
-        <h1 className="font-serif text-4xl leading-tight text-encre-700">
-          À qui tu proposes ça&nbsp;?
-        </h1>
-        <p className="mt-3 max-w-md text-encre-500">
-          Remplis l&rsquo;essentiel, tu pourras modifier tant que la deadline n&rsquo;est pas
-          passée.
-        </p>
-      </header>
-
-      <CreateOutingForm
-        isLoggedIn={Boolean(user)}
-        defaultCreatorName={user?.name ?? undefined}
-        defaultTitle={config?.title}
-        pasterPlaceholder={config?.pasterPlaceholder}
-        pasterHint={config?.pasterHint}
-      />
-    </main>
+    <CreateWizard
+      isLoggedIn={Boolean(user)}
+      defaultCreatorName={user?.name ?? undefined}
+      vibeKey={vibe ?? null}
+      pasterPlaceholder={config?.pasterPlaceholder}
+      pasterHint={config?.pasterHint}
+      defaultTitle={config?.title}
+    />
   );
 }
