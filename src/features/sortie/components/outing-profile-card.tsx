@@ -52,8 +52,13 @@ export function OutingProfileCard({
   // the outing page until we design a dedicated voting sheet.
   const canInlineRsvp = showRsvp && !isPast && outing.mode === "fixed";
 
-  return (
-    <article className="overflow-hidden rounded-2xl border border-ivoire-400 bg-ivoire-50 transition-colors hover:border-or-500">
+  // Non-interactive cards (no inline RSVP) wrap the whole article in a
+  // Link — saves a full 40px "Voir la sortie →" button and doubles the
+  // tap target. When the inline RSVP chips are shown we can't nest them
+  // in an anchor, so we fall back to a tappable inner structure with a
+  // subtle text link.
+  const inner = (
+    <>
       {outing.heroImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -68,30 +73,27 @@ export function OutingProfileCard({
         />
       )}
 
-      <div className="flex flex-col gap-3 p-4">
-        {outing.startsAt && (
-          <p className="inline-flex w-fit items-center rounded-full bg-bordeaux-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-bordeaux-700">
-            {isPast ? formatOutingDateShort(outing.startsAt) : formatOutingDate(outing.startsAt)}
-          </p>
-        )}
-
-        <div>
-          <Link href={href} className="group inline-block">
-            <h3 className="font-serif text-xl text-encre-700 group-hover:text-bordeaux-700">
-              {outing.title}
-            </h3>
-          </Link>
-          {outing.location && <p className="mt-1 text-sm text-encre-400">{outing.location}</p>}
+      <div className="flex flex-col gap-2 p-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {outing.startsAt && (
+            <p className="inline-flex items-center rounded-full bg-bordeaux-50 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-bordeaux-700">
+              {isPast ? formatOutingDateShort(outing.startsAt) : formatOutingDate(outing.startsAt)}
+            </p>
+          )}
+          {outing.confirmedCount > 0 && (
+            <p className="inline-flex items-center gap-1 text-xs text-encre-500">
+              <Users size={12} />
+              {outing.confirmedCount}
+            </p>
+          )}
         </div>
 
-        {outing.confirmedCount > 0 && (
-          <p className="inline-flex items-center gap-1.5 text-xs text-encre-500">
-            <Users size={12} />
-            {outing.confirmedCount} confirmé{outing.confirmedCount > 1 ? "s" : ""}
-          </p>
-        )}
+        <div>
+          <h3 className="font-serif text-lg leading-tight text-encre-700">{outing.title}</h3>
+          {outing.location && <p className="mt-0.5 text-xs text-encre-400">{outing.location}</p>}
+        </div>
 
-        {canInlineRsvp ? (
+        {canInlineRsvp && (
           <>
             <InlineRsvpSection
               shortId={outing.shortId}
@@ -108,15 +110,25 @@ export function OutingProfileCard({
               Voir la sortie →
             </Link>
           </>
-        ) : (
-          <Link
-            href={href}
-            className="inline-flex w-fit items-center gap-1 rounded-full bg-bordeaux-600 px-4 py-2 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
-          >
-            Voir la sortie →
-          </Link>
         )}
       </div>
-    </article>
+    </>
+  );
+
+  if (canInlineRsvp) {
+    return (
+      <article className="overflow-hidden rounded-2xl border border-ivoire-400 bg-ivoire-50 transition-colors hover:border-or-500">
+        {inner}
+      </article>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="block overflow-hidden rounded-2xl border border-ivoire-400 bg-ivoire-50 transition-colors hover:border-or-500"
+    >
+      {inner}
+    </Link>
   );
 }
