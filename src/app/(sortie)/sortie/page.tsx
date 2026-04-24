@@ -66,6 +66,7 @@ export default async function SortieHome() {
           confirmed={nextStats.confirmed}
           total={nextStats.total}
           heroImageUrl={next.heroImageUrl}
+          headingLevel="h1"
         />
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
