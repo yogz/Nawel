@@ -13,7 +13,6 @@ import {
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
@@ -105,7 +104,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8 flex items-center justify-between">
         <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
-          ← Sortie
+          Accueil
         </Link>
         {isSelf && (
           <Link
@@ -123,7 +122,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
             @{row.username}
           </p>
-          <h1 className="font-serif text-3xl leading-tight text-encre-700 sm:text-4xl">
+          <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
             {row.name}
           </h1>
         </div>
@@ -163,13 +162,6 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         />
       )}
 
-      {isSelf && (upcoming.length > 0 || past.length > 0) && (
-        <p className="mb-4 text-xs text-encre-400">
-          Glisse une sortie vers la gauche pour l&rsquo;archiver — elle disparaît de ton profil mais
-          reste visible pour les invités.
-        </p>
-      )}
-
       {restUpcoming.length > 0 && (
         <OutingSection
           title="À venir"
@@ -178,13 +170,54 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           myRsvpByOuting={myRsvpByOuting}
           loggedInName={session?.user?.name ?? null}
           isPast={false}
-          isSelf={isSelf}
         />
       )}
-      {past.length > 0 && (
-        <details className="group mb-10 border-t border-encre-100 pt-4">
-          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700 transition-colors hover:text-bordeaux-700">
-            <span>Passées ({past.length})</span>
+
+      {past.length > 0 && <PastSection outings={past} loggedInName={session?.user?.name ?? null} />}
+    </main>
+  );
+}
+
+/**
+ * Past outings: show up to 3 inline (proves the profile is alive as a
+ * taste portfolio), hide the rest behind a <details> disclosure. For
+ * short histories (≤ 3 past outings) the disclosure never shows —
+ * everything stays flat.
+ */
+function PastSection({
+  outings,
+  loggedInName,
+}: {
+  outings: OutingRow[];
+  loggedInName: string | null;
+}) {
+  const inline = outings.slice(0, 3);
+  const hidden = outings.slice(3);
+
+  return (
+    <section className="mb-10">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        Passées
+      </p>
+      <ul className="flex flex-col gap-4">
+        {inline.map((o) => (
+          <li key={o.id}>
+            <OutingProfileCard
+              outing={o}
+              showRsvp={false}
+              myRsvp={null}
+              loggedInName={loggedInName}
+              outingBaseUrl={PUBLIC_BASE}
+              isPast
+            />
+          </li>
+        ))}
+      </ul>
+
+      {hidden.length > 0 && (
+        <details className="group mt-4 border-t border-encre-100 pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
+            <span>Voir les {hidden.length} autres</span>
             <span
               aria-hidden="true"
               className="transition-transform duration-200 group-open:rotate-90"
@@ -192,61 +225,23 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               ›
             </span>
           </summary>
-          <div className="mt-4">
-            <PastOutings
-              outings={past}
-              loggedInName={session?.user?.name ?? null}
-              isSelf={isSelf}
-            />
-          </div>
+          <ul className="mt-4 flex flex-col gap-4">
+            {hidden.map((o) => (
+              <li key={o.id}>
+                <OutingProfileCard
+                  outing={o}
+                  showRsvp={false}
+                  myRsvp={null}
+                  loggedInName={loggedInName}
+                  outingBaseUrl={PUBLIC_BASE}
+                  isPast
+                />
+              </li>
+            ))}
+          </ul>
         </details>
       )}
-    </main>
-  );
-}
-
-function PastOutings({
-  outings,
-  loggedInName,
-  isSelf,
-}: {
-  outings: OutingRow[];
-  loggedInName: string | null;
-  isSelf: boolean;
-}) {
-  return isSelf ? (
-    <ArchivableOutingList
-      items={outings.map((o) => ({
-        row: o,
-        node: (
-          <OutingProfileCard
-            outing={o}
-            showRsvp={false}
-            myRsvp={null}
-            loggedInName={loggedInName}
-            outingBaseUrl={PUBLIC_BASE}
-            isPast
-          />
-        ),
-      }))}
-      isPast
-      listClassName="flex flex-col gap-4"
-    />
-  ) : (
-    <ul className="flex flex-col gap-4">
-      {outings.map((o) => (
-        <li key={o.id}>
-          <OutingProfileCard
-            outing={o}
-            showRsvp={false}
-            myRsvp={null}
-            loggedInName={loggedInName}
-            outingBaseUrl={PUBLIC_BASE}
-            isPast
-          />
-        </li>
-      ))}
-    </ul>
+    </section>
   );
 }
 
@@ -261,7 +256,6 @@ function OutingSection({
   myRsvpByOuting,
   loggedInName,
   isPast,
-  isSelf,
 }: {
   title: string;
   outings: OutingRow[];
@@ -269,7 +263,6 @@ function OutingSection({
   myRsvpByOuting: Map<string, ParticipantRow>;
   loggedInName: string | null;
   isPast: boolean;
-  isSelf: boolean;
 }) {
   function resolveMyRsvp(p: ParticipantRow | undefined) {
     if (!p || (p.response !== "yes" && p.response !== "no" && p.response !== "handle_own")) {
@@ -289,40 +282,20 @@ function OutingSection({
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
         {title}
       </p>
-      {isSelf ? (
-        <ArchivableOutingList
-          items={outings.map((o) => ({
-            row: o,
-            node: (
-              <OutingProfileCard
-                outing={o}
-                showRsvp={showRsvp}
-                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
-                loggedInName={loggedInName}
-                outingBaseUrl={PUBLIC_BASE}
-                isPast={isPast}
-              />
-            ),
-          }))}
-          isPast={isPast}
-          listClassName="flex flex-col gap-4"
-        />
-      ) : (
-        <ul className="flex flex-col gap-4">
-          {outings.map((o) => (
-            <li key={o.id}>
-              <OutingProfileCard
-                outing={o}
-                showRsvp={showRsvp}
-                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
-                loggedInName={loggedInName}
-                outingBaseUrl={PUBLIC_BASE}
-                isPast={isPast}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="flex flex-col gap-4">
+        {outings.map((o) => (
+          <li key={o.id}>
+            <OutingProfileCard
+              outing={o}
+              showRsvp={showRsvp}
+              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
+              loggedInName={loggedInName}
+              outingBaseUrl={PUBLIC_BASE}
+              isPast={isPast}
+            />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

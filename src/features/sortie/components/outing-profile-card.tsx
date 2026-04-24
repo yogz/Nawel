@@ -117,7 +117,7 @@ export function OutingProfileCard({
 
   if (canInlineRsvp) {
     return (
-      <article className="overflow-hidden rounded-2xl border border-ivoire-400 bg-ivoire-50 transition-colors hover:border-or-500">
+      <article className="overflow-hidden rounded-2xl bg-ivoire-50 shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-md)]">
         {inner}
       </article>
     );
@@ -126,7 +126,7 @@ export function OutingProfileCard({
   return (
     <Link
       href={href}
-      className="block overflow-hidden rounded-2xl border border-ivoire-400 bg-ivoire-50 transition-colors hover:border-or-500"
+      className="block overflow-hidden rounded-2xl bg-ivoire-50 shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-md)]"
     >
       {inner}
     </Link>
