@@ -1,160 +1,23 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Camera, Check, Instagram, Music2 } from "lucide-react";
-import {
-  updateAvatarAction,
-  updateProfileDetailsAction,
-} from "@/features/sortie/actions/profile-actions";
+import { useActionState, useState } from "react";
+import { Check, Instagram, Music2 } from "lucide-react";
+import { updateProfileDetailsAction } from "@/features/sortie/actions/profile-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
-import { AvatarCropSheet } from "./avatar-crop-sheet";
-import { UserAvatar } from "./user-avatar";
 
 type Props = {
-  name: string | null;
-  image: string | null;
   bio: string | null;
   instagramHandle: string | null;
   tiktokHandle: string | null;
 };
 
 /**
- * Settings-page form for the three "public persona" fields: avatar
- * (uploaded photo), short bio, and two social handles (Instagram /
- * TikTok). The avatar sits in its own sub-form because it posts a
- * multipart payload to a different server action — the rest is a
- * plain text form.
+ * Bio + social handles block on /moi. The avatar lives in the page
+ * header as a standalone `AvatarPicker` — this form is only about
+ * the text fields, which makes the single "Enregistrer" button
+ * unambiguous (it commits exactly what's in these three inputs).
  */
-export function ProfileDetailsForm({ name, image, bio, instagramHandle, tiktokHandle }: Props) {
-  return (
-    <div className="flex flex-col gap-6">
-      <AvatarPicker name={name} image={image} />
-      <DetailsForm bio={bio} instagramHandle={instagramHandle} tiktokHandle={tiktokHandle} />
-    </div>
-  );
-}
-
-function AvatarPicker({ name, image }: { name: string | null; image: string | null }) {
-  const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
-    updateAvatarAction,
-    {} as FormActionState
-  );
-  // The file the user just picked — kept in state to drive the crop
-  // sheet. Null = sheet closed. Reset after upload completes so a
-  // second upload cycle opens a fresh crop session.
-  const [pickedFile, setPickedFile] = useState<File | null>(null);
-  // Preview shown in the avatar bubble after a successful crop, before
-  // the server has revalidated. Object URL to the cropped blob; revoked
-  // once the real server URL takes over via router.refresh().
-  const [preview, setPreview] = useState<string | null>(null);
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) {
-      return;
-    }
-    setPickedFile(file);
-    // Reset the input so picking the same file again re-triggers
-    // onChange — browsers de-dupe by value on native inputs.
-    e.currentTarget.value = "";
-  }
-
-  function handleCropped(blob: Blob) {
-    // Wrap the blob as a File so the server action's FormData reads
-    // it as `instanceof File`. JPEG because that's what the crop sheet
-    // exports; the server sniffs magic bytes anyway.
-    const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
-    const nextPreview = URL.createObjectURL(blob);
-    setPreview((prev) => {
-      if (prev) {
-        URL.revokeObjectURL(prev);
-      }
-      return nextPreview;
-    });
-    setPickedFile(null);
-
-    const fd = new FormData();
-    fd.set("file", file);
-    formAction(fd);
-  }
-
-  // Trigger a refresh after a successful upload so the new `image` URL
-  // propagates from server → page props → UserAvatar elsewhere. Tracked
-  // via a ref so we only refresh on the pending→idle *transition*, not
-  // on every re-render that happens to see idle + success message.
-  const wasPending = useRef(false);
-  useEffect(() => {
-    const justFinished = wasPending.current && !pending;
-    wasPending.current = pending;
-    if (justFinished && state.message === "Photo mise à jour.") {
-      router.refresh();
-    }
-  }, [pending, state.message, router]);
-
-  const shown = preview ?? image;
-
-  return (
-    <>
-      <div className="flex items-center gap-4">
-        <label
-          className={`relative shrink-0 cursor-pointer transition-opacity active:scale-[0.98] ${
-            pending ? "opacity-50" : ""
-          }`}
-          aria-label={shown ? "Changer la photo" : "Ajouter une photo"}
-        >
-          <UserAvatar name={name} image={shown} size={80} />
-          <span
-            aria-hidden="true"
-            className="absolute right-0 bottom-0 grid size-7 place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-md)] ring-2 ring-ivoire-100"
-          >
-            <Camera size={12} strokeWidth={2.4} />
-          </span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-            onChange={handleChange}
-            disabled={pending}
-            className="sr-only"
-          />
-        </label>
-        <div className="flex flex-1 flex-col gap-1">
-          <p className="text-sm font-semibold text-encre-600">
-            {pending ? "Envoi…" : shown ? "Change ta photo" : "Ajoute une photo"}
-          </p>
-          <p className="text-xs text-encre-400">Tape l&rsquo;avatar. JPEG, PNG, WebP, HEIC.</p>
-          {state.message && state.message !== "Photo mise à jour." && (
-            <p className="text-xs text-destructive">{state.message}</p>
-          )}
-          {state.message === "Photo mise à jour." && !pending && (
-            <p className="inline-flex items-center gap-1 text-xs text-bordeaux-700">
-              <Check size={12} strokeWidth={3} />
-              Photo mise à jour.
-            </p>
-          )}
-        </div>
-      </div>
-      <AvatarCropSheet
-        file={pickedFile}
-        onCancel={() => setPickedFile(null)}
-        onCropped={handleCropped}
-      />
-    </>
-  );
-}
-
-function DetailsForm({
-  bio,
-  instagramHandle,
-  tiktokHandle,
-}: {
-  bio: string | null;
-  instagramHandle: string | null;
-  tiktokHandle: string | null;
-}) {
+export function ProfileDetailsForm({ bio, instagramHandle, tiktokHandle }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     updateProfileDetailsAction,
     {} as FormActionState
