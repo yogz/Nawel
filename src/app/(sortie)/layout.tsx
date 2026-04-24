@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Inter_Tight } from "next/font/google";
+import Script from "next/script";
 import "../sortie.css";
+
+// Umami cloud website id for sortie.colist.fr. Script is loaded with
+// `strategy="afterInteractive"` (equivalent to the native `defer` hint
+// the Umami snippet asks for) so it never blocks the first paint.
+const UMAMI_WEBSITE_ID = "383d4d2b-6e94-4215-b02e-39ddc800134b";
 
 const interTight = Inter_Tight({
   subsets: ["latin", "latin-ext"],
@@ -37,6 +43,11 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="fr" className={`${interTight.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="theme-sortie font-sans antialiased">{children}</body>
+      <Script
+        src="https://cloud.umami.is/script.js"
+        data-website-id={UMAMI_WEBSITE_ID}
+        strategy="afterInteractive"
+      />
     </html>
   );
 }
