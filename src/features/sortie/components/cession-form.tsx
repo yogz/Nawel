@@ -4,6 +4,12 @@ import { useActionState, useState } from "react";
 import { cedeAllocationAction } from "@/features/sortie/actions/purchase-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 
+// Re-exported from the shared lib so existing `import { formatAllocationLabel }
+// from "@/features/sortie/components/cession-form"` keeps working — the real
+// definition lives in the neutral module and can be imported by server
+// components directly.
+export { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
+
 type Target = { id: string; name: string };
 
 type Props = {
@@ -13,10 +19,6 @@ type Props = {
   targets: Target[];
   locked: boolean;
 };
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
-}
 
 export function CessionForm({ shortId, allocationId, label, targets, locked }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
@@ -79,28 +81,4 @@ export function CessionForm({ shortId, allocationId, label, targets, locked }: P
       {state.message && <p className="text-erreur-700">{state.message}</p>}
     </form>
   );
-}
-
-export function formatAllocationLabel(args: {
-  isChild: boolean;
-  pricingMode: "unique" | "category" | "nominal";
-  uniquePriceCents: number | null;
-  adultPriceCents: number | null;
-  childPriceCents: number | null;
-  nominalPriceCents: number | null;
-}): string {
-  const kind = args.isChild ? "place enfant" : "place adulte";
-  let cents = 0;
-  switch (args.pricingMode) {
-    case "unique":
-      cents = args.uniquePriceCents ?? 0;
-      break;
-    case "category":
-      cents = (args.isChild ? args.childPriceCents : args.adultPriceCents) ?? 0;
-      break;
-    case "nominal":
-      cents = args.nominalPriceCents ?? 0;
-      break;
-  }
-  return cents > 0 ? `${kind} · ${formatCents(cents)}` : kind;
 }

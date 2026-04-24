@@ -15,7 +15,8 @@ import {
   listCessionTargets,
 } from "@/features/sortie/queries/debt-queries";
 import { DebtRow } from "@/features/sortie/components/debt-row";
-import { CessionForm, formatAllocationLabel } from "@/features/sortie/components/cession-form";
+import { CessionForm } from "@/features/sortie/components/cession-form";
+import { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
