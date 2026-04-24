@@ -16,10 +16,14 @@ import { auth } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
 import { participants } from "@drizzle/sortie-schema";
 import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
-import { UpcomingOutingsList } from "@/features/sortie/components/upcoming-outings-list";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
+import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+
+const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
+
+type HomeOutingRow = Awaited<ReturnType<typeof listAllMyOutings>>["upcoming"][number];
 
 export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -47,6 +51,7 @@ export default async function SortieHome() {
   }
 
   const firstName = session.user.name?.split(" ")[0] ?? "Toi";
+  const restUpcoming = upcoming.slice(1);
 
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
@@ -81,31 +86,29 @@ export default async function SortieHome() {
         <EmptyHeroWithVibes firstName={firstName} />
       )}
 
-      {upcoming.length > 1 && (
+      {restUpcoming.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-encre-300">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
             À venir
-          </h2>
-          <UpcomingOutingsList outings={upcoming.slice(1)} />
+          </p>
+          <ul className="flex flex-col gap-4">
+            {restUpcoming.map((o) => (
+              <li key={o.id}>
+                <OutingProfileCard
+                  outing={o}
+                  showRsvp={false}
+                  myRsvp={null}
+                  loggedInName={session.user.name ?? null}
+                  outingBaseUrl={PUBLIC_BASE}
+                  isPast={false}
+                />
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
-      {past.length > 0 && (
-        <details className="group mb-12 border-t border-encre-100 pt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-encre-300 transition-colors hover:text-bordeaux-600">
-            <span>Sorties passées ({past.length})</span>
-            <ChevronRight
-              size={14}
-              strokeWidth={2.2}
-              aria-hidden="true"
-              className="transition-transform duration-200 group-open:rotate-90"
-            />
-          </summary>
-          <div className="mt-4">
-            <UpcomingOutingsList outings={past} />
-          </div>
-        </details>
-      )}
+      {past.length > 0 && <PastSection outings={past} loggedInName={session.user.name ?? null} />}
 
       {/* Floating CTA: sticky bottom-right. Safe-area inset lets it sit
           above the iOS home indicator instead of getting clipped by the
@@ -123,6 +126,73 @@ export default async function SortieHome() {
         <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
       </Link>
     </main>
+  );
+}
+
+/**
+ * Past outings: mirrors the /@<username> pattern — up to 3 inline, rest
+ * hidden behind "Voir les N autres ›". Keeps short histories flat
+ * without demoting them, and spares multi-year organisers from a wall
+ * of past cards every time they land on /.
+ */
+function PastSection({
+  outings,
+  loggedInName,
+}: {
+  outings: HomeOutingRow[];
+  loggedInName: string | null;
+}) {
+  const inline = outings.slice(0, 3);
+  const hidden = outings.slice(3);
+
+  return (
+    <section className="mb-10">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+        Passées
+      </p>
+      <ul className="flex flex-col gap-4">
+        {inline.map((o) => (
+          <li key={o.id}>
+            <OutingProfileCard
+              outing={o}
+              showRsvp={false}
+              myRsvp={null}
+              loggedInName={loggedInName}
+              outingBaseUrl={PUBLIC_BASE}
+              isPast
+            />
+          </li>
+        ))}
+      </ul>
+
+      {hidden.length > 0 && (
+        <details className="group mt-4 border-t border-encre-100 pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
+            <span>Voir les {hidden.length} autres</span>
+            <ChevronRight
+              size={14}
+              strokeWidth={2.2}
+              aria-hidden="true"
+              className="transition-transform duration-200 group-open:rotate-90"
+            />
+          </summary>
+          <ul className="mt-4 flex flex-col gap-4">
+            {hidden.map((o) => (
+              <li key={o.id}>
+                <OutingProfileCard
+                  outing={o}
+                  showRsvp={false}
+                  myRsvp={null}
+                  loggedInName={loggedInName}
+                  outingBaseUrl={PUBLIC_BASE}
+                  isPast
+                />
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </section>
   );
 }
 

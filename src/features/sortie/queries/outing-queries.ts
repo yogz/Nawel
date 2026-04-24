@@ -85,7 +85,13 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       startsAt: outings.fixedDatetime,
       deadlineAt: outings.deadlineAt,
       status: outings.status,
+      mode: outings.mode,
       heroImageUrl: outings.heroImageUrl,
+      confirmedCount: sql<number>`(
+        SELECT COUNT(*)::int FROM ${participants}
+        WHERE ${participants.outingId} = ${outings.id}
+          AND ${participants.response} = 'yes'
+      )`.as("confirmed_count"),
     })
     .from(outings)
     .where(
