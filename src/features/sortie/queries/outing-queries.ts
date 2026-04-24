@@ -15,7 +15,7 @@ export async function getOutingByShortId(shortId: string) {
         // Logged-in participants have `anonName = null` — their display name
         // lives in the `user` table. Joining it here keeps the UI layer from
         // falling back to "Quelqu'un" for creators who auto-RSVP themselves.
-        with: { user: { columns: { name: true } } },
+        with: { user: { columns: { name: true, image: true } } },
       },
       // Cheap to always fetch — fixed outings just return an empty array.
       // Votes are joined nested so the voting UI can tally per-timeslot in
