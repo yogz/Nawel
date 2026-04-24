@@ -34,6 +34,16 @@ export const user = pgTable("user", {
   // profile page matches `?k=<token>` server-side against this value and
   // never exposes it in rendered HTML.
   rsvpInviteToken: text("rsvp_invite_token"),
+  // Short free-text bio shown on the public profile (`/@<username>`).
+  // Capped at 160 chars by the action schema — plenty for a one-liner,
+  // short enough to stay readable on a 360px-wide viewport.
+  bio: text("bio"),
+  // Social handles stored without the `@` prefix and without the
+  // surrounding URL. `instagramHandle = "noam"` → profil rendu pointe
+  // vers https://instagram.com/noam. Max 30 chars (matches each
+  // platform's actual limit + room for dots / underscores).
+  instagramHandle: varchar("instagram_handle", { length: 30 }),
+  tiktokHandle: varchar("tiktok_handle", { length: 30 }),
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),

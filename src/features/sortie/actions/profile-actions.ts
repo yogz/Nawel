@@ -8,6 +8,8 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { sanitizeText } from "@/lib/sanitize";
+import { uploadAvatar } from "@/features/sortie/lib/avatar-upload";
 import type { FormActionState } from "./outing-actions";
 
 // Usernames are the slug users type at `sortie.colist.fr/@<username>`, so
@@ -103,4 +105,139 @@ export async function updateUsernameAction(
   revalidatePath("/moi");
   revalidatePath(`/@${username}`);
   return {};
+}
+
+// Social handle: alphanumerics, dot, underscore — matches both IG and
+// TikTok's actual allowed charset. Length 1–30. Empty string clears.
+const HANDLE_REGEX = /^[A-Za-z0-9_.]{1,30}$/;
+
+const updateProfileDetailsSchema = z.object({
+  bio: z
+    .string()
+    .trim()
+    .max(160, "Bio trop longue (160 caractères max).")
+    .optional()
+    .transform((v) => v || null),
+  instagramHandle: z
+    .string()
+    .trim()
+    .transform((v) => (v.startsWith("@") ? v.slice(1) : v))
+    .transform((v) => v || null)
+    .refine((v) => v === null || HANDLE_REGEX.test(v), {
+      message: "Handle Instagram invalide (lettres, chiffres, . ou _).",
+    }),
+  tiktokHandle: z
+    .string()
+    .trim()
+    .transform((v) => (v.startsWith("@") ? v.slice(1) : v))
+    .transform((v) => v || null)
+    .refine((v) => v === null || HANDLE_REGEX.test(v), {
+      message: "Handle TikTok invalide (lettres, chiffres, . ou _).",
+    }),
+});
+
+/**
+ * Updates bio + Instagram + TikTok in one pass. The three fields form
+ * the "public profile details" block on /moi and they revalidate the
+ * same two surfaces, so splitting them into separate actions would
+ * just multiply server round-trips.
+ */
+export async function updateProfileDetailsAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { message: "Il faut être connecté pour modifier ton profil." };
+  }
+
+  const parsed = updateProfileDetailsSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const gate = await rateLimit({
+    key: `profile:${session.user.id}`,
+    limit: 20,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  const { bio, instagramHandle, tiktokHandle } = parsed.data;
+
+  await db
+    .update(user)
+    .set({
+      // Sanitise the bio the same way we sanitise outing descriptions —
+      // strips any HTML so a future component that forgets to escape
+      // still can't render a stored XSS.
+      bio: bio ? sanitizeText(bio, 160) : null,
+      instagramHandle,
+      tiktokHandle,
+      updatedAt: new Date(),
+    })
+    .where(eq(user.id, session.user.id));
+
+  revalidatePath("/moi");
+  const row = await db.query.user.findFirst({
+    where: eq(user.id, session.user.id),
+    columns: { username: true },
+  });
+  if (row?.username) {
+    revalidatePath(`/@${row.username}`);
+  }
+  return { message: "Profil mis à jour." };
+}
+
+/**
+ * Avatar upload. Accepts the raw `File` from a native file input,
+ * validates size + MIME + magic-byte sniffing, pushes to Vercel Blob,
+ * and updates `user.image` with the resulting URL. The old avatar
+ * stays in Blob for now — cost is negligible and writing a retention
+ * job is follow-up work.
+ */
+export async function updateAvatarAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session?.user) {
+    return { message: "Il faut être connecté pour changer ta photo." };
+  }
+
+  const gate = await rateLimit({
+    key: `avatar:${session.user.id}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return { message: "Aucun fichier reçu." };
+  }
+
+  const result = await uploadAvatar(file);
+  if (!result.ok) {
+    return { message: result.message };
+  }
+
+  await db
+    .update(user)
+    .set({ image: result.url, updatedAt: new Date() })
+    .where(eq(user.id, session.user.id));
+
+  revalidatePath("/moi");
+  const row = await db.query.user.findFirst({
+    where: eq(user.id, session.user.id),
+    columns: { username: true },
+  });
+  if (row?.username) {
+    revalidatePath(`/@${row.username}`);
+  }
+  return { message: "Photo mise à jour." };
 }
