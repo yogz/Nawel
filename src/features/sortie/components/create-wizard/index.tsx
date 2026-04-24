@@ -451,7 +451,7 @@ function PasteStep({
   }
 
   return (
-    <section className="flex flex-col gap-8 px-6 py-10">
+    <section className="flex flex-col gap-6 px-6 py-10">
       <VibePicker value={vibe} onChange={onVibeChange} />
 
       <div>
