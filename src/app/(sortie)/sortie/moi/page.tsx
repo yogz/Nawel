@@ -43,8 +43,7 @@ export default async function ProfileSettingsPage() {
           <h1 className="font-serif text-4xl leading-tight text-encre-700">Connexion requise</h1>
         </header>
         <p className="mb-6 text-sm text-encre-500">
-          Pour choisir un nom d&rsquo;utilisateur et afficher tes sorties publiquement, connecte-toi
-          à ton compte CoList.
+          Connecte-toi pour prendre un @nom et afficher tes sorties.
         </p>
         <LoginLink variant="primary" label="Se connecter" />
         <p className="mt-4 text-xs text-encre-400">
@@ -124,8 +123,8 @@ export default async function ProfileSettingsPage() {
         <section>
           <h2 className="mb-4 font-serif text-xl text-encre-700">Mes sorties visibles</h2>
           <p className="mb-4 text-xs text-encre-400">
-            Glisse une sortie vers la gauche pour l&rsquo;archiver — elle disparaît de ton profil
-            mais reste visible pour les invités.
+            Glisse à gauche pour archiver. La sortie quitte ton profil, les invités la voient
+            toujours.
           </p>
           {upcoming.length > 0 && (
             <OutingListBlock title="À venir" rows={upcoming} isPast={false} />

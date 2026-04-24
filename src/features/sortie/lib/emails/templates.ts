@@ -67,7 +67,7 @@ export function purchaseConfirmedEmail(args: {
     </p>
   `;
   return {
-    subject: `${args.outingTitle} — ${formatCents(args.amountCents)} à régler`,
+    subject: `${formatCents(args.amountCents)} pour ${args.outingTitle}`,
     html: renderEmail({
       preheader: `${args.buyerName} a acheté les billets. Ta part : ${formatCents(args.amountCents)}.`,
       body,
@@ -153,11 +153,7 @@ export function rsvpReceivedEmail(args: {
   const title = escapeHtml(args.outingTitle);
   const name = escapeHtml(args.responderName);
   const label =
-    args.response === "yes"
-      ? "a dit oui"
-      : args.response === "no"
-        ? "ne peut pas venir"
-        : "gère sa place";
+    args.response === "yes" ? "dit oui" : args.response === "no" ? "dit non" : "prend sa place";
   const guests: string[] = [];
   if (args.extraAdults > 0) {
     guests.push(`+${args.extraAdults} adulte${args.extraAdults > 1 ? "s" : ""}`);
@@ -177,7 +173,7 @@ export function rsvpReceivedEmail(args: {
     </p>
   `;
   return {
-    subject: `${args.responderName} ${label} — ${args.outingTitle}`,
+    subject: `${args.responderName} ${label}`,
     html: renderEmail({
       preheader: `${args.responderName} ${label}${guestsLine} pour ${args.outingTitle}.`,
       body,

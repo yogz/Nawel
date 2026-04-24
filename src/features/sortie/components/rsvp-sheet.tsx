@@ -168,11 +168,11 @@ export function RsvpSheet({
                     onClick={() => setShowExtras(true)}
                     className="self-start text-sm text-bordeaux-700 underline-offset-4 hover:underline"
                   >
-                    + Avec quelqu&rsquo;un ?
+                    + Tu viens accompagné&middot;e&nbsp;?
                   </button>
                 ) : (
                   <div className="flex flex-col gap-3 rounded-lg bg-ivoire-50 p-4">
-                    <p className="text-sm text-encre-500">Tu viens avec quelqu&rsquo;un&nbsp;?</p>
+                    <p className="text-sm text-encre-500">Combien vous êtes&nbsp;?</p>
                     <GuestCountStepper
                       label="Adultes en plus"
                       name="extraAdults"
@@ -202,12 +202,10 @@ export function RsvpSheet({
                     className="mt-0.5 h-4 w-4 accent-bordeaux-600"
                   />
                   <span className="flex flex-col">
-                    <span className="font-medium text-encre-700">
-                      Je prends mon billet moi-même
-                    </span>
+                    <span className="font-medium text-encre-700">Je gère mon billet</span>
                     <span className="text-xs text-encre-400">
-                      Coche si tu ne veux pas qu&rsquo;on achète ta place. Sinon, quelqu&rsquo;un du
-                      groupe prendra pour toi — tu rembourseras après.
+                      Coche si tu prends ta place toi-même. Sinon le groupe t&rsquo;en achète une,
+                      tu rembourses après.
                     </span>
                   </span>
                 </label>

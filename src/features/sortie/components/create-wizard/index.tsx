@@ -426,7 +426,7 @@ function PasteStep({
   }
 
   const vibeHint = vibeKey
-    ? `Pour ta ${vibeKey === "theatre" ? "pièce" : vibeKey === "opera" ? "soirée opéra" : vibeKey === "concert" ? "soirée concert" : vibeKey === "cine" ? "séance ciné" : vibeKey === "expo" ? "visite d'expo" : "sortie"}`
+    ? `Pour ton ${vibeKey === "theatre" ? "théâtre" : vibeKey === "opera" ? "opéra" : vibeKey === "concert" ? "concert" : vibeKey === "cine" ? "ciné" : vibeKey === "expo" ? "expo" : "sortie"}`
     : null;
 
   return (
@@ -514,10 +514,10 @@ function ConfirmPasteStep({
     <section className="flex flex-col gap-6 px-6 py-10">
       <div>
         <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
-          On a trouvé ça
+          Voilà ce qu&rsquo;on a trouvé
         </p>
         <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          C&rsquo;est bien ça ?
+          Ça colle&nbsp;?
         </h1>
         <p className="mt-3 text-sm text-encre-400">Tape directement dans la carte pour corriger.</p>
       </div>
@@ -984,11 +984,9 @@ function NameStep({
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
       <div>
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
-          Tu signes
-        </p>
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">Toi</p>
         <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          C&rsquo;est toi qui organise.
+          On signe comment&nbsp;?
         </h1>
       </div>
 
@@ -1087,7 +1085,7 @@ function CommitStep({
           Prêt
         </p>
         <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          Tu signes et on publie.
+          On est prêts. Tu confirmes&nbsp;?
         </h1>
       </div>
 
@@ -1125,7 +1123,7 @@ function CommitStep({
       <div className="mt-auto">
         <SwipeToPublish onConfirm={onPublish} />
         <p className="mt-3 text-center text-xs text-encre-400">
-          Les réponses se fermeront automatiquement avant la date.
+          Les réponses se ferment toutes seules avant la date.
         </p>
       </div>
     </section>

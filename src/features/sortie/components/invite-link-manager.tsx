@@ -93,8 +93,8 @@ export function InviteLinkManager({ username, token, origin }: Props) {
     return (
       <div className="flex flex-col gap-3">
         <p className="text-sm text-encre-500">
-          Crée un lien privé pour permettre à tes amis de confirmer leur présence directement depuis
-          ton profil, sans passer par chaque sortie.
+          Un lien privé pour tes amis&nbsp;: ils répondent à toutes tes sorties depuis ton profil,
+          d&rsquo;un coup.
         </p>
         <form action={generateAction}>
           <Button type="submit" disabled={generating}>

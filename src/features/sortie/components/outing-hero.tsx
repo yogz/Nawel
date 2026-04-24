@@ -42,7 +42,7 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
           rel="noopener noreferrer"
           className="mt-3 text-sm text-bordeaux-600 underline-offset-4 hover:underline"
         >
-          Voir la billetterie ↗
+          Prendre mes places ↗
         </a>
       )}
     </header>

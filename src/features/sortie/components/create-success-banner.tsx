@@ -57,9 +57,9 @@ export function CreateSuccessBanner({ url, title, startsAt }: Props) {
         <Check size={16} strokeWidth={3} />
       </span>
       <div className="flex-1">
-        <p className="font-semibold text-bordeaux-700">Ta sortie est prête.</p>
+        <p className="font-semibold text-bordeaux-700">C&rsquo;est en ligne.</p>
         <p className="mt-1 text-sm text-encre-500">
-          Partage le lien à tes potes pour collecter les réponses.
+          Balance le lien à tes potes, les réponses arrivent ici.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button

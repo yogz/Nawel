@@ -24,7 +24,7 @@ type Props = {
  */
 export function SwipeToPublish({
   onConfirm,
-  label = "Glisser pour publier",
+  label = "Glisse pour publier",
   confirmedLabel = "Publié",
 }: Props) {
   const x = useMotionValue(0);

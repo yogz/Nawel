@@ -142,14 +142,14 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           {isSelf ? (
             <>
               <p className="mb-3">
-                Ton profil est vide pour l&rsquo;instant. Crée une sortie en cochant « Afficher sur
-                mon profil » et elle apparaîtra ici.
+                Rien ici pour l&rsquo;instant. Lance une sortie et coche « Afficher sur mon profil »
+                — elle s&rsquo;affichera là.
               </p>
               <Link
                 href="/nouvelle"
                 className="inline-flex items-center text-bordeaux-700 underline-offset-4 hover:underline"
               >
-                Créer ma première sortie →
+                Lancer ma première sortie →
               </Link>
             </>
           ) : (

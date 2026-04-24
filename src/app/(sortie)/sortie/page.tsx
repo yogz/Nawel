@@ -211,12 +211,12 @@ function PublicHome() {
           <span className="text-bordeaux-600">vraiment</span> ?
         </h1>
         <p className="mb-10 max-w-md text-lg leading-relaxed text-encre-400">
-          Un lien à partager, chacun répond. Pas de bordel WhatsApp pour compter qui vient, qui
-          achète les places, et qui doit encore de l&rsquo;argent.
+          Un lien, tout le monde répond. Fini le bordel WhatsApp pour compter qui vient, qui paie
+          les places, qui doit combien.
         </p>
 
         <Button asChild size="lg" className="px-8">
-          <Link href="/nouvelle">Créer une sortie</Link>
+          <Link href="/nouvelle">Lancer une sortie</Link>
         </Button>
 
         <LoginLink className="mt-4" label="J&rsquo;ai déjà un compte →" />
