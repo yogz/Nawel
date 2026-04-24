@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, CalendarPlus } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 
 type Props = {
@@ -7,9 +7,21 @@ type Props = {
   startsAt: Date | null;
   ticketUrl: string | null;
   heroImageUrl?: string | null;
+  /** Canonical `slug-shortId` path of the outing — used to link to the
+   * iCalendar download (`/<canonicalPath>/agenda`). Optional so vote-
+   * mode pages (no fixed date) can render the hero without the
+   * "Ajouter à mon agenda" affordance. */
+  canonicalPath?: string;
 };
 
-export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl }: Props) {
+export function OutingHero({
+  title,
+  location,
+  startsAt,
+  ticketUrl,
+  heroImageUrl,
+  canonicalPath,
+}: Props) {
   return (
     <header className="flex flex-col items-start text-left">
       {heroImageUrl && (
@@ -36,17 +48,33 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
 
       {location && <p className="mt-4 text-lg text-encre-400">{location}</p>}
 
-      {ticketUrl && (
-        <a
-          href={ticketUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center gap-1 text-sm text-bordeaux-600 underline-offset-4 hover:underline"
-        >
-          Prendre mes places
-          <ArrowUpRight size={14} strokeWidth={2.2} />
-        </a>
-      )}
+      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        {ticketUrl && (
+          <a
+            href={ticketUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-bordeaux-600 underline-offset-4 hover:underline"
+          >
+            Prendre mes places
+            <ArrowUpRight size={14} strokeWidth={2.2} />
+          </a>
+        )}
+        {startsAt && canonicalPath && (
+          <a
+            href={`/${canonicalPath}/agenda`}
+            // `download` is a hint to the browser — iOS / Android treat
+            // the `text/calendar` MIME as "add to calendar" regardless,
+            // but the filename makes the fallback download readable on
+            // desktop.
+            download={`sortie-${canonicalPath}.ics`}
+            className="inline-flex items-center gap-1 text-bordeaux-600 underline-offset-4 hover:underline"
+          >
+            <CalendarPlus size={14} strokeWidth={2.2} />
+            Ajouter à mon agenda
+          </a>
+        )}
+      </div>
     </header>
   );
 }
