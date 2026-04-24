@@ -1,15 +1,13 @@
 import { headers } from "next/headers";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth-config";
-import { CreateOutingForm } from "@/features/sortie/components/create-outing-form";
+import { CreateWizard } from "@/features/sortie/components/create-wizard";
 
 export const metadata = {
-  title: "Créer une sortie · avancé",
+  title: "Sondage de dates",
 };
 
 // Same vibe config as `/nouvelle` — duplicated rather than shared because
-// the advanced form uses a different component surface and moving this
+// the advanced form uses a different default step flavour and moving this
 // into a shared util would be premature for two callers.
 type VibeConfig = {
   title: string;
@@ -49,10 +47,17 @@ type Props = {
   searchParams: Promise<{ vibe?: string }>;
 };
 
-// Legacy form preserved for power-users who need vote-mode (multi-date
-// polls) or granular control over the RSVP deadline. The wizard at
-// `/nouvelle` targets the 80% fixed-mode path with a gesture-first UX;
-// this page is the escape hatch.
+/**
+ * Vote-mode variant of the create wizard. Same flow as `/nouvelle`
+ * (paste → confirm → slots → venue → name → commit) but the "date"
+ * step becomes a multi-slot picker so the creator can propose
+ * several dates and let participants vote their availability.
+ *
+ * Historically this URL hosted a legacy scrollable form
+ * (`CreateOutingForm`) which accepted both fixed and vote modes.
+ * That form was deleted when this wizard route took over — the
+ * fixed path lives at `/nouvelle`, vote lives here.
+ */
 export default async function NouvelleAvancePage({ searchParams }: Props) {
   const { vibe } = await searchParams;
   const config = vibe && VIBE_CONFIG[vibe] ? VIBE_CONFIG[vibe] : null;
@@ -60,40 +65,14 @@ export default async function NouvelleAvancePage({ searchParams }: Props) {
   const user = session?.user ?? null;
 
   return (
-    <main className="mx-auto min-h-[100dvh] max-w-xl px-6 py-14">
-      <nav className="mb-10">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
-        >
-          <ArrowLeft size={14} strokeWidth={2} />
-          Accueil
-        </Link>
-      </nav>
-
-      <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-          Formulaire avancé
-        </p>
-        <h1 className="text-4xl leading-tight text-encre-700">
-          Sondage de dates ou contrôle fin ?
-        </h1>
-        <p className="mt-3 max-w-md text-encre-500">
-          Tu peux revenir au{" "}
-          <Link href="/nouvelle" className="underline">
-            mode rapide
-          </Link>{" "}
-          si tu n&rsquo;as pas besoin de ces options.
-        </p>
-      </header>
-
-      <CreateOutingForm
-        isLoggedIn={Boolean(user)}
-        defaultCreatorName={user?.name ?? undefined}
-        defaultTitle={config?.title}
-        pasterPlaceholder={config?.pasterPlaceholder}
-        pasterHint={config?.pasterHint}
-      />
-    </main>
+    <CreateWizard
+      mode="vote"
+      isLoggedIn={Boolean(user)}
+      defaultCreatorName={user?.name ?? undefined}
+      vibeKey={vibe ?? null}
+      pasterPlaceholder={config?.pasterPlaceholder}
+      pasterHint={config?.pasterHint}
+      defaultTitle={config?.title}
+    />
   );
 }
