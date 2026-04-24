@@ -8,6 +8,7 @@ import {
   updateProfileDetailsAction,
 } from "@/features/sortie/actions/profile-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import { AvatarCropSheet } from "./avatar-crop-sheet";
 import { UserAvatar } from "./user-avatar";
 
 type Props = {
@@ -41,9 +42,13 @@ function AvatarPicker({ name, image }: { name: string | null; image: string | nu
     updateAvatarAction,
     {} as FormActionState
   );
-  // Optimistic preview: set immediately on file pick, replaced by the
-  // real URL after the server responds + router.refresh() drops the
-  // new image URL into props.
+  // The file the user just picked — kept in state to drive the crop
+  // sheet. Null = sheet closed. Reset after upload completes so a
+  // second upload cycle opens a fresh crop session.
+  const [pickedFile, setPickedFile] = useState<File | null>(null);
+  // Preview shown in the avatar bubble after a successful crop, before
+  // the server has revalidated. Object URL to the cropped blob; revoked
+  // once the real server URL takes over via router.refresh().
   const [preview, setPreview] = useState<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -51,10 +56,29 @@ function AvatarPicker({ name, image }: { name: string | null; image: string | nu
     if (!file) {
       return;
     }
-    setPreview(URL.createObjectURL(file));
-    // Submit the form immediately — no "save" button, the file-picker
-    // tap IS the commit gesture.
-    e.currentTarget.form?.requestSubmit();
+    setPickedFile(file);
+    // Reset the input so picking the same file again re-triggers
+    // onChange — browsers de-dupe by value on native inputs.
+    e.currentTarget.value = "";
+  }
+
+  function handleCropped(blob: Blob) {
+    // Wrap the blob as a File so the server action's FormData reads
+    // it as `instanceof File`. JPEG because that's what the crop sheet
+    // exports; the server sniffs magic bytes anyway.
+    const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+    const nextPreview = URL.createObjectURL(blob);
+    setPreview((prev) => {
+      if (prev) {
+        URL.revokeObjectURL(prev);
+      }
+      return nextPreview;
+    });
+    setPickedFile(null);
+
+    const fd = new FormData();
+    fd.set("file", file);
+    formAction(fd);
   }
 
   // Trigger a refresh after a successful upload so the new `image` URL
@@ -73,39 +97,45 @@ function AvatarPicker({ name, image }: { name: string | null; image: string | nu
   const shown = preview ?? image;
 
   return (
-    <form action={formAction} className="flex items-center gap-4">
-      <div className="shrink-0">
-        <UserAvatar name={name} image={shown} size={72} />
+    <>
+      <div className="flex items-center gap-4">
+        <div className="shrink-0">
+          <UserAvatar name={name} image={shown} size={72} />
+        </div>
+        <div className="flex flex-1 flex-col gap-2">
+          <label
+            className={`inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-full border-2 border-encre-100 bg-white px-3 py-1.5 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 ${
+              pending ? "opacity-50" : ""
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+              onChange={handleChange}
+              disabled={pending}
+              className="sr-only"
+            />
+            {pending ? "Envoi…" : shown ? "Changer la photo" : "Ajouter une photo"}
+          </label>
+          <p className="text-xs text-encre-400">JPEG, PNG, WebP ou HEIC. 2 Mo max.</p>
+          {state.message && state.message !== "Photo mise à jour." && (
+            <p className="text-xs text-destructive">{state.message}</p>
+          )}
+          {state.message === "Photo mise à jour." && !pending && (
+            <p className="inline-flex items-center gap-1 text-xs text-bordeaux-700">
+              <Check size={12} strokeWidth={3} />
+              Photo mise à jour.
+            </p>
+          )}
+        </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2">
-        <label
-          className={`inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-full border-2 border-encre-100 bg-white px-3 py-1.5 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 ${
-            pending ? "opacity-50" : ""
-          }`}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            name="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-            onChange={handleChange}
-            disabled={pending}
-            className="sr-only"
-          />
-          {pending ? "Envoi…" : shown ? "Changer la photo" : "Ajouter une photo"}
-        </label>
-        <p className="text-xs text-encre-400">JPEG, PNG, WebP ou HEIC. 2 Mo max.</p>
-        {state.message && state.message !== "Photo mise à jour." && (
-          <p className="text-xs text-destructive">{state.message}</p>
-        )}
-        {state.message === "Photo mise à jour." && !pending && (
-          <p className="inline-flex items-center gap-1 text-xs text-bordeaux-700">
-            <Check size={12} strokeWidth={3} />
-            Photo mise à jour.
-          </p>
-        )}
-      </div>
-    </form>
+      <AvatarCropSheet
+        file={pickedFile}
+        onCancel={() => setPickedFile(null)}
+        onCropped={handleCropped}
+      />
+    </>
   );
 }
 
