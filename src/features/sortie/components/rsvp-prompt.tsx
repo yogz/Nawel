@@ -122,7 +122,7 @@ export function RsvpPrompt({
               className="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
             >
               <Pencil size={12} />
-              Modifier mes détails
+              Changer mes infos
             </button>
           )}
           <RemoveRsvpButton

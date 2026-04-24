@@ -25,7 +25,7 @@ export function ReclaimForm({ shortId }: Props) {
         onClick={() => setOpen(true)}
         className="text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
       >
-        Pas reconnu&nbsp;? Recevoir un lien d&rsquo;accès
+        Pas reconnu&nbsp;? Je reçois un lien par email
       </button>
     );
   }

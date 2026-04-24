@@ -98,14 +98,13 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
                     <strong className="text-encre-700">
                       {confirmedCount} personne{confirmedCount > 1 ? "s" : ""}
                     </strong>{" "}
-                    {confirmedCount > 1 ? "recevront" : "recevra"} un email pour
-                    {confirmedCount > 1 ? " les" : " la"} prévenir de l&rsquo;annulation. Cette
-                    action est définitive.
+                    {confirmedCount > 1 ? "vont être prévenues" : "va être prévenue"} par email. Tu
+                    ne pourras pas revenir en arrière.
                   </>
                 ) : (
                   <>
-                    Personne n&rsquo;a encore dit oui — aucun email ne sera envoyé. Cette action est
-                    définitive.
+                    Personne n&rsquo;a encore dit oui — aucun email ne partira. Tu ne pourras pas
+                    revenir en arrière.
                   </>
                 )}
               </p>
