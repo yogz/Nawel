@@ -241,6 +241,10 @@ export const pickTimeslotSchema = z.object({
   timeslotId: z.string().uuid(),
 });
 
+export const removeRsvpSchema = z.object({
+  shortId: shortIdSchema,
+});
+
 export const cancelOutingSchema = z.object({
   shortId: shortIdSchema,
 });

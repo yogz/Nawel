@@ -1,16 +1,19 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
-import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import {
+  ensureParticipantTokenHash,
+  readParticipantTokenHash,
+} from "@/features/sortie/lib/cookie-token";
 import { sendRsvpReceivedEmail } from "@/features/sortie/lib/emails/send-outing-emails";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
-import { rsvpSchema, voteRsvpSchema } from "./schemas";
+import { removeRsvpSchema, rsvpSchema, voteRsvpSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
 
 async function getSessionUser() {
@@ -125,6 +128,63 @@ export async function rsvpAction(
   // Revalidate the bare-shortId form; the public page's canonical redirect
   // takes care of both the /<shortId> and /<slug-shortId> cache entries.
   revalidatePath(`/${data.shortId}`);
+  return {};
+}
+
+/**
+ * Hard-delete the viewer's participant row — "Retirer ma réponse" on the
+ * inline RSVP card. We only match on the identity signals the viewer
+ * actually carries (cookie hash for anons, user id for logged-in) so one
+ * visitor can never wipe another's RSVP.
+ *
+ * Cascades: `timeslot_votes` drop via FK cascade, but `purchases`,
+ * `allocations`, and `debts` use `restrict` — so a participant who's
+ * already recorded a purchase can't retract their RSVP. We surface that
+ * as a readable error rather than an opaque FK violation.
+ */
+export async function removeRsvpAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = removeRsvpSchema.safeParse(formDataToRsvp(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId } = parsed.data;
+  const user = await getSessionUser();
+  const cookieTokenHash = await readParticipantTokenHash();
+
+  if (!user && !cookieTokenHash) {
+    return { message: "Aucune réponse à retirer." };
+  }
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  const identityClauses = [];
+  if (cookieTokenHash) {
+    identityClauses.push(eq(participants.cookieTokenHash, cookieTokenHash));
+  }
+  if (user) {
+    identityClauses.push(eq(participants.userId, user.id));
+  }
+  const identity = identityClauses.length === 1 ? identityClauses[0]! : or(...identityClauses)!;
+
+  try {
+    await db.delete(participants).where(and(eq(participants.outingId, outing.id), identity));
+  } catch {
+    // FK restrict from purchases/allocations/debts — the viewer has
+    // already committed to financial rows we can't orphan.
+    return {
+      message: "Impossible de retirer ta réponse (achats ou dépenses déjà enregistrés).",
+    };
+  }
+
+  revalidatePath(`/${shortId}`);
   return {};
 }
 
