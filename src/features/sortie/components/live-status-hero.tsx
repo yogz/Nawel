@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
+import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 
 type Props = {
@@ -83,7 +84,7 @@ export function LiveStatusHero({
           <span className="font-semibold text-encre-700">{relativeOutingHero(startsAt)}</span>
           <span> · {formatOutingDate(startsAt)}</span>
         </p>
-        {location && <p className="text-sm text-encre-500">{location}</p>}
+        {location && <p className="text-sm text-encre-500">{formatVenue(location)}</p>}
         {headcount && <p className="mt-1 text-sm text-encre-500">{headcount}</p>}
 
         {heroImageUrl ? (

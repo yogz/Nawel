@@ -1,5 +1,6 @@
 import { ArrowUpRight, CalendarPlus } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
+import { formatVenue } from "@/features/sortie/lib/format-venue";
 
 type Props = {
   title: string;
@@ -46,7 +47,7 @@ export function OutingHero({
         {title}
       </h1>
 
-      {location && <p className="mt-4 text-lg text-encre-400">{location}</p>}
+      {location && <p className="mt-4 text-lg text-encre-400">{formatVenue(location)}</p>}
 
       <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         {ticketUrl && (

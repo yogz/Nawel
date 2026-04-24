@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check, ChevronRight, X } from "lucide-react";
 import { formatOutingDate, formatOutingDateShort } from "@/features/sortie/lib/date-fr";
+import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { InlineRsvpSection } from "./inline-rsvp-section";
 import type { RsvpResponse } from "./rsvp-sheets";
 
@@ -75,7 +76,7 @@ export function OutingProfileCard({
     : null;
 
   const meta = [
-    outing.location,
+    formatVenue(outing.location),
     outing.confirmedCount > 0
       ? `${outing.confirmedCount} confirmé${outing.confirmedCount > 1 ? "s" : ""}`
       : null,

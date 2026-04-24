@@ -10,6 +10,7 @@ import {
   listPublicProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { LoginLink } from "@/features/sortie/components/login-link";
@@ -221,7 +222,7 @@ function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: b
       </span>
       <span className="text-xs text-encre-400">
         {outing.startsAt ? formatOutingDateConversational(outing.startsAt) : "Date à définir"}
-        {outing.location ? ` · ${outing.location}` : ""}
+        {outing.location ? ` · ${formatVenue(outing.location)}` : ""}
       </span>
     </Link>
   );
