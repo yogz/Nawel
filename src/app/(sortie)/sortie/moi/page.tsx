@@ -14,6 +14,7 @@ import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
+import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 
 export const metadata = {
   title: "Mon profil",
@@ -137,8 +138,11 @@ export default async function ProfileSettingsPage() {
               </p>
               <ul className="flex flex-col gap-2">
                 {archived.map((o) => (
-                  <li key={o.id}>
-                    <OutingRowCard outing={o} muted />
+                  <li key={o.id} className="flex items-center gap-3">
+                    <div className="min-w-0 flex-1">
+                      <OutingRowCard outing={o} muted />
+                    </div>
+                    <UnarchiveButton shortId={o.shortId} />
                   </li>
                 ))}
               </ul>
