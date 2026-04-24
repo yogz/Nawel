@@ -68,8 +68,6 @@ export default async function ProfileSettingsPage() {
       username: true,
       rsvpInviteToken: true,
       bio: true,
-      instagramHandle: true,
-      tiktokHandle: true,
     },
   });
 
@@ -132,11 +130,7 @@ export default async function ProfileSettingsPage() {
       <section className="mb-14">
         <div className="flex flex-col gap-4">
           <UsernameForm currentUsername={username} />
-          <ProfileDetailsForm
-            bio={row?.bio ?? null}
-            instagramHandle={row?.instagramHandle ?? null}
-            tiktokHandle={row?.tiktokHandle ?? null}
-          />
+          <ProfileDetailsForm bio={row?.bio ?? null} />
         </div>
       </section>
 
