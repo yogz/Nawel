@@ -15,6 +15,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
 import { participants } from "@drizzle/sortie-schema";
+import { user } from "@drizzle/schema";
 import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
@@ -50,6 +51,17 @@ export default async function SortieHome() {
     };
   }
 
+  // Read the avatar from the DB rather than the session: Better Auth caches
+  // `session.user.image` in the cookie at sign-in time, so a fresh upload
+  // doesn't propagate to the nav avatar until the session is renewed. The
+  // /moi page already follows this pattern (it queries the user row for
+  // `image`), this keeps the home nav consistent.
+  const userRow = await db.query.user.findFirst({
+    where: eq(user.id, userId),
+    columns: { image: true },
+  });
+  const avatarImage = userRow?.image ?? session.user.image ?? null;
+
   const firstName = session.user.name?.split(" ")[0] ?? "Toi";
   const restUpcoming = upcoming.slice(1);
 
@@ -57,7 +69,7 @@ export default async function SortieHome() {
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
       <nav className="mb-8 flex items-center justify-end">
         <Link href="/moi" aria-label="Mon profil">
-          <UserAvatar name={session.user.name} image={session.user.image} size={36} />
+          <UserAvatar name={session.user.name} image={avatarImage} size={36} />
         </Link>
       </nav>
 
