@@ -104,7 +104,7 @@ export function VoteRsvpSheet({
         <SheetHeader className="mb-6 text-left">
           <SheetTitle className="font-serif text-2xl text-encre-700">Quand tu peux ?</SheetTitle>
           <p className="text-sm text-encre-400">
-            Tape les créneaux qui te vont. Rien sélectionné = tu peux pas.
+            Coche les créneaux qui te vont. Rien de coché = tu peux pas.
           </p>
         </SheetHeader>
 
@@ -191,9 +191,9 @@ export function VoteRsvpSheet({
           >
             <Button type="submit" size="lg" disabled={pending}>
               {pending
-                ? "On y va…"
+                ? "Envoi…"
                 : selectedCount === 0
-                  ? "Je peux aucun"
+                  ? "Aucun ne me va"
                   : `Envoyer (${selectedCount})`}
             </Button>
           </div>

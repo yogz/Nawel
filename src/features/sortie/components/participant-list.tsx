@@ -37,7 +37,7 @@ export function ParticipantList({ participants }: { participants: Participant[] 
       ? "Pas encore de oui ferme."
       : yesList.length === 1
         ? `${firstName ?? "Quelqu'un"} a déjà dit oui.`
-        : `${numberToFrenchCap(yesList.length)} d'entre vous ont déjà dit oui.`;
+        : `Vous êtes ${numberToFrenchCap(yesList.length)} à avoir dit oui.`;
 
   // When the only yes is an anonymous no-name, the headline already says
   // "Quelqu'un a déjà dit oui." — repeating "Quelqu'un" as a bullet below

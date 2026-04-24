@@ -16,7 +16,7 @@ export function DeadlineBadge({ deadlineAt }: Props) {
 
   return (
     <p className={urgent ? "text-sm font-medium text-bordeaux-700" : "text-sm text-encre-400"}>
-      {urgent ? "⏳ " : ""}Réponse avant {formatOutingDateConversational(deadlineAt)}.
+      Réponds avant le {formatOutingDateConversational(deadlineAt)}.
     </p>
   );
 }

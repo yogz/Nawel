@@ -42,7 +42,7 @@ export function VotingSection({
         <span className="text-xs text-encre-400">
           {totalVoters === 0
             ? "Personne n'a voté"
-            : `${totalVoters} ${totalVoters > 1 ? "votant·es" : "votant·e"}`}
+            : `${totalVoters} vote${totalVoters > 1 ? "s" : ""}`}
         </span>
       </header>
 
