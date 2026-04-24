@@ -159,6 +159,11 @@ export function CreateWizard({
     const usePasteBranch = (draft.title.length > 0 || draft.ticketUrl.length > 0) && !pasteFailed;
     const base = usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
     let filtered = isLoggedIn ? base.filter((s) => s !== "name") : base;
+    // Title-only input (no URL to parse) → nothing to review on the
+    // confirm card, skip it. URL flow keeps the confirm step as usual.
+    if (draft.title.length > 0 && draft.ticketUrl.length === 0) {
+      filtered = filtered.filter((s) => s !== "confirm");
+    }
     if (draft.venue.trim().length > 0 && step !== "venue") {
       filtered = filtered.filter((s) => s !== "venue");
     }
@@ -313,9 +318,18 @@ export function CreateWizard({
                   setPasteFailed(false);
                   goToStep("confirm");
                 }}
-                onManual={() => {
-                  setPasteFailed(true);
-                  goToStep("title");
+                onTitleOnly={(title) => {
+                  // Plain-text input — no URL to parse, so no confirm
+                  // step to show (the steps memo skips it when there
+                  // is no ticketUrl). Jump straight to the date picker.
+                  setDraft((d) => ({
+                    ...d,
+                    title,
+                    ticketUrl: "",
+                    heroImageUrl: "",
+                  }));
+                  setPasteFailed(false);
+                  goToStep("date");
                 }}
               />
             )}
@@ -407,7 +421,7 @@ function PasteStep({
   vibe,
   onVibeChange,
   onParsed,
-  onManual,
+  onTitleOnly,
 }: {
   placeholder?: string;
   hint?: string;
@@ -420,34 +434,46 @@ function PasteStep({
     startsAt: string | null;
     ticketUrl: string;
   }) => void;
-  onManual: () => void;
+  onTitleOnly: (title: string) => void;
 }) {
-  const [url, setUrl] = useState("");
+  const [value, setValue] = useState("");
   const [pending, setPending] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  async function parse() {
-    if (!url.trim()) {
+  const trimmed = value.trim();
+  // Treat anything starting with http(s) as a ticket URL to parse.
+  // Everything else we treat as a plain title — the creator just
+  // wants to name the event and move on.
+  const looksLikeUrl = /^https?:\/\//i.test(trimmed);
+
+  async function submit() {
+    if (!trimmed) {
       return;
     }
-    setErr(null);
-    setPending(true);
-    try {
-      const res = await fetch("/api/sortie/parse-ticket-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      });
-      if (!res.ok) {
-        throw new Error("fail");
+    if (looksLikeUrl) {
+      setErr(null);
+      setPending(true);
+      try {
+        const res = await fetch("/api/sortie/parse-ticket-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: trimmed }),
+        });
+        if (!res.ok) {
+          throw new Error("fail");
+        }
+        const data = await res.json();
+        onParsed(data);
+      } catch {
+        setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
+      } finally {
+        setPending(false);
       }
-      const data = await res.json();
-      onParsed(data);
-    } catch {
-      setErr("Lien illisible — tu peux le saisir à la main.");
-    } finally {
-      setPending(false);
+      return;
     }
+    // Plain text: use it as the outing title and skip straight to
+    // the date step — no poster to review on the confirm card.
+    onTitleOnly(trimmed);
   }
 
   return (
@@ -456,11 +482,13 @@ function PasteStep({
 
       <div>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          Colle le lien
+          Un lien,
           <br />
-          de la billetterie.
+          ou juste un titre.
         </h1>
-        <p className="mt-4 text-base text-encre-500">{hint ?? "On remplit le reste pour toi."}</p>
+        <p className="mt-4 text-base text-encre-500">
+          {hint ?? "On remplit le reste si on peut, sinon on continue."}
+        </p>
       </div>
 
       <div className="relative">
@@ -469,15 +497,17 @@ function PasteStep({
           className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-encre-300"
         />
         <Input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder={placeholder ?? "https://…"}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={placeholder ?? "https://… ou « La Belle et la Bête »"}
+          autoCapitalize="sentences"
+          spellCheck={false}
           className="h-16 rounded-full border-2 border-encre-100 bg-white pr-6 pl-12 text-base font-medium"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
-              parse();
+              submit();
             }
           }}
         />
@@ -489,8 +519,8 @@ function PasteStep({
         <Button
           type="button"
           size="lg"
-          disabled={pending || !url.trim()}
-          onClick={parse}
+          disabled={pending || !trimmed}
+          onClick={submit}
           className="h-16 rounded-full text-base font-bold"
         >
           {pending ? (
@@ -498,20 +528,18 @@ function PasteStep({
               <Loader2 size={16} className="animate-spin" />
               Lecture du lien…
             </span>
-          ) : (
+          ) : looksLikeUrl ? (
             <span className="inline-flex items-center gap-2">
               <Wand2 size={16} />
               Remplir automatiquement
             </span>
+          ) : (
+            <span className="inline-flex items-center gap-2">
+              <ArrowRight size={16} />
+              Continuer
+            </span>
           )}
         </Button>
-        <button
-          type="button"
-          onClick={onManual}
-          className="self-center text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-        >
-          Pas de lien, je saisis à la main →
-        </button>
         <div className="flex justify-center">
           <AdvancedModeLink vibe={vibe} />
         </div>
