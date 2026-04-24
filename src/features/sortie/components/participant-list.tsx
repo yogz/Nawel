@@ -1,11 +1,12 @@
 import { numberToFrenchCap } from "@/features/sortie/lib/number-fr";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
+import { UserAvatar } from "./user-avatar";
 
 type Participant = {
   id: string;
   userId: string | null;
   anonName: string | null;
-  user?: { name: string | null } | null;
+  user?: { name: string | null; image: string | null } | null;
   extraAdults: number;
   extraChildren: number;
   response: string;
@@ -56,14 +57,15 @@ export function ParticipantList({ participants }: { participants: Participant[] 
       )}
 
       {!hideList && yesList.length > 0 && (
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-2">
           {yesList.map((p) => {
             const extras = formatExtras(p.extraAdults, p.extraChildren);
+            const display = displayNameOf(p) ?? "Quelqu'un";
             return (
-              <li key={p.id} className="flex items-baseline gap-2 text-encre-600">
-                <span className="inline-block size-1.5 shrink-0 rotate-45 bg-or-500" aria-hidden />
-                <span>
-                  {displayNameOf(p) ?? "Quelqu'un"}
+              <li key={p.id} className="flex items-center gap-2.5 text-encre-600">
+                <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
+                <span className="min-w-0 truncate">
+                  {display}
                   {extras && <span className="text-encre-400"> {extras}</span>}
                 </span>
               </li>
@@ -101,16 +103,16 @@ function SecondarySection({
       <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-encre-400">
         {label} · {count}
       </p>
-      <ul className="flex flex-col gap-1">
-        {rows.map((p) => (
-          <li key={p.id} className="flex items-baseline gap-2 text-encre-500">
-            <span
-              className="inline-block size-1.5 shrink-0 rounded-full bg-encre-200"
-              aria-hidden
-            />
-            <span>{displayNameOf(p) ?? "Quelqu'un"}</span>
-          </li>
-        ))}
+      <ul className="flex flex-col gap-2">
+        {rows.map((p) => {
+          const display = displayNameOf(p) ?? "Quelqu'un";
+          return (
+            <li key={p.id} className="flex items-center gap-2.5 text-encre-500">
+              <UserAvatar name={display} image={p.user?.image ?? null} size={24} />
+              <span className="min-w-0 truncate">{display}</span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
