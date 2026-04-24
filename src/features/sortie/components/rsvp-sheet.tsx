@@ -118,7 +118,7 @@ export function RsvpSheet({
         </SheetTrigger>
         <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
           <SheetHeader className="mb-6 text-left">
-            <SheetTitle className="font-serif text-2xl text-encre-700">Tu viens ?</SheetTitle>
+            <SheetTitle className="font-serif text-2xl text-encre-700">Tu viens&nbsp;?</SheetTitle>
           </SheetHeader>
 
           <form ref={formRef} action={formAction} className="flex flex-col gap-5">
