@@ -92,6 +92,11 @@ export function OutingProfileCard({
           ? { label: "Tu viens · billet perso", tone: "confirmed" as const }
           : { label: "Tu viens", tone: "confirmed" as const };
 
+  // First letter of the title for the poster-less fallback thumbnail.
+  // Same visual vocabulary as the LiveStatusHero empty state — gradient
+  // panel with a big typographic initial instead of a dead color swatch.
+  const initial = (outing.title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
+
   const navigationRow = (
     <>
       {outing.heroImageUrl ? (
@@ -104,8 +109,12 @@ export function OutingProfileCard({
       ) : (
         <div
           aria-hidden="true"
-          className="size-16 shrink-0 rounded-md bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
-        />
+          className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
+        >
+          <span className="font-serif text-2xl font-black leading-none tracking-tight text-encre-700/40 select-none">
+            {initial}
+          </span>
+        </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
         {statusEyebrow && (

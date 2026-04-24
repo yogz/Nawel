@@ -65,6 +65,11 @@ export function LiveStatusHero({
       ? `${confirmed} confirmé${confirmed > 1 ? "s" : ""}${pending > 0 ? ` · ${pending} en attente` : ""}`
       : null;
 
+  // First letter of the title, rendered huge on the gradient when we
+  // don't have a poster. Gives the empty state a focal point — closer
+  // to an Apple Music album placeholder than a dead gradient slab.
+  const initial = (title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
+
   return (
     <section className="mb-10">
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
@@ -91,8 +96,12 @@ export function LiveStatusHero({
         ) : (
           <div
             aria-hidden="true"
-            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
-          />
+            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
+          >
+            <span className="font-serif text-[12rem] font-black leading-none tracking-tight text-encre-700/15 select-none sm:text-[14rem]">
+              {initial}
+            </span>
+          </div>
         )}
 
         <p className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-bordeaux-700 underline-offset-4 group-hover:underline">
