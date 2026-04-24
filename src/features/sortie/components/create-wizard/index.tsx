@@ -512,6 +512,9 @@ function PasteStep({
         >
           Pas de lien, je saisis à la main →
         </button>
+        <div className="flex justify-center">
+          <AdvancedModeLink vibe={vibe} />
+        </div>
       </div>
     </section>
   );
