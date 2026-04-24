@@ -8,12 +8,13 @@ type Props = {
   url: string;
   title: string;
   startsAt: Date | null;
+  firstName?: string | null;
 };
 
-export function ShareActions({ url, title, startsAt }: Props) {
+export function ShareActions({ url, title, startsAt, firstName }: Props) {
   const [justCopied, setJustCopied] = useState(false);
 
-  const whatsAppHref = buildWhatsAppHref({ title, url, startsAt });
+  const whatsAppHref = buildWhatsAppHref({ title, url, startsAt, firstName });
 
   async function copy() {
     try {

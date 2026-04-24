@@ -8,6 +8,7 @@ type Props = {
   url: string;
   title: string;
   startsAt: Date | null;
+  firstName?: string | null;
 };
 
 /**
@@ -20,7 +21,7 @@ type Props = {
  * the banner ends the creation moment; the normal share row re-appears on the
  * next navigation (when `?from=create` is gone).
  */
-export function CreateSuccessBanner({ url, title, startsAt }: Props) {
+export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) {
   const [visible, setVisible] = useState(true);
   const [copied, setCopied] = useState(false);
 
@@ -28,7 +29,7 @@ export function CreateSuccessBanner({ url, title, startsAt }: Props) {
     return null;
   }
 
-  const whatsAppHref = buildWhatsAppHref({ title, url, startsAt });
+  const whatsAppHref = buildWhatsAppHref({ title, url, startsAt, firstName });
 
   async function handleCopy() {
     try {
