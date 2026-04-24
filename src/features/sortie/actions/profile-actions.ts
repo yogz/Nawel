@@ -210,13 +210,20 @@ export async function updateAvatarAction(
       .set({ image: result.url, updatedAt: new Date() })
       .where(eq(user.id, session.user.id));
 
-    revalidatePath("/moi");
+    // Revalidate against the *real* app routes, not the user-facing URLs.
+    // `proxy.ts` rewrites `/moi` → `/sortie/moi` and `/@<u>` → `/sortie/profile/<u>`,
+    // so the previous `revalidatePath("/moi")` / `revalidatePath("/@${u}")` calls
+    // were no-ops — they targeted paths that don't exist on the rendered tree.
+    // We also bust `/sortie` (home) since the nav avatar there reads from the
+    // user row.
+    revalidatePath("/sortie");
+    revalidatePath("/sortie/moi");
     const row = await db.query.user.findFirst({
       where: eq(user.id, session.user.id),
       columns: { username: true },
     });
     if (row?.username) {
-      revalidatePath(`/@${row.username}`);
+      revalidatePath(`/sortie/profile/${row.username}`);
     }
     return { message: "Photo mise à jour." };
   } catch (err) {
