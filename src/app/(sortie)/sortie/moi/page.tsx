@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { ArrowLeft, ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -172,24 +172,14 @@ export default async function ProfileSettingsPage() {
 
       {username && (
         <section className="mb-12">
-          <details className="group">
-            <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
-              <span>Lien privé pour tes amis</span>
-              <ChevronRight
-                size={14}
-                strokeWidth={2.2}
-                aria-hidden="true"
-                className="transition-transform duration-200 group-open:rotate-90"
-              />
-            </summary>
-            <div className="mt-4">
-              <InviteLinkManager
-                username={username}
-                token={row?.rsvpInviteToken ?? null}
-                origin={origin}
-              />
-            </div>
-          </details>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+            Lien privé pour tes amis
+          </p>
+          <InviteLinkManager
+            username={username}
+            token={row?.rsvpInviteToken ?? null}
+            origin={origin}
+          />
         </section>
       )}
     </main>

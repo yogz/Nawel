@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Instagram, Music2 } from "lucide-react";
+import { Camera, Check, Instagram, Music2 } from "lucide-react";
 import {
   updateAvatarAction,
   updateProfileDetailsAction,
@@ -99,26 +99,33 @@ function AvatarPicker({ name, image }: { name: string | null; image: string | nu
   return (
     <>
       <div className="flex items-center gap-4">
-        <div className="shrink-0">
-          <UserAvatar name={name} image={shown} size={72} />
-        </div>
-        <div className="flex flex-1 flex-col gap-2">
-          <label
-            className={`inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-full border-2 border-encre-100 bg-white px-3 py-1.5 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 ${
-              pending ? "opacity-50" : ""
-            }`}
+        <label
+          className={`relative shrink-0 cursor-pointer transition-opacity active:scale-[0.98] ${
+            pending ? "opacity-50" : ""
+          }`}
+          aria-label={shown ? "Changer la photo" : "Ajouter une photo"}
+        >
+          <UserAvatar name={name} image={shown} size={80} />
+          <span
+            aria-hidden="true"
+            className="absolute right-0 bottom-0 grid size-7 place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-md)] ring-2 ring-ivoire-100"
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-              onChange={handleChange}
-              disabled={pending}
-              className="sr-only"
-            />
-            {pending ? "Envoi…" : shown ? "Changer la photo" : "Ajouter une photo"}
-          </label>
-          <p className="text-xs text-encre-400">JPEG, PNG, WebP ou HEIC. 2 Mo max.</p>
+            <Camera size={12} strokeWidth={2.4} />
+          </span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+            onChange={handleChange}
+            disabled={pending}
+            className="sr-only"
+          />
+        </label>
+        <div className="flex flex-1 flex-col gap-1">
+          <p className="text-sm font-semibold text-encre-600">
+            {pending ? "Envoi…" : shown ? "Change ta photo" : "Ajoute une photo"}
+          </p>
+          <p className="text-xs text-encre-400">Tape l&rsquo;avatar. JPEG, PNG, WebP, HEIC.</p>
           {state.message && state.message !== "Photo mise à jour." && (
             <p className="text-xs text-destructive">{state.message}</p>
           )}
