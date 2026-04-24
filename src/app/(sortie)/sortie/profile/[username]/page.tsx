@@ -14,6 +14,7 @@ import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
+import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
@@ -81,6 +82,14 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   const { upcoming, past } = await listPublicProfileOutings(row.id);
   const session = await auth.api.getSession({ headers: await headers() });
   const isSelf = session?.user?.id === row.id;
+
+  // Pull out the featured outing for the hero — first upcoming that has
+  // a concrete date. Vote-mode outings without a chosen slot fall back
+  // into the regular card list below (no date → no relative "dans N
+  // jours" to show in the hero). Skipping by `.slice(1)` later keeps
+  // the list from duplicating the hero.
+  const heroOuting = upcoming.find((o) => o.startsAt !== null) ?? null;
+  const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
   // Only load the viewer's existing RSVPs when the token unlocks inline RSVP
   // — otherwise there's nothing to render and the round-trip is wasted.
@@ -152,6 +161,19 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       )}
 
+      {heroOuting && heroOuting.startsAt && (
+        <LiveStatusHero
+          slug={heroOuting.slug}
+          shortId={heroOuting.shortId}
+          title={heroOuting.title}
+          location={heroOuting.location}
+          startsAt={heroOuting.startsAt}
+          confirmed={heroOuting.confirmedCount}
+          heroImageUrl={heroOuting.heroImageUrl}
+          eyebrow={isSelf ? "Ta prochaine sortie" : "Prochaine sortie"}
+        />
+      )}
+
       {isSelf && (upcoming.length > 0 || past.length > 0) && (
         <p className="mb-4 text-xs text-encre-400">
           Glisse une sortie vers la gauche pour l&rsquo;archiver — elle disparaît de ton profil mais
@@ -159,10 +181,10 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </p>
       )}
 
-      {upcoming.length > 0 && (
+      {restUpcoming.length > 0 && (
         <OutingSection
           title="À venir"
-          outings={upcoming}
+          outings={restUpcoming}
           showRsvp={showRsvp}
           myRsvpByOuting={myRsvpByOuting}
           loggedInName={session?.user?.name ?? null}
