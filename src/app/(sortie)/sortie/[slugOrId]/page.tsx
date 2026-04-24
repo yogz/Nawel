@@ -10,6 +10,7 @@ import { debts, purchases } from "@drizzle/sortie-schema";
 import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import { resolveBackLink } from "@/features/sortie/lib/back-link";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
@@ -77,7 +78,9 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
     redirect(`/${canonical}`);
   }
 
-  const session = await auth.api.getSession({ headers: await headers() });
+  const h = await headers();
+  const back = resolveBackLink(h.get("referer"), h.get("host"));
+  const session = await auth.api.getSession({ headers: h });
   const cookieTokenHash = await readParticipantTokenHash();
   const isCreator =
     (session?.user && session.user.id === outing.creatorUserId) ||
@@ -124,11 +127,11 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-6 flex items-center justify-between">
         <Link
-          href="/"
+          href={back.href}
           className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
         >
           <ArrowLeft size={14} strokeWidth={2} />
-          Accueil
+          {back.label}
         </Link>
         {isCreator && (
           <Link
