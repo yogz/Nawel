@@ -25,14 +25,32 @@ import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
 import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
+import { VibePicker } from "../vibe-picker";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
+
+type Vibe = "theatre" | "opera" | "concert" | "cine" | "expo" | "autre";
+
+function isVibe(v: string | null | undefined): v is Vibe {
+  return (
+    v === "theatre" ||
+    v === "opera" ||
+    v === "concert" ||
+    v === "cine" ||
+    v === "expo" ||
+    v === "autre"
+  );
+}
 
 type Draft = {
   title: string;
   venue: string;
   ticketUrl: string;
   heroImageUrl: string;
+  // Cultural category — pre-filled from the `?vibe=` query param when
+  // the user came from a home tile, otherwise chosen on the paste step
+  // via `VibePicker`. Optional, so null stays a valid state.
+  vibe: Vibe | null;
   date: Date | null;
   time: string | null;
   // Custom RSVP deadline override. `null` = use the server-side
@@ -120,6 +138,7 @@ export function CreateWizard({
     venue: "",
     ticketUrl: "",
     heroImageUrl: "",
+    vibe: isVibe(vibeKey) ? vibeKey : null,
     date: null,
     time: "20:00",
     rsvpDeadline: null,
@@ -205,6 +224,9 @@ export function CreateWizard({
     if (draft.heroImageUrl && isSafeHttpUrl(draft.heroImageUrl)) {
       fd.set("heroImageUrl", draft.heroImageUrl);
     }
+    if (draft.vibe) {
+      fd.set("vibe", draft.vibe);
+    }
     // The server schema requires `creatorDisplayName` (min length 1) for
     // both branches — the action ignores it for logged-in users but the
     // Zod validator doesn't know that, so we have to ship *something*.
@@ -264,7 +286,8 @@ export function CreateWizard({
               <PasteStep
                 placeholder={pasterPlaceholder}
                 hint={pasterHint}
-                vibeKey={vibeKey}
+                vibe={draft.vibe}
+                onVibeChange={(vibe) => setDraft((d) => ({ ...d, vibe }))}
                 onParsed={(data) => {
                   // JSON-LD often ships a full startsAt — split it back
                   // into the wizard's date + time fields so step 3 lands
@@ -381,13 +404,15 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
 function PasteStep({
   placeholder,
   hint,
-  vibeKey,
+  vibe,
+  onVibeChange,
   onParsed,
   onManual,
 }: {
   placeholder?: string;
   hint?: string;
-  vibeKey: string | null;
+  vibe: Vibe | null;
+  onVibeChange: (next: Vibe | null) => void;
   onParsed: (data: {
     title: string | null;
     venue: string | null;
@@ -425,18 +450,11 @@ function PasteStep({
     }
   }
 
-  const vibeHint = vibeKey
-    ? `Pour ton ${vibeKey === "theatre" ? "théâtre" : vibeKey === "opera" ? "opéra" : vibeKey === "concert" ? "concert" : vibeKey === "cine" ? "ciné" : vibeKey === "expo" ? "expo" : "sortie"}`
-    : null;
-
   return (
     <section className="flex flex-col gap-8 px-6 py-10">
+      <VibePicker value={vibe} onChange={onVibeChange} />
+
       <div>
-        {vibeHint && (
-          <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
-            {vibeHint}
-          </p>
-        )}
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
           Colle le lien
           <br />
