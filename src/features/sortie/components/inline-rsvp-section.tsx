@@ -124,9 +124,9 @@ export function InlineRsvpSection({
         </button>
         <RemoveRsvpButton
           shortId={shortId}
-          triggerLabel="Me retirer"
+          triggerLabel="Retirer ma réponse"
           iconSize={14}
-          triggerClassName="flex h-11 items-center justify-center gap-1.5 rounded-full border-2 border-encre-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 active:scale-95"
+          triggerClassName="flex h-11 items-center justify-center gap-1.5 truncate rounded-full border-2 border-encre-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 active:scale-95"
         />
         {sheets}
       </div>
