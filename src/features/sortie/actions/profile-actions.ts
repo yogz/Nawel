@@ -199,23 +199,34 @@ export async function updateAvatarAction(
     return { message: "Aucun fichier reçu." };
   }
 
-  const result = await uploadAvatar(file);
-  if (!result.ok) {
-    return { message: result.message };
-  }
+  try {
+    const result = await uploadAvatar(file);
+    if (!result.ok) {
+      return { message: result.message };
+    }
 
-  await db
-    .update(user)
-    .set({ image: result.url, updatedAt: new Date() })
-    .where(eq(user.id, session.user.id));
+    await db
+      .update(user)
+      .set({ image: result.url, updatedAt: new Date() })
+      .where(eq(user.id, session.user.id));
 
-  revalidatePath("/moi");
-  const row = await db.query.user.findFirst({
-    where: eq(user.id, session.user.id),
-    columns: { username: true },
-  });
-  if (row?.username) {
-    revalidatePath(`/@${row.username}`);
+    revalidatePath("/moi");
+    const row = await db.query.user.findFirst({
+      where: eq(user.id, session.user.id),
+      columns: { username: true },
+    });
+    if (row?.username) {
+      revalidatePath(`/@${row.username}`);
+    }
+    return { message: "Photo mise à jour." };
+  } catch (err) {
+    // Catch-all so the client gets a readable message instead of a
+    // generic Next.js 500 with an opaque digest. The stack is logged
+    // server-side for correlation with the digest in Vercel logs.
+    console.error("[updateAvatarAction] unexpected failure", {
+      userId: session.user.id,
+      error: err,
+    });
+    return { message: "Erreur serveur pendant l'upload. Réessaie ou contacte-nous." };
   }
-  return { message: "Photo mise à jour." };
 }

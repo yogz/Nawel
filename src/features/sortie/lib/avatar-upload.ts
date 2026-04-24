@@ -29,8 +29,21 @@ export async function uploadAvatar(file: File): Promise<AvatarUploadResult> {
     return { ok: false, message: "Format non supporté (JPEG, PNG, WebP, HEIC)." };
   }
 
-  const buf = Buffer.from(await file.arrayBuffer());
-  const sniff = await fileTypeFromBuffer(buf);
+  let buf: Buffer;
+  try {
+    buf = Buffer.from(await file.arrayBuffer());
+  } catch (err) {
+    console.error("[avatar-upload] failed to read file buffer", err);
+    return { ok: false, message: "Impossible de lire le fichier — réessaie." };
+  }
+
+  let sniff: Awaited<ReturnType<typeof fileTypeFromBuffer>>;
+  try {
+    sniff = await fileTypeFromBuffer(buf);
+  } catch (err) {
+    console.error("[avatar-upload] file-type sniff failed", err);
+    return { ok: false, message: "Ce format d'image n'est pas supporté." };
+  }
   if (!sniff || !ALLOWED_MIME.has(sniff.mime)) {
     return { ok: false, message: "Le contenu du fichier ne correspond pas à son type déclaré." };
   }
@@ -42,12 +55,23 @@ export async function uploadAvatar(file: File): Promise<AvatarUploadResult> {
     };
   }
 
-  const key = `sortie/avatars/${randomUUID()}.${sniff.ext}`;
-  const blob = await put(key, buf, {
-    access: "public",
-    contentType: sniff.mime,
-    cacheControlMaxAge: 60 * 60 * 24 * 365,
-    addRandomSuffix: false,
-  });
-  return { ok: true, url: blob.url };
+  try {
+    const key = `sortie/avatars/${randomUUID()}.${sniff.ext}`;
+    const blob = await put(key, buf, {
+      access: "public",
+      contentType: sniff.mime,
+      cacheControlMaxAge: 60 * 60 * 24 * 365,
+      addRandomSuffix: false,
+    });
+    return { ok: true, url: blob.url };
+  } catch (err) {
+    // Vercel Blob: invalid/revoked token, quota, network, bucket
+    // misconfig — log the detail server-side, show the user a
+    // sentence they can act on.
+    console.error("[avatar-upload] blob put failed", err);
+    return {
+      ok: false,
+      message: "L'upload a échoué côté serveur. Réessaie dans un instant.",
+    };
+  }
 }
