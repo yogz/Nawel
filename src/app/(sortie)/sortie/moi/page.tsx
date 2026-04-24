@@ -15,6 +15,7 @@ import { InviteLinkManager } from "@/features/sortie/components/invite-link-mana
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
+import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
 
 export const metadata = {
   title: "Mon profil",
@@ -56,7 +57,16 @@ export default async function ProfileSettingsPage() {
 
   const row = await db.query.user.findFirst({
     where: eq(user.id, session.user.id),
-    columns: { id: true, name: true, username: true, rsvpInviteToken: true },
+    columns: {
+      id: true,
+      name: true,
+      image: true,
+      username: true,
+      rsvpInviteToken: true,
+      bio: true,
+      instagramHandle: true,
+      tiktokHandle: true,
+    },
   });
 
   const { upcoming, past } = await listPublicProfileOutings(session.user.id);
@@ -99,6 +109,17 @@ export default async function ProfileSettingsPage() {
           </p>
         )}
       </header>
+
+      <section className="mb-12">
+        <h2 className="mb-4 font-serif text-xl text-encre-700">Photo, bio et réseaux</h2>
+        <ProfileDetailsForm
+          name={row?.name ?? null}
+          image={row?.image ?? null}
+          bio={row?.bio ?? null}
+          instagramHandle={row?.instagramHandle ?? null}
+          tiktokHandle={row?.tiktokHandle ?? null}
+        />
+      </section>
 
       <section className="mb-12">
         <h2 className="mb-4 font-serif text-xl text-encre-700">Nom d&rsquo;utilisateur</h2>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { sql } from "drizzle-orm";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight, Instagram, Music2 } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -38,6 +38,9 @@ async function resolveUser(raw: string) {
       username: true,
       image: true,
       rsvpInviteToken: true,
+      bio: true,
+      instagramHandle: true,
+      tiktokHandle: true,
     },
   });
   return row ?? null;
@@ -183,16 +186,45 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       </nav>
 
-      <header className="mb-10 flex items-center gap-5">
-        <UserAvatar name={row.name} image={row.image} size={72} />
-        <div className="flex-1">
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-            @{row.username}
-          </p>
-          <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
-            {row.name}
-          </h1>
+      <header className="mb-10">
+        <div className="flex items-center gap-5">
+          <UserAvatar name={row.name} image={row.image} size={72} />
+          <div className="flex-1">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+              @{row.username}
+            </p>
+            <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
+              {row.name}
+            </h1>
+          </div>
         </div>
+        {row.bio && (
+          <p className="mt-4 max-w-md text-base leading-relaxed text-encre-500">{row.bio}</p>
+        )}
+        {(row.instagramHandle || row.tiktokHandle) && (
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+            {row.instagramHandle && (
+              <a
+                href={`https://instagram.com/${row.instagramHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+              >
+                <Instagram size={14} strokeWidth={2.2} />@{row.instagramHandle}
+              </a>
+            )}
+            {row.tiktokHandle && (
+              <a
+                href={`https://tiktok.com/@${row.tiktokHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+              >
+                <Music2 size={14} strokeWidth={2.2} />@{row.tiktokHandle}
+              </a>
+            )}
+          </div>
+        )}
       </header>
 
       {upcoming.length === 0 && past.length === 0 && (
