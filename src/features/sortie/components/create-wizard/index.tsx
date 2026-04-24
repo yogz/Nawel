@@ -29,6 +29,16 @@ import { VibePicker } from "../vibe-picker";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
 
+type Mode = "fixed" | "vote";
+
+type DraftSlot = {
+  // Stable id so React can key the list across re-orderings. Generated
+  // fresh per slot, never persisted.
+  id: string;
+  date: Date;
+  time: string;
+};
+
 type Vibe = "theatre" | "opera" | "concert" | "cine" | "expo" | "autre";
 
 function isVibe(v: string | null | undefined): v is Vibe {
@@ -51,8 +61,12 @@ type Draft = {
   // the user came from a home tile, otherwise chosen on the paste step
   // via `VibePicker`. Optional, so null stays a valid state.
   vibe: Vibe | null;
+  // Fixed-mode single slot. Ignored in vote-mode.
   date: Date | null;
   time: string | null;
+  // Vote-mode list of proposed slots. Ignored in fixed-mode. Min 2 /
+  // max 8 enforced at the step level and re-validated on the server.
+  slots: DraftSlot[];
   // Custom RSVP deadline override. `null` = use the server-side
   // auto-computed default (24h / 1w / 2w / 3w before depending on how
   // far out the event is).
@@ -68,6 +82,10 @@ type Props = {
   pasterPlaceholder?: string;
   pasterHint?: string;
   defaultTitle?: string;
+  /** When `"vote"`, the date step proposes multiple slots instead of
+   * a single datetime. Used by `/nouvelle/avance` to expose the
+   * sondage-de-dates flow without duplicating the rest of the wizard. */
+  mode?: Mode;
 };
 
 const STEPS_FIXED: Step[] = ["paste", "confirm", "date", "venue", "name", "commit"];
@@ -130,6 +148,7 @@ export function CreateWizard({
   pasterPlaceholder,
   pasterHint,
   defaultTitle,
+  mode = "fixed",
 }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("paste");
@@ -141,6 +160,7 @@ export function CreateWizard({
     vibe: isVibe(vibeKey) ? vibeKey : null,
     date: null,
     time: "20:00",
+    slots: [],
     rsvpDeadline: null,
     creatorDisplayName: defaultCreatorName ?? "",
     creatorEmail: "",
@@ -205,15 +225,33 @@ export function CreateWizard({
 
   async function publish() {
     setError(null);
-    if (!draft.date || !draft.time) {
-      setError("Choisis une date et une heure.");
-      return;
-    }
-    const startsAt = combineDateAndTime(draft.date, draft.time);
     const fd = new FormData();
     fd.set("title", draft.title);
-    fd.set("mode", "fixed");
-    fd.set("startsAt", toLocalIsoString(startsAt));
+
+    if (mode === "vote") {
+      if (draft.slots.length < 2) {
+        setError("Propose au moins deux créneaux.");
+        return;
+      }
+      // Server schema expects a JSON-encoded array of
+      // { startsAt, position }. Position is derived from the order the
+      // creator added them, preserved via the array index.
+      const slotsJson = draft.slots.map((s, idx) => ({
+        startsAt: toLocalIsoString(combineDateAndTime(s.date, s.time)),
+        position: idx,
+      }));
+      fd.set("mode", "vote");
+      fd.set("timeslots", JSON.stringify(slotsJson));
+    } else {
+      if (!draft.date || !draft.time) {
+        setError("Choisis une date et une heure.");
+        return;
+      }
+      const startsAt = combineDateAndTime(draft.date, draft.time);
+      fd.set("mode", "fixed");
+      fd.set("startsAt", toLocalIsoString(startsAt));
+    }
+
     if (draft.rsvpDeadline) {
       fd.set("rsvpDeadline", toLocalIsoString(draft.rsvpDeadline));
     }
@@ -348,7 +386,16 @@ export function CreateWizard({
                 onNext={() => advanceFrom("title")}
               />
             )}
-            {step === "date" && (
+            {step === "date" && mode === "vote" && (
+              <SlotsStep
+                slots={draft.slots}
+                deadline={draft.rsvpDeadline}
+                onSlotsChange={(slots) => setDraft((d) => ({ ...d, slots }))}
+                onDeadlineChange={(rsvpDeadline) => setDraft((d) => ({ ...d, rsvpDeadline }))}
+                onNext={() => advanceFrom("date")}
+              />
+            )}
+            {step === "date" && mode !== "vote" && (
               <DateStep
                 date={draft.date}
                 time={draft.time}
@@ -793,6 +840,208 @@ function DateStep({
           Ça marche
           <ArrowRight size={18} className="ml-2" />
         </Button>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Vote-mode variant of the date step — the creator proposes 2–8
+ * timeslots, and participants vote their availability on each.
+ * Reuses SortieCalendar + TimeDrum (same components as DateStep) to
+ * avoid introducing a second date-picker vocabulary. Slots are added
+ * via an inline "Ajouter un créneau" panel; the existing list sits
+ * above as compact cards with a trash button per row.
+ *
+ * Deadline computation uses the earliest proposed slot — closing the
+ * poll the moment the first-possible date arrives is what the server
+ * does by default, and matches the creator's intuition ("avant que
+ * quelqu'un doive déjà partir").
+ */
+function SlotsStep({
+  slots,
+  deadline,
+  onSlotsChange,
+  onDeadlineChange,
+  onNext,
+}: {
+  slots: DraftSlot[];
+  deadline: Date | null;
+  onSlotsChange: (next: DraftSlot[]) => void;
+  onDeadlineChange: (deadline: Date | null) => void;
+  onNext: () => void;
+}) {
+  const [addOpen, setAddOpen] = useState(slots.length === 0);
+  const [pendingDate, setPendingDate] = useState<Date | null>(null);
+  const [pendingTime, setPendingTime] = useState<string | null>("20:00");
+
+  const canAdd = slots.length < 8;
+  const hasEnough = slots.length >= 2;
+
+  // Earliest slot drives the deadline section — we don't expose a
+  // deadline control until the creator added at least one slot so the
+  // auto-preview has something to base the offset on.
+  const earliest = useMemo(() => {
+    if (slots.length === 0) {
+      return null;
+    }
+    return slots
+      .map((s) => combineDateAndTime(s.date, s.time))
+      .reduce((min, cur) => (cur.getTime() < min.getTime() ? cur : min));
+  }, [slots]);
+
+  function commitPending() {
+    if (!pendingDate || !pendingTime) {
+      return;
+    }
+    const next: DraftSlot = {
+      id:
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      date: pendingDate,
+      time: pendingTime,
+    };
+    onSlotsChange([...slots, next]);
+    setPendingDate(null);
+    setPendingTime("20:00");
+    setAddOpen(false);
+  }
+
+  function removeSlot(id: string) {
+    onSlotsChange(slots.filter((s) => s.id !== id));
+  }
+
+  return (
+    <section className="flex min-h-full flex-col gap-6 px-6 py-10">
+      <div>
+        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
+          <Calendar size={12} />
+          Sondage
+        </p>
+        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+          Propose tes
+          <br />
+          créneaux.
+        </h1>
+        <p className="mt-3 text-base text-encre-500">
+          Les gens voteront ce qui leur va. Deux minimum, huit max.
+        </p>
+      </div>
+
+      {slots.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {slots.map((s) => {
+            const combined = combineDateAndTime(s.date, s.time);
+            return (
+              <li
+                key={s.id}
+                className="flex items-center justify-between gap-3 rounded-2xl border-2 border-encre-100 bg-white p-3"
+              >
+                <div className="flex items-center gap-2 text-sm font-semibold text-encre-700">
+                  <CalendarDays size={14} className="text-bordeaux-600" />
+                  {new Intl.DateTimeFormat("fr-FR", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    timeZone: "Europe/Paris",
+                  })
+                    .format(combined)
+                    .replace(":", "h")}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeSlot(s.id)}
+                  aria-label="Retirer ce créneau"
+                  className="grid size-8 shrink-0 place-items-center rounded-full text-encre-400 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <ArrowLeft size={14} strokeWidth={2.2} aria-hidden="true" className="rotate-45" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {addOpen && canAdd && (
+        <div className="flex flex-col gap-3 rounded-3xl border-2 border-bordeaux-100 bg-white p-4">
+          <SortieCalendar selected={pendingDate} onSelect={(d) => setPendingDate(d)} />
+          {pendingDate && (
+            <>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-encre-400">Heure</p>
+              <TimeDrum selected={pendingTime} onSelect={setPendingTime} />
+            </>
+          )}
+          <div className="flex items-center justify-end gap-2 pt-2">
+            {slots.length > 0 && (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setAddOpen(false);
+                  setPendingDate(null);
+                  setPendingTime("20:00");
+                }}
+                className="text-sm"
+              >
+                Annuler
+              </Button>
+            )}
+            <Button
+              type="button"
+              onClick={commitPending}
+              disabled={!pendingDate || !pendingTime}
+              className="text-sm"
+            >
+              Ajouter ce créneau
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!addOpen && canAdd && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setAddOpen(true)}
+          className="h-12 w-full rounded-full border-2 border-dashed border-bordeaux-300 text-sm font-bold text-bordeaux-700"
+        >
+          + Ajouter un créneau
+        </Button>
+      )}
+
+      {!canAdd && (
+        <p className="text-xs text-encre-400">
+          Huit créneaux max — retires-en un pour en ajouter un autre.
+        </p>
+      )}
+
+      {earliest && (
+        <DeadlineSection
+          startsAt={earliest}
+          deadline={deadline}
+          onDeadlineChange={onDeadlineChange}
+        />
+      )}
+
+      <div className="mt-auto">
+        <Button
+          type="button"
+          size="lg"
+          disabled={!hasEnough || addOpen}
+          onClick={onNext}
+          className="h-16 w-full rounded-full text-base font-bold"
+        >
+          Ça marche
+          <ArrowRight size={18} className="ml-2" />
+        </Button>
+        {!hasEnough && !addOpen && (
+          <p className="mt-2 text-center text-xs text-encre-400">
+            Il en faut au moins deux pour que le sondage ait du sens.
+          </p>
+        )}
       </div>
     </section>
   );
