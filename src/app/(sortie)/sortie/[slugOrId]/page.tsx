@@ -123,8 +123,17 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
 
+  // The RSVP picker gets pinned to the bottom of the viewport when the
+  // visitor hasn't answered yet — it's the single most important action
+  // on the page, and burying it below the participant list + deadline
+  // badge costs conversion on long guest lists. Once answered, the
+  // prompt renders inline (chips + modifier / retirer links) since the
+  // action becomes secondary.
+  const shouldStickRsvp =
+    !deadlinePassed && !me?.response && !(outing.mode === "vote" && !outing.chosenTimeslotId);
+
   return (
-    <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
+    <main className={`mx-auto max-w-xl px-6 pt-10 ${shouldStickRsvp ? "pb-44" : "pb-24"}`}>
       <nav className="mb-6 flex items-center justify-between">
         <Link
           href={back.href}
@@ -195,50 +204,49 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         />
       )}
 
-      {!deadlinePassed && (
+      {!deadlinePassed && outing.mode === "vote" && !outing.chosenTimeslotId && (
+        <div className="mt-8 flex justify-center">
+          <VoteRsvpSheet
+            shortId={outing.shortId}
+            timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
+            existingVotes={
+              me
+                ? Object.fromEntries(
+                    outing.timeslots.flatMap((t) =>
+                      t.votes
+                        .filter((v) => v.participantId === me.id)
+                        .map((v) => [t.id, v.available])
+                    )
+                  )
+                : {}
+            }
+            existingName={me?.anonName ?? session?.user?.name ?? undefined}
+            existingEmail={me?.anonEmail ?? undefined}
+            hasVoted={Boolean(
+              me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
+            )}
+          />
+        </div>
+      )}
+
+      {!deadlinePassed && !(outing.mode === "vote" && !outing.chosenTimeslotId) && me?.response && (
         <div className="mt-8">
-          {outing.mode === "vote" && !outing.chosenTimeslotId ? (
-            <div className="flex justify-center">
-              <VoteRsvpSheet
-                shortId={outing.shortId}
-                timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
-                existingVotes={
-                  me
-                    ? Object.fromEntries(
-                        outing.timeslots.flatMap((t) =>
-                          t.votes
-                            .filter((v) => v.participantId === me.id)
-                            .map((v) => [t.id, v.available])
-                        )
-                      )
-                    : {}
-                }
-                existingName={me?.anonName ?? session?.user?.name ?? undefined}
-                existingEmail={me?.anonEmail ?? undefined}
-                hasVoted={Boolean(
-                  me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
-                )}
-              />
-            </div>
-          ) : (
-            <RsvpPrompt
-              shortId={outing.shortId}
-              existingResponse={
-                me &&
-                (me.response === "yes" || me.response === "no" || me.response === "handle_own")
-                  ? (me.response as "yes" | "no" | "handle_own")
-                  : null
-              }
-              existingName={me?.anonName ?? undefined}
-              existingExtraAdults={me?.extraAdults ?? 0}
-              existingExtraChildren={me?.extraChildren ?? 0}
-              existingEmail={me?.anonEmail ?? undefined}
-              loggedInName={session?.user?.name ?? undefined}
-              outingTitle={outing.title}
-              outingUrl={`${PUBLIC_BASE}/${canonical}`}
-              outingDate={outing.fixedDatetime}
-            />
-          )}
+          <RsvpPrompt
+            shortId={outing.shortId}
+            existingResponse={
+              me.response === "yes" || me.response === "no" || me.response === "handle_own"
+                ? (me.response as "yes" | "no" | "handle_own")
+                : null
+            }
+            existingName={me.anonName ?? undefined}
+            existingExtraAdults={me.extraAdults ?? 0}
+            existingExtraChildren={me.extraChildren ?? 0}
+            existingEmail={me.anonEmail ?? undefined}
+            loggedInName={session?.user?.name ?? undefined}
+            outingTitle={outing.title}
+            outingUrl={`${PUBLIC_BASE}/${canonical}`}
+            outingDate={outing.fixedDatetime}
+          />
         </div>
       )}
 
@@ -278,6 +286,32 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       {!isCreator && outing.creatorAnonEmail && (
         <div className="mt-8 flex justify-center">
           <ReclaimForm shortId={outing.shortId} />
+        </div>
+      )}
+
+      {shouldStickRsvp && (
+        <div
+          className="fixed inset-x-0 z-40 border-t border-encre-700/5 bg-[var(--sortie-cream)]/95 backdrop-blur-sm"
+          style={{
+            bottom: 0,
+            paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+            paddingTop: "0.75rem",
+          }}
+        >
+          <div className="mx-auto flex max-w-xl flex-col gap-2 px-6">
+            <RsvpPrompt
+              shortId={outing.shortId}
+              existingResponse={null}
+              existingName={me?.anonName ?? undefined}
+              existingExtraAdults={me?.extraAdults ?? 0}
+              existingExtraChildren={me?.extraChildren ?? 0}
+              existingEmail={me?.anonEmail ?? undefined}
+              loggedInName={session?.user?.name ?? undefined}
+              outingTitle={outing.title}
+              outingUrl={`${PUBLIC_BASE}/${canonical}`}
+              outingDate={outing.fixedDatetime}
+            />
+          </div>
         </div>
       )}
     </main>
