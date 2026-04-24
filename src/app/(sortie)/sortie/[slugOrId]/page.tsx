@@ -11,7 +11,8 @@ import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { resolveBackLink } from "@/features/sortie/lib/back-link";
-import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { buildOutingShareMeta } from "@/features/sortie/lib/outing-share-meta";
+import { getCreatorFirstName } from "@/features/sortie/lib/creator-display";
 import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
@@ -36,24 +37,50 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Sortie" };
   }
   const outing = await getOutingByShortId(shortId);
-  if (!outing || outing.status === "cancelled") {
+  if (!outing) {
     return { title: "Sortie" };
   }
-  const dateLine = outing.fixedDatetime
-    ? formatOutingDateConversational(outing.fixedDatetime)
-    : null;
-  const description = [dateLine, outing.location].filter(Boolean).join(" · ");
+
+  const meta = buildOutingShareMeta(outing);
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  const url = `${PUBLIC_BASE}/${canonical}`;
+  // Cache-bust the OG image on every RSVP so the live social-proof count
+  // is reflected when the link is re-shared. WhatsApp caches aggressively
+  // but respects a changed query string as a new asset.
+  const ogImageUrl = `${PUBLIC_BASE}/${canonical}/opengraph-image?v=${meta.confirmedCount}`;
+  const ogAlt = meta.isCancelled
+    ? "Sortie annulée"
+    : `${outing.title}${meta.firstName ? ` — invitation de ${meta.firstName}` : ""}`;
 
   return {
-    title: outing.title,
-    description: description || "Une sortie à partager entre amis.",
+    title: meta.ogTitle,
+    description: meta.ogDescription || undefined,
+    // `noindex` protects search visibility only — WhatsApp / iMessage / Signal
+    // ignore it and will still fetch the preview. Confidentiality lives in the
+    // opaque `shortId`, not in robots.
     robots: { index: false, follow: false },
     openGraph: {
-      title: outing.title,
-      description: description || undefined,
-      type: "article",
+      title: meta.ogTitle,
+      description: meta.ogDescription || undefined,
+      url,
+      type: "website",
       locale: "fr_FR",
       siteName: "Sortie",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: ogAlt,
+          type: "image/png",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: meta.ogTitle,
+      description: meta.ogDescription || undefined,
+      images: [ogImageUrl],
     },
   };
 }
@@ -122,6 +149,9 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
     : null;
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
+  // Creator's first name for the WhatsApp share opening — "Léa t'invite : …".
+  // Shared between the post-creation banner and the regular share row.
+  const creatorFirstName = getCreatorFirstName(outing);
 
   // The RSVP picker gets pinned to the bottom of the viewport when the
   // visitor hasn't answered yet — it's the single most important action
@@ -157,6 +187,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           url={`${PUBLIC_BASE}/${canonical}`}
           title={outing.title}
           startsAt={outing.fixedDatetime}
+          firstName={creatorFirstName}
         />
       )}
 
@@ -166,6 +197,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             url={`${PUBLIC_BASE}/${canonical}`}
             title={outing.title}
             startsAt={outing.fixedDatetime}
+            firstName={creatorFirstName}
           />
         </div>
       )}

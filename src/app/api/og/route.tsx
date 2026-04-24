@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 
 export const runtime = "edge";
 
@@ -233,6 +233,14 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        // Aggressive CDN caching — WhatsApp caches previews for days and
+        // doesn't expose a bust mechanism, so re-scrapes are rare. Letting
+        // Vercel Edge cache for a year (s-maxage) keeps OG generation from
+        // running per view. `max-age=3600` leaves browser-side caching on
+        // the hour for non-CDN viewers (debug tools, link checkers).
+        "cache-control": "public, max-age=3600, s-maxage=31536000, immutable",
+      },
     }
   );
 }

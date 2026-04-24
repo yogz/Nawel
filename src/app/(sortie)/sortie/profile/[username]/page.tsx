@@ -12,6 +12,7 @@ import {
   listPublicProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import { formatDateTimeForShare } from "@/features/sortie/lib/date-fr";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
@@ -45,14 +46,71 @@ async function resolveUser(raw: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const row = await resolveUser(username);
-  if (!row) {
+  if (!row || !row.username) {
     return { title: "Profil" };
   }
+
+  // Fetch the next outing inline so the description can be concrete
+  // ("Prochaine : Raclette samedi 20h30 · 8 déjà partants") rather than
+  // the generic "Les sorties de @leamartin" which reads as vitrine-morte.
+  const { upcoming, past } = await listPublicProfileOutings(row.id);
+  const next = upcoming.find((o) => o.startsAt !== null) ?? upcoming[0] ?? null;
+
+  const url = `${PUBLIC_BASE}/@${row.username}`;
+  const ogImageUrl = `${PUBLIC_BASE}/@${row.username}/opengraph-image?v=${upcoming.length}-${past.length}`;
+
+  const title = `${row.name} organise des sorties`;
+  const description = buildProfileDescription({ next, pastCount: past.length });
+
   return {
-    title: `${row.name} · Sortie`,
-    description: `Les sorties de @${row.username}`,
+    title,
+    description,
     robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "profile",
+      locale: "fr_FR",
+      siteName: "Sortie",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${row.name} sur Sortie`,
+          type: "image/png",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
+}
+
+function buildProfileDescription(args: {
+  next: { title: string; startsAt: Date | null; confirmedCount: number } | null;
+  pastCount: number;
+}): string {
+  if (args.next) {
+    const parts: string[] = [`Prochaine : ${args.next.title}`];
+    if (args.next.startsAt) {
+      parts.push(formatDateTimeForShare(args.next.startsAt));
+    }
+    if (args.next.confirmedCount >= 3) {
+      parts.push(`${args.next.confirmedCount} déjà partants`);
+    }
+    return parts.join(" · ");
+  }
+  if (args.pastCount > 0) {
+    const label = args.pastCount === 1 ? "sortie passée" : "sorties passées";
+    return `${args.pastCount} ${label} · la prochaine arrive bientôt.`;
+  }
+  return "Les prochaines sorties arriveront ici.";
 }
 
 export default async function PublicProfilePage({ params, searchParams }: Props) {

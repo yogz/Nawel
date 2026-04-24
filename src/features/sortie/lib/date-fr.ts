@@ -66,3 +66,73 @@ export function toDateTimeLocalValue(date: Date): string {
   const get = (t: Intl.DateTimeFormatPart["type"]) => parts.find((p) => p.type === t)?.value ?? "";
   return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
 }
+
+const weekdayOnlyFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  timeZone: TZ,
+});
+
+const dayMonthNumericFormatter = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  timeZone: TZ,
+});
+
+const weekdayDayMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: TZ,
+});
+
+/** "20h30" — time only, French conventions */
+export function formatTimeOnly(date: Date): string {
+  return timeFormatter.format(date).replace(":", "h");
+}
+
+/**
+ * Date phrasing for share previews, optimised for conversion (Meetup +18% RSVP
+ * on relative phrasing within a 7-day window).
+ *
+ * J-0/+2  → "ce soir" / "demain" / "après-demain"
+ * J+3/+7  → "ce samedi" (weekday only, feels "this week")
+ * J+8/+90 → "samedi 3 mai" (weekday + date, intimate anchoring)
+ * J>90    → "3 mai" (weekday name becomes noise at distance)
+ */
+export function formatRelativeDateForShare(date: Date, now: Date = new Date()): string {
+  const daysOut = Math.floor((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  if (daysOut < 0) {
+    // Past dates: fall through to absolute — share previews of past sorties
+    // are an edge case (archived links) and relative language misleads there.
+    return weekdayDayMonthFormatter.format(date);
+  }
+  if (daysOut === 0) {
+    return "ce soir";
+  }
+  if (daysOut === 1) {
+    return "demain";
+  }
+  if (daysOut === 2) {
+    return "après-demain";
+  }
+  if (daysOut <= 7) {
+    return `ce ${weekdayOnlyFormatter.format(date)}`;
+  }
+  if (daysOut <= 90) {
+    return weekdayDayMonthFormatter.format(date);
+  }
+  return dayMonthNumericFormatter.format(date);
+}
+
+/**
+ * Compact date + time for share description lines:
+ * "Samedi 20h30" when near, "Samedi 3 mai · 20h30" when far.
+ * Keeps `og:description` dense: heure = projection, date = situation.
+ */
+export function formatDateTimeForShare(date: Date, now: Date = new Date()): string {
+  const rel = formatRelativeDateForShare(date, now);
+  const time = formatTimeOnly(date);
+  // Capitalise first letter — "ce samedi" → "Ce samedi" at line start.
+  const capitalised = rel.charAt(0).toUpperCase() + rel.slice(1);
+  return `${capitalised} · ${time}`;
+}
