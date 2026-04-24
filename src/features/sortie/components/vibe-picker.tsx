@@ -1,15 +1,6 @@
 "use client";
 
-export type Vibe = "theatre" | "opera" | "concert" | "cine" | "expo" | "autre";
-
-export const VIBE_OPTIONS: Array<{ value: Vibe; label: string }> = [
-  { value: "theatre", label: "Théâtre" },
-  { value: "opera", label: "Opéra" },
-  { value: "concert", label: "Concert" },
-  { value: "cine", label: "Ciné" },
-  { value: "expo", label: "Expo" },
-  { value: "autre", label: "Autre" },
-];
+import { VIBE_OPTIONS, type Vibe } from "../lib/vibe-config";
 
 type Props = {
   value: Vibe | null;

@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -26,10 +25,9 @@ import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 import { VibePicker } from "../vibe-picker";
+import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
-
-type Mode = "fixed" | "vote";
 
 type DraftSlot = {
   // Stable id so React can key the list across re-orderings. Generated
@@ -38,19 +36,6 @@ type DraftSlot = {
   date: Date;
   time: string;
 };
-
-type Vibe = "theatre" | "opera" | "concert" | "cine" | "expo" | "autre";
-
-function isVibe(v: string | null | undefined): v is Vibe {
-  return (
-    v === "theatre" ||
-    v === "opera" ||
-    v === "concert" ||
-    v === "cine" ||
-    v === "expo" ||
-    v === "autre"
-  );
-}
 
 type Draft = {
   title: string;
@@ -61,11 +46,13 @@ type Draft = {
   // the user came from a home tile, otherwise chosen on the paste step
   // via `VibePicker`. Optional, so null stays a valid state.
   vibe: Vibe | null;
-  // Fixed-mode single slot. Ignored in vote-mode.
+  // Pending picker draft on the when-step. Merged into `slots` at
+  // publish time (so a single filled picker = fixed-mode sortie).
   date: Date | null;
   time: string | null;
-  // Vote-mode list of proposed slots. Ignored in fixed-mode. Min 2 /
-  // max 8 enforced at the step level and re-validated on the server.
+  // Committed alternative slots from the when-step ghost-row. 0–7
+  // entries — the pending picker contributes the 8th at publish.
+  // Final count decides the mode: 1 slot → fixed, 2+ → vote.
   slots: DraftSlot[];
   // Custom RSVP deadline override. `null` = use the server-side
   // auto-computed default (24h / 1w / 2w / 3w before depending on how
@@ -79,13 +66,7 @@ type Props = {
   isLoggedIn: boolean;
   defaultCreatorName?: string;
   vibeKey: string | null;
-  pasterPlaceholder?: string;
-  pasterHint?: string;
   defaultTitle?: string;
-  /** When `"vote"`, the date step proposes multiple slots instead of
-   * a single datetime. Used by `/nouvelle/avance` to expose the
-   * sondage-de-dates flow without duplicating the rest of the wizard. */
-  mode?: Mode;
 };
 
 const STEPS_FIXED: Step[] = ["paste", "confirm", "date", "venue", "name", "commit"];
@@ -136,20 +117,13 @@ function isValidEmail(raw: string): boolean {
  * "next" step (computed by `stepsFor` based on prior inputs). The URL
  * stays on /nouvelle the whole time; back-button exits the flow.
  *
- * Vote-mode (sondage de dates) is intentionally not here — it's
- * preserved at /nouvelle/avance. The 80/20 says fixed mode is the
- * overwhelming default, and every mode toggle in the wizard would be a
- * form-feel regression.
+ * Vote-mode (sondage de dates) is not a separate route or toggle — on
+ * the when-step, tapping "Proposer une autre date" commits the current
+ * picker into a slot list and lets the user add up to 7 more. Publish
+ * derives the mode from the final count (1 → fixed, 2+ → vote), so the
+ * user never sees the word "sondage" until the invite is sent.
  */
-export function CreateWizard({
-  isLoggedIn,
-  defaultCreatorName,
-  vibeKey,
-  pasterPlaceholder,
-  pasterHint,
-  defaultTitle,
-  mode = "fixed",
-}: Props) {
+export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultTitle }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("paste");
   const [draft, setDraft] = useState<Draft>({
@@ -228,28 +202,38 @@ export function CreateWizard({
     const fd = new FormData();
     fd.set("title", draft.title);
 
-    if (mode === "vote") {
-      if (draft.slots.length < 2) {
-        setError("Propose au moins deux créneaux.");
-        return;
-      }
+    // Merge the picker's pending draft into the committed slots — the
+    // WhenStep keeps them separate so inline editing stays smooth, but
+    // at publish time they're all just "slots to submit". Mode is
+    // derived from the final count: 1 → fixed, 2+ → vote. The user
+    // never chose a mode.
+    const allSlots: Array<{ date: Date; time: string }> = draft.slots.map((s) => ({
+      date: s.date,
+      time: s.time,
+    }));
+    if (draft.date && draft.time) {
+      allSlots.push({ date: draft.date, time: draft.time });
+    }
+
+    if (allSlots.length === 0) {
+      setError("Choisis une date et une heure.");
+      return;
+    }
+
+    if (allSlots.length === 1) {
+      const only = allSlots[0]!;
+      const startsAt = combineDateAndTime(only.date, only.time);
+      fd.set("mode", "fixed");
+      fd.set("startsAt", toLocalIsoString(startsAt));
+    } else {
       // Server schema expects a JSON-encoded array of
-      // { startsAt, position }. Position is derived from the order the
-      // creator added them, preserved via the array index.
-      const slotsJson = draft.slots.map((s, idx) => ({
+      // { startsAt, position }. Position preserves the add order.
+      const slotsJson = allSlots.map((s, idx) => ({
         startsAt: toLocalIsoString(combineDateAndTime(s.date, s.time)),
         position: idx,
       }));
       fd.set("mode", "vote");
       fd.set("timeslots", JSON.stringify(slotsJson));
-    } else {
-      if (!draft.date || !draft.time) {
-        setError("Choisis une date et une heure.");
-        return;
-      }
-      const startsAt = combineDateAndTime(draft.date, draft.time);
-      fd.set("mode", "fixed");
-      fd.set("startsAt", toLocalIsoString(startsAt));
     }
 
     if (draft.rsvpDeadline) {
@@ -327,8 +311,6 @@ export function CreateWizard({
           >
             {step === "paste" && (
               <PasteStep
-                placeholder={pasterPlaceholder}
-                hint={pasterHint}
                 vibe={draft.vibe}
                 onVibeChange={(vibe) => setDraft((d) => ({ ...d, vibe }))}
                 onParsed={(data) => {
@@ -386,22 +368,15 @@ export function CreateWizard({
                 onNext={() => advanceFrom("title")}
               />
             )}
-            {step === "date" && mode === "vote" && (
-              <SlotsStep
+            {step === "date" && (
+              <WhenStep
                 slots={draft.slots}
+                pendingDate={draft.date}
+                pendingTime={draft.time}
                 deadline={draft.rsvpDeadline}
                 onSlotsChange={(slots) => setDraft((d) => ({ ...d, slots }))}
-                onDeadlineChange={(rsvpDeadline) => setDraft((d) => ({ ...d, rsvpDeadline }))}
-                onNext={() => advanceFrom("date")}
-              />
-            )}
-            {step === "date" && mode !== "vote" && (
-              <DateStep
-                date={draft.date}
-                time={draft.time}
-                deadline={draft.rsvpDeadline}
-                onDateChange={(date) => setDraft((d) => ({ ...d, date }))}
-                onTimeChange={(time) => setDraft((d) => ({ ...d, time }))}
+                onPendingDateChange={(date) => setDraft((d) => ({ ...d, date }))}
+                onPendingTimeChange={(time) => setDraft((d) => ({ ...d, time }))}
                 onDeadlineChange={(rsvpDeadline) => setDraft((d) => ({ ...d, rsvpDeadline }))}
                 onNext={() => advanceFrom("date")}
               />
@@ -463,15 +438,11 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
 }
 
 function PasteStep({
-  placeholder,
-  hint,
   vibe,
   onVibeChange,
   onParsed,
   onTitleOnly,
 }: {
-  placeholder?: string;
-  hint?: string;
   vibe: Vibe | null;
   onVibeChange: (next: Vibe | null) => void;
   onParsed: (data: {
@@ -486,6 +457,14 @@ function PasteStep({
   const [value, setValue] = useState("");
   const [pending, setPending] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // Tapping a vibe chip retunes the placeholder + hint to match the
+  // category, so the examples in the input track what the user just said
+  // they're planning. Falls back to generic copy when no vibe is picked
+  // (or "autre", which has no dedicated config).
+  const vibeConfig = vibe ? (VIBE_CONFIG[vibe] ?? null) : null;
+  const placeholder = vibeConfig?.pasterPlaceholder;
+  const hint = vibeConfig?.pasterHint;
 
   const trimmed = value.trim();
   // Treat anything starting with http(s) as a ticket URL to parse.
@@ -562,35 +541,30 @@ function PasteStep({
 
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
-      <div className="flex flex-col gap-3">
-        <Button
-          type="button"
-          size="lg"
-          disabled={pending || !trimmed}
-          onClick={submit}
-          className="h-16 rounded-full text-base font-bold"
-        >
-          {pending ? (
-            <span className="inline-flex items-center gap-2">
-              <Loader2 size={16} className="animate-spin" />
-              Lecture du lien…
-            </span>
-          ) : looksLikeUrl ? (
-            <span className="inline-flex items-center gap-2">
-              <Wand2 size={16} />
-              Remplir automatiquement
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-2">
-              <ArrowRight size={16} />
-              Continuer
-            </span>
-          )}
-        </Button>
-        <div className="flex justify-center">
-          <AdvancedModeLink vibe={vibe} />
-        </div>
-      </div>
+      <Button
+        type="button"
+        size="lg"
+        disabled={pending || !trimmed}
+        onClick={submit}
+        className="h-16 rounded-full text-base font-bold"
+      >
+        {pending ? (
+          <span className="inline-flex items-center gap-2">
+            <Loader2 size={16} className="animate-spin" />
+            Lecture du lien…
+          </span>
+        ) : looksLikeUrl ? (
+          <span className="inline-flex items-center gap-2">
+            <Wand2 size={16} />
+            Remplir automatiquement
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-2">
+            <ArrowRight size={16} />
+            Continuer
+          </span>
+        )}
+      </Button>
     </section>
   );
 }
@@ -760,135 +734,62 @@ function TitleStep({
   );
 }
 
-function DateStep({
-  date,
-  time,
-  deadline,
-  onDateChange,
-  onTimeChange,
-  onDeadlineChange,
-  onNext,
-}: {
-  date: Date | null;
-  time: string | null;
-  deadline: Date | null;
-  onDateChange: (date: Date) => void;
-  onTimeChange: (time: string) => void;
-  onDeadlineChange: (deadline: Date | null) => void;
-  onNext: () => void;
-}) {
-  // Calendar rendered inline — the date is the main artefact of this
-  // step, hiding it behind a popover added an empty tap and didn't help
-  // anyone. The Shadcn Calendar grid fits in ~300px of height, which is
-  // fine on mobile below the title.
-
-  return (
-    <section className="flex min-h-full flex-col gap-6 px-6 py-10">
-      <div>
-        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
-          <Calendar size={12} />
-          Quand
-        </p>
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          C&rsquo;est quand ?
-        </h1>
-      </div>
-
-      <div className="rounded-3xl border-2 border-bordeaux-100 bg-white p-4">
-        <SortieCalendar selected={date} onSelect={(d) => onDateChange(d)} />
-      </div>
-
-      {date ? (
-        <p className="inline-flex items-center gap-2 self-start rounded-full bg-bordeaux-50 px-4 py-2 text-sm font-bold text-bordeaux-700">
-          <CalendarDays size={14} />
-          {new Intl.DateTimeFormat("fr-FR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            timeZone: "Europe/Paris",
-          }).format(date)}
-        </p>
-      ) : (
-        <p className="text-sm text-encre-400">Choisis une date pour continuer.</p>
-      )}
-
-      {date && (
-        <div className="mt-2">
-          <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
-            Heure
-          </p>
-          <TimeDrum selected={time} onSelect={onTimeChange} />
-        </div>
-      )}
-
-      {date && time && (
-        <DeadlineSection
-          startsAt={combineDateAndTime(date, time)}
-          deadline={deadline}
-          onDeadlineChange={onDeadlineChange}
-        />
-      )}
-
-      <div className="mt-auto">
-        <Button
-          type="button"
-          size="lg"
-          disabled={!date || !time}
-          onClick={onNext}
-          className="h-16 w-full rounded-full text-base font-bold"
-        >
-          Ça marche
-          <ArrowRight size={18} className="ml-2" />
-        </Button>
-      </div>
-    </section>
-  );
-}
-
 /**
- * Vote-mode variant of the date step — the creator proposes 2–8
- * timeslots, and participants vote their availability on each.
- * Reuses SortieCalendar + TimeDrum (same components as DateStep) to
- * avoid introducing a second date-picker vocabulary. Slots are added
- * via an inline "Ajouter un créneau" panel; the existing list sits
- * above as compact cards with a trash button per row.
+ * Unified "when" step. Progressive-disclosure pattern borrowed from
+ * Apple Reminders / Rallly / Lu.ma: the user picks a single date +
+ * time like any event, and only if they tap the subtle "Proposer une
+ * autre date" row does the step quietly switch into multi-slot mode
+ * (which the publish action then translates into vote-mode on the
+ * server). The words "sondage" / "vote" never surface — mode is
+ * derived from how many slots end up committed.
  *
- * Deadline computation uses the earliest proposed slot — closing the
- * poll the moment the first-possible date arrives is what the server
- * does by default, and matches the creator's intuition ("avant que
- * quelqu'un doive déjà partir").
+ * State shape:
+ *   - `slots` = committed creneaux (0…8)
+ *   - `pendingDate` / `pendingTime` = the picker's current draft,
+ *     merged into slots at publish time if still non-null.
+ *   - `pickerOpen` = whether the inline picker is visible. Always
+ *     true at 0 slots; user-toggled once at least one slot exists.
  */
-function SlotsStep({
+function WhenStep({
   slots,
+  pendingDate,
+  pendingTime,
   deadline,
   onSlotsChange,
+  onPendingDateChange,
+  onPendingTimeChange,
   onDeadlineChange,
   onNext,
 }: {
   slots: DraftSlot[];
+  pendingDate: Date | null;
+  pendingTime: string | null;
   deadline: Date | null;
   onSlotsChange: (next: DraftSlot[]) => void;
+  onPendingDateChange: (date: Date | null) => void;
+  onPendingTimeChange: (time: string | null) => void;
   onDeadlineChange: (deadline: Date | null) => void;
   onNext: () => void;
 }) {
-  const [addOpen, setAddOpen] = useState(slots.length === 0);
-  const [pendingDate, setPendingDate] = useState<Date | null>(null);
-  const [pendingTime, setPendingTime] = useState<string | null>("20:00");
+  const [pickerOpen, setPickerOpen] = useState(slots.length === 0);
 
-  const canAdd = slots.length < 8;
-  const hasEnough = slots.length >= 2;
+  const canAddMore = slots.length < 8;
+  const pickerFilled = pendingDate !== null && pendingTime !== null;
+  const canProceed = slots.length >= 1 || pickerFilled;
 
-  // Earliest slot drives the deadline section — we don't expose a
-  // deadline control until the creator added at least one slot so the
-  // auto-preview has something to base the offset on.
+  // Earliest slot (committed or pending) drives the deadline preview —
+  // closing the invitation the moment the first-possible date arrives
+  // is what the server auto-computes by default.
   const earliest = useMemo(() => {
-    if (slots.length === 0) {
+    const candidates = slots.map((s) => combineDateAndTime(s.date, s.time));
+    if (pendingDate && pendingTime) {
+      candidates.push(combineDateAndTime(pendingDate, pendingTime));
+    }
+    if (candidates.length === 0) {
       return null;
     }
-    return slots
-      .map((s) => combineDateAndTime(s.date, s.time))
-      .reduce((min, cur) => (cur.getTime() < min.getTime() ? cur : min));
-  }, [slots]);
+    return candidates.reduce((min, cur) => (cur.getTime() < min.getTime() ? cur : min));
+  }, [slots, pendingDate, pendingTime]);
 
   function commitPending() {
     if (!pendingDate || !pendingTime) {
@@ -903,13 +804,25 @@ function SlotsStep({
       time: pendingTime,
     };
     onSlotsChange([...slots, next]);
-    setPendingDate(null);
-    setPendingTime("20:00");
-    setAddOpen(false);
+    onPendingDateChange(null);
+    onPendingTimeChange("20:00");
+    setPickerOpen(false);
+  }
+
+  function cancelPending() {
+    onPendingDateChange(null);
+    onPendingTimeChange("20:00");
+    setPickerOpen(false);
   }
 
   function removeSlot(id: string) {
-    onSlotsChange(slots.filter((s) => s.id !== id));
+    const next = slots.filter((s) => s.id !== id);
+    onSlotsChange(next);
+    // Back to empty → reopen the picker so the user has a control to
+    // land on instead of a blank step with just an "add" button.
+    if (next.length === 0) {
+      setPickerOpen(true);
+    }
   }
 
   return (
@@ -917,16 +830,11 @@ function SlotsStep({
       <div>
         <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
           <Calendar size={12} />
-          Sondage
+          Quand
         </p>
         <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
-          Propose tes
-          <br />
-          créneaux.
+          C&rsquo;est quand ?
         </h1>
-        <p className="mt-3 text-base text-encre-500">
-          Les gens voteront ce qui leur va. Deux minimum, huit max.
-        </p>
       </div>
 
       {slots.length > 0 && (
@@ -965,54 +873,58 @@ function SlotsStep({
         </ul>
       )}
 
-      {addOpen && canAdd && (
+      {pickerOpen && canAddMore && (
         <div className="flex flex-col gap-3 rounded-3xl border-2 border-bordeaux-100 bg-white p-4">
-          <SortieCalendar selected={pendingDate} onSelect={(d) => setPendingDate(d)} />
+          <SortieCalendar selected={pendingDate} onSelect={(d) => onPendingDateChange(d)} />
           {pendingDate && (
             <>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-encre-400">Heure</p>
-              <TimeDrum selected={pendingTime} onSelect={setPendingTime} />
+              <TimeDrum selected={pendingTime} onSelect={onPendingTimeChange} />
             </>
           )}
-          <div className="flex items-center justify-end gap-2 pt-2">
-            {slots.length > 0 && (
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setAddOpen(false);
-                  setPendingDate(null);
-                  setPendingTime("20:00");
-                }}
-                className="text-sm"
-              >
+          {slots.length > 0 && (
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button type="button" variant="ghost" onClick={cancelPending} className="text-sm">
                 Annuler
               </Button>
-            )}
-            <Button
-              type="button"
-              onClick={commitPending}
-              disabled={!pendingDate || !pendingTime}
-              className="text-sm"
-            >
-              Ajouter ce créneau
-            </Button>
-          </div>
+              <Button
+                type="button"
+                onClick={commitPending}
+                disabled={!pickerFilled}
+                className="text-sm"
+              >
+                Ajouter ce créneau
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
-      {!addOpen && canAdd && (
+      {/* Ghost row — the whole point of this step. Appears only once a
+          first slot is pickable, so the invitation to propose alternatives
+          stays hidden from users who just want a fixed date. */}
+      {slots.length === 0 && pickerFilled && canAddMore && (
+        <button
+          type="button"
+          onClick={commitPending}
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-encre-200 bg-transparent text-sm font-medium text-encre-400 transition-colors active:scale-[0.99] hover:border-bordeaux-300 hover:text-bordeaux-700"
+        >
+          + Proposer une autre date
+        </button>
+      )}
+
+      {!pickerOpen && canAddMore && (
         <Button
           type="button"
           variant="outline"
-          onClick={() => setAddOpen(true)}
+          onClick={() => setPickerOpen(true)}
           className="h-12 w-full rounded-full border-2 border-dashed border-bordeaux-300 text-sm font-bold text-bordeaux-700"
         >
-          + Ajouter un créneau
+          + Proposer une autre date
         </Button>
       )}
 
-      {!canAdd && (
+      {!canAddMore && (
         <p className="text-xs text-encre-400">
           Huit créneaux max — retires-en un pour en ajouter un autre.
         </p>
@@ -1030,18 +942,13 @@ function SlotsStep({
         <Button
           type="button"
           size="lg"
-          disabled={!hasEnough || addOpen}
+          disabled={!canProceed}
           onClick={onNext}
           className="h-16 w-full rounded-full text-base font-bold"
         >
           Ça marche
           <ArrowRight size={18} className="ml-2" />
         </Button>
-        {!hasEnough && !addOpen && (
-          <p className="mt-2 text-center text-xs text-encre-400">
-            Il en faut au moins deux pour que le sondage ait du sens.
-          </p>
-        )}
       </div>
     </section>
   );
@@ -1444,18 +1351,5 @@ function CommitStep({
         </p>
       </div>
     </section>
-  );
-}
-
-// Unused in this file but exported so the parent page can show the link
-// to the advanced form where vote mode still lives.
-export function AdvancedModeLink({ vibe }: { vibe: string | null }) {
-  return (
-    <Link
-      href={vibe ? `/nouvelle/avance?vibe=${vibe}` : "/nouvelle/avance"}
-      className="text-xs text-encre-300 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-    >
-      Un sondage avec plusieurs dates →
-    </Link>
   );
 }
