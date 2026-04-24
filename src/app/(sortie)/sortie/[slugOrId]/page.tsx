@@ -175,7 +175,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         {isCreator && (
           <Link
             href={`/${canonical}/modifier`}
-            className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+            className="text-xs text-encre-300 transition-colors hover:text-encre-500"
           >
             Modifier la sortie
           </Link>
