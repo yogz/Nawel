@@ -202,7 +202,7 @@ export function outingCancelledEmail(args: { outingTitle: string; homeUrl: strin
   const body = `
     <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${title} est annulée</h1>
     <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
-      Le créateur a annulé la sortie. On se rattrape au prochain&nbsp;?
+      La sortie est annulée. On se rattrape la prochaine fois.
     </p>
     <p style="margin:24px 0 0;">
       <a href="${escapeHtml(args.homeUrl)}" style="color:#6B1F2A;text-decoration:underline;">Accueil Sortie</a>
@@ -241,10 +241,10 @@ export function timeslotPickedEmail(args: {
       <strong>${title}</strong>${locationLine}
     </p>
     <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
-      Le créateur a choisi&nbsp;: <strong>${when}</strong>.
+      Le créneau choisi&nbsp;: <strong>${when}</strong>.
     </p>
     <p style="margin:0 0 24px;color:#4A4132;line-height:1.6;">
-      Si tu avais voté disponible, ta place est confirmée. Sinon, c'est le moment de re-RSVP.
+      Si tu avais voté pour ce créneau, tu es dedans. Sinon, redis-nous vite si tu peux.
     </p>
     <p style="margin:0;">
       <a href="${escapeHtml(args.outingUrl)}" style="color:#6B1F2A;text-decoration:underline;">Voir la sortie</a>
@@ -353,7 +353,7 @@ export function outingModifiedEmail(args: {
   const body = `
     <h1 style="margin:0 0 12px;font-family:Georgia,serif;font-size:26px;line-height:1.25;color:#231E16;">${title} a changé</h1>
     <p style="margin:0 0 16px;color:#4A4132;line-height:1.6;">
-      Le créateur a mis à jour ${args.changes.length > 1 ? "quelques détails" : "un détail"} de la sortie&nbsp;:
+      Voici ${args.changes.length > 1 ? "quelques changements" : "un changement"} dans la sortie&nbsp;:
     </p>
     <ul style="margin:8px 0 24px;padding:0;">${rows}</ul>
     <p style="margin:24px 0 0;">
