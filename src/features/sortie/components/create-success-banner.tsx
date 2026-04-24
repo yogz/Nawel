@@ -62,24 +62,25 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
         <p className="mt-1 text-sm text-encre-500">
           Balance le lien à tes potes, les réponses arrivent ici.
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 rounded-full bg-bordeaux-600 px-4 py-2 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
-          >
-            {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-            {copied ? "Copié !" : "Copier le lien"}
-          </button>
+        <div className="mt-3 flex items-center gap-2">
           <a
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-or-500 bg-or-50 px-4 py-2 text-sm font-semibold text-or-800 transition-colors hover:bg-or-100"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-bordeaux-600 px-4 py-2 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
           >
-            <MessageCircle size={14} />
+            <MessageCircle size={14} strokeWidth={2.2} />
             WhatsApp
           </a>
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label={copied ? "Lien copié" : "Copier le lien"}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-encre-100 bg-white px-4 py-2 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700"
+          >
+            {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
+            {copied ? "Copié" : "Copier"}
+          </button>
         </div>
       </div>
       <button
