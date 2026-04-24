@@ -107,10 +107,6 @@ export async function updateUsernameAction(
   return {};
 }
 
-// Social handle: alphanumerics, dot, underscore — matches both IG and
-// TikTok's actual allowed charset. Length 1–30. Empty string clears.
-const HANDLE_REGEX = /^[A-Za-z0-9_.]{1,30}$/;
-
 const updateProfileDetailsSchema = z.object({
   bio: z
     .string()
@@ -118,29 +114,13 @@ const updateProfileDetailsSchema = z.object({
     .max(160, "Bio trop longue (160 caractères max).")
     .optional()
     .transform((v) => v || null),
-  instagramHandle: z
-    .string()
-    .trim()
-    .transform((v) => (v.startsWith("@") ? v.slice(1) : v))
-    .transform((v) => v || null)
-    .refine((v) => v === null || HANDLE_REGEX.test(v), {
-      message: "Handle Instagram invalide (lettres, chiffres, . ou _).",
-    }),
-  tiktokHandle: z
-    .string()
-    .trim()
-    .transform((v) => (v.startsWith("@") ? v.slice(1) : v))
-    .transform((v) => v || null)
-    .refine((v) => v === null || HANDLE_REGEX.test(v), {
-      message: "Handle TikTok invalide (lettres, chiffres, . ou _).",
-    }),
 });
 
 /**
- * Updates bio + Instagram + TikTok in one pass. The three fields form
- * the "public profile details" block on /moi and they revalidate the
- * same two surfaces, so splitting them into separate actions would
- * just multiply server round-trips.
+ * Updates the short bio. Social handle fields (Instagram / TikTok)
+ * were removed from the form per user feedback — the columns stay
+ * in the schema for now so historical data isn't lost, but we no
+ * longer write to them from this action.
  */
 export async function updateProfileDetailsAction(
   _prev: FormActionState,
@@ -165,7 +145,7 @@ export async function updateProfileDetailsAction(
     return { message: gate.message };
   }
 
-  const { bio, instagramHandle, tiktokHandle } = parsed.data;
+  const { bio } = parsed.data;
 
   await db
     .update(user)
@@ -174,8 +154,6 @@ export async function updateProfileDetailsAction(
       // strips any HTML so a future component that forgets to escape
       // still can't render a stored XSS.
       bio: bio ? sanitizeText(bio, 160) : null,
-      instagramHandle,
-      tiktokHandle,
       updatedAt: new Date(),
     })
     .where(eq(user.id, session.user.id));

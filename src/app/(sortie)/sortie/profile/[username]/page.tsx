@@ -3,7 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { sql } from "drizzle-orm";
-import { ArrowLeft, ChevronRight, Instagram, Music2 } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -39,8 +39,6 @@ async function resolveUser(raw: string) {
       image: true,
       rsvpInviteToken: true,
       bio: true,
-      instagramHandle: true,
-      tiktokHandle: true,
     },
   });
   return row ?? null;
@@ -200,30 +198,6 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
         {row.bio && (
           <p className="mt-4 max-w-md text-base leading-relaxed text-encre-500">{row.bio}</p>
-        )}
-        {(row.instagramHandle || row.tiktokHandle) && (
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-            {row.instagramHandle && (
-              <a
-                href={`https://instagram.com/${row.instagramHandle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-              >
-                <Instagram size={14} strokeWidth={2.2} />@{row.instagramHandle}
-              </a>
-            )}
-            {row.tiktokHandle && (
-              <a
-                href={`https://tiktok.com/@${row.tiktokHandle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-              >
-                <Music2 size={14} strokeWidth={2.2} />@{row.tiktokHandle}
-              </a>
-            )}
-          </div>
         )}
       </header>
 
