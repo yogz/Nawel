@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
@@ -71,6 +71,10 @@ export function LiveStatusHero({
   // to an Apple Music album placeholder than a dead gradient slab.
   const initial = (title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
 
+  // Returns null past 27 days out so we don't paint a relative phrase
+  // that just repeats the absolute date. See `relativeOutingHero`.
+  const relative = relativeOutingHero(startsAt);
+
   return (
     <section className="mb-10">
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
@@ -80,11 +84,29 @@ export function LiveStatusHero({
         <Heading className="font-serif text-4xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-or-600 sm:text-5xl">
           {title}
         </Heading>
-        <p className="mt-2 text-base text-encre-500">
-          <span className="font-semibold text-encre-700">{relativeOutingHero(startsAt)}</span>
-          <span> · {formatOutingDate(startsAt)}</span>
+        <p className="mt-2 flex items-center gap-1.5 text-base text-encre-500">
+          <CalendarDays
+            size={15}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="shrink-0 text-encre-400"
+          />
+          <span>
+            {relative && <span className="font-semibold text-encre-700">{relative} · </span>}
+            {formatOutingDate(startsAt)}
+          </span>
         </p>
-        {location && <p className="text-sm text-encre-500">{formatVenue(location)}</p>}
+        {location && (
+          <p className="mt-1 flex items-center gap-1.5 text-sm text-encre-500">
+            <MapPin
+              size={14}
+              strokeWidth={2}
+              aria-hidden="true"
+              className="shrink-0 text-encre-400"
+            />
+            <span>{formatVenue(location)}</span>
+          </p>
+        )}
         {headcount && <p className="mt-1 text-sm text-encre-500">{headcount}</p>}
 
         {heroImageUrl ? (

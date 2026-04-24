@@ -122,15 +122,18 @@ export default async function SortieHome() {
 
       {past.length > 0 && <PastSection outings={past} loggedInName={session.user.name ?? null} />}
 
-      {/* Floating CTA: sticky bottom-right. Safe-area inset lets it sit
-          above the iOS home indicator instead of getting clipped by the
-          34pt gesture zone. Icon-only on small screens keeps it from
-          eating the right edge of list cards at 360px. */}
+      {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
+          safe-area inset is what keeps it clear of Safari's bottom URL bar
+          on iOS — the inset only accounts for the 34pt home indicator,
+          not the browser chrome that lives above it. Material 3 specifies
+          16dp (≈ 1rem) from the edge for a primary FAB; we sit at 1.5rem
+          minimum so the icon-only button feels deliberate at 360px width
+          and the right edge of list cards never overlaps it. */}
       <Link
         href="/nouvelle"
         aria-label="Nouvelle sortie"
         style={{
-          bottom: "max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem))",
+          bottom: "max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))",
         }}
         className="fixed right-5 z-50 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 active:scale-95 sm:right-8 sm:w-auto sm:justify-start sm:pr-6 sm:pl-5"
       >
