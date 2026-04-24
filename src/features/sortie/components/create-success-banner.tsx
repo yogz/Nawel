@@ -67,7 +67,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-bordeaux-600 px-4 py-2 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-or-600 px-4 py-2 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-or-700"
           >
             <MessageCircle size={14} strokeWidth={2.2} />
             WhatsApp
