@@ -85,6 +85,7 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       startsAt: outings.fixedDatetime,
       deadlineAt: outings.deadlineAt,
       status: outings.status,
+      heroImageUrl: outings.heroImageUrl,
     })
     .from(outings)
     .where(
