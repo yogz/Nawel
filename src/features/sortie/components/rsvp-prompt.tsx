@@ -6,6 +6,7 @@ import { Check, Pencil, X } from "lucide-react";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 import { RsvpStub } from "./rsvp-stub";
+import { RemoveRsvpButton } from "./remove-rsvp-dialog";
 
 type Response = RsvpResponse;
 
@@ -113,16 +114,24 @@ export function RsvpPrompt({
           />
         </div>
 
-        {isComing && (
-          <button
-            type="button"
-            onClick={handleYesTap}
-            className="mt-3 inline-flex items-center gap-1 self-center text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-          >
-            <Pencil size={12} />
-            Modifier mes détails
-          </button>
-        )}
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-4">
+          {isComing && (
+            <button
+              type="button"
+              onClick={handleYesTap}
+              className="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+            >
+              <Pencil size={12} />
+              Modifier mes détails
+            </button>
+          )}
+          <RemoveRsvpButton
+            shortId={shortId}
+            triggerClassName="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-destructive hover:underline"
+            triggerLabel="Retirer ma réponse"
+            iconSize={12}
+          />
+        </div>
 
         <NoNameSheet
           open={sheetMode === "no-name-needed"}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Check, Pencil, Trash2, X } from "lucide-react";
-import { removeRsvpAction, rsvpAction } from "@/features/sortie/actions/participant-actions";
+import { Check, Pencil, X } from "lucide-react";
+import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
+import { RemoveRsvpButton } from "./remove-rsvp-dialog";
 
 type Props = {
   shortId: string;
@@ -44,26 +44,8 @@ export function InlineRsvpSection({
 }: Props) {
   const router = useRouter();
   const [sheetMode, setSheetMode] = useState<SheetMode>("idle");
-  const [confirmRemove, setConfirmRemove] = useState(false);
-  const [removeError, setRemoveError] = useState<string | null>(null);
-  const [isRemoving, startRemoveTransition] = useTransition();
 
   const knownName = existing?.name ?? loggedInName ?? "";
-
-  function handleRemove() {
-    startRemoveTransition(async () => {
-      const fd = new FormData();
-      fd.set("shortId", shortId);
-      const result = await removeRsvpAction({}, fd);
-      if (result?.message) {
-        setRemoveError(result.message);
-        return;
-      }
-      setConfirmRemove(false);
-      setRemoveError(null);
-      router.refresh();
-    });
-  }
 
   async function commitNo(name: string) {
     const fd = new FormData();
@@ -134,25 +116,8 @@ export function InlineRsvpSection({
           <Pencil size={11} />
           Modifier
         </button>
-        <button
-          type="button"
-          onClick={() => setConfirmRemove(true)}
-          className="inline-flex items-center gap-1 text-xs text-encre-400 underline-offset-4 hover:text-destructive hover:underline"
-        >
-          <Trash2 size={11} />
-          Retirer
-        </button>
+        <RemoveRsvpButton shortId={shortId} />
         {sheets}
-        <RemoveRsvpDialog
-          open={confirmRemove}
-          onClose={() => {
-            setConfirmRemove(false);
-            setRemoveError(null);
-          }}
-          onConfirm={handleRemove}
-          pending={isRemoving}
-          error={removeError}
-        />
       </div>
     );
   }
@@ -200,80 +165,6 @@ function CardResponseButton({
       {icon}
       <span>{label}</span>
     </button>
-  );
-}
-
-function RemoveRsvpDialog({
-  open,
-  onClose,
-  onConfirm,
-  pending,
-  error,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  pending: boolean;
-  error: string | null;
-}) {
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            onClick={pending ? undefined : onClose}
-            className="fixed inset-0 z-40 bg-encre-700/50"
-          />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="remove-rsvp-title"
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-ivoire-50 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]"
-          >
-            <h3
-              id="remove-rsvp-title"
-              className="mb-2 font-serif text-lg leading-tight text-encre-700"
-            >
-              Retirer ta réponse ?
-            </h3>
-            <p className="mb-6 text-sm text-encre-500">
-              Ta réponse disparaîtra des compteurs. Tu pourras répondre à nouveau plus tard.
-            </p>
-            {error && (
-              <p className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
-              </p>
-            )}
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={pending}
-                className="inline-flex h-11 items-center justify-center rounded-md border border-encre-200 bg-ivoire-50 px-4 text-sm font-semibold text-encre-700 transition-colors hover:bg-ivoire-100 disabled:opacity-50"
-              >
-                Retour
-              </button>
-              <button
-                type="button"
-                onClick={onConfirm}
-                disabled={pending}
-                className="inline-flex h-11 items-center justify-center rounded-md bg-destructive px-4 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-50"
-              >
-                {pending ? "Suppression…" : "Retirer ma réponse"}
-              </button>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
   );
 }
 
