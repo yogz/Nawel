@@ -125,11 +125,12 @@ export default async function ProfileSettingsPage() {
         </div>
       </header>
 
-      <section className="mb-12">
-        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-          Ton profil
-        </p>
-        <div className="flex flex-col gap-6">
+      <SectionHeading
+        title="Ton profil"
+        subtitle="Ce que les autres voient quand ils tapent sur ton @handle."
+      />
+      <section className="mb-14">
+        <div className="flex flex-col gap-4">
           <UsernameForm currentUsername={username} />
           <ProfileDetailsForm
             bio={row?.bio ?? null}
@@ -140,48 +141,78 @@ export default async function ProfileSettingsPage() {
       </section>
 
       {(upcoming.length > 0 || past.length > 0 || archived.length > 0) && (
-        <section className="mb-12">
-          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-            Tes sorties
-          </p>
-          {upcoming.length > 0 && (
-            <OutingListBlock title="À venir" rows={upcoming} isPast={false} />
-          )}
-          {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
-          {archived.length > 0 && (
-            <div className="mb-6">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
-                Archivées
-              </p>
-              <ul className="flex flex-col gap-2">
-                {archived.map((o) => (
-                  <li key={o.id} className="flex items-center gap-3">
-                    <div className="min-w-0 flex-1">
-                      <OutingRowCard outing={o} muted />
-                    </div>
-                    <UnarchiveButton shortId={o.shortId} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
+        <>
+          <SectionDivider />
+          <SectionHeading
+            title="Tes sorties"
+            subtitle="Glisse une sortie à gauche pour l’archiver. L’archiver la retire de ton profil, jamais des invités."
+          />
+          <section className="mb-14">
+            {upcoming.length > 0 && (
+              <OutingListBlock title="À venir" rows={upcoming} isPast={false} />
+            )}
+            {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
+            {archived.length > 0 && (
+              <div className="mb-6">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
+                  Archivées
+                </p>
+                <ul className="flex flex-col gap-2">
+                  {archived.map((o) => (
+                    <li key={o.id} className="flex items-center gap-3">
+                      <div className="min-w-0 flex-1">
+                        <OutingRowCard outing={o} muted />
+                      </div>
+                      <UnarchiveButton shortId={o.shortId} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+        </>
       )}
 
       {username && (
-        <section className="mb-12">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-            Lien privé pour tes amis
-          </p>
-          <InviteLinkManager
-            username={username}
-            token={row?.rsvpInviteToken ?? null}
-            origin={origin}
+        <>
+          <SectionDivider />
+          <SectionHeading
+            title="Ton lien privé"
+            subtitle="Tes amis RSVP direct à toutes tes sorties depuis une seule URL secrète."
           />
-        </section>
+          <section className="mb-14">
+            <InviteLinkManager
+              username={username}
+              token={row?.rsvpInviteToken ?? null}
+              origin={origin}
+            />
+          </section>
+        </>
       )}
     </main>
   );
+}
+
+/**
+ * Primary section anchor used across /moi. Title in the display
+ * serif, small muted subtitle underneath. Much more present than
+ * the 11px coral eyebrow it replaces — was the single biggest cost
+ * of readability on this page.
+ */
+function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="mb-5">
+      <h2 className="font-serif text-2xl leading-tight text-encre-700">{title}</h2>
+      {subtitle && <p className="mt-1 text-sm text-encre-400">{subtitle}</p>}
+    </div>
+  );
+}
+
+/** Quiet horizontal rule between top-level sections — breathing
+ * room + a visual anchor the eye can use to re-orient after a
+ * dense form block. */
+function SectionDivider() {
+  return <hr className="mb-10 border-t border-encre-100" />;
 }
 
 type OutingRow = {
