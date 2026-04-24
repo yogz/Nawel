@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Trash2 } from "lucide-react";
+import { UserMinus } from "lucide-react";
 import { removeRsvpAction } from "@/features/sortie/actions/participant-actions";
 
 type Props = {
@@ -63,7 +63,7 @@ export function RemoveRsvpButton({
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
-        <Trash2 size={iconSize} />
+        <UserMinus size={iconSize} />
         {triggerLabel}
       </button>
       <AnimatePresence>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Pencil, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 import { RemoveRsvpButton } from "./remove-rsvp-dialog";
@@ -96,27 +96,38 @@ export function InlineRsvpSection({
     </>
   );
 
+  // Unified `grid-cols-2` layout in both states — no jarring jump when
+  // the viewer taps from "not answered" to "answered." Both pre- and
+  // post-RSVP show one primary button + one secondary, both 44px for
+  // HIG compliance.
   if (existing) {
     const isComing = existing.response !== "no";
+    const summary = summariseResponse(
+      existing.response,
+      existing.extraAdults,
+      existing.extraChildren
+    );
     return (
-      <div className="flex flex-wrap items-center gap-2">
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
-            isComing ? "bg-bordeaux-600 text-ivoire-50" : "bg-encre-700 text-ivoire-50"
-          }`}
-        >
-          {isComing ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
-          {summariseResponse(existing.response, existing.extraAdults, existing.extraChildren)}
-        </span>
+      <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
           onClick={handleYesTap}
-          className="inline-flex items-center gap-1 text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+          aria-label={`${summary} — taper pour modifier`}
+          className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors active:scale-95 ${
+            isComing
+              ? "bg-bordeaux-600 text-ivoire-50 hover:bg-bordeaux-700"
+              : "bg-encre-700 text-ivoire-50 hover:bg-encre-800"
+          }`}
         >
-          <Pencil size={11} />
-          Modifier
+          {isComing ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}
+          <span className="truncate">{summary}</span>
         </button>
-        <RemoveRsvpButton shortId={shortId} />
+        <RemoveRsvpButton
+          shortId={shortId}
+          triggerLabel="Me retirer"
+          iconSize={14}
+          triggerClassName="flex h-11 items-center justify-center gap-1.5 rounded-full border-2 border-encre-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 active:scale-95"
+        />
         {sheets}
       </div>
     );
@@ -160,7 +171,7 @@ function CardResponseButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors active:scale-95 ${palette}`}
+      className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors active:scale-95 ${palette}`}
     >
       {icon}
       <span>{label}</span>
