@@ -74,17 +74,24 @@ export default async function SortieHome() {
       </nav>
 
       {next && next.startsAt && nextStats ? (
-        <LiveStatusHero
-          slug={next.slug}
-          shortId={next.shortId}
-          title={next.title}
-          location={next.location}
-          startsAt={next.startsAt}
-          confirmed={nextStats.confirmed}
-          total={nextStats.total}
-          heroImageUrl={next.heroImageUrl}
-          headingLevel="h1"
-        />
+        <>
+          {/* Personal anchor: this used to disappear the moment a user had
+              an upcoming outing, exactly when the page felt most data-rich
+              and least personal. Keeping it small + muted so it sets the
+              tone without competing with the LiveStatusHero headline. */}
+          <p className="mb-3 text-sm text-encre-400">Salut {firstName}.</p>
+          <LiveStatusHero
+            slug={next.slug}
+            shortId={next.shortId}
+            title={next.title}
+            location={next.location}
+            startsAt={next.startsAt}
+            confirmed={nextStats.confirmed}
+            total={nextStats.total}
+            heroImageUrl={next.heroImageUrl}
+            headingLevel="h1"
+          />
+        </>
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
           <h1 className="text-5xl leading-[1.02] font-extrabold tracking-tight text-encre-700 sm:text-6xl">

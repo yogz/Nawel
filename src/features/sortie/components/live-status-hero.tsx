@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
@@ -121,16 +121,16 @@ export function LiveStatusHero({
             aria-hidden="true"
             className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
           >
-            <span className="font-serif text-[12rem] font-black leading-none tracking-tight text-encre-700/15 select-none sm:text-[14rem]">
+            {/* Designed empty state, not a broken-image placeholder. The
+                earlier 12-14rem letter ate ~60% of the canvas and read as
+                "image failed to load"; sized down to 5-6rem with slightly
+                higher contrast so it lands closer to an Apple Music album
+                monogram — still soft, still secondary, but intentional. */}
+            <span className="font-serif text-[5rem] font-black leading-none tracking-tight text-encre-700/30 select-none sm:text-[6rem]">
               {initial}
             </span>
           </div>
         )}
-
-        <p className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-bordeaux-700 underline-offset-4 group-hover:underline">
-          Voir la sortie
-          <ArrowRight size={14} strokeWidth={2.2} />
-        </p>
       </Link>
     </section>
   );
