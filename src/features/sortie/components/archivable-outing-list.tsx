@@ -128,14 +128,20 @@ export function ArchivableOutingList<R extends MinimalRow>({
           <motion.div
             role="status"
             aria-live="polite"
+            // Animate y + opacity only. Framer Motion composes its own
+            // `transform` on the element, which would override the
+            // Tailwind `-translate-x-1/2` centering and slide the toast
+            // off the right edge. We position via left/right insets
+            // inside the fixed container instead — safer.
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            // `pb-[env(safe-area-inset-bottom)]`-ish via calc — sits
-            // above the iOS home indicator without overlapping it.
+            // `calc()` on bottom pads above the iOS home indicator.
+            // `max-w-xl` matches the app's content column; `mx-auto`
+            // centers it horizontally without Tailwind transforms.
             style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-            className="fixed left-1/2 z-50 flex max-w-[90vw] -translate-x-1/2 items-center gap-4 rounded-full bg-encre-700 px-5 py-3 text-sm text-ivoire-50 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]"
+            className="fixed inset-x-4 z-50 mx-auto flex max-w-md items-center justify-between gap-4 rounded-full bg-encre-700 px-5 py-3 text-sm text-ivoire-50 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]"
           >
             <span className="truncate">
               {toast.isPast ? "Retirée de ton profil" : "Sortie archivée"}
@@ -143,7 +149,7 @@ export function ArchivableOutingList<R extends MinimalRow>({
             <button
               type="button"
               onClick={handleUndo}
-              className="text-xs font-black uppercase tracking-[0.12em] text-or-300 underline-offset-4 hover:underline"
+              className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-or-300 underline-offset-4 hover:underline"
             >
               Annuler
             </button>
