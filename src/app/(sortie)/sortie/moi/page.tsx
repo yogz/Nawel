@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -17,6 +17,9 @@ import { LoginLink } from "@/features/sortie/components/login-link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
+import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
+import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
+import { UserAvatar } from "@/features/sortie/components/user-avatar";
 
 export const metadata = {
   title: "Mon profil",
@@ -80,9 +83,13 @@ export default async function ProfileSettingsPage() {
   const proto = h.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
   const origin = `${proto}://${host}`;
 
+  const name = row?.name ?? session.user.name ?? "Anonyme";
+  const image = row?.image ?? null;
+  const username = row?.username ?? null;
+
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
-      <nav className="mb-8">
+      <nav className="mb-8 flex items-center justify-between">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
@@ -90,64 +97,54 @@ export default async function ProfileSettingsPage() {
           <ArrowLeft size={14} strokeWidth={2} />
           Accueil
         </Link>
+        {username && <ProfileShareButton url={`${origin}/@${username}`} name={name} />}
       </nav>
 
-      <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-          Mon profil
-        </p>
-        <h1 className="font-serif text-4xl leading-tight text-encre-700">
-          {row?.name ?? "Anonyme"}
-        </h1>
-        {row?.username && (
-          <p className="mt-3 text-sm text-encre-500">
-            <Link
-              href={`/@${row.username}`}
-              className="text-bordeaux-700 underline-offset-4 hover:underline"
-            >
-              sortie.colist.fr/@{row.username}
-            </Link>
-          </p>
-        )}
+      <header className="mb-12 flex flex-col items-start gap-5">
+        <UserAvatar name={name} image={image} size={96} />
+        <div className="flex flex-col items-start gap-3">
+          <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
+            {name}
+          </h1>
+          {username ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <CopyableHandle username={username} origin={origin} />
+              <Link
+                href={`/@${username}`}
+                className="inline-flex items-center gap-1 text-sm text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+              >
+                Voir mon profil public
+                <ArrowUpRight size={12} strokeWidth={2.2} />
+              </Link>
+            </div>
+          ) : (
+            <p className="text-sm text-encre-400">
+              Choisis un @nom plus bas pour activer ton profil public.
+            </p>
+          )}
+        </div>
       </header>
 
       <section className="mb-12">
-        <h2 className="mb-4 font-serif text-xl text-encre-700">Photo, bio et réseaux</h2>
-        <ProfileDetailsForm
-          name={row?.name ?? null}
-          image={row?.image ?? null}
-          bio={row?.bio ?? null}
-          instagramHandle={row?.instagramHandle ?? null}
-          tiktokHandle={row?.tiktokHandle ?? null}
-        />
-      </section>
-
-      <section className="mb-12">
-        <h2 className="mb-4 font-serif text-xl text-encre-700">Nom d&rsquo;utilisateur</h2>
-        <UsernameForm currentUsername={row?.username ?? null} />
-      </section>
-
-      <section className="mb-12">
-        <h2 className="mb-4 font-serif text-xl text-encre-700">Lien privé pour tes amis</h2>
-        {row?.username ? (
-          <InviteLinkManager
-            username={row.username}
-            token={row.rsvpInviteToken ?? null}
-            origin={origin}
+        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+          Ton profil
+        </p>
+        <div className="flex flex-col gap-6">
+          <UsernameForm currentUsername={username} />
+          <ProfileDetailsForm
+            name={name}
+            image={image}
+            bio={row?.bio ?? null}
+            instagramHandle={row?.instagramHandle ?? null}
+            tiktokHandle={row?.tiktokHandle ?? null}
           />
-        ) : (
-          <p className="text-sm text-encre-400">
-            Choisis d&rsquo;abord un nom d&rsquo;utilisateur pour générer ton lien privé.
-          </p>
-        )}
+        </div>
       </section>
 
       {(upcoming.length > 0 || past.length > 0 || archived.length > 0) && (
-        <section>
-          <h2 className="mb-4 font-serif text-xl text-encre-700">Mes sorties visibles</h2>
-          <p className="mb-4 text-xs text-encre-400">
-            Glisse à gauche pour archiver. La sortie quitte ton profil, les invités la voient
-            toujours.
+        <section className="mb-12">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+            Tes sorties
           </p>
           {upcoming.length > 0 && (
             <OutingListBlock title="À venir" rows={upcoming} isPast={false} />
@@ -170,6 +167,29 @@ export default async function ProfileSettingsPage() {
               </ul>
             </div>
           )}
+        </section>
+      )}
+
+      {username && (
+        <section className="mb-12">
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
+              <span>Lien privé pour tes amis</span>
+              <ChevronRight
+                size={14}
+                strokeWidth={2.2}
+                aria-hidden="true"
+                className="transition-transform duration-200 group-open:rotate-90"
+              />
+            </summary>
+            <div className="mt-4">
+              <InviteLinkManager
+                username={username}
+                token={row?.rsvpInviteToken ?? null}
+                origin={origin}
+              />
+            </div>
+          </details>
         </section>
       )}
     </main>
@@ -196,7 +216,7 @@ function OutingListBlock({
 }) {
   return (
     <div className="mb-6">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
         {title}
       </p>
       <ArchivableOutingList
@@ -213,8 +233,8 @@ function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: b
   return (
     <Link
       href={`/${canonical}`}
-      className={`flex flex-col gap-0.5 rounded-xl border bg-ivoire-50 p-3 transition-colors hover:border-or-500 ${
-        muted ? "border-ivoire-300 opacity-75" : "border-ivoire-400"
+      className={`flex flex-col gap-0.5 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500 ${
+        muted ? "opacity-75" : ""
       }`}
     >
       <span className={`text-sm font-medium ${muted ? "text-encre-500" : "text-encre-700"}`}>
