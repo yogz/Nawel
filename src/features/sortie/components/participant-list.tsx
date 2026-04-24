@@ -13,9 +13,13 @@ type Participant = {
 
 export function ParticipantList({ participants }: { participants: Participant[] }) {
   const yesList = participants.filter((p) => p.response === "yes");
+  const handleOwnList = participants.filter((p) => p.response === "handle_own");
+  const interestedList = participants.filter((p) => p.response === "interested");
   const totalHeads = yesList.reduce((acc, p) => acc + 1 + p.extraAdults + p.extraChildren, 0);
 
-  if (yesList.length === 0) {
+  const hasAnyPositive = yesList.length + handleOwnList.length + interestedList.length > 0;
+
+  if (!hasAnyPositive) {
     return (
       <p className="text-center text-encre-400">
         Personne n&rsquo;a encore répondu — partage le lien pour que ça démarre.
@@ -29,9 +33,11 @@ export function ParticipantList({ participants }: { participants: Participant[] 
   // "un" isolé n'est pas un pronom. Use the person's name when there's
   // exactly one yes, and fall back to "Quelqu'un" for nameless anons.
   const headline =
-    yesList.length === 1
-      ? `${firstName ?? "Quelqu'un"} a déjà dit oui.`
-      : `${numberToFrenchCap(yesList.length)} d'entre vous ont déjà dit oui.`;
+    yesList.length === 0
+      ? "Pas encore de oui ferme."
+      : yesList.length === 1
+        ? `${firstName ?? "Quelqu'un"} a déjà dit oui.`
+        : `${numberToFrenchCap(yesList.length)} d'entre vous ont déjà dit oui.`;
 
   // When the only yes is an anonymous no-name, the headline already says
   // "Quelqu'un a déjà dit oui." — repeating "Quelqu'un" as a bullet below
@@ -49,7 +55,7 @@ export function ParticipantList({ participants }: { participants: Participant[] 
         </p>
       )}
 
-      {!hideList && (
+      {!hideList && yesList.length > 0 && (
         <ul className="flex flex-col gap-1">
           {yesList.map((p) => {
             const extras = formatExtras(p.extraAdults, p.extraChildren);
@@ -65,6 +71,47 @@ export function ParticipantList({ participants }: { participants: Participant[] 
           })}
         </ul>
       )}
+
+      {handleOwnList.length > 0 && (
+        <SecondarySection
+          label="Avec leur propre billet"
+          count={handleOwnList.length}
+          rows={handleOwnList}
+        />
+      )}
+
+      {interestedList.length > 0 && (
+        <SecondarySection label="Intéressés" count={interestedList.length} rows={interestedList} />
+      )}
+    </div>
+  );
+}
+
+function SecondarySection({
+  label,
+  count,
+  rows,
+}: {
+  label: string;
+  count: number;
+  rows: Participant[];
+}) {
+  return (
+    <div className="mt-5 border-t border-ivoire-400 pt-4">
+      <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-encre-400">
+        {label} · {count}
+      </p>
+      <ul className="flex flex-col gap-1">
+        {rows.map((p) => (
+          <li key={p.id} className="flex items-baseline gap-2 text-encre-500">
+            <span
+              className="inline-block size-1.5 shrink-0 rounded-full bg-encre-200"
+              aria-hidden
+            />
+            <span>{displayNameOf(p) ?? "Quelqu'un"}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
