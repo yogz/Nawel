@@ -773,20 +773,31 @@ function DeadlineSection({
   const effective = deadline ?? autoDeadline;
   const isCustom = deadline !== null;
 
+  // `now` is captured once per mount so the presets don't drift as the
+  // user lingers on the step. Deadlines are computed as `now + offset`
+  // (days after the invitation is published), not `event - offset` —
+  // easier mental model for the creator ("I want answers within a week
+  // of sending the link") than "I want to close 2 weeks before".
+  const now = useMemo(() => new Date(), []);
+
   const presets = useMemo(
     () => [
-      { label: "24h avant", offsetMs: 24 * 60 * 60 * 1000 },
-      { label: "3 jours avant", offsetMs: 3 * 24 * 60 * 60 * 1000 },
-      { label: "1 semaine avant", offsetMs: 7 * 24 * 60 * 60 * 1000 },
-      { label: "2 semaines avant", offsetMs: 14 * 24 * 60 * 60 * 1000 },
+      { label: "24h après", offsetMs: 24 * 60 * 60 * 1000 },
+      { label: "3 jours après", offsetMs: 3 * 24 * 60 * 60 * 1000 },
+      { label: "1 semaine après", offsetMs: 7 * 24 * 60 * 60 * 1000 },
+      { label: "2 semaines après", offsetMs: 14 * 24 * 60 * 60 * 1000 },
     ],
     []
   );
 
-  // Determine which preset (if any) matches the current offset so we can
-  // highlight it. An exact match within 1h = same chip.
-  const currentOffsetMs = startsAt.getTime() - effective.getTime();
-  const activePreset = presets.find((p) => Math.abs(p.offsetMs - currentOffsetMs) < 60 * 60 * 1000);
+  // Highlight the preset that matches the current deadline. Match is
+  // computed against `now + offset`, not `event - offset`, so the
+  // chip lighting is consistent with the new semantics. 1h tolerance
+  // to cover second-level drift between mount and render.
+  const currentOffsetFromNowMs = effective.getTime() - now.getTime();
+  const activePreset = presets.find(
+    (p) => Math.abs(p.offsetMs - currentOffsetFromNowMs) < 60 * 60 * 1000
+  );
 
   return (
     <div className="rounded-2xl border-2 border-encre-100 bg-white p-4">
@@ -831,11 +842,19 @@ function DeadlineSection({
           </button>
           {presets.map((p) => {
             const active = activePreset === p;
+            // Hide presets whose "now + offset" lands after the event —
+            // asking people to reply past the date of the sortie doesn't
+            // make sense. Leaves `Auto` + valid ones visible.
+            const proposedDeadline = new Date(now.getTime() + p.offsetMs);
+            const wouldExceedEvent = proposedDeadline.getTime() >= startsAt.getTime();
+            if (wouldExceedEvent) {
+              return null;
+            }
             return (
               <button
                 key={p.label}
                 type="button"
-                onClick={() => onDeadlineChange(new Date(startsAt.getTime() - p.offsetMs))}
+                onClick={() => onDeadlineChange(new Date(now.getTime() + p.offsetMs))}
                 aria-pressed={active}
                 className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
                   active
