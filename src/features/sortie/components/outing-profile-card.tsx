@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Users } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { formatOutingDate, formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { InlineRsvpSection } from "./inline-rsvp-section";
 import type { RsvpResponse } from "./rsvp-sheets";
@@ -36,17 +36,16 @@ type Props = {
 };
 
 /**
- * Two layouts for the same component depending on interactivity:
+ * Compact Letterboxd / Apple Music row: 64px thumbnail + metadata
+ * stack + trailing ChevronRight. Used for every card on the public
+ * profile — one visual language, whether the viewer can RSVP inline
+ * or not.
  *
- *   - **Inline-RSVP card** (visitor with valid `?k=` token, upcoming,
- *     fixed-mode): the original vertical layout with the poster on top
- *     and RSVP chips inside. Can't be a Link because of nested buttons.
- *
- *   - **Compact row** (everyone else — public visitors and past
- *     outings): horizontal row with a square 64px thumbnail on the
- *     left and the metadata stack on the right. Letterboxd / Apple
- *     Music pattern. ~88px tall vs ~180px for the old stacked card,
- *     which makes a multi-outing profile scannable without scrolling.
+ * When the viewer holds an invite token and the outing is a fixed-date
+ * upcoming one, `InlineRsvpSection` renders below the navigation row.
+ * Chips can't nest inside the outer `<Link>` (nested interactive
+ * elements), so the Link wraps only the thumbnail + text + chevron and
+ * the chips live as a separate block in the same container.
  */
 export function OutingProfileCard({
   outing,
@@ -61,64 +60,10 @@ export function OutingProfileCard({
   const outingUrl = `${outingBaseUrl}/${canonical}`;
 
   // v1: inline RSVP is limited to `fixed` outings. Vote-mode requires the
-  // full timeslot matrix (too heavy for a card) — fall back to the row
-  // layout until we design a dedicated voting sheet.
+  // full timeslot matrix (too heavy for a card) — fall back to the
+  // plain row layout until we design a dedicated voting sheet.
   const canInlineRsvp = showRsvp && !isPast && outing.mode === "fixed";
 
-  if (canInlineRsvp) {
-    return (
-      <article className="overflow-hidden rounded-2xl bg-ivoire-50 shadow-[var(--shadow-sm)] ring-1 ring-encre-700/5 transition-shadow hover:shadow-[var(--shadow-md)]">
-        {outing.heroImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={outing.heroImageUrl}
-            alt=""
-            className="aspect-[3/1] w-full bg-ivoire-100 object-cover object-top"
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            className="aspect-[3/1] w-full bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
-          />
-        )}
-        <div className="flex flex-col gap-2 p-3">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            {outing.startsAt && (
-              <p className="inline-flex items-center rounded-full bg-bordeaux-50 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-bordeaux-700">
-                {formatOutingDate(outing.startsAt)}
-              </p>
-            )}
-            {outing.confirmedCount > 0 && (
-              <p className="inline-flex items-center gap-1 text-xs text-encre-500">
-                <Users size={12} />
-                {outing.confirmedCount}
-              </p>
-            )}
-          </div>
-          <div>
-            <h3 className="font-serif text-lg leading-tight text-encre-700">{outing.title}</h3>
-            {outing.location && <p className="mt-0.5 text-xs text-encre-400">{outing.location}</p>}
-          </div>
-          <InlineRsvpSection
-            shortId={outing.shortId}
-            outingTitle={outing.title}
-            outingUrl={outingUrl}
-            outingDate={outing.startsAt}
-            existing={myRsvp}
-            loggedInName={loggedInName}
-          />
-          <Link
-            href={href}
-            className="text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
-          >
-            Voir la sortie →
-          </Link>
-        </div>
-      </article>
-    );
-  }
-
-  // Compact row: 64px square thumb + metadata stack. Full row tappable.
   const dateLabel = outing.startsAt
     ? isPast
       ? formatOutingDateShort(outing.startsAt)
@@ -134,11 +79,8 @@ export function OutingProfileCard({
     .filter(Boolean)
     .join(" · ");
 
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500"
-    >
+  const navigationRow = (
+    <>
       {outing.heroImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -169,6 +111,38 @@ export function OutingProfileCard({
         aria-hidden="true"
         className="shrink-0 text-encre-300 transition-colors group-hover:text-or-600"
       />
+    </>
+  );
+
+  if (canInlineRsvp) {
+    // Row + chips share an outer article. The navigation parts live
+    // inside a Link; the chips live outside it so they can be
+    // interactive buttons in their own right.
+    return (
+      <article className="rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5">
+        <Link href={href} className="group flex items-center gap-3">
+          {navigationRow}
+        </Link>
+        <div className="mt-3">
+          <InlineRsvpSection
+            shortId={outing.shortId}
+            outingTitle={outing.title}
+            outingUrl={outingUrl}
+            outingDate={outing.startsAt}
+            existing={myRsvp}
+            loggedInName={loggedInName}
+          />
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500"
+    >
+      {navigationRow}
     </Link>
   );
 }
