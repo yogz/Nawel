@@ -32,7 +32,7 @@ export function PaymentMethodsManager({ shortId, methods }: Props) {
           {methods.map((m) => (
             <li key={m.id} className="flex items-center justify-between gap-3 p-3">
               <div className="flex flex-col">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
                   {TYPE_LABELS[m.type]}
                 </span>
                 <span className="font-mono text-sm text-encre-700">{m.valuePreview}</span>

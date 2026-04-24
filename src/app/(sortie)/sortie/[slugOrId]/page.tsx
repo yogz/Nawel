@@ -3,6 +3,7 @@ import Link from "next/link";
 import { and, eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { debts, purchases } from "@drizzle/sortie-schema";
@@ -122,8 +123,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-6 flex items-center justify-between">
-        <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
-          ← Sortie
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+        >
+          <ArrowLeft size={14} strokeWidth={2} />
+          Accueil
         </Link>
         {isCreator && (
           <Link

@@ -1,7 +1,16 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { Film, Image as ImageIcon, Mic2, MoreHorizontal, Music, Plus, Theater } from "lucide-react";
+import {
+  ChevronRight,
+  Film,
+  Image as ImageIcon,
+  Mic2,
+  MoreHorizontal,
+  Music,
+  Plus,
+  Theater,
+} from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { Button } from "@/components/ui/button";
@@ -84,12 +93,12 @@ export default async function SortieHome() {
         <details className="group mb-12 border-t border-encre-100 pt-4">
           <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.12em] text-encre-300 transition-colors hover:text-bordeaux-600">
             <span>Sorties passées ({past.length})</span>
-            <span
+            <ChevronRight
+              size={14}
+              strokeWidth={2.2}
               aria-hidden="true"
               className="transition-transform duration-200 group-open:rotate-90"
-            >
-              ›
-            </span>
+            />
           </summary>
           <div className="mt-4">
             <UpcomingOutingsList outings={past} />

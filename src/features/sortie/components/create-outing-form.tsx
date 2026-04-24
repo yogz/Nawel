@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useActionState, useMemo, useState } from "react";
-import { Link2 } from "lucide-react";
+import { ArrowLeft, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
@@ -365,9 +365,10 @@ function DeadlinePreview({
       <button
         type="button"
         onClick={onCancelOverride}
-        className="self-start text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+        className="inline-flex items-center gap-1 self-start text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
       >
-        ← Revenir au défaut ({describeDeadlineOffset(offsetMs)})
+        <ArrowLeft size={12} strokeWidth={2} />
+        Revenir au défaut ({describeDeadlineOffset(offsetMs)})
       </button>
     );
   }

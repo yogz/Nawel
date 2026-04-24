@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth-config";
 import { CreateOutingForm } from "@/features/sortie/components/create-outing-form";
 
@@ -61,13 +62,17 @@ export default async function NouvelleAvancePage({ searchParams }: Props) {
   return (
     <main className="mx-auto min-h-[100dvh] max-w-xl px-6 py-14">
       <nav className="mb-10">
-        <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
-          ← Sortie
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+        >
+          <ArrowLeft size={14} strokeWidth={2} />
+          Accueil
         </Link>
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
           Formulaire avancé
         </p>
         <h1 className="text-4xl leading-tight text-encre-700">

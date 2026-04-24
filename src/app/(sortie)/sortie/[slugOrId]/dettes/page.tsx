@@ -2,6 +2,7 @@ import { and, eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { participants, purchases } from "@drizzle/sortie-schema";
@@ -83,14 +84,15 @@ export default async function DebtsPage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href={`/${canonical}`}
-          className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
         >
-          ← {outing.title}
+          <ArrowLeft size={14} strokeWidth={2} />
+          {outing.title}
         </Link>
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
           L&rsquo;argent
         </p>
         <h1 className="font-serif text-4xl leading-tight text-encre-700">Où en est-on&nbsp;?</h1>

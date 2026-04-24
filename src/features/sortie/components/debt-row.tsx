@@ -64,7 +64,7 @@ export function DebtRow({
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex flex-col">
           <span className="font-serif text-lg text-encre-700">{personName(other)}</span>
-          <span className="text-xs uppercase tracking-[0.06em] text-or-700">{statusLabel}</span>
+          <span className="text-xs uppercase tracking-[0.06em] text-or-600">{statusLabel}</span>
         </div>
         <span className="font-serif text-2xl text-encre-700">{formatCents(amountCents)}</span>
       </div>
@@ -176,7 +176,7 @@ function MethodRow({
   return (
     <li className="flex items-center justify-between gap-2 rounded-md bg-white px-3 py-2">
       <div className="flex flex-col">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
           {TYPE_LABEL[method.type]}
           {method.displayLabel ? ` · ${method.displayLabel}` : ""}
         </span>

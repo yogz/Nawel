@@ -129,7 +129,7 @@ export function DateTimePicker({
             className="group flex h-11 w-full items-center justify-between rounded-md border border-ivoire-400 bg-ivoire-50 px-3 text-left text-sm text-encre-700 transition-colors hover:border-or-500 focus-visible:border-or-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500/30"
           >
             <span className={value ? "" : "text-encre-300"}>{label}</span>
-            <CalendarIcon size={16} className="text-or-700" />
+            <CalendarIcon size={16} className="text-or-600" />
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
@@ -143,7 +143,7 @@ export function DateTimePicker({
               className="[--cell-size:2.25rem]"
             />
             <div className="flex flex-col gap-2 p-3">
-              <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+              <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
                 Heure
               </p>
               <div ref={timeListRef} className="h-[240px] w-[5.5rem] overflow-y-auto">

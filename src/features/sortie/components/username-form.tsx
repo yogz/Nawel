@@ -73,7 +73,7 @@ export function UsernameForm({ currentUsername }: Props) {
         <Button type="submit" disabled={pending || value === currentUsername || value.length === 0}>
           {pending ? "Enregistrement…" : currentUsername ? "Mettre à jour" : "Réserver ce nom"}
         </Button>
-        {justSaved && <span className="text-xs text-or-700">Enregistré.</span>}
+        {justSaved && <span className="text-xs text-or-600">Enregistré.</span>}
       </div>
     </form>
   );

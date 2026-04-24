@@ -245,7 +245,7 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
       </div>
 
       <div className="rounded-lg border border-or-500/30 bg-or-50 p-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">Total</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">Total</p>
         <p className="font-serif text-4xl text-encre-700">{formatCents(totalCents)}</p>
         <p className="mt-1 text-xs text-encre-400">
           À répartir entre {totalPlaces} place{totalPlaces > 1 ? "s" : ""}.

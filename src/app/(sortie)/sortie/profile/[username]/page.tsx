@@ -3,6 +3,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { sql } from "drizzle-orm";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -14,6 +15,7 @@ import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
+import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
@@ -103,23 +105,30 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8 flex items-center justify-between">
-        <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+        >
+          <ArrowLeft size={14} strokeWidth={2} />
           Accueil
         </Link>
-        {isSelf && (
-          <Link
-            href="/moi"
-            className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
-          >
-            Modifier mon profil
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <ProfileShareButton url={`${PUBLIC_BASE}/@${row.username}`} name={row.name} />
+          {isSelf && (
+            <Link
+              href="/moi"
+              className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+            >
+              Modifier
+            </Link>
+          )}
+        </div>
       </nav>
 
       <header className="mb-10 flex items-center gap-5">
         <UserAvatar name={row.name} image={row.image} size={72} />
         <div className="flex-1">
-          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
             @{row.username}
           </p>
           <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
@@ -196,7 +205,7 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
         Passées
       </p>
       <ul className="flex flex-col gap-4">
@@ -218,12 +227,12 @@ function PastSection({
         <details className="group mt-4 border-t border-encre-100 pt-4">
           <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
             <span>Voir les {hidden.length} autres</span>
-            <span
+            <ChevronRight
+              size={14}
+              strokeWidth={2.2}
               aria-hidden="true"
               className="transition-transform duration-200 group-open:rotate-90"
-            >
-              ›
-            </span>
+            />
           </summary>
           <ul className="mt-4 flex flex-col gap-4">
             {hidden.map((o) => (
@@ -279,7 +288,7 @@ function OutingSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
         {title}
       </p>
       <ul className="flex flex-col gap-4">
