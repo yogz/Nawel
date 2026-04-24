@@ -208,6 +208,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         startsAt={outing.fixedDatetime}
         ticketUrl={outing.eventLink}
         heroImageUrl={outing.heroImageUrl}
+        canonicalPath={canonical}
       />
 
       <section
