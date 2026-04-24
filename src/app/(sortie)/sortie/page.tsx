@@ -276,13 +276,15 @@ function PublicHome() {
           Sortie
         </p>
         <h1 className="mb-6 text-5xl leading-[1.02] text-encre-700 sm:text-6xl">
-          Qui vient,
+          Organise.
           <br />
-          <span className="text-bordeaux-600">vraiment</span>&nbsp;?
+          Ils répondent.
+          <br />
+          <span className="text-bordeaux-600">Tu sais.</span>
         </h1>
         <p className="mb-10 max-w-md text-lg leading-relaxed text-encre-400">
-          Un lien, tout le monde répond. Fini le bordel WhatsApp pour compter qui vient, qui paie
-          les places, qui doit combien.
+          Tu lances la sortie, tout le monde répond d&rsquo;un tap. Qui vient, qui prend les places,
+          qui rembourse combien. Tout d&rsquo;un coup d&rsquo;œil.
         </p>
 
         <Button asChild size="lg" className="px-8">
