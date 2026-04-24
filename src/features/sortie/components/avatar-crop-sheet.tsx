@@ -38,15 +38,41 @@ export function AvatarCropSheet({ file, onCancel, onCropped }: Props) {
   useEffect(() => {
     if (!file) {
       setImageSrc(null);
+      setError(null);
       return;
     }
     const url = URL.createObjectURL(file);
-    setImageSrc(url);
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setAreaPixels(null);
-    setError(null);
-    return () => URL.revokeObjectURL(url);
+    let cancelled = false;
+
+    // Probe the image before mounting the Cropper. react-easy-crop has no
+    // error callback: if the browser can't decode the file (HEIC/HEIF in
+    // Android Chrome or some in-app WebViews, corrupted file, etc.) it
+    // leaves the canvas blank, `onCropComplete` never fires, and the
+    // "Utiliser cette photo" button stays disabled with no feedback —
+    // the user has no way out. Catching the decode failure here means
+    // we can show a sentence they can act on.
+    const probe = new Image();
+    probe.onload = () => {
+      if (cancelled) return;
+      setImageSrc(url);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setAreaPixels(null);
+      setError(null);
+    };
+    probe.onerror = () => {
+      if (cancelled) return;
+      setImageSrc(null);
+      setError(
+        "Ce format d'image n'est pas supporté par ton navigateur. Choisis une autre photo (JPEG ou PNG)."
+      );
+    };
+    probe.src = url;
+
+    return () => {
+      cancelled = true;
+      URL.revokeObjectURL(url);
+    };
   }, [file]);
 
   const onCropComplete = useCallback((_area: Area, pixels: Area) => {
