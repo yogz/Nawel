@@ -64,12 +64,12 @@ export function OutingProfileCard({
         <img
           src={outing.heroImageUrl}
           alt=""
-          className="aspect-[21/9] w-full bg-ivoire-100 object-cover object-top"
+          className="aspect-[3/1] w-full bg-ivoire-100 object-cover object-top"
         />
       ) : (
         <div
           aria-hidden="true"
-          className="aspect-[21/9] w-full bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
+          className="aspect-[3/1] w-full bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
         />
       )}
 
