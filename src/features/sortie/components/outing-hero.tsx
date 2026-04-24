@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 
 type Props = {
@@ -19,7 +20,7 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
         <img
           src={heroImageUrl}
           alt=""
-          className="mb-6 aspect-[16/10] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)]"
+          className="mb-6 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
         />
       )}
 
@@ -40,9 +41,10 @@ export function OutingHero({ title, location, startsAt, ticketUrl, heroImageUrl 
           href={ticketUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 text-sm text-bordeaux-600 underline-offset-4 hover:underline"
+          className="mt-3 inline-flex items-center gap-1 text-sm text-bordeaux-600 underline-offset-4 hover:underline"
         >
-          Prendre mes places ↗
+          Prendre mes places
+          <ArrowUpRight size={14} strokeWidth={2.2} />
         </a>
       )}
     </header>
