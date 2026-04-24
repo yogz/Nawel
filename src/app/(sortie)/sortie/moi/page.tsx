@@ -19,7 +19,7 @@ import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
-import { UserAvatar } from "@/features/sortie/components/user-avatar";
+import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
 
 export const metadata = {
   title: "Mon profil",
@@ -101,7 +101,7 @@ export default async function ProfileSettingsPage() {
       </nav>
 
       <header className="mb-12 flex flex-col items-start gap-5">
-        <UserAvatar name={name} image={image} size={96} />
+        <AvatarPicker name={name} image={image} size={96} />
         <div className="flex flex-col items-start gap-3">
           <h1 className="font-serif text-4xl leading-[1.02] tracking-tight text-encre-700 sm:text-5xl">
             {name}
@@ -132,8 +132,6 @@ export default async function ProfileSettingsPage() {
         <div className="flex flex-col gap-6">
           <UsernameForm currentUsername={username} />
           <ProfileDetailsForm
-            name={name}
-            image={image}
             bio={row?.bio ?? null}
             instagramHandle={row?.instagramHandle ?? null}
             tiktokHandle={row?.tiktokHandle ?? null}
