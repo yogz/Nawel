@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 
 type Props = {
@@ -16,21 +18,32 @@ type Props = {
   total?: number;
   heroImageUrl?: string | null;
   /**
-   * Eyebrow text above the relative date. Defaults to "Ta prochaine
-   * sortie" for the logged-in home view. Pass "Prochaine sortie" (or a
-   * name-prefixed variant) when rendering on a public profile where "ta"
-   * is weird.
+   * Eyebrow text above the headline. Defaults to "Ta prochaine sortie"
+   * for the logged-in home view. Pass "Prochaine sortie" on a public
+   * profile where "ta" is wrong for a stranger's page.
    */
   eyebrow?: string;
+  /**
+   * HTML heading level for the title. Defaults to `h2` because the
+   * public profile already owns the page's `h1` with the user's name.
+   * On the logged-in home the hero *is* the top-of-page focus — pass
+   * `h1` there so the document has exactly one.
+   */
+  headingLevel?: "h1" | "h2";
 };
 
 /**
- * Big "what's next" section for both the logged-in home and the public
- * profile. The date + title + headcount stack as text; the poster sits
- * below as a hero-sized block. Portrait posters are shown contained
- * over a blurred version of themselves as backdrop — the Spotify /
- * Letterboxd pattern — so the affiche's full composition is visible
- * without a crop.
+ * Featured "what's next" hero on both the logged-in home and the public
+ * profile. Title-first anchoring — on a shareable vitrine, a visitor
+ * remembers *"Nicolas is going to see Pene Pati"*, not a relative date
+ * that rewrites itself every morning. The date is a supporting meta
+ * line: relative ("Dans 6 jours") for immediacy + absolute ("Jeudi 30
+ * avril · 20h") so the page is stable across bookmarks.
+ *
+ * Poster sits in a simple `aspect-[3/2] object-cover` block with a
+ * light ring + shadow. The earlier blurred-backdrop pattern was
+ * producing dead-space halos when the source photo's aspect didn't
+ * match the container — dropped.
  */
 export function LiveStatusHero({
   slug,
@@ -42,13 +55,10 @@ export function LiveStatusHero({
   total,
   heroImageUrl,
   eyebrow = "Ta prochaine sortie",
+  headingLevel = "h2",
 }: Props) {
   const canonical = slug ? `${slug}-${shortId}` : shortId;
-
-  // Show a headcount only when there's actually one to show. "0 confirmé"
-  // on a shareable vitrine reads as "nobody's going" — negative social
-  // proof on the very card we most want to convert. Hide until at least
-  // one person has said yes.
+  const Heading = headingLevel;
   const pending = total !== undefined ? Math.max(0, total - confirmed) : 0;
   const headcount =
     confirmed > 0
@@ -61,37 +71,34 @@ export function LiveStatusHero({
         {eyebrow}
       </p>
       <Link href={`/${canonical}`} className="group block transition-transform active:scale-[0.99]">
-        <h2 className="text-3xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-bordeaux-700 sm:text-4xl">
-          {relativeOutingHero(startsAt)}
-        </h2>
-        <p className="mt-2 text-base text-encre-600">
-          <span className="font-bold text-encre-700">{title}</span>
-          {location && <span className="text-encre-500"> · {location}</span>}
+        <Heading className="font-serif text-4xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-or-600 sm:text-5xl">
+          {title}
+        </Heading>
+        <p className="mt-2 text-base text-encre-500">
+          <span className="font-semibold text-encre-700">{relativeOutingHero(startsAt)}</span>
+          <span> · {formatOutingDate(startsAt)}</span>
         </p>
+        {location && <p className="text-sm text-encre-500">{location}</p>}
         {headcount && <p className="mt-1 text-sm text-encre-500">{headcount}</p>}
 
         {heroImageUrl ? (
-          // Blurred-backdrop + contained foreground. Portrait theatre
-          // posters lose their meaning when cropped landscape; this
-          // pattern keeps the affiche whole while the colour palette
-          // fills the card.
-          <div className="relative mt-5 aspect-[16/10] w-full overflow-hidden rounded-3xl shadow-[var(--shadow-velvet)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={heroImageUrl}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={heroImageUrl} alt="" className="relative mx-auto h-full object-contain" />
-          </div>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroImageUrl}
+            alt=""
+            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
+          />
         ) : (
           <div
             aria-hidden="true"
-            className="mt-5 aspect-[16/10] w-full rounded-3xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-velvet)]"
+            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
           />
         )}
+
+        <p className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-bordeaux-700 underline-offset-4 group-hover:underline">
+          Voir la sortie
+          <ArrowRight size={14} strokeWidth={2.2} />
+        </p>
       </Link>
     </section>
   );
