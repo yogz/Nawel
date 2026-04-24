@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
+import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -29,13 +30,14 @@ export default async function ProfileSettingsPage() {
         <nav className="mb-8">
           <Link
             href="/"
-            className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+            className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
           >
-            ← Sortie
+            <ArrowLeft size={14} strokeWidth={2} />
+            Accueil
           </Link>
         </nav>
         <header className="mb-10">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
             Mon profil
           </p>
           <h1 className="font-serif text-4xl leading-tight text-encre-700">Connexion requise</h1>
@@ -70,13 +72,17 @@ export default async function ProfileSettingsPage() {
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8">
-        <Link href="/" className="text-sm text-encre-400 transition-colors hover:text-bordeaux-700">
-          ← Sortie
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+        >
+          <ArrowLeft size={14} strokeWidth={2} />
+          Accueil
         </Link>
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
           Mon profil
         </p>
         <h1 className="font-serif text-4xl leading-tight text-encre-700">
@@ -165,7 +171,7 @@ function OutingListBlock({
 }) {
   return (
     <div className="mb-6">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
         {title}
       </p>
       <ArchivableOutingList

@@ -116,7 +116,7 @@ function TimeslotRowView({
         </span>
         <div className="flex shrink-0 items-center gap-3 text-xs text-encre-500">
           <span className="inline-flex items-center gap-1">
-            <Check size={12} className="text-or-700" />
+            <Check size={12} className="text-or-600" />
             {ts.yesCount}
           </span>
           <span className="inline-flex items-center gap-1">

@@ -57,7 +57,7 @@ export function LiveStatusHero({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
         {eyebrow}
       </p>
       <Link href={`/${canonical}`} className="group block transition-transform active:scale-[0.99]">
