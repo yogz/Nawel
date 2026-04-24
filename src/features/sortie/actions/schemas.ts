@@ -104,6 +104,14 @@ export const createOutingSchema = z
     // on the ticket site. Same protocol refinement as `ticketUrl` so a
     // malicious source can't slip a `javascript:` URL through.
     heroImageUrl: optionalSafeUrl,
+    // Cultural category — optional at the schema layer because the
+    // picker is skippable. Empty form value ("") becomes undefined so
+    // the insert falls back to null.
+    vibe: z
+      .enum(["theatre", "opera", "concert", "cine", "expo", "autre"])
+      .or(z.literal(""))
+      .optional()
+      .transform((v) => (v ? v : undefined)),
     creatorDisplayName: trimmedString.min(1).max(100),
     creatorEmail: z
       .union([z.literal(""), z.string().email().max(255)])

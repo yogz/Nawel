@@ -29,6 +29,15 @@ export const outingStatus = sortie.enum("outing_status", [
 
 export const outingMode = sortie.enum("outing_mode", ["fixed", "vote"]);
 
+export const outingVibe = sortie.enum("outing_vibe", [
+  "theatre",
+  "opera",
+  "concert",
+  "cine",
+  "expo",
+  "autre",
+]);
+
 export const rsvpResponse = sortie.enum("rsvp_response", ["yes", "no", "handle_own", "interested"]);
 
 export const pricingMode = sortie.enum("pricing_mode", ["unique", "category", "nominal"]);
@@ -82,6 +91,10 @@ export const outings = sortie.table(
     // creator types everything by hand. Stored as a URL (we don't rehost
     // the image — it's the ticket site's CDN).
     heroImageUrl: text("hero_image_url"),
+    // Cultural category captured at create time. Nullable to stay
+    // compatible with all historical outings + to let the creator skip
+    // the picker if they don't want to commit.
+    vibe: outingVibe("vibe"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
