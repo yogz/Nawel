@@ -53,35 +53,38 @@ export function LiveStatusHero({
       : `${confirmed} confirmé${confirmed > 1 ? "s" : ""}${pending > 0 ? ` · ${pending} en attente` : ""}`;
 
   return (
-    <Link
-      href={`/${canonical}`}
-      className="relative mb-10 block overflow-hidden rounded-3xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] p-6 shadow-[var(--shadow-velvet)] transition-transform active:scale-[0.99]"
-    >
-      {heroImageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={heroImageUrl}
-          alt=""
-          aria-hidden="true"
-          // Scale up so the blur's soft edges don't expose the card
-          // border. Opacity low enough that any poster palette can sit
-          // under the text without compromising contrast.
-          className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-2xl"
-        />
-      )}
-      <div className="relative z-10">
-        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-bordeaux-700">
-          {eyebrow}
-        </p>
-        <h1 className="mt-2 text-4xl leading-[0.98] font-extrabold tracking-tight text-encre-700 sm:text-5xl">
+    <section className="mb-10">
+      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
+        {eyebrow}
+      </p>
+      <Link href={`/${canonical}`} className="group block transition-transform active:scale-[0.99]">
+        <h1 className="text-4xl leading-[0.98] font-extrabold tracking-tight text-encre-700 group-hover:text-bordeaux-700 sm:text-5xl">
           {relativeOutingHero(startsAt)}
         </h1>
-        <p className="mt-4 text-base text-encre-600">
+        <p className="mt-3 text-base text-encre-600">
           <span className="font-bold text-encre-700">{title}</span>
           {location && <span className="text-encre-500"> · {location}</span>}
         </p>
         <p className="mt-1 text-sm text-encre-500">{headcount}</p>
-      </div>
-    </Link>
+
+        {/* Poster image (or fallback gradient). Aspect-[16/10] keeps it
+            hero-sized without dominating the viewport. The shadow +
+            rounded corners make it read as "the main event" visually,
+            distinct from the denser cards below. */}
+        {heroImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={heroImageUrl}
+            alt=""
+            className="mt-5 aspect-[16/10] w-full rounded-3xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-velvet)]"
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="mt-5 aspect-[16/10] w-full rounded-3xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-velvet)]"
+          />
+        )}
+      </Link>
+    </section>
   );
 }

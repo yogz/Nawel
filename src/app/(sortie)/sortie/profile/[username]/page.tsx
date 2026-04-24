@@ -35,7 +35,6 @@ async function resolveUser(raw: string) {
       name: true,
       username: true,
       image: true,
-      emoji: true,
       rsvpInviteToken: true,
     },
   });
@@ -119,17 +118,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       </nav>
 
       <header className="mb-10 flex items-center gap-5">
-        <div className="relative">
-          <UserAvatar name={row.name} image={row.image} size={72} />
-          {row.emoji && (
-            <span
-              aria-hidden="true"
-              className="absolute -bottom-1 -right-1 grid size-8 place-items-center rounded-full border-2 border-ivoire-50 bg-ivoire-100 text-base"
-            >
-              {row.emoji}
-            </span>
-          )}
-        </div>
+        <UserAvatar name={row.name} image={row.image} size={72} />
         <div className="flex-1">
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700">
             @{row.username}
@@ -193,17 +182,71 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         />
       )}
       {past.length > 0 && (
-        <OutingSection
-          title="Passées"
-          outings={past}
-          showRsvp={false}
-          myRsvpByOuting={new Map()}
-          loggedInName={session?.user?.name ?? null}
-          isPast
-          isSelf={isSelf}
-        />
+        <details className="group mb-10 border-t border-encre-100 pt-4">
+          <summary className="mb-3 flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-or-700 transition-colors hover:text-bordeaux-700">
+            <span>Passées ({past.length})</span>
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-200 group-open:rotate-90"
+            >
+              ›
+            </span>
+          </summary>
+          <div className="mt-4">
+            <PastOutings
+              outings={past}
+              loggedInName={session?.user?.name ?? null}
+              isSelf={isSelf}
+            />
+          </div>
+        </details>
       )}
     </main>
+  );
+}
+
+function PastOutings({
+  outings,
+  loggedInName,
+  isSelf,
+}: {
+  outings: OutingRow[];
+  loggedInName: string | null;
+  isSelf: boolean;
+}) {
+  return isSelf ? (
+    <ArchivableOutingList
+      items={outings.map((o) => ({
+        row: o,
+        node: (
+          <OutingProfileCard
+            outing={o}
+            showRsvp={false}
+            myRsvp={null}
+            loggedInName={loggedInName}
+            outingBaseUrl={PUBLIC_BASE}
+            isPast
+          />
+        ),
+      }))}
+      isPast
+      listClassName="flex flex-col gap-4"
+    />
+  ) : (
+    <ul className="flex flex-col gap-4">
+      {outings.map((o) => (
+        <li key={o.id}>
+          <OutingProfileCard
+            outing={o}
+            showRsvp={false}
+            myRsvp={null}
+            loggedInName={loggedInName}
+            outingBaseUrl={PUBLIC_BASE}
+            isPast
+          />
+        </li>
+      ))}
+    </ul>
   );
 }
 
