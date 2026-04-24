@@ -84,7 +84,7 @@ export default async function SortieHome() {
       {upcoming.length > 1 && (
         <section className="mb-10">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-encre-300">
-            Autres à venir
+            À venir
           </h2>
           <UpcomingOutingsList outings={upcoming.slice(1)} />
         </section>
@@ -131,7 +131,7 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
     <>
       <header className="mb-8">
         <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
-        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme ?</p>
+        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme&nbsp;?</p>
       </header>
       <div className="mb-12 grid grid-cols-3 gap-3 sm:grid-cols-6">
         <VibeButton
@@ -208,7 +208,7 @@ function PublicHome() {
         <h1 className="mb-6 text-5xl leading-[1.02] text-encre-700 sm:text-6xl">
           Qui vient,
           <br />
-          <span className="text-bordeaux-600">vraiment</span> ?
+          <span className="text-bordeaux-600">vraiment</span>&nbsp;?
         </h1>
         <p className="mb-10 max-w-md text-lg leading-relaxed text-encre-400">
           Un lien, tout le monde répond. Fini le bordel WhatsApp pour compter qui vient, qui paie

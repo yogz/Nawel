@@ -107,7 +107,7 @@ export function RsvpPrompt({
           />
           <PageResponseButton
             icon={<X size={22} strokeWidth={2.5} />}
-            label={isComing ? "Je peux plus" : "Je peux pas"}
+            label={isComing ? "Finalement non" : "Je peux pas"}
             tone="no"
             active={!isComing}
             onClick={handleNoTap}

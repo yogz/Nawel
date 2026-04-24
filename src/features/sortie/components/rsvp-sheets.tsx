@@ -46,7 +46,7 @@ export function NoNameSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="theme-sortie max-h-[60dvh] overflow-y-auto">
         <SheetHeader className="mb-5 text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">Qui dit non ?</SheetTitle>
+          <SheetTitle className="font-serif text-2xl text-encre-700">Qui dit non&nbsp;?</SheetTitle>
           <p className="text-sm text-encre-400">Juste ton prénom, on s&rsquo;arrête là.</p>
         </SheetHeader>
         <form action={formAction} className="flex flex-col gap-4">

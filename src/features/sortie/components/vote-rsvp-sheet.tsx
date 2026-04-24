@@ -102,7 +102,9 @@ export function VoteRsvpSheet({
       </SheetTrigger>
       <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
         <SheetHeader className="mb-6 text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">Quand tu peux ?</SheetTitle>
+          <SheetTitle className="font-serif text-2xl text-encre-700">
+            Quand tu peux&nbsp;?
+          </SheetTitle>
           <p className="text-sm text-encre-400">
             Coche les créneaux qui te vont. Rien de coché = tu peux pas.
           </p>

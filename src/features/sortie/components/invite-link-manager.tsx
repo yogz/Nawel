@@ -80,7 +80,7 @@ export function InviteLinkManager({ username, token, origin }: Props) {
   function handleRevoke(e: React.FormEvent<HTMLFormElement>) {
     if (
       !window.confirm(
-        "Le lien va être supprimé. Tes amis ne pourront plus RSVP depuis ton profil. Continuer ?"
+        "Le lien va être supprimé. Tes amis ne pourront plus répondre depuis ton profil. Continuer ?"
       )
     ) {
       e.preventDefault();

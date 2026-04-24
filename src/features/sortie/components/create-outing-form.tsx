@@ -184,7 +184,7 @@ export function CreateOutingForm({
         type="url"
         defaultValue={pastedTicketUrl}
         placeholder="https://…"
-        helper="Quelqu'un achètera les places pour le groupe ? On s'occupe de la comptabilité après."
+        helper="Quelqu'un achètera les places pour le groupe&nbsp;? On s'occupe de la comptabilité après."
         error={errors.ticketUrl?.[0]}
       />
 

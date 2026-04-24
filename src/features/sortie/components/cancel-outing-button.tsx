@@ -88,7 +88,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
                     id="cancel-outing-title"
                     className="font-serif text-lg leading-tight text-encre-700"
                   >
-                    Annuler « {outingTitle} » ?
+                    Annuler «&nbsp;{outingTitle}&nbsp;»&nbsp;?
                   </h3>
                 </div>
               </div>

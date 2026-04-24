@@ -91,7 +91,7 @@ export function RemoveRsvpButton({
                 id="remove-rsvp-title"
                 className="mb-2 font-serif text-lg leading-tight text-encre-700"
               >
-                Retirer ta réponse ?
+                Retirer ta réponse&nbsp;?
               </h3>
               <p className="mb-6 text-sm text-encre-500">
                 Ta réponse disparaîtra des compteurs. Tu pourras répondre à nouveau plus tard.
