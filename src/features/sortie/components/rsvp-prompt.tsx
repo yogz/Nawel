@@ -262,7 +262,7 @@ function PageResponseButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex h-20 flex-col items-center justify-center gap-1 rounded-2xl px-3 text-center text-base font-black leading-tight tracking-tight transition-transform active:scale-95 ${palette}`}
+      className={`flex h-20 flex-col items-center justify-center gap-1 rounded-2xl px-3 text-center text-base font-black leading-tight tracking-tight transition-transform motion-safe:active:scale-95 ${palette}`}
     >
       <span>{icon}</span>
       <span>{label}</span>

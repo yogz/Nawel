@@ -146,7 +146,7 @@ export default async function SortieHome() {
         style={{
           bottom: "max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))",
         }}
-        className="fixed right-5 z-50 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 active:scale-95 sm:right-8 sm:w-auto sm:justify-start sm:pr-6 sm:pl-5"
+        className="fixed right-5 z-50 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-bordeaux-700 motion-safe:active:scale-95 sm:right-8 sm:w-auto sm:justify-start sm:pr-6 sm:pl-5"
       >
         <Plus size={22} strokeWidth={2.5} />
         <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
@@ -286,7 +286,7 @@ function VibeButton({
     <Link
       href={href}
       style={{ backgroundColor: bg }}
-      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-3 text-encre-700 shadow-[var(--shadow-xs)] transition-transform duration-[var(--dur-fast)] active:scale-95 active:rotate-[-1deg]"
+      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-3 text-encre-700 shadow-[var(--shadow-xs)] transition-transform duration-[var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
     >
       <span className="text-encre-600">{icon}</span>
       <span className="text-base font-black leading-none tracking-tight">{label}</span>

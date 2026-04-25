@@ -907,7 +907,7 @@ function WhenStep({
         <button
           type="button"
           onClick={commitPending}
-          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-encre-200 bg-transparent text-sm font-medium text-encre-400 transition-colors active:scale-[0.99] hover:border-bordeaux-300 hover:text-bordeaux-700"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-encre-200 bg-transparent text-sm font-medium text-encre-400 transition-colors motion-safe:active:scale-[0.99] hover:border-bordeaux-300 hover:text-bordeaux-700"
         >
           + Proposer une autre date
         </button>
@@ -1040,7 +1040,7 @@ function DeadlineSection({
             className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
               !isCustom
                 ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                : "border-encre-100 bg-white text-encre-700 active:scale-95"
+                : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
             }`}
           >
             Auto
@@ -1064,7 +1064,7 @@ function DeadlineSection({
                 className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
                   active
                     ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                    : "border-encre-100 bg-white text-encre-700 active:scale-95"
+                    : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
                 }`}
               >
                 {p.label}
@@ -1075,7 +1075,7 @@ function DeadlineSection({
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-9 items-center gap-1 rounded-full border-2 border-dashed border-bordeaux-300 bg-transparent px-3 text-xs font-bold text-bordeaux-600 transition-colors active:scale-95 hover:border-bordeaux-600"
+                className="inline-flex h-9 items-center gap-1 rounded-full border-2 border-dashed border-bordeaux-300 bg-transparent px-3 text-xs font-bold text-bordeaux-600 transition-colors motion-safe:active:scale-95 hover:border-bordeaux-600"
               >
                 <CalendarDays size={12} />
                 Date précise

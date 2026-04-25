@@ -124,7 +124,7 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
       <button
         type="button"
         onClick={handleShare}
-        className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-bold text-encre-700 shadow-[var(--shadow-lg)] transition-transform active:scale-95"
+        className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-bold text-encre-700 shadow-[var(--shadow-lg)] transition-transform motion-safe:active:scale-95"
       >
         <Share2 size={16} />
         Partager
