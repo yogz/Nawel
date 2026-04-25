@@ -163,11 +163,17 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
     !deadlinePassed && !me?.response && !(outing.mode === "vote" && !outing.chosenTimeslotId);
 
   return (
-    <main className={`mx-auto max-w-xl px-6 pt-10 ${shouldStickRsvp ? "pb-44" : "pb-24"}`}>
-      <nav className="mb-6 flex items-center justify-between">
+    <main className={`relative mx-auto max-w-xl px-6 ${shouldStickRsvp ? "pb-44" : "pb-24"}`}>
+      {/* Top nav floats over the full-bleed hero. The pill backgrounds
+          sit on a backdrop blur so the affordances stay readable on
+          any photo, including ones with a busy upper third. */}
+      <nav
+        className="absolute inset-x-6 z-30 flex items-center justify-between"
+        style={{ top: "max(env(safe-area-inset-top), 1rem)" }}
+      >
         <Link
           href={back.href}
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-700 backdrop-blur-md transition-colors hover:bg-black/55"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           {back.label}
@@ -175,12 +181,21 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         {isCreator && (
           <Link
             href={`/${canonical}/modifier`}
-            className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400 transition-colors hover:text-bordeaux-600"
+            className="inline-flex h-11 items-center rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-700 backdrop-blur-md transition-colors hover:bg-black/55"
           >
             modifier ↗
           </Link>
         )}
       </nav>
+
+      <OutingHero
+        title={outing.title}
+        location={outing.location}
+        startsAt={outing.fixedDatetime}
+        ticketUrl={outing.eventLink}
+        heroImageUrl={outing.heroImageUrl}
+        canonicalPath={canonical}
+      />
 
       {justCreated && isCreator && (
         <CreateSuccessBanner
@@ -201,15 +216,6 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           />
         </div>
       )}
-
-      <OutingHero
-        title={outing.title}
-        location={outing.location}
-        startsAt={outing.fixedDatetime}
-        ticketUrl={outing.eventLink}
-        heroImageUrl={outing.heroImageUrl}
-        canonicalPath={canonical}
-      />
 
       <section
         className="mt-10 overflow-hidden rounded-[28px] border border-ivoire-400 bg-ivoire-100 p-6 shadow-[var(--shadow-velvet)]"
