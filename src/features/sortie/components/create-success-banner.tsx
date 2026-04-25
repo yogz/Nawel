@@ -76,7 +76,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
             type="button"
             onClick={handleCopy}
             aria-label={copied ? "Lien copié" : "Copier le lien"}
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-encre-100 bg-white px-4 py-2 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700"
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-200 px-4 py-2 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-400 hover:bg-ivoire-300"
           >
             {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
             {copied ? "Copié" : "Copier"}

@@ -42,10 +42,10 @@ export function TimeDrum({ selected, onSelect }: Props) {
               type="button"
               onClick={() => pick(t)}
               aria-pressed={isSelected}
-              className={`flex h-14 items-center justify-center rounded-xl border-2 text-lg font-black tabular-nums tracking-tight transition-colors ${
+              className={`flex h-14 items-center justify-center rounded-xl border text-lg font-black tabular-nums tracking-tight transition-colors ${
                 isSelected
                   ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
+                  : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
               }`}
             >
               {t.replace(":", "h")}
@@ -72,7 +72,7 @@ export function TimeDrum({ selected, onSelect }: Props) {
       </div>
 
       {customOpen && (
-        <div className="flex items-center gap-3 rounded-xl border border-encre-100 bg-white p-3">
+        <div className="flex items-center gap-3 rounded-xl border border-encre-300 bg-ivoire-200 p-3">
           <label
             htmlFor="custom-time-input"
             className="text-xs font-black uppercase tracking-[0.12em] text-encre-400"
