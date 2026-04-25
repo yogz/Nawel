@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, Sparkles } from "lucide-react";
 import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
@@ -60,9 +61,16 @@ export function TicketmasterSuggestions({ results, onPick }: Props) {
                 className="flex w-full items-start gap-3 rounded-xl border border-encre-100 bg-white p-3 text-left transition-colors duration-300 hover:border-bordeaux-200 hover:bg-bordeaux-50 focus-visible:border-bordeaux-300 focus-visible:bg-bordeaux-50 focus-visible:outline-none"
               >
                 {result.image ? (
-                  <img
+                  // `unoptimized` skips Next's image proxy — Ticketmaster's
+                  // CDN (s1.ticketm.net) isn't in next.config remotePatterns
+                  // and whitelisting it for a 56px thumbnail in a best-effort
+                  // widget would be over-engineering. Direct CDN load is fine.
+                  <Image
                     src={result.image}
                     alt=""
+                    width={56}
+                    height={56}
+                    unoptimized
                     loading="lazy"
                     className="size-14 shrink-0 rounded-lg object-cover"
                   />

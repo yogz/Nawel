@@ -444,14 +444,19 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
  * search endpoint when the user types non-URL text ≥3 chars. Aborts in
  * flight requests on input change so we don't paint stale suggestions.
  * Any failure (network, key missing, no match) → empty array, silent.
+ *
+ * The "should we even show suggestions" gate is derived (not stored)
+ * to avoid an effect that synchronously calls setState on the invalid
+ * branch — react-hooks/set-state-in-effect rule. When the input falls
+ * below the threshold we just return `[]` directly.
  */
 function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterResult[] {
   const [results, setResults] = useState<TicketmasterResult[]>([]);
   const abortRef = useRef<AbortController | null>(null);
+  const shouldFetch = enabled && query.length >= 3;
 
   useEffect(() => {
-    if (!enabled || query.length < 3) {
-      setResults([]);
+    if (!shouldFetch) {
       return;
     }
     const handle = setTimeout(() => {
@@ -480,9 +485,9 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
       clearTimeout(handle);
       abortRef.current?.abort();
     };
-  }, [query, enabled]);
+  }, [query, shouldFetch]);
 
-  return results;
+  return shouldFetch ? results : [];
 }
 
 function PasteStep({
@@ -592,6 +597,20 @@ function PasteStep({
           }}
         />
       </div>
+
+      <TicketmasterSuggestions
+        results={suggestions}
+        onPick={(result) => {
+          const venueLine = [result.venue, result.city].filter(Boolean).join(", ");
+          onParsed({
+            title: result.title,
+            venue: venueLine || null,
+            image: result.image,
+            startsAt: result.startsAt,
+            ticketUrl: result.ticketUrl,
+          });
+        }}
+      />
 
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
