@@ -62,9 +62,9 @@ export function ParticipantList({ participants }: { participants: Participant[] 
             const extras = formatExtras(p.extraAdults, p.extraChildren);
             const display = displayNameOf(p) ?? "Quelqu'un";
             return (
-              <li key={p.id} className="flex items-center gap-2.5 text-encre-600">
-                <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
-                <span className="min-w-0 truncate">
+              <li key={p.id} className="flex items-center gap-3 text-encre-600">
+                <UserAvatar name={display} image={p.user?.image ?? null} size={32} />
+                <span className="min-w-0 truncate text-base">
                   {display}
                   {extras && <span className="text-encre-400"> {extras}</span>}
                 </span>
@@ -100,16 +100,16 @@ function SecondarySection({
 }) {
   return (
     <div className="mt-5 border-t border-ivoire-400 pt-4">
-      <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-encre-400">
+      <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
         {label} · {count}
       </p>
       <ul className="flex flex-col gap-2">
         {rows.map((p) => {
           const display = displayNameOf(p) ?? "Quelqu'un";
           return (
-            <li key={p.id} className="flex items-center gap-2.5 text-encre-500">
-              <UserAvatar name={display} image={p.user?.image ?? null} size={24} />
-              <span className="min-w-0 truncate">{display}</span>
+            <li key={p.id} className="flex items-center gap-3 text-encre-500">
+              <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
+              <span className="min-w-0 truncate text-sm">{display}</span>
             </li>
           );
         })}

@@ -120,31 +120,31 @@ export function OutingProfileCard({
       <div className="flex min-w-0 flex-1 flex-col">
         {statusEyebrow && (
           <p
-            className={`flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.06em] ${
+            className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.06em] ${
               statusEyebrow.tone === "confirmed" ? "text-bordeaux-600" : "text-encre-400"
             }`}
           >
             {statusEyebrow.tone === "confirmed" ? (
-              <Check size={11} strokeWidth={3} />
+              <Check size={13} strokeWidth={3} />
             ) : (
-              <X size={11} strokeWidth={3} />
+              <X size={13} strokeWidth={3} />
             )}
             {statusEyebrow.label}
           </p>
         )}
         {dateLabel && (
           <p
-            className={`text-[11px] font-semibold uppercase tracking-[0.06em] ${
+            className={`text-xs font-semibold uppercase tracking-[0.06em] ${
               statusEyebrow ? "text-encre-400" : "text-bordeaux-600"
             }`}
           >
             {dateLabel}
           </p>
         )}
-        <h3 className="truncate font-serif text-[15px] font-bold leading-tight text-encre-700 group-hover:text-or-600">
+        <h3 className="truncate font-serif text-base font-bold leading-tight text-encre-700 group-hover:text-or-600">
           {outing.title}
         </h3>
-        {meta && <p className="truncate text-xs text-encre-500">{meta}</p>}
+        {meta && <p className="truncate text-sm text-encre-500">{meta}</p>}
       </div>
     </>
   );

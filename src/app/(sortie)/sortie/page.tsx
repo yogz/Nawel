@@ -73,7 +73,7 @@ export default async function SortieHome() {
           aria-label="Mon profil"
           className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivoire-50"
         >
-          <UserAvatar name={session.user.name} image={avatarImage} size={36} />
+          <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
 
@@ -111,7 +111,7 @@ export default async function SortieHome() {
 
       {restUpcoming.length > 0 && (
         <section className="mt-4 mb-10">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
             À venir
           </p>
           <ul className="flex flex-col gap-4">
@@ -173,7 +173,7 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
         Passées
       </p>
       <ul className="flex flex-col gap-4">
@@ -193,7 +193,7 @@ function PastSection({
 
       {hidden.length > 0 && (
         <details className="group mt-4 border-t border-encre-100 pt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
+          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
             <span>Voir les {hidden.length} autres</span>
             <ChevronRight
               size={14}
@@ -289,7 +289,7 @@ function VibeButton({
       className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-3 text-encre-700 shadow-[var(--shadow-xs)] transition-transform duration-[var(--dur-fast)] active:scale-95 active:rotate-[-1deg]"
     >
       <span className="text-encre-600">{icon}</span>
-      <span className="text-[15px] font-black leading-none tracking-tight">{label}</span>
+      <span className="text-base font-black leading-none tracking-tight">{label}</span>
     </Link>
   );
 }
@@ -298,7 +298,7 @@ function PublicHome() {
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 py-20">
       <header className="flex flex-col items-start">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-bordeaux-600">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-bordeaux-600">
           Sortie
         </p>
         <h1 className="mb-6 text-5xl leading-[1.02] text-encre-700 sm:text-6xl">
