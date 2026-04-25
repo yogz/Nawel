@@ -67,7 +67,7 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-encre-700/70 px-6 backdrop-blur-sm"
+      className="fixed inset-y-0 left-1/2 z-[100] flex w-full max-w-[520px] -translate-x-1/2 flex-col items-center justify-center bg-encre-700/70 px-6 backdrop-blur-sm"
     >
       <button
         type="button"

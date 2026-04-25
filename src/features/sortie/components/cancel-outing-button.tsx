@@ -67,7 +67,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-40 bg-encre-700/50"
+              className="fixed inset-y-0 left-1/2 z-40 w-full max-w-[520px] -translate-x-1/2 bg-encre-700/50"
             />
             <motion.div
               role="dialog"
