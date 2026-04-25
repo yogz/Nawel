@@ -3,8 +3,10 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera } from "lucide-react";
-import { updateAvatarAction } from "@/features/sortie/actions/profile-actions";
-import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import {
+  updateAvatarAction,
+  type AvatarActionState,
+} from "@/features/sortie/actions/profile-actions";
 import { AvatarCropSheet } from "./avatar-crop-sheet";
 import { UserAvatar } from "./user-avatar";
 
@@ -30,14 +32,16 @@ type Props = {
 export function AvatarPicker({ name, image, size = 80 }: Props) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
+  const [state, formAction, pending] = useActionState<AvatarActionState, FormData>(
     updateAvatarAction,
-    {} as FormActionState
+    {} as AvatarActionState
   );
   // The file the user just picked — opens the crop sheet when set.
   const [pickedFile, setPickedFile] = useState<File | null>(null);
-  // Optimistic preview from the cropped blob. Replaced by the real
-  // `image` prop once `router.refresh()` propagates the new server URL.
+  // Optimistic preview. Holds either a `blob:` URL (immediately after
+  // the user crops, before the server has replied) or the canonical
+  // Vercel Blob URL (after the action returns it). The blob: form is
+  // swapped + revoked on success so it doesn't leak across uploads.
   const [preview, setPreview] = useState<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,18 +70,26 @@ export function AvatarPicker({ name, image, size = 80 }: Props) {
     formAction(fd);
   }
 
-  // Refresh server data the moment the action resolves successfully,
-  // so the parent page picks up the new image URL and the optimistic
-  // preview can be dropped. Tracked via a ref so we only fire once
-  // per pending → idle transition.
+  // On successful upload: swap the blob: preview for the canonical
+  // Vercel Blob URL the action just returned, revoke the blob URL so
+  // we don't leak it, and refresh so other surfaces (home nav, public
+  // profile) pick up the new value too. Tracked via a ref so we only
+  // fire once per pending → idle transition.
   const wasPending = useRef(false);
   useEffect(() => {
     const justFinished = wasPending.current && !pending;
     wasPending.current = pending;
-    if (justFinished && state.message === "Photo mise à jour.") {
+    if (justFinished && state.imageUrl) {
+      const nextUrl = state.imageUrl;
+      setPreview((prev) => {
+        if (prev?.startsWith("blob:")) {
+          URL.revokeObjectURL(prev);
+        }
+        return nextUrl;
+      });
       router.refresh();
     }
-  }, [pending, state.message, router]);
+  }, [pending, state.imageUrl, router]);
 
   const shown = preview ?? image;
   // Scale the badge and its ring against the avatar size so it stays
