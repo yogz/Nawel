@@ -68,7 +68,11 @@ export default async function SortieHome() {
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
       <nav className="mb-8 flex items-center justify-end">
-        <Link href="/moi" aria-label="Mon profil">
+        <Link
+          href="/moi"
+          aria-label="Mon profil"
+          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ivoire-50"
+        >
           <UserAvatar name={session.user.name} image={avatarImage} size={36} />
         </Link>
       </nav>
@@ -106,7 +110,7 @@ export default async function SortieHome() {
       )}
 
       {restUpcoming.length > 0 && (
-        <section className="mb-10">
+        <section className="mt-4 mb-10">
           <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
             À venir
           </p>
