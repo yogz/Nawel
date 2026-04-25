@@ -117,7 +117,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
 
       {/* Weekday labels. Tracking bumped to match the year eyebrow above
           so both uppercase micro-labels share a rhythm. */}
-      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-[0.18em] text-encre-300">
+      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-[0.18em] text-encre-400">
         {WEEKDAY_LABELS.map((w, i) => (
           <span key={`${w}-${i}`}>{w}</span>
         ))}
@@ -173,9 +173,9 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
                 isSelected
                   ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-sm)]"
                   : isPast
-                    ? "cursor-not-allowed text-encre-200"
+                    ? "cursor-not-allowed text-encre-300 opacity-60"
                     : isOutside
-                      ? "cursor-not-allowed text-encre-100"
+                      ? "cursor-not-allowed text-encre-200"
                       : isToday
                         ? "text-bordeaux-700 ring-2 ring-inset ring-or-400 hover:bg-bordeaux-50"
                         : "text-encre-700 hover:bg-bordeaux-50 motion-safe:active:scale-95"

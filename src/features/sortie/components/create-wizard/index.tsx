@@ -579,7 +579,7 @@ function PasteStep({
       <div className="relative">
         <Link2
           size={18}
-          className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-encre-300"
+          className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-encre-400"
         />
         <Input
           type="text"
@@ -735,7 +735,7 @@ function InlineEditable({
   rows?: number;
 }) {
   const shared =
-    "w-full resize-none bg-transparent outline-none transition-colors placeholder:text-encre-300 focus:ring-0";
+    "w-full resize-none bg-transparent outline-none transition-colors placeholder:text-encre-400 focus:ring-0";
   if (as === "textarea") {
     return (
       <textarea

@@ -53,7 +53,7 @@
     --sortie-acid: #c7ff3c;
     --sortie-hot: #ff3d81;
     --sortie-ink: #f5f2eb;
-    --sortie-ink-muted: rgba(245, 242, 235, 0.55);
+    --sortie-ink-muted: rgba(245, 242, 235, 0.6);
     --sortie-cream: var(--sortie-bg);
     --sortie-cobalt: var(--sortie-acid);
     --sortie-coral: var(--sortie-hot);
@@ -113,7 +113,7 @@
   }
 
   .theme-sortie ::placeholder {
-    color: rgba(245, 242, 235, 0.35);
+    color: rgba(245, 242, 235, 0.5);
   }
 
   /* Acid focus ring replaces the default cyan, which clashes with the

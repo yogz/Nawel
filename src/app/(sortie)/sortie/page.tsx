@@ -391,7 +391,7 @@ function PublicHome() {
         </Link>
 
         <LoginLink
-          className="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400 hover:text-encre-700"
+          className="mt-5 font-mono text-xs uppercase tracking-[0.22em] text-encre-500 hover:text-encre-700"
           label="j&rsquo;ai déjà un compte →"
         />
       </header>
