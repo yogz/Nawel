@@ -1,5 +1,5 @@
 import { google } from "@ai-sdk/google";
-import { generateText, Output, stepCountIs, type Tool } from "ai";
+import { generateObject, generateText, type Tool } from "ai";
 import { z } from "zod";
 import { logger } from "./logger";
 
@@ -65,15 +65,29 @@ export type FindEventResult =
   | { found: true; data: EventDetails; sources: string[] }
   | { found: false; reason: "no_match" | "low_confidence" | "error" };
 
-const SYSTEM_PROMPT = `Tu es un assistant qui trouve des informations vérifiées sur des événements culturels en France (concerts, théâtre, opéra, expositions, cinéma).
+const SEARCH_SYSTEM_PROMPT = `Tu es un assistant qui trouve des informations vérifiées sur des événements culturels en France (concerts, théâtre, opéra, expositions, cinéma).
+
+Règles :
+- Utilise google_search pour récupérer des infos de sources officielles.
+- Privilégie les billetteries reconnues : Fnac Spectacles, Ticketmaster, Shotgun, Dice, sites des salles (Opéra de Paris, Philharmonie…), Allociné, Parismusées.
+- Ne propose QUE des événements à venir (date >= aujourd'hui).
+- Réponds en français, en listant explicitement :
+  * Nom de l'événement
+  * Lieu/salle, ville
+  * Date et heure exacte
+  * URL complète de la billetterie officielle (ex: https://www.fnacspectacles.com/...). CITE L'URL ENTIÈRE, pas un titre cliquable.
+  * URL complète d'une affiche / photo officielle (jpg/png/webp). CITE L'URL ENTIÈRE.
+- Si tu n'es pas certain, dis-le et n'invente rien.
+- Si l'événement n'existe pas, dis-le clairement.`;
+
+const EXTRACT_SYSTEM_PROMPT = `Extrais les informations de l'événement décrit ci-dessous en JSON structuré.
 
 Règles strictes :
-- Utilise google_search pour vérifier chaque information.
-- Ne devine JAMAIS une URL, une date ou un lieu. Si tu n'es pas certain à partir d'une source officielle (site de la salle, billetterie reconnue, page officielle de l'artiste), laisse le champ vide.
-- Privilégie les billetteries reconnues : Fnac Spectacles, Ticketmaster, Shotgun, Dice, sites des salles (Opéra de Paris, Philharmonie, etc.), Allociné, Parismusées.
-- La date doit être au format ISO 8601 local (YYYY-MM-DDTHH:mm) sans timezone.
-- L'image doit être l'affiche ou la photo officielle de l'événement, hébergée sur le site officiel.
-- confidence='high' uniquement si TOUTES les infos non vides viennent de sources officielles que tu as réellement consultées via google_search.`;
+- Si une info manque ou est incertaine dans le texte source, laisse le champ vide ("" ou date vide).
+- N'invente AUCUNE URL : seules les URL présentes dans le texte source sont valides.
+- Format date : ISO 8601 local YYYY-MM-DDTHH:mm sans timezone. Vide si inconnu.
+- confidence='high' uniquement si le texte source affirme les infos avec une source officielle citée. Sinon 'low'.
+- vibe='autre' si la catégorie n'est pas évidente.`;
 
 /**
  * Cherche les détails d'un événement culturel en France via Gemini grounding.
@@ -89,31 +103,49 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
   }
 
   try {
-    const { output, sources, providerMetadata } = await generateText({
+    // Étape 1 : recherche groundée → texte + sources.
+    // L'API Gemini interdit de combiner tool use et response JSON,
+    // donc on fait deux appels chaînés. Le 1er bénéficie du free
+    // tier grounding (search), le 2nd est de la génération texte
+    // standard (gratuite jusqu'au quota Gemini Flash).
+    const search = await generateText({
       model: google("gemini-2.5-flash"),
       tools: {
         // Cast: la signature du tool provider Google ne s'aligne pas
         // strictement sur la `ToolSet` de ai v6, mais le runtime accepte.
         google_search: google.tools.googleSearch({}) as unknown as Tool,
       },
-      system: SYSTEM_PROMPT,
+      system: SEARCH_SYSTEM_PROMPT,
       prompt: `Trouve les détails de cet événement : "${cleaned}".`,
-      output: Output.object({ schema: eventSchema }),
-      stopWhen: stepCountIs(5),
-      abortSignal: AbortSignal.timeout(10_000),
+      abortSignal: AbortSignal.timeout(25_000),
     });
 
-    const sourceUrls = (sources ?? [])
+    const sourceUrls = (search.sources ?? [])
       .map((s) => (s.sourceType === "url" ? s.url : null))
       .filter((u): u is string => typeof u === "string");
 
     logger.debug("[gemini-search] grounded result", {
       query: cleaned,
       sourcesCount: sourceUrls.length,
-      groundingMetadata: providerMetadata?.google,
+      textLength: search.text.length,
     });
 
-    const validated = validateAgainstSources(output, sourceUrls);
+    if (!search.text || search.text.trim().length < 20) {
+      return { found: false, reason: "no_match" };
+    }
+
+    // Étape 2 : extraction JSON structurée à partir du texte groundé.
+    const sourcesBlock =
+      sourceUrls.length > 0 ? `\n\nSources consultées :\n${sourceUrls.join("\n")}` : "";
+    const { object } = await generateObject({
+      model: google("gemini-2.5-flash"),
+      schema: eventSchema,
+      system: EXTRACT_SYSTEM_PROMPT,
+      prompt: `Texte source :\n${search.text}${sourcesBlock}`,
+      abortSignal: AbortSignal.timeout(20_000),
+    });
+
+    const validated = validateAgainstSources(object, sourceUrls);
     if (!validated) {
       return { found: false, reason: "low_confidence" };
     }
@@ -125,30 +157,48 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
   }
 }
 
-function validateAgainstSources(data: EventDetails, sources: string[]): EventDetails | null {
+// Format ISO local strict : YYYY-MM-DDTHH:mm (pas de timezone, pas de seconds).
+const ISO_LOCAL_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+function validateAgainstSources(data: EventDetails, _sources: string[]): EventDetails | null {
   if (!data.title || data.title.trim().length === 0) {
     return null;
   }
 
-  const sourceHosts = new Set(sources.map(safeHost).filter(Boolean) as string[]);
   const ticketHost = safeHost(data.ticketUrl);
   const imageHost = safeHost(data.heroImageUrl);
 
-  // Si la ticketUrl n'a pas été vue dans les sources ET ne pointe pas
-  // vers un domaine reconnu, on la dégrade plutôt que de la propager.
-  if (
-    data.ticketUrl &&
-    ticketHost &&
-    !sourceHosts.has(ticketHost) &&
-    !TRUSTED_TICKET_HOSTS.includes(ticketHost)
-  ) {
-    data.ticketUrl = "";
-    data.confidence = "low";
+  // ticketUrl : on n'utilise pas `sources` car les URL retournées par
+  // l'API Gemini pointent vers des redirects vertexaisearch.cloud.google.com.
+  // À la place, on valide via la whitelist de domaines billetterie/salles FR
+  // connus. Si pas dans la whitelist, on drop et on dégrade la confiance.
+  if (data.ticketUrl) {
+    if (!ticketHost || !TRUSTED_TICKET_HOSTS.includes(ticketHost)) {
+      data.ticketUrl = "";
+      data.confidence = "low";
+    }
   }
 
-  // Même règle pour l'image : doit venir d'une source consultée.
-  if (data.heroImageUrl && imageHost && !sourceHosts.has(imageHost)) {
+  // heroImageUrl : on accepte n'importe quel HTTPS valide (les images
+  // sont souvent sur des CDN tiers). On rejette juste les schemas
+  // bizarres et les data: URI.
+  if (data.heroImageUrl && !imageHost) {
     data.heroImageUrl = "";
+  }
+
+  // Date : exiger ISO local strict, et exclure les événements passés.
+  // Un événement passé n'a aucun intérêt pour un wizard de création.
+  if (data.startsAt) {
+    if (!ISO_LOCAL_RE.test(data.startsAt)) {
+      data.startsAt = "";
+      data.confidence = "low";
+    } else {
+      const parsed = new Date(data.startsAt);
+      if (Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now()) {
+        data.startsAt = "";
+        data.confidence = "low";
+      }
+    }
   }
 
   // Si après nettoyage il ne reste qu'un titre seul, c'est trop maigre.
