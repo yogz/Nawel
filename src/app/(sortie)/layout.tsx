@@ -56,8 +56,8 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       style={{ colorScheme: "dark" }}
     >
-      <body className="theme-sortie font-sans antialiased md:bg-black">
-        <div className="mx-auto min-h-dvh w-full max-w-md bg-[var(--sortie-bg)] md:shadow-[0_0_60px_rgba(0,0,0,0.7),0_0_0_1px_rgba(199,255,60,0.08)]">
+      <body className="theme-sortie font-sans antialiased md:bg-[radial-gradient(ellipse_at_top_left,rgba(199,255,60,0.08),transparent_60%),radial-gradient(ellipse_at_bottom_right,rgba(255,61,129,0.06),transparent_55%),#000]">
+        <div className="mx-auto min-h-dvh w-full max-w-[520px] bg-[var(--sortie-bg)] md:my-6 md:min-h-[calc(100dvh-3rem)] md:overflow-clip md:rounded-[2.25rem] md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_0_1px_rgba(199,255,60,0.12)] md:ring-1 md:ring-white/5">
           {children}
         </div>
       </body>
