@@ -30,6 +30,15 @@ export const metadata: Metadata = {
   description: "Organise tes sorties entre amis.",
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
+  // Impact.com site-ownership verification. Token is intentionally
+  // public — it's there for Impact's bot to read off the page when
+  // confirming we own this domain. Lives on every (sortie) route via
+  // the layout so Impact can verify against any URL it crawls.
+  verification: {
+    other: {
+      "impact-site-verification": "96f5c8af-11a0-43f5-900f-9a80069517ef",
+    },
+  },
 };
 
 export const viewport: Viewport = {
