@@ -588,7 +588,7 @@ function PasteStep({
           placeholder={placeholder ?? "https://… ou « La Belle et la Bête »"}
           autoCapitalize="sentences"
           spellCheck={false}
-          className="h-16 rounded-full border-2 border-encre-100 bg-white pr-6 pl-12 text-base font-medium"
+          className="h-16 rounded-full border border-encre-300 bg-ivoire-200 pr-6 pl-12 text-base font-medium"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -665,7 +665,7 @@ function ConfirmPasteStep({
         <p className="mt-3 text-sm text-encre-400">Tape directement dans la carte pour corriger.</p>
       </div>
 
-      <article className="overflow-hidden rounded-3xl border border-encre-100 bg-white shadow-[var(--shadow-md)]">
+      <article className="overflow-hidden rounded-3xl border border-encre-300 bg-ivoire-200 shadow-[var(--shadow-md)]">
         {draft.heroImageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -783,7 +783,7 @@ function TitleStep({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Macbeth à la Comédie-Française"
         maxLength={200}
-        className="h-16 rounded-2xl border-2 border-encre-100 bg-white text-lg font-medium"
+        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-lg font-medium"
         onKeyDown={(e) => {
           if (e.key === "Enter" && value.trim()) {
             onNext();
@@ -917,7 +917,7 @@ function WhenStep({
             return (
               <li
                 key={s.id}
-                className="flex items-center justify-between gap-3 rounded-2xl border-2 border-encre-100 bg-white p-3"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-encre-300 bg-ivoire-200 p-3"
               >
                 <div className="flex items-center gap-2 text-sm font-semibold text-encre-700">
                   <CalendarDays size={14} className="text-bordeaux-600" />
@@ -947,7 +947,7 @@ function WhenStep({
       )}
 
       {pickerOpen && canAddMore && (
-        <div className="flex flex-col gap-3 rounded-3xl border-2 border-bordeaux-100 bg-white p-4">
+        <div className="flex flex-col gap-3 rounded-3xl border border-bordeaux-300 bg-ivoire-200 p-4">
           <SortieCalendar selected={pendingDate} onSelect={(d) => onPendingDateChange(d)} />
           {pendingDate && (
             <>
@@ -1078,7 +1078,7 @@ function DeadlineSection({
   );
 
   return (
-    <div className="rounded-2xl border-2 border-encre-100 bg-white p-4">
+    <div className="rounded-2xl border border-encre-300 bg-ivoire-200 p-4">
       <div className="flex items-start gap-3">
         <CalendarClock size={18} className="mt-0.5 shrink-0 text-bordeaux-600" />
         <div className="flex-1">
@@ -1113,7 +1113,7 @@ function DeadlineSection({
             className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
               !isCustom
                 ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
+                : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
             }`}
           >
             Auto
@@ -1137,7 +1137,7 @@ function DeadlineSection({
                 className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
                   active
                     ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                    : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
+                    : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
                 }`}
               >
                 {p.label}
@@ -1231,7 +1231,7 @@ function VenueStep({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Salle Richelieu · Paris 1er"
         maxLength={200}
-        className="h-16 rounded-2xl border-2 border-encre-100 bg-white text-lg font-medium"
+        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-lg font-medium"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             onNext();
@@ -1293,10 +1293,10 @@ function NameStep({
         onChange={(e) => onNameChange(e.target.value)}
         placeholder="Ton prénom"
         maxLength={100}
-        className="h-16 rounded-2xl border-2 border-encre-100 bg-white text-center text-2xl font-black tracking-tight"
+        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-center text-2xl font-black tracking-tight"
       />
 
-      <label className="flex items-start gap-3 rounded-xl border border-encre-100 bg-white p-4 text-sm text-encre-500">
+      <label className="flex items-start gap-3 rounded-xl border border-encre-300 bg-ivoire-200 p-4 text-sm text-encre-500">
         <input
           type="checkbox"
           checked={wantEmail}
@@ -1322,7 +1322,7 @@ function NameStep({
             onChange={(e) => onEmailChange(e.target.value)}
             type="email"
             placeholder="ton@email.com"
-            className="h-14 rounded-xl border-2 border-encre-100 bg-white text-base"
+            className="h-14 rounded-xl border border-encre-300 bg-ivoire-200 text-base"
           />
           {email.length > 0 && !isValidEmail(email) && (
             <p className="text-xs text-erreur-700">Email invalide.</p>

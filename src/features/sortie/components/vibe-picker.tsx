@@ -37,7 +37,7 @@ export function VibePicker({ value, onChange }: Props) {
                     className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors motion-safe:active:scale-95 ${
                       active
                         ? "bg-bordeaux-600 text-ivoire-50"
-                        : "border-2 border-encre-100 bg-white text-encre-700 hover:border-encre-200"
+                        : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300"
                     }`}
                   >
                     {opt.label}
