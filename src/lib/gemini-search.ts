@@ -213,10 +213,14 @@ function validateAgainstSources(data: EventDetails, _sources: string[]): EventDe
 }
 
 function safeHost(url: string): string | null {
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
   try {
     const u = new URL(url);
-    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    if (u.protocol !== "https:" && u.protocol !== "http:") {
+      return null;
+    }
     return u.hostname.replace(/^www\./, "").toLowerCase();
   } catch {
     return null;

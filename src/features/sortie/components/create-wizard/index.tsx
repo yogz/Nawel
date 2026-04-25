@@ -27,7 +27,9 @@ import { SwipeToPublish } from "../swipe-to-publish";
 import { VibePicker } from "../vibe-picker";
 import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
 import { TicketmasterSuggestions } from "./ticketmaster-suggestions";
+import { GeminiSuggestionCard } from "./gemini-suggestion-card";
 import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
+import type { EventDetails, FindEventResult } from "@/lib/gemini-search";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
 
@@ -509,7 +511,9 @@ function PasteStep({
 }) {
   const [value, setValue] = useState("");
   const [pending, setPending] = useState(false);
+  const [pendingMsg, setPendingMsg] = useState<"parse" | "search">("parse");
   const [err, setErr] = useState<string | null>(null);
+  const [geminiSuggestion, setGeminiSuggestion] = useState<EventDetails | null>(null);
 
   // Tapping a vibe chip retunes the placeholder + hint to match the
   // category, so the examples in the input track what the user just said
@@ -531,34 +535,95 @@ function PasteStep({
   // pipeline (same `onParsed` callback as the actual paste flow).
   const suggestions = useTicketmasterSuggestions(trimmed, !looksLikeUrl);
 
+  // Fallback Gemini : appelle /api/sortie/find-event quand l'URL n'est
+  // pas parseable ou que l'utilisateur tape un texte libre sans hit
+  // Ticketmaster. Latence 12-15s, donc déclenché uniquement après
+  // l'échec des autres voies. Retourne true si une suggestion a été
+  // posée, false sinon (le caller décide du fallback final).
+  async function tryGemini(query: string): Promise<boolean> {
+    try {
+      const res = await fetch("/api/sortie/find-event", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+      const data = (await res.json()) as FindEventResult;
+      if (data.found && data.data) {
+        setGeminiSuggestion(data.data);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
   async function submit() {
     if (!trimmed) {
       return;
     }
-    if (looksLikeUrl) {
-      setErr(null);
-      setPending(true);
-      try {
+    setErr(null);
+    setGeminiSuggestion(null);
+    setPending(true);
+    try {
+      if (looksLikeUrl) {
+        setPendingMsg("parse");
         const res = await fetch("/api/sortie/parse-ticket-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url: trimmed }),
         });
-        if (!res.ok) {
-          throw new Error("fail");
+        if (res.ok) {
+          onParsed(await res.json());
+          return;
         }
-        const data = await res.json();
-        onParsed(data);
-      } catch {
-        setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
-      } finally {
-        setPending(false);
+        // Parsing échoué → on tente Gemini avec l'URL comme query.
+        setPendingMsg("search");
+        const found = await tryGemini(trimmed);
+        if (!found) {
+          setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
+        }
+        return;
       }
+      // Texte libre : tenter Gemini avant le fallback titre seul.
+      setPendingMsg("search");
+      const found = await tryGemini(trimmed);
+      if (!found) {
+        onTitleOnly(trimmed);
+      }
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function acceptSuggestion() {
+    if (!geminiSuggestion) {
       return;
     }
-    // Plain text: use it as the outing title and skip straight to
-    // the date step — no poster to review on the confirm card.
-    onTitleOnly(trimmed);
+    const venueLine = [geminiSuggestion.venue, geminiSuggestion.city].filter(Boolean).join(", ");
+    // Pré-sélectionne la vibe détectée si différente d'"autre" et qu'aucune
+    // n'était déjà choisie par l'utilisateur (on ne l'écrase pas).
+    if (geminiSuggestion.vibe && geminiSuggestion.vibe !== "autre" && !vibe) {
+      onVibeChange(geminiSuggestion.vibe);
+    }
+    onParsed({
+      title: geminiSuggestion.title,
+      venue: venueLine || null,
+      image: geminiSuggestion.heroImageUrl || null,
+      startsAt: geminiSuggestion.startsAt || null,
+      ticketUrl: geminiSuggestion.ticketUrl || "",
+    });
+  }
+
+  function dismissSuggestion() {
+    setGeminiSuggestion(null);
+    // Refus explicite → on retombe sur le comportement par défaut :
+    // erreur visible pour les URL, titre seul pour le texte libre.
+    if (looksLikeUrl) {
+      setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
+    } else {
+      onTitleOnly(trimmed);
+    }
   }
 
   return (
@@ -612,19 +677,27 @@ function PasteStep({
         }}
       />
 
+      {geminiSuggestion && (
+        <GeminiSuggestionCard
+          data={geminiSuggestion}
+          onAccept={acceptSuggestion}
+          onDismiss={dismissSuggestion}
+        />
+      )}
+
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
       <Button
         type="button"
         size="lg"
-        disabled={pending || !trimmed}
+        disabled={pending || !trimmed || !!geminiSuggestion}
         onClick={submit}
         className="h-16 rounded-full text-base font-bold"
       >
         {pending ? (
           <span className="inline-flex items-center gap-2">
             <Loader2 size={16} className="animate-spin" />
-            Lecture du lien…
+            {pendingMsg === "search" ? "On cherche cet événement…" : "Lecture du lien…"}
           </span>
         ) : looksLikeUrl ? (
           <span className="inline-flex items-center gap-2">

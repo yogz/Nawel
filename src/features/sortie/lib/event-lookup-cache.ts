@@ -42,7 +42,9 @@ export async function getCachedLookup(query: string): Promise<FindEventResult | 
       .where(eq(eventLookupCache.queryHash, queryHash))
       .limit(1);
 
-    if (!row) return null;
+    if (!row) {
+      return null;
+    }
     if (row.createdAt < ttlCutoff) {
       // Entrée trop vieille — on la laisse pourrir, le prochain putCachedLookup
       // l'écrasera via le UNIQUE conflict.
