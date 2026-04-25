@@ -330,7 +330,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
       {shouldStickRsvp && (
         <div
-          className="fixed inset-x-0 z-40 border-t border-ivoire-400 bg-[var(--sortie-bg)]/92 backdrop-blur-md"
+          className="fixed inset-x-0 z-40 mx-auto max-w-[520px] border-t border-ivoire-400 bg-[var(--sortie-bg)]/92 backdrop-blur-md"
           style={{
             bottom: 0,
             paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",

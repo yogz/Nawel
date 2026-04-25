@@ -37,7 +37,7 @@ export function OutingHero({
   // hero occupies the full viewport regardless of how the page is
   // constrained.
   return (
-    <header className="relative left-1/2 mb-10 h-[78dvh] min-h-[560px] w-screen -translate-x-1/2 overflow-hidden">
+    <header className="relative left-1/2 mb-10 h-[78dvh] min-h-[560px] w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelisting each domain for
         // next/image would be a maintenance task; these images are
