@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
+import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -356,6 +357,18 @@ const VENUE_KEYWORDS = [
   "hall",
   "club",
   "bataclan",
+  // Common French concert/show venue nouns that aren't generic enough
+  // to qualify as "keywords" but reliably mark a venue when they
+  // appear in URL slugs or og:site_name. Case-insensitive — the slug
+  // splitter pairs them with a leading article ("le-grand-rex",
+  // "l-olympia") to keep title/venue detection from leaking.
+  "rex",
+  "olympia",
+  "cigale",
+  "trianon",
+  "bobino",
+  "alhambra",
+  "casino",
 ];
 
 function looksLikeVenue(s: string | undefined): boolean {
@@ -479,6 +492,131 @@ function extractOg(html: string): Parsed {
   return { title, venue, image, startsAt };
 }
 
+/**
+ * Title-cased, space-separated form of a URL slug:
+ *   "george-dalaras-rembetiko" → "George Dalaras Rembetiko"
+ * Used as the last-resort title when the page itself yielded nothing.
+ */
+function humanizeSlug(slug: string): string {
+  return slug
+    .replace(/[-_]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .map((w) => (w.length > 0 ? w[0]!.toUpperCase() + w.slice(1).toLowerCase() : w))
+    .join(" ");
+}
+
+/**
+ * When a slug ends with "-le-grand-rex", "-le-bataclan", "-l-olympia"
+ * etc. — a French article followed by a venue noun — split it into
+ * title / venue. Falls back to "whole slug as title" when no venue
+ * marker is found (better than nothing — the user can still edit).
+ *
+ * Detection: the LAST occurrence of `-(le|la|les|l)-` whose suffix
+ * contains a `VENUE_KEYWORDS` term wins. We scan from the end because
+ * titles can themselves contain "le"/"la" ("la-belle-et-la-bete-…")
+ * and we want the venue split, not the article inside the title.
+ */
+function splitTitleVenueFromSlug(slug: string): { title?: string; venue?: string } {
+  // "au" / "aux" are locative articles: "macbeth-au-theatre-…",
+  // "spectacle-aux-bouffes-…". Treated as venue markers alongside the
+  // definite articles.
+  const articles = ["le", "la", "les", "l", "au", "aux"];
+  let bestSplit: { idx: number; venueText: string } | null = null;
+  for (const article of articles) {
+    const marker = `-${article}-`;
+    const idx = slug.lastIndexOf(marker);
+    if (idx <= 0) {
+      continue;
+    }
+    const suffix = slug.slice(idx + 1);
+    const suffixSpaced = suffix.replace(/[-_]+/g, " ").toLowerCase();
+    if (!VENUE_KEYWORDS.some((k) => suffixSpaced.includes(k))) {
+      continue;
+    }
+    if (!bestSplit || idx > bestSplit.idx) {
+      bestSplit = { idx, venueText: suffix };
+    }
+  }
+  if (bestSplit) {
+    const titlePart = slug.slice(0, bestSplit.idx);
+    const titleHumanized = humanizeSlug(titlePart);
+    if (titleHumanized.length > 0) {
+      return { title: titleHumanized, venue: humanizeSlug(bestSplit.venueText) };
+    }
+  }
+  const whole = humanizeSlug(slug);
+  return whole.length > 0 ? { title: whole } : {};
+}
+
+/**
+ * Last-resort extractor when the page itself yields nothing useful
+ * (anti-bot challenge, JS-rendered shell, 4xx, etc.). Mines the URL
+ * path for an artist/venue slug. Loose on purpose: garbage slugs
+ * (numeric IDs only, empty paths) return {} and the wizard falls back
+ * to "rien trouvé".
+ */
+function extractFromUrlSlug(url: URL): { title?: string; venue?: string } {
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
+  const segments = url.pathname.split("/").filter(Boolean);
+
+  // Ticketmaster.fr: /fr/manifestation/<slug>/idmanif/<id>
+  // Slugs end with "-billet" / "-billets" / "-tickets" — strip those
+  // before humanizing so we don't ship "George Dalaras Billet" as
+  // a title.
+  if (host === "ticketmaster.fr") {
+    const idx = segments.indexOf("manifestation");
+    const slug = idx >= 0 ? segments[idx + 1] : undefined;
+    if (!slug || !/[a-z]/i.test(slug)) {
+      return {};
+    }
+    const cleaned = slug.replace(/-(billet|billets|tickets|reservation|reservations)$/i, "");
+    const title = humanizeSlug(cleaned);
+    return title.length > 0 ? { title } : {};
+  }
+
+  // Fnac Spectacles: /event/<slug>-<numericId>/
+  // Also covers the older /place-de-spectacle/<slug>-<id>/ URLs.
+  if (host === "fnacspectacles.com") {
+    const eventIdx = segments.findIndex((s) => s === "event" || s === "place-de-spectacle");
+    const slug = eventIdx >= 0 ? segments[eventIdx + 1] : undefined;
+    if (!slug || !/[a-z]/i.test(slug)) {
+      return {};
+    }
+    const cleaned = slug.replace(/-\d{4,}$/, "");
+    return splitTitleVenueFromSlug(cleaned);
+  }
+
+  // Generic: last meaningful path segment. Strip trailing numeric ids
+  // and `.html?` suffixes — most CMSes ship one or the other.
+  const last = segments[segments.length - 1] ?? "";
+  const cleaned = last.replace(/-\d{4,}$/, "").replace(/\.html?$/i, "");
+  if (!cleaned || !/[a-z]/i.test(cleaned)) {
+    return {};
+  }
+  return splitTitleVenueFromSlug(cleaned);
+}
+
+/**
+ * Pull the artist/show name out of a ticketmaster.fr slug for
+ * Discovery API lookup. Strips the "-billet" / "-billets" / "-tickets"
+ * suffix and replaces dashes with spaces. Returns null when the slug
+ * has no usable token (numeric only, empty path).
+ */
+function ticketmasterSearchKeyword(url: URL): string | null {
+  const segments = url.pathname.split("/").filter(Boolean);
+  const idx = segments.indexOf("manifestation");
+  const slug = idx >= 0 ? segments[idx + 1] : undefined;
+  if (!slug || !/[a-z]/i.test(slug)) {
+    return null;
+  }
+  const cleaned = slug
+    .replace(/-(billet|billets|tickets|reservation|reservations)$/i, "")
+    .replace(/[-_]+/g, " ")
+    .trim();
+  return cleaned.length >= 3 ? cleaned : null;
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const parsed = inputSchema.safeParse(body);
@@ -506,9 +644,80 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "blocked_host" }, { status: 400 });
   }
 
+  // Always run the slug fallback up-front. It's cheap, deterministic,
+  // and gives us a safety net if the upcoming fetch returns an anti-bot
+  // challenge (Datadome on ticketmaster.fr / fnacspectacles.com), a
+  // 403, a JS-only shell, or anything else with no usable OG/JSON-LD.
+  const slug = extractFromUrlSlug(target);
+
+  // Best-effort fetch + parse. Wrapped in a try so a network error or
+  // bot-blocked response doesn't kill the response — we still serve
+  // the slug-derived title back to the wizard.
+  const og: Parsed = await fetchAndParseOg(target);
+
+  // Discovery API enrichment for ticketmaster.fr links: even if the
+  // page itself is bot-blocked, the public API gives us image + date +
+  // venue without rate-limit drama. Best-effort: empty result is fine.
+  let tm: { title?: string; venue?: string; image?: string; startsAt?: string } = {};
+  if (target.hostname.toLowerCase().replace(/^www\./, "") === "ticketmaster.fr") {
+    const keyword = ticketmasterSearchKeyword(target);
+    if (keyword) {
+      const events = await searchTicketmasterEvents(keyword, 1);
+      const top = events[0];
+      if (top) {
+        tm = {
+          title: top.title ?? undefined,
+          venue: [top.venue, top.city].filter(Boolean).join(", ") || undefined,
+          image: top.image ?? undefined,
+          startsAt: top.startsAt ?? undefined,
+        };
+      }
+    }
+  }
+
+  // Merge priority: page-extracted (canonical when available) > TM API
+  // enrichment > URL-slug. The slug is always last because it's the
+  // crudest signal — the page or API will be more accurate when they
+  // ship something usable.
+  const title = og.title || tm.title || slug.title;
+  const venue = og.venue || tm.venue || slug.venue;
+  const image = og.image || tm.image;
+  const startsAt = og.startsAt || tm.startsAt;
+
+  // Hint the client when we got nothing usable AND the host is a
+  // known SPA — the user sees a specific message ("Pathé ne partage
+  // pas ses infos…") instead of a vague "Aucune info". With slug
+  // fallback in place this should fire much less often, but it's
+  // still the right message when the slug itself is a numeric id.
+  const nothingUseful = !title && !venue && !image && !startsAt;
+  const spa = SPA_HOSTS[target.hostname.toLowerCase()] ?? null;
+  const spaHint =
+    nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
+
+  return NextResponse.json({
+    title: title ?? null,
+    venue: venue ?? null,
+    image: image ?? null,
+    startsAt: startsAt ?? null,
+    ticketUrl: target.toString(),
+    spaHint,
+  });
+}
+
+/**
+ * Fetch the target URL with a realistic mobile UA and pull OG /
+ * JSON-LD metadata out of the response. Returns an empty `Parsed` for
+ * any failure mode (timeout, non-HTML response, 4xx/5xx, anti-bot
+ * challenge with no structured data) — the caller falls back to slug
+ * extraction or API enrichment.
+ *
+ * Previously this was the entire POST body; broken out so the handler
+ * can layer slug + Discovery API enrichment on top of whatever the
+ * page gives us, instead of bailing out the moment fetch hiccups.
+ */
+async function fetchAndParseOg(target: URL): Promise<Parsed> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
   try {
     const response = await fetch(target.toString(), {
       signal: controller.signal,
@@ -531,13 +740,13 @@ export async function POST(request: NextRequest) {
 
     const contentType = response.headers.get("content-type") ?? "";
     if (!contentType.includes("text/html")) {
-      return NextResponse.json({ error: "not_html" }, { status: 400 });
+      return {};
     }
 
     // Read at most MAX_BYTES so a giant HTML blob can't exhaust memory.
     const reader = response.body?.getReader();
     if (!reader) {
-      return NextResponse.json({ error: "empty_body" }, { status: 400 });
+      return {};
     }
     const chunks: Uint8Array[] = [];
     let total = 0;
@@ -554,30 +763,11 @@ export async function POST(request: NextRequest) {
     const html = new TextDecoder("utf-8", { fatal: false }).decode(
       Buffer.concat(chunks.map((c) => Buffer.from(c)))
     );
-    const og = extractOg(html);
-
-    // Hint the client when we got nothing usable AND the host is a
-    // known SPA — the user sees a specific message ("Pathé ne partage
-    // pas ses infos…") instead of a vague "Aucune info".
-    const nothingUseful = !og.title && !og.venue && !og.image && !og.startsAt;
-    const spa = SPA_HOSTS[target.hostname.toLowerCase()] ?? null;
-    const spaHint =
-      nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
-
-    return NextResponse.json({
-      title: og.title ?? null,
-      venue: og.venue ?? null,
-      image: og.image ?? null,
-      startsAt: og.startsAt ?? null,
-      ticketUrl: target.toString(),
-      spaHint,
-    });
+    return extractOg(html);
   } catch (err) {
     clearTimeout(timeout);
     const message = err instanceof Error ? err.message : "unknown";
-    return NextResponse.json(
-      { error: "fetch_failed", detail: message.slice(0, 120) },
-      { status: 502 }
-    );
+    console.warn("[parse-ticket-url] fetch failed:", message.slice(0, 120));
+    return {};
   }
 }
