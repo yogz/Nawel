@@ -56,7 +56,11 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       style={{ colorScheme: "dark" }}
     >
-      <body className="theme-sortie font-sans antialiased">{children}</body>
+      <body className="theme-sortie font-sans antialiased md:bg-black">
+        <div className="mx-auto min-h-dvh w-full max-w-md bg-[var(--sortie-bg)] md:shadow-[0_0_60px_rgba(0,0,0,0.7),0_0_0_1px_rgba(199,255,60,0.08)]">
+          {children}
+        </div>
+      </body>
       <Script
         src="https://cloud.umami.is/script.js"
         data-website-id={UMAMI_WEBSITE_ID}
