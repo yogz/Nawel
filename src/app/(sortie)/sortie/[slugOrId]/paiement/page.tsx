@@ -66,23 +66,29 @@ export default async function PaymentMethodsPage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href={`/${canonical}`}
-          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
         >
-          <ArrowLeft size={14} strokeWidth={2} />
+          <ArrowLeft size={14} strokeWidth={2.2} />
           {outing.title}
         </Link>
       </nav>
 
       <header className="mb-8">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-          Moyens de paiement
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+          />
+          ─ moyens de paiement ─
         </p>
-        <h1 className="font-serif text-3xl leading-tight text-encre-700">
-          Comment on te rembourse
+        <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-5xl">
+          Comment
+          <br />
+          on te rembourse.
         </h1>
-        <p className="mt-3 text-encre-500">
-          Si tu es l&rsquo;acheteur·euse, renseigne un moyen pour que les autres te remboursent
-          facilement. Chiffrés au repos, jamais affichés en clair dans les listes.
+        <p className="mt-4 text-[15px] leading-[1.5] text-encre-500">
+          Renseigne un moyen pour qu&rsquo;on te rembourse facilement. Chiffré au repos, jamais
+          affiché en clair dans les listes.
         </p>
       </header>
 

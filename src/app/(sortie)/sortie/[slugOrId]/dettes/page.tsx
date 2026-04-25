@@ -84,18 +84,24 @@ export default async function DebtsPage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href={`/${canonical}`}
-          className="inline-flex items-center gap-1.5 text-sm text-encre-400 transition-colors hover:text-bordeaux-700"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
         >
-          <ArrowLeft size={14} strokeWidth={2} />
+          <ArrowLeft size={14} strokeWidth={2.2} />
           {outing.title}
         </Link>
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
-          L&rsquo;argent
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+          />
+          ─ l&rsquo;argent ─
         </p>
-        <h1 className="font-serif text-4xl leading-tight text-encre-700">Où en est-on&nbsp;?</h1>
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700">
+          Où en est-on&nbsp;?
+        </h1>
         {purchase?.proofFileUrl && (
           <p className="mt-4 text-sm">
             <a
@@ -112,7 +118,9 @@ export default async function DebtsPage({ params }: Props) {
 
       {myDebts.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 font-serif text-xl text-encre-700">Ce que tu dois</h2>
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+            Ce que tu dois
+          </h2>
           <ul className="flex flex-col gap-3">
             {myDebts.map((d) => (
               <DebtRow
@@ -132,7 +140,9 @@ export default async function DebtsPage({ params }: Props) {
 
       {myCredits.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 font-serif text-xl text-encre-700">Ce qu&rsquo;on te doit</h2>
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+            Ce qu&rsquo;on te doit
+          </h2>
           <ul className="flex flex-col gap-3">
             {myCredits.map((d) => (
               <DebtRow
@@ -158,7 +168,9 @@ export default async function DebtsPage({ params }: Props) {
 
       {myAllocations.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 font-serif text-xl text-encre-700">Mes places</h2>
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+            Mes places
+          </h2>
           <ul className="flex flex-col gap-3">
             {myAllocations.map((a) => (
               <li
