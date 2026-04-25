@@ -7,6 +7,7 @@ import {
   timestamp,
   real,
   index,
+  uniqueIndex,
   boolean,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -325,6 +326,42 @@ export const ingredientCache = pgTable(
     dishPeopleIdx: index("ingredient_cache_dish_people_idx").on(table.dishName, table.peopleCount),
   })
 );
+// Cache for Gemini-grounded event lookups (sortie wizard fallback).
+// Keyed by sha256(normalized_query) so identical queries from different
+// users hit the same row and don't re-burn the daily Google quota.
+export const eventLookupCache = pgTable(
+  "event_lookup_cache",
+  {
+    id: serial("id").primaryKey(),
+    queryHash: varchar("query_hash", { length: 64 }).notNull().unique(),
+    query: text("query").notNull(),
+    payload: text("payload").notNull(), // JSON-serialized FindEventResult
+    sourcesCount: integer("sources_count").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    queryHashIdx: index("event_lookup_cache_query_hash_idx").on(table.queryHash),
+    createdAtIdx: index("event_lookup_cache_created_at_idx").on(table.createdAt),
+  })
+);
+
+// Daily counter of AI provider calls. We rely on the provider for the
+// hard quota (HTTP 429), but keep this counter to surface usage trends
+// in admin dashboards and to log a console.warn at 80% of free tier.
+export const aiUsageDaily = pgTable(
+  "ai_usage_daily",
+  {
+    id: serial("id").primaryKey(),
+    date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
+    provider: varchar("provider", { length: 50 }).notNull(),
+    count: integer("count").notNull().default(0),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    dateProviderIdx: uniqueIndex("ai_usage_daily_date_provider_idx").on(table.date, table.provider),
+  })
+);
+
 // Feedback Table for bug reports and user feedback
 export const feedback = pgTable("feedback", {
   id: serial("id").primaryKey(),
