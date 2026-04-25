@@ -80,17 +80,21 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
 
       <div
         ref={stubRef}
-        className="relative w-full max-w-[340px] rotate-[-3deg] overflow-hidden rounded-[28px] bg-gradient-to-br from-[#FAF7F2] via-white to-[#D7E0FF] p-6 shadow-[0_40px_80px_-20px_rgba(12,18,40,0.5),0_16px_32px_-12px_rgba(45,91,255,0.3)]"
+        className="relative w-full max-w-[340px] rotate-[-3deg] overflow-hidden rounded-[28px] bg-ivoire-100 p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_16px_32px_-12px_rgba(199,255,60,0.25)]"
         style={{
           animation: "rsvp-stub-pop 480ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
+          backgroundImage:
+            "radial-gradient(circle at 20% 0%, rgba(199,255,60,0.16) 0%, transparent 45%), radial-gradient(circle at 90% 100%, rgba(255,61,129,0.18) 0%, transparent 50%)",
         }}
       >
-        {/* Perforation: two semicircle notches + dashed line, purely CSS */}
-        <div className="pointer-events-none absolute top-1/2 -left-3 h-6 w-6 -translate-y-1/2 rounded-full bg-encre-700/70" />
-        <div className="pointer-events-none absolute top-1/2 -right-3 h-6 w-6 -translate-y-1/2 rounded-full bg-encre-700/70" />
+        {/* Perforation: two semicircle notches + dashed line — they punch
+            through the ticket, so they have to match the page background
+            (the dark cabinet), not a tinted shape. */}
+        <div className="pointer-events-none absolute top-1/2 -left-3 h-6 w-6 -translate-y-1/2 rounded-full bg-[var(--sortie-bg)]" />
+        <div className="pointer-events-none absolute top-1/2 -right-3 h-6 w-6 -translate-y-1/2 rounded-full bg-[var(--sortie-bg)]" />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-4 left-4 h-0 -translate-y-1/2 border-t-2 border-dashed border-encre-200"
+          className="pointer-events-none absolute top-1/2 right-4 left-4 h-0 -translate-y-1/2 border-t-2 border-dashed border-encre-300"
         />
 
         <p className="text-[10px] font-black uppercase tracking-[0.28em] text-bordeaux-700">
@@ -115,7 +119,7 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
             className="h-10 w-24"
             style={{
               backgroundImage:
-                "repeating-linear-gradient(90deg, #FF6B4A 0, #FF6B4A 2px, transparent 2px, transparent 4px, #FF6B4A 4px, #FF6B4A 5px, transparent 5px, transparent 8px)",
+                "repeating-linear-gradient(90deg, #FF3D81 0, #FF3D81 2px, transparent 2px, transparent 4px, #FF3D81 4px, #FF3D81 5px, transparent 5px, transparent 8px)",
             }}
           />
         </div>

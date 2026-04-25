@@ -1386,7 +1386,13 @@ function CommitStep({
         </h1>
       </div>
 
-      <article className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-velvet)]">
+      <article
+        className="relative overflow-hidden rounded-3xl bg-ivoire-100 shadow-[var(--shadow-velvet)]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 0%, rgba(199,255,60,0.18) 0%, transparent 45%), radial-gradient(circle at 90% 100%, rgba(255,61,129,0.18) 0%, transparent 45%)",
+        }}
+      >
         {draft.heroImageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img

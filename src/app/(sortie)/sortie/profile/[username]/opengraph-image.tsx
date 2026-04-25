@@ -16,13 +16,15 @@ export const contentType = "image/png";
 export const runtime = "edge";
 export const revalidate = 60;
 
-const IVOIRE = "#FAF7F2";
-const IVOIRE_DEEP = "#F1EADC";
-const ENCRE_700 = "#1C1917";
-const ENCRE_500 = "#57534E";
-const OR = "#D4A574";
-const OR_DEEP = "#B8894A";
-const BORDEAUX = "#722F37";
+// "Acid Cabinet" palette — see /[slugOrId]/opengraph-image.tsx for the
+// rationale. Token names stay opaque ids; only the hex values flip.
+const IVOIRE = "#0A0A0A";
+const IVOIRE_DEEP = "#161616";
+const ENCRE_700 = "#F5F2EB";
+const ENCRE_500 = "#A0A0A0";
+const OR = "#FF3D81";
+const OR_DEEP = "#E63577";
+const BORDEAUX = "#C7FF3C";
 
 type Props = { params: Promise<{ username: string }> };
 

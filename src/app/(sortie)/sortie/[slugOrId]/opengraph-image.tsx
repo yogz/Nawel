@@ -15,14 +15,25 @@ export const contentType = "image/png";
 export const runtime = "edge";
 export const revalidate = 60;
 
-const IVOIRE = "#FAF7F2";
-const IVOIRE_DEEP = "#F1EADC";
-const ENCRE_700 = "#1C1917";
-const ENCRE_500 = "#57534E";
-const OR = "#D4A574";
-const OR_DEEP = "#B8894A";
-const BORDEAUX = "#722F37";
-const BORDEAUX_DEEP = "#5A2229";
+// "Acid Cabinet" palette — the share preview now matches the in-app
+// dark theme. Token names are kept as opaque ids (same trick as
+// tailwind.config) so no `Satori` JSX node has to be retouched.
+//   IVOIRE / IVOIRE_DEEP = primary surfaces (now dark)
+//   ENCRE_700 / ENCRE_500 = text foreground / muted (now light)
+//   OR / OR_DEEP = accent (hot pink)
+//   BORDEAUX / BORDEAUX_DEEP = primary (acid green)
+const IVOIRE = "#0A0A0A";
+const IVOIRE_DEEP = "#161616";
+const ENCRE_700 = "#F5F2EB";
+const ENCRE_500 = "#A0A0A0";
+const OR = "#FF3D81";
+const OR_DEEP = "#E63577";
+const BORDEAUX = "#C7FF3C";
+const BORDEAUX_DEEP = "#A8E62E";
+// Dark scrim used behind hero photos. The hero variant used to set its
+// background to ENCRE_700 (a dark ink) — that role moved here so we
+// could flip ENCRE_700 to "light text" in the dark theme.
+const SCRIM = "#0A0A0A";
 
 type Props = { params: Promise<{ slugOrId: string }> };
 
@@ -203,7 +214,7 @@ function renderWithHero(args: {
         height: "100%",
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
-        background: ENCRE_700,
+        background: SCRIM,
       }}
     >
       {}
@@ -262,7 +273,7 @@ function renderWithHero(args: {
             fontSize: titleSize(title),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: IVOIRE,
+            color: ENCRE_700,
             lineHeight: 1.05,
             marginBottom: 18,
             display: "-webkit-box",
@@ -487,8 +498,8 @@ function BottomStrip({
                 width: 56,
                 height: 56,
                 borderRadius: "50%",
-                background: onDark ? "rgba(250,247,242,0.12)" : BORDEAUX,
-                color: onDark ? IVOIRE : OR,
+                background: onDark ? "rgba(245,242,235,0.12)" : BORDEAUX,
+                color: onDark ? ENCRE_700 : IVOIRE,
                 fontSize: 26,
                 fontWeight: 700,
               }}
