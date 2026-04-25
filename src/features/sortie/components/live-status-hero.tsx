@@ -80,7 +80,11 @@ export function LiveStatusHero({
       <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
         {eyebrow}
       </p>
-      <Link href={`/${canonical}`} className="group block transition-transform active:scale-[0.99]">
+      <Link
+        href={`/${canonical}`}
+        aria-label={`Voir la sortie ${title}`}
+        className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500 focus-visible:ring-offset-4 focus-visible:ring-offset-ivoire-50 active:scale-[0.99]"
+      >
         <Heading className="font-serif text-4xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-or-600 sm:text-5xl">
           {title}
         </Heading>
