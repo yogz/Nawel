@@ -30,15 +30,6 @@ export const metadata: Metadata = {
   description: "Organise tes sorties entre amis.",
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
-  // Impact.com site-ownership verification. Token is intentionally
-  // public — it's there for Impact's bot to read off the page when
-  // confirming we own this domain. Lives on every (sortie) route via
-  // the layout so Impact can verify against any URL it crawls.
-  verification: {
-    other: {
-      "impact-site-verification": "96f5c8af-11a0-43f5-900f-9a80069517ef",
-    },
-  },
 };
 
 export const viewport: Viewport = {
@@ -51,22 +42,7 @@ export const viewport: Viewport = {
 export default function SortieRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${interTight.variable} ${inter.variable}`} suppressHydrationWarning>
-      <body className="theme-sortie font-sans antialiased">
-        {children}
-        {/* Impact.com site-ownership verification, on-page mirror of the
-            meta tag in `metadata.verification.other`. Impact's docs
-            officially read the meta, but some integrations also scan body
-            text — a partner-requested redundancy, harmless either way.
-            Renders below the fold (after every page's `min-h-[100dvh]`
-            main), at a deliberately discreet size so it doesn't compete
-            with the page's own footer / FAB. */}
-        <p
-          aria-hidden="true"
-          className="px-6 pb-6 pt-2 text-center text-[10px] tracking-wide text-encre-300"
-        >
-          Impact-Site-Verification: 96f5c8af-11a0-43f5-900f-9a80069517ef
-        </p>
-      </body>
+      <body className="theme-sortie font-sans antialiased">{children}</body>
       <Script
         src="https://cloud.umami.is/script.js"
         data-website-id={UMAMI_WEBSITE_ID}
