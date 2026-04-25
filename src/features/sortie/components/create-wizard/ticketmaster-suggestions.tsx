@@ -58,7 +58,7 @@ export function TicketmasterSuggestions({ results, onPick }: Props) {
                 type="button"
                 onClick={() => onPick(result)}
                 aria-label={`Choisir ${result.title}`}
-                className="flex w-full items-start gap-3 rounded-xl border border-encre-100 bg-white p-3 text-left transition-colors duration-300 hover:border-bordeaux-200 hover:bg-bordeaux-50 focus-visible:border-bordeaux-300 focus-visible:bg-bordeaux-50 focus-visible:outline-none"
+                className="flex w-full items-start gap-3 rounded-xl border border-encre-200 bg-ivoire-100 p-3 text-left transition-colors duration-300 hover:border-bordeaux-300 hover:bg-ivoire-200 focus-visible:border-bordeaux-400 focus-visible:bg-ivoire-200 focus-visible:outline-none"
               >
                 {result.image ? (
                   // `unoptimized` skips Next's image proxy — Ticketmaster's
@@ -75,7 +75,7 @@ export function TicketmasterSuggestions({ results, onPick }: Props) {
                     className="size-14 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-ivoire-200 text-encre-300">
+                  <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-ivoire-300 text-encre-400">
                     <MapPin size={20} />
                   </div>
                 )}
