@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
-import { Button } from "@/components/ui/button";
 import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
 import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
@@ -83,7 +82,10 @@ export default async function SortieHome() {
               an upcoming outing, exactly when the page felt most data-rich
               and least personal. Keeping it small + muted so it sets the
               tone without competing with the LiveStatusHero headline. */}
-          <p className="mb-3 text-sm text-encre-400">Salut {firstName}.</p>
+          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+            <span aria-hidden>◉</span>
+            salut {firstName.toLowerCase()}
+          </p>
           <LiveStatusHero
             slug={next.slug}
             shortId={next.shortId}
@@ -98,11 +100,19 @@ export default async function SortieHome() {
         </>
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
-          <h1 className="text-5xl leading-[1.02] font-extrabold tracking-tight text-encre-700 sm:text-6xl">
+          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+            />
+            ─ ta liste ─
+          </p>
+          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl">
             Salut {firstName}.
           </h1>
-          <p className="mt-3 text-lg text-encre-400">
-            {upcoming.length} {upcoming.length > 1 ? "sorties" : "sortie"} à venir.
+          <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-encre-400">
+            {String(upcoming.length).padStart(2, "0")}{" "}
+            {upcoming.length > 1 ? "sorties on the wire" : "sortie on the wire"}
           </p>
         </header>
       ) : (
@@ -111,8 +121,8 @@ export default async function SortieHome() {
 
       {restUpcoming.length > 0 && (
         <section className="mt-4 mb-10">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
-            À venir
+          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-600">
+            ─ à venir ─
           </p>
           <ul className="flex flex-col gap-4">
             {restUpcoming.map((o, index) => (
@@ -182,8 +192,8 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
-        Passées
+      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-600">
+        ─ passées ─
       </p>
       <ul className="flex flex-col gap-4">
         {inline.map((o) => (
@@ -202,8 +212,8 @@ function PastSection({
 
       {hidden.length > 0 && (
         <details className="group mt-4 border-t border-encre-100 pt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-semibold uppercase tracking-[0.08em] text-encre-400 transition-colors hover:text-bordeaux-700">
-            <span>Voir les {hidden.length} autres</span>
+          <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:text-bordeaux-600">
+            <span>+ voir les {String(hidden.length).padStart(2, "0")} autres</span>
             <ChevronRight
               size={14}
               strokeWidth={2.2}
@@ -234,46 +244,63 @@ function PastSection({
 function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
   return (
     <>
-      <header className="mb-8">
-        <h1 className="text-4xl leading-[1.05] text-encre-700 sm:text-5xl">Salut {firstName}.</h1>
-        <p className="mt-3 text-lg text-encre-400">C&rsquo;est quoi le programme&nbsp;?</p>
+      <header className="mb-10">
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+          />
+          ─ idle. choisis ton ambiance ─
+        </p>
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl">
+          Salut {firstName}.
+        </h1>
+        <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-encre-400">
+          C&rsquo;est quoi le programme&nbsp;?
+        </p>
       </header>
-      <div className="mb-12 grid grid-cols-3 gap-3 sm:grid-cols-6">
+      <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <VibeButton
           href="/nouvelle?vibe=theatre"
-          icon={<Theater size={24} />}
+          icon={<Theater size={28} />}
           label="Théâtre"
-          bg="#FFE1D7"
+          bg="#C7FF3C"
+          fg="#0A0A0A"
         />
         <VibeButton
           href="/nouvelle?vibe=opera"
-          icon={<Mic2 size={24} />}
+          icon={<Mic2 size={28} />}
           label="Opéra"
-          bg="#D7E0FF"
+          bg="#FF3D81"
+          fg="#0A0A0A"
         />
         <VibeButton
           href="/nouvelle?vibe=concert"
-          icon={<Music size={24} />}
+          icon={<Music size={28} />}
           label="Concert"
-          bg="#FFEAB3"
+          bg="#FFD93D"
+          fg="#0A0A0A"
         />
         <VibeButton
           href="/nouvelle?vibe=cine"
-          icon={<Film size={24} />}
+          icon={<Film size={28} />}
           label="Ciné"
-          bg="#E0D4FF"
+          bg="#7C5CFF"
+          fg="#FFFFFF"
         />
         <VibeButton
           href="/nouvelle?vibe=expo"
-          icon={<ImageIcon size={24} />}
+          icon={<ImageIcon size={28} />}
           label="Expo"
-          bg="#C9F0D8"
+          bg="#FF7733"
+          fg="#0A0A0A"
         />
         <VibeButton
           href="/nouvelle"
-          icon={<MoreHorizontal size={24} />}
+          icon={<MoreHorizontal size={28} />}
           label="Autre"
-          bg="#F1EAD8"
+          bg="#1F1F1F"
+          fg="#F5F2EB"
         />
       </div>
     </>
@@ -285,48 +312,88 @@ function VibeButton({
   icon,
   label,
   bg,
+  fg,
 }: {
   href: string;
   icon: React.ReactNode;
   label: string;
   bg: string;
+  fg: string;
 }) {
   return (
     <Link
       href={href}
-      style={{ backgroundColor: bg }}
-      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-3 text-encre-700 shadow-[var(--shadow-xs)] transition-transform duration-[var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
+      style={{ backgroundColor: bg, color: fg }}
+      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[24px] p-4 shadow-[var(--shadow-md)] transition-transform duration-[var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
     >
-      <span className="text-encre-600">{icon}</span>
-      <span className="text-base font-black leading-none tracking-tight">{label}</span>
+      <span style={{ color: fg }}>{icon}</span>
+      <span
+        className="text-[20px] font-black leading-[0.95] tracking-[-0.025em]"
+        style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+      >
+        {label}
+      </span>
     </Link>
   );
 }
 
 function PublicHome() {
   return (
-    <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 py-20">
-      <header className="flex flex-col items-start">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-bordeaux-600">
-          Sortie
+    <main className="relative mx-auto flex min-h-[100dvh] max-w-2xl flex-col px-6 pb-12 pt-[max(env(safe-area-inset-top),2rem)]">
+      {/* Ambient acid glow on the top-right corner — sets the mood the
+          moment the page paints. The radial gradient sits behind the
+          content layer at low opacity so it never trips contrast. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
+        style={{
+          background:
+            "radial-gradient(circle at 95% 0%, rgba(199,255,60,0.18) 0%, transparent 45%), radial-gradient(circle at 5% 95%, rgba(255,61,129,0.14) 0%, transparent 50%)",
+        }}
+      />
+
+      <header className="flex flex-1 flex-col items-start justify-center">
+        <p className="mb-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.24em] text-bordeaux-600">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+          />
+          sortie · v0.1
         </p>
-        <h1 className="mb-6 text-5xl leading-[1.02] text-encre-700 sm:text-6xl">
+        <h1
+          className="mb-6 text-[56px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-[80px]"
+          style={{ textWrap: "balance" }}
+        >
           Organise.
           <br />
           Ils répondent.
           <br />
           <span className="text-bordeaux-600">Tu sais.</span>
         </h1>
-        <p className="mb-10 max-w-md text-lg leading-relaxed text-encre-400">
+        <p className="mb-10 max-w-md text-[17px] leading-[1.5] text-encre-400">
           Tu lances la sortie, tout le monde répond d&rsquo;un tap. Qui vient, qui prend les places,
-          qui rembourse combien. Tout d&rsquo;un coup d&rsquo;œil.
+          qui rembourse combien.{" "}
+          <span className="text-encre-700">Tout d&rsquo;un coup d&rsquo;œil.</span>
         </p>
 
-        <Button asChild size="lg" className="px-8">
-          <Link href="/nouvelle">Lancer une sortie</Link>
-        </Button>
+        <Link
+          href="/nouvelle"
+          className="group inline-flex items-center gap-2 rounded-full bg-bordeaux-600 px-7 py-4 text-[17px] font-black text-encre-50 shadow-[var(--shadow-acid)] transition-transform duration-[var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98]"
+          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+        >
+          Lancer une sortie
+          <span
+            aria-hidden
+            className="transition-transform duration-[var(--dur-base)] group-hover:translate-x-0.5"
+          >
+            →
+          </span>
+        </Link>
 
-        <LoginLink className="mt-4" label="J&rsquo;ai déjà un compte →" />
+        <LoginLink
+          className="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400 hover:text-encre-700"
+          label="j&rsquo;ai déjà un compte →"
+        />
       </header>
     </main>
   );

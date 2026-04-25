@@ -110,9 +110,19 @@ export function OutingProfileCard({
       ) : (
         <div
           aria-hidden="true"
-          className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br from-bordeaux-50 via-ivoire-100 to-or-50"
+          className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md"
+          style={{
+            background:
+              "radial-gradient(circle at 30% 20%, #FF3D81 0%, transparent 50%), radial-gradient(circle at 75% 80%, #C7FF3C 0%, transparent 50%), #1a1a1a",
+          }}
         >
-          <span className="font-serif text-2xl font-black leading-none tracking-tight text-encre-700/40 select-none">
+          <span
+            className="text-2xl font-black leading-none tracking-tight text-encre-50 opacity-50 select-none"
+            style={{
+              fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
+              mixBlendMode: "overlay",
+            }}
+          >
             {initial}
           </span>
         </div>
@@ -120,31 +130,31 @@ export function OutingProfileCard({
       <div className="flex min-w-0 flex-1 flex-col">
         {statusEyebrow && (
           <p
-            className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.06em] ${
+            className={`flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
               statusEyebrow.tone === "confirmed" ? "text-bordeaux-600" : "text-encre-400"
             }`}
           >
             {statusEyebrow.tone === "confirmed" ? (
-              <Check size={13} strokeWidth={3} />
+              <Check size={12} strokeWidth={3} />
             ) : (
-              <X size={13} strokeWidth={3} />
+              <X size={12} strokeWidth={3} />
             )}
             {statusEyebrow.label}
           </p>
         )}
         {dateLabel && (
           <p
-            className={`text-xs font-semibold uppercase tracking-[0.06em] ${
+            className={`font-mono text-[10.5px] uppercase tracking-[0.18em] ${
               statusEyebrow ? "text-encre-400" : "text-bordeaux-600"
             }`}
           >
             {dateLabel}
           </p>
         )}
-        <h3 className="truncate font-serif text-base font-bold leading-tight text-encre-700 group-hover:text-or-600">
+        <h3 className="truncate text-[17px] leading-tight font-black tracking-[-0.025em] text-encre-700 group-hover:text-bordeaux-600">
           {outing.title}
         </h3>
-        {meta && <p className="truncate text-sm text-encre-500">{meta}</p>}
+        {meta && <p className="truncate text-[13px] text-encre-500">{meta}</p>}
       </div>
     </>
   );

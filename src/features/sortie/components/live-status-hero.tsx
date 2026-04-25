@@ -82,67 +82,77 @@ export function LiveStatusHero({
     // user rather than snapping into place. `motion-safe:` so reduced-
     // motion users get an instant render.
     <section className="mb-10 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
+      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+        <span
+          aria-hidden
+          className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+        />
         {eyebrow}
       </p>
       <Link
         href={`/${canonical}`}
         aria-label={`Voir la sortie ${title}`}
-        className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500 focus-visible:ring-offset-4 focus-visible:ring-offset-ivoire-50 motion-safe:active:scale-[0.99]"
+        className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bordeaux-600 focus-visible:ring-offset-4 focus-visible:ring-offset-ivoire-50 motion-safe:active:scale-[0.99]"
       >
-        <Heading className="font-serif text-4xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-or-600 sm:text-5xl">
+        <Heading className="text-[44px] leading-[0.95] font-black tracking-[-0.04em] text-encre-700 group-hover:text-bordeaux-600 sm:text-6xl">
           {title}
         </Heading>
-        <p className="mt-2 flex items-center gap-2 text-lg text-encre-500">
+        <p className="mt-3 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
           <CalendarDays
-            size={17}
-            strokeWidth={2}
+            size={14}
+            strokeWidth={2.2}
             aria-hidden="true"
-            className="shrink-0 text-encre-400"
+            className="shrink-0 text-bordeaux-600"
           />
           <span>
-            {relative && <span className="font-semibold text-encre-700">{relative} · </span>}
+            {relative && <span className="text-encre-700">{relative} — </span>}
             {formatOutingDate(startsAt)}
           </span>
         </p>
         {location && (
-          <p className="mt-1.5 flex items-center gap-2 text-base text-encre-500">
+          <p className="mt-1.5 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
             <MapPin
-              size={16}
-              strokeWidth={2}
+              size={14}
+              strokeWidth={2.2}
               aria-hidden="true"
-              className="shrink-0 text-encre-400"
+              className="shrink-0 text-bordeaux-600"
             />
             <span>{formatVenue(location)}</span>
           </p>
         )}
-        {headcount && <p className="mt-1.5 text-base text-encre-500">{headcount}</p>}
+        {headcount && (
+          <p className="mt-1.5 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+            ◉ {headcount}
+          </p>
+        )}
 
         {heroImageUrl ? (
           // `data-vt-poster` opts this image into the cross-document
-          // View Transitions morph (see sortie.css). When the user
-          // hard-navigates from this card into the outing detail
-          // page, the poster animates into its larger position
-          // there. No-op on browsers without VT support; no-op on
-          // Next.js client-side navigations (separate concern).
+          // View Transitions morph (see sortie.css).
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroImageUrl}
             alt=""
             data-vt-poster
-            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
+            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/10"
+            style={{ filter: "saturate(1.15) contrast(1.05)" }}
           />
         ) : (
           <div
             aria-hidden="true"
-            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#FFE1D7] via-[#FAF7F2] to-[#D7E0FF] shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
+            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-encre-700/10"
+            style={{
+              background:
+                "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
+            }}
           >
-            {/* Designed empty state, not a broken-image placeholder. The
-                earlier 12-14rem letter ate ~60% of the canvas and read as
-                "image failed to load"; sized down to 5-6rem with slightly
-                higher contrast so it lands closer to an Apple Music album
-                monogram — still soft, still secondary, but intentional. */}
-            <span className="font-serif text-[5rem] font-black leading-none tracking-tight text-encre-700/30 select-none sm:text-[6rem]">
+            <span
+              className="text-[6rem] leading-none font-black tracking-tight text-encre-50 opacity-40 select-none sm:text-[7rem]"
+              style={{
+                fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
+                mixBlendMode: "overlay",
+              }}
+            >
               {initial}
             </span>
           </div>
