@@ -24,8 +24,8 @@ type Props = {
  */
 export function SwipeToPublish({
   onConfirm,
-  label = "Glisse pour publier",
-  confirmedLabel = "Publié",
+  label = "GLISSE POUR PUBLIER",
+  confirmedLabel = "live ✓",
 }: Props) {
   const x = useMotionValue(0);
   const [stage, setStage] = useState<"idle" | "committed" | "done" | "error">("idle");
@@ -79,20 +79,20 @@ export function SwipeToPublish({
       {/* Centered label */}
       <motion.p
         style={{ opacity: stage === "idle" ? textOpacity : 0 }}
-        className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm font-bold text-bordeaux-700"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[12px] font-bold tracking-[0.2em] text-bordeaux-700"
       >
         {label}
       </motion.p>
 
       {stage === "committed" && (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm font-bold text-ivoire-50">
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-ivoire-50">
           <Loader2 size={16} className="animate-spin" />
-          On publie…
+          GOING LIVE…
         </p>
       )}
 
       {stage === "done" && (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 text-sm font-bold text-ivoire-50">
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-ivoire-50">
           <Check size={18} strokeWidth={3} />
           {confirmedLabel}
         </p>
