@@ -47,3 +47,4 @@ next-env.d.ts
 
 # local claude-code tooling state (lock files, scheduled tasks, etc.)
 /.claude/
+.env.production*
