@@ -115,8 +115,17 @@ export default async function SortieHome() {
             À venir
           </p>
           <ul className="flex flex-col gap-4">
-            {restUpcoming.map((o) => (
-              <li key={o.id}>
+            {restUpcoming.map((o, index) => (
+              // Stagger via inline `animation-delay` rather than a JS
+              // orchestrator — keeps the list server-rendered, the
+              // animation is pure CSS triggered on first paint.
+              // Capped at index 9 so a 30-event organiser doesn't sit
+              // through 1.2s of waterfall before the last card lands.
+              <li
+                key={o.id}
+                className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
+                style={{ animationDelay: `${Math.min(index, 9) * 40}ms` }}
+              >
                 <OutingProfileCard
                   outing={o}
                   showRsvp={false}
