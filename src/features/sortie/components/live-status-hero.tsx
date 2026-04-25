@@ -76,7 +76,12 @@ export function LiveStatusHero({
   const relative = relativeOutingHero(startsAt);
 
   return (
-    <section className="mb-10">
+    // Emphasized fade-up on first mount only. The whole hero is the
+    // page's most important moment of arrival; a single, slow entry
+    // (400ms) makes the headline feel like it's been waiting for the
+    // user rather than snapping into place. `motion-safe:` so reduced-
+    // motion users get an instant render.
+    <section className="mb-10 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
         {eyebrow}
       </p>

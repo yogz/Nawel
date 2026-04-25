@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import {
   updateAvatarAction,
   type AvatarActionState,
@@ -103,12 +103,27 @@ export function AvatarPicker({ name, image, size = 80 }: Props) {
   return (
     <>
       <label
-        className={`relative inline-block shrink-0 cursor-pointer transition-opacity motion-safe:active:scale-[0.98] ${
-          pending ? "opacity-50" : ""
-        }`}
+        className="relative inline-block shrink-0 cursor-pointer motion-safe:active:scale-[0.98]"
         aria-label={shown ? "Changer la photo" : "Ajouter une photo"}
       >
         <UserAvatar name={name} image={shown} size={size} />
+        {pending && (
+          // Real progress feedback during upload — the previous
+          // implementation just dimmed the label to 50% opacity, which
+          // reads as "disabled" rather than "in progress". An overlaid
+          // spinner over a translucent scrim says "I'm doing something
+          // with your photo" unambiguously.
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 grid place-items-center rounded-full bg-encre-700/40 backdrop-blur-[2px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-motion-standard"
+          >
+            <Loader2
+              size={Math.round(size * 0.4)}
+              strokeWidth={2.5}
+              className="text-ivoire-50 motion-safe:animate-spin"
+            />
+          </span>
+        )}
         <span
           aria-hidden="true"
           className="absolute grid place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-md)] ring-2 ring-ivoire-100"
