@@ -11,12 +11,28 @@ export function DeadlineBadge({ deadlineAt }: Props) {
   const urgent = !isPast && hoursLeft < 48;
 
   if (isPast) {
-    return <p className="text-sm text-encre-400">La liste est close.</p>;
+    return (
+      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400">
+        ◉ liste close
+      </p>
+    );
   }
 
   return (
-    <p className={urgent ? "text-sm font-medium text-bordeaux-700" : "text-sm text-encre-400"}>
-      Réponds avant le {formatOutingDateConversational(deadlineAt)}.
+    <p
+      className={
+        urgent
+          ? "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-or-500"
+          : "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400"
+      }
+    >
+      {urgent && (
+        <span
+          aria-hidden
+          className="h-1.5 w-1.5 animate-pulse rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+        />
+      )}
+      <span>réponds avant le {formatOutingDateConversational(deadlineAt)}</span>
     </p>
   );
 }

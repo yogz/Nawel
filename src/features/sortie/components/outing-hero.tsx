@@ -40,32 +40,44 @@ export function OutingHero({
           src={heroImageUrl}
           alt=""
           data-vt-poster
-          className="mb-6 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
+          className="mb-6 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/10"
+          style={{ filter: "saturate(1.15) contrast(1.05)" }}
         />
       )}
 
       {startsAt && (
-        <p className="inline-flex items-center rounded-full bg-bordeaux-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-bordeaux-700">
-          {formatOutingDate(startsAt)}
+        <p className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+          />
+          {formatOutingDate(startsAt).toUpperCase()}
         </p>
       )}
 
-      <h1 className="mt-4 text-[44px] leading-[0.95] font-black tracking-[-0.035em] text-encre-700 sm:text-6xl">
+      <h1
+        className="mt-4 text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
+        style={{ textWrap: "balance" }}
+      >
         {title}
       </h1>
 
-      {location && <p className="mt-4 text-lg text-encre-400">{formatVenue(location)}</p>}
+      {location && (
+        <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+          ◉ {formatVenue(location)}
+        </p>
+      )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         {ticketUrl && (
           <a
             href={ticketUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-bordeaux-600 underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1 font-medium text-bordeaux-600 underline-offset-4 hover:underline"
           >
             Prendre mes places
-            <ArrowUpRight size={14} strokeWidth={2.2} />
+            <ArrowUpRight size={14} strokeWidth={2.4} />
           </a>
         )}
         {startsAt && canonicalPath && (
@@ -76,7 +88,7 @@ export function OutingHero({
             // but the filename makes the fallback download readable on
             // desktop.
             download={`sortie-${canonicalPath}.ics`}
-            className="inline-flex items-center gap-1 text-bordeaux-600 underline-offset-4 hover:underline"
+            className="inline-flex items-center gap-1 text-encre-500 underline-offset-4 hover:text-bordeaux-600 hover:underline"
           >
             <CalendarPlus size={14} strokeWidth={2.2} />
             Ajouter à mon agenda

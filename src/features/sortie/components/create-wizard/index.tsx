@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -26,6 +26,8 @@ import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 import { VibePicker } from "../vibe-picker";
 import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
+import { TicketmasterSuggestions } from "./ticketmaster-suggestions";
+import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
 
@@ -437,6 +439,52 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
   );
 }
 
+/**
+ * Best-effort Ticketmaster search hook. Fires a debounced POST to our
+ * search endpoint when the user types non-URL text ≥3 chars. Aborts in
+ * flight requests on input change so we don't paint stale suggestions.
+ * Any failure (network, key missing, no match) → empty array, silent.
+ */
+function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterResult[] {
+  const [results, setResults] = useState<TicketmasterResult[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!enabled || query.length < 3) {
+      setResults([]);
+      return;
+    }
+    const handle = setTimeout(() => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      fetch("/api/sortie/search-ticketmaster", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+        signal: controller.signal,
+      })
+        .then((res) =>
+          res.ok ? (res.json() as Promise<{ results: TicketmasterResult[] }>) : { results: [] }
+        )
+        .then((data) => {
+          if (!controller.signal.aborted) {
+            setResults(Array.isArray(data.results) ? data.results : []);
+          }
+        })
+        .catch(() => {
+          // Silent: best-effort enrichment.
+        });
+    }, 400);
+    return () => {
+      clearTimeout(handle);
+      abortRef.current?.abort();
+    };
+  }, [query, enabled]);
+
+  return results;
+}
+
 function PasteStep({
   vibe,
   onVibeChange,
@@ -471,6 +519,12 @@ function PasteStep({
   // Everything else we treat as a plain title — the creator just
   // wants to name the event and move on.
   const looksLikeUrl = /^https?:\/\//i.test(trimmed);
+
+  // Best-effort enrichment: when the user is typing free text, ping
+  // Ticketmaster in the background and surface up to 3 matches under
+  // the input. Picking one short-circuits the rest of the wizard's URL
+  // pipeline (same `onParsed` callback as the actual paste flow).
+  const suggestions = useTicketmasterSuggestions(trimmed, !looksLikeUrl);
 
   async function submit() {
     if (!trimmed) {

@@ -22,9 +22,19 @@ export function ParticipantList({ participants }: { participants: Participant[] 
 
   if (!hasAnyPositive) {
     return (
-      <p className="text-center text-encre-400">
-        Personne n&rsquo;a encore répondu — partage le lien pour que ça démarre.
-      </p>
+      <div className="text-center">
+        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          ─ first to commit ─
+        </p>
+        <p
+          className="text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
+          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+        >
+          Personne n&rsquo;a encore tappé.
+          <br />
+          <span className="text-bordeaux-600">Partage le lien.</span>
+        </p>
+      </div>
     );
   }
 
@@ -48,11 +58,22 @@ export function ParticipantList({ participants }: { participants: Participant[] 
 
   return (
     <div>
-      <p className="mb-4 text-center font-serif text-xl text-encre-700">{headline}</p>
+      <p className="mb-2 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+        ─ they&rsquo;re in ─
+      </p>
+      <p
+        className="mb-4 text-center text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
+        style={{
+          fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
+          textWrap: "balance",
+        }}
+      >
+        {headline}
+      </p>
 
       {totalHeads > yesList.length && (
-        <p className="mb-4 text-center text-sm text-encre-400">
-          {numberToFrenchCap(totalHeads)} personnes au total avec les accompagnants.
+        <p className="mb-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+          ◉ {numberToFrenchCap(totalHeads)} personnes avec les accompagnants
         </p>
       )}
 
@@ -100,8 +121,8 @@ function SecondarySection({
 }) {
   return (
     <div className="mt-5 border-t border-ivoire-400 pt-4">
-      <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
-        {label} · {count}
+      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+        {label} · {String(count).padStart(2, "0")}
       </p>
       <ul className="flex flex-col gap-2">
         {rows.map((p) => {
