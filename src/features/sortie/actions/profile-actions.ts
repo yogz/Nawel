@@ -176,10 +176,20 @@ export async function updateProfileDetailsAction(
  * stays in Blob for now — cost is negligible and writing a retention
  * job is follow-up work.
  */
+/**
+ * Avatar action state. Carries the canonical Blob URL on success so
+ * the picker can swap its optimistic blob: preview for the real URL
+ * without waiting for `router.refresh()` to round-trip — and so the
+ * old blob URL gets revoked instead of leaking until the tab closes.
+ */
+export type AvatarActionState = FormActionState & {
+  imageUrl?: string;
+};
+
 export async function updateAvatarAction(
-  _prev: FormActionState,
+  _prev: AvatarActionState,
   formData: FormData
-): Promise<FormActionState> {
+): Promise<AvatarActionState> {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
     return { message: "Il faut être connecté pour changer ta photo." };
@@ -225,7 +235,7 @@ export async function updateAvatarAction(
     if (row?.username) {
       revalidatePath(`/sortie/profile/${row.username}`);
     }
-    return { message: "Photo mise à jour." };
+    return { message: "Photo mise à jour.", imageUrl: result.url };
   } catch (err) {
     // Catch-all so the client gets a readable message instead of a
     // generic Next.js 500 with an opaque digest. The stack is logged
