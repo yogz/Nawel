@@ -298,7 +298,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
   }
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-ivoire-100">
+    <div className="absolute inset-0 z-40 flex flex-col bg-ivoire-100">
       <WizardHeader progress={progress} onBack={back} />
 
       <div className="relative flex-1 overflow-y-auto overflow-x-hidden">
