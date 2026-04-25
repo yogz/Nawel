@@ -9,7 +9,8 @@ import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { sanitizeText } from "@/lib/sanitize";
-import { uploadAvatar } from "@/features/sortie/lib/avatar-upload";
+import { deletePreviousAvatar, uploadAvatar } from "@/features/sortie/lib/avatar-upload";
+import { after } from "next/server";
 import type { FormActionState } from "./outing-actions";
 
 // Usernames are the slug users type at `sortie.colist.fr/@<username>`, so
@@ -210,6 +211,14 @@ export async function updateAvatarAction(
   }
 
   try {
+    // Read the old URL up-front so we can clean it up after the
+    // response. Same query also gives us the username for the public
+    // profile revalidation below — saves a round trip.
+    const previous = await db.query.user.findFirst({
+      where: eq(user.id, session.user.id),
+      columns: { image: true, username: true },
+    });
+
     const result = await uploadAvatar(file);
     if (!result.ok) {
       return { message: result.message };
@@ -228,13 +237,19 @@ export async function updateAvatarAction(
     // user row.
     revalidatePath("/sortie");
     revalidatePath("/sortie/moi");
-    const row = await db.query.user.findFirst({
-      where: eq(user.id, session.user.id),
-      columns: { username: true },
-    });
-    if (row?.username) {
-      revalidatePath(`/sortie/profile/${row.username}`);
+    if (previous?.username) {
+      revalidatePath(`/sortie/profile/${previous.username}`);
     }
+
+    // Fire-and-forget the orphan cleanup *after* the response is
+    // flushed to the user. The new avatar is already saved; this is
+    // pure housekeeping and should never gate the round-trip. `after()`
+    // (Next.js 14.2+) runs the callback on the same request lifecycle
+    // but without holding the response open.
+    after(async () => {
+      await deletePreviousAvatar(previous?.image ?? null);
+    });
+
     return { message: "Photo mise à jour.", imageUrl: result.url };
   } catch (err) {
     // Catch-all so the client gets a readable message instead of a
