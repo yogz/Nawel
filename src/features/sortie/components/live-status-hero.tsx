@@ -77,7 +77,7 @@ export function LiveStatusHero({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.08em] text-or-600">
         {eyebrow}
       </p>
       <Link
@@ -88,9 +88,9 @@ export function LiveStatusHero({
         <Heading className="font-serif text-4xl leading-[1.02] font-extrabold tracking-tight text-encre-700 group-hover:text-or-600 sm:text-5xl">
           {title}
         </Heading>
-        <p className="mt-2 flex items-center gap-1.5 text-base text-encre-500">
+        <p className="mt-2 flex items-center gap-2 text-lg text-encre-500">
           <CalendarDays
-            size={15}
+            size={17}
             strokeWidth={2}
             aria-hidden="true"
             className="shrink-0 text-encre-400"
@@ -101,9 +101,9 @@ export function LiveStatusHero({
           </span>
         </p>
         {location && (
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-encre-500">
+          <p className="mt-1.5 flex items-center gap-2 text-base text-encre-500">
             <MapPin
-              size={14}
+              size={16}
               strokeWidth={2}
               aria-hidden="true"
               className="shrink-0 text-encre-400"
@@ -111,7 +111,7 @@ export function LiveStatusHero({
             <span>{formatVenue(location)}</span>
           </p>
         )}
-        {headcount && <p className="mt-1 text-sm text-encre-500">{headcount}</p>}
+        {headcount && <p className="mt-1.5 text-base text-encre-500">{headcount}</p>}
 
         {heroImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
