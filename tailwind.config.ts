@@ -163,6 +163,20 @@ const config: Config = {
         normal: "300ms",
         slow: "500ms",
         slower: "800ms",
+        // Sortie motion vocabulary — see DESIGN_SYSTEM.md.
+        // `motion-tap` covers `active:scale-*` feedback, `motion-standard`
+        // is the default for hover/color/opacity, `motion-emphasized` is
+        // for entrances and important state changes.
+        "motion-tap": "100ms",
+        "motion-standard": "250ms",
+        "motion-emphasized": "400ms",
+      },
+      transitionTimingFunction: {
+        // Material 3 standard easings. The standard curve decelerates
+        // sharply at the end (feels responsive); the emphasized curve
+        // is slower in the middle (feels deliberate, used for entrances).
+        "motion-standard": "cubic-bezier(0.2, 0, 0, 1)",
+        "motion-emphasized": "cubic-bezier(0.05, 0.7, 0.1, 1)",
       },
       keyframes: {
         blink: {

@@ -45,7 +45,7 @@ export function TimeDrum({ selected, onSelect }: Props) {
               className={`flex h-14 items-center justify-center rounded-xl border-2 text-lg font-black tabular-nums tracking-tight transition-colors ${
                 isSelected
                   ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-100 bg-white text-encre-700 active:scale-95"
+                  : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
               }`}
             >
               {t.replace(":", "h")}
@@ -64,7 +64,7 @@ export function TimeDrum({ selected, onSelect }: Props) {
           className={`flex h-14 items-center justify-center rounded-xl border-2 text-sm font-bold transition-colors ${
             customOpen
               ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-              : "border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 active:scale-95"
+              : "border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 motion-safe:active:scale-95"
           }`}
         >
           Autre heure

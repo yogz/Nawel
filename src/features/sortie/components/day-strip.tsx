@@ -97,7 +97,7 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 transition-colors active:scale-95 hover:border-bordeaux-600 hover:text-bordeaux-700 [scroll-snap-align:start]"
+            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 transition-colors motion-safe:active:scale-95 hover:border-bordeaux-600 hover:text-bordeaux-700 [scroll-snap-align:start]"
           >
             <CalendarPlus size={22} />
             <span className="text-[11px] font-semibold leading-tight text-center">Autre date</span>
@@ -141,7 +141,7 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
               className={`relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-all [scroll-snap-align:center] ${
                 isSelected
                   ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-100 bg-white text-encre-700 active:scale-95"
+                  : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
               }`}
             >
               <span

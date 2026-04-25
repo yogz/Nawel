@@ -93,7 +93,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
           onClick={goPrev}
           disabled={!canGoPrev}
           aria-label="Mois précédent"
-          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700 disabled:cursor-not-allowed disabled:opacity-30"
+          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors motion-safe:active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <ChevronLeft size={20} />
         </button>
@@ -109,7 +109,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
           type="button"
           onClick={goNext}
           aria-label="Mois suivant"
-          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700"
+          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors motion-safe:active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700"
         >
           <ChevronRight size={20} />
         </button>
@@ -178,7 +178,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
                       ? "cursor-not-allowed text-encre-100"
                       : isToday
                         ? "text-bordeaux-700 ring-2 ring-inset ring-or-400 hover:bg-bordeaux-50"
-                        : "text-encre-700 hover:bg-bordeaux-50 active:scale-95"
+                        : "text-encre-700 hover:bg-bordeaux-50 motion-safe:active:scale-95"
               }`}
             >
               {cell.date.getDate()}

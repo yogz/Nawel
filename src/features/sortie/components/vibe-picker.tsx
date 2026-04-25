@@ -34,7 +34,7 @@ export function VibePicker({ value, onChange }: Props) {
                     type="button"
                     onClick={() => onChange(active ? null : opt.value)}
                     aria-pressed={active}
-                    className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors active:scale-95 ${
+                    className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors motion-safe:active:scale-95 ${
                       active
                         ? "bg-bordeaux-600 text-ivoire-50"
                         : "border-2 border-encre-100 bg-white text-encre-700 hover:border-encre-200"

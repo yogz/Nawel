@@ -113,7 +113,7 @@ export function InlineRsvpSection({
           type="button"
           onClick={handleYesTap}
           aria-label={`${summary} — taper pour modifier`}
-          className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors active:scale-95 ${
+          className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 ${
             isComing
               ? "bg-bordeaux-600 text-ivoire-50 hover:bg-bordeaux-700"
               : "bg-encre-700 text-ivoire-50 hover:bg-encre-800"
@@ -126,7 +126,7 @@ export function InlineRsvpSection({
           shortId={shortId}
           triggerLabel="Retirer ma réponse"
           iconSize={14}
-          triggerClassName="flex h-11 items-center justify-center gap-1.5 truncate rounded-full border-2 border-encre-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 active:scale-95"
+          triggerClassName="flex h-11 items-center justify-center gap-1.5 truncate rounded-full border-2 border-encre-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-700 motion-safe:active:scale-95"
         />
         {sheets}
       </div>
@@ -171,7 +171,7 @@ function CardResponseButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors active:scale-95 ${palette}`}
+      className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 ${palette}`}
     >
       {icon}
       <span>{label}</span>

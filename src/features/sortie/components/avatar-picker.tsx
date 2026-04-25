@@ -103,7 +103,7 @@ export function AvatarPicker({ name, image, size = 80 }: Props) {
   return (
     <>
       <label
-        className={`relative inline-block shrink-0 cursor-pointer transition-opacity active:scale-[0.98] ${
+        className={`relative inline-block shrink-0 cursor-pointer transition-opacity motion-safe:active:scale-[0.98] ${
           pending ? "opacity-50" : ""
         }`}
         aria-label={shown ? "Changer la photo" : "Ajouter une photo"}

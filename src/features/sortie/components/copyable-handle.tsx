@@ -38,7 +38,7 @@ export function CopyableHandle({ username, origin }: Props) {
       type="button"
       onClick={copy}
       aria-label={copied ? "Lien copié" : `Copier ${fullUrl}`}
-      className="inline-flex items-center gap-1.5 rounded-full bg-bordeaux-50 px-3 py-1.5 text-sm font-semibold text-bordeaux-700 transition-colors hover:bg-bordeaux-100 active:scale-95"
+      className="inline-flex items-center gap-1.5 rounded-full bg-bordeaux-50 px-3 py-1.5 text-sm font-semibold text-bordeaux-700 transition-colors hover:bg-bordeaux-100 motion-safe:active:scale-95"
     >
       {copied ? (
         <>
