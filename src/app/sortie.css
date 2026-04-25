@@ -98,3 +98,57 @@
     animation-duration: var(--dur-fast) !important;
   }
 }
+
+/* ---- View Transitions API ----------------------------------------------
+ *
+ * Browser-native page transitions. Chrome 111+ and Safari 18+ ship the
+ * cross-document variant — declaring `@view-transition { navigation: auto }`
+ * tells the browser to crossfade between any two same-origin pages it
+ * navigates between (form submit, hard reload, browser back/forward).
+ *
+ * Next.js App Router does *client-side* navigation by default, which the
+ * browser doesn't see as a "navigation" event — so this CSS only kicks
+ * in for hard reloads and browser back/forward. To get client-side
+ * navigations to participate, we'd need React 19's experimental
+ * `<ViewTransition>` component (still flagged) or the Next.js
+ * `experimental.viewTransition` option. Both are too unstable for prod
+ * today; revisit when they're stable.
+ *
+ * What this *does* deliver: a smooth crossfade on browser back/forward
+ * (the common case for "I went into an outing and tapped back"), and
+ * shared-element morph for the hero poster between the home card and
+ * the outing detail page (when the navigation is hard, not RSC). Modest
+ * win, zero risk, graceful no-op everywhere it isn't supported.
+ *
+ * Safari 18 supports the `@view-transition` rule but with quirks around
+ * named transitions; the `view-transition-name` declarations stay
+ * unscoped (no `.theme-sortie` prefix) because the rule needs to be
+ * matchable when the document is mid-transition (no class context).
+ */
+@view-transition {
+  navigation: auto;
+}
+
+/* Shared-element morph: the hero poster on the home / public profile
+ * card animates into the same position on the outing detail page when
+ * the navigation crosses a hard boundary. The name must be unique
+ * across the document at any given time, so we set it on a single
+ * candidate element via `[data-vt-poster]`. The detail page sets the
+ * same data attribute on its hero image. */
+[data-vt-poster] {
+  view-transition-name: outing-poster;
+}
+
+/* Tune the cross-fade timing to match our motion vocabulary
+ * (motion-emphasized 400ms / cubic-bezier(0.05, 0.7, 0.1, 1)). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+::view-transition-old(outing-poster),
+::view-transition-new(outing-poster) {
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.05, 0.7, 0.1, 1);
+}

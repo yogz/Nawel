@@ -119,10 +119,17 @@ export function LiveStatusHero({
         {headcount && <p className="mt-1.5 text-base text-encre-500">{headcount}</p>}
 
         {heroImageUrl ? (
+          // `data-vt-poster` opts this image into the cross-document
+          // View Transitions morph (see sortie.css). When the user
+          // hard-navigates from this card into the outing detail
+          // page, the poster animates into its larger position
+          // there. No-op on browsers without VT support; no-op on
+          // Next.js client-side navigations (separate concern).
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={heroImageUrl}
             alt=""
+            data-vt-poster
             className="mt-5 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
           />
         ) : (

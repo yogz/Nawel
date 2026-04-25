@@ -29,10 +29,17 @@ export function OutingHero({
         // Remote ticket-site CDNs — whitelisting each domain for next/image
         // would create a perpetual maintenance task, and these images are
         // already cached on their original CDNs.
+        //
+        // `data-vt-poster` pairs this image with the same one in
+        // LiveStatusHero (home / public profile). Browsers that
+        // support View Transitions (Chrome 111+, Safari 18+) will
+        // morph between the small card poster and this large hero
+        // poster on hard navigations. See sortie.css.
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={heroImageUrl}
           alt=""
+          data-vt-poster
           className="mb-6 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/5"
         />
       )}
