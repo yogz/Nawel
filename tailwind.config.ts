@@ -7,61 +7,64 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        // CoList still binds Inter via its own layout. The Sortie route
+        // group rebinds `--font-inter` to Space Grotesk and
+        // `--font-inter-tight` to Unbounded — same className strings, new
+        // typefaces, zero churn. The Tailwind keys stay opaque ids.
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        // `font-serif` stays for zero-churn in existing className strings,
-        // but it now points at Inter Tight (bold-weight display face) — the
-        // Sortie rebrand swapped the serif display family for a geometric
-        // sans without dropping the token name.
         serif: ["var(--font-inter-tight)", "var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-pilot-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
-        // Sortie design system — "Cream & Cobalt" rebrand (2026). The token
-        // names (`bordeaux`, `or`, `ivoire`, `encre`) are kept for zero-churn
-        // but the hex values are now electric cobalt, coral, warm cream and
-        // cool ink. Don't rename them blindly — hundreds of className strings
-        // depend on these keys. Treat the names as opaque ids.
+        // Sortie design system — "Acid Cabinet" pivot (2026 GenZ direction).
+        // Token NAMES (`bordeaux`, `or`, `ivoire`, `encre`) are kept opaque
+        // for zero-churn across hundreds of className strings. Their VALUES
+        // were remapped from cream-and-cobalt to a deep dark palette with
+        // acid-green primary + hot-pink accent. Treat the keys as semantic
+        // roles: bordeaux = primary, or = accent, ivoire = surface, encre =
+        // foreground (its scale now runs muted→bright, NOT light→dark).
         bordeaux: {
-          50: "#EEF2FF",
-          100: "#DDE4FF",
-          200: "#BAC9FF",
-          300: "#8BA5FF",
-          400: "#5A80FF",
-          500: "#4269FF",
-          600: "#2D5BFF",
-          700: "#1F42D6",
-          800: "#142FA6",
-          900: "#0C1E73",
+          50: "#1A2C0A",
+          100: "#2E4A12",
+          200: "#446F1A",
+          300: "#6FA825",
+          400: "#9FD632",
+          500: "#BDF03A",
+          600: "#C7FF3C",
+          700: "#A8E62E",
+          800: "#7FB320",
+          900: "#5A8016",
         },
         or: {
-          50: "#FFF3EE",
-          100: "#FFDFD1",
-          200: "#FFB89E",
-          300: "#FF8E6A",
-          400: "#FF7250",
-          500: "#FF6B4A",
-          600: "#E84F2F",
-          700: "#B83D23",
-          800: "#862B1A",
-          900: "#5A1D11",
+          50: "#2D0815",
+          100: "#4D1024",
+          200: "#75173A",
+          300: "#A81F50",
+          400: "#D6286B",
+          500: "#FF3D81",
+          600: "#E63577",
+          700: "#B82A5F",
+          800: "#8A2049",
+          900: "#5C1531",
         },
         ivoire: {
-          50: "#FFFDF9",
-          100: "#FCFAF4",
-          200: "#FAF7F2",
-          300: "#F1EAD8",
-          400: "#E4DCC4",
+          50: "#0F0F0F",
+          100: "#161616",
+          200: "#1F1F1F",
+          300: "#2A2A2A",
+          400: "#333333",
         },
         encre: {
-          50: "#ECECEE",
-          100: "#CBCBD0",
-          200: "#9FA0AA",
-          300: "#6C6E7D",
-          400: "#4A4C5A",
-          500: "#2F3140",
-          600: "#1E2030",
-          700: "#121424",
-          800: "#0A0B1A",
-          900: "#06070F",
+          50: "#0F0F0F",
+          100: "#1A1A1A",
+          200: "#2A2A2A",
+          300: "#5C5C5F",
+          400: "#7A7A7D",
+          500: "#A8A8AB",
+          600: "#D5D5D7",
+          700: "#F5F2EB",
+          800: "#FAFAFA",
+          900: "#FFFFFF",
         },
         surface: "var(--surface)",
         muted: {

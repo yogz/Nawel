@@ -6,49 +6,66 @@
  * Tokens scoped to .theme-sortie. Imported only from (sortie)/layout.tsx so
  * the Sortie CSS bundle stays independent of globals.css.
  *
- * "Cream & Cobalt" palette (2026 rebrand):
- *   - Surface: warm cream (#FAF7F2)
- *   - Primary: electric cobalt (#2D5BFF) — CTAs, focus rings
- *   - Accent:  coral (#FF6B4A) — secondary highlights
- *   - Text:    cool dark ink (#121424)
+ * "Acid Cabinet" palette (2026 GenZ pivot):
+ *   - Surface: deep black (#0A0A0A)
+ *   - Primary: acid green (#C7FF3C) — CTAs, focus rings, signal moments
+ *   - Accent:  hot pink (#FF3D81) — deadlines, money, secondary signals
+ *   - Text:    off-white (#F5F2EB)
+ *
+ * The historical token names (`bordeaux-`, `or-`, `ivoire-`, `encre-`) are
+ * preserved — they're remapped to the new palette in tailwind.config.ts so
+ * existing className strings keep their semantic role (foreground stays
+ * foreground, primary stays primary) without a global rename pass.
  */
 
 @layer base {
   .theme-sortie {
-    --background: 38 50% 97%;
-    --foreground: 236 32% 11%;
-    --card: 40 56% 99%;
-    --card-foreground: 236 32% 11%;
-    --popover: 40 56% 99%;
-    --popover-foreground: 236 32% 11%;
-    --primary: 226 100% 59%;
-    --primary-foreground: 38 50% 97%;
-    --secondary: 38 38% 93%;
-    --secondary-foreground: 236 32% 11%;
-    --muted: 38 28% 90%;
-    --muted-foreground: 232 10% 46%;
-    --accent: 10 100% 65%;
-    --accent-foreground: 40 56% 99%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 38 50% 97%;
-    --border: 38 22% 85%;
-    --input: 38 22% 85%;
-    --ring: 226 100% 59%;
+    /* shadcn/ui contract — dark surface, acid primary */
+    --background: 0 0% 4%;
+    --foreground: 40 30% 94%;
+    --card: 0 0% 9%;
+    --card-foreground: 40 30% 94%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 40 30% 94%;
+    --primary: 76 100% 62%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 40 30% 94%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 40 8% 65%;
+    --accent: 338 100% 62%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 4%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 76 100% 62%;
     --radius: 1rem;
 
-    --sortie-cobalt: #2d5bff;
-    --sortie-coral: #ff6b4a;
-    --sortie-cream: #faf7f2;
-    --sortie-ink: #121424;
+    /* GenZ tokens — explicit names for new components. The legacy
+       --sortie-cream stays as an alias to --sortie-bg so the few
+       existing usages (sticky RSVP backdrop, etc.) keep resolving
+       to the active surface mid-migration. */
+    --sortie-bg: #0a0a0a;
+    --sortie-surface: #161616;
+    --sortie-surface-2: #1f1f1f;
+    --sortie-border: rgba(245, 242, 235, 0.08);
+    --sortie-acid: #c7ff3c;
+    --sortie-hot: #ff3d81;
+    --sortie-ink: #f5f2eb;
+    --sortie-ink-muted: rgba(245, 242, 235, 0.55);
+    --sortie-cream: var(--sortie-bg);
+    --sortie-cobalt: var(--sortie-acid);
+    --sortie-coral: var(--sortie-hot);
 
-    /* Crisp, slightly cool shadows — modern/minimal. */
-    --shadow-xs: 0 1px 2px rgba(12, 18, 40, 0.05);
-    --shadow-sm: 0 1px 3px rgba(12, 18, 40, 0.06), 0 1px 2px rgba(12, 18, 40, 0.04);
-    --shadow-md: 0 4px 14px rgba(12, 18, 40, 0.08), 0 2px 4px rgba(12, 18, 40, 0.04);
-    --shadow-lg: 0 14px 32px rgba(12, 18, 40, 0.1), 0 4px 8px rgba(12, 18, 40, 0.05);
-    --shadow-velvet:
-      0 24px 48px -12px rgba(45, 91, 255, 0.14), 0 8px 16px -4px rgba(12, 18, 40, 0.08);
-    --shadow-or: 0 2px 8px rgba(255, 107, 74, 0.22), 0 0 0 1px rgba(255, 107, 74, 0.14);
+    /* Dark-friendly shadows: low spread + acid glow on accents */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 14px 32px rgba(0, 0, 0, 0.65), 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-velvet: 0 24px 48px -12px rgba(199, 255, 60, 0.18), 0 8px 16px -4px rgba(0, 0, 0, 0.6);
+    --shadow-or: 0 6px 18px rgba(255, 61, 129, 0.32), 0 0 0 1px rgba(255, 61, 129, 0.2);
+    --shadow-acid: 0 12px 32px -8px rgba(199, 255, 60, 0.45);
 
     --dur-instant: 80ms;
     --dur-fast: 160ms;
@@ -60,27 +77,28 @@
     --ease-velvet: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    --status-bar-color: var(--sortie-cream);
+    --status-bar-color: var(--sortie-bg);
 
-    background-color: var(--sortie-cream);
+    background-color: var(--sortie-bg);
     color: var(--sortie-ink);
-    /* ss01: slashed zero, cv11: single-story 'a' — Inter switches that
-       noticeably improve numeric and body legibility at small sizes. */
     font-feature-settings:
       "ss01" on,
       "cv11" on;
   }
 
+  /* Display headings get the Unbounded face. Tighter tracking holds the
+     "stadium-letter" silhouette that makes the GenZ direction read as
+     bold rather than soft. */
   .theme-sortie :is(h1, h2, h3) {
-    font-family: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.025em;
+    font-family: var(--font-inter-tight), system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
   }
 
   .theme-sortie h1,
   .theme-sortie .display {
-    letter-spacing: -0.035em;
-    font-weight: 800;
+    letter-spacing: -0.04em;
+    font-weight: 900;
   }
 
   /* iOS Safari zooms to 16px and never zooms back out whenever an input
@@ -89,6 +107,20 @@
      trigger the trap. */
   .theme-sortie :is(input, select, textarea) {
     font-size: max(16px, 1rem);
+    background-color: var(--sortie-surface);
+    color: var(--sortie-ink);
+    border-color: var(--sortie-border);
+  }
+
+  .theme-sortie ::placeholder {
+    color: rgba(245, 242, 235, 0.35);
+  }
+
+  /* Acid focus ring replaces the default cyan, which clashes with the
+     palette and makes accessibility audits trip. */
+  .theme-sortie :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid var(--sortie-acid);
+    outline-offset: 2px;
   }
 }
 

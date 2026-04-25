@@ -1,25 +1,34 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight } from "next/font/google";
+import { Unbounded, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "../sortie.css";
 
-// Umami cloud website id for sortie.colist.fr. Script is loaded with
-// `strategy="afterInteractive"` (equivalent to the native `defer` hint
-// the Umami snippet asks for) so it never blocks the first paint.
 const UMAMI_WEBSITE_ID = "383d4d2b-6e94-4215-b02e-39ddc800134b";
 
-const interTight = Inter_Tight({
-  subsets: ["latin", "latin-ext"],
-  weight: ["500", "600", "700", "800"],
+// GenZ design system: Unbounded for display, Space Grotesk for body,
+// JetBrains Mono for data/labels. We re-use the historical CSS var names
+// (`--font-inter`, `--font-inter-tight`) so the existing `font-sans` /
+// `font-serif` className strings keep resolving — they now point at the
+// new families without any churn in component code.
+const display = Unbounded({
+  subsets: ["latin"],
+  weight: ["400", "600", "800", "900"],
   display: "swap",
   variable: "--font-inter-tight",
 });
 
-const inter = Inter({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
+const body = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-inter",
+});
+
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-pilot-mono",
 });
 
 export const metadata: Metadata = {
@@ -36,12 +45,17 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#FAF7F2",
+  themeColor: "#0A0A0A",
 };
 
 export default function SortieRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={`${interTight.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html
+      lang="fr"
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
+      suppressHydrationWarning
+      style={{ colorScheme: "dark" }}
+    >
       <body className="theme-sortie font-sans antialiased">{children}</body>
       <Script
         src="https://cloud.umami.is/script.js"
