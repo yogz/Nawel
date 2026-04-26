@@ -11,6 +11,21 @@ import {
 } from "@/features/sortie/queries/stat-queries";
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
+import { logger } from "@/lib/logger";
+
+// Une query qui plante ne doit pas casser tout le dashboard. On les
+// wrap individuellement et on retombe sur un défaut vide en cas
+// d'erreur SQL / Umami down / fuseau bizarre.
+async function safe<T>(label: string, fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch (err) {
+    logger.warn(`[stat-page] ${label} failed`, {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+    return fallback;
+  }
+}
 
 export const metadata = {
   title: "Supervision",
@@ -34,11 +49,24 @@ export default async function StatPage() {
   }
 
   const [parseAgg, services, hosts, outingsPerDay, wizardUmami] = await Promise.all([
-    getParseAggregate(),
-    getServiceCallStats(),
-    getHostBreakdown(),
-    getOutingsCreatedPerDay(),
-    getWizardUmamiStats(),
+    safe("getParseAggregate", getParseAggregate, {
+      totalAttempts: 0,
+      totalSuccess: 0,
+      totalImageFound: 0,
+      totalZeroData: 0,
+      totalFetchError: 0,
+      hostCount: 0,
+    }),
+    safe("getServiceCallStats", getServiceCallStats, []),
+    safe("getHostBreakdown", () => getHostBreakdown(), []),
+    safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
+    safe("getWizardUmamiStats", () => getWizardUmamiStats(), {
+      configured: false,
+      rangeDays: 7,
+      funnel: null,
+      pasteToPublish: null,
+      geminiTriggers: null,
+    }),
   ]);
 
   return (

@@ -100,6 +100,7 @@ type OutingSnapshot = {
   fixedDatetime: Date | null;
   deadlineAt: Date;
   eventLink: string | null;
+  heroImageUrl: string | null;
 };
 
 /**
@@ -136,6 +137,17 @@ export function buildOutingDiff(
   }
   if (before.eventLink !== after.eventLink) {
     diff.push({ label: "Lien billetterie", before: before.eventLink, after: after.eventLink });
+  }
+  if (before.heroImageUrl !== after.heroImageUrl) {
+    // Les URLs d'image ne sont pas lisibles en email — on remonte juste
+    // le signal de changement avec des libellés génériques. Le CTA
+    // "Revoir la sortie" laisse l'invité voir la nouvelle image en
+    // contexte sur la page publique.
+    diff.push({
+      label: "Image",
+      before: before.heroImageUrl ? "Image précédente" : null,
+      after: after.heroImageUrl ? "Nouvelle image" : null,
+    });
   }
 
   return diff;

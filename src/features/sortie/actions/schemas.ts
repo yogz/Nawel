@@ -203,6 +203,7 @@ export const updateOutingSchema = z
     startsAt: z.coerce.date(),
     rsvpDeadline: z.coerce.date(),
     ticketUrl: optionalSafeUrl,
+    heroImageUrl: optionalSafeUrl,
   })
   .refine((data) => data.rsvpDeadline < data.startsAt, {
     message: "La deadline doit être avant la date de la sortie.",

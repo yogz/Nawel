@@ -187,6 +187,7 @@ export async function updateOutingAction(
   const venue = data.venue ? sanitizeText(data.venue, 200) : null;
   const slug = slugifyAscii(title, 40);
   const ticketUrl = data.ticketUrl ?? null;
+  const heroImageUrl = data.heroImageUrl ?? null;
 
   await db
     .update(outings)
@@ -194,6 +195,7 @@ export async function updateOutingAction(
       title,
       location: venue,
       eventLink: ticketUrl,
+      heroImageUrl,
       fixedDatetime: data.startsAt,
       deadlineAt: data.rsvpDeadline,
       slug,
@@ -208,6 +210,7 @@ export async function updateOutingAction(
       fixedDatetime: outing.fixedDatetime,
       deadlineAt: outing.deadlineAt,
       eventLink: outing.eventLink,
+      heroImageUrl: outing.heroImageUrl,
     },
     {
       title,
@@ -215,6 +218,7 @@ export async function updateOutingAction(
       fixedDatetime: data.startsAt,
       deadlineAt: data.rsvpDeadline,
       eventLink: ticketUrl,
+      heroImageUrl,
     }
   );
   if (diff.length > 0) {

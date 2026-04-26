@@ -143,18 +143,24 @@ export type OutingsPerDay = {
  *
  * Distinct de "actives" (cancelled_at IS NULL) pour avoir les deux
  * chiffres : combien de gens créent vs combien restent debout.
+ *
+ * Note : le `GROUP BY` répète l'expression complète au lieu de
+ * pointer l'alias `day` — Postgres l'accepte des deux façons mais
+ * Drizzle quotait l'alias d'une manière qui faisait planter PG en
+ * prod ("column 'day' does not exist"). On évite la confusion.
  */
 export async function getOutingsCreatedPerDay(): Promise<OutingsPerDay[]> {
+  const dayExpr = sql<string>`to_char(date_trunc('day', ${outings.createdAt} AT TIME ZONE 'Europe/Paris'), 'YYYY-MM-DD')`;
   const rows = await db
     .select({
-      day: sql<string>`to_char(date_trunc('day', ${outings.createdAt} AT TIME ZONE 'Europe/Paris'), 'YYYY-MM-DD')`,
+      day: dayExpr,
       totalCount: sql<number>`COUNT(*)::int`,
       activeCount: sql<number>`COUNT(*) FILTER (WHERE ${outings.cancelledAt} IS NULL)::int`,
     })
     .from(outings)
     .where(sql`${outings.createdAt} >= now() - interval '7 days'`)
-    .groupBy(sql`day`)
-    .orderBy(sql`day ASC`);
+    .groupBy(dayExpr)
+    .orderBy(dayExpr);
 
   return rows;
 }

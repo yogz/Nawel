@@ -87,6 +87,8 @@ export default async function EditOutingPage({ params }: Props) {
           startsAt={outing.fixedDatetime}
           deadlineAt={outing.deadlineAt}
           ticketUrl={outing.eventLink}
+          heroImageUrl={outing.heroImageUrl}
+          vibe={outing.vibe}
         />
       )}
 
