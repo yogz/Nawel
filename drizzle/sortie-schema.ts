@@ -302,6 +302,32 @@ export const debts = sortie.table(
   })
 );
 
+// === parse_stats (telemetry per-host pour le parser d'URL) ===
+
+// Compteurs agrégés par hostname pour le scraper OG/JSON-LD de
+// `/api/sortie/parse-ticket-url`. Permet de repérer les sites qui
+// reviennent souvent en échec et de prioriser des parsers sur-mesure.
+// Volonté : pas stocker l'URL complète des utilisateurs (privacy +
+// éviter les tokens de partage qui traînent dans les paths). On garde
+// juste le `path` du dernier échec, sans query string, comme indice.
+export const parseStats = sortie.table("parse_stats", {
+  // Hostname normalisé (lowercase, sans `www.`). RFC 1035 plafonne à 253.
+  host: varchar("host", { length: 253 }).primaryKey(),
+  attempts: integer("attempts").notNull().default(0),
+  // Page récupérée OK mais aucun champ extrait (ni title, ni venue,
+  // ni image, ni date). Le nombre qui compte pour repérer un site qui
+  // mérite un parser dédié.
+  zeroDataCount: integer("zero_data_count").notNull().default(0),
+  // Tout ce qui empêche d'arriver à l'extraction : SSRF blocked,
+  // timeout, non-2xx, content-type non-HTML, body vide.
+  fetchErrorCount: integer("fetch_error_count").notNull().default(0),
+  // Dernier échec, pour debug ponctuel sans avoir à lire les logs Vercel.
+  lastFailureAt: timestamp("last_failure_at", { withTimezone: true }),
+  lastFailurePath: text("last_failure_path"),
+  lastFailureKind: varchar("last_failure_kind", { length: 16 }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // === audit_log (append-only) ===
 
 export const auditLog = sortie.table(

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
+import { trackParseAttempt, type ParseOutcome } from "@/features/sortie/lib/parse-stats";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -641,6 +642,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "unsupported_protocol" }, { status: 400 });
   }
   if (isPrivateIpLikeHost(target.hostname)) {
+    trackParseAttempt(target.hostname, "fetch_error", target.pathname);
     return NextResponse.json({ error: "blocked_host" }, { status: 400 });
   }
 
@@ -653,7 +655,8 @@ export async function POST(request: NextRequest) {
   // Best-effort fetch + parse. Wrapped in a try so a network error or
   // bot-blocked response doesn't kill the response — we still serve
   // the slug-derived title back to the wizard.
-  const og: Parsed = await fetchAndParseOg(target);
+  const fetchResult = await fetchAndParseOg(target);
+  const og: Parsed = fetchResult.data;
 
   // Discovery API enrichment for ticketmaster.fr links: even if the
   // page itself is bot-blocked, the public API gives us image + date +
@@ -694,6 +697,17 @@ export async function POST(request: NextRequest) {
   const spaHint =
     nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
 
+  // Telemetry par hostname. On ne juge que ce que la PAGE a donné
+  // (og + JSON-LD), pas les fallbacks slug / Discovery API : c'est
+  // bien le scraper qu'on veut surveiller. Différé après la réponse.
+  const pageGotSomething = Boolean(og.title || og.venue || og.image || og.startsAt);
+  const outcome: ParseOutcome = !fetchResult.fetched
+    ? "fetch_error"
+    : pageGotSomething
+      ? "success"
+      : "zero_data";
+  trackParseAttempt(target.hostname, outcome, target.pathname);
+
   return NextResponse.json({
     title: title ?? null,
     venue: venue ?? null,
@@ -715,7 +729,9 @@ export async function POST(request: NextRequest) {
  * can layer slug + Discovery API enrichment on top of whatever the
  * page gives us, instead of bailing out the moment fetch hiccups.
  */
-async function fetchAndParseOg(target: URL): Promise<Parsed> {
+type FetchResult = { data: Parsed; fetched: boolean };
+
+async function fetchAndParseOg(target: URL): Promise<FetchResult> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -738,15 +754,22 @@ async function fetchAndParseOg(target: URL): Promise<Parsed> {
     });
     clearTimeout(timeout);
 
+    // Non-2xx ou redirection vers une 4xx/5xx résolue : on considère
+    // que c'est un fetch_error pour la télémétrie. La page ne nous a
+    // littéralement rien donné d'exploitable.
+    if (!response.ok) {
+      return { data: {}, fetched: false };
+    }
+
     const contentType = response.headers.get("content-type") ?? "";
     if (!contentType.includes("text/html")) {
-      return {};
+      return { data: {}, fetched: false };
     }
 
     // Read at most MAX_BYTES so a giant HTML blob can't exhaust memory.
     const reader = response.body?.getReader();
     if (!reader) {
-      return {};
+      return { data: {}, fetched: false };
     }
     const chunks: Uint8Array[] = [];
     let total = 0;
@@ -763,11 +786,11 @@ async function fetchAndParseOg(target: URL): Promise<Parsed> {
     const html = new TextDecoder("utf-8", { fatal: false }).decode(
       Buffer.concat(chunks.map((c) => Buffer.from(c)))
     );
-    return extractOg(html);
+    return { data: extractOg(html), fetched: true };
   } catch (err) {
     clearTimeout(timeout);
     const message = err instanceof Error ? err.message : "unknown";
     console.warn("[parse-ticket-url] fetch failed:", message.slice(0, 120));
-    return {};
+    return { data: {}, fetched: false };
   }
 }
