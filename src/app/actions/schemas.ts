@@ -198,6 +198,18 @@ export const createEventSchema = z.object({
 
 export const deleteEventSchema = baseInput;
 
+// Guest dashboard: validate a batch of {slug, token} pairs from localStorage
+export const getGuestEventsSchema = z.object({
+  pairs: z
+    .array(
+      z.object({
+        slug: safeSlug,
+        token: z.string().min(1).max(200),
+      })
+    )
+    .max(100),
+});
+
 export const updateEventSchema = baseInput.extend({
   name: safeText(100).optional(),
   description: safeText(500).optional().nullable(),

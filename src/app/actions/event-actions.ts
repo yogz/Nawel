@@ -4,12 +4,13 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { sanitizeStrictText, sanitizeSlug } from "@/lib/sanitize";
 import { events, people, meals } from "@drizzle/schema";
-import { eq, desc, inArray } from "drizzle-orm";
+import { eq, desc, inArray, and, or, gt, isNull } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { verifyAccess } from "./shared";
 import {
   createEventSchema,
   deleteEventSchema,
+  getGuestEventsSchema,
   updateEventSchema,
   updateEventWithMealSchema,
 } from "./schemas";
@@ -262,6 +263,56 @@ export const getMyEventsAction = withErrorThrower(async () => {
   });
 
   return uniqueEvents;
+});
+
+/**
+ * Resolves events from a batch of {slug, token} pairs stored in a guest's localStorage.
+ * Each event is returned only if the provided token matches an existing, non-expired
+ * `people` row attached to that event.
+ */
+export const getGuestEventsAction = createSafeAction(getGuestEventsSchema, async ({ pairs }) => {
+  if (pairs.length === 0) {
+    return [];
+  }
+
+  const slugs = Array.from(new Set(pairs.map((p) => p.slug)));
+  const tokens = Array.from(new Set(pairs.map((p) => p.token)));
+
+  const rows = await db
+    .select({
+      eventId: events.id,
+      eventSlug: events.slug,
+      personToken: people.token,
+    })
+    .from(events)
+    .innerJoin(people, eq(people.eventId, events.id))
+    .where(
+      and(
+        inArray(events.slug, slugs),
+        inArray(people.token, tokens),
+        or(isNull(people.tokenExpiresAt), gt(people.tokenExpiresAt, new Date()))
+      )
+    );
+
+  // Only keep matches where the (slug, token) pair was actually submitted together —
+  // prevents leaking events when a token from one event happens to match a slug from another.
+  const submitted = new Set(pairs.map((p) => `${p.slug} ${p.token}`));
+  const matchedIds = new Set<number>();
+  for (const row of rows) {
+    if (row.personToken && submitted.has(`${row.eventSlug} ${row.personToken}`)) {
+      matchedIds.add(row.eventId);
+    }
+  }
+
+  if (matchedIds.size === 0) {
+    return [];
+  }
+
+  return await db.query.events.findMany({
+    where: inArray(events.id, Array.from(matchedIds)),
+    with: { meals: true },
+    orderBy: desc(events.createdAt),
+  });
 });
 
 export const updateEventAction = createSafeAction(updateEventSchema, async (input) => {

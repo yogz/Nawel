@@ -81,6 +81,52 @@ export function clearGuestToken(slug: string) {
   }
 }
 
+/**
+ * Scan localStorage for all stored guest tokens.
+ * Returns valid (non-expired) {slug, token} pairs and lazily purges expired ones.
+ */
+export function getAllGuestTokens(): { slug: string; token: string }[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const result: { slug: string; token: string }[] = [];
+    const expiredKeys: string[] = [];
+    const prefix = "event_token_";
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(prefix)) continue;
+
+      const slug = key.slice(prefix.length);
+      const stored = parseStored(localStorage.getItem(key));
+      if (!stored) continue;
+
+      if (typeof stored === "string") {
+        result.push({ slug, token: stored });
+        continue;
+      }
+
+      if (isExpired(stored)) {
+        expiredKeys.push(key);
+        continue;
+      }
+
+      result.push({ slug, token: stored.t });
+    }
+
+    for (const key of expiredKeys) {
+      try {
+        localStorage.removeItem(key);
+      } catch {
+        // ignore
+      }
+    }
+
+    return result;
+  } catch {
+    return [];
+  }
+}
+
 export function setLegacyPersonToken(
   personId: number,
   token: string,
