@@ -1,6 +1,6 @@
 import { desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { parseStats, serviceCallStats } from "@drizzle/sortie-schema";
+import { outings, parseStats, serviceCallStats } from "@drizzle/sortie-schema";
 
 export type ParseAggregate = {
   totalAttempts: number;
@@ -123,6 +123,40 @@ export async function getServiceCallStats(): Promise<ServiceCallGroup[]> {
     group.sources.sort((a, b) => b.callCount - a.callCount);
   }
   return Array.from(groups.values()).sort((a, b) => b.totalCalls - a.totalCalls);
+}
+
+export type OutingsPerDay = {
+  // Date au format ISO YYYY-MM-DD (jour Paris). String côté SQL pour
+  // éviter les surprises de fuseau au sérialise → désérialise React.
+  day: string;
+  totalCount: number;
+  // Sortie non cancelled — utile pour distinguer "créées" de "encore
+  // actives". Le cancelled est rare mais existe sur des sortie tests.
+  activeCount: number;
+};
+
+/**
+ * Sorties créées par jour sur les 7 derniers jours (incluant
+ * aujourd'hui), bucketées en heure locale Paris pour matcher l'usage
+ * réel des créateurs. Renvoie 7 lignes max — moins si aucune sortie
+ * n'a été créée certains jours (le dashboard remplit les trous).
+ *
+ * Distinct de "actives" (cancelled_at IS NULL) pour avoir les deux
+ * chiffres : combien de gens créent vs combien restent debout.
+ */
+export async function getOutingsCreatedPerDay(): Promise<OutingsPerDay[]> {
+  const rows = await db
+    .select({
+      day: sql<string>`to_char(date_trunc('day', ${outings.createdAt} AT TIME ZONE 'Europe/Paris'), 'YYYY-MM-DD')`,
+      totalCount: sql<number>`COUNT(*)::int`,
+      activeCount: sql<number>`COUNT(*) FILTER (WHERE ${outings.cancelledAt} IS NULL)::int`,
+    })
+    .from(outings)
+    .where(sql`${outings.createdAt} >= now() - interval '7 days'`)
+    .groupBy(sql`day`)
+    .orderBy(sql`day ASC`);
+
+  return rows;
 }
 
 /**

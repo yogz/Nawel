@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth-config";
 import {
   getHostBreakdown,
+  getOutingsCreatedPerDay,
   getParseAggregate,
   getServiceCallStats,
 } from "@/features/sortie/queries/stat-queries";
@@ -31,10 +32,11 @@ export default async function StatPage() {
     redirect("/sortie");
   }
 
-  const [parseAgg, services, hosts] = await Promise.all([
+  const [parseAgg, services, hosts, outingsPerDay] = await Promise.all([
     getParseAggregate(),
     getServiceCallStats(),
     getHostBreakdown(),
+    getOutingsCreatedPerDay(),
   ]);
 
   return (
@@ -66,7 +68,12 @@ export default async function StatPage() {
         </p>
       </header>
 
-      <StatDashboard parseAgg={parseAgg} services={services} hosts={hosts} />
+      <StatDashboard
+        parseAgg={parseAgg}
+        services={services}
+        hosts={hosts}
+        outingsPerDay={outingsPerDay}
+      />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import type {
   HostStat,
+  OutingsPerDay,
   ParseAggregate,
   ServiceCallGroup,
 } from "@/features/sortie/queries/stat-queries";
@@ -8,7 +9,39 @@ type Props = {
   parseAgg: ParseAggregate;
   services: ServiceCallGroup[];
   hosts: HostStat[];
+  outingsPerDay: OutingsPerDay[];
 };
+
+const DAY_LABEL_FMT = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "short",
+  day: "numeric",
+});
+
+/**
+ * Remplit les 7 derniers jours (incluant aujourd'hui, en heure Paris)
+ * avec des zéros pour les jours sans sortie. La query DB ne retourne
+ * que les jours avec ≥1 sortie ; on a besoin d'une série dense pour
+ * afficher 7 colonnes alignées.
+ */
+function fill7Days(rows: OutingsPerDay[]): OutingsPerDay[] {
+  const byDay = new Map(rows.map((r) => [r.day, r]));
+  const today = new Date();
+  // Aligne sur Paris en formattant + reparsant. Plus robuste qu'une
+  // arithmétique sur Date côté JS qui prendrait l'heure machine.
+  const isoFmt = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const out: OutingsPerDay[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today.getTime() - i * 86_400_000);
+    const day = isoFmt.format(d);
+    out.push(byDay.get(day) ?? { day, totalCount: 0, activeCount: 0 });
+  }
+  return out;
+}
 
 const RELATIVE_FMT = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
 const DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
@@ -78,13 +111,78 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub?: string
   );
 }
 
-export function StatDashboard({ parseAgg, services, hosts }: Props) {
+export function StatDashboard({ parseAgg, services, hosts, outingsPerDay }: Props) {
   const problemHosts = hosts
     .filter((h) => h.attempts >= 5 && h.successCount / h.attempts < 0.5)
     .slice(0, 10);
 
+  const days = fill7Days(outingsPerDay);
+  const totalCreated7d = days.reduce((sum, d) => sum + d.totalCount, 0);
+  const totalActive7d = days.reduce((sum, d) => sum + d.activeCount, 0);
+  // Hauteur max pour normaliser les barres : 1 minimum pour que l'axe
+  // ne soit pas écrasé même quand toutes les valeurs sont 0.
+  const maxCount = Math.max(1, ...days.map((d) => d.totalCount));
+
   return (
     <div className="flex flex-col gap-12">
+      {/* === Section 0 : sorties créées (vue produit) === */}
+      <section>
+        <header className="mb-4">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+            ─ création sorties ─
+          </p>
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+            Sorties créées (7 derniers jours)
+          </h2>
+        </header>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Kpi
+            label="Total 7j"
+            value={totalCreated7d.toLocaleString("fr-FR")}
+            sub={`${totalActive7d.toLocaleString("fr-FR")} actives`}
+          />
+          <div className="col-span-2 flex flex-col gap-1 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4 sm:col-span-3">
+            <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+              Par jour
+            </p>
+            <div className="mt-1 flex h-24 items-end gap-2">
+              {days.map((d) => {
+                const height = (d.totalCount / maxCount) * 100;
+                const cancelled = d.totalCount - d.activeCount;
+                const cancelledRatio = d.totalCount > 0 ? cancelled / d.totalCount : 0;
+                return (
+                  <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
+                    <div className="relative flex h-full w-full items-end overflow-hidden rounded-md bg-ivoire-200">
+                      {d.totalCount > 0 && (
+                        <div
+                          className="w-full bg-bordeaux-600"
+                          style={{ height: `${Math.max(8, height)}%` }}
+                          aria-label={`${d.totalCount} sortie${d.totalCount > 1 ? "s" : ""}`}
+                        >
+                          {cancelledRatio > 0 && (
+                            <div
+                              className="w-full bg-rose-400/70"
+                              style={{ height: `${cancelledRatio * 100}%` }}
+                              title={`${cancelled} cancelled`}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <span className="font-mono text-[10px] tabular-nums text-encre-500">
+                      {DAY_LABEL_FMT.format(new Date(`${d.day}T12:00:00`))}
+                    </span>
+                    <span className="font-mono text-[11px] font-bold tabular-nums text-encre-700">
+                      {d.totalCount}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* === Section 1 : KPIs scraper OG === */}
       <section>
         <header className="mb-4">
