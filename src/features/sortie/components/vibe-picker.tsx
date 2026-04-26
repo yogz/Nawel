@@ -12,20 +12,24 @@ type Props = {
 const containerVariants: Variants = {
   rest: {},
   nudge: {
-    transition: { staggerChildren: 0.06, delayChildren: 0.25 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.3 },
   },
 };
 
+// Acid-green glow + a clearly visible bounce. The previous scale of
+// 1.045 read as static on the dark surface, and the bordeaux shadow
+// vanished against #0a0a0a — both swapped for the GenZ acid token.
 const itemVariants: Variants = {
-  rest: { scale: 1, boxShadow: "0 0 0 0 rgba(0,0,0,0)" },
+  rest: { scale: 1, boxShadow: "0 0 0 0 rgba(199, 255, 60, 0)" },
   nudge: {
-    scale: [1, 1.045, 1],
+    scale: [1, 1.1, 0.98, 1],
     boxShadow: [
-      "0 0 0 0 rgba(0,0,0,0)",
-      "0 4px 14px -6px rgba(99, 0, 41, 0.35)",
-      "0 0 0 0 rgba(0,0,0,0)",
+      "0 0 0 0 rgba(199, 255, 60, 0)",
+      "0 0 0 4px rgba(199, 255, 60, 0.35)",
+      "0 0 18px 2px rgba(199, 255, 60, 0.45)",
+      "0 0 0 0 rgba(199, 255, 60, 0)",
     ],
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -58,8 +62,8 @@ export function VibePicker({ value, onChange }: Props) {
     }
     setShouldNudge(true);
     // Single-pass: clear after the cascade plays so re-renders don't
-    // restage it. Cascade total ≈ 0.25 (delay) + 6 × 0.06 + 0.5 ≈ 1.1s.
-    const t = window.setTimeout(() => setShouldNudge(false), 1300);
+    // restage it. Cascade total ≈ 0.3 (delay) + 6 × 0.08 + 0.7 ≈ 1.5s.
+    const t = window.setTimeout(() => setShouldNudge(false), 1700);
     return () => window.clearTimeout(t);
     // Run once on mount only; ignoring `value` avoids re-firing the
     // nudge when the user starts/clears their selection.
@@ -71,46 +75,43 @@ export function VibePicker({ value, onChange }: Props) {
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
         C&rsquo;est quoi&nbsp;?
       </p>
-      <div className="relative">
-        <div className="-mx-6 overflow-x-auto px-6 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <motion.ul
-            className="flex w-max gap-2"
-            variants={containerVariants}
-            initial="rest"
-            animate={shouldNudge ? "nudge" : "rest"}
-          >
-            {VIBE_OPTIONS.map((opt) => {
-              const active = value === opt.value;
-              return (
-                <motion.li
-                  key={opt.value}
-                  className="shrink-0 rounded-full"
-                  variants={itemVariants}
+      {/* `mask-image` fades the pills themselves to transparent on the
+          right edge instead of overlaying the page bg. Avoids the muddy
+          look the previous gradient overlay produced over `bg-ivoire-200`
+          pills (whose surface is slightly lighter than the page bg). */}
+      <div
+        className="-mx-6 overflow-x-auto px-6 pr-10 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%_-_2.5rem),transparent_100%)] [&::-webkit-scrollbar]:hidden"
+      >
+        <motion.ul
+          className="flex w-max gap-2 py-1"
+          variants={containerVariants}
+          initial="rest"
+          animate={shouldNudge ? "nudge" : "rest"}
+        >
+          {VIBE_OPTIONS.map((opt) => {
+            const active = value === opt.value;
+            return (
+              <motion.li
+                key={opt.value}
+                className="shrink-0 rounded-full"
+                variants={itemVariants}
+              >
+                <button
+                  type="button"
+                  onClick={() => onChange(active ? null : opt.value)}
+                  aria-pressed={active}
+                  className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors motion-safe:active:scale-95 ${
+                    active
+                      ? "bg-bordeaux-600 text-ivoire-50"
+                      : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300"
+                  }`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => onChange(active ? null : opt.value)}
-                    aria-pressed={active}
-                    className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors motion-safe:active:scale-95 ${
-                      active
-                        ? "bg-bordeaux-600 text-ivoire-50"
-                        : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300"
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                </motion.li>
-              );
-            })}
-          </motion.ul>
-        </div>
-        {/* Right-edge fade to hint at scrollable content. Uses the
-            sortie cream surface colour so it blends with whatever
-            step background sits behind — no hardcoded bg needed. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[var(--sortie-cream)] to-transparent"
-        />
+                  {opt.label}
+                </button>
+              </motion.li>
+            );
+          })}
+        </motion.ul>
       </div>
     </div>
   );
