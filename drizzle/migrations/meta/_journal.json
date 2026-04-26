@@ -225,6 +225,13 @@
       "when": 1777193001507,
       "tag": "0031_lonely_magus",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1777214205722,
+      "tag": "0032_nappy_the_captain",
+      "breakpoints": true
     }
   ]
 }

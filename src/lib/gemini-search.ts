@@ -2,6 +2,7 @@ import { google } from "@ai-sdk/google";
 import { generateObject, generateText, type Tool } from "ai";
 import { z } from "zod";
 import { logger } from "./logger";
+import { trackServiceCall } from "@/features/sortie/lib/service-call-stats";
 
 const VIBE_VALUES = ["theatre", "opera", "concert", "cine", "expo", "autre"] as const;
 
@@ -135,6 +136,7 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
     });
 
     if (!search.text || search.text.trim().length < 20) {
+      trackServiceCall("gemini", "no_match");
       return { found: false, reason: "no_match" };
     }
 
@@ -151,12 +153,19 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
 
     const validated = validateAgainstSources(object, sourceUrls);
     if (!validated) {
+      // L'API a répondu mais le résultat n'a pas survécu à la
+      // validation (host non whitelisté, date passée, champs vides).
+      // On compte ça comme "no_match" côté télémétrie : appel parti,
+      // pas de payload exploitable.
+      trackServiceCall("gemini", "no_match");
       return { found: false, reason: "low_confidence" };
     }
 
+    trackServiceCall("gemini", "found");
     return { found: true, data: validated, sources: sourceUrls };
   } catch (error) {
     logger.error("[gemini-search] error", error);
+    trackServiceCall("gemini", "error", error instanceof Error ? error.message : "unknown");
     return { found: false, reason: "error" };
   }
 }
