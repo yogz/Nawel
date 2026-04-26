@@ -1172,7 +1172,20 @@ function PasteStep({
       )}
 
       {pending && pendingMsg === "search" && !geminiSuggestion && (
-        <GeminiSearchProgress onCancel={cancelGemini} />
+        // Sur path texte, le bouton annuler doit faire avancer le wizard
+        // avec le titre tapé — sinon l'user qui change d'avis se retrouve
+        // bloqué sur la step paste sans signal de quoi faire ensuite. Sur
+        // path URL, on ne peut pas avancer (l'input est une URL, pas un
+        // titre) → on garde le simple abort.
+        <GeminiSearchProgress
+          onCancel={() => {
+            cancelGemini();
+            if (!looksLikeUrl && trimmed) {
+              onTitleOnly(trimmed);
+            }
+          }}
+          cancelLabel={!looksLikeUrl ? "Continuer sans attendre" : "Annuler la recherche"}
+        />
       )}
 
       {err && <p className="text-sm text-erreur-700">{err}</p>}
@@ -1275,7 +1288,13 @@ function PasteStep({
  * durée, on fait évoluer le message pour montrer qu'il se passe quelque
  * chose, et on offre un bouton Annuler — le user n'est jamais piégé.
  */
-function GeminiSearchProgress({ onCancel }: { onCancel: () => void }) {
+function GeminiSearchProgress({
+  onCancel,
+  cancelLabel = "Annuler la recherche",
+}: {
+  onCancel: () => void;
+  cancelLabel?: string;
+}) {
   const [phase, setPhase] = useState(0);
   useEffect(() => {
     // Cycle de messages : 0–3 s → 3–7 s → 7–15 s → >15 s. Les seuils
@@ -1319,7 +1338,7 @@ function GeminiSearchProgress({ onCancel }: { onCancel: () => void }) {
         onClick={onCancel}
         className="mt-1 text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
       >
-        Annuler la recherche
+        {cancelLabel}
       </button>
     </motion.div>
   );
