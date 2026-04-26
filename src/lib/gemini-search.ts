@@ -180,10 +180,18 @@ function validateAgainstSources(data: EventDetails, _sources: string[]): EventDe
   }
 
   // heroImageUrl : on accepte n'importe quel HTTPS valide (les images
-  // sont souvent sur des CDN tiers). On rejette juste les schemas
-  // bizarres et les data: URI.
-  if (data.heroImageUrl && !imageHost) {
-    data.heroImageUrl = "";
+  // sont souvent sur des CDN tiers), mais on filtre :
+  // - les redirects Google grounding (vertexaisearch.cloud.google.com) :
+  //   ils ne servent pas d'image directement, ils renvoient un HTML
+  // - les pages HTML déguisées (pas d'extension image)
+  // - les host sans schéma HTTPS valide
+  if (data.heroImageUrl) {
+    if (!imageHost || imageHost.endsWith("vertexaisearch.cloud.google.com")) {
+      data.heroImageUrl = "";
+    } else if (!/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(data.heroImageUrl)) {
+      // Pas une vraie URL d'image (probablement une page produit/article).
+      data.heroImageUrl = "";
+    }
   }
 
   // Date : exiger ISO local strict, et exclure les événements passés.

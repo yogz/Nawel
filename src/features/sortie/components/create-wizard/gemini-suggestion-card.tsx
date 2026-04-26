@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, Sparkles } from "lucide-react";
@@ -8,7 +9,10 @@ import type { EventDetails } from "@/lib/gemini-search";
 
 type Props = {
   data: EventDetails;
-  onAccept: () => void;
+  // Le composant détecte les images cassées (404 / hotlink) et passe un
+  // booléen pour que le parent puisse drop l'URL au moment d'injecter le
+  // draft, plutôt que de propager une URL cassée jusqu'au hero final.
+  onAccept: (opts: { skipImage: boolean }) => void;
   onDismiss: () => void;
 };
 
@@ -39,6 +43,11 @@ function formatStartsAt(iso: string): string | null {
 export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
   const venueLine = [data.venue, data.city].filter(Boolean).join(" — ");
   const dateLine = formatStartsAt(data.startsAt);
+  // Si l'URL d'image renvoyée par Gemini ne charge pas (404, hotlink
+  // protection, redirect HTML…), on bascule sur le placeholder MapPin
+  // au lieu d'afficher une icône cassée.
+  const [imageBroken, setImageBroken] = useState(false);
+  const hasImage = !!data.heroImageUrl && !imageBroken;
 
   return (
     <motion.div
@@ -53,7 +62,7 @@ export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
       </div>
 
       <div className="flex items-start gap-3">
-        {data.heroImageUrl ? (
+        {hasImage ? (
           <Image
             src={data.heroImageUrl}
             alt=""
@@ -61,6 +70,7 @@ export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
             height={64}
             unoptimized
             loading="lazy"
+            onError={() => setImageBroken(true)}
             className="size-16 shrink-0 rounded-lg object-cover"
           />
         ) : (
@@ -83,7 +93,7 @@ export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
         <Button
           type="button"
           size="sm"
-          onClick={onAccept}
+          onClick={() => onAccept({ skipImage: imageBroken })}
           className="flex-1 rounded-full text-sm font-bold"
         >
           Oui, utiliser

@@ -596,7 +596,7 @@ function PasteStep({
     }
   }
 
-  function acceptSuggestion() {
+  function acceptSuggestion({ skipImage }: { skipImage: boolean }) {
     if (!geminiSuggestion) {
       return;
     }
@@ -609,7 +609,10 @@ function PasteStep({
     onParsed({
       title: geminiSuggestion.title,
       venue: venueLine || null,
-      image: geminiSuggestion.heroImageUrl || null,
+      // Si la card a détecté l'image cassée pendant le preview, on évite
+      // de propager l'URL au draft : la sortie créée affichera le hero
+      // par défaut au lieu d'une icône cassée.
+      image: skipImage ? null : geminiSuggestion.heroImageUrl || null,
       startsAt: geminiSuggestion.startsAt || null,
       ticketUrl: geminiSuggestion.ticketUrl || "",
     });
