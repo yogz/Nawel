@@ -30,26 +30,35 @@ export async function checkRateLimit(
   // Use a sorted set for sliding window
   const redisKey = `ratelimit:${key}`;
 
-  // Remove old entries and add new one in a pipeline
-  const pipeline = redis.pipeline();
-  pipeline.zremrangebyscore(redisKey, 0, windowStart);
-  pipeline.zadd(redisKey, { score: now, member: `${now}-${Math.random()}` });
-  pipeline.zcard(redisKey);
-  pipeline.expire(redisKey, windowSeconds + 1);
+  try {
+    // Remove old entries and add new one in a pipeline
+    const pipeline = redis.pipeline();
+    pipeline.zremrangebyscore(redisKey, 0, windowStart);
+    pipeline.zadd(redisKey, { score: now, member: `${now}-${Math.random()}` });
+    pipeline.zcard(redisKey);
+    pipeline.expire(redisKey, windowSeconds + 1);
 
-  const results = await pipeline.exec();
-  const count = results[2] as number;
+    const results = await pipeline.exec();
+    const count = results[2] as number;
 
-  if (count > limit) {
-    // Get the oldest entry to calculate retry time
-    const oldest = await redis.zrange<string[]>(redisKey, 0, 0, { withScores: true });
-    const oldestTime = oldest.length >= 2 ? parseInt(oldest[1]) : now;
-    const retryAfter = Math.ceil((oldestTime + windowMs - now) / 1000);
+    if (count > limit) {
+      // Get the oldest entry to calculate retry time
+      const oldest = await redis.zrange<string[]>(redisKey, 0, 0, { withScores: true });
+      const oldestTime = oldest.length >= 2 ? parseInt(oldest[1]) : now;
+      const retryAfter = Math.ceil((oldestTime + windowMs - now) / 1000);
 
-    return { success: false, retryAfter: Math.max(1, retryAfter) };
+      return { success: false, retryAfter: Math.max(1, retryAfter) };
+    }
+
+    return { success: true, remaining: limit - count };
+  } catch (error) {
+    // Fail-open : si Redis est inaccessible (DNS down, instance détruite,
+    // réseau coupé), on laisse passer plutôt que de bloquer toute l'app.
+    // Le rate-limit n'est pas un mécanisme de sécurité critique — perdre
+    // la protection temporairement est moins grave qu'un 500 généralisé.
+    console.warn("[redis] rate limit check failed, allowing request:", error);
+    return { success: true, remaining: limit };
   }
-
-  return { success: true, remaining: limit - count };
 }
 
 /**
