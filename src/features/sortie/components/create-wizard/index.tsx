@@ -28,6 +28,7 @@ import { VibePicker } from "../vibe-picker";
 import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
 import { EventSuggestions } from "./event-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
+import { MissingImagePicker } from "./missing-image-picker";
 import type { UnifiedEventResult } from "@/app/api/sortie/search-events/route";
 import type { EventDetails, FindEventResult } from "@/lib/gemini-search";
 import {
@@ -577,6 +578,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                 onTitleChange={(title) => setDraft((d) => ({ ...d, title }))}
                 onVenueChange={(venue) => setDraft((d) => ({ ...d, venue }))}
                 onImageBroken={() => setDraft((d) => ({ ...d, heroImageUrl: "" }))}
+                onImagePick={(heroImageUrl) => setDraft((d) => ({ ...d, heroImageUrl }))}
                 onNext={() => advanceFrom("confirm")}
               />
             )}
@@ -1119,6 +1121,7 @@ function ConfirmPasteStep({
   onTitleChange,
   onVenueChange,
   onImageBroken,
+  onImagePick,
   onNext,
 }: {
   draft: Draft;
@@ -1126,6 +1129,7 @@ function ConfirmPasteStep({
   onTitleChange: (v: string) => void;
   onVenueChange: (v: string) => void;
   onImageBroken: () => void;
+  onImagePick: (url: string) => void;
   onNext: () => void;
 }) {
   // L'URL OG du parser peut être morte (CDN expiré, S3 signé périmé,
@@ -1133,6 +1137,20 @@ function ConfirmPasteStep({
   // visuel cassé en prod. Le state local évite la course entre le
   // re-render du parent et le repaint de l'<img>.
   const [imageFailed, setImageFailed] = useState(false);
+  // Quand l'utilisateur change d'image (via le picker — "Rechercher une
+  // autre", "Importer la mienne"…), on remet imageFailed à false pour
+  // que la nouvelle URL ait sa chance avant de retomber sur le picker.
+  // Pattern documenté React : ajuster un state pendant le render quand
+  // une prop change, plutôt qu'un useEffect qui produirait un double
+  // render (et qui se fait taper sur les doigts par le compilateur).
+  const [trackedUrl, setTrackedUrl] = useState(draft.heroImageUrl);
+  if (trackedUrl !== draft.heroImageUrl) {
+    setTrackedUrl(draft.heroImageUrl);
+    setImageFailed(false);
+  }
+
+  const showPicker = !draft.heroImageUrl || imageFailed;
+
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
       <div>
@@ -1169,10 +1187,13 @@ function ConfirmPasteStep({
             className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
         )}
-        {imageFailed && (
-          <p className="border-b border-encre-200 bg-ivoire-100 px-5 py-3 text-xs text-encre-500">
-            Image indisponible — on utilisera le visuel par défaut.
-          </p>
+        {showPicker && (
+          <MissingImagePicker
+            title={draft.title}
+            venue={draft.venue}
+            vibe={draft.vibe}
+            onPick={onImagePick}
+          />
         )}
         <div className="flex flex-col gap-2 p-5">
           <InlineEditable
