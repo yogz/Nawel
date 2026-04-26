@@ -88,6 +88,26 @@ const ALL_STEPS: ReadonlySet<Step> = new Set([
   "commit",
 ]);
 
+// Traduction des noms de champs Zod en termes user-facing. Le serveur
+// renvoie `creatorEmail`, `creatorDisplayName`, etc. — exposer ça brut
+// trahit la stack technique et désoriente le user (qui ne reconnaît
+// pas son propre champ). Mappage manuel parce qu'il y a moins de
+// 10 champs et que ça n'évolue pas vite ; un fallback sur le nom brut
+// en cas d'oubli plutôt qu'un crash.
+const FIELD_LABELS_FR: Record<string, string> = {
+  title: "Titre",
+  venue: "Lieu",
+  ticketUrl: "Lien de billetterie",
+  heroImageUrl: "Image",
+  startsAt: "Date",
+  rsvpDeadline: "Date limite de réponse",
+  vibe: "Catégorie",
+  creatorDisplayName: "Prénom",
+  creatorEmail: "Email",
+  mode: "Mode",
+  timeslots: "Créneaux proposés",
+};
+
 /**
  * Reconvertit un payload localStorage en `{ draft, step }` typé. Les
  * Date sont stockées en ISO via JSON.stringify natif et reconverties
@@ -281,7 +301,11 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       draft.ticketUrl.length === 0 &&
       draft.venue.trim().length === 0 &&
       !draft.heroImageUrl;
-    if (hasNothingToConfirm) {
+    // Garde `step !== "confirm"` symétrique à celui sur "venue" plus
+    // bas : si l'utilisateur édite le confirm card et vide le venue
+    // d'un coup, la step ne doit pas disparaître sous ses pieds (la
+    // state machine se retrouverait en `stepIndex === -1`).
+    if (hasNothingToConfirm && step !== "confirm") {
       filtered = filtered.filter((s) => s !== "confirm");
     }
     if (draft.venue.trim().length > 0 && step !== "venue") {
@@ -417,9 +441,10 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       const entry = Object.entries(result.errors)[0];
       const firstField = entry?.[0];
       const firstMessage = entry?.[1]?.[0];
+      const friendlyField = firstField ? (FIELD_LABELS_FR[firstField] ?? null) : null;
       setError(
-        firstField && firstMessage
-          ? `${firstField}: ${firstMessage}`
+        friendlyField && firstMessage
+          ? `${friendlyField} : ${firstMessage}`
           : (firstMessage ?? "Un champ manque.")
       );
       throw new Error("validation");
@@ -539,6 +564,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                 draft={draft}
                 onTitleChange={(title) => setDraft((d) => ({ ...d, title }))}
                 onVenueChange={(venue) => setDraft((d) => ({ ...d, venue }))}
+                onImageBroken={() => setDraft((d) => ({ ...d, heroImageUrl: "" }))}
                 onNext={() => advanceFrom("confirm")}
               />
             )}
@@ -1076,13 +1102,20 @@ function ConfirmPasteStep({
   draft,
   onTitleChange,
   onVenueChange,
+  onImageBroken,
   onNext,
 }: {
   draft: Draft;
   onTitleChange: (v: string) => void;
   onVenueChange: (v: string) => void;
+  onImageBroken: () => void;
   onNext: () => void;
 }) {
+  // L'URL OG du parser peut être morte (CDN expiré, S3 signé périmé,
+  // 403, etc.). Sans onError on validait silencieusement une sortie au
+  // visuel cassé en prod. Le state local évite la course entre le
+  // re-render du parent et le repaint de l'<img>.
+  const [imageFailed, setImageFailed] = useState(false);
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
       <div>
@@ -1096,13 +1129,22 @@ function ConfirmPasteStep({
       </div>
 
       <article className="overflow-hidden rounded-3xl border border-encre-300 bg-ivoire-200 shadow-[var(--shadow-md)]">
-        {draft.heroImageUrl && (
+        {draft.heroImageUrl && !imageFailed && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={draft.heroImageUrl}
             alt=""
+            onError={() => {
+              setImageFailed(true);
+              onImageBroken();
+            }}
             className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
           />
+        )}
+        {imageFailed && (
+          <p className="border-b border-encre-200 bg-ivoire-100 px-5 py-3 text-xs text-encre-500">
+            Image indisponible — on utilisera le visuel par défaut.
+          </p>
         )}
         <div className="flex flex-col gap-2 p-5">
           <InlineEditable
