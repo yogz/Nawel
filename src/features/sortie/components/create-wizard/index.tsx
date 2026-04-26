@@ -463,11 +463,13 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
 type TicketmasterSuggestionsState = {
   results: TicketmasterResult[];
   correctedQuery: string | null;
+  isLoading: boolean;
 };
 
 const EMPTY_SUGGESTIONS: TicketmasterSuggestionsState = {
   results: [],
   correctedQuery: null,
+  isLoading: false,
 };
 
 function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterSuggestionsState {
@@ -477,8 +479,15 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
 
   useEffect(() => {
     if (!shouldFetch) {
+      // Reset complet quand l'input redescend sous 3 chars / mode URL :
+      // sinon on garderait des results périmés visibles à la prochaine
+      // activation de l'autocomplete.
+      setState(EMPTY_SUGGESTIONS);
       return;
     }
+    // Loading state immédiat (avant même le debounce de 400 ms) — c'est
+    // ça qui supprime le moment "rien ne se passe" pendant ~700 ms.
+    setState((prev) => ({ ...prev, isLoading: true }));
     const handle = setTimeout(() => {
       abortRef.current?.abort();
       const controller = new AbortController();
@@ -502,11 +511,15 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
             setState({
               results: Array.isArray(data.results) ? data.results : [],
               correctedQuery: typeof data.correctedQuery === "string" ? data.correctedQuery : null,
+              isLoading: false,
             });
           }
         })
         .catch(() => {
           // Silent: best-effort enrichment.
+          if (!controller.signal.aborted) {
+            setState((prev) => ({ ...prev, isLoading: false }));
+          }
         });
     }, 400);
     return () => {
@@ -561,24 +574,36 @@ function PasteStep({
   // pipeline (same `onParsed` callback as the actual paste flow).
   // `correctedQuery` est non-null quand l'API a corrigé une faute
   // d'orthographe ("rolland" → "roland") — affiché au-dessus de la liste.
-  const { results: suggestions, correctedQuery } = useTicketmasterSuggestions(
-    trimmed,
-    !looksLikeUrl
-  );
+  const {
+    results: suggestions,
+    correctedQuery,
+    isLoading: suggestionsLoading,
+  } = useTicketmasterSuggestions(trimmed, !looksLikeUrl);
 
   // Fallback Gemini : appelle /api/sortie/find-event quand l'URL n'est
   // pas parseable ou que l'utilisateur tape un texte libre sans hit
   // Ticketmaster. Latence 12-15s, donc déclenché uniquement après
   // l'échec des autres voies. Retourne true si une suggestion a été
   // posée, false sinon (le caller décide du fallback final).
+  // L'AbortController est exposé via une ref pour que le bouton
+  // Annuler du loading state puisse interrompre le fetch côté client
+  // (le serveur continue mais on jette la réponse).
+  const geminiAbortRef = useRef<AbortController | null>(null);
   async function tryGemini(query: string): Promise<boolean> {
+    geminiAbortRef.current?.abort();
+    const controller = new AbortController();
+    geminiAbortRef.current = controller;
     try {
       const res = await fetch("/api/sortie/find-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
+        signal: controller.signal,
       });
       const data = (await res.json()) as FindEventResult;
+      if (controller.signal.aborted) {
+        return false;
+      }
       if (data.found && data.data) {
         setGeminiSuggestion(data.data);
         return true;
@@ -586,6 +611,48 @@ function PasteStep({
       return false;
     } catch {
       return false;
+    } finally {
+      if (geminiAbortRef.current === controller) {
+        geminiAbortRef.current = null;
+      }
+    }
+  }
+
+  function cancelGemini() {
+    geminiAbortRef.current?.abort();
+    geminiAbortRef.current = null;
+    setPending(false);
+    setErr(null);
+  }
+
+  /**
+   * Pipeline URL : parse OG/JSON-LD → fallback Gemini si rien d'utile.
+   * Extrait pour pouvoir être déclenché à la fois depuis le bouton
+   * "Remplir automatiquement" (via submit()) et depuis l'auto-fetch
+   * sur paste (handlePaste, sans cliquer).
+   */
+  async function runUrlPipeline(url: string) {
+    setErr(null);
+    setGeminiSuggestion(null);
+    setPending(true);
+    setPendingMsg("parse");
+    try {
+      const res = await fetch("/api/sortie/parse-ticket-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      if (res.ok) {
+        onParsed(await res.json());
+        return;
+      }
+      setPendingMsg("search");
+      const found = await tryGemini(url);
+      if (!found) {
+        setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
+      }
+    } finally {
+      setPending(false);
     }
   }
 
@@ -593,31 +660,15 @@ function PasteStep({
     if (!trimmed) {
       return;
     }
+    if (looksLikeUrl) {
+      await runUrlPipeline(trimmed);
+      return;
+    }
     setErr(null);
     setGeminiSuggestion(null);
     setPending(true);
+    setPendingMsg("search");
     try {
-      if (looksLikeUrl) {
-        setPendingMsg("parse");
-        const res = await fetch("/api/sortie/parse-ticket-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: trimmed }),
-        });
-        if (res.ok) {
-          onParsed(await res.json());
-          return;
-        }
-        // Parsing échoué → on tente Gemini avec l'URL comme query.
-        setPendingMsg("search");
-        const found = await tryGemini(trimmed);
-        if (!found) {
-          setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
-        }
-        return;
-      }
-      // Texte libre : tenter Gemini avant le fallback titre seul.
-      setPendingMsg("search");
       const found = await tryGemini(trimmed);
       if (!found) {
         onTitleOnly(trimmed);
@@ -625,6 +676,28 @@ function PasteStep({
     } finally {
       setPending(false);
     }
+  }
+
+  /**
+   * Auto-fetch quand l'utilisateur colle une URL : fire le pipeline
+   * immédiatement sans attendre un clic sur "Remplir automatiquement".
+   * Trigger uniquement sur paste explicite (pas sur typing) pour ne
+   * pas spam le serveur pendant que l'user compose une URL caractère
+   * par caractère.
+   */
+  function handlePaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    if (pending) {
+      return;
+    }
+    const pasted = e.clipboardData.getData("text").trim();
+    if (!pasted || !/^https?:\/\//i.test(pasted)) {
+      return;
+    }
+    // L'event default va aussi déposer le texte dans l'input — on
+    // écrase juste pour s'assurer que la value reflète bien l'URL
+    // collée (cas où l'user remplace une sélection partielle).
+    setValue(pasted);
+    void runUrlPipeline(pasted);
   }
 
   function acceptSuggestion({ skipImage }: { skipImage: boolean }) {
@@ -684,6 +757,7 @@ function PasteStep({
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onPaste={handlePaste}
           placeholder={placeholder ?? "https://… ou « La Belle et la Bête »"}
           autoCapitalize="sentences"
           spellCheck={false}
@@ -701,6 +775,7 @@ function PasteStep({
         results={suggestions}
         correctedQuery={correctedQuery}
         originalQuery={trimmed}
+        isLoading={suggestionsLoading}
         onPick={(result) => {
           const venueLine = [result.venue, result.city].filter(Boolean).join(", ");
           onParsed({
@@ -721,33 +796,98 @@ function PasteStep({
         />
       )}
 
+      {pending && pendingMsg === "search" && !geminiSuggestion && (
+        <GeminiSearchProgress onCancel={cancelGemini} />
+      )}
+
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
-      <Button
-        type="button"
-        size="lg"
-        disabled={pending || !trimmed || !!geminiSuggestion}
-        onClick={submit}
-        className="h-16 rounded-full text-base font-bold"
-      >
-        {pending ? (
-          <span className="inline-flex items-center gap-2">
-            <Loader2 size={16} className="animate-spin" />
-            {pendingMsg === "search" ? "On cherche cet événement…" : "Lecture du lien…"}
-          </span>
-        ) : looksLikeUrl ? (
-          <span className="inline-flex items-center gap-2">
-            <Wand2 size={16} />
-            Remplir automatiquement
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-2">
-            <ArrowRight size={16} />
-            Continuer
-          </span>
-        )}
-      </Button>
+      {/* Pendant la recherche Gemini, le composant GeminiSearchProgress
+          ci-dessus prend le relais avec son bouton Annuler — on cache le
+          bouton principal pour ne pas dupliquer le feedback. */}
+      {!(pending && pendingMsg === "search") && (
+        <Button
+          type="button"
+          size="lg"
+          disabled={pending || !trimmed || !!geminiSuggestion}
+          onClick={submit}
+          className="h-16 rounded-full text-base font-bold"
+        >
+          {pending ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={16} className="animate-spin" />
+              Lecture du lien…
+            </span>
+          ) : looksLikeUrl ? (
+            <span className="inline-flex items-center gap-2">
+              <Wand2 size={16} />
+              Remplir automatiquement
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-2">
+              <ArrowRight size={16} />
+              Continuer
+            </span>
+          )}
+        </Button>
+      )}
     </section>
+  );
+}
+
+/**
+ * Loading state dédié pour la recherche Gemini : 12-15 s en moyenne,
+ * c'est trop long pour un simple spinner. On annonce explicitement la
+ * durée, on fait évoluer le message pour montrer qu'il se passe quelque
+ * chose, et on offre un bouton Annuler — le user n'est jamais piégé.
+ */
+function GeminiSearchProgress({ onCancel }: { onCancel: () => void }) {
+  const [phase, setPhase] = useState(0);
+  useEffect(() => {
+    // Cycle de messages : 0–3 s → 3–7 s → 7–15 s → >15 s. Les seuils
+    // sont calés sur la latence observée du fallback (12-15 s typique,
+    // 25 s timeout côté serveur).
+    const t1 = setTimeout(() => setPhase(1), 3000);
+    const t2 = setTimeout(() => setPhase(2), 7000);
+    const t3 = setTimeout(() => setPhase(3), 15000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, []);
+  const message = [
+    "On cherche cet événement…",
+    "On consulte les sources officielles…",
+    "On rassemble les infos…",
+    "Encore quelques secondes…",
+  ][phase];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="flex flex-col items-center gap-3 rounded-3xl border border-bordeaux-100 bg-bordeaux-50/40 px-6 py-8 text-center"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="grid size-12 place-items-center rounded-full bg-bordeaux-100 text-bordeaux-600">
+        <Loader2 size={20} className="animate-spin" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <p className="text-sm font-bold text-encre-700">{message}</p>
+        <p className="text-xs text-encre-500">
+          Cette étape peut prendre une quinzaine de secondes.
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="mt-1 text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+      >
+        Annuler la recherche
+      </button>
+    </motion.div>
   );
 }
 

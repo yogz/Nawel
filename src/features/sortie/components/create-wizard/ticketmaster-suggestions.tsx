@@ -13,6 +13,10 @@ type Props = {
   // pourquoi les résultats ne matchent pas littéralement ce qu'il a tapé.
   correctedQuery: string | null;
   originalQuery: string;
+  // True entre la 1re saisie ≥3 chars et la 1re réponse de l'API. Permet
+  // d'afficher des skeletons pendant les ~700 ms (debounce + fetch) où
+  // sinon l'écran reste figé après la frappe.
+  isLoading: boolean;
   onPick: (result: TicketmasterResult) => void;
 };
 
@@ -39,7 +43,47 @@ function formatStartsAt(iso: string | null): string | null {
  * wizard like an URL paste. Renders nothing when results are empty so
  * the absence of matches is invisible to the user.
  */
-export function TicketmasterSuggestions({ results, correctedQuery, originalQuery, onPick }: Props) {
+export function TicketmasterSuggestions({
+  results,
+  correctedQuery,
+  originalQuery,
+  isLoading,
+  onPick,
+}: Props) {
+  // Skeleton dès que la frappe a lieu — 2 cards grises animate-pulse
+  // qui matchent le layout des vraies (image 56×56 + 2 lignes texte).
+  // Évite le moment "rien ne se passe" entre la dernière touche et la
+  // 1re réponse de l'API.
+  if (results.length === 0 && isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="flex flex-col gap-2"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
+          <Sparkles size={12} />
+          Recherche Ticketmaster…
+        </div>
+        <ul className="flex flex-col gap-2">
+          {[0, 1].map((i) => (
+            <li key={i}>
+              <div className="flex items-start gap-3 rounded-xl border border-encre-200 bg-ivoire-100 p-3">
+                <div className="size-14 shrink-0 animate-pulse rounded-lg bg-ivoire-300" />
+                <div className="min-w-0 flex-1 space-y-2 pt-1">
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-ivoire-300" />
+                  <div className="h-3 w-1/2 animate-pulse rounded bg-ivoire-300" />
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    );
+  }
   if (results.length === 0) {
     return null;
   }
