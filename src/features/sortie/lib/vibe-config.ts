@@ -49,6 +49,27 @@ export const VIBE_CONFIG: Partial<Record<Vibe, VibeConfig>> = {
   },
 };
 
+// Heure pré-sélectionnée dans le wizard quand l'utilisateur n'en a
+// pas encore choisi une (et qu'aucune source — JSON-LD, Ticketmaster,
+// Gemini — ne nous en a fourni). Calage approximatif sur les pratiques
+// courantes en France ; le user peut toujours surcharger via le picker
+// (le flag `timeTouched` côté wizard arrête l'auto-update).
+const VIBE_DEFAULT_START_TIME: Record<Vibe, string> = {
+  theatre: "20:00",
+  opera: "19:30",
+  concert: "20:30",
+  cine: "20:00",
+  expo: "14:00",
+  autre: "19:00",
+};
+
+export function defaultStartTimeFor(vibe: Vibe | null | undefined): string {
+  if (!vibe) {
+    return VIBE_DEFAULT_START_TIME.autre;
+  }
+  return VIBE_DEFAULT_START_TIME[vibe];
+}
+
 export function isVibe(v: string | null | undefined): v is Vibe {
   return (
     v === "theatre" ||

@@ -26,7 +26,7 @@ import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 import { VibePicker } from "../vibe-picker";
-import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
+import { VIBE_CONFIG, defaultStartTimeFor, isVibe, type Vibe } from "../../lib/vibe-config";
 import { EventSuggestions } from "./event-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
 import { MissingImagePicker } from "./missing-image-picker";
@@ -62,6 +62,10 @@ type Draft = {
   // publish time (so a single filled picker = fixed-mode sortie).
   date: Date | null;
   time: string | null;
+  // True dès que l'utilisateur a explicitement choisi une heure via le
+  // picker. Tant qu'il est false, changer de vibe ré-aligne l'heure sur
+  // le défaut de la nouvelle catégorie (cf. `defaultStartTimeFor`).
+  timeTouched: boolean;
   // Committed alternative slots from the when-step ghost-row. 0–7
   // entries — the pending picker contributes the 8th at publish.
   // Final count decides the mode: 1 slot → fixed, 2+ → vote.
@@ -160,6 +164,11 @@ function tryRestoreDraft(payload: unknown): { draft: Draft; step: Step } | null 
     vibe: isVibe(rawDraft.vibe as string | null) ? (rawDraft.vibe as Vibe) : null,
     date: parseDate(rawDraft.date),
     time: typeof rawDraft.time === "string" ? rawDraft.time : null,
+    // Au restore on conserve l'intent : si l'user avait choisi une heure
+    // dans la session précédente, on ne la réécrira pas en changeant de
+    // vibe à la reprise. Drafts pré-PR3 sans le champ → false (l'heure
+    // stockée est probablement le défaut "20:00" historique).
+    timeTouched: typeof rawDraft.timeTouched === "boolean" ? rawDraft.timeTouched : false,
     slots,
     rsvpDeadline: parseDate(rawDraft.rsvpDeadline),
     creatorDisplayName:
@@ -241,18 +250,22 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
   const router = useRouter();
   const [step, setStep] = useState<Step>("paste");
   const telemetry = useWizardTelemetry(step);
-  const [draft, setDraft] = useState<Draft>({
-    title: defaultTitle ?? "",
-    venue: "",
-    ticketUrl: "",
-    heroImageUrl: "",
-    vibe: isVibe(vibeKey) ? vibeKey : null,
-    date: null,
-    time: "20:00",
-    slots: [],
-    rsvpDeadline: null,
-    creatorDisplayName: defaultCreatorName ?? "",
-    creatorEmail: "",
+  const [draft, setDraft] = useState<Draft>(() => {
+    const initialVibe = isVibe(vibeKey) ? vibeKey : null;
+    return {
+      title: defaultTitle ?? "",
+      venue: "",
+      ticketUrl: "",
+      heroImageUrl: "",
+      vibe: initialVibe,
+      date: null,
+      time: defaultStartTimeFor(initialVibe),
+      timeTouched: false,
+      slots: [],
+      rsvpDeadline: null,
+      creatorDisplayName: defaultCreatorName ?? "",
+      creatorEmail: "",
+    };
   });
   const [pasteFailed, setPasteFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -549,7 +562,15 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
             {step === "paste" && (
               <PasteStep
                 vibe={draft.vibe}
-                onVibeChange={(vibe) => setDraft((d) => ({ ...d, vibe }))}
+                onVibeChange={(vibe) =>
+                  setDraft((d) => ({
+                    ...d,
+                    vibe,
+                    // Réaligne l'heure sur le défaut de la nouvelle vibe
+                    // tant que l'user n'en a pas choisi une lui-même.
+                    time: d.timeTouched ? d.time : defaultStartTimeFor(vibe),
+                  }))
+                }
                 onPasteSubmitted={telemetry.onPasteSubmitted}
                 onSuggestionPicked={telemetry.onSuggestionPicked}
                 onGeminiStarted={telemetry.onGeminiStarted}
@@ -620,7 +641,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                 deadline={draft.rsvpDeadline}
                 onSlotsChange={(slots) => setDraft((d) => ({ ...d, slots }))}
                 onPendingDateChange={(date) => setDraft((d) => ({ ...d, date }))}
-                onPendingTimeChange={(time) => setDraft((d) => ({ ...d, time }))}
+                onPendingTimeChange={(time) => setDraft((d) => ({ ...d, time, timeTouched: true }))}
                 onDeadlineChange={(rsvpDeadline) => setDraft((d) => ({ ...d, rsvpDeadline }))}
                 onNext={() => advanceFrom("date")}
               />
