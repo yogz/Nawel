@@ -7,6 +7,7 @@ import { sendSortieEmail } from "@/lib/resend-sortie";
 import { magicLinks, outings } from "@drizzle/sortie-schema";
 import { hashToken } from "@/features/sortie/lib/cookie-token";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { renderEmail } from "@/features/sortie/lib/emails/layout";
 import { z } from "zod";
 import type { FormActionState } from "./outing-actions";
 
@@ -80,20 +81,21 @@ export async function sendReclaimMagicLinkAction(
 
     const link = `${BASE_URL}/claim?t=${rawToken}`;
     const title = escapeHtml(outing.title);
+    const body = `
+      <h1 style="margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-0.03em;font-weight:800;color:#0A0A0A;">Reprendre la main sur ${title}</h1>
+      <p style="color:#3A3833;line-height:1.6;font-size:15px;margin:0 0 28px;">Clique sur ce lien pour récupérer les droits de modif depuis cet appareil. Le lien expire dans 24 heures.</p>
+      <p style="margin:0 0 24px;">
+        <a href="${link}" style="display:inline-block;padding:14px 26px;background:#0A0A0A;color:#C7FF3C;text-decoration:none;border-radius:999px;font-weight:700;font-size:14px;letter-spacing:0.01em;">Reprendre la sortie</a>
+      </p>
+      <p style="font-size:13px;color:#7A7368;line-height:1.6;margin:0;">Si tu n&rsquo;es pas à l&rsquo;origine de cette demande, ignore ce mail — le lien ne sera jamais activé.</p>
+    `;
     await sendSortieEmail({
       to: email,
       subject: `Ton lien de secours pour ${outing.title}`,
-      html: `
-        <div style="font-family: system-ui, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px;">
-          <p style="font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #7E6133;">Sortie</p>
-          <h1 style="font-family: Georgia, serif; font-size: 28px; color: #231E16;">Reprendre la main sur ${title}</h1>
-          <p style="color: #4A4132; line-height: 1.6;">Clique sur ce lien pour retrouver les droits de modification depuis cet appareil. Le lien expire dans 24 heures.</p>
-          <p style="margin: 24px 0;">
-            <a href="${link}" style="display: inline-block; padding: 12px 24px; background: #6B1F2A; color: #F5F1E8; text-decoration: none; border-radius: 8px;">Reprendre la sortie</a>
-          </p>
-          <p style="font-size: 13px; color: #8E8168; line-height: 1.6;">Si tu n'es pas à l'origine de cette demande, tu peux ignorer cet email — le lien ne sera jamais activé.</p>
-        </div>
-      `,
+      html: renderEmail({
+        preheader: `Lien de secours pour reprendre la main sur ${outing.title}.`,
+        body,
+      }),
     });
   }
 

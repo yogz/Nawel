@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     template: "%s · Sortie",
     default: "Sortie",
   },
-  description: "Organise tes sorties entre amis.",
+  description: "Entre amis, ça s'organise.",
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
 };
