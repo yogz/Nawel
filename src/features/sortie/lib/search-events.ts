@@ -3,7 +3,7 @@ import {
   type EventProviderName,
   type UnifiedEventResult,
 } from "./event-providers";
-import { searchTicketmasterEventsWithSpellcheck } from "./ticketmaster-search";
+import { searchTicketmasterEventsRich } from "./ticketmaster-search";
 
 export type EventSearchOutcome = {
   results: UnifiedEventResult[];
@@ -13,6 +13,14 @@ export type EventSearchOutcome = {
    * détecter une régression dans un provider sans casser le flux user.
    */
   failedSources: EventProviderName[];
+  /**
+   * Suggestion d'orthographe Ticketmaster captée pendant la passe.
+   * Non-null uniquement si l'appelant a passé `withTmSpellcheck: true`
+   * dans `searchEvents` ET que TM a renvoyé une suggestion. Permet à
+   * `searchEventsWithSpellcheck` de récupérer la correction sans payer
+   * d'appel TM dédié.
+   */
+  tmSpellcheckSuggestion: string | null;
 };
 
 export type EventSearchOutcomeWithSpellcheck = EventSearchOutcome & {
@@ -119,13 +127,38 @@ function compareForDisplay(a: UnifiedEventResult, b: UnifiedEventResult): number
  * Best-effort sur tout : une source qui throw n'empêche pas les
  * autres de remonter. La liste `failedSources` sert au debug, pas au UX.
  */
+export type SearchEventsOpts = {
+  /**
+   * Active `includeSpellcheck=yes` sur le 1er appel TM du parcours.
+   * La suggestion remonte via `tmSpellcheckSuggestion` dans le retour.
+   * Utilisé par `searchEventsWithSpellcheck` pour économiser un appel
+   * TM dédié — au lieu d'avoir 4 appels TM dans le worst case typo,
+   * on en a 2.
+   */
+  withTmSpellcheck?: boolean;
+};
+
 export async function searchEvents(
   query: string,
-  limitPerSource: number
+  limitPerSource: number,
+  opts: SearchEventsOpts = {}
 ): Promise<EventSearchOutcome> {
-  const settled = await Promise.allSettled(
-    EVENT_PROVIDERS.map((provider) => provider.search(query, limitPerSource))
-  );
+  // Quand `withTmSpellcheck` est demandé, on bypasse le provider TM
+  // standard (qui n'expose pas la suggestion) et on appelle directement
+  // le helper "rich". L'ordre des résultats reste identique grâce à un
+  // index de remap qui maintient TM en tête pour le tiebreaker dedup.
+  let tmSpellcheckSuggestion: string | null = null;
+  const promises: Promise<UnifiedEventResult[]>[] = EVENT_PROVIDERS.map((provider) => {
+    if (opts.withTmSpellcheck && provider.name === "ticketmaster") {
+      return searchTicketmasterEventsRich(query, limitPerSource, "wizard-search").then((rich) => {
+        tmSpellcheckSuggestion = rich.spellcheckSuggestion;
+        return rich.results.map((r) => ({ source: "ticketmaster" as const, ...r }));
+      });
+    }
+    return provider.search(query, limitPerSource);
+  });
+
+  const settled = await Promise.allSettled(promises);
 
   const failedSources: EventProviderName[] = [];
   // Map clé→event : la 1re occurrence gagne. L'ordre d'EVENT_PROVIDERS
@@ -158,15 +191,19 @@ export async function searchEvents(
   });
 
   const results = Array.from(buckets.values()).sort(compareForDisplay);
-  return { results, failedSources };
+  return { results, failedSources, tmSpellcheckSuggestion };
 }
 
 /**
  * Variante avec retry orthographique. Si la 1re passe agrégée ne ramène
- * AUCUN résultat (toutes sources comprises), on demande à Ticketmaster
- * une suggestion d'orthographe et on relance la recherche multi-sources
- * sur la query corrigée. Évite de basculer sur le fallback Gemini
- * (lent + payant) pour des fautes triviales du type "rolland" → "roland".
+ * AUCUN résultat (toutes sources comprises), on récupère la suggestion
+ * d'orthographe TM (déjà captée pendant le 1er appel grâce à
+ * `withTmSpellcheck`) et on relance la recherche multi-sources sur la
+ * query corrigée. Évite de basculer sur le fallback Gemini (lent +
+ * payant) pour des fautes triviales du type "rolland" → "roland".
+ *
+ * Économie : 2 appels TM dans le worst case (avant : 4) — la suggestion
+ * remonte en sideband au 1er appel, plus besoin d'un cycle TM dédié.
  *
  * Spellcheck = TM-only car c'est la seule source qui en propose ; mais
  * le 2e appel bénéficie à toutes les sources, donc OpenAgenda voit
@@ -176,19 +213,19 @@ export async function searchEventsWithSpellcheck(
   query: string,
   limitPerSource: number
 ): Promise<EventSearchOutcomeWithSpellcheck> {
-  const first = await searchEvents(query, limitPerSource);
+  const first = await searchEvents(query, limitPerSource, { withTmSpellcheck: true });
   if (first.results.length > 0) {
     return { ...first, correctedQuery: null };
   }
 
-  const { correctedQuery } = await searchTicketmasterEventsWithSpellcheck(query, 1);
-  if (!correctedQuery) {
+  const suggestion = first.tmSpellcheckSuggestion?.trim();
+  if (!suggestion || suggestion.toLowerCase() === query.trim().toLowerCase()) {
     return { ...first, correctedQuery: null };
   }
 
-  const second = await searchEvents(correctedQuery, limitPerSource);
+  const second = await searchEvents(suggestion, limitPerSource);
   if (second.results.length === 0) {
     return { ...first, correctedQuery: null };
   }
-  return { ...second, correctedQuery };
+  return { ...second, correctedQuery: suggestion };
 }

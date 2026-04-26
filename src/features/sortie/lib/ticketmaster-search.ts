@@ -90,17 +90,6 @@ function mapEvent(event: TmEvent): TicketmasterResult | null {
 }
 
 /**
- * Outcome of a search call when spellcheck is enabled. `correctedQuery`
- * est non-null seulement quand l'API a proposé une orthographe et qu'on
- * a relancé la recherche dessus avec succès — l'UI peut afficher
- * "Résultats pour 'roland' (au lieu de 'rolland')".
- */
-export type TicketmasterSearchOutcome = {
-  results: TicketmasterResult[];
-  correctedQuery: string | null;
-};
-
-/**
  * Best-effort search against the Ticketmaster Discovery API.
  *
  * Returns an empty array for any failure mode (missing key, network
@@ -110,8 +99,8 @@ export type TicketmasterSearchOutcome = {
  *
  * Appelée par l'orchestrateur multi-sources (`searchEvents`) et
  * directement par `/api/sortie/parse-ticket-url` pour enrichir un
- * lien ticketmaster.fr. La spellcheck est exposée séparément via
- * `searchTicketmasterEventsWithSpellcheck` plus bas.
+ * lien ticketmaster.fr. Pour le parcours avec spellcheck, voir
+ * `searchTicketmasterEventsRich` qui renvoie aussi la suggestion.
  */
 export async function searchTicketmasterEvents(
   query: string,
@@ -123,40 +112,23 @@ export async function searchTicketmasterEvents(
 }
 
 /**
- * Variante avec spellcheck : si la 1re recherche ne retourne rien et
- * que l'API propose une correction d'orthographe, on relance une 2e
- * fois avec la suggestion. Évite de basculer sur le fallback Gemini
- * (rate-limited + payant) pour des fautes triviales du genre
- * "rolland" → "roland".
+ * Variante "riche" qui expose ET les résultats ET la suggestion
+ * d'orthographe TM. Utilisée par l'orchestrateur multi-sources quand
+ * on veut capturer la spellcheck en sideband sans dépenser un appel
+ * supplémentaire dédié — on active `includeSpellcheck=yes` sur le
+ * tout 1er appel TM du parcours, et la suggestion remonte avec les
+ * résultats normaux.
  *
- * `correctedQuery` est défini uniquement quand le 2e appel a ramené
- * au moins un résultat — sinon on retourne le tableau vide initial
- * et on laisse le pipeline continuer normalement.
+ * Caller : `searchEventsWithSpellcheck` dans search-events.ts. Ne pas
+ * utiliser ailleurs sauf si tu as besoin du suggestion (sinon
+ * `searchTicketmasterEvents` suffit, signature plus simple).
  */
-export async function searchTicketmasterEventsWithSpellcheck(
+export async function searchTicketmasterEventsRich(
   query: string,
-  limit: number
-): Promise<TicketmasterSearchOutcome> {
-  // Les deux fetch internes sont tagués "spellcheck" : l'appel
-  // initial avec includeSpellcheck=yes ET la re-recherche sur la
-  // suggestion font partie du même parcours user.
-  const first = await fetchTicketmaster(query, limit, true, "spellcheck");
-  if (first.results.length > 0) {
-    return { results: first.results, correctedQuery: null };
-  }
-  const suggestion = first.spellcheckSuggestion;
-  if (!suggestion) {
-    return { results: [], correctedQuery: null };
-  }
-  const normalized = suggestion.trim();
-  if (!normalized || normalized.toLowerCase() === query.trim().toLowerCase()) {
-    return { results: [], correctedQuery: null };
-  }
-  const second = await fetchTicketmaster(normalized, limit, false, "spellcheck");
-  if (second.results.length === 0) {
-    return { results: [], correctedQuery: null };
-  }
-  return { results: second.results, correctedQuery: normalized };
+  limit: number,
+  source: TicketmasterSource
+): Promise<{ results: TicketmasterResult[]; spellcheckSuggestion: string | null }> {
+  return fetchTicketmaster(query, limit, true, source);
 }
 
 type RawSearchResult = {
