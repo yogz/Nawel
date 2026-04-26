@@ -4,12 +4,23 @@ import type {
   ParseAggregate,
   ServiceCallGroup,
 } from "@/features/sortie/queries/stat-queries";
+import type { WizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 
 type Props = {
   parseAgg: ParseAggregate;
   services: ServiceCallGroup[];
   hosts: HostStat[];
   outingsPerDay: OutingsPerDay[];
+  wizardUmami: WizardUmamiStats;
+};
+
+const STEP_SHORT_LABEL: Record<string, string> = {
+  wizard_step_paste_entered: "paste",
+  wizard_step_date_entered: "date",
+  wizard_step_venue_entered: "venue",
+  wizard_step_name_entered: "name",
+  wizard_step_commit_entered: "commit",
+  wizard_publish_succeeded: "publish",
 };
 
 const DAY_LABEL_FMT = new Intl.DateTimeFormat("fr-FR", {
@@ -111,7 +122,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub?: string
   );
 }
 
-export function StatDashboard({ parseAgg, services, hosts, outingsPerDay }: Props) {
+export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizardUmami }: Props) {
   const problemHosts = hosts
     .filter((h) => h.attempts >= 5 && h.successCount / h.attempts < 0.5)
     .slice(0, 10);
@@ -122,6 +133,11 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay }: Prop
   // Hauteur max pour normaliser les barres : 1 minimum pour que l'axe
   // ne soit pas écrasé même quand toutes les valeurs sont 0.
   const maxCount = Math.max(1, ...days.map((d) => d.totalCount));
+
+  // Funnel max pour échelle visuelle. Le 1er step (paste) est le
+  // dénominateur naturel des % de conversion ; en cas de 0 paste on
+  // évite une division par zéro qui afficherait NaN.
+  const funnelTopCount = wizardUmami.funnel?.[0]?.count ?? 0;
 
   return (
     <div className="flex flex-col gap-12">
@@ -181,6 +197,105 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay }: Prop
             </div>
           </div>
         </div>
+      </section>
+
+      {/* === Section 0bis : funnel wizard via API Umami === */}
+      <section>
+        <header className="mb-4">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+            ─ funnel wizard (umami) ─
+          </p>
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+            Conversion création — {wizardUmami.rangeDays} derniers jours
+          </h2>
+        </header>
+        {!wizardUmami.configured ? (
+          <p className="rounded-xl border border-dashed border-ivoire-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+            UMAMI_API_KEY non configurée — ajoute la clé dans .env pour voir cette section.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {/* Funnel : barres horizontales empilées avec count + % */}
+            {wizardUmami.funnel ? (
+              <div className="flex flex-col gap-2 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4">
+                <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+                  Steps
+                </p>
+                <ul className="flex flex-col gap-1.5">
+                  {wizardUmami.funnel.map((step) => {
+                    const ratio = funnelTopCount > 0 ? step.count / funnelTopCount : 0;
+                    const label = STEP_SHORT_LABEL[step.event] ?? step.event;
+                    return (
+                      <li key={step.event} className="flex items-center gap-3">
+                        <span className="w-16 font-mono text-[11.5px] text-encre-500">{label}</span>
+                        <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-ivoire-200">
+                          <div
+                            className="h-full bg-bordeaux-600"
+                            style={{ width: `${Math.max(2, ratio * 100)}%` }}
+                          />
+                        </div>
+                        <span className="w-12 text-right font-mono text-[11.5px] tabular-nums font-bold text-encre-700">
+                          {step.count.toLocaleString("fr-FR")}
+                        </span>
+                        <span className="w-12 text-right font-mono text-[11px] tabular-nums text-encre-500">
+                          {funnelTopCount > 0 ? `${Math.round(ratio * 100)}%` : "—"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : (
+              <p className="rounded-xl border border-dashed border-ivoire-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+                Funnel indisponible (Umami down ou aucune donnée).
+              </p>
+            )}
+
+            {/* KPIs paste→publish + Gemini triggers */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Kpi
+                label="Paste → publish"
+                value={
+                  wizardUmami.pasteToPublish
+                    ? `${(wizardUmami.pasteToPublish.median / 1000).toFixed(1)} s`
+                    : "—"
+                }
+                sub={
+                  wizardUmami.pasteToPublish
+                    ? `médiane sur ${wizardUmami.pasteToPublish.count} publish (p90 ${(wizardUmami.pasteToPublish.p90 / 1000).toFixed(0)} s)`
+                    : "pas encore de publish"
+                }
+              />
+              <Kpi
+                label="Gemini opt-in"
+                value={(wizardUmami.geminiTriggers?.optin ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.geminiTriggers
+                    ? `${pct(wizardUmami.geminiTriggers.optin, wizardUmami.geminiTriggers.total)} des triggers`
+                    : "—"
+                }
+              />
+              <Kpi
+                label="Gemini bg"
+                value={(wizardUmami.geminiTriggers?.bg ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.geminiTriggers
+                    ? `${pct(wizardUmami.geminiTriggers.bg, wizardUmami.geminiTriggers.total)} des triggers`
+                    : "—"
+                }
+              />
+              <Kpi
+                label="Gemini auto (legacy)"
+                value={(wizardUmami.geminiTriggers?.auto ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  (wizardUmami.geminiTriggers?.auto ?? 0) > 0
+                    ? "⚠ régression : ne devrait plus exister"
+                    : "✓ retiré (PR2a/2c)"
+                }
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       {/* === Section 1 : KPIs scraper OG === */}

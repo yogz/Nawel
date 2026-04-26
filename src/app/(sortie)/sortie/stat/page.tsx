@@ -9,6 +9,7 @@ import {
   getParseAggregate,
   getServiceCallStats,
 } from "@/features/sortie/queries/stat-queries";
+import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
 
 export const metadata = {
@@ -32,11 +33,12 @@ export default async function StatPage() {
     redirect("/sortie");
   }
 
-  const [parseAgg, services, hosts, outingsPerDay] = await Promise.all([
+  const [parseAgg, services, hosts, outingsPerDay, wizardUmami] = await Promise.all([
     getParseAggregate(),
     getServiceCallStats(),
     getHostBreakdown(),
     getOutingsCreatedPerDay(),
+    getWizardUmamiStats(),
   ]);
 
   return (
@@ -73,6 +75,7 @@ export default async function StatPage() {
         services={services}
         hosts={hosts}
         outingsPerDay={outingsPerDay}
+        wizardUmami={wizardUmami}
       />
     </main>
   );
