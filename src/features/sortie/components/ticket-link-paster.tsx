@@ -144,7 +144,7 @@ export function TicketLinkPaster({ onParsed, placeholder, hint }: Props) {
               setNoDataStaged(null);
               setError(null);
             }}
-            placeholder={placeholder ?? "https://www.fnacspectacles.com/place-de-spectacle/..."}
+            placeholder={placeholder ?? "https://www.ticketmaster.fr/fr/manifestation/..."}
             className="pl-9"
             onKeyDown={(e) => {
               if (e.key === "Enter") {

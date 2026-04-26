@@ -82,6 +82,40 @@ const SPA_HOSTS: Record<string, { name: string; alternate?: string }> = {
   "www.ugc.fr": { name: "UGC", alternate: "Allociné" },
 };
 
+// Hosts protégés par un WAF anti-bot (DataDome ou équivalent) qui
+// répondent INTERNAL_ERROR / timeout à toute requête sans empreinte
+// navigateur complète. Tous appartiennent au groupe CTS Eventim
+// (propriétaire de France Billet, Fnac Spectacles, Carrefour Billetterie,
+// Ticketnet) qui partage la même infra protectrice.
+//
+// Stratégie : on ne fetch même pas — on économise 5 s de timeout, et
+// on saute directement au slug parser + Discovery API (Ticketmaster.fr
+// partage souvent le même catalogue car CTS Eventim possède aussi
+// Ticketmaster en Europe).
+const CTS_EVENTIM_HOSTS = new Set([
+  "fnacspectacles.com",
+  "fnacspectacles.fr",
+  "francebillet.com",
+  "carrefour-spectacles.com",
+  "ticketnet.fr",
+]);
+
+function normalizeHostname(hostname: string): string {
+  return hostname.toLowerCase().replace(/^www\./, "");
+}
+
+function isCtsEventimHost(hostname: string): boolean {
+  return CTS_EVENTIM_HOSTS.has(normalizeHostname(hostname));
+}
+
+const CTS_EVENTIM_LABELS: Record<string, string> = {
+  "fnacspectacles.com": "Fnac Spectacles",
+  "fnacspectacles.fr": "Fnac Spectacles",
+  "francebillet.com": "France Billet",
+  "carrefour-spectacles.com": "Carrefour Spectacles",
+  "ticketnet.fr": "Ticketnet",
+};
+
 // HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
 // hex) are handled generically; named entities only cover the Western
 // European accented set + typographic punctuation we actually run into
@@ -576,15 +610,33 @@ function extractFromUrlSlug(url: URL): { title?: string; venue?: string } {
     return title.length > 0 ? { title } : {};
   }
 
-  // Fnac Spectacles: /event/<slug>-<numericId>/
-  // Also covers the older /place-de-spectacle/<slug>-<id>/ URLs.
-  if (host === "fnacspectacles.com") {
-    const eventIdx = segments.findIndex((s) => s === "event" || s === "place-de-spectacle");
-    const slug = eventIdx >= 0 ? segments[eventIdx + 1] : undefined;
+  // Fnac Spectacles + autres sites du groupe CTS Eventim : la URL
+  // suit toujours le pattern /<segment>/<slug>-<id>/ avec <segment>
+  // qui varie par site (event, place-de-spectacle, place, manifestation,
+  // ticket…). On itère sur les segments connus et on prend le suivant.
+  if (
+    host === "fnacspectacles.com" ||
+    host === "fnacspectacles.fr" ||
+    host === "francebillet.com" ||
+    host === "carrefour-spectacles.com" ||
+    host === "ticketnet.fr"
+  ) {
+    const knownSegments = new Set([
+      "event",
+      "place-de-spectacle",
+      "place",
+      "manifestation",
+      "ticket",
+      "billet",
+    ]);
+    const segIdx = segments.findIndex((s) => knownSegments.has(s));
+    const slug = segIdx >= 0 ? segments[segIdx + 1] : segments[segments.length - 1];
     if (!slug || !/[a-z]/i.test(slug)) {
       return {};
     }
-    const cleaned = slug.replace(/-\d{4,}$/, "");
+    const cleaned = slug
+      .replace(/-\d{4,}$/, "")
+      .replace(/-(billet|billets|tickets|reservation|reservations)$/i, "");
     return splitTitleVenueFromSlug(cleaned);
   }
 
@@ -652,29 +704,43 @@ export async function POST(request: NextRequest) {
   // 403, a JS-only shell, or anything else with no usable OG/JSON-LD.
   const slug = extractFromUrlSlug(target);
 
-  // Best-effort fetch + parse. Wrapped in a try so a network error or
-  // bot-blocked response doesn't kill the response — we still serve
-  // the slug-derived title back to the wizard.
-  const fetchResult = await fetchAndParseOg(target);
+  // Détection précoce des hosts CTS Eventim : on sait que le fetch va
+  // échouer (WAF), donc on skip directement pour économiser 5 s de
+  // timeout et éviter de polluer parse_stats avec un fetch_error qui
+  // n'est pas un bug à fixer.
+  const wafBlocked = isCtsEventimHost(target.hostname);
+  const fetchResult = wafBlocked
+    ? { data: {} as Parsed, fetched: false }
+    : await fetchAndParseOg(target);
   const og: Parsed = fetchResult.data;
 
-  // Discovery API enrichment for ticketmaster.fr links: even if the
-  // page itself is bot-blocked, the public API gives us image + date +
-  // venue without rate-limit drama. Best-effort: empty result is fine.
+  // Discovery API enrichment :
+  //   - Pour ticketmaster.fr : on extrait le keyword du slug et on
+  //     query Discovery — gives us image + date + venue sans toucher
+  //     la page (qui peut être WAF-protégée).
+  //   - Pour les hosts CTS Eventim (Fnac Spectacles, France Billet…) :
+  //     même logique, mais le keyword vient du slug humanisé. CTS
+  //     Eventim possède aussi Ticketmaster en Europe → fort taux de
+  //     mirroring du catalogue.
+  //   - Best-effort dans tous les cas : empty result OK.
   let tm: { title?: string; venue?: string; image?: string; startsAt?: string } = {};
-  if (target.hostname.toLowerCase().replace(/^www\./, "") === "ticketmaster.fr") {
-    const keyword = ticketmasterSearchKeyword(target);
-    if (keyword) {
-      const events = await searchTicketmasterEvents(keyword, 1);
-      const top = events[0];
-      if (top) {
-        tm = {
-          title: top.title ?? undefined,
-          venue: [top.venue, top.city].filter(Boolean).join(", ") || undefined,
-          image: top.image ?? undefined,
-          startsAt: top.startsAt ?? undefined,
-        };
-      }
+  const normHost = normalizeHostname(target.hostname);
+  let discoveryKeyword: string | null = null;
+  if (normHost === "ticketmaster.fr") {
+    discoveryKeyword = ticketmasterSearchKeyword(target);
+  } else if (isCtsEventimHost(target.hostname) && slug.title) {
+    discoveryKeyword = slug.title;
+  }
+  if (discoveryKeyword) {
+    const events = await searchTicketmasterEvents(discoveryKeyword, 1);
+    const top = events[0];
+    if (top) {
+      tm = {
+        title: top.title ?? undefined,
+        venue: [top.venue, top.city].filter(Boolean).join(", ") || undefined,
+        image: top.image ?? undefined,
+        startsAt: top.startsAt ?? undefined,
+      };
     }
   }
 
@@ -697,15 +763,33 @@ export async function POST(request: NextRequest) {
   const spaHint =
     nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
 
+  // Hint dédié pour les hosts CTS Eventim : on annonce le blocage
+  // anti-bot et on pousse l'utilisateur vers une source qui marche
+  // mieux côté scraping (Ticketmaster ou le site de la salle). Affiché
+  // même si on a réussi à enrichir via Discovery, parce que la qualité
+  // des données reste dégradée comparée à un parsing direct.
+  const wafHint = wafBlocked
+    ? {
+        siteName: CTS_EVENTIM_LABELS[normHost] ?? "Ce site",
+        suggestion:
+          "Pour de meilleurs résultats, colle plutôt un lien Ticketmaster ou le site de la salle directement.",
+      }
+    : null;
+
   // Telemetry par hostname. On ne juge que ce que la PAGE a donné
   // (og + JSON-LD), pas les fallbacks slug / Discovery API : c'est
   // bien le scraper qu'on veut surveiller. Différé après la réponse.
+  // Pour les hosts CTS Eventim on marque "blocked_waf" plutôt que
+  // "fetch_error" — c'est un blocage par design, pas un bug à fixer,
+  // on isole le faux positif dans la table.
   const pageGotSomething = Boolean(og.title || og.venue || og.image || og.startsAt);
-  const outcome: ParseOutcome = !fetchResult.fetched
-    ? "fetch_error"
-    : pageGotSomething
-      ? "success"
-      : "zero_data";
+  const outcome: ParseOutcome = wafBlocked
+    ? "blocked_waf"
+    : !fetchResult.fetched
+      ? "fetch_error"
+      : pageGotSomething
+        ? "success"
+        : "zero_data";
   trackParseAttempt(target.hostname, outcome, target.pathname);
 
   return NextResponse.json({
@@ -715,6 +799,7 @@ export async function POST(request: NextRequest) {
     startsAt: startsAt ?? null,
     ticketUrl: target.toString(),
     spaHint,
+    wafHint,
   });
 }
 

@@ -24,8 +24,8 @@ export type VibeConfig = {
 export const VIBE_CONFIG: Partial<Record<Vibe, VibeConfig>> = {
   theatre: {
     title: "Théâtre",
-    pasterPlaceholder: "https://www.fnacspectacles.com/place-de-spectacle/...",
-    pasterHint: "Fnac Spectacles, Théâtres Parisiens Associés, Comédie-Française…",
+    pasterPlaceholder: "https://www.theatrechampselysees.fr/spectacle/...",
+    pasterHint: "Ticketmaster, sites des théâtres (Comédie-Française, Champs-Élysées…)",
   },
   opera: {
     title: "Opéra",

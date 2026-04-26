@@ -155,9 +155,13 @@ describe("POST /api/sortie/parse-ticket-url", () => {
   });
 
   describe("OG / JSON-LD extraction wins over slug", () => {
+    // Note : on n'utilise plus fnacspectacles.com pour ce test parce
+    // que le route handler skippe désormais le fetch sur ce host (WAF
+    // anti-bot). Un host non-CTS permet de garder l'assertion claire :
+    // quand une page expose un OG, il prime sur la dérivation du slug.
     it("prefers og:title even when a slug title is available", async () => {
       mockFetchByHost({
-        "www.fnacspectacles.com": () =>
+        "www.theatrechampselysees.fr": () =>
           htmlResponse(`
             <html><head>
               <meta property="og:title" content="George Dalaras — Rembétiko" />
@@ -166,13 +170,38 @@ describe("POST /api/sortie/parse-ticket-url", () => {
           `),
       });
       const res = await POST(
-        makeRequest(
-          "https://www.fnacspectacles.com/event/george-dalaras-rembetiko-le-grand-rex-20805259/"
-        )
+        makeRequest("https://www.theatrechampselysees.fr/event/george-dalaras-rembetiko/")
       );
       const body = (await res.json()) as ParseResponse;
       expect(body.title).toBe("George Dalaras — Rembétiko");
       expect(body.image).toBe("https://img.example.com/poster.jpg");
+    });
+  });
+
+  describe("CTS Eventim WAF blocking", () => {
+    it("skippe le fetch et retourne wafHint pour fnacspectacles.com", async () => {
+      // Le mock fetch ne devrait pas être appelé : on track via spy.
+      const fetchSpy = vi.fn();
+      globalThis.fetch = fetchSpy as unknown as typeof globalThis.fetch;
+      const res = await POST(
+        makeRequest(
+          "https://www.fnacspectacles.com/event/george-dalaras-rembetiko-le-grand-rex-20805259/"
+        )
+      );
+      expect(res.status).toBe(200);
+      const body = (await res.json()) as ParseResponse & {
+        wafHint?: { siteName: string; suggestion: string } | null;
+      };
+      // Slug-derived title doit toujours fonctionner.
+      expect(body.title).toBe("George Dalaras Rembetiko");
+      // Le hint utilisateur est rempli pour le bon host.
+      expect(body.wafHint).toEqual({
+        siteName: "Fnac Spectacles",
+        suggestion: expect.stringContaining("Ticketmaster"),
+      });
+      // Aucun fetch HTML vers fnacspectacles n'a été tenté.
+      const calls = fetchSpy.mock.calls.map((c) => String(c[0]));
+      expect(calls.every((u) => !u.includes("fnacspectacles"))).toBe(true);
     });
   });
 

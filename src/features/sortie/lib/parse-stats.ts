@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { parseStats } from "@drizzle/sortie-schema";
 import { logger } from "@/lib/logger";
 
-export type ParseOutcome = "success" | "zero_data" | "fetch_error";
+export type ParseOutcome = "success" | "zero_data" | "fetch_error" | "blocked_waf";
 
 /**
  * Schedule un upsert télémétrie pour qu'il s'exécute après la réponse
@@ -95,6 +95,11 @@ export async function recordParseStat(
     }
 
     const path = rawPath ? sanitizePath(rawPath) : null;
+    // `blocked_waf` est compté dans `fetchErrorCount` côté DB (pas de
+    // colonne dédiée — la nuance se voit via `lastFailureKind`). Comme
+    // ça on n'a pas à migrer le schema à chaque nouveau type d'échec,
+    // et le compteur "fetchErrors" reste l'agrégat utile pour repérer
+    // les hosts qui posent problème.
     const isZeroData = outcome === "zero_data";
     await db
       .insert(parseStats)
