@@ -13,12 +13,24 @@ export type ParseAggregate = {
 
 export type ServiceCallStat = {
   service: string;
+  source: string;
   callCount: number;
   foundCount: number;
   errorCount: number;
   lastCalledAt: Date | null;
   lastErrorAt: Date | null;
   lastErrorMessage: string | null;
+};
+
+export type ServiceCallGroup = {
+  service: string;
+  totalCalls: number;
+  totalFound: number;
+  totalErrors: number;
+  lastCalledAt: Date | null;
+  // Trié par callCount desc — la source la plus "consommatrice" en
+  // premier, qui est aussi la plus intéressante pour l'œil supervision.
+  sources: ServiceCallStat[];
 };
 
 export type HostStat = {
@@ -63,23 +75,54 @@ export async function getParseAggregate(): Promise<ParseAggregate> {
 }
 
 /**
- * Compteurs par service externe (gemini, ticketmaster). Volume ~2-5
- * lignes — pas de tri SQL nécessaire, on tri côté JS pour mettre les
- * services les plus appelés en premier.
+ * Compteurs par service externe groupés par service (gemini,
+ * ticketmaster), avec breakdown par source d'appel pour chaque service
+ * (findEventDetails, wizard-search, spellcheck, parse-enrich, legacy).
+ * Volume ~5-10 rows DB — agrégation entièrement côté JS, pas
+ * d'optimisation SQL utile à ce stade.
  */
-export async function getServiceCallStats(): Promise<ServiceCallStat[]> {
+export async function getServiceCallStats(): Promise<ServiceCallGroup[]> {
   const rows = await db.select().from(serviceCallStats);
-  return rows
-    .map((r) => ({
+
+  const groups = new Map<string, ServiceCallGroup>();
+  for (const r of rows) {
+    let group = groups.get(r.service);
+    if (!group) {
+      group = {
+        service: r.service,
+        totalCalls: 0,
+        totalFound: 0,
+        totalErrors: 0,
+        lastCalledAt: null,
+        sources: [],
+      };
+      groups.set(r.service, group);
+    }
+    group.totalCalls += r.callCount;
+    group.totalFound += r.foundCount;
+    group.totalErrors += r.errorCount;
+    if (
+      r.lastCalledAt &&
+      (!group.lastCalledAt || r.lastCalledAt.getTime() > group.lastCalledAt.getTime())
+    ) {
+      group.lastCalledAt = r.lastCalledAt;
+    }
+    group.sources.push({
       service: r.service,
+      source: r.source,
       callCount: r.callCount,
       foundCount: r.foundCount,
       errorCount: r.errorCount,
       lastCalledAt: r.lastCalledAt,
       lastErrorAt: r.lastErrorAt,
       lastErrorMessage: r.lastErrorMessage,
-    }))
-    .sort((a, b) => b.callCount - a.callCount);
+    });
+  }
+
+  for (const group of groups.values()) {
+    group.sources.sort((a, b) => b.callCount - a.callCount);
+  }
+  return Array.from(groups.values()).sort((a, b) => b.totalCalls - a.totalCalls);
 }
 
 /**

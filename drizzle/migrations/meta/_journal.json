@@ -232,6 +232,13 @@
       "when": 1777214205722,
       "tag": "0032_nappy_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1777218240578,
+      "tag": "0033_magenta_killer_shrike",
+      "breakpoints": true
     }
   ]
 }

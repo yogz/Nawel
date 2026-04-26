@@ -716,22 +716,26 @@ export async function POST(request: NextRequest) {
   // Discovery API enrichment :
   //   - Pour ticketmaster.fr : on extrait le keyword du slug et on
   //     query Discovery — gives us image + date + venue sans toucher
-  //     la page (qui peut être WAF-protégée).
+  //     la page (qui peut être WAF-protégée). On SKIPPE si l'OG a
+  //     déjà ramené title + venue + image + startsAt : pas la peine
+  //     de payer un appel TM pour des données qu'on a déjà.
   //   - Pour les hosts CTS Eventim (Fnac Spectacles, France Billet…) :
   //     même logique, mais le keyword vient du slug humanisé. CTS
   //     Eventim possède aussi Ticketmaster en Europe → fort taux de
-  //     mirroring du catalogue.
+  //     mirroring du catalogue. PAS de skip ici : leur WAF nous a
+  //     bloqué, og est vide, TM est notre seul espoir.
   //   - Best-effort dans tous les cas : empty result OK.
   let tm: { title?: string; venue?: string; image?: string; startsAt?: string } = {};
   const normHost = normalizeHostname(target.hostname);
+  const ogIsComplete = Boolean(og.title && og.venue && og.image && og.startsAt);
   let discoveryKeyword: string | null = null;
-  if (normHost === "ticketmaster.fr") {
+  if (normHost === "ticketmaster.fr" && !ogIsComplete) {
     discoveryKeyword = ticketmasterSearchKeyword(target);
   } else if (isCtsEventimHost(target.hostname) && slug.title) {
     discoveryKeyword = slug.title;
   }
   if (discoveryKeyword) {
-    const events = await searchTicketmasterEvents(discoveryKeyword, 1);
+    const events = await searchTicketmasterEvents(discoveryKeyword, 1, "parse-enrich");
     const top = events[0];
     if (top) {
       tm = {

@@ -1,4 +1,10 @@
-import { trackServiceCall } from "./service-call-stats";
+import { trackServiceCall, type ServiceSource } from "./service-call-stats";
+
+// Sources d'appel possibles à TM. Type étroit pour qu'à la lecture du
+// dashboard les libellés ne se mélangent pas (ex. "search" vs "wizard-
+// search"). Les sources Gemini ne sont pas listées ici — type "find
+// EventDetails" est utilisé exclusivement dans gemini-search.ts.
+type TicketmasterSource = Extract<ServiceSource, "wizard-search" | "spellcheck" | "parse-enrich">;
 
 export type TicketmasterResult = {
   id: string;
@@ -84,17 +90,6 @@ function mapEvent(event: TmEvent): TicketmasterResult | null {
 }
 
 /**
- * Outcome of a search call when spellcheck is enabled. `correctedQuery`
- * est non-null seulement quand l'API a proposé une orthographe et qu'on
- * a relancé la recherche dessus avec succès — l'UI peut afficher
- * "Résultats pour 'roland' (au lieu de 'rolland')".
- */
-export type TicketmasterSearchOutcome = {
-  results: TicketmasterResult[];
-  correctedQuery: string | null;
-};
-
-/**
  * Best-effort search against the Ticketmaster Discovery API.
  *
  * Returns an empty array for any failure mode (missing key, network
@@ -104,49 +99,36 @@ export type TicketmasterSearchOutcome = {
  *
  * Appelée par l'orchestrateur multi-sources (`searchEvents`) et
  * directement par `/api/sortie/parse-ticket-url` pour enrichir un
- * lien ticketmaster.fr. La spellcheck est exposée séparément via
- * `searchTicketmasterEventsWithSpellcheck` plus bas.
+ * lien ticketmaster.fr. Pour le parcours avec spellcheck, voir
+ * `searchTicketmasterEventsRich` qui renvoie aussi la suggestion.
  */
 export async function searchTicketmasterEvents(
   query: string,
-  limit: number
+  limit: number,
+  source: Exclude<TicketmasterSource, "spellcheck">
 ): Promise<TicketmasterResult[]> {
-  const { results } = await fetchTicketmaster(query, limit, false);
+  const { results } = await fetchTicketmaster(query, limit, false, source);
   return results;
 }
 
 /**
- * Variante avec spellcheck : si la 1re recherche ne retourne rien et
- * que l'API propose une correction d'orthographe, on relance une 2e
- * fois avec la suggestion. Évite de basculer sur le fallback Gemini
- * (rate-limited + payant) pour des fautes triviales du genre
- * "rolland" → "roland".
+ * Variante "riche" qui expose ET les résultats ET la suggestion
+ * d'orthographe TM. Utilisée par l'orchestrateur multi-sources quand
+ * on veut capturer la spellcheck en sideband sans dépenser un appel
+ * supplémentaire dédié — on active `includeSpellcheck=yes` sur le
+ * tout 1er appel TM du parcours, et la suggestion remonte avec les
+ * résultats normaux.
  *
- * `correctedQuery` est défini uniquement quand le 2e appel a ramené
- * au moins un résultat — sinon on retourne le tableau vide initial
- * et on laisse le pipeline continuer normalement.
+ * Caller : `searchEventsWithSpellcheck` dans search-events.ts. Ne pas
+ * utiliser ailleurs sauf si tu as besoin du suggestion (sinon
+ * `searchTicketmasterEvents` suffit, signature plus simple).
  */
-export async function searchTicketmasterEventsWithSpellcheck(
+export async function searchTicketmasterEventsRich(
   query: string,
-  limit: number
-): Promise<TicketmasterSearchOutcome> {
-  const first = await fetchTicketmaster(query, limit, true);
-  if (first.results.length > 0) {
-    return { results: first.results, correctedQuery: null };
-  }
-  const suggestion = first.spellcheckSuggestion;
-  if (!suggestion) {
-    return { results: [], correctedQuery: null };
-  }
-  const normalized = suggestion.trim();
-  if (!normalized || normalized.toLowerCase() === query.trim().toLowerCase()) {
-    return { results: [], correctedQuery: null };
-  }
-  const second = await fetchTicketmaster(normalized, limit, false);
-  if (second.results.length === 0) {
-    return { results: [], correctedQuery: null };
-  }
-  return { results: second.results, correctedQuery: normalized };
+  limit: number,
+  source: TicketmasterSource
+): Promise<{ results: TicketmasterResult[]; spellcheckSuggestion: string | null }> {
+  return fetchTicketmaster(query, limit, true, source);
 }
 
 type RawSearchResult = {
@@ -157,7 +139,8 @@ type RawSearchResult = {
 async function fetchTicketmaster(
   query: string,
   limit: number,
-  withSpellcheck: boolean
+  withSpellcheck: boolean,
+  source: TicketmasterSource
 ): Promise<RawSearchResult> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
   if (!apiKey) {
@@ -184,7 +167,7 @@ async function fetchTicketmaster(
     });
     if (!response.ok) {
       console.warn("[ticketmaster] non-2xx", response.status);
-      trackServiceCall("ticketmaster", "error", `http_${response.status}`);
+      trackServiceCall("ticketmaster", source, "error", `http_${response.status}`);
       return { results: [], spellcheckSuggestion: null };
     }
     const data = (await response.json()) as {
@@ -207,12 +190,12 @@ async function fetchTicketmaster(
     const spellcheckSuggestion = withSpellcheck
       ? extractSpellcheckSuggestion(data.spellcheck)
       : null;
-    trackServiceCall("ticketmaster", results.length > 0 ? "found" : "no_match");
+    trackServiceCall("ticketmaster", source, results.length > 0 ? "found" : "no_match");
     return { results, spellcheckSuggestion };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown";
     console.warn("[ticketmaster] fetch failed:", message);
-    trackServiceCall("ticketmaster", "error", message);
+    trackServiceCall("ticketmaster", source, "error", message);
     return { results: [], spellcheckSuggestion: null };
   }
 }

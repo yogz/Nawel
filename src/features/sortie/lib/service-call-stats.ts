@@ -8,6 +8,16 @@ export type ServiceName = "gemini" | "ticketmaster";
 export type ServiceOutcome = "found" | "no_match" | "error";
 
 /**
+ * Convention des labels de source — pour les afficher proprement dans
+ * le dashboard et garantir qu'on n'éclate pas le compteur entre des
+ * variantes typographiques ("wizard_search" vs "wizard-search").
+ *
+ *   gemini       → "findEventDetails"
+ *   ticketmaster → "wizard-search" | "spellcheck" | "parse-enrich"
+ */
+export type ServiceSource = "findEventDetails" | "wizard-search" | "spellcheck" | "parse-enrich";
+
+/**
  * Schedule un upsert de compteur pour un service externe (Gemini,
  * Ticketmaster Discovery API…). Même contrat que `trackParseAttempt` :
  * non-bloquant, jamais d'exception remontée à l'appelant. En contexte
@@ -15,10 +25,11 @@ export type ServiceOutcome = "found" | "no_match" | "error";
  */
 export function trackServiceCall(
   service: ServiceName,
+  source: ServiceSource,
   outcome: ServiceOutcome,
   errorMessage?: string
 ): void {
-  const run = () => recordServiceCall(service, outcome, errorMessage).catch(() => {});
+  const run = () => recordServiceCall(service, source, outcome, errorMessage).catch(() => {});
   try {
     after(run);
   } catch {
@@ -28,6 +39,7 @@ export function trackServiceCall(
 
 export async function recordServiceCall(
   service: ServiceName,
+  source: ServiceSource,
   outcome: ServiceOutcome,
   errorMessage?: string
 ): Promise<void> {
@@ -40,6 +52,7 @@ export async function recordServiceCall(
       .insert(serviceCallStats)
       .values({
         service,
+        source,
         callCount: 1,
         foundCount: isFound ? 1 : 0,
         errorCount: isError ? 1 : 0,
@@ -48,7 +61,7 @@ export async function recordServiceCall(
         lastErrorMessage: isError ? trimmedMessage : null,
       })
       .onConflictDoUpdate({
-        target: serviceCallStats.service,
+        target: [serviceCallStats.service, serviceCallStats.source],
         set: {
           callCount: sql`${serviceCallStats.callCount} + 1`,
           foundCount: isFound
@@ -69,6 +82,7 @@ export async function recordServiceCall(
   } catch (err) {
     logger.warn("[service-call-stats] upsert failed", {
       service,
+      source,
       outcome,
       message: err instanceof Error ? err.message : "unknown",
     });

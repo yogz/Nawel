@@ -339,28 +339,43 @@ export const parseStats = sortie.table("parse_stats", {
 
 // === service_call_stats (telemetry pour services externes globaux) ===
 
-// Compteurs agrégés par service externe — Gemini, Ticketmaster Discovery
-// API, etc. Granularité = un service. Pas de breakdown par host (Gemini
-// n'en a pas) ni par jour (le dashboard de supervision veut le total
-// vie). Pour la rotation/historique on regardera plus tard si on en a
-// besoin ; aujourd'hui on cherche juste à savoir "combien de fois on a
-// appelé Gemini" et "ça répond ou ça plante ?".
-export const serviceCallStats = sortie.table("service_call_stats", {
-  // Identifiant logique du service. "gemini" | "ticketmaster" pour le
-  // moment — colonne libre pour ne pas avoir à muter un enum à chaque
-  // nouveau service.
-  service: varchar("service", { length: 32 }).primaryKey(),
-  callCount: integer("call_count").notNull().default(0),
-  // Le service a renvoyé un résultat exploitable (Gemini : event trouvé
-  // après validation ; Ticketmaster : au moins 1 event mappé). Distinct
-  // de "appel sans erreur" — un 200 vide ne compte pas comme found.
-  foundCount: integer("found_count").notNull().default(0),
-  errorCount: integer("error_count").notNull().default(0),
-  lastCalledAt: timestamp("last_called_at", { withTimezone: true }),
-  lastErrorAt: timestamp("last_error_at", { withTimezone: true }),
-  lastErrorMessage: varchar("last_error_message", { length: 200 }),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+// Compteurs agrégés par service externe ET par source d'appel — Gemini
+// `findEventDetails`, Ticketmaster `wizard-search`, `spellcheck`,
+// `parse-enrich`, etc. La PK composite (service, source) permet de
+// répondre à "combien d'appels TM viennent du wizard vs. du parser
+// d'URL ?" sans tomber dans le table-per-call (privacy + volume).
+//
+// Les rows pré-existantes (pre-source) sont migrées avec source =
+// 'legacy' : elles s'arrêtent d'être incrémentées dès que le code
+// nouveau version est déployé, mais on les garde pour ne pas perdre
+// l'historique cumulé.
+export const serviceCallStats = sortie.table(
+  "service_call_stats",
+  {
+    // Identifiant logique du service. "gemini" | "ticketmaster" pour le
+    // moment — colonne libre pour ne pas avoir à muter un enum à chaque
+    // nouveau service.
+    service: varchar("service", { length: 32 }).notNull(),
+    // Provenance de l'appel à l'intérieur du service. Convention :
+    //   gemini       → "findEventDetails"
+    //   ticketmaster → "wizard-search" | "spellcheck" | "parse-enrich"
+    //   tout service → "legacy" (rows héritées de la v1 sans split)
+    source: varchar("source", { length: 48 }).notNull(),
+    callCount: integer("call_count").notNull().default(0),
+    // Le service a renvoyé un résultat exploitable (Gemini : event trouvé
+    // après validation ; Ticketmaster : au moins 1 event mappé). Distinct
+    // de "appel sans erreur" — un 200 vide ne compte pas comme found.
+    foundCount: integer("found_count").notNull().default(0),
+    errorCount: integer("error_count").notNull().default(0),
+    lastCalledAt: timestamp("last_called_at", { withTimezone: true }),
+    lastErrorAt: timestamp("last_error_at", { withTimezone: true }),
+    lastErrorMessage: varchar("last_error_message", { length: 200 }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.service, t.source] }),
+  })
+);
 
 // === audit_log (append-only) ===
 

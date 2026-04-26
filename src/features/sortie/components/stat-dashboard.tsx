@@ -1,12 +1,12 @@
 import type {
   HostStat,
   ParseAggregate,
-  ServiceCallStat,
+  ServiceCallGroup,
 } from "@/features/sortie/queries/stat-queries";
 
 type Props = {
   parseAgg: ParseAggregate;
-  services: ServiceCallStat[];
+  services: ServiceCallGroup[];
   hosts: HostStat[];
 };
 
@@ -135,33 +135,60 @@ export function StatDashboard({ parseAgg, services, hosts }: Props) {
           </p>
         ) : (
           <div className="flex flex-col gap-3">
-            {services.map((s) => (
+            {services.map((g) => (
               <div
-                key={s.service}
-                className="flex flex-col gap-2 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4 sm:flex-row sm:items-center sm:justify-between"
+                key={g.service}
+                className="flex flex-col gap-3 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4"
               >
-                <div className="flex flex-col gap-1">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bordeaux-600">
-                    {s.service}
-                  </p>
-                  <p className="text-[15px] text-encre-700">
-                    <span className="font-bold">{s.callCount.toLocaleString("fr-FR")}</span> appels
-                    — <span className="font-bold">{s.foundCount.toLocaleString("fr-FR")}</span>{" "}
-                    trouvés ({pct(s.foundCount, s.callCount)}) —{" "}
-                    <span className={s.errorCount > 0 ? "font-bold text-rose-700" : "font-bold"}>
-                      {s.errorCount.toLocaleString("fr-FR")}
-                    </span>{" "}
-                    erreurs
-                  </p>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-col gap-1">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bordeaux-600">
+                      {g.service}
+                    </p>
+                    <p className="text-[15px] text-encre-700">
+                      <span className="font-bold">{g.totalCalls.toLocaleString("fr-FR")}</span>{" "}
+                      appels —{" "}
+                      <span className="font-bold">{g.totalFound.toLocaleString("fr-FR")}</span>{" "}
+                      trouvés ({pct(g.totalFound, g.totalCalls)}) —{" "}
+                      <span className={g.totalErrors > 0 ? "font-bold text-rose-700" : "font-bold"}>
+                        {g.totalErrors.toLocaleString("fr-FR")}
+                      </span>{" "}
+                      erreurs
+                    </p>
+                  </div>
+                  <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400 sm:text-right">
+                    dernier appel {formatRelative(g.lastCalledAt)}
+                  </span>
                 </div>
-                <div className="flex flex-col gap-0.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400 sm:text-right">
-                  <span>dernier appel {formatRelative(s.lastCalledAt)}</span>
-                  {s.lastErrorAt && (
-                    <span title={s.lastErrorMessage ?? undefined}>
-                      dernière erreur {formatRelative(s.lastErrorAt)}
-                    </span>
-                  )}
-                </div>
+                {g.sources.length > 0 && (
+                  <ul className="flex flex-col gap-1 border-t border-ivoire-400/60 pt-2">
+                    {g.sources.map((s) => (
+                      <li
+                        key={s.source}
+                        className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-[11.5px] tabular-nums text-encre-700"
+                      >
+                        <span className="text-encre-500">↳ {s.source}</span>
+                        <span className="flex flex-wrap items-baseline gap-x-2">
+                          <span>
+                            <span className="font-bold">{s.callCount.toLocaleString("fr-FR")}</span>{" "}
+                            appels
+                          </span>
+                          <span className="text-encre-500">
+                            {pct(s.foundCount, s.callCount)} trouvés
+                          </span>
+                          {s.errorCount > 0 && (
+                            <span className="text-rose-700" title={s.lastErrorMessage ?? undefined}>
+                              {s.errorCount.toLocaleString("fr-FR")} err.
+                            </span>
+                          )}
+                          <span className="text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+                            {formatRelative(s.lastCalledAt)}
+                          </span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
           </div>
