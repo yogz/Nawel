@@ -635,6 +635,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
             )}
             {step === "date" && (
               <WhenStep
+                title={draft.title}
                 slots={draft.slots}
                 pendingDate={draft.date}
                 pendingTime={draft.time}
@@ -648,6 +649,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
             )}
             {step === "venue" && (
               <VenueStep
+                title={draft.title}
                 value={draft.venue}
                 onChange={(venue) => setDraft((d) => ({ ...d, venue }))}
                 onNext={() => advanceFrom("venue")}
@@ -656,6 +658,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
             )}
             {step === "name" && (
               <NameStep
+                title={draft.title}
                 name={draft.creatorDisplayName}
                 email={draft.creatorEmail}
                 onNameChange={(creatorDisplayName) =>
@@ -699,6 +702,32 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
         />
       </div>
     </header>
+  );
+}
+
+/**
+ * Chip de contexte affichée sur les steps post-titre (date, lieu, nom,
+ * commit) pour rappeler à l'user quel événement il est en train de
+ * configurer. Sans ça, le H1 identitaire de chaque step ("C'est quand ?",
+ * "Où ça se passe ?", etc.) ne dit pas DE QUOI on parle — fil conducteur
+ * cassé sur les flows multi-step.
+ *
+ * Style délibérément discret : pas de lime (réservé au focus actif),
+ * pas d'icône (l'eyebrow porte déjà le repère de step), truncate sur
+ * overflow (jamais de wrap ni de scroll horizontal). Non-interactive
+ * pour l'instant — l'édition via back-button reste accessible.
+ */
+function WizardContextChip({ title }: { title: string }) {
+  if (!title.trim()) {
+    return null;
+  }
+  return (
+    <span
+      className="mt-2 inline-flex max-w-full items-center rounded-full border border-encre-300/40 bg-ivoire-100/40 px-3 py-1.5 text-sm font-medium text-encre-500"
+      title={title}
+    >
+      <span className="truncate">{title}</span>
+    </span>
   );
 }
 
@@ -1570,6 +1599,7 @@ function TitleStep({
  *     true at 0 slots; user-toggled once at least one slot exists.
  */
 function WhenStep({
+  title,
   slots,
   pendingDate,
   pendingTime,
@@ -1580,6 +1610,7 @@ function WhenStep({
   onDeadlineChange,
   onNext,
 }: {
+  title: string;
   slots: DraftSlot[];
   pendingDate: Date | null;
   pendingTime: string | null;
@@ -1646,11 +1677,12 @@ function WhenStep({
 
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
-      <div>
+      <div className="flex flex-col items-start">
         <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
           <Calendar size={12} />
           Quand
         </p>
+        <WizardContextChip title={title} />
         <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
           C&rsquo;est quand ?
         </h1>
@@ -1948,11 +1980,13 @@ function describeOffset(offsetMs: number): string {
 }
 
 function VenueStep({
+  title,
   value,
   onChange,
   onNext,
   onSkip,
 }: {
+  title: string;
   value: string;
   onChange: (v: string) => void;
   onNext: () => void;
@@ -1960,11 +1994,12 @@ function VenueStep({
 }) {
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
-      <div>
+      <div className="flex flex-col items-start">
         <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
           <MapPin size={12} />
           Le lieu
         </p>
+        <WizardContextChip title={title} />
         <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
           Où ça se passe ?
         </h1>
@@ -2010,12 +2045,14 @@ function VenueStep({
 }
 
 function NameStep({
+  title,
   name,
   email,
   onNameChange,
   onEmailChange,
   onNext,
 }: {
+  title: string;
   name: string;
   email: string;
   onNameChange: (v: string) => void;
@@ -2026,8 +2063,9 @@ function NameStep({
 
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
-      <div>
+      <div className="flex flex-col items-start">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">Toi</p>
+        <WizardContextChip title={title} />
         <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
           On signe comment&nbsp;?
         </h1>
