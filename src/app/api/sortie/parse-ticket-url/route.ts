@@ -731,7 +731,7 @@ export async function POST(request: NextRequest) {
     discoveryKeyword = slug.title;
   }
   if (discoveryKeyword) {
-    const events = await searchTicketmasterEvents(discoveryKeyword, 1);
+    const events = await searchTicketmasterEvents(discoveryKeyword, 1, "parse-enrich");
     const top = events[0];
     if (top) {
       tm = {

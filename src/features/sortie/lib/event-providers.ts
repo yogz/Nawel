@@ -62,7 +62,11 @@ export const EVENT_PROVIDERS: ProviderConfig[] = [
   {
     name: "ticketmaster",
     search: async (query, limit) => {
-      const results: TicketmasterResult[] = await searchTicketmasterEvents(query, limit);
+      const results: TicketmasterResult[] = await searchTicketmasterEvents(
+        query,
+        limit,
+        "wizard-search"
+      );
       return tag("ticketmaster", results);
     },
   },

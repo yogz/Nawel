@@ -136,7 +136,7 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
     });
 
     if (!search.text || search.text.trim().length < 20) {
-      trackServiceCall("gemini", "no_match");
+      trackServiceCall("gemini", "findEventDetails", "no_match");
       return { found: false, reason: "no_match" };
     }
 
@@ -157,15 +157,20 @@ export async function findEventDetails(query: string): Promise<FindEventResult> 
       // validation (host non whitelisté, date passée, champs vides).
       // On compte ça comme "no_match" côté télémétrie : appel parti,
       // pas de payload exploitable.
-      trackServiceCall("gemini", "no_match");
+      trackServiceCall("gemini", "findEventDetails", "no_match");
       return { found: false, reason: "low_confidence" };
     }
 
-    trackServiceCall("gemini", "found");
+    trackServiceCall("gemini", "findEventDetails", "found");
     return { found: true, data: validated, sources: sourceUrls };
   } catch (error) {
     logger.error("[gemini-search] error", error);
-    trackServiceCall("gemini", "error", error instanceof Error ? error.message : "unknown");
+    trackServiceCall(
+      "gemini",
+      "findEventDetails",
+      "error",
+      error instanceof Error ? error.message : "unknown"
+    );
     return { found: false, reason: "error" };
   }
 }

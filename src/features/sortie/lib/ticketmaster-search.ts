@@ -1,4 +1,10 @@
-import { trackServiceCall } from "./service-call-stats";
+import { trackServiceCall, type ServiceSource } from "./service-call-stats";
+
+// Sources d'appel possibles à TM. Type étroit pour qu'à la lecture du
+// dashboard les libellés ne se mélangent pas (ex. "search" vs "wizard-
+// search"). Les sources Gemini ne sont pas listées ici — type "find
+// EventDetails" est utilisé exclusivement dans gemini-search.ts.
+type TicketmasterSource = Extract<ServiceSource, "wizard-search" | "spellcheck" | "parse-enrich">;
 
 export type TicketmasterResult = {
   id: string;
@@ -109,9 +115,10 @@ export type TicketmasterSearchOutcome = {
  */
 export async function searchTicketmasterEvents(
   query: string,
-  limit: number
+  limit: number,
+  source: Exclude<TicketmasterSource, "spellcheck">
 ): Promise<TicketmasterResult[]> {
-  const { results } = await fetchTicketmaster(query, limit, false);
+  const { results } = await fetchTicketmaster(query, limit, false, source);
   return results;
 }
 
@@ -130,7 +137,10 @@ export async function searchTicketmasterEventsWithSpellcheck(
   query: string,
   limit: number
 ): Promise<TicketmasterSearchOutcome> {
-  const first = await fetchTicketmaster(query, limit, true);
+  // Les deux fetch internes sont tagués "spellcheck" : l'appel
+  // initial avec includeSpellcheck=yes ET la re-recherche sur la
+  // suggestion font partie du même parcours user.
+  const first = await fetchTicketmaster(query, limit, true, "spellcheck");
   if (first.results.length > 0) {
     return { results: first.results, correctedQuery: null };
   }
@@ -142,7 +152,7 @@ export async function searchTicketmasterEventsWithSpellcheck(
   if (!normalized || normalized.toLowerCase() === query.trim().toLowerCase()) {
     return { results: [], correctedQuery: null };
   }
-  const second = await fetchTicketmaster(normalized, limit, false);
+  const second = await fetchTicketmaster(normalized, limit, false, "spellcheck");
   if (second.results.length === 0) {
     return { results: [], correctedQuery: null };
   }
@@ -157,7 +167,8 @@ type RawSearchResult = {
 async function fetchTicketmaster(
   query: string,
   limit: number,
-  withSpellcheck: boolean
+  withSpellcheck: boolean,
+  source: TicketmasterSource
 ): Promise<RawSearchResult> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
   if (!apiKey) {
@@ -184,7 +195,7 @@ async function fetchTicketmaster(
     });
     if (!response.ok) {
       console.warn("[ticketmaster] non-2xx", response.status);
-      trackServiceCall("ticketmaster", "error", `http_${response.status}`);
+      trackServiceCall("ticketmaster", source, "error", `http_${response.status}`);
       return { results: [], spellcheckSuggestion: null };
     }
     const data = (await response.json()) as {
@@ -207,12 +218,12 @@ async function fetchTicketmaster(
     const spellcheckSuggestion = withSpellcheck
       ? extractSpellcheckSuggestion(data.spellcheck)
       : null;
-    trackServiceCall("ticketmaster", results.length > 0 ? "found" : "no_match");
+    trackServiceCall("ticketmaster", source, results.length > 0 ? "found" : "no_match");
     return { results, spellcheckSuggestion };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown";
     console.warn("[ticketmaster] fetch failed:", message);
-    trackServiceCall("ticketmaster", "error", message);
+    trackServiceCall("ticketmaster", source, "error", message);
     return { results: [], spellcheckSuggestion: null };
   }
 }
