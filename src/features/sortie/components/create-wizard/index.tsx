@@ -36,6 +36,7 @@ import {
   persistWizardDraft,
   useStoredWizardDraft,
 } from "@/features/sortie/hooks/use-wizard-draft";
+import { useWizardTelemetry } from "@/features/sortie/hooks/use-wizard-telemetry";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
 
@@ -238,6 +239,7 @@ function isValidEmail(raw: string): boolean {
 export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultTitle }: Props) {
   const router = useRouter();
   const [step, setStep] = useState<Step>("paste");
+  const telemetry = useWizardTelemetry(step);
   const [draft, setDraft] = useState<Draft>({
     title: defaultTitle ?? "",
     venue: "",
@@ -344,6 +346,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
   function back() {
     const idx = steps.indexOf(step);
     if (idx > 0) {
+      telemetry.markBack();
       setStep(steps[idx - 1]!);
       return;
     }
@@ -381,7 +384,8 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       return;
     }
 
-    if (allSlots.length === 1) {
+    const publishMode: "fixed" | "vote" = allSlots.length === 1 ? "fixed" : "vote";
+    if (publishMode === "fixed") {
       const only = allSlots[0]!;
       const startsAt = combineDateAndTime(only.date, only.time);
       fd.set("mode", "fixed");
@@ -440,13 +444,28 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     // ici), donc c'est notre seule chance de nettoyer. Sur erreur,
     // l'état React du wizard reste intact et le user peut retenter.
     clearWizardDraft();
+    telemetry.onPublishStarted(publishMode, isLoggedIn);
+    // Optimistic success tracking : on succès le redirect serveur
+    // empêche d'arriver après l'await, donc on émet l'event juste
+    // avant. Si le serveur retourne une erreur, on émettra un
+    // `publish_failed` après — l'analytique tolère le doublon.
+    telemetry.onPublishSucceeded({
+      mode: publishMode,
+      isLoggedIn,
+      hasEmail: !isLoggedIn && draft.creatorEmail.length > 0,
+      hasVenue: draft.venue.trim().length > 0,
+      hasTicketUrl: draft.ticketUrl.length > 0,
+      hasHeroImage: draft.heroImageUrl.length > 0,
+    });
     const result = await createOutingAction({}, fd);
     // Success = server-side redirect, so we only land here on error.
     if (result?.message) {
+      telemetry.onPublishFailed("server");
       setError(result.message);
       throw new Error(result.message);
     }
     if (result?.errors) {
+      telemetry.onPublishFailed("validation");
       // Surface the offending field name alongside the message — a bare
       // "Invalid input" with no context was impossible to debug live.
       const entry = Object.entries(result.errors)[0];
@@ -530,6 +549,9 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
               <PasteStep
                 vibe={draft.vibe}
                 onVibeChange={(vibe) => setDraft((d) => ({ ...d, vibe }))}
+                onPasteSubmitted={telemetry.onPasteSubmitted}
+                onSuggestionPicked={telemetry.onSuggestionPicked}
+                onGeminiStarted={telemetry.onGeminiStarted}
                 onParsed={(data) => {
                   // JSON-LD often ships a full startsAt — split it back
                   // into the wizard's date + time fields so step 3 lands
@@ -745,6 +767,9 @@ function PasteStep({
   onVibeChange,
   onParsed,
   onTitleOnly,
+  onPasteSubmitted,
+  onSuggestionPicked,
+  onGeminiStarted,
 }: {
   vibe: Vibe | null;
   onVibeChange: (next: Vibe | null) => void;
@@ -757,6 +782,11 @@ function PasteStep({
     parserHint?: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
   }) => void;
   onTitleOnly: (title: string) => void;
+  onPasteSubmitted: (kind: "url" | "text", hasVibe: boolean) => void;
+  onSuggestionPicked: (source: "tm" | "oa" | "gemini") => void;
+  onGeminiStarted: (
+    trigger: "auto" | "optin" | "bg"
+  ) => (outcome: "found" | "not_found" | "cancelled" | "error") => void;
 }) {
   const [value, setValue] = useState("");
   const [pending, setPending] = useState(false);
@@ -801,10 +831,14 @@ function PasteStep({
   // Annuler du loading state puisse interrompre le fetch côté client
   // (le serveur continue mais on jette la réponse).
   const geminiAbortRef = useRef<AbortController | null>(null);
-  async function tryGemini(query: string): Promise<boolean> {
+  // `trigger` est passé jusqu'au helper télémétrie pour distinguer le
+  // mode `auto` (chaîné après échec OG) du futur `optin` (PR2a) et `bg`
+  // (PR2b). Aujourd'hui les deux call-sites passent `auto`.
+  async function tryGemini(query: string, trigger: "auto" | "optin" | "bg"): Promise<boolean> {
     geminiAbortRef.current?.abort();
     const controller = new AbortController();
     geminiAbortRef.current = controller;
+    const finalizeTelemetry = onGeminiStarted(trigger);
     try {
       const res = await fetch("/api/sortie/find-event", {
         method: "POST",
@@ -814,14 +848,25 @@ function PasteStep({
       });
       const data = (await res.json()) as FindEventResult;
       if (controller.signal.aborted) {
+        finalizeTelemetry("cancelled");
         return false;
       }
       if (data.found && data.data) {
         setGeminiSuggestion(data.data);
+        finalizeTelemetry("found");
         return true;
       }
+      finalizeTelemetry("not_found");
       return false;
-    } catch {
+    } catch (err) {
+      // `AbortError` arrive aussi via le catch (vs le check `aborted`
+      // ci-dessus) selon l'environnement — on ne veut pas le compter
+      // comme une erreur applicative.
+      if (controller.signal.aborted) {
+        finalizeTelemetry("cancelled");
+      } else {
+        finalizeTelemetry("error");
+      }
       return false;
     } finally {
       if (geminiAbortRef.current === controller) {
@@ -848,6 +893,7 @@ function PasteStep({
     setGeminiSuggestion(null);
     setPending(true);
     setPendingMsg("parse");
+    onPasteSubmitted("url", vibe != null);
     try {
       const res = await fetch("/api/sortie/parse-ticket-url", {
         method: "POST",
@@ -859,7 +905,7 @@ function PasteStep({
         return;
       }
       setPendingMsg("search");
-      const found = await tryGemini(url);
+      const found = await tryGemini(url, "auto");
       if (!found) {
         setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
       }
@@ -880,8 +926,9 @@ function PasteStep({
     setGeminiSuggestion(null);
     setPending(true);
     setPendingMsg("search");
+    onPasteSubmitted("text", vibe != null);
     try {
-      const found = await tryGemini(trimmed);
+      const found = await tryGemini(trimmed, "auto");
       if (!found) {
         onTitleOnly(trimmed);
       }
@@ -916,6 +963,7 @@ function PasteStep({
     if (!geminiSuggestion) {
       return;
     }
+    onSuggestionPicked("gemini");
     const venueLine = [geminiSuggestion.venue, geminiSuggestion.city].filter(Boolean).join(", ");
     // Pré-sélectionne la vibe détectée si différente d'"autre" et qu'aucune
     // n'était déjà choisie par l'utilisateur (on ne l'écrase pas).
@@ -989,6 +1037,7 @@ function PasteStep({
         originalQuery={trimmed}
         isLoading={suggestionsLoading}
         onPick={(result) => {
+          onSuggestionPicked(result.source === "ticketmaster" ? "tm" : "oa");
           const venueLine = [result.venue, result.city].filter(Boolean).join(", ");
           onParsed({
             title: result.title,
