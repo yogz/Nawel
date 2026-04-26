@@ -259,11 +259,17 @@ function PageResponseButton({
   active?: boolean;
   onClick: () => void;
 }) {
+  // Active = filled (acid for "yes", off-white for "no" — both with high
+  // contrast). Inactive = ghost on the dark surface: subtle fill, full-
+  // contrast text, visible border. Pure white was previously used for the
+  // inactive state but it screamed "primary CTA" against the Acid Cabinet
+  // dark theme and the encre-100 border vanished against it, leaving the
+  // light-gray label nearly unreadable.
   const palette = active
     ? tone === "yes"
       ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)]"
       : "bg-encre-700 text-ivoire-50 shadow-[var(--shadow-lg)]"
-    : "bg-white text-encre-600 border-2 border-encre-100";
+    : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300";
   return (
     <button
       type="button"
