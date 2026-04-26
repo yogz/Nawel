@@ -67,7 +67,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               onClick={() => setOpen(false)}
-              className="fixed inset-y-0 left-1/2 z-40 w-full max-w-[520px] -translate-x-1/2 bg-encre-700/50"
+              className="fixed inset-y-0 left-1/2 z-40 w-full max-w-[520px] -translate-x-1/2 bg-black/60 backdrop-blur-sm"
             />
             <motion.div
               role="dialog"
@@ -77,7 +77,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-ivoire-50 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]"
+              className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-ivoire-100 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] ring-1 ring-encre-700/10"
             >
               <div className="mb-4 flex items-start gap-3">
                 <span className="grid size-10 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive">
@@ -113,7 +113,7 @@ export function CancelOutingButton({ shortId, outingTitle, confirmedCount }: Pro
                   type="button"
                   onClick={() => setOpen(false)}
                   disabled={pending}
-                  className="inline-flex h-11 items-center justify-center rounded-md border border-encre-200 bg-ivoire-50 px-4 text-sm font-semibold text-encre-700 transition-colors hover:bg-ivoire-100 disabled:opacity-50"
+                  className="inline-flex h-11 items-center justify-center rounded-md border border-encre-200 bg-ivoire-50 px-4 text-sm font-semibold text-encre-700 transition-colors hover:bg-ivoire-200 disabled:opacity-50"
                 >
                   Retour
                 </button>
