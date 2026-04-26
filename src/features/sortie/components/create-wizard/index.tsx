@@ -14,6 +14,7 @@ import {
   MapPin,
   PartyPopper,
   Pencil,
+  Sparkles,
   Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -793,6 +794,13 @@ function PasteStep({
   const [pendingMsg, setPendingMsg] = useState<"parse" | "search">("parse");
   const [err, setErr] = useState<string | null>(null);
   const [geminiSuggestion, setGeminiSuggestion] = useState<EventDetails | null>(null);
+  // URL en attente de recherche IA opt-in : set quand le parser OG/JSON-LD
+  // a échoué (URL injouable côté serveur — WAF, SPA, page introuvable).
+  // Plutôt que d'enchaîner Gemini automatiquement (15 s d'attente piégée),
+  // on garde l'URL ici et on propose un bouton "Chercher pour moi" qui
+  // déclenche tryGemini à la demande. Reset au prochain submit ou à un
+  // succès Gemini.
+  const [geminiOptInUrl, setGeminiOptInUrl] = useState<string | null>(null);
 
   // Tapping a vibe chip retunes the placeholder + hint to match the
   // category, so the examples in the input track what the user just said
@@ -883,7 +891,11 @@ function PasteStep({
   }
 
   /**
-   * Pipeline URL : parse OG/JSON-LD → fallback Gemini si rien d'utile.
+   * Pipeline URL : parse OG/JSON-LD seulement. En cas d'échec, on
+   * remonte l'erreur immédiatement et on stocke l'URL pour proposer
+   * une recherche IA opt-in via le bouton "Chercher pour moi" — au
+   * lieu de piéger l'user dans 15 s d'attente Gemini automatique.
+   *
    * Extrait pour pouvoir être déclenché à la fois depuis le bouton
    * "Remplir automatiquement" (via submit()) et depuis l'auto-fetch
    * sur paste (handlePaste, sans cliquer).
@@ -891,6 +903,7 @@ function PasteStep({
   async function runUrlPipeline(url: string) {
     setErr(null);
     setGeminiSuggestion(null);
+    setGeminiOptInUrl(null);
     setPending(true);
     setPendingMsg("parse");
     onPasteSubmitted("url", vibe != null);
@@ -904,10 +917,33 @@ function PasteStep({
         onParsed(await res.json());
         return;
       }
-      setPendingMsg("search");
-      const found = await tryGemini(url, "auto");
+      setErr("Lien illisible — chercher pour toi ou retape juste le nom de la sortie.");
+      setGeminiOptInUrl(url);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  /**
+   * Lance Gemini à la demande sur l'URL stockée par `runUrlPipeline`.
+   * Trigger `optin` côté télémétrie pour distinguer du fallback `auto`
+   * historique. Consume le state opt-in en début pour que le bouton
+   * disparaisse immédiatement et ne puisse pas être re-cliqué pendant
+   * que la requête est en vol.
+   */
+  async function runGeminiOptIn() {
+    if (!geminiOptInUrl) {
+      return;
+    }
+    const url = geminiOptInUrl;
+    setGeminiOptInUrl(null);
+    setErr(null);
+    setPending(true);
+    setPendingMsg("search");
+    try {
+      const found = await tryGemini(url, "optin");
       if (!found) {
-        setErr("Lien illisible — retape-le ou entre juste le nom de la sortie.");
+        setErr("On n'a rien trouvé non plus — entre juste le nom de la sortie.");
       }
     } finally {
       setPending(false);
@@ -924,6 +960,7 @@ function PasteStep({
     }
     setErr(null);
     setGeminiSuggestion(null);
+    setGeminiOptInUrl(null);
     setPending(true);
     setPendingMsg("search");
     onPasteSubmitted("text", vibe != null);
@@ -1063,6 +1100,26 @@ function PasteStep({
 
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
+      {/* Bouton opt-in IA : apparaît uniquement après un échec parse
+          OG/JSON-LD. Annonce explicitement la durée (~15 s) parce que
+          c'est lent et que masquer le coût pousse à l'abandon. Disable
+          si une recherche est déjà en cours pour éviter les doubles
+          submits. */}
+      {geminiOptInUrl && !pending && !geminiSuggestion && (
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          onClick={runGeminiOptIn}
+          className="h-14 rounded-full border-bordeaux-300 text-base font-bold text-bordeaux-700 hover:bg-bordeaux-50"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Sparkles size={16} />
+            Chercher pour moi (≈15 s)
+          </span>
+        </Button>
+      )}
+
       {/* Pendant la recherche Gemini, le composant GeminiSearchProgress
           ci-dessus prend le relais avec son bouton Annuler — on cache le
           bouton principal pour ne pas dupliquer le feedback. */}
@@ -1072,12 +1129,20 @@ function PasteStep({
         // downgrade le bouton en outline pour que l'œil aille d'abord
         // aux suggestions (Hick's Law). Si les cards apparaissent ou
         // disparaissent, le bouton bascule sans flicker (transition
-        // de couleur seulement).
+        // de couleur seulement). Quand un opt-in IA est proposé sur
+        // l'URL collée, on désactive le bouton principal tant que
+        // l'URL n'a pas été modifiée — sinon un re-clic relancerait
+        // le même parse OG qui vient d'échouer.
         <Button
           type="button"
           size="lg"
           variant={suggestions.length > 0 && !looksLikeUrl ? "outline" : "default"}
-          disabled={pending || !trimmed || !!geminiSuggestion}
+          disabled={
+            pending ||
+            !trimmed ||
+            !!geminiSuggestion ||
+            (geminiOptInUrl !== null && trimmed === geminiOptInUrl)
+          }
           onClick={submit}
           className="h-16 rounded-full text-base font-bold"
         >
