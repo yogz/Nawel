@@ -30,6 +30,11 @@ import { TicketmasterSuggestions } from "./ticketmaster-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
 import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
 import type { EventDetails, FindEventResult } from "@/lib/gemini-search";
+import {
+  clearWizardDraft,
+  persistWizardDraft,
+  useStoredWizardDraft,
+} from "@/features/sortie/hooks/use-wizard-draft";
 
 type Step = "paste" | "title" | "confirm" | "date" | "venue" | "name" | "commit";
 
@@ -72,6 +77,88 @@ type Props = {
   vibeKey: string | null;
   defaultTitle?: string;
 };
+
+const ALL_STEPS: ReadonlySet<Step> = new Set([
+  "paste",
+  "title",
+  "confirm",
+  "date",
+  "venue",
+  "name",
+  "commit",
+]);
+
+/**
+ * Reconvertit un payload localStorage en `{ draft, step }` typé. Les
+ * Date sont stockées en ISO via JSON.stringify natif et reconverties
+ * ici. Toute incohérence (champ manquant, mauvais type, ISO invalide)
+ * → null, le caller ignore le restore plutôt que de booter en l'état
+ * cassé.
+ */
+function tryRestoreDraft(payload: unknown): { draft: Draft; step: Step } | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+  const obj = payload as Record<string, unknown>;
+  const rawDraft = obj.draft as Record<string, unknown> | undefined;
+  const rawStep = obj.step;
+  if (!rawDraft || typeof rawDraft !== "object") {
+    return null;
+  }
+  if (typeof rawStep !== "string" || !ALL_STEPS.has(rawStep as Step)) {
+    return null;
+  }
+  const parseDate = (v: unknown): Date | null => {
+    if (typeof v !== "string") {
+      return null;
+    }
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  const slotsRaw = Array.isArray(rawDraft.slots) ? rawDraft.slots : [];
+  const slots: DraftSlot[] = [];
+  for (const s of slotsRaw) {
+    if (!s || typeof s !== "object") {
+      continue;
+    }
+    const sObj = s as Record<string, unknown>;
+    const date = parseDate(sObj.date);
+    const time = typeof sObj.time === "string" ? sObj.time : null;
+    const id = typeof sObj.id === "string" ? sObj.id : null;
+    if (date && time && id) {
+      slots.push({ id, date, time });
+    }
+  }
+  const draft: Draft = {
+    title: typeof rawDraft.title === "string" ? rawDraft.title : "",
+    venue: typeof rawDraft.venue === "string" ? rawDraft.venue : "",
+    ticketUrl: typeof rawDraft.ticketUrl === "string" ? rawDraft.ticketUrl : "",
+    heroImageUrl: typeof rawDraft.heroImageUrl === "string" ? rawDraft.heroImageUrl : "",
+    vibe: isVibe(rawDraft.vibe as string | null) ? (rawDraft.vibe as Vibe) : null,
+    date: parseDate(rawDraft.date),
+    time: typeof rawDraft.time === "string" ? rawDraft.time : null,
+    slots,
+    rsvpDeadline: parseDate(rawDraft.rsvpDeadline),
+    creatorDisplayName:
+      typeof rawDraft.creatorDisplayName === "string" ? rawDraft.creatorDisplayName : "",
+    creatorEmail: typeof rawDraft.creatorEmail === "string" ? rawDraft.creatorEmail : "",
+  };
+  // Sanity check : un draft "vide" (juste des defaults) n'a aucun
+  // intérêt à être restauré — on laisse l'utilisateur démarrer net.
+  if (
+    !draft.title &&
+    !draft.venue &&
+    !draft.ticketUrl &&
+    !draft.heroImageUrl &&
+    !draft.date &&
+    draft.slots.length === 0 &&
+    !draft.creatorDisplayName &&
+    !draft.creatorEmail
+  ) {
+    return null;
+  }
+  return { draft, step: rawStep as Step };
+}
 
 const STEPS_FIXED: Step[] = ["paste", "confirm", "date", "venue", "name", "commit"];
 const STEPS_MANUAL: Step[] = ["paste", "title", "date", "venue", "name", "commit"];
@@ -145,6 +232,33 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
   });
   const [pasteFailed, setPasteFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Persistance localStorage du brouillon : un coup de fil entrant qui
+  // kill la webview ou un swipe-up Safari accidentel ne fait plus
+  // perdre tout le travail. Lecture en useEffect pour éviter le
+  // hydration mismatch (pattern recommandé par React.dev).
+  const { stored: storedDraft, dismiss: dismissStoredDraft } = useStoredWizardDraft();
+  const [restorePromptDismissed, setRestorePromptDismissed] = useState(false);
+
+  // Sauvegarde debounced du brouillon. 500 ms est un compromis : assez
+  // court pour ne pas perdre une édition récente, assez long pour ne
+  // pas faire un write par caractère sur les inputs textuels.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      persistWizardDraft({ draft, step, savedAt: Date.now() });
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [draft, step]);
+
+  function applyStoredDraft(payload: unknown) {
+    const restored = tryRestoreDraft(payload);
+    if (!restored) {
+      return;
+    }
+    setDraft(restored.draft);
+    setStep(restored.step);
+    dismissStoredDraft();
+  }
 
   // Step filtering builds the actual flow based on what we already know:
   //   - Paste branch vs manual entry (paster success vs fallback)
@@ -286,6 +400,11 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     } else {
       fd.set("showOnProfile", "on");
     }
+    // Clear localStorage AVANT le serveur action — sur succès le
+    // server-side redirect prend le relais (on ne repasse pas par
+    // ici), donc c'est notre seule chance de nettoyer. Sur erreur,
+    // l'état React du wizard reste intact et le user peut retenter.
+    clearWizardDraft();
     const result = await createOutingAction({}, fd);
     // Success = server-side redirect, so we only land here on error.
     if (result?.message) {
@@ -307,9 +426,59 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     }
   }
 
+  // Le banner de restore apparaît si on a détecté un brouillon stocké
+  // valide ET que l'utilisateur ne l'a pas encore tranché. On le place
+  // au-dessus du contenu de la step pour ne pas masquer la step active.
+  const showRestorePrompt =
+    !restorePromptDismissed &&
+    storedDraft !== null &&
+    storedDraft !== false &&
+    tryRestoreDraft(storedDraft.payload) !== null;
+
   return (
     <div className="absolute inset-0 z-40 flex flex-col bg-ivoire-100">
       <WizardHeader progress={progress} onBack={back} />
+
+      {showRestorePrompt && storedDraft && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="border-b border-bordeaux-100 bg-bordeaux-50/70 px-6 py-3"
+          role="region"
+          aria-label="Brouillon retrouvé"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-encre-600">
+              <span className="font-semibold text-encre-700">Brouillon retrouvé</span> — tu avais
+              commencé une sortie il y a peu.
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  applyStoredDraft(storedDraft.payload);
+                  setRestorePromptDismissed(true);
+                }}
+                className="rounded-full bg-bordeaux-600 px-4 py-1.5 text-xs font-bold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
+              >
+                Reprendre
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearWizardDraft();
+                  dismissStoredDraft();
+                  setRestorePromptDismissed(true);
+                }}
+                className="text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+              >
+                Recommencer
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <div className="relative flex-1 overflow-y-auto overflow-x-hidden">
         <AnimatePresence mode="wait" initial={false}>
@@ -806,9 +975,16 @@ function PasteStep({
           ci-dessus prend le relais avec son bouton Annuler — on cache le
           bouton principal pour ne pas dupliquer le feedback. */}
       {!(pending && pendingMsg === "search") && (
+        // Hiérarchie CTA : quand des suggestions Ticketmaster sont
+        // visibles, le tap sur une card est le path principal — on
+        // downgrade le bouton en outline pour que l'œil aille d'abord
+        // aux suggestions (Hick's Law). Si les cards apparaissent ou
+        // disparaissent, le bouton bascule sans flicker (transition
+        // de couleur seulement).
         <Button
           type="button"
           size="lg"
+          variant={suggestions.length > 0 && !looksLikeUrl ? "outline" : "default"}
           disabled={pending || !trimmed || !!geminiSuggestion}
           onClick={submit}
           className="h-16 rounded-full text-base font-bold"
@@ -822,6 +998,11 @@ function PasteStep({
             <span className="inline-flex items-center gap-2">
               <Wand2 size={16} />
               Remplir automatiquement
+            </span>
+          ) : suggestions.length > 0 ? (
+            <span className="inline-flex items-center gap-2">
+              <ArrowRight size={16} />
+              Aucune ne colle, continuer
             </span>
           ) : (
             <span className="inline-flex items-center gap-2">
