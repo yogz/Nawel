@@ -157,9 +157,17 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     const usePasteBranch = (draft.title.length > 0 || draft.ticketUrl.length > 0) && !pasteFailed;
     const base = usePasteBranch ? STEPS_FIXED : STEPS_MANUAL;
     let filtered = isLoggedIn ? base.filter((s) => s !== "name") : base;
-    // Title-only input (no URL to parse) → nothing to review on the
-    // confirm card, skip it. URL flow keeps the confirm step as usual.
-    if (draft.title.length > 0 && draft.ticketUrl.length === 0) {
+    // Title-only input (no URL, no venue, no image) → nothing to review
+    // on the confirm card, skip it. The Gemini fallback typically gives
+    // us title + venue + image without ticketUrl, and that DOES need a
+    // confirm step (otherwise advanceFrom("confirm") falls back to
+    // steps[0] = "paste" and the wizard loops on itself).
+    const hasNothingToConfirm =
+      draft.title.length > 0 &&
+      draft.ticketUrl.length === 0 &&
+      draft.venue.trim().length === 0 &&
+      !draft.heroImageUrl;
+    if (hasNothingToConfirm) {
       filtered = filtered.filter((s) => s !== "confirm");
     }
     if (draft.venue.trim().length > 0 && step !== "venue") {
