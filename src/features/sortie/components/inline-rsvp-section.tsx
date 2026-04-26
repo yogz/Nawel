@@ -163,17 +163,20 @@ function CardResponseButton({
   tone: "yes" | "no";
   onClick: () => void;
 }) {
-  const palette =
-    tone === "yes"
-      ? "bg-bordeaux-600 text-ivoire-50 hover:bg-bordeaux-700"
-      : "bg-white text-encre-700 border-2 border-encre-100 hover:border-encre-700";
+  // Pre-RSVP: les deux boutons restent à poids visuel égal (un "non"
+  // intimidé fausse la mesure de présence) MAIS aucun ne porte la
+  // couleur "active" — sinon l'œil lit "J'en suis" comme déjà coché et
+  // "Je peux pas" comme un CTA blanc agressif sur le thème sombre. On
+  // bascule donc sur un style ghost partagé : la distinction passe par
+  // la teinte de l'icône (vert acide pour le yes, neutre pour le no).
+  const accent = tone === "yes" ? "text-bordeaux-600" : "text-encre-500";
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-11 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 ${palette}`}
+      className="flex h-11 items-center justify-center gap-1.5 rounded-full border border-encre-200 bg-ivoire-100 px-3 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-300 hover:bg-ivoire-200 motion-safe:active:scale-95"
     >
-      {icon}
+      <span className={accent}>{icon}</span>
       <span>{label}</span>
     </button>
   );
