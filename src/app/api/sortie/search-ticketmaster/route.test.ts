@@ -66,7 +66,7 @@ describe("POST /api/sortie/search-ticketmaster", () => {
     const fetchSpy = mockTmFetch({});
     const res = await POST(makeRequest({ query: "stromae" }));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ results: [] });
+    expect(await res.json()).toEqual({ results: [], correctedQuery: null });
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
@@ -154,7 +154,7 @@ describe("POST /api/sortie/search-ticketmaster", () => {
     const { POST: freshPost } = await import("./route");
     const res = await freshPost(makeRequest({ query: "down" }));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ results: [] });
+    expect(await res.json()).toEqual({ results: [], correctedQuery: null });
   });
 
   it("returns empty results (200) when Ticketmaster returns non-2xx", async () => {
@@ -163,7 +163,7 @@ describe("POST /api/sortie/search-ticketmaster", () => {
     const { POST: freshPost } = await import("./route");
     const res = await freshPost(makeRequest({ query: "rate limited" }));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ results: [] });
+    expect(await res.json()).toEqual({ results: [], correctedQuery: null });
   });
 
   it("caches identical queries within TTL (single fetch for two calls)", async () => {

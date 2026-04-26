@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { sanitizeText } from "@/lib/sanitize";
 import {
-  searchTicketmasterEvents,
+  searchTicketmasterEventsWithSpellcheck,
   type TicketmasterResult,
 } from "@/features/sortie/lib/ticketmaster-search";
 
@@ -33,12 +33,18 @@ const MAX_RESULTS = 3;
 // resolving to the same type. The shape lives in the shared lib now.
 export type { TicketmasterResult };
 
+type CachedSearch = {
+  ts: number;
+  results: TicketmasterResult[];
+  correctedQuery: string | null;
+};
+
 // Single-process LRU-ish cache. Acceptable for "best-effort" — within a
 // warm Vercel container we avoid hammering Ticketmaster while users type
 // and pause. Cold containers redo the work, which is fine.
-const cache = new Map<string, { ts: number; results: TicketmasterResult[] }>();
+const cache = new Map<string, CachedSearch>();
 
-function readCache(key: string): TicketmasterResult[] | null {
+function readCache(key: string): CachedSearch | null {
   const entry = cache.get(key);
   if (!entry) {
     return null;
@@ -47,10 +53,10 @@ function readCache(key: string): TicketmasterResult[] | null {
     cache.delete(key);
     return null;
   }
-  return entry.results;
+  return entry;
 }
 
-function writeCache(key: string, results: TicketmasterResult[]): void {
+function writeCache(key: string, value: Omit<CachedSearch, "ts">): void {
   // Soft cap to avoid unbounded growth in a long-lived container.
   if (cache.size > 500) {
     const oldest = cache.keys().next().value;
@@ -58,7 +64,7 @@ function writeCache(key: string, results: TicketmasterResult[]): void {
       cache.delete(oldest);
     }
   }
-  cache.set(key, { ts: Date.now(), results });
+  cache.set(key, { ts: Date.now(), ...value });
 }
 
 export async function POST(request: NextRequest) {
@@ -73,16 +79,22 @@ export async function POST(request: NextRequest) {
   if (cleaned.length < 3) {
     // Sanitization can shrink the string below the floor — treat as
     // empty result rather than 4xx (user is mid-typing).
-    return NextResponse.json({ results: [] });
+    return NextResponse.json({ results: [], correctedQuery: null });
   }
 
   const cacheKey = cleaned.toLowerCase();
   const cached = readCache(cacheKey);
   if (cached) {
-    return NextResponse.json({ results: cached });
+    return NextResponse.json({
+      results: cached.results,
+      correctedQuery: cached.correctedQuery,
+    });
   }
 
-  const results = await searchTicketmasterEvents(cleaned, MAX_RESULTS);
-  writeCache(cacheKey, results);
-  return NextResponse.json({ results });
+  const { results, correctedQuery } = await searchTicketmasterEventsWithSpellcheck(
+    cleaned,
+    MAX_RESULTS
+  );
+  writeCache(cacheKey, { results, correctedQuery });
+  return NextResponse.json({ results, correctedQuery });
 }

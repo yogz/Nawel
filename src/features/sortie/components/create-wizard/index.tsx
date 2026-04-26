@@ -460,8 +460,18 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
  * branch — react-hooks/set-state-in-effect rule. When the input falls
  * below the threshold we just return `[]` directly.
  */
-function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterResult[] {
-  const [results, setResults] = useState<TicketmasterResult[]>([]);
+type TicketmasterSuggestionsState = {
+  results: TicketmasterResult[];
+  correctedQuery: string | null;
+};
+
+const EMPTY_SUGGESTIONS: TicketmasterSuggestionsState = {
+  results: [],
+  correctedQuery: null,
+};
+
+function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterSuggestionsState {
+  const [state, setState] = useState<TicketmasterSuggestionsState>(EMPTY_SUGGESTIONS);
   const abortRef = useRef<AbortController | null>(null);
   const shouldFetch = enabled && query.length >= 3;
 
@@ -480,11 +490,19 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
         signal: controller.signal,
       })
         .then((res) =>
-          res.ok ? (res.json() as Promise<{ results: TicketmasterResult[] }>) : { results: [] }
+          res.ok
+            ? (res.json() as Promise<{
+                results: TicketmasterResult[];
+                correctedQuery: string | null;
+              }>)
+            : { results: [], correctedQuery: null }
         )
         .then((data) => {
           if (!controller.signal.aborted) {
-            setResults(Array.isArray(data.results) ? data.results : []);
+            setState({
+              results: Array.isArray(data.results) ? data.results : [],
+              correctedQuery: typeof data.correctedQuery === "string" ? data.correctedQuery : null,
+            });
           }
         })
         .catch(() => {
@@ -497,7 +515,7 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
     };
   }, [query, shouldFetch]);
 
-  return shouldFetch ? results : [];
+  return shouldFetch ? state : EMPTY_SUGGESTIONS;
 }
 
 function PasteStep({
@@ -541,7 +559,12 @@ function PasteStep({
   // Ticketmaster in the background and surface up to 3 matches under
   // the input. Picking one short-circuits the rest of the wizard's URL
   // pipeline (same `onParsed` callback as the actual paste flow).
-  const suggestions = useTicketmasterSuggestions(trimmed, !looksLikeUrl);
+  // `correctedQuery` est non-null quand l'API a corrigé une faute
+  // d'orthographe ("rolland" → "roland") — affiché au-dessus de la liste.
+  const { results: suggestions, correctedQuery } = useTicketmasterSuggestions(
+    trimmed,
+    !looksLikeUrl
+  );
 
   // Fallback Gemini : appelle /api/sortie/find-event quand l'URL n'est
   // pas parseable ou que l'utilisateur tape un texte libre sans hit
@@ -676,6 +699,8 @@ function PasteStep({
 
       <TicketmasterSuggestions
         results={suggestions}
+        correctedQuery={correctedQuery}
+        originalQuery={trimmed}
         onPick={(result) => {
           const venueLine = [result.venue, result.city].filter(Boolean).join(", ");
           onParsed({

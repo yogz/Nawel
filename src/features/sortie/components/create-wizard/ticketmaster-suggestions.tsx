@@ -7,6 +7,12 @@ import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/ro
 
 type Props = {
   results: TicketmasterResult[];
+  // Quand non-null, l'API Ticketmaster a corrigé une faute d'orthographe
+  // dans `originalQuery` et a renvoyé les résultats pour `correctedQuery`.
+  // On l'affiche au-dessus de la liste pour que l'utilisateur comprenne
+  // pourquoi les résultats ne matchent pas littéralement ce qu'il a tapé.
+  correctedQuery: string | null;
+  originalQuery: string;
   onPick: (result: TicketmasterResult) => void;
 };
 
@@ -33,7 +39,7 @@ function formatStartsAt(iso: string | null): string | null {
  * wizard like an URL paste. Renders nothing when results are empty so
  * the absence of matches is invisible to the user.
  */
-export function TicketmasterSuggestions({ results, onPick }: Props) {
+export function TicketmasterSuggestions({ results, correctedQuery, originalQuery, onPick }: Props) {
   if (results.length === 0) {
     return null;
   }
@@ -48,6 +54,13 @@ export function TicketmasterSuggestions({ results, onPick }: Props) {
         <Sparkles size={12} />
         Suggestions Ticketmaster
       </div>
+      {correctedQuery && correctedQuery.toLowerCase() !== originalQuery.toLowerCase() && (
+        <p className="px-1 text-xs text-encre-500">
+          Aucun résultat pour <span className="font-medium">«&nbsp;{originalQuery}&nbsp;»</span> —
+          affichage pour{" "}
+          <span className="font-medium text-encre-700">«&nbsp;{correctedQuery}&nbsp;»</span>.
+        </p>
+      )}
       <ul className="flex flex-col gap-2">
         {results.map((result) => {
           const venueLine = [result.venue, result.city].filter(Boolean).join(" — ");
