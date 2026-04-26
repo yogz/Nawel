@@ -93,6 +93,24 @@ export function OutingProfileCard({
           ? { label: "Tu viens · billet perso", tone: "confirmed" as const }
           : { label: "Tu viens", tone: "confirmed" as const };
 
+  // Sortie passée : on dégrade visuellement pour qu'elle se lise comme
+  // un souvenir et non comme une action en attente. Trois axes appliqués
+  // explicitement (pas via arbitrary variant `[&_img]`, qui peut filer
+  // entre les mailles du JIT Tailwind selon la config) :
+  //  - wrapper : opacité globale, restaurée au hover
+  //  - image / fallback : grayscale + leger fade
+  //  - titre & meta : couleur abaissée d'un cran (encre-500 / encre-400
+  //    au lieu de encre-700 / encre-500), pour que le texte aussi se
+  //    lise comme estompé et pas seulement transparent.
+  const pastWrapperClasses = isPast
+    ? "opacity-80 transition-opacity duration-300 hover:opacity-100"
+    : "";
+  const pastImageClasses = isPast
+    ? "grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
+    : "";
+  const pastTitleClasses = isPast ? "text-encre-500" : "text-encre-700";
+  const pastMetaClasses = isPast ? "text-encre-400" : "text-encre-500";
+
   // First letter of the title for the poster-less fallback thumbnail.
   // Same visual vocabulary as the LiveStatusHero empty state — gradient
   // panel with a big typographic initial instead of a dead color swatch.
@@ -105,12 +123,12 @@ export function OutingProfileCard({
         <img
           src={outing.heroImageUrl}
           alt=""
-          className="size-16 shrink-0 rounded-md bg-ivoire-100 object-cover object-top"
+          className={`size-16 shrink-0 rounded-md bg-ivoire-100 object-cover object-top ${pastImageClasses}`}
         />
       ) : (
         <div
           aria-hidden="true"
-          className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md"
+          className={`relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md ${pastImageClasses}`}
           style={{
             background:
               "radial-gradient(circle at 30% 20%, #FF3D81 0%, transparent 50%), radial-gradient(circle at 75% 80%, #C7FF3C 0%, transparent 50%), #1a1a1a",
@@ -151,10 +169,12 @@ export function OutingProfileCard({
             {dateLabel}
           </p>
         )}
-        <h3 className="truncate text-[17px] leading-tight font-black tracking-[-0.025em] text-encre-700 group-hover:text-bordeaux-600">
+        <h3
+          className={`truncate text-[17px] leading-tight font-black tracking-[-0.025em] group-hover:text-bordeaux-600 ${pastTitleClasses}`}
+        >
           {outing.title}
         </h3>
-        {meta && <p className="truncate text-[13px] text-encre-500">{meta}</p>}
+        {meta && <p className={`truncate text-[13px] ${pastMetaClasses}`}>{meta}</p>}
       </div>
     </>
   );
@@ -166,7 +186,9 @@ export function OutingProfileCard({
     // the Link now. Subtle hover tint on row 1 makes tappability
     // still discoverable.
     return (
-      <article className="rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5">
+      <article
+        className={`rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 ${pastWrapperClasses}`}
+      >
         <Link
           href={href}
           className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-encre-700/[0.02]"
@@ -192,7 +214,7 @@ export function OutingProfileCard({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500"
+      className={`group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500 ${pastWrapperClasses}`}
     >
       {navigationRow}
       <ChevronRight
