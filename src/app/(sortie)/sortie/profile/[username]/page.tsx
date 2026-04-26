@@ -58,7 +58,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const next = upcoming.find((o) => o.startsAt !== null) ?? upcoming[0] ?? null;
 
   const url = `${PUBLIC_BASE}/@${row.username}`;
-  const ogImageUrl = `${PUBLIC_BASE}/@${row.username}/opengraph-image?v=${upcoming.length}-${past.length}`;
 
   const title = `${row.name} organise des sorties`;
   const description = buildProfileDescription({ next, pastCount: past.length });
@@ -74,21 +73,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "profile",
       locale: "fr_FR",
       siteName: "Sortie",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: `${row.name} sur Sortie`,
-          type: "image/png",
-        },
-      ],
+      // The image (and twitter:image) tags come from
+      // `profile/[username]/opengraph-image.tsx` via the Next.js metadata
+      // convention. The proxy passes through `/opengraph-image` paths
+      // unmodified so the auto-generated URL resolves.
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [ogImageUrl],
     },
   };
 }

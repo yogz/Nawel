@@ -40,16 +40,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
   // Default OG/Twitter for routes that don't override (home, /nouvelle, /moi).
-  // Pages with their own preview (`[slugOrId]`, `profile/[username]`) replace
-  // these via their own `generateMetadata` + `opengraph-image.tsx`.
-  //
-  // The image URL is hand-written (not auto-derived from the route file) on
-  // purpose: Next.js would emit `/sortie/opengraph-image-<hash>`, which the
-  // hostname proxy in `src/proxy.ts` re-rewrites into `/sortie/sortie/...`
-  // and 404s. Pointing crawlers at `/opengraph-image` directly lets the
-  // proxy rewrite once into the (sortie)/sortie/opengraph-image.tsx route
-  // and serve the PNG. Pages of an outing build their image URL the same
-  // way (see [slugOrId]/page.tsx).
+  // The image, dimensions, and twitter:image meta tags are populated
+  // automatically from `(sortie)/sortie/opengraph-image.tsx` by the
+  // Next.js metadata convention. The proxy in `src/proxy.ts` is patched
+  // to pass `/opengraph-image` paths through without re-prefixing — see
+  // the comment there for why we don't override `images` here.
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -57,21 +52,11 @@ export const metadata: Metadata = {
     title: "Sortie",
     description: "Entre amis, ça s'organise.",
     url: "https://sortie.colist.fr",
-    images: [
-      {
-        url: "https://sortie.colist.fr/opengraph-image",
-        width: 1200,
-        height: 630,
-        type: "image/png",
-        alt: "Sortie — entre amis, ça s'organise",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sortie",
     description: "Entre amis, ça s'organise.",
-    images: ["https://sortie.colist.fr/opengraph-image"],
   },
 };
 

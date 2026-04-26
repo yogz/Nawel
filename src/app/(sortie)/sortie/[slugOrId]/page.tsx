@@ -44,13 +44,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const meta = buildOutingShareMeta(outing);
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   const url = `${PUBLIC_BASE}/${canonical}`;
-  // Cache-bust the OG image on every RSVP so the live social-proof count
-  // is reflected when the link is re-shared. WhatsApp caches aggressively
-  // but respects a changed query string as a new asset.
-  const ogImageUrl = `${PUBLIC_BASE}/${canonical}/opengraph-image?v=${meta.confirmedCount}`;
-  const ogAlt = meta.isCancelled
-    ? "Sortie annulée"
-    : `${outing.title}${meta.firstName ? ` — invitation de ${meta.firstName}` : ""}`;
 
   return {
     title: meta.ogTitle,
@@ -66,21 +59,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       locale: "fr_FR",
       siteName: "Sortie",
-      images: [
-        {
-          url: ogImageUrl,
-          width: 1200,
-          height: 630,
-          alt: ogAlt,
-          type: "image/png",
-        },
-      ],
+      // The image (and twitter:image) tags are populated by the
+      // `[slugOrId]/opengraph-image.tsx` convention. The proxy passes
+      // through `/opengraph-image` paths so the auto-generated
+      // `/sortie/<slugOrId>/opengraph-image-<hash>` URL resolves.
     },
     twitter: {
       card: "summary_large_image",
       title: meta.ogTitle,
       description: meta.ogDescription || undefined,
-      images: [ogImageUrl],
     },
   };
 }

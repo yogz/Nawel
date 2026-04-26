@@ -29,6 +29,20 @@ export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   if (isSortieHost(request)) {
+    // Next.js metadata convention generates OG/Twitter image URLs that
+    // already include the `/sortie/` segment (because the asset files live
+    // under (sortie)/sortie/.../opengraph-image.tsx and route groups are
+    // transparent in URLs — so Next emits e.g. `/sortie/opengraph-image-<hash>`
+    // or `/sortie/<slugOrId>/opengraph-image-<hash>`). Re-applying the
+    // `/sortie` rewrite below would double-prefix them and 404 the preview
+    // — which is what WhatsApp/iMessage/Signal silently swallow. Pass them
+    // through so Vercel routes them straight to the file convention.
+    if (pathname.includes("/opengraph-image") || pathname.includes("/twitter-image")) {
+      const response = NextResponse.next();
+      response.headers.set("x-app", "sortie");
+      return response;
+    }
+
     // Public profile handles: `sortie.colist.fr/@bob` → internal
     // `/sortie/profile/bob`. We can't use a `@`-prefixed folder name because
     // Next.js reserves that for parallel route slots, so we rewrite instead.
