@@ -12,14 +12,20 @@ export type ParseOutcome = "success" | "zero_data" | "fetch_error" | "blocked_wa
  * (tests vitest, scripts) `after()` jette — on retombe sur un
  * fire-and-forget direct, et on avale toute erreur d'exécution.
  *
+ * `imageFound` n'est lu que quand `outcome === "success"` — pour les
+ * autres cas la page n'a rien donné, donc l'absence d'image n'est pas
+ * une info utile. Default false : appelants legacy n'ont pas à passer
+ * le flag (mais paieront un faux négatif sur le compteur image).
+ *
  * Le contrat : cet appel ne bloque ni ne fait échouer l'appelant.
  */
 export function trackParseAttempt(
   rawHost: string,
   outcome: ParseOutcome,
-  rawPath: string | null
+  rawPath: string | null,
+  imageFound = false
 ): void {
-  const run = () => recordParseStat(rawHost, outcome, rawPath).catch(() => {});
+  const run = () => recordParseStat(rawHost, outcome, rawPath, imageFound).catch(() => {});
   try {
     after(run);
   } catch {
@@ -69,7 +75,8 @@ function sanitizePath(rawPath: string): string {
 export async function recordParseStat(
   rawHost: string,
   outcome: ParseOutcome,
-  rawPath: string | null
+  rawPath: string | null,
+  imageFound = false
 ): Promise<void> {
   const host = normalizeHost(rawHost);
   if (!host) {
@@ -78,16 +85,27 @@ export async function recordParseStat(
 
   try {
     if (outcome === "success") {
-      // Success → on incrémente juste `attempts`. Pas de timestamp ni
-      // de path : le ratio (attempts - failures) / attempts donne le
-      // taux de succès, on n'a pas besoin de plus.
+      // Success → on incrémente `attempts` + `successCount`, et
+      // conditionnellement `imageFoundCount`. Le compteur image
+      // est un sous-ensemble strict de successCount (image trouvée
+      // ⇒ page parsée avec succès), donc le taux affiché par le
+      // dashboard est `imageFoundCount / successCount` pour mesurer
+      // "quand on récupère, est-ce qu'on a aussi l'image".
+      const imageInc = imageFound ? 1 : 0;
       await db
         .insert(parseStats)
-        .values({ host, attempts: 1 })
+        .values({
+          host,
+          attempts: 1,
+          successCount: 1,
+          imageFoundCount: imageInc,
+        })
         .onConflictDoUpdate({
           target: parseStats.host,
           set: {
             attempts: sql`${parseStats.attempts} + 1`,
+            successCount: sql`${parseStats.successCount} + 1`,
+            imageFoundCount: sql`${parseStats.imageFoundCount} + ${imageInc}`,
             updatedAt: sql`now()`,
           },
         });

@@ -793,7 +793,10 @@ export async function POST(request: NextRequest) {
       : pageGotSomething
         ? "success"
         : "zero_data";
-  trackParseAttempt(target.hostname, outcome, target.pathname);
+  // imageFound = strictement ce que la PAGE a donné (cohérent avec le
+  // reste de la télémétrie) — on n'attribue pas l'image enrichie via
+  // Discovery API au scraper OG.
+  trackParseAttempt(target.hostname, outcome, target.pathname, Boolean(og.image));
 
   return NextResponse.json({
     title: title ?? null,
