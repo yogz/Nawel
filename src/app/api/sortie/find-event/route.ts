@@ -30,6 +30,10 @@ export const dynamic = "force-dynamic";
 
 const inputSchema = z.object({
   query: z.string().min(3).max(300),
+  // Quand l'utilisateur clique "Rechercher une autre image" sur le confirm
+  // step, on veut bypasser le cache : sinon on lui rendrait sans cesse
+  // la même image que celle qu'il vient de rejeter.
+  noCache: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -45,6 +49,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ found: false, reason: "too_short" }, { status: 400 });
   }
   const query = parsed.data.query.trim();
+  const noCache = parsed.data.noCache === true;
 
   const ip = await getClientIp();
   const gate = await rateLimit({
@@ -59,10 +64,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const cached = await getCachedLookup(query);
-  if (cached) {
-    logger.debug("[find-event] cache hit", { query });
-    return NextResponse.json(cached);
+  if (!noCache) {
+    const cached = await getCachedLookup(query);
+    if (cached) {
+      logger.debug("[find-event] cache hit", { query });
+      return NextResponse.json(cached);
+    }
   }
 
   const result = await findEventDetails(query);
