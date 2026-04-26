@@ -8,7 +8,7 @@ type ParseResponse = {
   image: string | null;
   startsAt: string | null;
   ticketUrl: string;
-  spaHint: { siteName: string; alternate: string | null } | null;
+  parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
 };
 
 function makeRequest(url: string): NextRequest {
@@ -179,7 +179,7 @@ describe("POST /api/sortie/parse-ticket-url", () => {
   });
 
   describe("CTS Eventim WAF blocking", () => {
-    it("skippe le fetch et retourne wafHint pour fnacspectacles.com", async () => {
+    it("skippe le fetch et retourne parserHint pour fnacspectacles.com", async () => {
       // Le mock fetch ne devrait pas être appelé : on track via spy.
       const fetchSpy = vi.fn();
       globalThis.fetch = fetchSpy as unknown as typeof globalThis.fetch;
@@ -189,13 +189,12 @@ describe("POST /api/sortie/parse-ticket-url", () => {
         )
       );
       expect(res.status).toBe(200);
-      const body = (await res.json()) as ParseResponse & {
-        wafHint?: { siteName: string; suggestion: string } | null;
-      };
+      const body = (await res.json()) as ParseResponse;
       // Slug-derived title doit toujours fonctionner.
       expect(body.title).toBe("George Dalaras Rembetiko");
       // Le hint utilisateur est rempli pour le bon host.
-      expect(body.wafHint).toEqual({
+      expect(body.parserHint).toEqual({
+        kind: "waf",
         siteName: "Fnac Spectacles",
         suggestion: expect.stringContaining("Ticketmaster"),
       });

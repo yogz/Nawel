@@ -71,15 +71,14 @@ type Parsed = {
 };
 
 // Hosts known to ship an empty HTML shell with client-side rendering
-// only — Googlebot itself gets nothing back. When the extraction
-// produces no title/venue/image AND the host is one of these, we tag
-// the response so the client can show a tailored "saisis à la main"
-// hint instead of the generic "aucune info". Pure UX sugar.
-const SPA_HOSTS: Record<string, { name: string; alternate?: string }> = {
+// only — Googlebot itself gets nothing back. Quand l'extraction ne
+// remonte rien ET que le host est listé ici, on construit un hint
+// dédié pour que l'utilisateur sache qu'il s'agit d'un site rendu en
+// JS (pas un bug de notre côté) et qu'on lui suggère une alternative
+// qui marche mieux côté scraping.
+const SPA_HOSTS: Record<string, { name: string; alternate: string }> = {
   "pathe.fr": { name: "Pathé", alternate: "Allociné" },
-  "www.pathe.fr": { name: "Pathé", alternate: "Allociné" },
   "ugc.fr": { name: "UGC", alternate: "Allociné" },
-  "www.ugc.fr": { name: "UGC", alternate: "Allociné" },
 };
 
 // Hosts protégés par un WAF anti-bot (DataDome ou équivalent) qui
@@ -753,28 +752,32 @@ export async function POST(request: NextRequest) {
   const image = og.image || tm.image;
   const startsAt = og.startsAt || tm.startsAt;
 
-  // Hint the client when we got nothing usable AND the host is a
-  // known SPA — the user sees a specific message ("Pathé ne partage
-  // pas ses infos…") instead of a vague "Aucune info". With slug
-  // fallback in place this should fire much less often, but it's
-  // still the right message when the slug itself is a numeric id.
+  // Hint user-facing unifié pour les deux cas où le scraping ne peut
+  // rien remonter de la page (par design, pas par bug) :
+  //   - "waf" : site anti-bot (groupe CTS Eventim — Fnac Spectacles…)
+  //   - "spa" : site rendu côté client (Pathé, UGC…)
+  // Dans les deux cas on dit ce qui se passe + une alternative
+  // concrète pour la prochaine fois. Affiché toujours pour les WAF
+  // (le hint vaut même si Discovery a enrichi), affiché pour les SPA
+  // uniquement quand on n'a vraiment rien remonté (le slug fallback
+  // marche souvent).
   const nothingUseful = !title && !venue && !image && !startsAt;
-  const spa = SPA_HOSTS[target.hostname.toLowerCase()] ?? null;
-  const spaHint =
-    nothingUseful && spa ? { siteName: spa.name, alternate: spa.alternate ?? null } : null;
-
-  // Hint dédié pour les hosts CTS Eventim : on annonce le blocage
-  // anti-bot et on pousse l'utilisateur vers une source qui marche
-  // mieux côté scraping (Ticketmaster ou le site de la salle). Affiché
-  // même si on a réussi à enrichir via Discovery, parce que la qualité
-  // des données reste dégradée comparée à un parsing direct.
-  const wafHint = wafBlocked
-    ? {
-        siteName: CTS_EVENTIM_LABELS[normHost] ?? "Ce site",
-        suggestion:
-          "Pour de meilleurs résultats, colle plutôt un lien Ticketmaster ou le site de la salle directement.",
-      }
-    : null;
+  const spa = SPA_HOSTS[normHost] ?? null;
+  let parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null = null;
+  if (wafBlocked) {
+    parserHint = {
+      kind: "waf",
+      siteName: CTS_EVENTIM_LABELS[normHost] ?? "Ce site",
+      suggestion:
+        "Pour de meilleurs résultats, colle plutôt un lien Ticketmaster ou le site de la salle directement.",
+    };
+  } else if (nothingUseful && spa) {
+    parserHint = {
+      kind: "spa",
+      siteName: spa.name,
+      suggestion: `Essaie plutôt un lien ${spa.alternate} pour le même événement.`,
+    };
+  }
 
   // Telemetry par hostname. On ne juge que ce que la PAGE a donné
   // (og + JSON-LD), pas les fallbacks slug / Discovery API : c'est
@@ -798,8 +801,7 @@ export async function POST(request: NextRequest) {
     image: image ?? null,
     startsAt: startsAt ?? null,
     ticketUrl: target.toString(),
-    spaHint,
-    wafHint,
+    parserHint,
   });
 }
 

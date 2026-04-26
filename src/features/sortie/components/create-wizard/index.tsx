@@ -252,11 +252,16 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
   });
   const [pasteFailed, setPasteFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Hint affiché quand l'URL collée pointe vers un site protégé par
-  // un WAF anti-bot (groupe CTS Eventim : Fnac Spectacles, France
-  // Billet…). On a quand même tenté Discovery API, mais on annonce
-  // au user qu'un autre lien fonctionnera mieux la prochaine fois.
-  const [wafHint, setWafHint] = useState<{ siteName: string; suggestion: string } | null>(null);
+  // Hint affiché quand le scraping ne peut rien remonter de la page :
+  //   - "waf" : groupe CTS Eventim (Fnac Spectacles, France Billet…)
+  //   - "spa" : site rendu côté client (Pathé, UGC…)
+  // Dans les deux cas on a quand même tenté Discovery / slug, mais
+  // on annonce à l'utilisateur qu'une autre source fonctionne mieux.
+  const [parserHint, setParserHint] = useState<{
+    kind: "waf" | "spa";
+    siteName: string;
+    suggestion: string;
+  } | null>(null);
 
   // Persistance localStorage du brouillon : un coup de fil entrant qui
   // kill la webview ou un swipe-up Safari accidentel ne fait plus
@@ -547,7 +552,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                     time: parsedTime ?? d.time,
                   }));
                   setPasteFailed(false);
-                  setWafHint(data.wafHint ?? null);
+                  setParserHint(data.parserHint ?? null);
                   goToStep("confirm");
                 }}
                 onTitleOnly={(title) => {
@@ -568,7 +573,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
             {step === "confirm" && (
               <ConfirmPasteStep
                 draft={draft}
-                wafHint={wafHint}
+                parserHint={parserHint}
                 onTitleChange={(title) => setDraft((d) => ({ ...d, title }))}
                 onVenueChange={(venue) => setDraft((d) => ({ ...d, venue }))}
                 onImageBroken={() => setDraft((d) => ({ ...d, heroImageUrl: "" }))}
@@ -747,7 +752,7 @@ function PasteStep({
     image: string | null;
     startsAt: string | null;
     ticketUrl: string;
-    wafHint?: { siteName: string; suggestion: string } | null;
+    parserHint?: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
   }) => void;
   onTitleOnly: (title: string) => void;
 }) {
@@ -1110,14 +1115,14 @@ function GeminiSearchProgress({ onCancel }: { onCancel: () => void }) {
 
 function ConfirmPasteStep({
   draft,
-  wafHint,
+  parserHint,
   onTitleChange,
   onVenueChange,
   onImageBroken,
   onNext,
 }: {
   draft: Draft;
-  wafHint: { siteName: string; suggestion: string } | null;
+  parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
   onTitleChange: (v: string) => void;
   onVenueChange: (v: string) => void;
   onImageBroken: () => void;
@@ -1140,10 +1145,14 @@ function ConfirmPasteStep({
         <p className="mt-3 text-sm text-encre-400">Tape directement dans la carte pour corriger.</p>
       </div>
 
-      {wafHint && (
+      {parserHint && (
         <div className="flex flex-col gap-1 rounded-2xl border border-bordeaux-100 bg-bordeaux-50/60 px-4 py-3">
-          <p className="text-xs font-bold text-encre-700">{wafHint.siteName} bloque le scraping</p>
-          <p className="text-xs text-encre-500">{wafHint.suggestion}</p>
+          <p className="text-xs font-bold text-encre-700">
+            {parserHint.kind === "waf"
+              ? `${parserHint.siteName} bloque le scraping`
+              : `${parserHint.siteName} ne partage pas ses infos`}
+          </p>
+          <p className="text-xs text-encre-500">{parserHint.suggestion}</p>
         </div>
       )}
 
