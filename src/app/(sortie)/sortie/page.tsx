@@ -16,6 +16,7 @@ import { auth } from "@/lib/auth-config";
 import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
 import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
+import { bucketizeUpcoming, sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
@@ -33,7 +34,13 @@ export default async function SortieHome() {
     return <PublicHome />;
   }
 
-  const { upcoming, past } = await listAllMyOutings(userId);
+  const { upcoming: upcomingRaw, past } = await listAllMyOutings(userId);
+  // La query renvoie en `desc(createdAt)` par défaut — ce qui n'a aucun
+  // sens côté UX dès qu'on a > 5 sorties (un événement loin créé hier
+  // remonte avant un événement proche créé la semaine dernière). On
+  // re-trie ici par `startsAt` ascendant pour que la home reflète
+  // l'horizon temporel et non l'ordre de création.
+  const upcoming = sortUpcomingByStartsAt(upcomingRaw);
   const next = upcoming[0] ?? null;
 
   // Headline needs a headcount for the next outing — fetch once from the
@@ -120,34 +127,7 @@ export default async function SortieHome() {
       )}
 
       {restUpcoming.length > 0 && (
-        <section className="mt-4 mb-10">
-          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-600">
-            ─ à venir ─
-          </p>
-          <ul className="flex flex-col gap-4">
-            {restUpcoming.map((o, index) => (
-              // Stagger via inline `animation-delay` rather than a JS
-              // orchestrator — keeps the list server-rendered, the
-              // animation is pure CSS triggered on first paint.
-              // Capped at index 9 so a 30-event organiser doesn't sit
-              // through 1.2s of waterfall before the last card lands.
-              <li
-                key={o.id}
-                className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
-                style={{ animationDelay: `${Math.min(index, 9) * 40}ms` }}
-              >
-                <OutingProfileCard
-                  outing={o}
-                  showRsvp={false}
-                  myRsvp={null}
-                  loggedInName={session.user.name ?? null}
-                  outingBaseUrl={PUBLIC_BASE}
-                  isPast={false}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
+        <UpcomingBuckets outings={restUpcoming} loggedInName={session.user.name ?? null} />
       )}
 
       {past.length > 0 && <PastSection outings={past} loggedInName={session.user.name ?? null} />}
@@ -171,6 +151,73 @@ export default async function SortieHome() {
         <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
       </Link>
     </main>
+  );
+}
+
+/**
+ * Upcoming outings groupées par horizon temporel (cette semaine / ce
+ * mois-ci / plus tard / date à voter). Garde les buckets vides muets
+ * pour ne pas afficher de header sans contenu — un user qui n'a que des
+ * sorties dans 3 mois voit un seul header "plus tard", pas trois headers
+ * vides au-dessus.
+ *
+ * Stagger d'animation continu d'un bucket au suivant : on prend l'index
+ * absolu dans la liste (et pas l'index local au bucket) pour éviter la
+ * cassure rythmique quand la première carte de chaque section repart à
+ * `delay: 0` et que tout le bloc surgit en même temps.
+ */
+function UpcomingBuckets({
+  outings,
+  loggedInName,
+}: {
+  outings: HomeOutingRow[];
+  loggedInName: string | null;
+}) {
+  const buckets = bucketizeUpcoming(outings).filter((b) => b.outings.length > 0);
+  // Pré-calcule l'index absolu de la première carte de chaque bucket.
+  // On évite ainsi la mutation d'un `let` à l'intérieur du `.map()` JSX,
+  // que le React Compiler refuse (impureté pendant le render). Le delay
+  // de chaque carte se calcule ensuite par `baseIndex + indexLocal`.
+  const baseIndices: number[] = [];
+  buckets.reduce((acc, b) => {
+    baseIndices.push(acc);
+    return acc + b.outings.length;
+  }, 0);
+
+  return (
+    <div className="mt-4 mb-10 flex flex-col gap-8">
+      {buckets.map((bucket, bIdx) => {
+        const baseIndex = baseIndices[bIdx] ?? 0;
+        return (
+          <section key={bucket.key}>
+            <p className="mb-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-600">
+              <span>─ {bucket.label} ─</span>
+              <span className="text-encre-400">
+                {String(bucket.outings.length).padStart(2, "0")}
+              </span>
+            </p>
+            <ul className="flex flex-col gap-4">
+              {bucket.outings.map((o, oIdx) => (
+                <li
+                  key={o.id}
+                  className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
+                  style={{ animationDelay: `${Math.min(baseIndex + oIdx, 9) * 40}ms` }}
+                >
+                  <OutingProfileCard
+                    outing={o}
+                    showRsvp={false}
+                    myRsvp={null}
+                    loggedInName={loggedInName}
+                    outingBaseUrl={PUBLIC_BASE}
+                    isPast={false}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
   );
 }
 

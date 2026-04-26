@@ -103,9 +103,12 @@ export function EventSuggestions({
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="flex flex-col gap-2"
     >
-      <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
+      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
         <Sparkles size={12} />
         Suggestions
+        <span className="font-medium normal-case tracking-normal text-encre-400">
+          (date modifiable ensuite)
+        </span>
       </div>
       {correctedQuery && correctedQuery.toLowerCase() !== originalQuery.toLowerCase() && (
         <p className="px-1 text-xs text-encre-500">
