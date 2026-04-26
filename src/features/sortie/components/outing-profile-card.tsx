@@ -93,6 +93,16 @@ export function OutingProfileCard({
           ? { label: "Tu viens · billet perso", tone: "confirmed" as const }
           : { label: "Tu viens", tone: "confirmed" as const };
 
+  // Sortie passée : on dégrade le visuel pour qu'elle se lise comme un
+  // souvenir et non comme une action en attente. Opacité légère sur la
+  // carte entière + grayscale sur l'image (les couleurs criardes des
+  // affiches passées tirent l'œil sans raison). Hover restaure l'état
+  // plein pour les rares fois où l'utilisateur veut quand même cliquer
+  // (relire les détails, contacter un participant…).
+  const pastWrapperClasses = isPast
+    ? "opacity-70 transition-[opacity,filter] duration-300 hover:opacity-100 [&_img]:grayscale [&_img]:transition-[filter] [&_img]:duration-300 hover:[&_img]:grayscale-0"
+    : "";
+
   // First letter of the title for the poster-less fallback thumbnail.
   // Same visual vocabulary as the LiveStatusHero empty state — gradient
   // panel with a big typographic initial instead of a dead color swatch.
@@ -166,7 +176,9 @@ export function OutingProfileCard({
     // the Link now. Subtle hover tint on row 1 makes tappability
     // still discoverable.
     return (
-      <article className="rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5">
+      <article
+        className={`rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 ${pastWrapperClasses}`}
+      >
         <Link
           href={href}
           className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-encre-700/[0.02]"
@@ -192,7 +204,7 @@ export function OutingProfileCard({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500"
+      className={`group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500 ${pastWrapperClasses}`}
     >
       {navigationRow}
       <ChevronRight
