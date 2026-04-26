@@ -361,7 +361,7 @@ function PublicHome() {
           sortie · v0.1
         </p>
         <h1
-          className="mb-6 text-[52px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-[64px]"
+          className="mb-6 text-[56px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-[72px]"
           style={{ textWrap: "balance" }}
         >
           Organise.
