@@ -100,9 +100,10 @@ export type TicketmasterSearchOutcome = {
  * to surface it. Logs warnings to the console so ops can see rate-limit
  * / auth issues without breaking user flows.
  *
- * The route at `/api/sortie/search-ticketmaster` wraps this with a
- * short-lived cache; the URL-parser at `/api/sortie/parse-ticket-url`
- * calls it directly when enriching a ticketmaster.fr link.
+ * Appelée par l'orchestrateur multi-sources (`searchEvents`) et
+ * directement par `/api/sortie/parse-ticket-url` pour enrichir un
+ * lien ticketmaster.fr. La spellcheck est exposée séparément via
+ * `searchTicketmasterEventsWithSpellcheck` plus bas.
  */
 export async function searchTicketmasterEvents(
   query: string,

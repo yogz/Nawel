@@ -26,9 +26,9 @@ import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
 import { VibePicker } from "../vibe-picker";
 import { VIBE_CONFIG, isVibe, type Vibe } from "../../lib/vibe-config";
-import { TicketmasterSuggestions } from "./ticketmaster-suggestions";
+import { EventSuggestions } from "./event-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
-import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
+import type { UnifiedEventResult } from "@/app/api/sortie/search-events/route";
 import type { EventDetails, FindEventResult } from "@/lib/gemini-search";
 import {
   clearWizardDraft,
@@ -662,20 +662,20 @@ function WizardHeader({ progress, onBack }: { progress: number; onBack: () => vo
  * branch — react-hooks/set-state-in-effect rule. When the input falls
  * below the threshold we just return `[]` directly.
  */
-type TicketmasterSuggestionsState = {
-  results: TicketmasterResult[];
+type EventSuggestionsState = {
+  results: UnifiedEventResult[];
   correctedQuery: string | null;
   isLoading: boolean;
 };
 
-const EMPTY_SUGGESTIONS: TicketmasterSuggestionsState = {
+const EMPTY_SUGGESTIONS: EventSuggestionsState = {
   results: [],
   correctedQuery: null,
   isLoading: false,
 };
 
-function useTicketmasterSuggestions(query: string, enabled: boolean): TicketmasterSuggestionsState {
-  const [state, setState] = useState<TicketmasterSuggestionsState>(EMPTY_SUGGESTIONS);
+function useEventSuggestions(query: string, enabled: boolean): EventSuggestionsState {
+  const [state, setState] = useState<EventSuggestionsState>(EMPTY_SUGGESTIONS);
   const abortRef = useRef<AbortController | null>(null);
   const shouldFetch = enabled && query.length >= 3;
 
@@ -694,7 +694,7 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
-      fetch("/api/sortie/search-ticketmaster", {
+      fetch("/api/sortie/search-events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
@@ -703,7 +703,7 @@ function useTicketmasterSuggestions(query: string, enabled: boolean): Ticketmast
         .then((res) =>
           res.ok
             ? (res.json() as Promise<{
-                results: TicketmasterResult[];
+                results: UnifiedEventResult[];
                 correctedQuery: string | null;
               }>)
             : { results: [], correctedQuery: null }
@@ -772,16 +772,18 @@ function PasteStep({
   const looksLikeUrl = /^https?:\/\//i.test(trimmed);
 
   // Best-effort enrichment: when the user is typing free text, ping
-  // Ticketmaster in the background and surface up to 3 matches under
-  // the input. Picking one short-circuits the rest of the wizard's URL
+  // toutes les sources d'événements en parallèle (Ticketmaster +
+  // OpenAgenda + …) et surface jusqu'à 6 matches dédoublonnés sous
+  // l'input. Picking one short-circuits the rest of the wizard's URL
   // pipeline (same `onParsed` callback as the actual paste flow).
-  // `correctedQuery` est non-null quand l'API a corrigé une faute
-  // d'orthographe ("rolland" → "roland") — affiché au-dessus de la liste.
+  // `correctedQuery` est non-null quand l'orchestrateur a corrigé une
+  // faute d'orthographe ("rolland" → "roland") via la spellcheck TM —
+  // affiché au-dessus de la liste.
   const {
     results: suggestions,
     correctedQuery,
     isLoading: suggestionsLoading,
-  } = useTicketmasterSuggestions(trimmed, !looksLikeUrl);
+  } = useEventSuggestions(trimmed, !looksLikeUrl);
 
   // Fallback Gemini : appelle /api/sortie/find-event quand l'URL n'est
   // pas parseable ou que l'utilisateur tape un texte libre sans hit
@@ -974,7 +976,7 @@ function PasteStep({
         />
       </div>
 
-      <TicketmasterSuggestions
+      <EventSuggestions
         results={suggestions}
         correctedQuery={correctedQuery}
         originalQuery={trimmed}

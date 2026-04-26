@@ -3,21 +3,23 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, Sparkles } from "lucide-react";
-import type { TicketmasterResult } from "@/app/api/sortie/search-ticketmaster/route";
+import type { UnifiedEventResult } from "@/app/api/sortie/search-events/route";
+import type { EventProviderName } from "@/features/sortie/lib/event-providers";
 
 type Props = {
-  results: TicketmasterResult[];
-  // Quand non-null, l'API Ticketmaster a corrigé une faute d'orthographe
-  // dans `originalQuery` et a renvoyé les résultats pour `correctedQuery`.
-  // On l'affiche au-dessus de la liste pour que l'utilisateur comprenne
-  // pourquoi les résultats ne matchent pas littéralement ce qu'il a tapé.
+  results: UnifiedEventResult[];
+  // Quand non-null, l'orchestrateur a corrigé une faute d'orthographe
+  // dans `originalQuery` (via la spellcheck Ticketmaster) et a renvoyé
+  // les résultats pour `correctedQuery`. On l'affiche au-dessus de la
+  // liste pour que l'utilisateur comprenne pourquoi les résultats ne
+  // matchent pas littéralement ce qu'il a tapé.
   correctedQuery: string | null;
   originalQuery: string;
   // True entre la 1re saisie ≥3 chars et la 1re réponse de l'API. Permet
   // d'afficher des skeletons pendant les ~700 ms (debounce + fetch) où
   // sinon l'écran reste figé après la frappe.
   isLoading: boolean;
-  onPick: (result: TicketmasterResult) => void;
+  onPick: (result: UnifiedEventResult) => void;
 };
 
 const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
@@ -37,13 +39,20 @@ function formatStartsAt(iso: string | null): string | null {
   return dateFormatter.format(date);
 }
 
+const SOURCE_LABEL: Record<EventProviderName, string> = {
+  ticketmaster: "Ticketmaster",
+  openagenda: "OpenAgenda",
+};
+
 /**
  * Best-effort suggestion list shown under the paste-step input when the
- * user types free text matched by Ticketmaster. Click to pre-fill the
- * wizard like an URL paste. Renders nothing when results are empty so
- * the absence of matches is invisible to the user.
+ * user types free text. Agrège plusieurs sources (Ticketmaster,
+ * OpenAgenda, …) — chaque ligne porte un petit badge identifiant la
+ * provenance pour la transparence. Click to pre-fill the wizard like an
+ * URL paste. Renders nothing when results are empty so the absence of
+ * matches is invisible to the user.
  */
-export function TicketmasterSuggestions({
+export function EventSuggestions({
   results,
   correctedQuery,
   originalQuery,
@@ -66,7 +75,7 @@ export function TicketmasterSuggestions({
       >
         <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
           <Sparkles size={12} />
-          Recherche Ticketmaster…
+          Recherche en cours…
         </div>
         <ul className="flex flex-col gap-2">
           {[0, 1].map((i) => (
@@ -96,7 +105,7 @@ export function TicketmasterSuggestions({
     >
       <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
         <Sparkles size={12} />
-        Suggestions Ticketmaster
+        Suggestions
       </div>
       {correctedQuery && correctedQuery.toLowerCase() !== originalQuery.toLowerCase() && (
         <p className="px-1 text-xs text-encre-500">
@@ -109,8 +118,9 @@ export function TicketmasterSuggestions({
         {results.map((result) => {
           const venueLine = [result.venue, result.city].filter(Boolean).join(" — ");
           const dateLine = formatStartsAt(result.startsAt);
+          const sourceLabel = SOURCE_LABEL[result.source] ?? result.source;
           return (
-            <li key={result.id}>
+            <li key={`${result.source}:${result.id}`}>
               <button
                 type="button"
                 onClick={() => onPick(result)}
@@ -118,10 +128,10 @@ export function TicketmasterSuggestions({
                 className="flex w-full items-start gap-3 rounded-xl border border-encre-200 bg-ivoire-100 p-3 text-left transition-colors duration-300 hover:border-bordeaux-300 hover:bg-ivoire-200 focus-visible:border-bordeaux-400 focus-visible:bg-ivoire-200 focus-visible:outline-none"
               >
                 {result.image ? (
-                  // `unoptimized` skips Next's image proxy — Ticketmaster's
-                  // CDN (s1.ticketm.net) isn't in next.config remotePatterns
-                  // and whitelisting it for a 56px thumbnail in a best-effort
-                  // widget would be over-engineering. Direct CDN load is fine.
+                  // `unoptimized` skips Next's image proxy — les CDN tiers
+                  // (s1.ticketm.net, cdn.openagenda.com, …) ne sont pas
+                  // dans next.config remotePatterns et les whitelister
+                  // pour des thumbnails 56px serait sur-ingénierie.
                   <Image
                     src={result.image}
                     alt=""
@@ -139,9 +149,14 @@ export function TicketmasterSuggestions({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-bold text-encre-700">{result.title}</p>
                   {venueLine && <p className="truncate text-xs text-encre-500">{venueLine}</p>}
-                  {dateLine && (
-                    <p className="truncate text-xs font-medium text-bordeaux-600">{dateLine}</p>
-                  )}
+                  <div className="mt-0.5 flex items-center gap-2">
+                    {dateLine && (
+                      <p className="truncate text-xs font-medium text-bordeaux-600">{dateLine}</p>
+                    )}
+                    <span className="rounded-full bg-ivoire-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-encre-500">
+                      {sourceLabel}
+                    </span>
+                  </div>
                 </div>
               </button>
             </li>
