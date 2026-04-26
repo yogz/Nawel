@@ -124,10 +124,35 @@
   }
 }
 
+/* Critical-deadline halo: a 6px ring breathes around the dot when the
+ * RSVP deadline is under one hour. Pure CSS so it can run inside the
+ * (server-rendered) DeadlineBadge without a client boundary. */
+@keyframes deadline-halo {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px var(--sortie-hot),
+      0 0 0 0 rgba(255, 61, 129, 0.55);
+  }
+  50% {
+    box-shadow:
+      0 0 14px var(--sortie-hot),
+      0 0 0 6px rgba(255, 61, 129, 0);
+  }
+}
+
+.sortie-deadline-halo {
+  animation: deadline-halo 1.6s var(--ease-velvet) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .theme-sortie * {
     transition-duration: var(--dur-fast) !important;
     animation-duration: var(--dur-fast) !important;
+  }
+
+  .sortie-deadline-halo {
+    animation: none;
   }
 }
 

@@ -9,6 +9,7 @@ export function DeadlineBadge({ deadlineAt }: Props) {
   const isPast = deadlineAt < now;
   const hoursLeft = (deadlineAt.getTime() - now.getTime()) / 3_600_000;
   const urgent = !isPast && hoursLeft < 48;
+  const criticalSoon = !isPast && hoursLeft < 1;
 
   if (isPast) {
     return (
@@ -29,7 +30,11 @@ export function DeadlineBadge({ deadlineAt }: Props) {
       {urgent && (
         <span
           aria-hidden
-          className="h-1.5 w-1.5 animate-pulse rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+          className={
+            criticalSoon
+              ? "sortie-deadline-halo h-1.5 w-1.5 rounded-full bg-or-500"
+              : "h-1.5 w-1.5 animate-pulse rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+          }
         />
       )}
       <span>réponds avant le {formatOutingDateConversational(deadlineAt)}</span>

@@ -1,5 +1,6 @@
 import { numberToFrenchCap } from "@/features/sortie/lib/number-fr";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
+import { AnimatedCount } from "./animated-count";
 import { UserAvatar } from "./user-avatar";
 
 type Participant = {
@@ -44,11 +45,17 @@ export function ParticipantList({ participants }: { participants: Participant[] 
   // "un" isolé n'est pas un pronom. Use the person's name when there's
   // exactly one yes, and fall back to "Quelqu'un" for nameless anons.
   const headline =
-    yesList.length === 0
-      ? "Pas encore de oui ferme."
-      : yesList.length === 1
-        ? `${firstName ?? "Quelqu'un"} a déjà dit oui.`
-        : `Vous êtes ${numberToFrenchCap(yesList.length)} à avoir dit oui.`;
+    yesList.length === 0 ? (
+      "Pas encore de oui ferme."
+    ) : yesList.length === 1 ? (
+      `${firstName ?? "Quelqu'un"} a déjà dit oui.`
+    ) : (
+      <>
+        Vous êtes{" "}
+        <AnimatedCount value={yesList.length}>{numberToFrenchCap(yesList.length)}</AnimatedCount> à
+        avoir dit oui.
+      </>
+    );
 
   // When the only yes is an anonymous no-name, the headline already says
   // "Quelqu'un a déjà dit oui." — repeating "Quelqu'un" as a bullet below
@@ -73,7 +80,8 @@ export function ParticipantList({ participants }: { participants: Participant[] 
 
       {totalHeads > yesList.length && (
         <p className="mb-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
-          ◉ {numberToFrenchCap(totalHeads)} personnes avec les accompagnants
+          ◉ <AnimatedCount value={totalHeads}>{numberToFrenchCap(totalHeads)}</AnimatedCount>{" "}
+          personnes avec les accompagnants
         </p>
       )}
 

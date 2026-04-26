@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, MessageCircle } from "lucide-react";
+import { Check, Copy, MessageCircle } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { buildWhatsAppHref } from "@/features/sortie/lib/whatsapp-share";
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
   startsAt: Date | null;
   firstName?: string | null;
 };
+
+const SWAP_TRANSITION = { duration: 0.18, ease: [0.16, 1, 0.3, 1] as const };
 
 export function ShareActions({ url, title, startsAt, firstName }: Props) {
   const [justCopied, setJustCopied] = useState(false);
@@ -35,8 +38,43 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         className="inline-flex items-center gap-2 rounded-full border border-ivoire-400 px-3 py-1.5 text-sm text-encre-500 transition-colors hover:border-or-500 hover:text-bordeaux-700"
         aria-live="polite"
       >
-        <Copy size={14} />
-        {justCopied ? "Copié" : "Copier le lien"}
+        <AnimatePresence mode="wait" initial={false}>
+          {justCopied ? (
+            <motion.span
+              key="done-icon"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.6, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
+              className="inline-flex"
+            >
+              <Check size={14} />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="idle-icon"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.6, opacity: 0 }}
+              transition={SWAP_TRANSITION}
+              className="inline-flex"
+            >
+              <Copy size={14} />
+            </motion.span>
+          )}
+        </AnimatePresence>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={justCopied ? "done-label" : "idle-label"}
+            initial={{ y: 6, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -6, opacity: 0 }}
+            transition={SWAP_TRANSITION}
+            className="inline-block"
+          >
+            {justCopied ? "Copié" : "Copier le lien"}
+          </motion.span>
+        </AnimatePresence>
       </button>
       <a
         href={whatsAppHref}

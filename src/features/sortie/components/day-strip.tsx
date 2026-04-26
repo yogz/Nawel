@@ -138,10 +138,10 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
               data-idx={idx}
               onClick={() => onSelect(d)}
               aria-pressed={isSelected}
-              className={`relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-all [scroll-snap-align:center] ${
+              className={`relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-all duration-300 [scroll-snap-align:center] [scroll-snap-stop:always] ${
                 isSelected
-                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-100 bg-white text-encre-700 motion-safe:active:scale-95"
+                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50 motion-safe:scale-[1.04] motion-safe:shadow-[0_4px_18px_-6px_rgba(0,0,0,0.25)]"
+                  : "border-encre-100 bg-white text-encre-700 motion-safe:scale-100 motion-safe:active:scale-95"
               }`}
             >
               <span

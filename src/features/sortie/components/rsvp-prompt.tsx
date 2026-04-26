@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Pencil, X } from "lucide-react";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
+import { celebrateRsvp } from "@/features/sortie/lib/celebrate";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 import { RsvpStub } from "./rsvp-stub";
 import { RemoveRsvpButton } from "./remove-rsvp-dialog";
@@ -156,6 +157,12 @@ export function RsvpPrompt({
           onSuccess={(name, response) => {
             if (response !== "no") {
               setStub({ name: name.split(/\s+/)[0] ?? name });
+            }
+            if (response === "yes") {
+              celebrateRsvp();
+              if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+                navigator.vibrate([8, 30, 8]);
+              }
             }
             setSheetMode("idle");
           }}
