@@ -1196,42 +1196,33 @@ function PasteStep({
       {err && <p className="text-sm text-erreur-700">{err}</p>}
 
       {/* Bouton opt-in IA : apparaît uniquement après un échec parse
-          OG/JSON-LD. Annonce explicitement la durée (~15 s) parce que
-          c'est lent et que masquer le coût pousse à l'abandon. Disable
-          si une recherche est déjà en cours pour éviter les doubles
-          submits. */}
+          OG/JSON-LD. Style text-link discret (pas un CTA outline) pour
+          ne pas concurrencer visuellement le bouton "Continuer"
+          principal — c'est un fallback, pas le path nominal. La durée
+          (~15 s) reste annoncée pour respecter le contrat. */}
       {geminiOptInUrl && !pending && !geminiSuggestion && (
-        <Button
+        <button
           type="button"
-          size="lg"
-          variant="outline"
           onClick={runGeminiOptIn}
-          className="h-14 rounded-full border-bordeaux-300 text-base font-bold text-bordeaux-700 hover:bg-bordeaux-50"
+          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
         >
-          <span className="inline-flex items-center gap-2">
-            <Sparkles size={16} />
-            Chercher pour moi (≈15 s)
-          </span>
-        </Button>
+          <Sparkles size={14} />
+          Chercher pour moi (≈15 s)
+        </button>
       )}
 
-      {/* Opt-in IA path texte : symétrique au bouton URL. Visible quand
-          TM/OA a renvoyé des cards mais qu'aucune ne colle — l'user
-          peut tenter Gemini explicitement plutôt que se la prendre en
-          blocking au clic Continuer. */}
+      {/* Opt-in IA path texte : symétrique au bouton URL, même style
+          text-link discret. Visible quand TM/OA a renvoyé des cards
+          mais qu'aucune ne colle. */}
       {!looksLikeUrl && suggestions.length > 0 && !geminiSuggestion && !pending && (
-        <Button
+        <button
           type="button"
-          size="lg"
-          variant="outline"
           onClick={runGeminiOptInText}
-          className="h-14 rounded-full border-bordeaux-300 text-base font-bold text-bordeaux-700 hover:bg-bordeaux-50"
+          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
         >
-          <span className="inline-flex items-center gap-2">
-            <Sparkles size={16} />
-            Chercher pour moi (≈15 s)
-          </span>
-        </Button>
+          <Sparkles size={14} />
+          Chercher pour moi (≈15 s)
+        </button>
       )}
 
       {/* Pendant la recherche Gemini, le composant GeminiSearchProgress
