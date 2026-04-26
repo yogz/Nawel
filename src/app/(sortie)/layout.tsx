@@ -39,6 +39,22 @@ export const metadata: Metadata = {
   description: "Entre amis, ça s'organise.",
   metadataBase: new URL("https://sortie.colist.fr"),
   robots: { index: false, follow: false },
+  // Default OG/Twitter for routes that don't override (home, /nouvelle, /moi).
+  // Pages with their own preview (`[slugOrId]`, `profile/[username]`) replace
+  // these via their own `generateMetadata` + `opengraph-image.tsx`.
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Sortie",
+    title: "Sortie",
+    description: "Entre amis, ça s'organise.",
+    url: "https://sortie.colist.fr",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sortie",
+    description: "Entre amis, ça s'organise.",
+  },
 };
 
 export const viewport: Viewport = {
