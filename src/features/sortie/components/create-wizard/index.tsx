@@ -1211,7 +1211,7 @@ function PasteStep({
         >
           <span className="inline-flex items-center gap-2">
             <Sparkles size={16} />
-            Chercher avec l'IA (≈15 s)
+            Chercher pour moi (≈15 s)
           </span>
         </Button>
       )}
