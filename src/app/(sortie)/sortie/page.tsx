@@ -155,12 +155,6 @@ export default async function SortieHome() {
 }
 
 /**
- * Past outings: mirrors the /@<username> pattern — up to 3 inline, rest
- * hidden behind "Voir les N autres ›". Keeps short histories flat
- * without demoting them, and spares multi-year organisers from a wall
- * of past cards every time they land on /.
- */
-/**
  * Upcoming outings groupées par horizon temporel (cette semaine / ce
  * mois-ci / plus tard / date à voter). Garde les buckets vides muets
  * pour ne pas afficher de header sans contenu — un user qui n'a que des
@@ -227,6 +221,12 @@ function UpcomingBuckets({
   );
 }
 
+/**
+ * Past outings: mirrors the /@<username> pattern — up to 3 inline, rest
+ * hidden behind "Voir les N autres ›". Keeps short histories flat
+ * without demoting them, and spares multi-year organisers from a wall
+ * of past cards every time they land on /.
+ */
 function PastSection({
   outings,
   loggedInName,
