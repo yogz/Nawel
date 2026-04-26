@@ -851,6 +851,40 @@ function PasteStep({
     isLoading: suggestionsLoading,
   } = useEventSuggestions(trimmed, !looksLikeUrl);
 
+  // Mémoise les queries texte libre déjà tentées en background pour
+  // ne pas reboucler indéfiniment quand l'effet ré-évalue ses deps.
+  // Une string par query consume O(n) mémoire ; en pratique l'user
+  // tape <30 versions d'une recherche par session.
+  const bgGeminiTriedRef = useRef<Set<string>>(new Set());
+
+  // Background Gemini sur path texte libre : si Ticketmaster /
+  // OpenAgenda n'ont rien remonté après 2 s, on lance Gemini sans
+  // bloquer le bouton Continuer. Si Gemini répond avant que l'user
+  // clique Continuer, la GeminiSuggestionCard apparaît normalement.
+  // Si l'user clique Continuer pendant le fetch, submit() abort la
+  // requête et passe directement en onTitleOnly (cf. plus bas).
+  useEffect(() => {
+    if (
+      looksLikeUrl ||
+      pending ||
+      geminiSuggestion ||
+      suggestionsLoading ||
+      suggestions.length > 0 ||
+      trimmed.length < 4 ||
+      bgGeminiTriedRef.current.has(trimmed)
+    ) {
+      return;
+    }
+    const handle = setTimeout(() => {
+      bgGeminiTriedRef.current.add(trimmed);
+      // Fire-and-forget : l'éventuel résultat est consommé via
+      // `setGeminiSuggestion` à l'intérieur de tryGemini. Pas de
+      // gestion d'erreur ici, c'est best-effort.
+      void tryGemini(trimmed, "bg");
+    }, 2000);
+    return () => clearTimeout(handle);
+  }, [trimmed, looksLikeUrl, pending, geminiSuggestion, suggestionsLoading, suggestions.length]);
+
   // Fallback Gemini : appelle /api/sortie/find-event quand l'URL n'est
   // pas parseable ou que l'utilisateur tape un texte libre sans hit
   // Ticketmaster. Latence 12-15s, donc déclenché uniquement après
@@ -982,9 +1016,20 @@ function PasteStep({
     setErr(null);
     setGeminiSuggestion(null);
     setGeminiOptInUrl(null);
+    onPasteSubmitted("text", vibe != null);
+    // Si une recherche Gemini background tourne déjà sur cette query
+    // (PR2b) OU a déjà tenté sans rien trouver, on n'attend pas une
+    // 2ᵉ fois 15 s : abort + onTitleOnly direct. C'est le sens du
+    // clic Continuer — l'user veut avancer, pas re-fouiller.
+    const bgInFlight = geminiAbortRef.current !== null;
+    const bgAlreadyTried = bgGeminiTriedRef.current.has(trimmed);
+    if (bgInFlight || bgAlreadyTried) {
+      geminiAbortRef.current?.abort();
+      onTitleOnly(trimmed);
+      return;
+    }
     setPending(true);
     setPendingMsg("search");
-    onPasteSubmitted("text", vibe != null);
     try {
       const found = await tryGemini(trimmed, "auto");
       if (!found) {
