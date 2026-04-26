@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
-import { Check, Copy, MessageCircle, Share2, X } from "lucide-react";
+import { Check, MessageCircle, Share2, X } from "lucide-react";
 import { buildWhatsAppHref, buildWhatsAppMessage } from "@/features/sortie/lib/whatsapp-share";
 
 // Détection statique de la Web Share API. `useSyncExternalStore` est le
@@ -24,14 +24,8 @@ type Props = {
 
 /**
  * One-off banner rendered on the outing page when the creator arrived via
- * `?from=create`. Surfaces the share affordances (WhatsApp + native share +
- * copy) right at the top so they don't have to hunt for them.
- *
- * Hierarchy : WhatsApp est l'usage dominant en France pour partager une
- * sortie entre potes, donc c'est le CTA primaire pleine largeur. Sous-rangée
- * secondaire : `Partager` (Web Share API → iMessage/Telegram/Signal/AirDrop
- * via la sheet native iOS/Android, indispensable pour les ~30% qui ne
- * partagent pas via WhatsApp) et `Copier` en fallback universel.
+ * `?from=create`. Surfaces the share affordances (WhatsApp + native share)
+ * right at the top so they don't have to hunt for them.
  *
  * While visible, this banner is the sole share region — the page's regular
  * `ShareActions` row is hidden to avoid duplicating the same buttons. Closing
@@ -40,7 +34,6 @@ type Props = {
  */
 export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) {
   const [visible, setVisible] = useState(true);
-  const [copied, setCopied] = useState(false);
   // `navigator.share` n'existe que dans certains navigateurs (Safari iOS,
   // Chrome Android, Edge desktop récent). Quand absent, on masque le
   // bouton plutôt que de cracher un toast d'erreur sur Firefox desktop.
@@ -51,24 +44,6 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
   }
 
   const whatsAppHref = buildWhatsAppHref({ title, url, startsAt, firstName });
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Older browsers / insecure contexts: fall back to selecting text.
-      const input = document.createElement("input");
-      input.value = url;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand("copy");
-      document.body.removeChild(input);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  }
 
   async function handleNativeShare() {
     try {
@@ -99,44 +74,27 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
       <div className="flex-1">
         <p className="font-semibold text-bordeaux-700">C&rsquo;est en ligne.</p>
         <p className="mt-1 text-sm text-encre-500">Plus qu&rsquo;à inviter tes potes.</p>
-        <div className="mt-3 flex flex-col gap-2">
-          {/* Primary CTA pleine largeur — WhatsApp est l'usage majoritaire
-              FR, on lui donne le poids visuel correspondant. */}
+        <div className="mt-3 flex items-center gap-2">
           <a
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-or-600 px-4 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bordeaux-50"
+            className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-or-600 px-4 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bordeaux-50"
           >
             <MessageCircle size={16} strokeWidth={2.2} />
             Partager sur WhatsApp
           </a>
-          {/* Sous-rangée secondaire : sheet native + copier. La sheet
-              native est cachée sur les navigateurs qui ne la supportent
-              pas (Firefox desktop principalement) ; dans ce cas Copier
-              prend toute la largeur, comportement géré par `flex-1`. */}
-          <div className="flex items-center gap-2">
-            {canNativeShare && (
-              <button
-                type="button"
-                onClick={handleNativeShare}
-                aria-label="Partager via une autre application"
-                className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-200 px-4 text-sm font-semibold text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
-              >
-                <Share2 size={14} />
-                Partager
-              </button>
-            )}
+          {canNativeShare && (
             <button
               type="button"
-              onClick={handleCopy}
-              aria-label={copied ? "Lien copié" : "Copier le lien"}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-200 px-4 text-sm font-semibold text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+              onClick={handleNativeShare}
+              aria-label="Partager via une autre application"
+              className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-200 px-4 text-sm font-semibold text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
             >
-              {copied ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-              {copied ? "Copié" : "Copier le lien"}
+              <Share2 size={14} />
+              Partager
             </button>
-          </div>
+          )}
         </div>
       </div>
       <button
