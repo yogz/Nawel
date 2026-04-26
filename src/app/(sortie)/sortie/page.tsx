@@ -324,7 +324,7 @@ function VibeButton({
     <Link
       href={href}
       style={{ backgroundColor: bg, color: fg }}
-      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[24px] p-4 shadow-[var(--shadow-md)] transition-transform duration-[var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
+      className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[24px] p-4 shadow-[var(--shadow-md)] transition-transform [transition-duration:var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
     >
       <span style={{ color: fg }}>{icon}</span>
       <span
@@ -378,13 +378,13 @@ function PublicHome() {
 
         <Link
           href="/nouvelle"
-          className="group inline-flex items-center gap-2 rounded-full bg-bordeaux-600 px-7 py-4 text-[17px] font-black text-encre-50 shadow-[var(--shadow-acid)] transition-transform duration-[var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98]"
+          className="group inline-flex items-center gap-2 rounded-full bg-bordeaux-600 px-7 py-4 text-[17px] font-black text-encre-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98]"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
           Lancer une sortie
           <span
             aria-hidden
-            className="transition-transform duration-[var(--dur-base)] group-hover:translate-x-0.5"
+            className="transition-transform [transition-duration:var(--dur-base)] group-hover:translate-x-0.5"
           >
             →
           </span>
