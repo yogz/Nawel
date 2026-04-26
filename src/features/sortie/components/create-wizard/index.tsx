@@ -894,9 +894,11 @@ function PasteStep({
   // Annuler du loading state puisse interrompre le fetch côté client
   // (le serveur continue mais on jette la réponse).
   const geminiAbortRef = useRef<AbortController | null>(null);
-  // `trigger` est passé jusqu'au helper télémétrie pour distinguer le
-  // mode `auto` (chaîné après échec OG) du futur `optin` (PR2a) et `bg`
-  // (PR2b). Aujourd'hui les deux call-sites passent `auto`.
+  // `trigger` est passé jusqu'au helper télémétrie : `optin` = bouton
+  // "Chercher pour moi/avec l'IA" cliqué (URL ou texte), `bg` =
+  // background sur texte libre sans hit TM/OA. Le mode `auto`
+  // (chaînage blocking après échec) n'est plus émis, gardé dans le
+  // type union pour compat des dashboards Umami historiques.
   async function tryGemini(query: string, trigger: "auto" | "optin" | "bg"): Promise<boolean> {
     geminiAbortRef.current?.abort();
     const controller = new AbortController();
@@ -1005,6 +1007,29 @@ function PasteStep({
     }
   }
 
+  /**
+   * Opt-in Gemini sur path texte quand TM/OA a renvoyé des cards mais
+   * qu'aucune ne colle. Symétrique à `runGeminiOptIn` (path URL) : le
+   * clic Continuer reste un shortcut rapide vers `onTitleOnly`, et
+   * l'user qui veut l'IA passe par ce bouton dédié au coût annoncé.
+   */
+  async function runGeminiOptInText() {
+    if (!trimmed) {
+      return;
+    }
+    setErr(null);
+    setPending(true);
+    setPendingMsg("search");
+    try {
+      const found = await tryGemini(trimmed, "optin");
+      if (!found) {
+        setErr("On n'a rien trouvé — entre juste le nom de la sortie.");
+      }
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function submit() {
     if (!trimmed) {
       return;
@@ -1017,27 +1042,13 @@ function PasteStep({
     setGeminiSuggestion(null);
     setGeminiOptInUrl(null);
     onPasteSubmitted("text", vibe != null);
-    // Si une recherche Gemini background tourne déjà sur cette query
-    // (PR2b) OU a déjà tenté sans rien trouver, on n'attend pas une
-    // 2ᵉ fois 15 s : abort + onTitleOnly direct. C'est le sens du
-    // clic Continuer — l'user veut avancer, pas re-fouiller.
-    const bgInFlight = geminiAbortRef.current !== null;
-    const bgAlreadyTried = bgGeminiTriedRef.current.has(trimmed);
-    if (bgInFlight || bgAlreadyTried) {
-      geminiAbortRef.current?.abort();
-      onTitleOnly(trimmed);
-      return;
-    }
-    setPending(true);
-    setPendingMsg("search");
-    try {
-      const found = await tryGemini(trimmed, "auto");
-      if (!found) {
-        onTitleOnly(trimmed);
-      }
-    } finally {
-      setPending(false);
-    }
+    // Path texte : on ne lance JAMAIS Gemini en blocking au submit. Si
+    // l'user veut l'IA, c'est via le bouton opt-in dédié. Le clic
+    // Continuer = "j'avance avec ce que j'ai tapé", point. Tout bg en
+    // vol est aborté pour ne pas faire apparaître une card Gemini en
+    // décalage sur la step suivante.
+    geminiAbortRef.current?.abort();
+    onTitleOnly(trimmed);
   }
 
   /**
@@ -1182,6 +1193,25 @@ function PasteStep({
           <span className="inline-flex items-center gap-2">
             <Sparkles size={16} />
             Chercher pour moi (≈15 s)
+          </span>
+        </Button>
+      )}
+
+      {/* Opt-in IA path texte : symétrique au bouton URL. Visible quand
+          TM/OA a renvoyé des cards mais qu'aucune ne colle — l'user
+          peut tenter Gemini explicitement plutôt que se la prendre en
+          blocking au clic Continuer. */}
+      {!looksLikeUrl && suggestions.length > 0 && !geminiSuggestion && !pending && (
+        <Button
+          type="button"
+          size="lg"
+          variant="outline"
+          onClick={runGeminiOptInText}
+          className="h-14 rounded-full border-bordeaux-300 text-base font-bold text-bordeaux-700 hover:bg-bordeaux-50"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Sparkles size={16} />
+            Chercher avec l'IA (≈15 s)
           </span>
         </Button>
       )}
