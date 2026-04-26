@@ -188,22 +188,6 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         )}
       </nav>
 
-      {/* Just-created state: the creator's #1 job is sharing the link, so
-          we hoist the success banner *above* the hero — it's the first
-          thing they see, no scroll required. The floating nav still
-          renders absolute over the top of `main`, so the banner needs
-          clearance for the safe-area inset + the nav row (h-11). */}
-      {justCreated && isCreator && (
-        <div className="pt-[calc(env(safe-area-inset-top)+3.5rem)]">
-          <CreateSuccessBanner
-            url={`${PUBLIC_BASE}/${canonical}`}
-            title={outing.title}
-            startsAt={outing.fixedDatetime}
-            firstName={creatorFirstName}
-          />
-        </div>
-      )}
-
       <OutingHero
         title={outing.title}
         location={outing.location}
@@ -212,6 +196,25 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         heroImageUrl={outing.heroImageUrl}
         canonicalPath={canonical}
       />
+
+      {/* Just-created state: the creator's #1 job is sharing the link, so
+          we surface the success banner over the top of the hero — the
+          poster stays the visual anchor, the share affordances sit right
+          on top of it. Positioned just below the floating nav row (h-11
+          + safe-area inset). */}
+      {justCreated && isCreator && (
+        <div
+          className="absolute inset-x-6 z-20"
+          style={{ top: "calc(env(safe-area-inset-top) + 4rem)" }}
+        >
+          <CreateSuccessBanner
+            url={`${PUBLIC_BASE}/${canonical}`}
+            title={outing.title}
+            startsAt={outing.fixedDatetime}
+            firstName={creatorFirstName}
+          />
+        </div>
+      )}
 
       {!(justCreated && isCreator) && (
         <div className="mb-4 flex justify-end">

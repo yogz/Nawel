@@ -79,20 +79,23 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 flex-[2] min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-or-600 px-3 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bordeaux-50"
+            className="inline-flex h-11 flex-1 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-or-600 px-3 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bordeaux-50"
           >
             <MessageCircle size={16} strokeWidth={2.2} />
             Partager sur WhatsApp
           </a>
           {canNativeShare && (
+            // Action secondaire — la sheet de partage native est un canal
+            // alternatif (iMessage, Mail, Signal…), pas la voie principale.
+            // En icon-only on libère l'espace pour le CTA WhatsApp qui
+            // sinon déborde sur écran étroit.
             <button
               type="button"
               onClick={handleNativeShare}
               aria-label="Partager via une autre application"
-              className="inline-flex h-11 flex-1 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-encre-300 bg-ivoire-200 px-3 text-sm font-semibold text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-encre-300 bg-ivoire-200 text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
             >
-              <Share2 size={14} />
-              Partager
+              <Share2 size={16} />
             </button>
           )}
         </div>
