@@ -1012,6 +1012,11 @@ function PasteStep({
    * qu'aucune ne colle. Symétrique à `runGeminiOptIn` (path URL) : le
    * clic Continuer reste un shortcut rapide vers `onTitleOnly`, et
    * l'user qui veut l'IA passe par ce bouton dédié au coût annoncé.
+   *
+   * Si Gemini ne trouve rien, on avance silencieusement avec le texte
+   * tapé — l'user a DÉJÀ entré un nom, lui afficher "entre juste le
+   * nom" serait absurde. Le message d'erreur du runGeminiOptIn URL ne
+   * s'applique pas ici parce que l'input n'est pas une URL.
    */
   async function runGeminiOptInText() {
     if (!trimmed) {
@@ -1023,7 +1028,7 @@ function PasteStep({
     try {
       const found = await tryGemini(trimmed, "optin");
       if (!found) {
-        setErr("On n'a rien trouvé — entre juste le nom de la sortie.");
+        onTitleOnly(trimmed);
       }
     } finally {
       setPending(false);
