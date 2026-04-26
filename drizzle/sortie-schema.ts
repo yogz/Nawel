@@ -314,6 +314,15 @@ export const parseStats = sortie.table("parse_stats", {
   // Hostname normalisé (lowercase, sans `www.`). RFC 1035 plafonne à 253.
   host: varchar("host", { length: 253 }).primaryKey(),
   attempts: integer("attempts").notNull().default(0),
+  // Page récupérée OK ET au moins un champ extrait (title/venue/image/
+  // startsAt). C'est ce que le dashboard /sortie/stat appelle "OG
+  // récupéré". Distinct de `attempts - zero_data - fetch_error` qui
+  // serait équivalent mais demande le calcul à chaque lecture.
+  successCount: integer("success_count").notNull().default(0),
+  // Sous-ensemble de `successCount` : `og:image` ou `twitter:image`
+  // extrait. Permet de mesurer le taux d'images trouvées par host
+  // (utile pour repérer les sites qui ne ship pas d'OG image).
+  imageFoundCount: integer("image_found_count").notNull().default(0),
   // Page récupérée OK mais aucun champ extrait (ni title, ni venue,
   // ni image, ni date). Le nombre qui compte pour repérer un site qui
   // mérite un parser dédié.
@@ -325,6 +334,31 @@ export const parseStats = sortie.table("parse_stats", {
   lastFailureAt: timestamp("last_failure_at", { withTimezone: true }),
   lastFailurePath: text("last_failure_path"),
   lastFailureKind: varchar("last_failure_kind", { length: 16 }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// === service_call_stats (telemetry pour services externes globaux) ===
+
+// Compteurs agrégés par service externe — Gemini, Ticketmaster Discovery
+// API, etc. Granularité = un service. Pas de breakdown par host (Gemini
+// n'en a pas) ni par jour (le dashboard de supervision veut le total
+// vie). Pour la rotation/historique on regardera plus tard si on en a
+// besoin ; aujourd'hui on cherche juste à savoir "combien de fois on a
+// appelé Gemini" et "ça répond ou ça plante ?".
+export const serviceCallStats = sortie.table("service_call_stats", {
+  // Identifiant logique du service. "gemini" | "ticketmaster" pour le
+  // moment — colonne libre pour ne pas avoir à muter un enum à chaque
+  // nouveau service.
+  service: varchar("service", { length: 32 }).primaryKey(),
+  callCount: integer("call_count").notNull().default(0),
+  // Le service a renvoyé un résultat exploitable (Gemini : event trouvé
+  // après validation ; Ticketmaster : au moins 1 event mappé). Distinct
+  // de "appel sans erreur" — un 200 vide ne compte pas comme found.
+  foundCount: integer("found_count").notNull().default(0),
+  errorCount: integer("error_count").notNull().default(0),
+  lastCalledAt: timestamp("last_called_at", { withTimezone: true }),
+  lastErrorAt: timestamp("last_error_at", { withTimezone: true }),
+  lastErrorMessage: varchar("last_error_message", { length: 200 }),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

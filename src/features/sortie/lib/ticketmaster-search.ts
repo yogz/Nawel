@@ -1,3 +1,5 @@
+import { trackServiceCall } from "./service-call-stats";
+
 export type TicketmasterResult = {
   id: string;
   title: string;
@@ -159,6 +161,8 @@ async function fetchTicketmaster(
 ): Promise<RawSearchResult> {
   const apiKey = process.env.TICKETMASTER_API_KEY;
   if (!apiKey) {
+    // Pas d'appel parti → on ne tracke rien : la métrique mesure
+    // l'usage réel du service, pas la config locale.
     return { results: [], spellcheckSuggestion: null };
   }
 
@@ -180,6 +184,7 @@ async function fetchTicketmaster(
     });
     if (!response.ok) {
       console.warn("[ticketmaster] non-2xx", response.status);
+      trackServiceCall("ticketmaster", "error", `http_${response.status}`);
       return { results: [], spellcheckSuggestion: null };
     }
     const data = (await response.json()) as {
@@ -202,10 +207,12 @@ async function fetchTicketmaster(
     const spellcheckSuggestion = withSpellcheck
       ? extractSpellcheckSuggestion(data.spellcheck)
       : null;
+    trackServiceCall("ticketmaster", results.length > 0 ? "found" : "no_match");
     return { results, spellcheckSuggestion };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown";
     console.warn("[ticketmaster] fetch failed:", message);
+    trackServiceCall("ticketmaster", "error", message);
     return { results: [], spellcheckSuggestion: null };
   }
 }
