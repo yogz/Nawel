@@ -13,7 +13,14 @@ import { sendGAEvent } from "@/lib/umami";
  */
 
 type WizardEventName =
-  | "wizard_step_entered"
+  | "wizard_step_paste_entered"
+  | "wizard_step_title_entered"
+  | "wizard_step_confirm_entered"
+  | "wizard_step_date_entered"
+  | "wizard_step_venue_entered"
+  | "wizard_step_name_entered"
+  | "wizard_step_commit_entered"
+  | "wizard_step_entered_other"
   | "wizard_step_exited"
   | "wizard_paste_submitted"
   | "wizard_suggestion_picked"
@@ -30,8 +37,25 @@ function track(name: WizardEventName, payload?: Payload) {
   sendGAEvent("event", name, payload);
 }
 
+// Mapping step → nom d'event distinct. Les funnels Umami free ne
+// peuvent pas filtrer sur les properties (testé 2026-04-26 : pas de
+// 3ᵉ dropdown), donc chaque step a son event nommé pour pouvoir
+// servir de step de funnel. `_other` est un fallback safe pour les
+// steps qu'on ajouterait sans mettre à jour ce mapping (TS rattrape
+// déjà mais double sécu).
+const STEP_EVENT_NAMES: Record<string, WizardEventName> = {
+  paste: "wizard_step_paste_entered",
+  title: "wizard_step_title_entered",
+  confirm: "wizard_step_confirm_entered",
+  date: "wizard_step_date_entered",
+  venue: "wizard_step_venue_entered",
+  name: "wizard_step_name_entered",
+  commit: "wizard_step_commit_entered",
+};
+
 export function trackWizardStepEntered(step: string, fromStep: string | null) {
-  track("wizard_step_entered", { step, from_step: fromStep ?? "(initial)" });
+  const eventName = STEP_EVENT_NAMES[step] ?? "wizard_step_entered_other";
+  track(eventName, { step, from_step: fromStep ?? "(initial)" });
 }
 
 export function trackWizardStepExited(

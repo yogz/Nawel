@@ -35,16 +35,27 @@ afterEach(() => {
 });
 
 describe("wizard-telemetry", () => {
-  it("trackWizardStepEntered envoie le step et la step précédente", () => {
+  it("trackWizardStepEntered émet un event distinct par step (pour funnel Umami free)", () => {
     trackWizardStepEntered("date", "paste");
     expect(calls).toEqual([
-      { name: "wizard_step_entered", data: { step: "date", from_step: "paste" } },
+      { name: "wizard_step_date_entered", data: { step: "date", from_step: "paste" } },
     ]);
   });
 
   it("trackWizardStepEntered remplace fromStep null par '(initial)'", () => {
     trackWizardStepEntered("paste", null);
-    expect(calls[0]?.data?.from_step).toBe("(initial)");
+    expect(calls[0]).toEqual({
+      name: "wizard_step_paste_entered",
+      data: { step: "paste", from_step: "(initial)" },
+    });
+  });
+
+  it("trackWizardStepEntered fallback sur _other pour un step inconnu", () => {
+    trackWizardStepEntered("inventee", "date");
+    expect(calls[0]).toEqual({
+      name: "wizard_step_entered_other",
+      data: { step: "inventee", from_step: "date" },
+    });
   });
 
   it("trackWizardStepExited arrondit la durée et passe l'outcome", () => {
