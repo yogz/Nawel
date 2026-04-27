@@ -175,14 +175,16 @@ export function OutingProfileCard({
             sur l'action elle-même, pas dans la meta de la carte. */}
         {countdown && !needsVoteCta && (
           <p
-            className={`mt-1 font-mono text-[10.5px] uppercase tracking-[0.18em] ${toneClasses(
-              countdown.tone
-            )}`}
+            className={`mt-1 inline-flex w-fit items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
+              countdown.tone === "urgent"
+                ? "rounded-full bg-or-50 px-2 py-0.5 text-or-500"
+                : toneClasses(countdown.tone)
+            }`}
           >
             {countdown.tone === "urgent" && (
               <span
                 aria-hidden
-                className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-or-500 align-middle shadow-[0_0_10px_var(--sortie-hot)]"
+                className="sortie-deadline-halo inline-block h-1.5 w-1.5 rounded-full bg-or-500"
               />
             )}
             {countdown.label}
@@ -222,14 +224,16 @@ export function OutingProfileCard({
             // sur la même rangée ; sur écran étroit, le wrap natural
             // le passe en dessous proprement (gap-y-2).
             <p
-              className={`font-mono text-[10.5px] uppercase tracking-[0.18em] ${toneClasses(
-                countdown.tone
-              )}`}
+              className={`inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
+                countdown.tone === "urgent"
+                  ? "rounded-full bg-or-50 px-2 py-0.5 text-or-500"
+                  : toneClasses(countdown.tone)
+              }`}
             >
               {countdown.tone === "urgent" && (
                 <span
                   aria-hidden
-                  className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-or-500 align-middle shadow-[0_0_10px_var(--sortie-hot)]"
+                  className="sortie-deadline-halo inline-block h-1.5 w-1.5 rounded-full bg-or-500"
                 />
               )}
               {countdown.label}
