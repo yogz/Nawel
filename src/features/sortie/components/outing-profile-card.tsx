@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import { formatOutingDate, formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import {
   formatDeadlineCountdown,
@@ -180,7 +180,13 @@ export function OutingProfileCard({
             ou nav-only). Pour le mode vote on le déplace à côté du
             CTA "Vote pour la date" pour que l'invité voie l'urgence
             sur l'action elle-même, pas dans la meta de la carte. */}
-        {countdown && !needsVoteCta && (
+        {countdown && (
+          // Countdown TOUJOURS dans la meta de la card (sous le
+          // titre + lieu), peu importe le mode (fixed ou vote).
+          // Avant : on l'affichait à droite du CTA en mode vote, ce
+          // qui forçait l'œil à scanner à 2 endroits différents
+          // selon le type de sortie. Symétrie cross-cards = lecture
+          // plus rapide en liste.
           <p
             className={`mt-1 inline-flex w-fit items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
               countdown.tone === "urgent"
@@ -204,9 +210,12 @@ export function OutingProfileCard({
   if (needsVoteCta) {
     // Cas mode vote sur lien privé : pas d'inline picker (la matrix
     // de créneaux est trop riche pour une carte), mais on surface un
-    // CTA "Vote pour la date" pill acid pour que l'urgence saute aux
-    // yeux dans la liste. La carte entière reste navigable vers
-    // /<canonical> où la VoteRsvpSheet est dispo.
+    // CTA "Je vote →" qui mène à /<canonical> où la VoteRsvpSheet
+    // est dispo. Le bouton est en outlined neutre (PAS filled acid)
+    // pour ne pas voler la vedette aux cards mode fixed sur la même
+    // page : les 2 sont des actions à poids égal côté business.
+    // L'état "filled" sera réservé plus tard à "j'ai déjà voté"
+    // pour matcher le pattern segmented Material 3.
     return (
       <article
         className={`rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 ${pastWrapperClasses}`}
@@ -217,35 +226,15 @@ export function OutingProfileCard({
         >
           {navigationRow}
         </Link>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-encre-700/5 pt-3">
+        <div className="mt-3 border-t border-encre-700/5 pt-3">
           <Link
             href={href}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-bordeaux-600 px-4 text-[13px] font-bold text-encre-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-bordeaux-700 motion-safe:active:scale-95"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-encre-200 bg-ivoire-100 px-4 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-300 hover:bg-ivoire-200 motion-safe:active:scale-95"
           >
-            Vote pour la date
-            <ArrowRight size={14} strokeWidth={2.6} />
+            <Check size={14} strokeWidth={2.6} className="text-bordeaux-600" />
+            Je vote
+            <ArrowRight size={14} strokeWidth={2.4} />
           </Link>
-          {countdown && (
-            // Countdown collé au CTA — l'invité lit l'action et son
-            // urgence d'un coup. justify-between l'aligne à droite
-            // sur la même rangée ; sur écran étroit, le wrap natural
-            // le passe en dessous proprement (gap-y-2).
-            <p
-              className={`inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
-                countdown.tone === "urgent"
-                  ? "rounded-full bg-or-50 px-2 py-0.5 text-or-500"
-                  : toneClasses(countdown.tone)
-              }`}
-            >
-              {countdown.tone === "urgent" && (
-                <span
-                  aria-hidden
-                  className="sortie-deadline-halo inline-block h-1.5 w-1.5 rounded-full bg-or-500"
-                />
-              )}
-              {countdown.label}
-            </p>
-          )}
         </div>
       </article>
     );
