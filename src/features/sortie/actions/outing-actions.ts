@@ -22,6 +22,7 @@ import {
   generateOgThumbnailFromRemoteUrl,
 } from "@/features/sortie/lib/event-image-upload";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
+import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import {
   archiveOutingSchema,
   cancelOutingSchema,
@@ -96,6 +97,19 @@ export async function createOutingAction(
     heroImageOgUrl = await generateOgThumbnailFromRemoteUrl(heroImageUrl);
   }
 
+  // Création silencieuse d'un compte si le créateur anon a fourni son
+  // email : au prochain magic-link signin, il retrouvera la sortie
+  // sous son compte sans passer par le ReclaimForm. Si le compte
+  // existe déjà avec cet email, on le rattache directement.
+  const silentCreatorUserId =
+    !user && data.creatorEmail
+      ? await ensureSilentUserAccount({
+          email: data.creatorEmail,
+          name: creatorDisplayName,
+        })
+      : null;
+  const effectiveCreatorUserId = user?.id ?? silentCreatorUserId;
+
   // In vote mode we defer the concrete datetime: the outing is created with
   // fixedDatetime = null until the creator picks a winning timeslot. The
   // deadline is still required (it closes voting) so participants know when
@@ -121,10 +135,16 @@ export async function createOutingAction(
       mode: data.mode,
       status: "open",
       showOnProfile: data.showOnProfile,
-      creatorUserId: user?.id ?? null,
-      creatorAnonName: user ? null : creatorDisplayName,
-      creatorAnonEmail: user ? null : (data.creatorEmail ?? null),
-      creatorCookieTokenHash: user ? null : cookieTokenHash,
+      creatorUserId: effectiveCreatorUserId,
+      // Quand un userId (logué ou silent) est rattaché, on n'écrit
+      // pas dans les colonnes anon — l'identité vit dans la table
+      // user, plus dans deux colonnes en parallèle.
+      creatorAnonName: effectiveCreatorUserId ? null : creatorDisplayName,
+      creatorAnonEmail: effectiveCreatorUserId ? null : (data.creatorEmail ?? null),
+      // Le cookie reste utile même avec un user silent : il permet
+      // au créateur de réouvrir la sortie depuis le même device tant
+      // qu'il n'a pas signé le magic link.
+      creatorCookieTokenHash: effectiveCreatorUserId && user ? null : cookieTokenHash,
     })
     .returning({ id: outings.id });
 
@@ -147,9 +167,9 @@ export async function createOutingAction(
   if (data.mode === "fixed") {
     await db.insert(participants).values({
       outingId: insertedOuting.id,
-      userId: user?.id ?? null,
-      anonName: user ? null : creatorDisplayName,
-      anonEmail: user ? null : (data.creatorEmail ?? null),
+      userId: effectiveCreatorUserId,
+      anonName: effectiveCreatorUserId ? null : creatorDisplayName,
+      anonEmail: effectiveCreatorUserId ? null : (data.creatorEmail ?? null),
       cookieTokenHash,
       response: "yes",
     });

@@ -13,6 +13,7 @@ import {
 } from "@/features/sortie/lib/cookie-token";
 import { sendRsvpReceivedEmail } from "@/features/sortie/lib/emails/send-outing-emails";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import { removeRsvpSchema, rsvpSchema, voteRsvpSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
 
@@ -69,14 +70,26 @@ export async function rsvpAction(
     ? (user.name ?? "").slice(0, 100) || sanitizeStrictText(data.displayName, 100)
     : sanitizeStrictText(data.displayName, 100);
 
-  // Lookup par cookieTokenHash OU userId (si logué) : sans le 2e
-  // bras, un user qui RSVP depuis un nouveau navigateur (cookie tout
-  // neuf, mais session loguée existante) crée un doublon de
-  // participant à la place de mettre à jour celui de l'autre device.
-  // Cas réel : Nicolas qui revient sur sa sortie depuis son laptop
-  // après avoir voté depuis son téléphone.
-  const identityClause = user
-    ? or(eq(participants.cookieTokenHash, cookieTokenHash), eq(participants.userId, user.id))!
+  // Création silencieuse d'un compte si l'invité fournit un email :
+  // au prochain magic-link signin, il retrouvera tous ses RSVP. On
+  // récupère un userId à utiliser pour la row participant ; si null
+  // (email invalide / banned), on retombe en mode anon classique.
+  const silentUserId =
+    !user && data.email
+      ? await ensureSilentUserAccount({ email: data.email, name: displayName })
+      : null;
+  const effectiveUserId = user?.id ?? silentUserId;
+
+  // Lookup par cookieTokenHash OU userId (si logué ou silent-account) :
+  // sans le 2e bras, un user qui RSVP depuis un nouveau navigateur
+  // (cookie tout neuf, mais session loguée existante OU email déjà
+  // associé à un user) crée un doublon de participant à la place de
+  // mettre à jour celui de l'autre device.
+  const identityClause = effectiveUserId
+    ? or(
+        eq(participants.cookieTokenHash, cookieTokenHash),
+        eq(participants.userId, effectiveUserId)
+      )!
     : eq(participants.cookieTokenHash, cookieTokenHash);
   const existing = await db.query.participants.findFirst({
     where: and(eq(participants.outingId, outing.id), identityClause),
@@ -89,9 +102,12 @@ export async function rsvpAction(
         response: data.response,
         extraAdults: data.response === "yes" ? data.extraAdults : 0,
         extraChildren: data.response === "yes" ? data.extraChildren : 0,
-        anonName: user ? null : displayName,
-        anonEmail: user ? null : (data.email ?? null),
-        userId: user?.id ?? existing.userId,
+        // Quand un userId est rattaché (logué ou silent), on bascule
+        // sur le compte : on nettoie anonName/anonEmail pour ne pas
+        // dupliquer l'identité dans deux colonnes.
+        anonName: effectiveUserId ? null : displayName,
+        anonEmail: effectiveUserId ? null : (data.email ?? null),
+        userId: effectiveUserId ?? existing.userId,
         // On rapatrie le cookie courant sur le row existant pour que
         // les futurs lookups par cookie sur ce device tombent dessus
         // sans dépendre du fallback userId.
@@ -102,9 +118,9 @@ export async function rsvpAction(
   } else {
     await db.insert(participants).values({
       outingId: outing.id,
-      userId: user?.id ?? null,
-      anonName: user ? null : displayName,
-      anonEmail: user ? null : (data.email ?? null),
+      userId: effectiveUserId,
+      anonName: effectiveUserId ? null : displayName,
+      anonEmail: effectiveUserId ? null : (data.email ?? null),
       cookieTokenHash,
       response: data.response,
       extraAdults: data.response === "yes" ? data.extraAdults : 0,
@@ -268,11 +284,22 @@ export async function castVoteAction(
   const response: "interested" | "no" =
     filtered.length > 0 && filtered.some((v) => v.available) ? "interested" : "no";
 
+  // Création silencieuse — cf. note dans upsertRsvpAction. L'invité
+  // qui vote avec son email récupèrera ses RSVP au prochain magic-link.
+  const silentUserId =
+    !user && data.email
+      ? await ensureSilentUserAccount({ email: data.email, name: displayName })
+      : null;
+  const effectiveUserId = user?.id ?? silentUserId;
+
   // Cf. la note dans `upsertRsvpAction` : lookup par cookie OU userId
   // pour ne pas créer un doublon quand l'user vote depuis un nouveau
   // navigateur.
-  const voteIdentityClause = user
-    ? or(eq(participants.cookieTokenHash, cookieTokenHash), eq(participants.userId, user.id))!
+  const voteIdentityClause = effectiveUserId
+    ? or(
+        eq(participants.cookieTokenHash, cookieTokenHash),
+        eq(participants.userId, effectiveUserId)
+      )!
     : eq(participants.cookieTokenHash, cookieTokenHash);
   const existing = await db.query.participants.findFirst({
     where: and(eq(participants.outingId, outing.id), voteIdentityClause),
@@ -284,9 +311,9 @@ export async function castVoteAction(
       .update(participants)
       .set({
         response,
-        anonName: user ? null : displayName,
-        anonEmail: user ? null : (data.email ?? null),
-        userId: user?.id ?? existing.userId,
+        anonName: effectiveUserId ? null : displayName,
+        anonEmail: effectiveUserId ? null : (data.email ?? null),
+        userId: effectiveUserId ?? existing.userId,
         cookieTokenHash,
         updatedAt: new Date(),
       })
@@ -297,9 +324,9 @@ export async function castVoteAction(
       .insert(participants)
       .values({
         outingId: outing.id,
-        userId: user?.id ?? null,
-        anonName: user ? null : displayName,
-        anonEmail: user ? null : (data.email ?? null),
+        userId: effectiveUserId,
+        anonName: effectiveUserId ? null : displayName,
+        anonEmail: effectiveUserId ? null : (data.email ?? null),
         cookieTokenHash,
         response,
       })
