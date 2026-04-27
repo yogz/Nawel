@@ -40,6 +40,15 @@ export function SortieAuthForm() {
   // home Sortie. Sécurité : on rejette tout callback hors origin.
   const rawCallback = searchParams.get("callbackURL");
   const callbackURL = sanitizeCallback(rawCallback);
+  // Better Auth tourne avec `baseURL = https://www.colist.fr` côté
+  // serveur. Si on lui passe un path relatif comme `/perle-noire`,
+  // il le résout contre son baseURL et redirige sur **www**, pas
+  // sortie. On envoie donc une URL absolue qui inclut l'origin du
+  // browser (= sortie.colist.fr en prod) pour que la redirection
+  // post-auth (Google, magic link verify, email/pwd) reste sur
+  // sortie. Cf. devil's advocate review #3.
+  const absoluteCallback =
+    typeof window !== "undefined" ? `${window.location.origin}${callbackURL}` : callbackURL;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,7 +71,7 @@ export function SortieAuthForm() {
     (async () => {
       try {
         const { error } = await authClient.magicLink.verify({
-          query: { token, callbackURL },
+          query: { token, callbackURL: absoluteCallback },
         });
         if (cancelled) {
           return;
@@ -133,7 +142,7 @@ export function SortieAuthForm() {
     setError(null);
     setPending(true);
     try {
-      const { error } = await signIn.magicLink({ email, callbackURL });
+      const { error } = await signIn.magicLink({ email, callbackURL: absoluteCallback });
       if (error) {
         setError(error.message || "Impossible d'envoyer le lien — réessaie.");
         return;
@@ -156,7 +165,7 @@ export function SortieAuthForm() {
       // et utilisé par Better Auth pour redirect après le callback
       // /api/auth/callback/google sur www.colist.fr (cookie .colist.fr
       // partagé, donc on est logué sur sortie aussi).
-      await signIn.social({ provider: "google", callbackURL });
+      await signIn.social({ provider: "google", callbackURL: absoluteCallback });
     } catch {
       setError("Échec Google — réessaie.");
       setPending(false);
@@ -172,7 +181,7 @@ export function SortieAuthForm() {
     }
     setPending(true);
     try {
-      const { error } = await signIn.email({ email, password, callbackURL });
+      const { error } = await signIn.email({ email, password, callbackURL: absoluteCallback });
       if (error) {
         setError(error.message || "Identifiants invalides.");
         return;
