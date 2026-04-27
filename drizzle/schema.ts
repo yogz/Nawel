@@ -35,6 +35,13 @@ export const user = pgTable("user", {
   // profile page matches `?k=<token>` server-side against this value and
   // never exposes it in rendered HTML.
   rsvpInviteToken: text("rsvp_invite_token"),
+  // Token secret pour le flux iCal personnel — l'URL
+  // `sortie.colist.fr/calendar/<calendarToken>.ics` retourne les
+  // sorties RSVP yes/handle_own + créées par l'utilisateur. Pas
+  // d'auth nécessaire au poll — le token EST le bearer. Null par
+  // défaut, généré à la demande via /moi. Rotatable pour révoquer
+  // un lien leaké.
+  calendarToken: text("calendar_token").unique(),
   // Short free-text bio shown on the public profile (`/@<username>`).
   // Capped at 160 chars by the action schema — plenty for a one-liner,
   // short enough to stay readable on a 360px-wide viewport.

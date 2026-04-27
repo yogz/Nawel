@@ -1,6 +1,8 @@
-import { and, asc, desc, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants } from "@drizzle/sortie-schema";
+import { user } from "@drizzle/schema";
+import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
 export async function getOutingByShortId(shortId: string) {
   const outing = await db.query.outings.findFirst({
@@ -231,4 +233,82 @@ export async function listMyParticipantsForOutings(args: {
     }
   }
   return byOuting;
+}
+
+/**
+ * Sorties à inclure dans le flux iCal personnel d'un user :
+ *   - sorties qu'il a créées (creator_user_id match)
+ *   - OU sorties où il a une row participant avec response IN (yes,
+ *     handle_own)
+ *   - filtre temporel : on garde 30 jours d'historique pour ne pas
+ *     vider les sorties récentes du calendrier (utile en prod pour
+ *     les retours d'agenda type "tu te souviens où on était le X ?")
+ *   - en mode vote sans créneau choisi (fixedDatetime null) → exclu
+ *     (pas de date concrète à poser dans l'agenda)
+ *   - sorties annulées : INCLUSES, mais avec STATUS:CANCELLED côté
+ *     iCal. Le calendrier les barre — l'user voit l'annulation
+ *     dans son agenda sans avoir à ouvrir Sortie.
+ *
+ * Retourne le format `FeedOuting` consommé directement par
+ * `buildIcsFeed`.
+ */
+export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> {
+  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+  const rows = await db
+    .select({
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      fixedDatetime: outings.fixedDatetime,
+      status: outings.status,
+      vibe: outings.vibe,
+      ticketUrl: outings.eventLink,
+      creatorName: user.name,
+      confirmedCount: sql<number>`(
+        SELECT COUNT(*)::int FROM ${participants}
+        WHERE ${participants.outingId} = ${outings.id}
+          AND ${participants.response} = 'yes'
+      )`.as("confirmed_count"),
+    })
+    .from(outings)
+    .leftJoin(user, eq(user.id, outings.creatorUserId))
+    .where(
+      and(
+        isNotNull(outings.fixedDatetime),
+        gte(outings.fixedDatetime, cutoff),
+        or(
+          eq(outings.creatorUserId, userId),
+          inArray(
+            outings.id,
+            db
+              .select({ id: participants.outingId })
+              .from(participants)
+              .where(
+                and(
+                  eq(participants.userId, userId),
+                  inArray(participants.response, ["yes", "handle_own"])
+                )
+              )
+          )
+        )
+      )
+    )
+    .orderBy(asc(outings.fixedDatetime));
+
+  return rows
+    .filter((r): r is typeof r & { fixedDatetime: Date } => r.fixedDatetime !== null)
+    .map((r) => ({
+      shortId: r.shortId,
+      slug: r.slug,
+      title: r.title,
+      location: r.location,
+      fixedDatetime: r.fixedDatetime,
+      status: r.status,
+      vibe: r.vibe,
+      ticketUrl: r.ticketUrl,
+      creatorName: r.creatorName,
+      confirmedCount: r.confirmedCount,
+    }));
 }

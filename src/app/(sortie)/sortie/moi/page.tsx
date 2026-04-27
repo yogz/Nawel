@@ -20,6 +20,7 @@ import { ProfileDetailsForm } from "@/features/sortie/components/profile-details
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
 import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
+import { CalendarFeedManager } from "@/features/sortie/components/calendar-feed-manager";
 
 export const metadata = {
   title: "Mon profil",
@@ -75,6 +76,7 @@ export default async function ProfileSettingsPage() {
       image: true,
       username: true,
       rsvpInviteToken: true,
+      calendarToken: true,
       bio: true,
     },
   });
@@ -194,6 +196,15 @@ export default async function ProfileSettingsPage() {
           </section>
         </>
       )}
+
+      <SectionDivider />
+      <SectionHeading
+        title="Ton agenda"
+        subtitle="Synchronise tes sorties RSVP avec Apple Calendar, Google Calendar ou Outlook."
+      />
+      <section className="mb-14">
+        <CalendarFeedManager initialToken={row?.calendarToken ?? null} origin={origin} />
+      </section>
     </main>
   );
 }
