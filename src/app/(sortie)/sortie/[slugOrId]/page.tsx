@@ -204,7 +204,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {!(justCreated && isCreator) && (
-        <div className="mb-4 flex justify-end">
+        <div className="mb-4">
           <ShareActions
             url={`${PUBLIC_BASE}/${canonical}`}
             title={outing.title}
