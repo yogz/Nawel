@@ -33,20 +33,20 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   // CSS escape from the parent's `max-w-xl px-6` container: position
-  // left:50%, then translate -50% in X, then claim 100vw width. La
-  // hauteur est libre quand on a une vraie photo : on laisse l'image
-  // dicter son ratio (`w-full h-auto`) pour qu'elle s'affiche entière
-  // sans crop latéral, plutôt qu'un container fixe `78dvh` qui
-  // recadrait via `object-cover`. Pour les photos extrêmes en portrait
-  // on borne avec `max-h-[88dvh]` pour ne pas pousser le texte
-  // sous la fold ; à ce moment l'image revient en cover mode et est
-  // recentrée. Le fallback gradient garde sa hauteur dédiée puisqu'il
-  // n'a pas de ratio naturel.
-  const headerSizing = heroImageUrl ? "max-h-[88dvh]" : "h-[78dvh] min-h-[560px]";
+  // left:50%, then translate -50% in X, then claim 100vw width.
+  //
+  // Hauteur du header : `min-h-[560px]` garantit assez de place pour
+  // que le bloc texte (positionné en `absolute bottom-0`) ne déborde
+  // pas au-dessus de l'image quand celle-ci est en paysage court
+  // (~520×290 typique d'un poster Ticketmaster) — sinon le titre est
+  // clippé par `overflow-hidden`. `max-h-[88dvh]` borne les photos
+  // très verticales pour garder le texte au-dessus de la fold.
+  // L'image reste en `w-full h-auto` (ratio natif respecté, aucun crop
+  // latéral). Quand elle est plus courte que `min-h`, le background
+  // ivoire-900 couvre la zone restante et le scrim continue son
+  // dégradé jusqu'au texte sans rupture visible.
   return (
-    <header
-      className={`relative left-1/2 mb-10 w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden ${headerSizing}`}
-    >
+    <header className="relative left-1/2 mb-10 max-h-[88dvh] min-h-[560px] w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden bg-ivoire-50">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelisting each domain for
         // next/image would be a maintenance task; these images are
@@ -58,7 +58,7 @@ export function OutingHero({
           src={heroImageUrl}
           alt=""
           data-vt-poster
-          className="block h-auto max-h-[88dvh] w-full object-cover"
+          className="block h-auto w-full"
           style={{ filter: "saturate(1.15) contrast(1.05)" }}
         />
       ) : (
