@@ -37,7 +37,7 @@ export function ParticipantList({
           className="text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
-          Personne n&rsquo;a encore tappé.
+          Radio silence.
           <br />
           {isCreator ? (
             // Le créateur a accès aux boutons de partage juste au-dessus.
