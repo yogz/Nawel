@@ -60,8 +60,17 @@ const getTrustedOrigins = (): string[] => {
       "http://sortie.localhost:3001",
     ];
   }
-  // Production: only trust the configured base URL
-  return process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL.replace(/\/$/, "")] : [];
+  // Production : on inclut explicitement le sub-domain Sortie en plus
+  // du `BETTER_AUTH_URL` (= www). Sans ça, tout `signIn` /
+  // `signUp` / `magicLink.signIn` lancé depuis `sortie.colist.fr`
+  // retourne 403 — Better Auth refuse les requêtes dont l'`Origin`
+  // n'est pas trusted. La hardcode garantit que le déploiement ne
+  // casse pas si la env var n'est pas configurée ; pour overrider,
+  // set `BETTER_AUTH_TRUSTED_ORIGINS=https://...,https://...` côté
+  // Vercel.
+  const baseUrl = process.env.BETTER_AUTH_URL?.replace(/\/$/, "");
+  const sortieOrigin = "https://sortie.colist.fr";
+  return baseUrl ? [baseUrl, sortieOrigin] : [sortieOrigin];
 };
 
 // Cookie domain for cross-subdomain session sharing between www.colist.fr and sortie.colist.fr.
