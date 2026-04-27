@@ -144,23 +144,6 @@ export function InlineRsvpSection({
     }
   }
 
-  async function handleRetire() {
-    if (knownName.trim().length === 0) {
-      return;
-    }
-    // "Je retire" implémenté comme un commit "no" pour l'instant.
-    // (Une vraie suppression de row participant est dispo via
-    // RemoveRsvpButton sur la page sortie complète, mais ici on
-    // simplifie : "retire" = neutralise la réponse en posant "no".)
-    setPending(true);
-    try {
-      await commitResponse("no", knownName);
-      toast.success("Réponse retirée.");
-    } finally {
-      setPending(false);
-    }
-  }
-
   const sheets = (
     <>
       <NoNameSheet
@@ -208,21 +191,11 @@ export function InlineRsvpSection({
         />
       </div>
 
-      {existing !== null && (
-        // Le link "Déjà ton billet ?" qui pointait vers la page sortie
-        // pour basculer en `handle_own` a été retiré : la sheet de
-        // détail (YesDetailSheet) qui s'ouvre quand on re-tape "Je
-        // viens" sur état déjà-yes propose déjà l'option "billet
-        // perso", donc le link était redondant.
-        <button
-          type="button"
-          onClick={handleRetire}
-          disabled={pending}
-          className="self-start text-[12px] text-encre-400 underline underline-offset-4 transition-colors hover:text-encre-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Je retire
-        </button>
-      )}
+      {/* Plus de lien "Je retire" : il faisait juste un commit "no"
+          (= la même action que tap `Je passe`) avec un toast
+          différent. Doublon retiré pour alléger la card — l'undo
+          snackbar 5s sur les bascules yes ↔ no rattrape déjà les
+          erreurs de tap, et `Je passe` est accessible en 1 tap. */}
 
       {sheets}
     </div>
