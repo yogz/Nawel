@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
@@ -13,10 +12,6 @@ type Props = {
   outingTitle: string;
   outingUrl: string;
   outingDate: Date | null;
-  /** Slug-shortId path (sans leading slash) — utilisé pour le link
-   *  "Déjà ton billet ? →" qui mène à la page sortie où le flow
-   *  handle_own complet vit. */
-  outingPath: string;
   existing: {
     response: RsvpResponse;
     name: string;
@@ -54,7 +49,6 @@ export function InlineRsvpSection({
   outingTitle,
   outingUrl,
   outingDate,
-  outingPath,
   existing,
   loggedInName,
 }: Props) {
@@ -215,24 +209,19 @@ export function InlineRsvpSection({
       </div>
 
       {existing !== null && (
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-1">
-          {isYes && (
-            <Link
-              href={`/${outingPath}`}
-              className="text-[12px] text-or-500 underline-offset-4 transition-colors hover:underline"
-            >
-              Déjà ton billet ? →
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={handleRetire}
-            disabled={pending}
-            className="text-[12px] text-encre-400 underline underline-offset-4 transition-colors hover:text-encre-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Je retire
-          </button>
-        </div>
+        // Le link "Déjà ton billet ?" qui pointait vers la page sortie
+        // pour basculer en `handle_own` a été retiré : la sheet de
+        // détail (YesDetailSheet) qui s'ouvre quand on re-tape "Je
+        // viens" sur état déjà-yes propose déjà l'option "billet
+        // perso", donc le link était redondant.
+        <button
+          type="button"
+          onClick={handleRetire}
+          disabled={pending}
+          className="self-start text-[12px] text-encre-400 underline underline-offset-4 transition-colors hover:text-encre-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Je retire
+        </button>
       )}
 
       {sheets}

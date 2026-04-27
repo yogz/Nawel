@@ -272,7 +272,6 @@ export function OutingProfileCard({
             shortId={outing.shortId}
             outingTitle={outing.title}
             outingUrl={outingUrl}
-            outingPath={canonical}
             outingDate={outing.startsAt}
             existing={myRsvp}
             loggedInName={loggedInName}
