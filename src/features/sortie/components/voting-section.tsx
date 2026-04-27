@@ -29,6 +29,12 @@ export function VotingSection({
   chosenTimeslotId,
 }: Props) {
   const best = timeslots.reduce((acc, t) => Math.max(acc, t.yesCount), 0);
+  // On ne signale visuellement le "meilleur" créneau que s'il y a UN
+  // gagnant clair — quand plusieurs créneaux sont à égalité (ou tous
+  // à zéro), border le rose hot sur tous les rangs revient à dire
+  // "n'importe lequel" et noie la signal value de la couleur.
+  const bestCandidates = best > 0 ? timeslots.filter((t) => t.yesCount === best).length : 0;
+  const hasUniqueBest = bestCandidates === 1;
   // Total votes is what gates the pick affordance — yesCount + noCount across
   // every timeslot. Distinct from `totalVoters` which counts unique participants
   // (a participant who voted on 3 slots counts once there, but contributes 3
@@ -58,7 +64,7 @@ export function VotingSection({
             key={ts.id}
             shortId={shortId}
             ts={ts}
-            isBest={best > 0 && ts.yesCount === best}
+            isBest={hasUniqueBest && ts.yesCount === best}
             isChosen={ts.id === chosenTimeslotId}
             isCreator={isCreator}
             canPick={canPick}
@@ -151,7 +157,11 @@ function TimeslotRowView({
             type="button"
             onClick={handleClick}
             disabled={pending}
-            className="self-end text-xs text-bordeaux-700 underline-offset-4 hover:underline disabled:opacity-50"
+            // Action critique (fige le sondage) — on la rend
+            // intentionnellement discrète pour qu'elle ne soit pas
+            // confondue avec un CTA quotidien. Le confirm modal du
+            // handler fait déjà le filet de sécurité côté UX.
+            className="self-end font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400 underline-offset-4 transition-colors duration-300 hover:text-bordeaux-600 hover:underline disabled:opacity-50"
           >
             {pending ? "Choix en cours…" : "Choisir ce créneau"}
           </button>
