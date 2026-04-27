@@ -135,6 +135,13 @@ export function OutingProfileCard({
           src={outing.heroImageUrl}
           alt=""
           className={`size-16 shrink-0 rounded-md bg-ivoire-100 object-cover object-top ${pastImageClasses}`}
+          // Filter saturate + contrast aligné sur le hero détail
+          // (`OutingHero`). Donne une cohérence visuelle malgré
+          // les sources hétérogènes (Ticketmaster, Fnac, AllOcc,
+          // uploads users) qui ont chacune leur propre balance
+          // colorimétrique. Pas appliqué aux past (le grayscale
+          // du `pastImageClasses` prend le dessus).
+          style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
         />
       ) : (
         <div
