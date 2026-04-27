@@ -104,6 +104,9 @@ export const createOutingSchema = z
     // on the ticket site. Same protocol refinement as `ticketUrl` so a
     // malicious source can't slip a `javascript:` URL through.
     heroImageUrl: optionalSafeUrl,
+    // 1200×630 pre-resized JPEG companion to `heroImageUrl`, generated
+    // server-side at upload/parse time. Same protocol refinement.
+    heroImageOgUrl: optionalSafeUrl,
     // Cultural category — optional at the schema layer because the
     // picker is skippable. Empty form value ("") becomes undefined so
     // the insert falls back to null.
@@ -204,6 +207,7 @@ export const updateOutingSchema = z
     rsvpDeadline: z.coerce.date(),
     ticketUrl: optionalSafeUrl,
     heroImageUrl: optionalSafeUrl,
+    heroImageOgUrl: optionalSafeUrl,
   })
   .refine((data) => data.rsvpDeadline < data.startsAt, {
     message: "La deadline doit être avant la date de la sortie.",

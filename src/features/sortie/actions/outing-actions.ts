@@ -17,6 +17,10 @@ import {
   sendTimeslotPickedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import {
+  deletePreviousEventImage,
+  generateOgThumbnailFromRemoteUrl,
+} from "@/features/sortie/lib/event-image-upload";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import {
   archiveOutingSchema,
@@ -80,6 +84,17 @@ export async function createOutingAction(
     ? (user.name ?? "").slice(0, 100)
     : sanitizeStrictText(data.creatorDisplayName, 100);
 
+  // When the hero comes from a parsed ticket page (a third-party CDN URL
+  // rather than our blob), the upload pipeline never ran and we have no
+  // OG thumbnail yet. Generate one inline so the eventual WhatsApp
+  // preview stays under the ~300 KB cliff. Best-effort — `null` falls
+  // back on the raw remote URL at OG render time.
+  const heroImageUrl = data.heroImageUrl ?? null;
+  let heroImageOgUrl = data.heroImageOgUrl ?? null;
+  if (heroImageUrl && !heroImageOgUrl) {
+    heroImageOgUrl = await generateOgThumbnailFromRemoteUrl(heroImageUrl);
+  }
+
   // In vote mode we defer the concrete datetime: the outing is created with
   // fixedDatetime = null until the creator picks a winning timeslot. The
   // deadline is still required (it closes voting) so participants know when
@@ -92,7 +107,8 @@ export async function createOutingAction(
       title,
       location: venue,
       eventLink: data.ticketUrl ?? null,
-      heroImageUrl: data.heroImageUrl ?? null,
+      heroImageUrl,
+      heroImageOgUrl,
       vibe: data.vibe ?? null,
       fixedDatetime: data.mode === "fixed" ? (data.startsAt ?? null) : null,
       deadlineAt: resolveDeadline({
@@ -188,6 +204,24 @@ export async function updateOutingAction(
   const slug = slugifyAscii(title, 40);
   const ticketUrl = data.ticketUrl ?? null;
   const heroImageUrl = data.heroImageUrl ?? null;
+  // If the user replaced the hero image, the OG companion changed
+  // alongside it; if they wiped the hero, the companion goes too.
+  // Otherwise we keep what was already in DB (the form may not always
+  // re-submit `heroImageOgUrl` on a no-op edit).
+  let heroImageOgUrl: string | null;
+  if (heroImageUrl === null) {
+    heroImageOgUrl = null;
+  } else if (heroImageUrl !== outing.heroImageUrl) {
+    // New image. The wizard's upload path submits the companion next to
+    // the original; a hand-pasted URL or re-parsed ticket page does
+    // not — generate one inline as a fallback.
+    heroImageOgUrl = data.heroImageOgUrl ?? null;
+    if (!heroImageOgUrl) {
+      heroImageOgUrl = await generateOgThumbnailFromRemoteUrl(heroImageUrl);
+    }
+  } else {
+    heroImageOgUrl = outing.heroImageOgUrl;
+  }
 
   await db
     .update(outings)
@@ -196,12 +230,23 @@ export async function updateOutingAction(
       location: venue,
       eventLink: ticketUrl,
       heroImageUrl,
+      heroImageOgUrl,
       fixedDatetime: data.startsAt,
       deadlineAt: data.rsvpDeadline,
       slug,
       updatedAt: new Date(),
     })
     .where(eq(outings.id, outing.id));
+
+  // Best-effort cleanup of the blobs we just orphaned. Fire-and-forget
+  // — don't block the redirect on a Vercel Blob round-trip, and don't
+  // throw on failure (an orphaned blob is cheap, a failed update would
+  // be a user-facing regression).
+  if (outing.heroImageUrl !== heroImageUrl || outing.heroImageOgUrl !== heroImageOgUrl) {
+    const staleUrl = outing.heroImageUrl !== heroImageUrl ? outing.heroImageUrl : null;
+    const staleOgUrl = outing.heroImageOgUrl !== heroImageOgUrl ? outing.heroImageOgUrl : null;
+    void deletePreviousEventImage(staleUrl, staleOgUrl);
+  }
 
   const diff = buildOutingDiff(
     {

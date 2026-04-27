@@ -11,6 +11,7 @@ import type { FormActionState } from "./outing-actions";
  */
 export type EventImageActionState = FormActionState & {
   imageUrl?: string;
+  imageOgUrl?: string | null;
 };
 
 /**
@@ -49,5 +50,5 @@ export async function uploadEventImageAction(
     return { message: result.message };
   }
 
-  return { imageUrl: result.url };
+  return { imageUrl: result.url, imageOgUrl: result.ogUrl };
 }
