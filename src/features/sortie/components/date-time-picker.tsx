@@ -26,9 +26,17 @@ const DISPLAY = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Europe/Paris",
 });
 
-function toLocalIsoString(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+// Form submission emits a UTC ISO with `Z`, not the "local-naive"
+// `YYYY-MM-DDTHH:mm` we used to ship. The previous format was ambiguous
+// on the server: `z.coerce.date()` does `new Date(...)` which, on a
+// string without timezone, interprets it as the *server* local time
+// (Vercel Functions = UTC), so a "21:30 Paris" submission landed in DB
+// as 21:30 UTC, then drifted +2 h on every subsequent edit because the
+// modifier form re-formatted the bumped value back to Paris and re-sent
+// it. Sending an unambiguous UTC instant breaks that loop — see also
+// `create-wizard/index.tsx` for the same fix on the create path.
+function toUtcIsoString(date: Date): string {
+  return date.toISOString();
 }
 
 function parseLocalIsoString(value: string | undefined): Date | null {
@@ -71,7 +79,7 @@ export function DateTimePicker({
     onChangeRef.current = onChange;
   }, [onChange]);
   useEffect(() => {
-    onChangeRef.current?.(value ? toLocalIsoString(value) : "");
+    onChangeRef.current?.(value ? toUtcIsoString(value) : "");
   }, [value]);
 
   const selectedTime = value
@@ -117,7 +125,7 @@ export function DateTimePicker({
   const label = value
     ? `${DISPLAY.format(value)} · ${selectedTime?.replace(":", "h")}`
     : placeholder;
-  const hiddenValue = value ? toLocalIsoString(value) : "";
+  const hiddenValue = value ? toUtcIsoString(value) : "";
 
   return (
     <>

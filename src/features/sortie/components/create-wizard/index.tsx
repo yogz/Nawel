@@ -202,9 +202,11 @@ function combineDateAndTime(date: Date, time: string): Date {
   return next;
 }
 
-function toLocalIsoString(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+// Cf. la note dans `date-time-picker.tsx` : on émet un ISO UTC avec
+// `Z`, pas un `YYYY-MM-DDTHH:mm` ambigu, sinon le serveur (Vercel = UTC)
+// re-parse comme heure UTC une saisie qui était en heure Paris.
+function toUtcIsoString(date: Date): string {
+  return date.toISOString();
 }
 
 // Mirror of the server's `safeHttpUrl` refinement, kept in sync by hand.
@@ -403,12 +405,12 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
       const only = allSlots[0]!;
       const startsAt = combineDateAndTime(only.date, only.time);
       fd.set("mode", "fixed");
-      fd.set("startsAt", toLocalIsoString(startsAt));
+      fd.set("startsAt", toUtcIsoString(startsAt));
     } else {
       // Server schema expects a JSON-encoded array of
       // { startsAt, position }. Position preserves the add order.
       const slotsJson = allSlots.map((s, idx) => ({
-        startsAt: toLocalIsoString(combineDateAndTime(s.date, s.time)),
+        startsAt: toUtcIsoString(combineDateAndTime(s.date, s.time)),
         position: idx,
       }));
       fd.set("mode", "vote");
@@ -416,7 +418,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     }
 
     if (draft.rsvpDeadline) {
-      fd.set("rsvpDeadline", toLocalIsoString(draft.rsvpDeadline));
+      fd.set("rsvpDeadline", toUtcIsoString(draft.rsvpDeadline));
     }
     if (draft.venue) {
       fd.set("venue", draft.venue);
