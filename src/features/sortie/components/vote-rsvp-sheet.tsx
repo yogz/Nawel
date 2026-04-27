@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,12 @@ type Props = {
   hasVoted: boolean;
 };
 
+// Tap-cycle : undefined (pas voté) → true (oui) → false (non) → undefined.
+// On distingue maintenant "non explicite" et "pas tranché", ce qui permet
+// au pick suivant de différencier les participants à passer en `no` de
+// ceux qui gardent leur response actuelle (cf. pickTimeslotAction).
+type SlotVote = true | false;
+
 export function VoteRsvpSheet({
   shortId,
   timeslots,
@@ -35,15 +41,12 @@ export function VoteRsvpSheet({
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  // Single toggle per slot: true = available, undefined = not selected.
-  // We no longer track an explicit "not available" state — unselected rows
-  // are implicit no, and submitting with zero selections registers the
-  // participant as unavailable. One tap per slot instead of two.
-  const [selected, setSelected] = useState<Record<string, boolean>>(() => {
-    const init: Record<string, boolean> = {};
+  const [selected, setSelected] = useState<Record<string, SlotVote>>(() => {
+    const init: Record<string, SlotVote> = {};
     for (const t of timeslots) {
-      if (existingVotes[t.id] === true) {
-        init[t.id] = true;
+      const prior = existingVotes[t.id];
+      if (prior === true || prior === false) {
+        init[t.id] = prior;
       }
     }
     return init;
@@ -73,21 +76,27 @@ export function VoteRsvpSheet({
     : [];
   const generalError = state.message ?? hiddenFieldErrors[0] ?? null;
 
+  // Tous les votes "tranchés" (oui ou non) sont envoyés ; les abstentions
+  // (slot absent de `selected`) ne posent pas de row, ce qui laisse la
+  // response actuelle du participant intacte au prochain pick.
   const serializedVotes = JSON.stringify(
-    Object.entries(selected)
-      .filter(([, v]) => v)
-      .map(([timeslotId]) => ({ timeslotId, available: true }))
+    Object.entries(selected).map(([timeslotId, available]) => ({ timeslotId, available }))
   );
 
-  const selectedCount = Object.values(selected).filter(Boolean).length;
+  const yesCount = Object.values(selected).filter((v) => v === true).length;
+  const noCount = Object.values(selected).filter((v) => v === false).length;
+  const totalCast = yesCount + noCount;
 
-  function toggle(timeslotId: string) {
+  function cycle(timeslotId: string) {
     setSelected((prev) => {
       const next = { ...prev };
-      if (next[timeslotId]) {
-        delete next[timeslotId];
-      } else {
+      const cur = next[timeslotId];
+      if (cur === undefined) {
         next[timeslotId] = true;
+      } else if (cur === true) {
+        next[timeslotId] = false;
+      } else {
+        delete next[timeslotId];
       }
       return next;
     });
@@ -106,7 +115,8 @@ export function VoteRsvpSheet({
             Quand tu peux&nbsp;?
           </SheetTitle>
           <p className="text-sm text-encre-400">
-            Coche les créneaux qui te vont. Rien de coché = tu peux pas.
+            Tape pour dire que tu peux, re-tape pour dire que tu peux pas, encore une fois pour
+            effacer.
           </p>
         </SheetHeader>
 
@@ -116,17 +126,28 @@ export function VoteRsvpSheet({
 
           <ul className="flex flex-col gap-2">
             {timeslots.map((ts) => {
-              const active = !!selected[ts.id];
+              const v = selected[ts.id];
+              const status: "yes" | "no" | "idle" =
+                v === true ? "yes" : v === false ? "no" : "idle";
               return (
                 <li key={ts.id}>
                   <button
                     type="button"
-                    onClick={() => toggle(ts.id)}
-                    aria-pressed={active}
+                    onClick={() => cycle(ts.id)}
+                    aria-label={
+                      status === "yes"
+                        ? `${formatOutingDateConversational(ts.startsAt)} : tu peux`
+                        : status === "no"
+                          ? `${formatOutingDateConversational(ts.startsAt)} : tu peux pas`
+                          : `${formatOutingDateConversational(ts.startsAt)} : non voté`
+                    }
+                    aria-pressed={status === "yes"}
                     className={`flex w-full items-center justify-between gap-3 rounded-xl border p-4 text-left transition-all ${
-                      active
+                      status === "yes"
                         ? "border-bordeaux-600 bg-bordeaux-50 text-bordeaux-700"
-                        : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300"
+                        : status === "no"
+                          ? "border-or-500 bg-or-50 text-or-700"
+                          : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300"
                     }`}
                   >
                     <span className="text-sm font-medium">
@@ -134,12 +155,15 @@ export function VoteRsvpSheet({
                     </span>
                     <span
                       className={`grid size-6 place-items-center rounded-full border-2 transition-all ${
-                        active
+                        status === "yes"
                           ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                          : "border-encre-200"
+                          : status === "no"
+                            ? "border-or-500 bg-or-500 text-ivoire-50"
+                            : "border-encre-200"
                       }`}
                     >
-                      {active && <Check size={14} strokeWidth={3} />}
+                      {status === "yes" && <Check size={14} strokeWidth={3} />}
+                      {status === "no" && <X size={14} strokeWidth={3} />}
                     </span>
                   </button>
                 </li>
@@ -194,9 +218,11 @@ export function VoteRsvpSheet({
             <Button type="submit" size="lg" disabled={pending}>
               {pending
                 ? "Envoi…"
-                : selectedCount === 0
-                  ? "Aucun ne me va"
-                  : `Envoyer (${selectedCount})`}
+                : totalCast === 0
+                  ? "Envoyer (rien tranché)"
+                  : yesCount > 0
+                    ? `Envoyer (${yesCount} oui${noCount > 0 ? `, ${noCount} non` : ""})`
+                    : `Envoyer (${noCount} non)`}
             </Button>
           </div>
         </form>
