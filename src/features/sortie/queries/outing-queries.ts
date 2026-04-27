@@ -9,7 +9,7 @@ export async function getOutingByShortId(shortId: string) {
       // Creator's display name for share-preview copy ("Léa t'invite…").
       // Anon creators use `creatorAnonName` instead — the og-meta helper
       // picks whichever is set.
-      creatorUser: { columns: { name: true } },
+      creatorUser: { columns: { name: true, username: true } },
       participants: {
         orderBy: [asc(participants.respondedAt)],
         // Logged-in participants have `anonName = null` — their display name

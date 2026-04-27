@@ -311,11 +311,26 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         </nav>
       )}
 
-      <p className="mt-8 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
-        {outing.creatorAnonName || outing.creatorUserId
-          ? `↳ organisé par ${outing.creatorAnonName ?? "un membre colist"}`
-          : ""}
-      </p>
+      {(outing.creatorAnonName || outing.creatorUserId) && (
+        <p className="mt-8 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+          ↳ organisé par{" "}
+          {outing.creatorUser?.username ? (
+            // Le créateur a un handle public — on en fait un lien vers
+            // son profil pour activer la dimension sociale au lieu de
+            // dire "un membre colist" anonyme.
+            <Link
+              href={`/@${outing.creatorUser.username}`}
+              className="text-encre-500 underline-offset-4 transition-colors duration-300 hover:text-bordeaux-600 hover:underline"
+            >
+              @{outing.creatorUser.username}
+            </Link>
+          ) : (
+            <span className="text-encre-500">
+              {outing.creatorAnonName ?? outing.creatorUser?.name ?? "un membre colist"}
+            </span>
+          )}
+        </p>
+      )}
 
       {!isCreator && outing.creatorAnonEmail && (
         <div className="mt-8 flex justify-center">
