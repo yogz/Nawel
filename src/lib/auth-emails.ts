@@ -86,15 +86,32 @@ function renderSortieTemplate(c: Copy & { ctaUrl: string }): string {
   // CSS variables (Outlook). Les couleurs hex viennent du tailwind
   // config (`bordeaux-600 = #C7FF3C`, `or-500 = #FF3D81`,
   // `ivoire-50 = #0F0F0F` pour le bg, `encre-700 = #F5F2EB`).
+  //
+  // Dark mode : Gmail, Apple Mail, Outlook ré-inversent les couleurs
+  // si on ne déclare pas explicitement le color-scheme. La combo
+  // `<meta name="color-scheme">` + `supported-color-schemes` + le
+  // CSS `@media (prefers-color-scheme: dark)` est le pattern
+  // standard 2024 pour forcer un rendu dark fidèle à la charte. La
+  // class `[data-ogsc]` cible spécifiquement Outlook.com qui ne
+  // respecte ni les hex inline ni les media queries.
   return `<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" style="color-scheme: dark; background:#0A0A0A;">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="supported-color-schemes" content="dark" />
     <title>${escapeHtml(c.subject)}</title>
+    <style>
+      :root { color-scheme: dark; supported-color-schemes: dark; }
+      body, table, td { background-color: #0A0A0A !important; }
+      [data-ogsc] body, [data-ogsc] table, [data-ogsc] td { background-color: #0A0A0A !important; }
+      [data-ogsc] .sortie-title { color: #F5F2EB !important; }
+      [data-ogsc] .sortie-body { color: #A0A0A0 !important; }
+    </style>
   </head>
-  <body style="margin:0;padding:0;background:#0A0A0A;color:#F5F2EB;-webkit-text-size-adjust:100%;">
+  <body style="margin:0;padding:0;background:#0A0A0A;color:#F5F2EB;color-scheme:dark;-webkit-text-size-adjust:100%;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0A0A0A;padding:40px 16px;">
       <tr>
         <td align="center">
@@ -106,12 +123,12 @@ function renderSortieTemplate(c: Copy & { ctaUrl: string }): string {
               </td>
             </tr>
             <tr>
-              <td style="padding:0 0 24px 0;font-family:'Unbounded','Helvetica Neue',Arial,sans-serif;font-size:48px;line-height:0.95;font-weight:900;letter-spacing:-0.04em;color:#F5F2EB;">
+              <td class="sortie-title" style="padding:0 0 24px 0;font-family:'Unbounded','Helvetica Neue',Arial,sans-serif;font-size:48px;line-height:0.95;font-weight:900;letter-spacing:-0.04em;color:#F5F2EB;">
                 ${escapeHtml(c.title)}
               </td>
             </tr>
             <tr>
-              <td style="padding:0 0 32px 0;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.55;color:#A0A0A0;">
+              <td class="sortie-body" style="padding:0 0 32px 0;font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.55;color:#A0A0A0;">
                 ${escapeHtml(c.body)}
               </td>
             </tr>
