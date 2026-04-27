@@ -19,6 +19,7 @@ import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
 import { ReclaimForm } from "@/features/sortie/components/reclaim-form";
 import { RsvpPrompt } from "@/features/sortie/components/rsvp-prompt";
+import { ScrollToActionFab } from "@/features/sortie/components/scroll-to-action-fab";
 import { ShareActions } from "@/features/sortie/components/share-actions";
 import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
 import { VotingSection } from "@/features/sortie/components/voting-section";
@@ -149,6 +150,18 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   const shouldStickRsvp =
     !deadlinePassed && !me?.response && !(outing.mode === "vote" && !outing.chosenTimeslotId);
 
+  // FAB "Je vote ↓" affiché en mode sondage actif tant que le
+  // visiteur n'a pas voté. Il flotte tant que la zone d'action n'est
+  // pas dans le viewport et disparaît dès qu'il y arrive — pour
+  // qu'un invité qui scrolle dans les détails de la sortie ne perde
+  // pas l'action principale de vue. En mode fixed (et vote-with-
+  // chosen) le `RsvpPrompt` sticky bottom prend déjà ce rôle.
+  const hasVotedAlready = Boolean(
+    me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
+  );
+  const showVoteFab =
+    outing.mode === "vote" && !outing.chosenTimeslotId && !deadlinePassed && !hasVotedAlready;
+
   return (
     <main className={`relative mx-auto max-w-xl px-6 ${shouldStickRsvp ? "pb-44" : "pb-24"}`}>
       {/* Top nav floats over the full-bleed hero. The pill backgrounds
@@ -246,7 +259,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {!deadlinePassed && outing.mode === "vote" && !outing.chosenTimeslotId && (
-        <div className="mt-8 flex justify-center">
+        <div id="vote-action" className="mt-8 flex justify-center">
           <VoteRsvpSheet
             shortId={outing.shortId}
             timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
@@ -344,6 +357,8 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           <ReclaimForm shortId={outing.shortId} />
         </div>
       )}
+
+      {showVoteFab && <ScrollToActionFab targetId="vote-action" label="Je vote" />}
 
       {shouldStickRsvp && (
         <div

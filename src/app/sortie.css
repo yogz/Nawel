@@ -145,6 +145,29 @@
   animation: deadline-halo 1.6s var(--ease-velvet) infinite;
 }
 
+/* Pulse "tu y es" — déclenché par le FAB ScrollToActionFab quand
+ * il scroll vers la zone d'action. Le composant pose `data-pulse`
+ * sur la cible le temps que l'animation joue, puis le retire. Pas
+ * d'élément DOM additionnel : un seul ring acid en `box-shadow` qui
+ * s'estompe en 1.4s. Cf. respect de `prefers-reduced-motion` plus
+ * bas — l'animation tombe à un fade quasi instantané. */
+@keyframes sortie-action-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(199, 255, 60, 0);
+  }
+  20% {
+    box-shadow: 0 0 0 6px rgba(199, 255, 60, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(199, 255, 60, 0);
+  }
+}
+
+[data-pulse="true"] {
+  animation: sortie-action-pulse 1.4s var(--ease-velvet);
+  border-radius: 1.25rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .theme-sortie * {
     transition-duration: var(--dur-fast) !important;
