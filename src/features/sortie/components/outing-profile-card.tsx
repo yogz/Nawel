@@ -189,7 +189,12 @@ export function OutingProfileCard({
           {outing.title}
         </h3>
         {meta && <p className={`truncate text-[13px] ${pastMetaClasses}`}>{meta}</p>}
-        {countdown && (
+        {/* Countdown deadline dans la nav row — utile quand il n'y
+            a pas de barre d'actions séparée (mode fixed inline RSVP,
+            ou nav-only). Pour le mode vote on le déplace à côté du
+            CTA "Vote pour la date" pour que l'invité voie l'urgence
+            sur l'action elle-même, pas dans la meta de la carte. */}
+        {countdown && !needsVoteCta && (
           <p
             className={`mt-1 font-mono text-[10.5px] uppercase tracking-[0.18em] ${toneClasses(
               countdown.tone
@@ -224,7 +229,7 @@ export function OutingProfileCard({
         >
           {navigationRow}
         </Link>
-        <div className="mt-3 border-t border-encre-700/5 pt-3">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-encre-700/5 pt-3">
           <Link
             href={href}
             className="inline-flex h-10 items-center gap-1.5 rounded-full bg-bordeaux-600 px-4 text-[13px] font-bold text-encre-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-bordeaux-700 motion-safe:active:scale-95"
@@ -232,6 +237,25 @@ export function OutingProfileCard({
             Vote pour la date
             <ArrowRight size={14} strokeWidth={2.6} />
           </Link>
+          {countdown && (
+            // Countdown collé au CTA — l'invité lit l'action et son
+            // urgence d'un coup. justify-between l'aligne à droite
+            // sur la même rangée ; sur écran étroit, le wrap natural
+            // le passe en dessous proprement (gap-y-2).
+            <p
+              className={`font-mono text-[10.5px] uppercase tracking-[0.18em] ${toneClasses(
+                countdown.tone
+              )}`}
+            >
+              {countdown.tone === "urgent" && (
+                <span
+                  aria-hidden
+                  className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-or-500 align-middle shadow-[0_0_10px_var(--sortie-hot)]"
+                />
+              )}
+              {countdown.label}
+            </p>
+          )}
         </div>
       </article>
     );
