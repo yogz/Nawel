@@ -6,20 +6,20 @@ type Props = {
   variant?: "primary" | "inline";
 };
 
-// Anchor (not <Link>) because we're crossing sub-domains: sortie → www.
-// We tack the current sortie URL onto the login redirect so the magic-link
-// email brings the user straight back here. Auth cookies are already scoped
-// to `.colist.fr`, so once signed in on www they're signed in on sortie.
+// Pointe désormais vers `/sortie/login` (page interne avec charte Sortie)
+// plutôt que vers le login Colist en cross-domain. On préserve le
+// `callbackURL` côté query pour que Better Auth renvoie l'utilisateur
+// pile où il était. Le path interne traverse le proxy host : sur
+// `sortie.colist.fr`, `/login` est rewritten en `/sortie/login`.
 //
-// Compute the href at click time (not mount time) so the bare `useState +
-// useEffect` pattern that looks synchronous-in-effect doesn't trigger the
-// cascading-render lint rule. The anchor navigates on click anyway, so the
-// handler pre-empts the default and substitutes the right URL.
+// Compute le href au click — sans ça le SSR pre-renderer pose un href
+// arbitraire qui fuirait le `window.location` de la page cliente. Le
+// handler pre-empte le default anchor et substitue la bonne URL.
 export function LoginLink({ className, label = "Se connecter", variant = "inline" }: Props) {
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     const callback = encodeURIComponent(window.location.href);
-    window.location.href = `https://www.colist.fr/fr/login?callbackURL=${callback}`;
+    window.location.href = `/login?callbackURL=${callback}`;
   }
 
   const base =
@@ -28,11 +28,7 @@ export function LoginLink({ className, label = "Se connecter", variant = "inline
       : "text-sm text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-700 hover:underline";
 
   return (
-    <a
-      href="https://www.colist.fr/fr/login"
-      onClick={handleClick}
-      className={`${base} ${className ?? ""}`}
-    >
+    <a href="/login" onClick={handleClick} className={`${base} ${className ?? ""}`}>
       {label}
     </a>
   );
