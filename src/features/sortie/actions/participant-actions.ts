@@ -69,11 +69,17 @@ export async function rsvpAction(
     ? (user.name ?? "").slice(0, 100) || sanitizeStrictText(data.displayName, 100)
     : sanitizeStrictText(data.displayName, 100);
 
+  // Lookup par cookieTokenHash OU userId (si logué) : sans le 2e
+  // bras, un user qui RSVP depuis un nouveau navigateur (cookie tout
+  // neuf, mais session loguée existante) crée un doublon de
+  // participant à la place de mettre à jour celui de l'autre device.
+  // Cas réel : Nicolas qui revient sur sa sortie depuis son laptop
+  // après avoir voté depuis son téléphone.
+  const identityClause = user
+    ? or(eq(participants.cookieTokenHash, cookieTokenHash), eq(participants.userId, user.id))!
+    : eq(participants.cookieTokenHash, cookieTokenHash);
   const existing = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outing.id),
-      eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
+    where: and(eq(participants.outingId, outing.id), identityClause),
   });
 
   if (existing) {
@@ -86,6 +92,10 @@ export async function rsvpAction(
         anonName: user ? null : displayName,
         anonEmail: user ? null : (data.email ?? null),
         userId: user?.id ?? existing.userId,
+        // On rapatrie le cookie courant sur le row existant pour que
+        // les futurs lookups par cookie sur ce device tombent dessus
+        // sans dépendre du fallback userId.
+        cookieTokenHash,
         updatedAt: new Date(),
       })
       .where(eq(participants.id, existing.id));
@@ -258,11 +268,14 @@ export async function castVoteAction(
   const response: "interested" | "no" =
     filtered.length > 0 && filtered.some((v) => v.available) ? "interested" : "no";
 
+  // Cf. la note dans `upsertRsvpAction` : lookup par cookie OU userId
+  // pour ne pas créer un doublon quand l'user vote depuis un nouveau
+  // navigateur.
+  const voteIdentityClause = user
+    ? or(eq(participants.cookieTokenHash, cookieTokenHash), eq(participants.userId, user.id))!
+    : eq(participants.cookieTokenHash, cookieTokenHash);
   const existing = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outing.id),
-      eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
+    where: and(eq(participants.outingId, outing.id), voteIdentityClause),
   });
 
   let participantId: string;
@@ -274,6 +287,7 @@ export async function castVoteAction(
         anonName: user ? null : displayName,
         anonEmail: user ? null : (data.email ?? null),
         userId: user?.id ?? existing.userId,
+        cookieTokenHash,
         updatedAt: new Date(),
       })
       .where(eq(participants.id, existing.id));
