@@ -253,6 +253,26 @@ export function YesDetailSheet({
             )}
           </div>
 
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
+              Ton email <span className="text-encre-300">(facultatif)</span>
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              defaultValue={existingEmail ?? prefs?.email}
+              autoComplete="email"
+              inputMode="email"
+              placeholder="pour être prévenu·e des changements"
+              onFocus={scrollFocusedIntoView}
+              style={{ scrollMarginBottom: "6rem" }}
+            />
+            {state.errors?.email?.[0] && (
+              <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
+            )}
+          </div>
+
           <div className="flex flex-col gap-3">
             {!showExtras ? (
               <button
@@ -301,25 +321,6 @@ export function YesDetailSheet({
                 </span>
               </span>
             </label>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
-              Ton email <span className="text-encre-300">(facultatif)</span>
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={existingEmail ?? prefs?.email}
-              autoComplete="email"
-              inputMode="email"
-              placeholder="pour être prévenu·e des changements"
-              onFocus={scrollFocusedIntoView}
-            />
-            {state.errors?.email?.[0] && (
-              <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
-            )}
           </div>
 
           {generalError && (
