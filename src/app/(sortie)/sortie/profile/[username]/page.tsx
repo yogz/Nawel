@@ -165,7 +165,14 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           accueil
         </Link>
         <div className="flex items-center gap-2">
-          <ProfileShareButton url={`${PUBLIC_BASE}/@${row.username}`} name={row.name} />
+          {/* Pas de partage quand l'invité arrive via le lien privé
+              (`?k=token`) : il n'a aucune raison de relayer le profil
+              du créateur à des tiers, et le bouton brouillerait l'idée
+              que ce lien lui est personnel. Le créateur lui-même
+              continue à pouvoir partager via `/moi` (modifier ↗). */}
+          {!showRsvp && (
+            <ProfileShareButton url={`${PUBLIC_BASE}/@${row.username}`} name={row.name} />
+          )}
           {isSelf && (
             <Link
               href="/moi"
