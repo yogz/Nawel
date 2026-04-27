@@ -74,14 +74,20 @@ export function EditOutingForm({
         error={errors.title?.[0]}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <DateField
-          label="Date et heure"
-          name="startsAt"
-          required
-          defaultValue={startsAt ? toDateTimeLocalValue(startsAt) : undefined}
-          error={errors.startsAt?.[0]}
-        />
+      {/* En mode vote sans créneau choisi, `startsAt` est null : on
+          masque le DateField correspondant et on l'éditer depuis la
+          page de la sortie (sondage). Le rsvpDeadline reste éditable
+          car il pilote la fermeture du sondage. */}
+      <div className={`grid gap-4 ${startsAt ? "sm:grid-cols-2" : ""}`}>
+        {startsAt && (
+          <DateField
+            label="Date et heure"
+            name="startsAt"
+            required
+            defaultValue={toDateTimeLocalValue(startsAt)}
+            error={errors.startsAt?.[0]}
+          />
+        )}
         <DateField
           label="Réponse avant"
           name="rsvpDeadline"
@@ -90,6 +96,11 @@ export function EditOutingForm({
           error={errors.rsvpDeadline?.[0]}
         />
       </div>
+      {!startsAt && (
+        <p className="-mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+          ↳ date à voter — ajuste les créneaux depuis la page du sondage
+        </p>
+      )}
 
       <FormField
         label="Lieu"

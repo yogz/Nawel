@@ -224,6 +224,11 @@ export async function updateOutingAction(
     heroImageOgUrl = outing.heroImageOgUrl;
   }
 
+  // `fixedDatetime` n'est mis à jour que si l'utilisateur a fourni
+  // une date (form mode fixed ou mode vote post-pick). En mode vote
+  // sans créneau choisi, le DateField startsAt est masqué côté UI ;
+  // on garde donc la valeur null actuelle plutôt que d'écraser à
+  // undefined / NULL.
   await db
     .update(outings)
     .set({
@@ -232,7 +237,7 @@ export async function updateOutingAction(
       eventLink: ticketUrl,
       heroImageUrl,
       heroImageOgUrl,
-      fixedDatetime: data.startsAt,
+      ...(data.startsAt ? { fixedDatetime: data.startsAt } : {}),
       deadlineAt: data.rsvpDeadline,
       slug,
       updatedAt: new Date(),
@@ -261,7 +266,10 @@ export async function updateOutingAction(
     {
       title,
       location: venue,
-      fixedDatetime: data.startsAt,
+      // Quand startsAt n'est pas fourni (mode vote), on passe la
+      // valeur DB existante au diff pour qu'aucun email "date
+      // modifiée" parte alors qu'on n'y a pas touché.
+      fixedDatetime: data.startsAt ?? outing.fixedDatetime,
       deadlineAt: data.rsvpDeadline,
       eventLink: ticketUrl,
       heroImageUrl,

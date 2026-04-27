@@ -74,23 +74,21 @@ export default async function EditOutingPage({ params }: Props) {
         </h1>
       </header>
 
-      {outing.mode === "vote" && !outing.chosenTimeslotId ? (
-        <div className="rounded-lg border border-ivoire-400 bg-ivoire-50 p-4 text-sm text-encre-500">
-          Le sondage est encore ouvert. Tu pourras modifier les détails une fois un créneau choisi.
-          En attendant, tu peux toujours annuler.
-        </div>
-      ) : (
-        <EditOutingForm
-          shortId={outing.shortId}
-          title={outing.title}
-          venue={outing.location}
-          startsAt={outing.fixedDatetime}
-          deadlineAt={outing.deadlineAt}
-          ticketUrl={outing.eventLink}
-          heroImageUrl={outing.heroImageUrl}
-          vibe={outing.vibe}
-        />
-      )}
+      {/* Pas de blocage en mode vote : tous les champs neutres pour
+          le sondage (titre, lieu, lien, image, deadline) restent
+          éditables. Le DateField `startsAt` se masque tout seul dans
+          le form quand `outing.fixedDatetime` est null — l'utilisateur
+          ajuste les créneaux candidats depuis la page de la sortie. */}
+      <EditOutingForm
+        shortId={outing.shortId}
+        title={outing.title}
+        venue={outing.location}
+        startsAt={outing.fixedDatetime}
+        deadlineAt={outing.deadlineAt}
+        ticketUrl={outing.eventLink}
+        heroImageUrl={outing.heroImageUrl}
+        vibe={outing.vibe}
+      />
 
       {outing.status !== "cancelled" && !isPastEvent && (
         <section className="mt-12 border-t border-ivoire-400 pt-8">

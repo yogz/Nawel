@@ -203,13 +203,19 @@ export const updateOutingSchema = z
       .optional()
       .or(z.literal(""))
       .transform((v) => v || undefined),
-    startsAt: z.coerce.date(),
+    // `startsAt` est optionnel pour permettre l'édition des sortes en
+    // mode vote (où la date n'est pas encore tranchée). Quand il est
+    // absent, l'action ne touche pas `fixedDatetime` en DB.
+    startsAt: z
+      .union([z.literal(""), z.coerce.date()])
+      .optional()
+      .transform((v) => (v instanceof Date ? v : undefined)),
     rsvpDeadline: z.coerce.date(),
     ticketUrl: optionalSafeUrl,
     heroImageUrl: optionalSafeUrl,
     heroImageOgUrl: optionalSafeUrl,
   })
-  .refine((data) => data.rsvpDeadline < data.startsAt, {
+  .refine((data) => !data.startsAt || data.rsvpDeadline < data.startsAt, {
     message: "La deadline doit être avant la date de la sortie.",
     path: ["rsvpDeadline"],
   });
