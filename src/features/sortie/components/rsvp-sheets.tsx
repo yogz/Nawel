@@ -216,7 +216,6 @@ export function YesDetailSheet({
               defaultValue={existingName ?? loggedInName ?? prefs?.name}
               maxLength={100}
               placeholder="Claire"
-              autoComplete="given-name"
             />
             {state.errors?.displayName?.[0] && (
               <p className="text-xs text-erreur-700">{state.errors.displayName[0]}</p>
