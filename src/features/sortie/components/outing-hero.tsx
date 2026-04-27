@@ -33,11 +33,20 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   // CSS escape from the parent's `max-w-xl px-6` container: position
-  // left:50%, then translate -50% in X, then claim 100vw width. The
-  // hero occupies the full viewport regardless of how the page is
-  // constrained.
+  // left:50%, then translate -50% in X, then claim 100vw width. La
+  // hauteur est libre quand on a une vraie photo : on laisse l'image
+  // dicter son ratio (`w-full h-auto`) pour qu'elle s'affiche entière
+  // sans crop latéral, plutôt qu'un container fixe `78dvh` qui
+  // recadrait via `object-cover`. Pour les photos extrêmes en portrait
+  // on borne avec `max-h-[88dvh]` pour ne pas pousser le texte
+  // sous la fold ; à ce moment l'image revient en cover mode et est
+  // recentrée. Le fallback gradient garde sa hauteur dédiée puisqu'il
+  // n'a pas de ratio naturel.
+  const headerSizing = heroImageUrl ? "max-h-[88dvh]" : "h-[78dvh] min-h-[560px]";
   return (
-    <header className="relative left-1/2 mb-10 h-[78dvh] min-h-[560px] w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden">
+    <header
+      className={`relative left-1/2 mb-10 w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden ${headerSizing}`}
+    >
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelisting each domain for
         // next/image would be a maintenance task; these images are
@@ -49,7 +58,7 @@ export function OutingHero({
           src={heroImageUrl}
           alt=""
           data-vt-poster
-          className="absolute inset-0 h-full w-full object-cover"
+          className="block h-auto max-h-[88dvh] w-full object-cover"
           style={{ filter: "saturate(1.15) contrast(1.05)" }}
         />
       ) : (
