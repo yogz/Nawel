@@ -7,6 +7,7 @@ import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { Redis } from "@upstash/redis";
+import { buildSortieAuthEmail, isSortieOrigin } from "./auth-emails";
 
 // Lazy init — passing undefined to `new Resend()` throws at module-load time,
 // which breaks Next.js page-data collection on preview builds that don't have
@@ -142,11 +143,21 @@ export const auth = betterAuth({
 
       const resetUrl = `${origin}/${locale}/reset-password?token=${token}`;
 
+      // Brand selon l'origin : si l'utilisateur a démarré le reset
+      // depuis sortie.colist.fr, on lui sert un email Sortie (palette
+      // acid cabinet, voix GenZ). Le `from:` reste hello@colist.fr —
+      // 1 domaine vérifié Resend, partage du DKIM/SPF/DMARC.
+      const sortieBranded = isSortieOrigin(url)
+        ? buildSortieAuthEmail({ kind: "reset-password", ctaUrl: resetUrl })
+        : null;
+
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
         to: user.email,
-        subject: t("subject"),
-        html: `
+        subject: sortieBranded?.subject ?? t("subject"),
+        html:
+          sortieBranded?.html ??
+          `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
             <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
             <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
@@ -216,13 +227,24 @@ export const auth = betterAuth({
           // use default origin
         }
 
-        const magicUrl = `${origin}/${locale}/login?token=${token}`;
+        // Sortie utilise sa propre route `/login?token=...` (pas
+        // localisée), Colist passe par `/<locale>/login?token=...`.
+        const fromSortie = isSortieOrigin(url);
+        const magicUrl = fromSortie
+          ? `${origin}/login?token=${token}`
+          : `${origin}/${locale}/login?token=${token}`;
+
+        const sortieBranded = fromSortie
+          ? buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
+          : null;
 
         const { error } = await resend.emails.send({
           from: "CoList <hello@colist.fr>",
           to: email,
-          subject: t("subject"),
-          html: `
+          subject: sortieBranded?.subject ?? t("subject"),
+          html:
+            sortieBranded?.html ??
+            `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
               <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
               <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
@@ -271,11 +293,17 @@ export const auth = betterAuth({
 
       const verifyUrl = `${origin}/${locale}/verify-email?token=${token}`;
 
+      const sortieBranded = isSortieOrigin(url)
+        ? buildSortieAuthEmail({ kind: "email-verification", ctaUrl: verifyUrl })
+        : null;
+
       const { error } = await resend.emails.send({
         from: "CoList <hello@colist.fr>",
         to: user.email,
-        subject: t("subject"),
-        html: `
+        subject: sortieBranded?.subject ?? t("subject"),
+        html:
+          sortieBranded?.html ??
+          `
           <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;">
             <h1 style="color: #333; font-size: 24px;">${t("subject")}</h1>
             <p style="color: #666; font-size: 16px; line-height: 1.5;">${t("body")}</p>
