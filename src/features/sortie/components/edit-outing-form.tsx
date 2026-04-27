@@ -208,7 +208,13 @@ function ImageEditor({
 
       {open && (
         <div className="overflow-hidden rounded-xl border border-encre-200">
-          <MissingImagePicker title={title} venue={venue} vibe={vibe} onPick={onPick} />
+          <MissingImagePicker
+            title={title}
+            venue={venue}
+            vibe={vibe}
+            onPick={onPick}
+            hidePlaceholder
+          />
         </div>
       )}
     </div>

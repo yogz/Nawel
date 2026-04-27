@@ -23,6 +23,11 @@ type Props = {
   // Callback déclenché quand l'utilisateur valide une image (peu importe
   // la source). Le parent met à jour `draft.heroImageUrl`.
   onPick: (url: string) => void;
+  // Cache le placeholder "Pas d'image — choisis-en une" quand le
+  // parent affiche déjà l'image courante au-dessus (cas EditOutingForm).
+  // Le panneau ne montre alors que la barre d'actions + sous-flux,
+  // sans répéter "Pas d'image" alors qu'une image est juste là.
+  hidePlaceholder?: boolean;
 };
 
 type SubFlow = "none" | "generic";
@@ -38,7 +43,7 @@ type SubFlow = "none" | "generic";
  * déploient inline et peuvent être refermés sans perdre l'état du
  * wizard.
  */
-export function MissingImagePicker({ title, venue, vibe, onPick }: Props) {
+export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder = false }: Props) {
   const [subFlow, setSubFlow] = useState<SubFlow>("none");
   const [searchPending, setSearchPending] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -133,25 +138,28 @@ export function MissingImagePicker({ title, venue, vibe, onPick }: Props) {
       {/* Empty-state hero — préserve le rythme visuel de la carte (16:10
           comme la vraie image) pour que l'absence d'image n'écrase pas
           la composition. Le pattern radial discret évite l'effet "trou
-          gris" d'un placeholder plat. */}
-      <div
-        className="relative aspect-[16/10] w-full overflow-hidden bg-ivoire-100"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 30% 20%, rgba(143,82,69,0.08) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(199,255,60,0.10) 0%, transparent 50%)",
-        }}
-      >
-        <div className="absolute inset-0 grid place-items-center">
-          <div className="flex flex-col items-center gap-2 text-encre-400">
-            <div className="grid size-14 place-items-center rounded-full bg-ivoire-200/80 ring-1 ring-encre-200">
-              <ImageIcon size={26} strokeWidth={1.6} />
+          gris" d'un placeholder plat. Skip quand le parent a déjà rendu
+          l'image au-dessus (mode édit). */}
+      {!hidePlaceholder && (
+        <div
+          className="relative aspect-[16/10] w-full overflow-hidden bg-ivoire-100"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 30% 20%, rgba(143,82,69,0.08) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(199,255,60,0.10) 0%, transparent 50%)",
+          }}
+        >
+          <div className="absolute inset-0 grid place-items-center">
+            <div className="flex flex-col items-center gap-2 text-encre-400">
+              <div className="grid size-14 place-items-center rounded-full bg-ivoire-200/80 ring-1 ring-encre-200">
+                <ImageIcon size={26} strokeWidth={1.6} />
+              </div>
+              <p className="px-6 text-center text-xs font-medium text-encre-500">
+                Pas d&rsquo;image — choisis-en une ou continue sans.
+              </p>
             </div>
-            <p className="px-6 text-center text-xs font-medium text-encre-500">
-              Pas d&rsquo;image — choisis-en une ou continue sans.
-            </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Barre d'actions au pied du placeholder. 3 colonnes égales,
           touch targets ≥ 44px, label sur 2 lignes possible. */}
