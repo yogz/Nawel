@@ -91,6 +91,12 @@ export const outings = sortie.table(
     // creator types everything by hand. Stored as a URL (we don't rehost
     // the image — it's the ticket site's CDN).
     heroImageUrl: text("hero_image_url"),
+    // 1200×630 JPEG re-encoded copy of `heroImageUrl`, hosted on Vercel
+    // Blob, used by the OG image renderer. Pre-resized so the final
+    // Satori PNG stays under WhatsApp's ~300 KB preview cliff. Null when
+    // the source image was added before this column existed (the
+    // renderer falls back on `heroImageUrl` in that case).
+    heroImageOgUrl: text("hero_image_og_url"),
     // Cultural category captured at create time. Nullable to stay
     // compatible with all historical outings + to let the creator skip
     // the picker if they don't want to commit.

@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."outings" ADD COLUMN "hero_image_og_url" text;

@@ -239,6 +239,13 @@
       "when": 1777218240578,
       "tag": "0033_magenta_killer_shrike",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1777271364394,
+      "tag": "0034_stiff_spot",
+      "breakpoints": true
     }
   ]
 }
