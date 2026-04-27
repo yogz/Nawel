@@ -16,13 +16,16 @@ type Props = {
 };
 
 /**
- * Composition en superposition : l'image est full-bleed avec une
- * hauteur capée (cropée verticalement via `object-cover object-center`
- * si elle est trop haute) et le bloc texte sit en `absolute top-0`
- * par-dessus, sous un scrim qui assombrit le haut pour rendre le
- * titre lisible peu importe la dominante de la photo. Le `min-h`
- * garantit assez de surface pour que les CTA (Prendre mes places /
- * Agenda) tiennent sans déborder du scrim.
+ * Hero "affiche" : photo full-bleed qui couvre toute la zone, titre
+ * en bas-gauche sur un scrim qui s'intensifie en pied. Le sujet de
+ * la photo respire dans les 60 % supérieurs, le titre signe en fin
+ * de scan visuel comme sur une affiche Netflix / A24. `min-h-[480px]`
+ * garantit assez de surface pour que le bloc texte tienne sans
+ * déborder du scrim, peu importe le format de la photo source.
+ *
+ * Quand l'image est paysage courte et ne remplit pas le header, le
+ * background `bg-ivoire-50` (noir du theme dark) prend le relais ;
+ * le scrim continue son dégradé sans rupture visible.
  */
 export function OutingHero({
   title,
@@ -33,7 +36,7 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   return (
-    <header className="relative -mx-6 mb-10 h-[60dvh] max-h-[640px] min-h-[480px] overflow-hidden">
+    <header className="relative -mx-6 mb-10 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-ivoire-50">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelister chaque domaine pour
         // next/image serait une charge de maintenance ; ces images
@@ -51,21 +54,20 @@ export function OutingHero({
         <GradientFallback title={title} />
       )}
 
-      {/* Scrim — assombrit le haut (zone du texte) pour garantir un
-          contraste AAA peu importe la photo source ; estompe au
-          milieu pour laisser respirer l'image. Pas de scrim au bas :
-          la transition vers la suite de la page sit à l'extérieur
-          du hero. */}
+      {/* Scrim — transparent en haut (le sujet de la photo respire),
+          s'intensifie sur la moitié basse pour stamper le titre en
+          AAA peu importe la dominante de la photo source. Pattern
+          "movie poster" classique. */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.45) 35%, rgba(10,10,10,0) 70%)",
+            "linear-gradient(180deg, rgba(10,10,10,0) 0%, rgba(10,10,10,0) 35%, rgba(10,10,10,0.55) 65%, rgba(10,10,10,0.95) 100%)",
         }}
       />
 
-      <div className="absolute inset-x-0 top-0 flex flex-col items-start px-6 pt-[max(env(safe-area-inset-top),4.5rem)] pb-10 sm:px-10">
+      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
         {startsAt && (
           <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
             <span
@@ -78,7 +80,7 @@ export function OutingHero({
 
         <h1
           className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
-          style={{ textWrap: "balance", textShadow: "0 2px 16px rgba(0,0,0,0.45)" }}
+          style={{ textWrap: "balance" }}
         >
           {title}
         </h1>
