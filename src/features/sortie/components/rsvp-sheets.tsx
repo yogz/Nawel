@@ -9,7 +9,26 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
+import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
 import { GuestCountStepper } from "./guest-count-stepper";
+
+function buildSheetStyle(inset: number, viewportHeight: number | null): React.CSSProperties {
+  if (inset <= 0 || viewportHeight === null) return {};
+  return {
+    bottom: inset,
+    maxHeight: `${viewportHeight - 16}px`,
+  };
+}
+
+function scrollFocusedIntoView(event: React.FocusEvent<HTMLInputElement>) {
+  const target = event.currentTarget;
+  // Wait for the keyboard to actually open so visualViewport has shrunk
+  // before we scroll — otherwise the browser scrolls into the wrong
+  // (still full-height) viewport.
+  window.setTimeout(() => {
+    target.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, 250);
+}
 
 export type RsvpResponse = "yes" | "no" | "handle_own";
 
@@ -58,9 +77,15 @@ export function NoNameSheet({
     }
   }, [pending, state, router, onDone]);
 
+  const { inset: keyboardInset, viewportHeight } = useKeyboardInset();
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="theme-sortie max-h-[60dvh] overflow-y-auto">
+      <SheetContent
+        side="bottom"
+        className="theme-sortie max-h-[60dvh] overflow-y-auto"
+        style={buildSheetStyle(keyboardInset, viewportHeight)}
+      >
         <SheetHeader className="mb-5 text-left">
           <SheetTitle className="font-serif text-2xl text-encre-700">Qui dit non&nbsp;?</SheetTitle>
           <p className="text-sm text-encre-400">Juste ton prénom, on s&rsquo;arrête là.</p>
@@ -190,9 +215,15 @@ export function YesDetailSheet({
     : [];
   const generalError = state.message ?? hiddenFieldErrors[0] ?? null;
 
+  const { inset: keyboardInset, viewportHeight } = useKeyboardInset();
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
+      <SheetContent
+        side="bottom"
+        className="theme-sortie max-h-[92dvh] overflow-y-auto"
+        style={buildSheetStyle(keyboardInset, viewportHeight)}
+      >
         <SheetHeader className="mb-6 text-left">
           <SheetTitle className="font-serif text-2xl text-encre-700">
             {existingResponse ? "Modifier ta réponse" : "Super."}
@@ -284,6 +315,7 @@ export function YesDetailSheet({
               autoComplete="email"
               inputMode="email"
               placeholder="pour être prévenu·e des changements"
+              onFocus={scrollFocusedIntoView}
             />
             {state.errors?.email?.[0] && (
               <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
