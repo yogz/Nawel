@@ -16,13 +16,17 @@ type Props = {
 };
 
 /**
- * Full-bleed hero on the event detail page. The image (or a gradient
- * fallback) covers the top ~78dvh of the viewport with a darkening
- * scrim so the title sits flush at bottom-left, GenZ-poster style.
+ * Layout vertical : le bloc texte (date + titre + lieu + CTA) sit
+ * au-dessus de l'image, dans le flux normal du main (donc avec son
+ * propre padding `px-6` hérité). L'image vient en dessous full-bleed,
+ * avec un cap de hauteur pour éviter qu'un poster vertical pousse
+ * tout le contenu sous la fold ; `object-position: center` la centre
+ * verticalement et horizontalement (préférable au crop bas/haut
+ * arbitraire qu'on avait avant).
  *
- * The component uses negative horizontal margins (`-mx-6`) to escape
- * the parent's `max-w-xl px-6` container. The page is responsible for
- * placing the back / share nav as an overlay (`absolute top-0`).
+ * Le `pt-[5rem]` du bloc texte laisse passer la nav flottante
+ * (Accueil ↗ / Modifier ↗) qui sit en `absolute top-0` dans la
+ * `<main>` parente.
  */
 export function OutingHero({
   title,
@@ -32,53 +36,9 @@ export function OutingHero({
   heroImageUrl,
   canonicalPath,
 }: Props) {
-  // CSS escape from the parent's `max-w-xl px-6` container: position
-  // left:50%, then translate -50% in X, then claim 100vw width.
-  //
-  // Hauteur du header : `min-h-[560px]` garantit assez de place pour
-  // que le bloc texte (positionné en `absolute bottom-0`) ne déborde
-  // pas au-dessus de l'image quand celle-ci est en paysage court
-  // (~520×290 typique d'un poster Ticketmaster) — sinon le titre est
-  // clippé par `overflow-hidden`. `max-h-[88dvh]` borne les photos
-  // très verticales pour garder le texte au-dessus de la fold.
-  // L'image reste en `w-full h-auto` (ratio natif respecté, aucun crop
-  // latéral). Quand elle est plus courte que `min-h`, le background
-  // ivoire-900 couvre la zone restante et le scrim continue son
-  // dégradé jusqu'au texte sans rupture visible.
   return (
-    <header className="relative left-1/2 mb-10 max-h-[88dvh] min-h-[560px] w-[min(100vw,520px)] -translate-x-1/2 overflow-hidden bg-ivoire-50">
-      {heroImageUrl ? (
-        // Remote ticket-CDN image. Whitelisting each domain for
-        // next/image would be a maintenance task; these images are
-        // already cached on their original CDNs.
-        // `data-vt-poster` opts into the View Transitions morph (see
-        // sortie.css) when the browser supports it.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={heroImageUrl}
-          alt=""
-          data-vt-poster
-          className="block h-auto w-full"
-          style={{ filter: "saturate(1.15) contrast(1.05)" }}
-        />
-      ) : (
-        <GradientFallback title={title} />
-      )}
-
-      {/* Darkening scrim — three-stop linear keeps the top ~25 % of
-          the photo visible (lets the user read the venue ambiance)
-          while stamping the bottom 45 % so the headline reads at
-          AAA on any source photo. */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0) 25%, rgba(10,10,10,0) 50%, rgba(10,10,10,0.95) 100%)",
-        }}
-      />
-
-      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
+    <header className="-mx-6 mb-10">
+      <div className="px-6 pt-[max(env(safe-area-inset-top),5rem)] pb-6 sm:px-10">
         {startsAt && (
           <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
             <span
@@ -118,10 +78,10 @@ export function OutingHero({
             {startsAt && canonicalPath && (
               <a
                 href={`/${canonicalPath}/agenda`}
-                // `download` is a hint to the browser — iOS / Android
-                // treat the `text/calendar` MIME as "add to calendar"
-                // regardless, but the filename makes the fallback
-                // download readable on desktop.
+                // `download` est une suggestion : iOS / Android traitent
+                // le MIME `text/calendar` comme "Ajouter à l'agenda"
+                // peu importe ; le filename rend le fallback download
+                // lisible côté desktop.
                 download={`sortie-${canonicalPath}.ics`}
                 className="inline-flex items-center gap-1 text-encre-600 underline-offset-4 hover:text-bordeaux-600 hover:underline"
               >
@@ -132,13 +92,32 @@ export function OutingHero({
           </div>
         )}
       </div>
+
+      {heroImageUrl ? (
+        // Remote ticket-CDN image. On ne whiteliste pas chaque domaine
+        // pour next/image — ces images sont déjà cachées sur leur CDN
+        // d'origine. `data-vt-poster` opte pour la View Transitions
+        // morph (cf. sortie.css) sur les navigateurs qui la supportent.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={heroImageUrl}
+          alt=""
+          data-vt-poster
+          className="block h-[55dvh] max-h-[640px] min-h-[320px] w-full object-cover object-center"
+          style={{ filter: "saturate(1.15) contrast(1.05)" }}
+        />
+      ) : (
+        <div className="relative h-[55dvh] max-h-[640px] min-h-[320px] w-full overflow-hidden">
+          <GradientFallback title={title} />
+        </div>
+      )}
     </header>
   );
 }
 
 function GradientFallback({ title }: { title: string }) {
-  // First letter of the title rendered huge under the scrim — gives
-  // the empty state a typographic anchor instead of a flat gradient.
+  // Initiale du titre rendue en énorme sous le scrim — donne un ancrage
+  // typographique à l'empty state plutôt qu'un dégradé plat.
   const initial = (title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
   return (
     <div
@@ -150,7 +129,7 @@ function GradientFallback({ title }: { title: string }) {
       }}
     >
       <span
-        className="text-[18rem] leading-none font-black opacity-40 select-none sm:text-[22rem]"
+        className="text-[14rem] leading-none font-black opacity-40 select-none sm:text-[18rem]"
         style={{
           fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
           color: "#0A0A0A",

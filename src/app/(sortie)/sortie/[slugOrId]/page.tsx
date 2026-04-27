@@ -184,16 +184,14 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         canonicalPath={canonical}
       />
 
-      {/* Just-created state: the creator's #1 job is sharing the link, so
-          we surface the success banner over the top of the hero — the
-          poster stays the visual anchor, the share affordances sit right
-          on top of it. Positioned just below the floating nav row (h-11
-          + safe-area inset). */}
+      {/* Just-created state: surface le banner sous le hero (titre +
+          image), en flow normal. L'overlay absolute des versions
+          précédentes posait sur l'image — depuis qu'on a déplacé le
+          titre au-dessus de l'image, l'overlay recouvrait justement
+          ce titre. Mieux : laisser le banner prendre sa place dans
+          la pile, le poster reste l'ancre visuelle juste avant. */}
       {justCreated && isCreator && (
-        <div
-          className="absolute inset-x-6 z-20"
-          style={{ top: "calc(env(safe-area-inset-top) + 4rem)" }}
-        >
+        <div className="mb-4">
           <CreateSuccessBanner
             url={`${PUBLIC_BASE}/${canonical}`}
             title={outing.title}
