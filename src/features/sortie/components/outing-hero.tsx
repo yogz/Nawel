@@ -16,17 +16,13 @@ type Props = {
 };
 
 /**
- * Layout vertical : le bloc texte (date + titre + lieu + CTA) sit
- * au-dessus de l'image, dans le flux normal du main (donc avec son
- * propre padding `px-6` hérité). L'image vient en dessous full-bleed,
- * avec un cap de hauteur pour éviter qu'un poster vertical pousse
- * tout le contenu sous la fold ; `object-position: center` la centre
- * verticalement et horizontalement (préférable au crop bas/haut
- * arbitraire qu'on avait avant).
- *
- * Le `pt-[5rem]` du bloc texte laisse passer la nav flottante
- * (Accueil ↗ / Modifier ↗) qui sit en `absolute top-0` dans la
- * `<main>` parente.
+ * Composition en superposition : l'image est full-bleed avec une
+ * hauteur capée (cropée verticalement via `object-cover object-center`
+ * si elle est trop haute) et le bloc texte sit en `absolute top-0`
+ * par-dessus, sous un scrim qui assombrit le haut pour rendre le
+ * titre lisible peu importe la dominante de la photo. Le `min-h`
+ * garantit assez de surface pour que les CTA (Prendre mes places /
+ * Agenda) tiennent sans déborder du scrim.
  */
 export function OutingHero({
   title,
@@ -37,8 +33,39 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   return (
-    <header className="-mx-6 mb-10">
-      <div className="px-6 pt-[max(env(safe-area-inset-top),5rem)] pb-6 sm:px-10">
+    <header className="relative -mx-6 mb-10 h-[60dvh] max-h-[640px] min-h-[480px] overflow-hidden">
+      {heroImageUrl ? (
+        // Remote ticket-CDN image. Whitelister chaque domaine pour
+        // next/image serait une charge de maintenance ; ces images
+        // sont déjà cachées sur leur CDN d'origine. `data-vt-poster`
+        // opte pour la View Transitions morph (cf. sortie.css).
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={heroImageUrl}
+          alt=""
+          data-vt-poster
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          style={{ filter: "saturate(1.15) contrast(1.05)" }}
+        />
+      ) : (
+        <GradientFallback title={title} />
+      )}
+
+      {/* Scrim — assombrit le haut (zone du texte) pour garantir un
+          contraste AAA peu importe la photo source ; estompe au
+          milieu pour laisser respirer l'image. Pas de scrim au bas :
+          la transition vers la suite de la page sit à l'extérieur
+          du hero. */}
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(10,10,10,0.78) 0%, rgba(10,10,10,0.45) 35%, rgba(10,10,10,0) 70%)",
+        }}
+      />
+
+      <div className="absolute inset-x-0 top-0 flex flex-col items-start px-6 pt-[max(env(safe-area-inset-top),4.5rem)] pb-10 sm:px-10">
         {startsAt && (
           <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
             <span
@@ -51,7 +78,7 @@ export function OutingHero({
 
         <h1
           className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
-          style={{ textWrap: "balance" }}
+          style={{ textWrap: "balance", textShadow: "0 2px 16px rgba(0,0,0,0.45)" }}
         >
           {title}
         </h1>
@@ -78,10 +105,10 @@ export function OutingHero({
             {startsAt && canonicalPath && (
               <a
                 href={`/${canonicalPath}/agenda`}
-                // `download` est une suggestion : iOS / Android traitent
-                // le MIME `text/calendar` comme "Ajouter à l'agenda"
-                // peu importe ; le filename rend le fallback download
-                // lisible côté desktop.
+                // `download` est une suggestion : iOS / Android
+                // traitent le MIME `text/calendar` comme "Ajouter à
+                // l'agenda" peu importe ; le filename rend le
+                // fallback download lisible côté desktop.
                 download={`sortie-${canonicalPath}.ics`}
                 className="inline-flex items-center gap-1 text-encre-600 underline-offset-4 hover:text-bordeaux-600 hover:underline"
               >
@@ -92,32 +119,13 @@ export function OutingHero({
           </div>
         )}
       </div>
-
-      {heroImageUrl ? (
-        // Remote ticket-CDN image. On ne whiteliste pas chaque domaine
-        // pour next/image — ces images sont déjà cachées sur leur CDN
-        // d'origine. `data-vt-poster` opte pour la View Transitions
-        // morph (cf. sortie.css) sur les navigateurs qui la supportent.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={heroImageUrl}
-          alt=""
-          data-vt-poster
-          className="block h-[55dvh] max-h-[640px] min-h-[320px] w-full object-cover object-center"
-          style={{ filter: "saturate(1.15) contrast(1.05)" }}
-        />
-      ) : (
-        <div className="relative h-[55dvh] max-h-[640px] min-h-[320px] w-full overflow-hidden">
-          <GradientFallback title={title} />
-        </div>
-      )}
     </header>
   );
 }
 
 function GradientFallback({ title }: { title: string }) {
-  // Initiale du titre rendue en énorme sous le scrim — donne un ancrage
-  // typographique à l'empty state plutôt qu'un dégradé plat.
+  // Initiale du titre rendue en énorme — donne un ancrage typo à
+  // l'empty state plutôt qu'un dégradé plat.
   const initial = (title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
   return (
     <div
