@@ -35,29 +35,50 @@ const isoFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: TZ,
 });
 
-/** "jeudi 12 décembre · 20h30" */
-export function formatOutingDate(date: Date): string {
+const parisYearFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  timeZone: TZ,
+});
+
+function getParisYear(date: Date): number {
+  return Number(parisYearFormatter.format(date));
+}
+
+/**
+ * Renvoie ` 2027` si l'année de `date` (en Paris) diffère de l'année
+ * courante, sinon "". Évite l'année redondante quand on est dans la
+ * même année calendaire (cas majoritaire) tout en désambiguïsant les
+ * sorties passées d'archive ou planifiées sur l'année suivante.
+ */
+function yearSuffixIfNeeded(date: Date, now: Date = new Date()): string {
+  const dateYear = getParisYear(date);
+  const nowYear = getParisYear(now);
+  return dateYear !== nowYear ? ` ${dateYear}` : "";
+}
+
+/** "jeudi 12 décembre · 20h30" — ajoute l'année si différente de l'année courante */
+export function formatOutingDate(date: Date, now: Date = new Date()): string {
   const day = dayMonthFormatter.format(date);
   const time = timeFormatter.format(date).replace(":", "h");
-  return `${day} · ${time}`;
+  return `${day}${yearSuffixIfNeeded(date, now)} · ${time}`;
 }
 
-/** "jeu. 12 déc. · 20h30" — compact form for lists */
-export function formatOutingDateShort(date: Date): string {
+/** "jeu. 12 déc. · 20h30" — compact form for lists, année si nécessaire */
+export function formatOutingDateShort(date: Date, now: Date = new Date()): string {
   const day = shortDayMonthFormatter.format(date);
   const time = timeFormatter.format(date).replace(":", "h");
-  return `${day} · ${time}`;
+  return `${day}${yearSuffixIfNeeded(date, now)} · ${time}`;
 }
 
-/** "12 décembre à 20h30" — used in emails to match conversational tone */
-export function formatOutingDateConversational(date: Date): string {
+/** "12 décembre à 20h30" — used in emails, ajoute l'année si nécessaire */
+export function formatOutingDateConversational(date: Date, now: Date = new Date()): string {
   const day = new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "long",
     timeZone: TZ,
   }).format(date);
   const time = timeFormatter.format(date).replace(":", "h");
-  return `${day} à ${time}`;
+  return `${day}${yearSuffixIfNeeded(date, now)} à ${time}`;
 }
 
 /** "2026-12-12T20:30" — for datetime-local inputs */
@@ -104,7 +125,7 @@ export function formatRelativeDateForShare(date: Date, now: Date = new Date()): 
   if (daysOut < 0) {
     // Past dates: fall through to absolute — share previews of past sorties
     // are an edge case (archived links) and relative language misleads there.
-    return weekdayDayMonthFormatter.format(date);
+    return `${weekdayDayMonthFormatter.format(date)}${yearSuffixIfNeeded(date, now)}`;
   }
   if (daysOut === 0) {
     return "ce soir";
@@ -119,9 +140,9 @@ export function formatRelativeDateForShare(date: Date, now: Date = new Date()): 
     return `ce ${weekdayOnlyFormatter.format(date)}`;
   }
   if (daysOut <= 90) {
-    return weekdayDayMonthFormatter.format(date);
+    return `${weekdayDayMonthFormatter.format(date)}${yearSuffixIfNeeded(date, now)}`;
   }
-  return dayMonthNumericFormatter.format(date);
+  return `${dayMonthNumericFormatter.format(date)}${yearSuffixIfNeeded(date, now)}`;
 }
 
 /**
