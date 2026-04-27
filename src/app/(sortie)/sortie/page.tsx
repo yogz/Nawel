@@ -41,17 +41,22 @@ export default async function SortieHome() {
   // re-trie ici par `startsAt` ascendant pour que la home reflète
   // l'horizon temporel et non l'ordre de création.
   const upcoming = sortUpcomingByStartsAt(upcomingRaw);
-  const next = upcoming[0] ?? null;
+  // Le hero exige une date concrète — on choisit donc la prochaine sortie
+  // *avec* startsAt comme candidate hero, pas juste `upcoming[0]`. Sinon
+  // un sondage en cours (startsAt null) volait la place du hero, n'était
+  // pas rendu (le hero refuse les undated), et disparaissait aussi du
+  // bucket "date à voter" parce qu'on faisait `upcoming.slice(1)`.
+  const heroOuting = upcoming.find((o) => o.startsAt !== null) ?? null;
 
   // Headline needs a headcount for the next outing — fetch once from the
   // participants table and compute yes/total in memory (tiny rows, fine).
-  let nextStats: { confirmed: number; total: number } | null = null;
-  if (next) {
+  let heroStats: { confirmed: number; total: number } | null = null;
+  if (heroOuting) {
     const rows = await db
       .select({ response: participants.response })
       .from(participants)
-      .where(eq(participants.outingId, next.id));
-    nextStats = {
+      .where(eq(participants.outingId, heroOuting.id));
+    heroStats = {
       confirmed: rows.filter((r) => r.response === "yes").length,
       total: rows.filter((r) => r.response !== "no").length,
     };
@@ -69,7 +74,7 @@ export default async function SortieHome() {
   const avatarImage = userRow?.image ?? session.user.image ?? null;
 
   const firstName = session.user.name?.split(" ")[0] ?? "Toi";
-  const restUpcoming = upcoming.slice(1);
+  const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
@@ -83,7 +88,7 @@ export default async function SortieHome() {
         </Link>
       </nav>
 
-      {next && next.startsAt && nextStats ? (
+      {heroOuting && heroOuting.startsAt && heroStats ? (
         <>
           {/* Personal anchor: this used to disappear the moment a user had
               an upcoming outing, exactly when the page felt most data-rich
@@ -94,14 +99,14 @@ export default async function SortieHome() {
             salut {firstName.toLowerCase()}
           </p>
           <LiveStatusHero
-            slug={next.slug}
-            shortId={next.shortId}
-            title={next.title}
-            location={next.location}
-            startsAt={next.startsAt}
-            confirmed={nextStats.confirmed}
-            total={nextStats.total}
-            heroImageUrl={next.heroImageUrl}
+            slug={heroOuting.slug}
+            shortId={heroOuting.shortId}
+            title={heroOuting.title}
+            location={heroOuting.location}
+            startsAt={heroOuting.startsAt}
+            confirmed={heroStats.confirmed}
+            total={heroStats.total}
+            heroImageUrl={heroOuting.heroImageUrl}
             headingLevel="h1"
           />
         </>
