@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, magicLink, oAuthProxy } from "better-auth/plugins";
+import { admin, magicLink } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
@@ -78,7 +78,18 @@ const getTrustedOrigins = (): string[] => {
 const COOKIE_DOMAIN = process.env.NODE_ENV === "production" ? ".colist.fr" : undefined;
 
 export const auth = betterAuth({
-  baseURL: (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, ""),
+  // baseURL dynamique : Better Auth pioche le host depuis la requête
+  // entrante et l'utilise comme origin pour cette session. Conséquence :
+  // le redirect URI Google envoyé est `${origin}/api/auth/callback/google`
+  // et varie selon où l'utilisateur a démarré (sortie ou www). Les deux
+  // hosts sont configurés côté Google Console comme redirect URIs
+  // autorisés, donc Google accepte les deux. Les liens magic link
+  // partent aussi avec l'origin du browser (= sortie depuis sortie),
+  // plus de problème de redirect cross-domain post-callback.
+  baseURL: {
+    allowedHosts: ["www.colist.fr", "sortie.colist.fr"],
+    protocol: "https" as const,
+  },
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: getTrustedOrigins(),
   advanced: {
@@ -167,21 +178,12 @@ export const auth = betterAuth({
     trustedProviders: ["google"],
   },
   plugins: [
-    // Plugin oauth-proxy : route les flows OAuth (Google ici) à
-    // travers le `productionURL` (= www.colist.fr, où le redirect URI
-    // Google est configuré) puis renvoie l'utilisateur sur l'origin
-    // d'où il a démarré (sortie.colist.fr quand il signe depuis le
-    // sub-domain). Sans ce plugin, le callback OAuth atterrit sur
-    // www et y reste — Better Auth fait `c.redirect(callbackURL)`
-    // mais certaines configs Vercel multi-domain ne respectent pas
-    // l'URL absolue.
-    //
-    // Cf. https://better-auth.com/docs/plugins/oauth-proxy. Le plugin
-    // est aussi le pattern recommandé pour les preview deployments
-    // (ne pas configurer 50 redirect URIs côté provider).
-    oAuthProxy({
-      productionURL: (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, ""),
-    }),
+    // Pas d'oAuthProxy : on a opté pour la solution multi-redirect-URI
+    // côté Google Console (www + sortie tous les deux configurés).
+    // Combiné avec `baseURL: { allowedHosts: [...] }`, Better Auth
+    // utilise le host du request comme origin et envoie le bon redirect
+    // URI à Google. Le flow est direct (1 hop, pas de proxy callback),
+    // les cookies posés une seule fois sur `.colist.fr`.
     admin({
       adminRoles: ["admin"],
     }),
