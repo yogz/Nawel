@@ -184,9 +184,14 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       </nav>
 
-      <header className="mb-10">
-        <div className="flex items-center gap-5">
-          <UserAvatar name={row.name} image={row.image} size={88} />
+      {/* Header compact en mode lien privé : l'invité est en mode
+          "checklist d'actions à faire", l'identité de l'organisateur
+          n'a pas besoin d'être hero. Avatar 56px + h1 3xl gagnent
+          ~80px de fold (~1 card supplémentaire visible). Vitrine
+          publique (`!showRsvp`) garde le hero plein. */}
+      <header className={showRsvp ? "mb-7" : "mb-10"}>
+        <div className={`flex items-center ${showRsvp ? "gap-4" : "gap-5"}`}>
+          <UserAvatar name={row.name} image={row.image} size={showRsvp ? 56 : 88} />
           <div className="flex-1">
             <p className="mb-2 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
               <span
@@ -196,14 +201,16 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               @{row.username}
             </p>
             <h1
-              className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-5xl"
+              className={`leading-[0.95] font-black tracking-[-0.04em] text-encre-700 ${
+                showRsvp ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"
+              }`}
               style={{ textWrap: "balance" }}
             >
               {row.name}
             </h1>
           </div>
         </div>
-        {row.bio && (
+        {row.bio && !showRsvp && (
           <p className="mt-5 max-w-md text-[15px] leading-[1.5] text-encre-500">{row.bio}</p>
         )}
       </header>
