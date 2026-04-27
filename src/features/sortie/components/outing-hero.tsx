@@ -36,7 +36,7 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   return (
-    <header className="relative -mx-6 mb-10 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-ivoire-50">
+    <header className="relative -mx-6 mb-6 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-ivoire-50">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelister chaque domaine pour
         // next/image serait une charge de maintenance ; ces images
@@ -82,6 +82,9 @@ export function OutingHero({
           className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
           style={{ textWrap: "balance" }}
         >
+          {/* Plus de text-shadow : le scrim 95% en pied garantit déjà
+              le contraste, et le shadow rendait les letterforms
+              légèrement boueuses sur les zones plus claires. */}
           {title}
         </h1>
 

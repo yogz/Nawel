@@ -58,25 +58,31 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
     }
   }
 
+  // Le partage est une **action secondaire** sur cette page (l'action
+  // primaire est le RSVP / le vote). On évite donc le pattern
+  // full-bleed + plein-couleur du `CreateSuccessBanner`, qui n'a sa
+  // place que dans le moment post-create où le partage EST le job
+  // numéro un. Ici, deux pills outlined côte à côte alignés à droite,
+  // taille modeste, pour ne pas voler la vedette au CTA principal.
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex items-center justify-end gap-2">
       <a
         href={whatsAppHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-or-600 px-4 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700"
+        className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-or-500 bg-transparent px-4 text-sm font-semibold text-or-500 transition-colors duration-300 hover:border-or-400 hover:bg-or-50 hover:text-or-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500"
       >
-        <MessageCircle size={16} strokeWidth={2.2} />
-        Partager sur WhatsApp
+        <MessageCircle size={14} strokeWidth={2.4} />
+        WhatsApp
       </a>
       {canNativeShare ? (
         <button
           type="button"
           onClick={handleNativeShare}
           aria-label="Partager via une autre application"
-          className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-encre-300 bg-ivoire-200 text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-encre-300 bg-ivoire-300 text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
         >
-          <Share2 size={16} />
+          <Share2 size={14} />
         </button>
       ) : (
         // Fallback pour Firefox desktop / contextes non-secure : on
@@ -85,7 +91,7 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         <button
           type="button"
           onClick={copy}
-          className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-200 px-3 text-sm font-medium text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-300 px-3 text-sm font-medium text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
           aria-live="polite"
         >
           <AnimatePresence mode="wait" initial={false}>
