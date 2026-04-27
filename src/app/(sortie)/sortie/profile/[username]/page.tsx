@@ -135,12 +135,12 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   const session = await auth.api.getSession({ headers: await headers() });
   const isSelf = session?.user?.id === row.id;
 
-  // Pull out the featured outing for the hero — first upcoming that has
-  // a concrete date. Vote-mode outings without a chosen slot fall back
-  // into the regular card list below (no date → no relative "dans N
-  // jours" to show in the hero). Skipping by `.slice(1)` later keeps
-  // the list from duplicating the hero.
-  const heroOuting = upcoming.find((o) => o.startsAt !== null) ?? null;
+  // Vitrine publique : on featured la prochaine sortie en hero
+  // (LiveStatusHero) pour donner une accroche au visiteur curieux.
+  // Lien privé : pas de hero — l'invité doit RSVP à toutes les
+  // sorties, l'asymétrie d'un hero ralentit le scan. Toutes en
+  // OutingProfileCard uniformes, format Doodle / checklist.
+  const heroOuting = showRsvp ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
   const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
   // Only load the viewer's existing RSVPs when the token unlocks inline RSVP
