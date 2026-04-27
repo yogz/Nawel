@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, magicLink } from "better-auth/plugins";
+import { admin, magicLink, oAuthProxy } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
@@ -167,6 +167,21 @@ export const auth = betterAuth({
     trustedProviders: ["google"],
   },
   plugins: [
+    // Plugin oauth-proxy : route les flows OAuth (Google ici) à
+    // travers le `productionURL` (= www.colist.fr, où le redirect URI
+    // Google est configuré) puis renvoie l'utilisateur sur l'origin
+    // d'où il a démarré (sortie.colist.fr quand il signe depuis le
+    // sub-domain). Sans ce plugin, le callback OAuth atterrit sur
+    // www et y reste — Better Auth fait `c.redirect(callbackURL)`
+    // mais certaines configs Vercel multi-domain ne respectent pas
+    // l'URL absolue.
+    //
+    // Cf. https://better-auth.com/docs/plugins/oauth-proxy. Le plugin
+    // est aussi le pattern recommandé pour les preview deployments
+    // (ne pas configurer 50 redirect URIs côté provider).
+    oAuthProxy({
+      productionURL: (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, ""),
+    }),
     admin({
       adminRoles: ["admin"],
     }),
