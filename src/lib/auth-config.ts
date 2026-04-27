@@ -184,9 +184,23 @@ export const auth = betterAuth({
       mapProfileToImage: true,
     },
   },
-  accountLinking: {
-    enabled: true,
-    trustedProviders: ["google"],
+  account: {
+    // P1 — pattern documenté Better Auth 1.6 : accountLinking est
+    // imbriqué sous `account`, plus au top-level (qui était déprécié).
+    accountLinking: {
+      enabled: true,
+      // Quand un user signe via Google avec un email qui matche un
+      // compte existant (silent ou avec mdp), on link automatiquement
+      // sans demander confirmation par email — Google est trusté pour
+      // garantir l'authenticité de l'email.
+      trustedProviders: ["google"],
+    },
+    // P0 — chiffrer les access_token / refresh_token Google at-rest
+    // dans la table `account`. Sans ça, un dump DB exposerait les
+    // tokens OAuth utilisables pour appeler les API Google au nom du
+    // user. Le chiffrement utilise `secret` symétrique, transparent
+    // pour le code applicatif (BA décrypte au read).
+    encryptOAuthTokens: true,
   },
   plugins: [
     // Pas d'oAuthProxy : on a opté pour la solution multi-redirect-URI
