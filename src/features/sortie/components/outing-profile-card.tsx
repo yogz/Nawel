@@ -72,8 +72,15 @@ export function OutingProfileCard({
   // full timeslot matrix (too heavy for a card) — fall back to the
   // plain row layout with a "Vote pour la date" CTA that ouvre la
   // page de la sortie où la VoteRsvpSheet est dispo.
-  const canInlineRsvp = showRsvp && !isPast && outing.mode === "fixed";
-  const needsVoteCta = showRsvp && !isPast && outing.mode === "vote";
+  // Quand la deadline RSVP est dépassée, on cache complètement les
+  // boutons (inline picker + CTA "Je vote") : la sortie est verrouillée,
+  // l'invité ne peut plus changer son avis depuis la card. Les actions
+  // restent accessibles côté server (cf. participant-actions.ts) où
+  // elles sont rejetées avec un message clair, mais l'UI ne les
+  // expose plus pour ne pas suggérer une action impossible.
+  const deadlinePassed = outing.deadlineAt.getTime() < Date.now();
+  const canInlineRsvp = showRsvp && !isPast && !deadlinePassed && outing.mode === "fixed";
+  const needsVoteCta = showRsvp && !isPast && !deadlinePassed && outing.mode === "vote";
 
   const dateLabel = outing.startsAt
     ? isPast
