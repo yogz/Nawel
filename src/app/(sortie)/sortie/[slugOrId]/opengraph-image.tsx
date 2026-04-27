@@ -59,9 +59,16 @@ export default async function Image({ params }: Props) {
   // real photo at `heroImageUrl`. Compose it as cover with a noir overlay
   // so the text stays legible — experts converge on noir over bordeaux
   // (bordeaux on photo browns into mud).
-  if (outing.heroImageUrl) {
+  //
+  // Prefer the pre-resized 1200×630 JPEG companion (`heroImageOgUrl`):
+  // running Satori over a 5 MB upload pushes the final PNG past the
+  // ~300 KB cliff at which WhatsApp silently drops the preview. Fall
+  // back on the raw original for outings created before the companion
+  // column existed.
+  const heroForOg = outing.heroImageOgUrl ?? outing.heroImageUrl;
+  if (heroForOg) {
     return renderWithHero({
-      heroImageUrl: outing.heroImageUrl,
+      heroImageUrl: heroForOg,
       title: outing.title,
       eyebrow,
       location,
