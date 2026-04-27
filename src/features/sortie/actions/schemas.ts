@@ -254,6 +254,10 @@ export const pickTimeslotSchema = z.object({
   timeslotId: z.string().uuid(),
 });
 
+export const reopenPollSchema = z.object({
+  shortId: shortIdSchema,
+});
+
 export const removeRsvpSchema = z.object({
   shortId: shortIdSchema,
 });

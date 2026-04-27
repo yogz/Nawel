@@ -2,7 +2,7 @@
 
 import { useActionState, useRef } from "react";
 import { Check, X } from "lucide-react";
-import { pickTimeslotAction } from "@/features/sortie/actions/outing-actions";
+import { pickTimeslotAction, reopenPollAction } from "@/features/sortie/actions/outing-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 
@@ -29,6 +29,12 @@ export function VotingSection({
   chosenTimeslotId,
 }: Props) {
   const best = timeslots.reduce((acc, t) => Math.max(acc, t.yesCount), 0);
+  // Total votes is what gates the pick affordance — yesCount + noCount across
+  // every timeslot. Distinct from `totalVoters` which counts unique participants
+  // (a participant who voted on 3 slots counts once there, but contributes 3
+  // here). We need the "any vote at all" signal, hence this sum.
+  const totalVotes = timeslots.reduce((acc, t) => acc + t.yesCount + t.noCount, 0);
+  const canPick = isCreator && !chosenTimeslotId && totalVotes > 0;
 
   return (
     <section
@@ -55,10 +61,19 @@ export function VotingSection({
             isBest={best > 0 && ts.yesCount === best}
             isChosen={ts.id === chosenTimeslotId}
             isCreator={isCreator}
-            canPick={isCreator && !chosenTimeslotId}
+            canPick={canPick}
           />
         ))}
       </ul>
+
+      {isCreator && !chosenTimeslotId && totalVotes === 0 && (
+        <p className="mt-3 text-xs text-encre-400">
+          Personne n&rsquo;a encore voté — partage le lien d&rsquo;abord, sinon tu figeras le
+          sondage à l&rsquo;aveugle et plus personne ne pourra voter.
+        </p>
+      )}
+
+      {isCreator && chosenTimeslotId && <ReopenPollButton shortId={shortId} />}
     </section>
   );
 }
@@ -148,5 +163,39 @@ function TimeslotRowView({
         <p className="text-xs text-erreur-700">{state.message}</p>
       )}
     </li>
+  );
+}
+
+function ReopenPollButton({ shortId }: { shortId: string }) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
+    reopenPollAction,
+    {} as FormActionState
+  );
+
+  function handleClick() {
+    const confirmed = window.confirm(
+      "Rouvrir le sondage ? Le créneau choisi sera remis en jeu et les invités pourront re-voter."
+    );
+    if (confirmed) {
+      formRef.current?.requestSubmit();
+    }
+  }
+
+  return (
+    <div className="mt-4 border-t border-ivoire-400 pt-3">
+      <form ref={formRef} action={formAction} className="contents">
+        <input type="hidden" name="shortId" value={shortId} />
+      </form>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={pending}
+        className="text-xs text-bordeaux-700 underline-offset-4 hover:underline disabled:opacity-50"
+      >
+        {pending ? "Réouverture…" : "Rouvrir le sondage"}
+      </button>
+      {state.message && <p className="mt-1 text-xs text-erreur-700">{state.message}</p>}
+    </div>
   );
 }

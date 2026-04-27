@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -27,6 +27,7 @@ import {
   cancelOutingSchema,
   createOutingSchema,
   pickTimeslotSchema,
+  reopenPollSchema,
   resolveDeadline,
   unarchiveOutingSchema,
   updateOutingSchema,
@@ -474,6 +475,20 @@ export async function pickTimeslotAction(
     return { message: "Créneau introuvable." };
   }
 
+  // Refuser de figer un sondage qui n'a aucun vote — sinon le créateur
+  // bloque l'UI de vote pour les invités sans avoir reçu un seul retour
+  // (voir l'incident dMekC3qK : la VoteRsvpSheet disparaît dès que
+  // chosen_timeslot_id est non-null, plus moyen de revoter).
+  const totalVotes = await db
+    .select({ n: sql<number>`COUNT(*)::int` })
+    .from(timeslotVotes)
+    .innerJoin(outingTimeslots, eq(outingTimeslots.id, timeslotVotes.timeslotId))
+    .where(eq(outingTimeslots.outingId, outing.id))
+    .then((rows) => rows[0]?.n ?? 0);
+  if (totalVotes === 0) {
+    return { message: "Personne n'a encore voté — partage le lien d'abord." };
+  }
+
   // Pull every participant for this outing + their vote on the chosen slot
   // (if any) in one round-trip so we can compute response flips without N+1.
   const rows = await db
@@ -539,4 +554,61 @@ export async function pickTimeslotAction(
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
   redirect(`/${canonical}`);
+}
+
+/**
+ * Rouvrir un sondage qui a été figé prématurément. Reset
+ * `chosen_timeslot_id` + `fixed_datetime` à NULL — la `VoteRsvpSheet`
+ * réapparaît, les invités peuvent (re)voter, et le créateur peut
+ * re-pick une fois qu'il y a des votes. Les `participants.response`
+ * existants sont conservés tels quels (le pick suivant les recalcule
+ * à partir des votes par créneau).
+ */
+export async function reopenPollAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = reopenPollSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId } = parsed.data;
+  const user = await getSessionUser();
+  const cookieTokenHash = await ensureParticipantTokenHash();
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  const isOwner =
+    (user && outing.creatorUserId === user.id) ||
+    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  if (!isOwner) {
+    return { message: "Tu n'as pas les droits pour rouvrir le sondage." };
+  }
+  if (outing.mode !== "vote") {
+    return { message: "Cette sortie n'est pas en mode sondage." };
+  }
+  if (!outing.chosenTimeslotId) {
+    return { message: "Le sondage est déjà ouvert." };
+  }
+  if (outing.status === "cancelled") {
+    return { message: "Cette sortie est annulée." };
+  }
+
+  await db
+    .update(outings)
+    .set({
+      chosenTimeslotId: null,
+      fixedDatetime: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(outings.id, outing.id));
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}`);
+  return {};
 }
