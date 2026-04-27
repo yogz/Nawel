@@ -45,18 +45,22 @@ export function formatDeadlineCountdown(
     // Round up so "23h59 restants" lit comme "Plus que 24h" plutôt
     // que "Plus que 23h" (sentiment d'urgence cohérent avec ce qu'un
     // humain dit). Floor-ceil entre 1 et 24 selon ce qui reste.
+    // Suffixe "pour répondre" : sans contexte explicite, "Plus que 18h"
+    // pourrait être lu comme "il reste 18h avant la sortie" alors
+    // que c'est la deadline RSVP. Le suffixe lève l'ambiguïté.
     const hoursLeft = Math.max(1, Math.ceil(deltaMs / ONE_HOUR_MS));
     return {
-      label: hoursLeft === 1 ? "Plus que 1h" : `Plus que ${hoursLeft}h`,
+      label: hoursLeft === 1 ? "Plus que 1h pour répondre" : `Plus que ${hoursLeft}h pour répondre`,
       tone: "urgent",
     };
   }
 
   if (deltaMs < SEVEN_DAYS_MS) {
-    // J-1 / J-2 / … en compact. Plus lisible que "Plus que 3 jours"
-    // dans le format chip mono uppercase qu'utilisent les cartes.
+    // 1–7 jours : "J-4 pour répondre" — le J-N seul était ambigu
+    // (référence à la sortie ou à la deadline RSVP ?), le suffixe
+    // précise. Reste compact pour la chip mono uppercase.
     const daysLeft = Math.ceil(deltaMs / ONE_DAY_MS);
-    return { label: `J-${daysLeft}`, tone: "soon" };
+    return { label: `J-${daysLeft} pour répondre`, tone: "soon" };
   }
 
   // ≥ 7 jours : on revient à l'absolu, parce que "Plus que 12 jours"
