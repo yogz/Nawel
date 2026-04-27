@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight, X } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { formatOutingDate, formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import {
   formatDeadlineCountdown,
@@ -98,14 +98,11 @@ export function OutingProfileCard({
   const countdown =
     !isPast && outing.status !== "cancelled" ? formatDeadlineCountdown(outing.deadlineAt) : null;
 
-  const statusEyebrow =
-    myRsvp === null
-      ? null
-      : myRsvp.response === "no"
-        ? { label: "Tu ne viens pas", tone: "muted" as const }
-        : myRsvp.response === "handle_own"
-          ? { label: "Tu viens · billet perso", tone: "confirmed" as const }
-          : { label: "Tu viens", tone: "confirmed" as const };
+  // L'eyebrow `✓ TU VIENS` qui existait avant a été retiré : il
+  // était redondant avec l'état filled du segmented `Je viens` /
+  // `Je passe` qui dit déjà la réponse. Cf. review graphic
+  // designer + UX. La date (en eyebrow vert) reste l'unique repère
+  // temporel sur la card.
 
   // Sortie passée : on dégrade visuellement pour qu'elle se lise comme
   // un souvenir et non comme une action en attente. Trois axes appliqués
@@ -160,26 +157,8 @@ export function OutingProfileCard({
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        {statusEyebrow && (
-          <p
-            className={`flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
-              statusEyebrow.tone === "confirmed" ? "text-bordeaux-600" : "text-encre-400"
-            }`}
-          >
-            {statusEyebrow.tone === "confirmed" ? (
-              <Check size={12} strokeWidth={3} />
-            ) : (
-              <X size={12} strokeWidth={3} />
-            )}
-            {statusEyebrow.label}
-          </p>
-        )}
         {dateLabel && (
-          <p
-            className={`font-mono text-[10.5px] uppercase tracking-[0.18em] ${
-              statusEyebrow ? "text-encre-400" : "text-bordeaux-600"
-            }`}
-          >
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-bordeaux-600">
             {dateLabel}
           </p>
         )}
@@ -282,6 +261,7 @@ export function OutingProfileCard({
             shortId={outing.shortId}
             outingTitle={outing.title}
             outingUrl={outingUrl}
+            outingPath={canonical}
             outingDate={outing.startsAt}
             existing={myRsvp}
             loggedInName={loggedInName}
