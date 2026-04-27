@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
+import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 
 type Props = {
@@ -58,22 +59,41 @@ export function InlineRsvpSection({
   // bascule yes → no, on stocke "yes" pour pouvoir restaurer si besoin.
   const [pending, setPending] = useState(false);
 
-  const knownName = existing?.name ?? loggedInName ?? "";
+  // Pour les anonymes : si pas d'`existing` sur cette sortie et pas
+  // de session loguée, on tombe sur les prefs localStorage (saisie
+  // sur une autre sortie). Permet le commit direct yes/no en 1 tap
+  // sans ouvrir la sheet, même pour un user qui n'a jamais répondu
+  // à CETTE sortie en particulier.
+  const prefs = readAnonPrefs();
+  const knownName = existing?.name ?? loggedInName ?? prefs?.name ?? "";
   const currentResponse: RsvpResponse | null = existing?.response ?? null;
   const isYes = currentResponse !== null && currentResponse !== "no";
   const isNo = currentResponse === "no";
 
   async function commitResponse(response: "yes" | "no", name: string) {
+    // Quand on commit en direct depuis la card (path 1-tap sans
+    // sheet), on reprend les extras/email connus pour ne pas les
+    // écraser. Pour un anon sans `existing`, on hydrate depuis les
+    // prefs localStorage (saisis sur une autre sortie).
+    const extraAdults = existing?.extraAdults ?? prefs?.extraAdults ?? 0;
+    const extraChildren = existing?.extraChildren ?? prefs?.extraChildren ?? 0;
+    const email = existing?.email ?? prefs?.email ?? "";
+
     const fd = new FormData();
     fd.set("shortId", shortId);
     fd.set("response", response);
     fd.set("displayName", name);
-    fd.set("extraAdults", String(existing?.extraAdults ?? 0));
-    fd.set("extraChildren", String(existing?.extraChildren ?? 0));
-    if (existing?.email) {
-      fd.set("email", existing.email);
+    fd.set("extraAdults", String(extraAdults));
+    fd.set("extraChildren", String(extraChildren));
+    if (email) {
+      fd.set("email", email);
     }
     await rsvpAction({}, fd);
+
+    // Met à jour les prefs avec ce qu'on vient d'envoyer (le name
+    // surtout — l'email/extras viennent déjà des prefs ou d'existing).
+    writeAnonPrefs({ name });
+
     router.refresh();
   }
 

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
 import { GuestCountStepper } from "./guest-count-stepper";
 
 export type RsvpResponse = "yes" | "no" | "handle_own";
@@ -25,16 +26,31 @@ export function NoNameSheet({
   onDone: () => void;
 }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     rsvpAction,
     {} as FormActionState
   );
+
+  // Préremplissage anon : si l'invité a déjà saisi son prénom sur
+  // une autre sortie depuis le même device, on le récupère depuis
+  // localStorage. La donnée est origin-scoped sur sortie.colist.fr,
+  // donc pas de fuite vers Colist www.
+  const prefs = readAnonPrefs();
 
   const wasPending = useRef(false);
   useEffect(() => {
     const justFinished = wasPending.current && !pending;
     wasPending.current = pending;
     if (justFinished && !state.errors && !state.message) {
+      // Persiste le prénom saisi pour pré-remplir les prochaines
+      // sorties que l'utilisateur va RSVP depuis ce device.
+      const submittedName =
+        (formRef.current?.elements.namedItem("displayName") as HTMLInputElement | null)?.value ??
+        "";
+      if (submittedName) {
+        writeAnonPrefs({ name: submittedName });
+      }
       queueMicrotask(() => {
         onDone();
         router.refresh();
@@ -49,7 +65,7 @@ export function NoNameSheet({
           <SheetTitle className="font-serif text-2xl text-encre-700">Qui dit non&nbsp;?</SheetTitle>
           <p className="text-sm text-encre-400">Juste ton prénom, on s&rsquo;arrête là.</p>
         </SheetHeader>
-        <form action={formAction} className="flex flex-col gap-4">
+        <form ref={formRef} action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="shortId" value={shortId} />
           <input type="hidden" name="response" value="no" />
           <input type="hidden" name="extraAdults" value="0" />
@@ -59,6 +75,7 @@ export function NoNameSheet({
             name="displayName"
             required
             maxLength={100}
+            defaultValue={prefs?.name}
             placeholder="Ton prénom"
             autoComplete="given-name"
             className="h-14 rounded-xl border-2 border-encre-100 bg-white text-center text-xl font-black tracking-tight"
@@ -117,13 +134,22 @@ export function YesDetailSheet({
   outingDate: Date | null;
   onSuccess: (name: string, response: RsvpResponse) => void;
 }) {
+  // Préremplissage anon : on lit les prefs UNE FOIS au mount du
+  // composant. Les valeurs `existing*` (réponse à cette sortie
+  // précisément) priment toujours sur les prefs (saisie sur une
+  // autre sortie) — c'est juste un fallback.
+  const prefs = readAnonPrefs();
+
   const [chosen, setChosen] = useState<RsvpResponse>(
     existingResponse === "no" ? "yes" : (existingResponse ?? "yes")
   );
-  const [adults, setAdults] = useState(existingExtraAdults);
-  const [children, setChildren] = useState(existingExtraChildren);
+  const [adults, setAdults] = useState(existingExtraAdults || prefs?.extraAdults || 0);
+  const [children, setChildren] = useState(existingExtraChildren || prefs?.extraChildren || 0);
   const [showExtras, setShowExtras] = useState(
-    existingExtraAdults > 0 || existingExtraChildren > 0
+    existingExtraAdults > 0 ||
+      existingExtraChildren > 0 ||
+      (prefs?.extraAdults ?? 0) > 0 ||
+      (prefs?.extraChildren ?? 0) > 0
   );
 
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
@@ -142,9 +168,20 @@ export function YesDetailSheet({
         existingName ??
         loggedInName ??
         "Toi";
+      const currentEmail =
+        (formRef.current?.elements.namedItem("email") as HTMLInputElement | null)?.value ?? "";
+      // Persiste les valeurs saisies pour les prochaines sorties RSVP
+      // depuis ce device. Best-effort : on n'échoue pas le commit si
+      // localStorage est plein / désactivé.
+      writeAnonPrefs({
+        name: currentName,
+        email: currentEmail,
+        extraAdults: adults,
+        extraChildren: children,
+      });
       onSuccess(currentName, chosen);
     }
-  }, [pending, state, existingName, loggedInName, chosen, onSuccess]);
+  }, [pending, state, existingName, loggedInName, chosen, onSuccess, adults, children]);
 
   const hiddenFieldErrors = state.errors
     ? Object.entries(state.errors)
@@ -174,8 +211,9 @@ export function YesDetailSheet({
             <Input
               id="displayName"
               name="displayName"
+              autoComplete="given-name"
               required
-              defaultValue={existingName ?? loggedInName}
+              defaultValue={existingName ?? loggedInName ?? prefs?.name}
               maxLength={100}
               placeholder="Claire"
               autoComplete="given-name"
@@ -243,7 +281,9 @@ export function YesDetailSheet({
               id="email"
               name="email"
               type="email"
-              defaultValue={existingEmail}
+              defaultValue={existingEmail ?? prefs?.email}
+              autoComplete="email"
+              inputMode="email"
               placeholder="pour être prévenu·e des changements"
             />
             {state.errors?.email?.[0] && (
