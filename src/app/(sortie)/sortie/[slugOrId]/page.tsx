@@ -201,7 +201,14 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         </div>
       )}
 
-      {!(justCreated && isCreator) && (
+      {/* Le partage est une action de créateur — c'est lui qui a la
+          mission d'inviter du monde. Un invité qui arrive via un lien
+          WhatsApp est dans le flow de réception, pas de répartage ;
+          lui montrer un bouton "Partager" suggère à tort qu'il est en
+          charge de propager le lien. On le cache donc pour les
+          non-créateurs. Le banner post-create est déjà soumis à
+          `isCreator`, donc cohérent. */}
+      {isCreator && !justCreated && (
         <div className="mb-4">
           <ShareActions
             url={`${PUBLIC_BASE}/${canonical}`}
@@ -216,7 +223,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         className="mt-10 overflow-hidden rounded-[28px] border border-ivoire-400 bg-ivoire-100 p-6 shadow-[var(--shadow-velvet)]"
         aria-label="Les confirmés"
       >
-        <ParticipantList participants={outing.participants} />
+        <ParticipantList participants={outing.participants} isCreator={isCreator} />
 
         <div className="mt-6 border-t border-ivoire-400 pt-4 text-center">
           <DeadlineBadge deadlineAt={outing.deadlineAt} />

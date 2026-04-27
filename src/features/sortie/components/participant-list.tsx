@@ -13,7 +13,13 @@ type Participant = {
   response: string;
 };
 
-export function ParticipantList({ participants }: { participants: Participant[] }) {
+export function ParticipantList({
+  participants,
+  isCreator = false,
+}: {
+  participants: Participant[];
+  isCreator?: boolean;
+}) {
   const yesList = participants.filter((p) => p.response === "yes");
   const handleOwnList = participants.filter((p) => p.response === "handle_own");
   const interestedList = participants.filter((p) => p.response === "interested");
@@ -33,7 +39,15 @@ export function ParticipantList({ participants }: { participants: Participant[] 
         >
           Personne n&rsquo;a encore tappé.
           <br />
-          <span className="text-bordeaux-600">Partage le lien.</span>
+          {isCreator ? (
+            // Le créateur a accès aux boutons de partage juste au-dessus.
+            // L'invitation à partager n'a de sens que pour lui.
+            <span className="text-bordeaux-600">Partage le lien.</span>
+          ) : (
+            // Pour un invité, on retourne l'incitation : c'est lui qui
+            // peut être le premier à dire oui, pas un partageur de lien.
+            <span className="text-bordeaux-600">Sois le premier à dire oui.</span>
+          )}
         </p>
       </div>
     );
