@@ -201,13 +201,23 @@ function validateAgainstSources(data: EventDetails, _sources: string[]): EventDe
   // sont souvent sur des CDN tiers), mais on filtre :
   // - les redirects Google grounding (vertexaisearch.cloud.google.com) :
   //   ils ne servent pas d'image directement, ils renvoient un HTML
-  // - les pages HTML déguisées (pas d'extension image)
+  // - les pages HTML/PHP/ASP clairement identifiables par leur extension
   // - les host sans schéma HTTPS valide
+  //
+  // Volontairement permissif sur l'extension : les CDN modernes
+  // (Cloudinary, _next/image, Imgix, hashes opaques) servent des images
+  // sans `.jpg`/`.png` final. La regex stricte précédente rejetait la
+  // majorité des URL retournées par Gemini, ce qui faisait tomber le
+  // hero sur "" pour quasi tous les événements. Le rendu côté client
+  // a déjà un `<img onError>` qui rebascule sur le picker en cas de
+  // 404 ou de mime non-image, donc une URL douteuse coûte au pire un
+  // round-trip raté.
   if (data.heroImageUrl) {
+    const path = safePath(data.heroImageUrl);
     if (!imageHost || imageHost.endsWith("vertexaisearch.cloud.google.com")) {
       data.heroImageUrl = "";
-    } else if (!/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(data.heroImageUrl)) {
-      // Pas une vraie URL d'image (probablement une page produit/article).
+    } else if (path && /\.(html?|php|aspx?|jsp)$/i.test(path)) {
+      // URL clairement HTML — pas une image.
       data.heroImageUrl = "";
     }
   }
@@ -228,7 +238,11 @@ function validateAgainstSources(data: EventDetails, _sources: string[]): EventDe
   }
 
   // Si après nettoyage il ne reste qu'un titre seul, c'est trop maigre.
-  const populatedFields = [data.venue, data.startsAt, data.ticketUrl].filter(
+  // L'image compte comme un champ utile : sur la page d'un évent existant,
+  // l'utilisateur peut ne chercher qu'une nouvelle image (titre + venue
+  // déjà connus côté DB), et un résultat "title + heroImageUrl" est
+  // exactement ce qu'on veut servir.
+  const populatedFields = [data.venue, data.startsAt, data.ticketUrl, data.heroImageUrl].filter(
     (v) => v && v.length > 0
   );
   if (populatedFields.length === 0) {
@@ -248,6 +262,14 @@ function safeHost(url: string): string | null {
       return null;
     }
     return u.hostname.replace(/^www\./, "").toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function safePath(url: string): string | null {
+  try {
+    return new URL(url).pathname;
   } catch {
     return null;
   }
