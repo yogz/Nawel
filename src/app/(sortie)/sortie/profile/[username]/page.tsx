@@ -403,6 +403,7 @@ function OutingSection({
       extraAdults: p.extraAdults,
       extraChildren: p.extraChildren,
       email: p.anonEmail ?? undefined,
+      votedSlots: p.votedSlots,
     };
   }
 

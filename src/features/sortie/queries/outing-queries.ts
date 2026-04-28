@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { outings, outingTimeslots, participants } from "@drizzle/sortie-schema";
+import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
@@ -200,16 +200,24 @@ export async function listArchivedOutings(userId: string) {
  *
  * Skips the DB round-trip entirely when the viewer has no identity signal.
  */
+export type MyParticipantWithSlots = typeof participants.$inferSelect & {
+  // Créneaux marqués `available = true` par le viewer en mode vote.
+  // Toujours présent (tableau vide pour les sorties fixed ou les modes
+  // vote sans choix coché). Trié par `startsAt` ASC pour permettre
+  // l'affichage compact "Mar 12 · Mer 13" sans re-sort côté UI.
+  votedSlots: Date[];
+};
+
 export async function listMyParticipantsForOutings(args: {
   outingIds: string[];
   cookieTokenHash: string | null;
   userId: string | null;
 }) {
   if (args.outingIds.length === 0) {
-    return new Map<string, typeof participants.$inferSelect>();
+    return new Map<string, MyParticipantWithSlots>();
   }
   if (!args.cookieTokenHash && !args.userId) {
-    return new Map<string, typeof participants.$inferSelect>();
+    return new Map<string, MyParticipantWithSlots>();
   }
   const identityClauses = [];
   if (args.cookieTokenHash) {
@@ -224,12 +232,42 @@ export async function listMyParticipantsForOutings(args: {
     where: and(inArray(participants.outingId, args.outingIds), identity),
   });
 
-  const byOuting = new Map<string, typeof participants.$inferSelect>();
+  // Un seul aller-retour pour ramener les créneaux votés (available=true)
+  // de tous les participants viewer. Vide si aucune sortie en mode vote
+  // n'est dans le lot. Le `inArray` sur `participantId` est borné par le
+  // nombre de sorties affichées (typiquement < 20), donc pas de risque
+  // de blow-up sur cette query.
+  const participantIds = rows.map((r) => r.id);
+  const slotsByParticipant = new Map<string, Date[]>();
+  if (participantIds.length > 0) {
+    const slotRows = await db
+      .select({
+        participantId: timeslotVotes.participantId,
+        startsAt: outingTimeslots.startsAt,
+      })
+      .from(timeslotVotes)
+      .innerJoin(outingTimeslots, eq(outingTimeslots.id, timeslotVotes.timeslotId))
+      .where(
+        and(inArray(timeslotVotes.participantId, participantIds), eq(timeslotVotes.available, true))
+      )
+      .orderBy(asc(outingTimeslots.startsAt));
+
+    for (const slot of slotRows) {
+      const list = slotsByParticipant.get(slot.participantId) ?? [];
+      list.push(slot.startsAt);
+      slotsByParticipant.set(slot.participantId, list);
+    }
+  }
+
+  const byOuting = new Map<string, MyParticipantWithSlots>();
   for (const row of rows) {
     // A viewer can only have one participant row per outing — first hit wins
     // and the unique index prevents duplicates anyway.
     if (!byOuting.has(row.outingId)) {
-      byOuting.set(row.outingId, row);
+      byOuting.set(row.outingId, {
+        ...row,
+        votedSlots: slotsByParticipant.get(row.id) ?? [],
+      });
     }
   }
   return byOuting;
@@ -306,9 +344,7 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
       // " · à confirmer" sur le SUMMARY. NULL pour les sorties qu'il a
       // créées mais auxquelles il n'a pas RSVP — traité comme "yes"
       // côté builder (le créateur vient par défaut).
-      userResponse: sql<
-        "yes" | "no" | "handle_own" | "interested" | null
-      >`(
+      userResponse: sql<"yes" | "no" | "handle_own" | "interested" | null>`(
         SELECT ${participants.response}::text FROM ${participants}
         WHERE ${participants.outingId} = ${outings.id}
           AND ${participants.userId} = ${userId}

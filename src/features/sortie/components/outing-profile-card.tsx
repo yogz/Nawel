@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
-import { formatOutingDate, formatOutingDateShort } from "@/features/sortie/lib/date-fr";
+import {
+  formatOutingDate,
+  formatOutingDateShort,
+  formatVotedSlotsCompact,
+} from "@/features/sortie/lib/date-fr";
 import {
   formatDeadlineCountdown,
   type DeadlineTone,
@@ -34,6 +38,9 @@ type Props = {
     extraAdults: number;
     extraChildren: number;
     email?: string;
+    // Créneaux choisis en mode vote (vide ou absent en mode fixed).
+    // Triés ASC, dédupliqués par jour côté formatter.
+    votedSlots?: Date[];
   } | null;
   loggedInName?: string | null;
   outingBaseUrl: string;
@@ -216,10 +223,21 @@ export function OutingProfileCard({
 
   if (needsVoteCta) {
     // Pas d'inline picker : la matrix de créneaux est trop riche pour
-    // une carte. Le CTA mène à /<canonical> où la VoteRsvpSheet
-    // prend le relais. Quand l'invité a déjà voté, on signale acid-50
-    // pour confirmer "système t'a entendu" sans poids primary-action.
-    const hasVoted = myRsvp !== null;
+    // une carte. Le CTA mène à /<canonical> où la VoteRsvpSheet prend
+    // le relais.
+    //
+    // Asymétrie de saillance — alignée sur l'état "voté" du mode fixed
+    // (chip filled + ghost) pour que la lecture en checklist soit
+    // homogène cross-mode :
+    //  - non voté → CTA filled acid (action requise = œil attiré)
+    //  - voté    → résumé "✓ Tes dates : …" + bouton ghost discret
+    //              (déjà fait, l'œil passe son chemin sur le scan)
+    //
+    // Le résumé liste les jours choisis (max 3 + "+N" overflow). On
+    // affiche pas l'heure : les créneaux peuvent être plusieurs sur le
+    // même jour, et l'heure précise se relit dans la sheet via Modifier.
+    const votedSlots = myRsvp?.votedSlots ?? [];
+    const hasVoted = votedSlots.length > 0;
     return (
       <article
         className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
@@ -231,23 +249,34 @@ export function OutingProfileCard({
           {navigationRow}
         </Link>
         <div className="mt-3 border-t border-ink-700/5 pt-3">
-          {hasVoted && (
-            <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-700">
-              ✓ Tu as voté
-            </p>
+          {hasVoted ? (
+            <>
+              <p className="mb-2 text-[13px] leading-snug text-ink-600">
+                <span className="mr-1.5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-700">
+                  ✓ Tes dates
+                </span>
+                <span className="font-semibold text-ink-700">
+                  {formatVotedSlotsCompact(votedSlots)}
+                </span>
+              </p>
+              <Link
+                href={href}
+                className="inline-flex h-11 items-center gap-1.5 rounded-full border border-ink-200 bg-transparent px-4 text-sm font-semibold text-ink-600 transition-colors hover:border-ink-300 hover:bg-surface-100 motion-safe:active:scale-95"
+              >
+                Modifier les dates
+                <ArrowRight size={14} strokeWidth={2.4} />
+              </Link>
+            </>
+          ) : (
+            <Link
+              href={href}
+              className="inline-flex h-11 items-center gap-1.5 rounded-full border border-acid-600 bg-acid-50 px-4 text-sm font-semibold text-acid-700 transition-colors hover:bg-acid-100 motion-safe:active:scale-95"
+            >
+              <Check size={14} strokeWidth={2.6} className="text-acid-600" />
+              Je vote
+              <ArrowRight size={14} strokeWidth={2.4} />
+            </Link>
           )}
-          <Link
-            href={href}
-            className={`inline-flex h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors motion-safe:active:scale-95 ${
-              hasVoted
-                ? "border-acid-600 bg-acid-50 text-acid-700 hover:bg-acid-100"
-                : "border-ink-200 bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200"
-            }`}
-          >
-            <Check size={14} strokeWidth={2.6} className="text-acid-600" />
-            {hasVoted ? "Modifier mon vote" : "Je vote"}
-            <ArrowRight size={14} strokeWidth={2.4} />
-          </Link>
         </div>
       </article>
     );

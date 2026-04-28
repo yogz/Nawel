@@ -109,6 +109,49 @@ export function formatOutingDate(date: Date, now: Date = new Date()): string {
   return `${day}${yearSuffixIfNeeded(date, now)} · ${time}`;
 }
 
+const compactSlotFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  timeZone: TZ,
+});
+
+/**
+ * Résumé compact des créneaux votés pour le mode vote (Doodle-style).
+ * Dédupe par journée Paris : deux créneaux le même jour à des heures
+ * différentes ne s'affichent qu'une fois. La précision horaire est
+ * volontairement absente — c'est un *résumé d'engagement* pour scanner
+ * une checklist, pas une référence agenda.
+ *
+ * Limite à 3 jours visibles + suffixe "+N" si overflow. Trie ASC.
+ *
+ * Exemples :
+ *   1 jour  → "mar. 12 mai"
+ *   3 jours → "mar. 12 mai · mer. 13 mai · jeu. 14 mai"
+ *   5 jours → "mar. 12 mai · mer. 13 mai · jeu. 14 mai · +2"
+ */
+export function formatVotedSlotsCompact(slots: Date[]): string {
+  if (slots.length === 0) {
+    return "";
+  }
+  const seen = new Set<string>();
+  const uniqueDays: Date[] = [];
+  for (const slot of slots) {
+    const dayKey = parisDayKeyFormatter.format(slot);
+    if (!seen.has(dayKey)) {
+      seen.add(dayKey);
+      uniqueDays.push(slot);
+    }
+  }
+  const visible = uniqueDays.slice(0, 3);
+  const overflow = uniqueDays.length - visible.length;
+  const parts = visible.map((d) => compactSlotFormatter.format(d).replace(/\.$/, ""));
+  if (overflow > 0) {
+    parts.push(`+${overflow}`);
+  }
+  return parts.join(" · ");
+}
+
 /** "jeu. 12 déc. · 20h30" — compact form for lists, année si nécessaire */
 export function formatOutingDateShort(date: Date, now: Date = new Date()): string {
   const day = shortDayMonthFormatter.format(date);
