@@ -1,6 +1,7 @@
-import { ArrowUpRight, CalendarPlus } from "lucide-react";
+import { CalendarPlus } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { RotatingTicketLink } from "@/features/sortie/components/rotating-ticket-link";
 
 type Props = {
   title: string;
@@ -96,17 +97,7 @@ export function OutingHero({
 
         {(ticketUrl || (startsAt && canonicalPath)) && (
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-            {ticketUrl && (
-              <a
-                href={ticketUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-acid-600 underline-offset-4 hover:underline"
-              >
-                Prendre tes billets / info sur l&rsquo;événement
-                <ArrowUpRight size={14} strokeWidth={2.4} />
-              </a>
-            )}
+            {ticketUrl && <RotatingTicketLink href={ticketUrl} />}
             {startsAt && canonicalPath && (
               <a
                 href={`/${canonicalPath}/agenda`}
