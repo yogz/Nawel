@@ -93,29 +93,40 @@ export async function markDebtPaidAction(
     return { message: "Non autorisé." };
   }
 
-  // Debtor-only transition. WHERE + status guard doubles as an idempotency
-  // check — a second click after confirmation is a no-op.
-  const [updated] = await db
-    .update(debts)
-    .set({ status: "declared_paid", declaredAt: new Date(), updatedAt: new Date() })
-    .where(
-      and(
-        eq(debts.id, parsed.data.debtId),
-        eq(debts.debtorParticipantId, participant.id),
-        eq(debts.status, "pending")
+  // Transaction : update debt + insert audit log atomiques. L'audit log
+  // est append-only : un crash post-update qui laisse l'event sans trace
+  // brise la promesse de traçabilité des transitions de paiement.
+  // Email reste hors transaction (fire-and-forget Resend).
+  const ipHash = await hashIp();
+  const updated = await db.transaction(async (tx) => {
+    // Debtor-only transition. WHERE + status guard doubles as an idempotency
+    // check — a second click after confirmation is a no-op.
+    const [row] = await tx
+      .update(debts)
+      .set({ status: "declared_paid", declaredAt: new Date(), updatedAt: new Date() })
+      .where(
+        and(
+          eq(debts.id, parsed.data.debtId),
+          eq(debts.debtorParticipantId, participant.id),
+          eq(debts.status, "pending")
+        )
       )
-    )
-    .returning({ id: debts.id });
+      .returning({ id: debts.id });
+
+    if (row) {
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorParticipantId: participant.id,
+        actorUserId: userId,
+        action: "DEBT_DECLARED_PAID",
+        ipHash,
+        payload: JSON.stringify({ debtId: row.id }),
+      });
+    }
+    return row;
+  });
 
   if (updated) {
-    await db.insert(auditLog).values({
-      outingId: outing.id,
-      actorParticipantId: participant.id,
-      actorUserId: userId,
-      action: "DEBT_DECLARED_PAID",
-      ipHash: await hashIp(),
-      payload: JSON.stringify({ debtId: updated.id }),
-    });
     await sendPaymentDeclaredEmail({
       outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
       debtId: updated.id,
@@ -148,21 +159,29 @@ export async function confirmDebtPaidAction(
     return { message: "Non autorisé." };
   }
 
-  const [updated] = await db
-    .update(debts)
-    .set({ status: "confirmed", confirmedAt: new Date(), updatedAt: new Date() })
-    .where(and(eq(debts.id, parsed.data.debtId), eq(debts.creditorParticipantId, participant.id)))
-    .returning({ id: debts.id });
+  // Transaction : update debt + audit log atomiques (idem markDebtPaid).
+  const ipHash = await hashIp();
+  const updated = await db.transaction(async (tx) => {
+    const [row] = await tx
+      .update(debts)
+      .set({ status: "confirmed", confirmedAt: new Date(), updatedAt: new Date() })
+      .where(and(eq(debts.id, parsed.data.debtId), eq(debts.creditorParticipantId, participant.id)))
+      .returning({ id: debts.id });
+
+    if (row) {
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorParticipantId: participant.id,
+        actorUserId: userId,
+        action: "DEBT_CONFIRMED",
+        ipHash,
+        payload: JSON.stringify({ debtId: row.id }),
+      });
+    }
+    return row;
+  });
 
   if (updated) {
-    await db.insert(auditLog).values({
-      outingId: outing.id,
-      actorParticipantId: participant.id,
-      actorUserId: userId,
-      action: "DEBT_CONFIRMED",
-      ipHash: await hashIp(),
-      payload: JSON.stringify({ debtId: updated.id }),
-    });
     await sendPaymentConfirmedEmail({
       outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
       debtId: updated.id,
@@ -239,15 +258,22 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
     return { ok: false, message: "Moyen introuvable." };
   }
 
-  const value = decryptSecret(method.valueEncrypted);
-
-  await db.insert(auditLog).values({
-    outingId: outing.id,
-    actorParticipantId: participant.id,
-    actorUserId: userId,
-    action: "IBAN_REVEALED",
-    ipHash: await hashIp(),
-    payload: JSON.stringify({ methodId, debtId }),
+  // Transaction : décryptage + écriture de l'audit log atomiques. Si
+  // l'audit log échoue après le décryptage, on rollback — on préfère
+  // refuser la révélation plutôt que de la servir sans trace
+  // (l'auditabilité est la garantie qui justifie le décryptage).
+  const ipHash = await hashIp();
+  const value = await db.transaction(async (tx) => {
+    const decrypted = decryptSecret(method.valueEncrypted);
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorParticipantId: participant.id,
+      actorUserId: userId,
+      action: "IBAN_REVEALED",
+      ipHash,
+      payload: JSON.stringify({ methodId, debtId }),
+    });
+    return decrypted;
   });
 
   return { ok: true, value };
