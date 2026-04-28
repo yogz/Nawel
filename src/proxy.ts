@@ -77,10 +77,19 @@ export const config = {
   // - ... if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
   // - ... the ones containing a dot (e.g. `favicon.ico`)
   //
+  // Plus une exception explicite : on REMET dans le matcher tous les
+  // paths qui terminent par `.ics`. Le flux iCal personnel
+  // `sortie.colist.fr/calendar/<token>.ics` (Apple Calendar exige
+  // ce suffixe pour ouvrir le prompt de subscription webcal) passait
+  // sinon dans la branche "static asset" du matcher → pas de rewrite
+  // → 404. Le path `.ics` matché ici a besoin du proxy pour être
+  // réécrit `/calendar/...ics` → `/sortie/calendar/...ics` (route
+  // handler dans le route group `(sortie)`).
+  //
   // NOTE: we deliberately do NOT skip prefetch requests. The sortie host
   // relies on this proxy to rewrite `/@user` and `/moi` to their internal
   // routes — if prefetches bypass the proxy they resolve as 404 on the
   // `/[locale]/...` tree and Vercel caches those 404s, breaking subsequent
   // real navigations.
-  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)", "/:path*.ics"],
 };
