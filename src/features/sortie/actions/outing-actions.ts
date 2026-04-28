@@ -261,6 +261,9 @@ export async function updateOutingAction(
       deadlineAt: data.rsvpDeadline,
       slug,
       updatedAt: new Date(),
+      // Bump SEQUENCE : un changement de titre / date / lieu doit forcer
+      // les clients calendar à re-rendre l'event (RFC 5545 §3.8.7.4).
+      sequence: sql`${outings.sequence} + 1`,
     })
     .where(eq(outings.id, outing.id));
 
@@ -346,7 +349,15 @@ export async function cancelOutingAction(
 
   await db
     .update(outings)
-    .set({ status: "cancelled", cancelledAt: new Date(), updatedAt: new Date() })
+    .set({
+      status: "cancelled",
+      cancelledAt: new Date(),
+      updatedAt: new Date(),
+      // Bump SEQUENCE pour que les clients calendar abonnés au flux iCal
+      // re-rendent la copie locale (Apple/Outlook ignorent les updates
+      // sans SEQUENCE incrémenté). Cf. RFC 5545 §3.8.7.4.
+      sequence: sql`${outings.sequence} + 1`,
+    })
     .where(eq(outings.id, outing.id));
 
   await sendOutingCancelledEmails({

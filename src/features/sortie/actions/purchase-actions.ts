@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, asc, eq, ne, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -250,7 +250,14 @@ export async function declarePurchaseAction(
 
     await tx
       .update(outings)
-      .set({ status: "purchased", updatedAt: new Date() })
+      .set({
+        status: "purchased",
+        updatedAt: new Date(),
+        // Bump SEQUENCE : transition awaiting_purchase → purchased.
+        // Signale aux abonnés iCal que l'event est désormais figé
+        // (TRANSP passe à OPAQUE, suffixe " · à confirmer" tombe).
+        sequence: sql`${outings.sequence} + 1`,
+      })
       .where(eq(outings.id, outing.id));
   });
 
