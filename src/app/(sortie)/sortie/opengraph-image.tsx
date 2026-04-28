@@ -103,7 +103,7 @@ export default function Image() {
         >
           <span
             style={{
-              display: "inline-block",
+              display: "flex",
               width: 8,
               height: 8,
               borderRadius: "50%",
