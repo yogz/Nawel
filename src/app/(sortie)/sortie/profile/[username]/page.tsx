@@ -12,7 +12,6 @@ import {
   listPublicProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
-import { formatDateTimeForShare } from "@/features/sortie/lib/date-fr";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
@@ -51,16 +50,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Profil" };
   }
 
-  // Fetch the next outing inline so the description can be concrete
-  // ("Prochaine : Raclette samedi 20h30 · 8 déjà partants") rather than
-  // the generic "Les sorties de @leamartin" which reads as vitrine-morte.
+  // Format mini-agenda : la valeur d'un partage de profil c'est la *série*,
+  // pas la sortie isolée. Le partage type est "voilà ce que je vais voir,
+  // dites-moi si vous voulez venir" en WhatsApp/DM aux amis — donc le titre
+  // affiche la densité (count) et la description liste les prochaines.
   const { upcoming, past } = await listPublicProfileOutings(row.id);
-  const next = upcoming.find((o) => o.startsAt !== null) ?? upcoming[0] ?? null;
+  const datedUpcoming = upcoming
+    .filter((o): o is typeof o & { startsAt: Date } => o.startsAt !== null)
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
   const url = `${PUBLIC_BASE}/@${row.username}`;
 
-  const title = `${row.name} organise des sorties`;
-  const description = buildProfileDescription({ next, pastCount: past.length });
+  const title = buildProfileTitle({ name: row.name, upcomingCount: upcoming.length });
+  const description = buildProfileDescription({
+    dated: datedUpcoming,
+    totalUpcoming: upcoming.length,
+    pastCount: past.length,
+  });
 
   return {
     title,
@@ -86,25 +92,54 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function buildProfileTitle(args: { name: string; upcomingCount: number }): string {
+  if (args.upcomingCount === 0) {
+    return `${args.name} sur Sortie`;
+  }
+  if (args.upcomingCount === 1) {
+    return `${args.name} — 1 sortie à venir`;
+  }
+  return `${args.name} — ${args.upcomingCount} sorties à venir`;
+}
+
+const SHORT_DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "short",
+  timeZone: "Europe/Paris",
+});
+
 function buildProfileDescription(args: {
-  next: { title: string; startsAt: Date | null; confirmedCount: number } | null;
+  dated: { title: string; startsAt: Date }[];
+  totalUpcoming: number;
   pastCount: number;
 }): string {
-  if (args.next) {
-    const parts: string[] = [`Prochaine : ${args.next.title}`];
-    if (args.next.startsAt) {
-      parts.push(formatDateTimeForShare(args.next.startsAt));
+  if (args.totalUpcoming === 0) {
+    if (args.pastCount > 0) {
+      const label = args.pastCount === 1 ? "sortie passée" : "sorties passées";
+      return `${args.pastCount} ${label} · la prochaine arrive bientôt.`;
     }
-    if (args.next.confirmedCount >= 3) {
-      parts.push(`${args.next.confirmedCount} déjà partants`);
-    }
-    return parts.join(" · ");
+    return "Les prochaines sorties arriveront ici.";
   }
-  if (args.pastCount > 0) {
-    const label = args.pastCount === 1 ? "sortie passée" : "sorties passées";
-    return `${args.pastCount} ${label} · la prochaine arrive bientôt.`;
+
+  // Liste compacte : 3 prochaines avec date courte ("29 avr") + nom court.
+  // Vise ~140 chars pour rester sous le truncation WhatsApp/iMessage tout
+  // en montrant la densité de la sélection.
+  const slice = args.dated.slice(0, 3);
+  const parts = slice.map(
+    (o) => `${SHORT_DATE_FMT.format(o.startsAt).replace(".", "")} : ${truncateTitle(o.title, 32)}`
+  );
+  const overflow = args.totalUpcoming - slice.length;
+  if (overflow > 0) {
+    parts.push(`+${overflow} autre${overflow > 1 ? "s" : ""}`);
   }
-  return "Les prochaines sorties arriveront ici.";
+  return parts.join(" · ");
+}
+
+function truncateTitle(title: string, max: number): string {
+  if (title.length <= max) {
+    return title;
+  }
+  return `${title.slice(0, max - 1).trimEnd()}…`;
 }
 
 export default async function PublicProfilePage({ params, searchParams }: Props) {

@@ -3,12 +3,12 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
 import { listPublicProfileOutings } from "@/features/sortie/queries/outing-queries";
-import { formatRelativeDateForShare, formatTimeOnly } from "@/features/sortie/lib/date-fr";
 
-// Keep compatible with WhatsApp full-width preview (1.91:1) rather than the
-// carré 1:1 spec — WhatsApp thumbnails squares at 80×80 against the chat
-// margin, losing ~75% of the surface. Full-width renders correctly on
-// iMessage/Signal/Telegram too.
+// Format mini-agenda : carte profil = menu des prochaines sorties (4 lignes
+// datées + compteur "+ N autres"). Cible le cas d'usage natif "voilà ce que
+// je vais voir, dites-moi si vous voulez venir" partagé en WhatsApp/DM aux
+// amis. Plus de focus sur "la prochaine" — c'est la *série* qui crée la
+// valeur du partage de profil.
 export const alt = "Sortie";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -23,9 +23,16 @@ const IVOIRE = "#0A0A0A";
 const IVOIRE_DEEP = "#161616";
 const ENCRE_700 = "#F5F2EB";
 const ENCRE_500 = "#A0A0A0";
+const ENCRE_400 = "#7A7A7A";
 const OR = "#FF3D81";
 const OR_DEEP = "#E63577";
 const BORDEAUX = "#C7FF3C";
+
+const TZ = "Europe/Paris";
+const dayFmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: TZ });
+const monthShortFmt = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: TZ });
+
+const MENU_LIMIT = 4;
 
 type Props = { params: Promise<{ username: string }> };
 
@@ -42,144 +49,276 @@ export default async function Image({ params }: Props) {
     return renderFallback();
   }
 
-  const { upcoming, past } = await listPublicProfileOutings(row.id);
-  const next = upcoming.find((o) => o.startsAt !== null) ?? upcoming[0] ?? null;
-  const totalOrganised = upcoming.length + past.length;
+  const { upcoming } = await listPublicProfileOutings(row.id);
+
+  // Re-trie par startsAt asc (la query renvoie en `desc(createdAt)` par
+  // défaut). Pour le menu il faut la chronologie "ce qui arrive en premier".
+  const dated = upcoming
+    .filter((o): o is typeof o & { startsAt: Date } => o.startsAt !== null)
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+
+  if (upcoming.length === 0) {
+    return renderEmpty(row.name, row.username);
+  }
+
+  const featured = dated.slice(0, MENU_LIMIT);
+  const overflow = upcoming.length - featured.length;
 
   return new ImageResponse(
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         width: "100%",
         height: "100%",
         background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         position: "relative",
+        padding: "76px 100px",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 40,
-          right: 40,
-          bottom: 40,
-          border: `1px solid ${OR}`,
-          opacity: 0.35,
-        }}
-      />
+      <Passepartout />
+      <Seal />
 
-      {/* Wax seal — kept identical to the event OG so the profile and event
-            cards feel visibly from the same family when both appear in a
-            WhatsApp thread. */}
-      <div
-        style={{
-          position: "absolute",
-          top: 80,
-          right: 88,
-          width: 88,
-          height: 88,
-          borderRadius: "50%",
-          background: BORDEAUX,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transform: "rotate(-6deg)",
-          color: OR,
-          fontSize: 44,
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
-        }}
-      >
-        S
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 48,
-          padding: "0 100px",
-          width: "100%",
-        }}
-      >
-        <Avatar name={row.name} />
-
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: OR_DEEP,
-              marginBottom: 16,
-            }}
-          >
-            @{row.username}
-          </div>
-
-          <div
-            style={{
-              fontSize: nameSize(row.name),
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
-              color: ENCRE_700,
-              lineHeight: 1.02,
-              marginBottom: 20,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              maxWidth: 700,
-            }}
-          >
-            {row.name}
-          </div>
-
-          <div
-            style={{
-              width: 60,
-              height: 1,
-              background: OR,
-              opacity: 0.6,
-              marginBottom: 20,
-            }}
-          />
-
-          <ProfileTagline next={next} totalOrganised={totalOrganised} />
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: 72,
-          left: 100,
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-        }}
-      >
-        <div
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: BORDEAUX,
-          }}
-        />
+      {/* Header — handle + nom + filet or + label agenda */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{
             fontSize: 22,
             fontWeight: 600,
-            color: BORDEAUX,
-            letterSpacing: "0.02em",
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: OR_DEEP,
+            marginBottom: 12,
           }}
         >
-          Sortie
+          {`@${row.username}`}
+        </div>
+        <div
+          style={{
+            fontSize: nameSize(row.name),
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            color: ENCRE_700,
+            lineHeight: 1.0,
+            maxWidth: 800,
+          }}
+        >
+          {row.name}
+        </div>
+        <div
+          style={{
+            width: 60,
+            height: 1,
+            background: OR,
+            opacity: 0.6,
+            marginTop: 18,
+            marginBottom: 22,
+          }}
+        />
+        <div
+          style={{
+            fontSize: 18,
+            fontWeight: 500,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: ENCRE_500,
+          }}
+        >
+          {buildAgendaLabel(upcoming.length)}
         </div>
       </div>
+
+      {/* Menu rows */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          marginTop: 32,
+          gap: 14,
+        }}
+      >
+        {featured.map((o) => (
+          <MenuRow key={o.id} title={o.title} date={o.startsAt} />
+        ))}
+        {overflow > 0 && (
+          <div
+            style={{
+              fontSize: 20,
+              fontWeight: 500,
+              color: ENCRE_400,
+              letterSpacing: "0.04em",
+              marginTop: 6,
+            }}
+          >
+            {`+ ${overflow} autre${overflow > 1 ? "s" : ""}`}
+          </div>
+        )}
+        {/* Edge case: que des sorties non datées (mode vote sans créneau
+                choisi). On ne montre pas les titres pour rester sobre — le
+                compteur "Agenda · N sorties" en haut suffit. */}
+        {featured.length === 0 && (
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 500,
+              color: ENCRE_500,
+              lineHeight: 1.4,
+              maxWidth: 760,
+            }}
+          >
+            {"Dates en cours de coordination — RDV bientôt."}
+          </div>
+        )}
+      </div>
+
+      <BrandBottomLeft />
+    </div>,
+    { ...size }
+  );
+}
+
+function MenuRow({ title, date }: { title: string; date: Date }) {
+  const day = dayFmt.format(date);
+  const month = monthShortFmt.format(date).replace(/\./g, "").toUpperCase();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        gap: 28,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          gap: 8,
+          width: 130,
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 32,
+            fontWeight: 700,
+            color: BORDEAUX,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          {day}
+        </span>
+        <span
+          style={{
+            fontSize: 18,
+            fontWeight: 600,
+            letterSpacing: "0.14em",
+            color: BORDEAUX,
+          }}
+        >
+          {month}
+        </span>
+      </div>
+      <div
+        style={{
+          fontSize: 26,
+          fontWeight: 500,
+          color: ENCRE_700,
+          lineHeight: 1.2,
+          flex: 1,
+          display: "-webkit-box",
+          WebkitLineClamp: 1,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {title}
+      </div>
+    </div>
+  );
+}
+
+function buildAgendaLabel(count: number): string {
+  if (count === 1) {
+    return "Agenda · 1 sortie à venir";
+  }
+  return `Agenda · ${count} sorties à venir`;
+}
+
+function nameSize(name: string): number {
+  if (name.length <= 20) {
+    return 76;
+  }
+  if (name.length <= 32) {
+    return 60;
+  }
+  return 48;
+}
+
+function renderEmpty(name: string, username: string) {
+  return new ImageResponse(
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
+        fontFamily: '"Inter Tight", "Inter", system-ui',
+        position: "relative",
+        padding: "76px 100px",
+      }}
+    >
+      <Passepartout />
+      <Seal />
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            fontSize: 22,
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: OR_DEEP,
+            marginBottom: 12,
+          }}
+        >
+          {`@${username}`}
+        </div>
+        <div
+          style={{
+            fontSize: nameSize(name),
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            color: ENCRE_700,
+            lineHeight: 1.0,
+          }}
+        >
+          {name}
+        </div>
+        <div
+          style={{
+            width: 60,
+            height: 1,
+            background: OR,
+            opacity: 0.6,
+            marginTop: 18,
+            marginBottom: 24,
+          }}
+        />
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 500,
+            color: ENCRE_500,
+            lineHeight: 1.3,
+            maxWidth: 760,
+          }}
+        >
+          {"Les prochaines sorties arriveront ici."}
+        </div>
+      </div>
+      <BrandBottomLeft />
     </div>,
     { ...size }
   );
@@ -206,144 +345,78 @@ function renderFallback() {
           letterSpacing: "-0.02em",
         }}
       >
-        Profil Sortie
+        {"Profil Sortie"}
       </div>
     </div>,
     { ...size }
   );
 }
 
-function nameSize(name: string): number {
-  if (name.length <= 20) {
-    return 76;
-  }
-  if (name.length <= 32) {
-    return 60;
-  }
-  return 48;
-}
-
-function Avatar({ name }: { name: string }) {
-  // Initial-disc avatar rather than a remote `<img>` fetch — Google OAuth
-  // URLs are the usual `image` source and fetching them from the edge is
-  // unreliable (rate limits, 403, latency). Two initials read as identity
-  // and stay on-brand; keeps the PNG under 150 KB.
-  const initials = name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((s) => s.charAt(0).toUpperCase())
-    .join("");
-
+function Passepartout() {
   return (
     <div
       style={{
-        width: 240,
-        height: 240,
+        position: "absolute",
+        top: 40,
+        left: 40,
+        right: 40,
+        bottom: 40,
+        border: `1px solid ${OR}`,
+        opacity: 0.35,
+      }}
+    />
+  );
+}
+
+function Seal() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 80,
+        right: 88,
+        width: 88,
+        height: 88,
         borderRadius: "50%",
         background: BORDEAUX,
-        color: OR,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 96,
-        fontWeight: 700,
+        transform: "rotate(-6deg)",
+        color: OR,
+        fontSize: 44,
+        fontWeight: 800,
         letterSpacing: "-0.04em",
-        boxShadow: `0 0 0 6px ${IVOIRE}, 0 0 0 7px ${OR}`,
-        flexShrink: 0,
       }}
     >
-      {initials || "?"}
+      {"S"}
     </div>
   );
 }
 
-function ProfileTagline({
-  next,
-  totalOrganised,
-}: {
-  next: { title: string; startsAt: Date | null; confirmedCount: number } | null;
-  totalOrganised: number;
-}) {
-  if (next) {
-    const dateLine = next.startsAt
-      ? `${capitalise(formatRelativeDateForShare(next.startsAt))} · ${formatTimeOnly(
-          next.startsAt
-        )}`
-      : "Bientôt";
-    return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div
-          style={{
-            fontSize: 16,
-            fontWeight: 500,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: ENCRE_500,
-            marginBottom: 8,
-          }}
-        >
-          Prochaine sortie
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            fontWeight: 600,
-            color: ENCRE_700,
-            lineHeight: 1.2,
-            letterSpacing: "-0.01em",
-            maxWidth: 700,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {next.title}
-        </div>
-        <div
-          style={{
-            fontSize: 22,
-            fontWeight: 500,
-            color: BORDEAUX,
-            marginTop: 6,
-          }}
-        >
-          {dateLine}
-          {next.confirmedCount >= 3 ? ` · ${next.confirmedCount} déjà partants` : ""}
-        </div>
-      </div>
-    );
-  }
-  if (totalOrganised > 0) {
-    const label = totalOrganised === 1 ? "sortie organisée" : "sorties organisées";
-    return (
-      <div
-        style={{
-          fontSize: 26,
-          fontWeight: 500,
-          color: ENCRE_500,
-          lineHeight: 1.3,
-        }}
-      >
-        {totalOrganised} {label}
-      </div>
-    );
-  }
+function BrandBottomLeft() {
   return (
     <div
       style={{
-        fontSize: 26,
-        fontWeight: 500,
-        color: ENCRE_500,
-        lineHeight: 1.3,
+        position: "absolute",
+        bottom: 72,
+        left: 100,
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
       }}
     >
-      Les prochaines sorties arriveront ici.
+      <div style={{ width: 8, height: 8, borderRadius: "50%", background: BORDEAUX }} />
+      <div
+        style={{
+          fontSize: 22,
+          fontWeight: 600,
+          color: BORDEAUX,
+          letterSpacing: "0.02em",
+        }}
+      >
+        {"Sortie"}
+      </div>
     </div>
   );
-}
-
-function capitalise(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
