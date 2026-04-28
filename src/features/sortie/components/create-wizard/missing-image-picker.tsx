@@ -4,6 +4,7 @@ import { useRef, useState, type ChangeEvent } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageIcon, Loader2, RefreshCw, Upload, X } from "lucide-react";
+import { compressImageIfNeeded } from "@/features/sortie/lib/compress-image-client";
 import { getGenericImagesForVibe } from "@/features/sortie/lib/generic-event-images";
 import type { Vibe } from "@/features/sortie/lib/vibe-config";
 import type { FindEventResult } from "@/lib/gemini-search";
@@ -119,8 +120,14 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
     setUploadError(null);
     setUploadPending(true);
     try {
+      // Compresse côté client avant l'upload : Vercel rejette les
+      // fonctions serverless > 4.5 MB au niveau gateway, et les photos
+      // iPhone JPEG dépassent régulièrement (5-8 MB). Sans cette étape,
+      // on se prend un FUNCTION_PAYLOAD_TOO_LARGE muet (HTML, pas JSON)
+      // après ~20s d'upload sur le réseau mobile.
+      const optimized = await compressImageIfNeeded(file);
       const fd = new FormData();
-      fd.set("file", file);
+      fd.set("file", optimized);
       const res = await fetch("/api/sortie/event-image-upload", {
         method: "POST",
         body: fd,
@@ -132,7 +139,15 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
       }
       if (!res.ok) {
         const data = (await res.json().catch(() => null)) as { message?: string } | null;
-        setUploadError(data?.message ?? "L'upload a échoué — réessaie dans un instant.");
+        // Vercel gateway 413 : le payload a passé la compression mais
+        // dépasse encore la limite d'infra (cas extrême : photo gigapixel
+        // qu'on n'a pas pu décoder côté client). Message explicite pour
+        // que l'utilisateur sache qu'il faut réduire la résolution.
+        const fallback =
+          res.status === 413
+            ? "Image trop lourde — réduis sa résolution avant de réessayer."
+            : "L'upload a échoué — réessaie dans un instant.";
+        setUploadError(data?.message ?? fallback);
         return;
       }
       const data = (await res.json()) as { url: string; ogUrl: string | null };
