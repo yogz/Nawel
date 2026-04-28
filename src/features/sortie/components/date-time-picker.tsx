@@ -17,6 +17,13 @@ type Props = {
   // value was cleared). Added for the vote-mode timeslot editor, which
   // needs to mirror each slot's value into a JSON-encoded array field.
   onChange?: (value: string) => void;
+  // Mode date seule : masque le sélecteur d'heure et fixe l'heure à
+  // 23:59 (fin de journée). Utilisé pour les deadlines RSVP où la
+  // règle métier impose que la deadline tombe en fin de journée
+  // (cf. `endOfDayInParis` côté serveur). Sans ce mode, le picker
+  // afficherait une heure custom qu'on écraserait silencieusement à
+  // l'enregistrement — confusion garantie.
+  dateOnly?: boolean;
 };
 
 const DISPLAY = new Intl.DateTimeFormat("fr-FR", {
@@ -64,6 +71,7 @@ export function DateTimePicker({
   required = false,
   placeholder = "Choisir une date",
   onChange,
+  dateOnly = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState<Date | null>(parseLocalIsoString(defaultValue));
@@ -106,6 +114,18 @@ export function DateTimePicker({
       return;
     }
     const next = new Date(day);
+    if (dateOnly) {
+      // Mode date seule : on cale toujours à 23:59 (fin de journée
+      // locale). Le serveur appliquera quand même son `endOfDayInParis`
+      // pour gérer les bascules DST proprement, mais l'UI affiche déjà
+      // la valeur finale — pas de surprise au reload.
+      next.setHours(23, 59, 0, 0);
+      setValue(next);
+      // Ferme le popover après la sélection : pas de second choix
+      // d'heure à faire en mode date seule.
+      setOpen(false);
+      return;
+    }
     if (value) {
       next.setHours(value.getHours(), value.getMinutes(), 0, 0);
     } else {
@@ -122,8 +142,13 @@ export function DateTimePicker({
     setOpen(false);
   };
 
+  // En mode date seule, l'heure (toujours 23:59) est implicite — pas
+  // besoin de la rappeler dans le label, le contexte du champ
+  // ("Dernier jour pour répondre") porte déjà la sémantique fin-de-jour.
   const label = value
-    ? `${DISPLAY.format(value)} · ${selectedTime?.replace(":", "h")}`
+    ? dateOnly
+      ? DISPLAY.format(value)
+      : `${DISPLAY.format(value)} · ${selectedTime?.replace(":", "h")}`
     : placeholder;
   const hiddenValue = value ? toUtcIsoString(value) : "";
 
@@ -150,33 +175,35 @@ export function DateTimePicker({
               weekStartsOn={1}
               className="[--cell-size:2.25rem]"
             />
-            <div className="flex flex-col gap-2 p-3">
-              <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
-                Heure
-              </p>
-              <div ref={timeListRef} className="h-[240px] w-[5.5rem] overflow-y-auto">
-                <div className="flex flex-col gap-0.5 pr-1">
-                  {timeOptions.map((time) => {
-                    const isSelected = selectedTime === time;
-                    return (
-                      <button
-                        key={time}
-                        type="button"
-                        data-time={time}
-                        onClick={() => handleTimePick(time)}
-                        className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
-                          isSelected
-                            ? "bg-acid-600 text-surface-100"
-                            : "text-ink-600 hover:bg-surface-200"
-                        }`}
-                      >
-                        {time.replace(":", "h")}
-                      </button>
-                    );
-                  })}
+            {!dateOnly && (
+              <div className="flex flex-col gap-2 p-3">
+                <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
+                  Heure
+                </p>
+                <div ref={timeListRef} className="h-[240px] w-[5.5rem] overflow-y-auto">
+                  <div className="flex flex-col gap-0.5 pr-1">
+                    {timeOptions.map((time) => {
+                      const isSelected = selectedTime === time;
+                      return (
+                        <button
+                          key={time}
+                          type="button"
+                          data-time={time}
+                          onClick={() => handleTimePick(time)}
+                          className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
+                            isSelected
+                              ? "bg-acid-600 text-surface-100"
+                              : "text-ink-600 hover:bg-surface-200"
+                          }`}
+                        >
+                          {time.replace(":", "h")}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </PopoverContent>
       </Popover>

@@ -87,11 +87,13 @@ export function EditOutingForm({
           />
         )}
         <DateField
-          label="Réponse avant"
+          label="Dernier jour pour répondre"
           name="rsvpDeadline"
           required
+          dateOnly
           defaultValue={toDateTimeLocalValue(deadlineAt)}
           error={errors.rsvpDeadline?.[0]}
+          hint="Clôture à 23h59"
         />
       </div>
       {!startsAt && (
@@ -215,19 +217,29 @@ function DateField({
   required,
   error,
   defaultValue,
+  dateOnly,
+  hint,
 }: {
   label: string;
   name: string;
   required?: boolean;
   error?: string;
   defaultValue?: string;
+  dateOnly?: boolean;
+  hint?: string;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={name} className="text-[13px] font-medium text-ink-500">
         {label}
       </Label>
-      <DateTimePicker name={name} defaultValue={defaultValue} required={required} />
+      <DateTimePicker
+        name={name}
+        defaultValue={defaultValue}
+        required={required}
+        dateOnly={dateOnly}
+      />
+      {hint && !error && <p className="text-[11px] text-ink-400">{hint}</p>}
       {error && <p className="text-xs text-erreur-700">{error}</p>}
     </div>
   );
