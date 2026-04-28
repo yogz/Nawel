@@ -53,8 +53,18 @@ export default async function Image({ params }: Props) {
   }
 
   const startsAt = outing.fixedDatetime;
-  const eyebrow = startsAt ? buildEyebrow(startsAt) : "Sortie à venir";
-  const location = outing.location?.trim() ?? null;
+  // Eyebrow personnalisé "LÉA T'INVITE" : c'est le hook de conversion #1
+  // dans une preview WhatsApp/iMessage. La catégorie (`vibe`) est trop
+  // souvent vide pour qu'on s'y appuie, le firstName en revanche est
+  // toujours là (créateur connecté ou anon avec pseudo). Fallback
+  // "INVITATION" reste un signal universel "viens" même sans nom.
+  const inviteEyebrow = meta.firstName
+    ? `${meta.firstName.toUpperCase()} T'INVITE`
+    : "INVITATION";
+  // Méta-ligne : date relative + lieu, séparés par middle-dot. Les deux
+  // sont facultatifs — sans aucun, on ne rend pas la ligne du tout.
+  const dateLabel = startsAt ? buildDateLabel(startsAt) : null;
+  const location = outing.location?.trim() || null;
 
   // Hero-image variant: when the organiser pasted a ticket page, we have a
   // real photo at `heroImageUrl`. Compose it as cover with a noir overlay
@@ -71,23 +81,25 @@ export default async function Image({ params }: Props) {
     return renderWithHero({
       heroImageUrl: heroForOg,
       title: outing.title,
-      eyebrow,
+      eyebrow: inviteEyebrow,
+      dateLabel,
       location,
-      firstName: meta.firstName,
+      hideCreditInStrip: meta.firstName !== null,
       confirmedCount: meta.confirmedCount,
     });
   }
 
   return renderStandard({
     title: outing.title,
-    eyebrow,
+    eyebrow: inviteEyebrow,
+    dateLabel,
     location,
-    firstName: meta.firstName,
+    hideCreditInStrip: meta.firstName !== null,
     confirmedCount: meta.confirmedCount,
   });
 }
 
-function buildEyebrow(startsAt: Date): string {
+function buildDateLabel(startsAt: Date): string {
   const rel = formatRelativeDateForShare(startsAt);
   const time = formatTimeOnly(startsAt);
   return `${rel} · ${time}`.toUpperCase();
@@ -111,11 +123,13 @@ function titleSize(title: string): number {
 function renderStandard(args: {
   title: string;
   eyebrow: string;
+  dateLabel: string | null;
   location: string | null;
-  firstName: string | null;
+  hideCreditInStrip: boolean;
   confirmedCount: number;
 }) {
-  const { title, eyebrow, location, firstName, confirmedCount } = args;
+  const { title, eyebrow, dateLabel, location, hideCreditInStrip, confirmedCount } = args;
+  const metaLine = [dateLabel, location].filter(Boolean).join(" · ");
   return new ImageResponse(
     <div
       style={{
@@ -140,12 +154,15 @@ function renderStandard(args: {
           position: "relative",
         }}
       >
+        {/* Eyebrow personnalisé "LÉA T'INVITE" — passé en ACID (vert
+              acide) plutôt qu'en HOT : le vert porte le signal "viens",
+              le rose reste réservé à la ponctuation (rule, seal). */}
         <div
           style={{
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            color: HOT_DEEP,
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            color: ACID,
             textTransform: "uppercase",
             marginBottom: 24,
           }}
@@ -171,8 +188,8 @@ function renderStandard(args: {
           {title}
         </div>
 
-        {/* Hair-thin gold rule — ancrage typographique, replaces a heavier
-              divider without adding weight. */}
+        {/* Hot-pink hair rule — ponctuation typographique, conserve l'accent
+              secondaire dans le rythme vertical. */}
         <div
           style={{
             width: 60,
@@ -184,21 +201,24 @@ function renderStandard(args: {
           }}
         />
 
-        {location && (
+        {metaLine && (
           <div
             style={{
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: 500,
               color: INK_500,
               maxWidth: 880,
               lineHeight: 1.3,
             }}
           >
-            {location}
+            {metaLine}
           </div>
         )}
 
-        <BottomStrip firstName={firstName} confirmedCount={confirmedCount} />
+        <BottomStrip
+          hideCredit={hideCreditInStrip}
+          confirmedCount={confirmedCount}
+        />
       </div>
     </div>,
     { ...size }
@@ -209,11 +229,14 @@ function renderWithHero(args: {
   heroImageUrl: string;
   title: string;
   eyebrow: string;
+  dateLabel: string | null;
   location: string | null;
-  firstName: string | null;
+  hideCreditInStrip: boolean;
   confirmedCount: number;
 }) {
-  const { heroImageUrl, title, eyebrow, location, firstName, confirmedCount } = args;
+  const { heroImageUrl, title, eyebrow, dateLabel, location, hideCreditInStrip, confirmedCount } =
+    args;
+  const metaLine = [dateLabel, location].filter(Boolean).join(" · ");
   return new ImageResponse(
     <div
       style={{
@@ -263,12 +286,16 @@ function renderWithHero(args: {
           position: "relative",
         }}
       >
+        {/* Eyebrow personnalisé "LÉA T'INVITE" en ACID — même rôle que
+              dans la variante standard : porter l'identité de
+              l'invitation au-dessus du titre, là où les crops carrés
+              iMessage/WhatsApp gardent encore le contenu visible. */}
         <div
           style={{
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            color: HOT,
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            color: ACID,
             textTransform: "uppercase",
             marginBottom: 18,
           }}
@@ -295,10 +322,10 @@ function renderWithHero(args: {
           {title}
         </div>
 
-        {location && (
+        {metaLine && (
           <div
             style={{
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: 500,
               color: "rgba(250,247,242,0.85)",
               maxWidth: 900,
@@ -306,11 +333,15 @@ function renderWithHero(args: {
               lineHeight: 1.3,
             }}
           >
-            {location}
+            {metaLine}
           </div>
         )}
 
-        <BottomStrip firstName={firstName} confirmedCount={confirmedCount} variant="onDark" />
+        <BottomStrip
+          hideCredit={hideCreditInStrip}
+          confirmedCount={confirmedCount}
+          variant="onDark"
+        />
       </div>
     </div>,
     { ...size }
@@ -468,21 +499,23 @@ function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
 }
 
 function BottomStrip({
-  firstName,
+  hideCredit,
   confirmedCount,
   variant = "onLight",
 }: {
-  firstName: string | null;
+  // Quand `true`, le bandeau "PAR Léa" est masqué : le prénom est déjà
+  // remonté en eyebrow ("LÉA T'INVITE"), le répéter en bas duplique
+  // l'attribution et mange l'espace utile pour le social proof.
+  hideCredit: boolean;
   confirmedCount: number;
   variant?: "onLight" | "onDark";
 }) {
   const onDark = variant === "onDark";
-  const showByCredit = Boolean(firstName);
   // Social proof surfaces only when the threshold is crossed — single
   // confirmed guest reads as an empty event and inverts the effect.
   const showProof = confirmedCount >= 3;
 
-  if (!showByCredit && !showProof) {
+  if (!showProof) {
     return <BrandBottomRight variant={variant} />;
   }
 
@@ -495,78 +528,29 @@ function BottomStrip({
         marginTop: 44,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        {showByCredit && firstName && (
-          <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                background: onDark ? "rgba(245,242,235,0.12)" : ACID,
-                color: onDark ? INK_700 : SURFACE,
-                fontSize: 26,
-                fontWeight: 700,
-              }}
-            >
-              {firstName.charAt(0).toUpperCase()}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 16,
-                  fontWeight: 500,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: onDark ? "rgba(250,247,242,0.6)" : INK_500,
-                }}
-              >
-                Par
-              </div>
-              <div
-                style={{
-                  fontSize: 26,
-                  fontWeight: 600,
-                  color: onDark ? SURFACE : INK_700,
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {firstName}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      {/* Spacer when credit hidden — keeps the brand right-aligned and
+            the proof left-aligned in the strip. Empty flex placeholder. */}
+      {hideCredit && <div />}
 
-      {showProof && (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+        }}
+      >
+        <AvatarStack count={Math.min(confirmedCount, 3)} onDark={onDark} />
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
+            fontSize: 22,
+            fontWeight: 600,
+            color: onDark ? SURFACE : ACID,
+            letterSpacing: "-0.005em",
           }}
         >
-          <AvatarStack count={Math.min(confirmedCount, 3)} onDark={onDark} />
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color: onDark ? SURFACE : ACID,
-              letterSpacing: "-0.005em",
-            }}
-          >
-            {confirmedCount} déjà partants
-          </div>
+          {confirmedCount} déjà partants
         </div>
-      )}
+      </div>
 
       <BrandInline variant={variant} />
     </div>
