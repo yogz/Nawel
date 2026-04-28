@@ -10,7 +10,13 @@ export const alt = "Sortie — entre amis, ça s'organise";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export const runtime = "edge";
+// Pas de `runtime = "edge"` ici : Next.js désactive la static
+// generation en edge runtime, ce qui forcerait un re-render à chaque
+// scrape WhatsApp/iMessage alors que cet asset est purement brand
+// (zéro donnée dynamique, `revalidate=86400`). En runtime Node par
+// défaut, le PNG est généré une fois au build, poussé sur le CDN
+// Vercel, servi à coût ~zéro pendant 24h. Quotidien, ISR régénère
+// en background.
 export const revalidate = 86400;
 
 const INK = "#0A0A0A";
