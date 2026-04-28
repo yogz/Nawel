@@ -1,6 +1,7 @@
 import { put, del } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import { randomUUID } from "node:crypto";
+import sharp from "sharp";
 import { generateOgThumbnail } from "./og-thumbnail";
 
 // Couvres d'événements : on accepte plus large qu'un avatar parce que
@@ -9,6 +10,12 @@ import { generateOgThumbnail } from "./og-thumbnail";
 export const MAX_EVENT_IMAGE_BYTES = 5 * 1024 * 1024;
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+
+// HEIC/HEIF est l'encodage par défaut des iPhones récents, mais seul
+// Safari le rend en <img>. Chrome/Firefox/Edge affichent un cassé. On
+// transcode systématiquement vers JPEG côté serveur — sinon l'utilisateur
+// voit l'upload "marcher" puis l'image ne s'affiche jamais.
+const NEEDS_TRANSCODE_TO_JPEG = new Set(["image/heic", "image/heif"]);
 
 // Same paranoid double-check as `avatar-upload.ts`: only nuke URLs we
 // can prove came from our blob store, under the events prefix. Anything
@@ -40,8 +47,20 @@ export async function uploadEventImage(file: File): Promise<EventImageUploadResu
   if (file.size > MAX_EVENT_IMAGE_BYTES) {
     return { ok: false, message: "Image trop lourde (5 Mo max)." };
   }
-  if (!ALLOWED_MIME.has(file.type)) {
+  // file.type peut être absent ("") quand le fichier vient d'un partage
+  // entre apps mobiles : on s'en remet alors au sniff magic-byte plus bas
+  // plutôt que de rejeter sur une heuristique navigateur peu fiable.
+  if (file.type && !ALLOWED_MIME.has(file.type)) {
     return { ok: false, message: "Format non supporté (JPEG, PNG, WebP, HEIC)." };
+  }
+
+  // Fail fast si le storage n'est pas configuré : inutile de lire le
+  // buffer ni de sniffer pour échouer à la fin.
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return {
+      ok: false,
+      message: "Upload indisponible — la configuration du stockage n'est pas prête.",
+    };
   }
 
   let buf: Buffer;
@@ -52,13 +71,10 @@ export async function uploadEventImage(file: File): Promise<EventImageUploadResu
     return { ok: false, message: "Impossible de lire le fichier — réessaie." };
   }
 
-  let sniff: Awaited<ReturnType<typeof fileTypeFromBuffer>>;
-  try {
-    sniff = await fileTypeFromBuffer(buf);
-  } catch (err) {
+  const sniff = await fileTypeFromBuffer(buf).catch((err) => {
     console.error("[event-image-upload] file-type sniff failed", err);
-    return { ok: false, message: "Ce format d'image n'est pas supporté." };
-  }
+    return undefined;
+  });
   if (!sniff || !ALLOWED_MIME.has(sniff.mime)) {
     return {
       ok: false,
@@ -66,16 +82,28 @@ export async function uploadEventImage(file: File): Promise<EventImageUploadResu
     };
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return {
-      ok: false,
-      message: "Upload indisponible — la configuration du stockage n'est pas prête.",
-    };
+  // HEIC/HEIF → JPEG : indispensable pour que Chrome/Firefox/Edge rendent
+  // l'image. On profite de ce passage pour appliquer aussi `rotate()`
+  // (respecte l'EXIF orientation) et nettoyer les métadonnées.
+  let storedMime = sniff.mime;
+  let storedExt = sniff.ext;
+  if (NEEDS_TRANSCODE_TO_JPEG.has(sniff.mime)) {
+    try {
+      buf = await sharp(buf).rotate().jpeg({ quality: 88, mozjpeg: true }).toBuffer();
+      storedMime = "image/jpeg";
+      storedExt = "jpg";
+    } catch (err) {
+      console.error("[event-image-upload] HEIC/HEIF transcode failed", err);
+      return {
+        ok: false,
+        message: "Impossible de convertir cette image — réessaie en JPEG ou PNG.",
+      };
+    }
   }
 
   try {
     const id = randomUUID();
-    const originalKey = `sortie/events/${id}.${sniff.ext}`;
+    const originalKey = `sortie/events/${id}.${storedExt}`;
     const ogKey = `sortie/events/${id}-og.jpg`;
 
     // Original + OG thumb pushed in parallel. Failing the thumb is not a
@@ -84,7 +112,7 @@ export async function uploadEventImage(file: File): Promise<EventImageUploadResu
     const [original, ogThumb] = await Promise.all([
       put(originalKey, buf, {
         access: "public",
-        contentType: sniff.mime,
+        contentType: storedMime,
         cacheControlMaxAge: 60 * 60 * 24 * 365,
         addRandomSuffix: false,
       }),
