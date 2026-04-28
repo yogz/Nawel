@@ -4,13 +4,13 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
 import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
 import { GuestCountStepper } from "./guest-count-stepper";
+import { IdentityFields } from "./identity-fields";
 
 function buildSheetStyle(inset: number, viewportHeight: number | null): React.CSSProperties {
   if (inset <= 0 || viewportHeight === null) return {};
@@ -18,16 +18,6 @@ function buildSheetStyle(inset: number, viewportHeight: number | null): React.CS
     bottom: inset,
     maxHeight: `${viewportHeight - 16}px`,
   };
-}
-
-function scrollFocusedIntoView(event: React.FocusEvent<HTMLInputElement>) {
-  const target = event.currentTarget;
-  // Wait for the keyboard to actually open so visualViewport has shrunk
-  // before we scroll — otherwise the browser scrolls into the wrong
-  // (still full-height) viewport.
-  window.setTimeout(() => {
-    target.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, 250);
 }
 
 export type RsvpResponse = "yes" | "no" | "handle_own";
@@ -235,43 +225,11 @@ export function YesDetailSheet({
           <input type="hidden" name="shortId" value={shortId} />
           <input type="hidden" name="response" value={chosen} />
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="displayName" className="text-[13px] font-medium text-ink-500">
-              Ton prénom
-            </Label>
-            <Input
-              id="displayName"
-              name="displayName"
-              autoComplete="given-name"
-              required
-              defaultValue={existingName ?? loggedInName ?? prefs?.name}
-              maxLength={100}
-              placeholder="Claire"
-            />
-            {state.errors?.displayName?.[0] && (
-              <p className="text-xs text-erreur-700">{state.errors.displayName[0]}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-[13px] font-medium text-ink-500">
-              Ton email <span className="text-ink-300">(facultatif)</span>
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={existingEmail ?? prefs?.email}
-              autoComplete="email"
-              inputMode="email"
-              placeholder="pour être prévenu·e des changements"
-              onFocus={scrollFocusedIntoView}
-              style={{ scrollMarginBottom: "6rem" }}
-            />
-            {state.errors?.email?.[0] && (
-              <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
-            )}
-          </div>
+          <IdentityFields
+            defaultName={existingName ?? loggedInName ?? prefs?.name}
+            defaultEmail={existingEmail ?? prefs?.email}
+            errors={state.errors}
+          />
 
           <div className="flex flex-col gap-3">
             {!showExtras ? (
