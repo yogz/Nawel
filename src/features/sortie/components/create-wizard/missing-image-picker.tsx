@@ -1,13 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageIcon, Loader2, RefreshCw, Upload, X } from "lucide-react";
-import {
-  uploadEventImageAction,
-  type EventImageActionState,
-} from "@/features/sortie/actions/event-image-actions";
 import { getGenericImagesForVibe } from "@/features/sortie/lib/generic-event-images";
 import type { Vibe } from "@/features/sortie/lib/vibe-config";
 import type { FindEventResult } from "@/lib/gemini-search";
@@ -55,20 +51,14 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
   const triedUrlsRef = useRef<Set<string>>(new Set());
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadState, uploadAction, uploadPending] = useActionState<
-    EventImageActionState,
-    FormData
-  >(uploadEventImageAction, {} as EventImageActionState);
-  // Garde-fou : ne déclencher onPick qu'au passage pending → idle, pas
-  // sur le state initial (où imageUrl est absent de toute façon).
-  const wasUploading = useRef(false);
-  useEffect(() => {
-    const justFinished = wasUploading.current && !uploadPending;
-    wasUploading.current = uploadPending;
-    if (justFinished && uploadState.imageUrl) {
-      onPick(uploadState.imageUrl);
-    }
-  }, [uploadPending, uploadState.imageUrl, onPick]);
+  // Upload via fetch sur la route handler `/api/sortie/event-image-upload`,
+  // pas via `useActionState` : le picker est rendu dans le `<form>` parent
+  // de l'edit page, et un dispatch action enfant n'y déclenchait pas le
+  // server action proprement (silencieux côté client). Le route handler
+  // découple complètement du contexte form, network tab visible pour
+  // debug, même validation côté serveur.
+  const [uploadPending, setUploadPending] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const trimmedTitle = title.trim();
   const canSearch = trimmedTitle.length >= 3 && !searchPending;
@@ -120,15 +110,39 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
     }
   }
 
-  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.currentTarget.value = "";
     if (!file) {
       return;
     }
-    const fd = new FormData();
-    fd.set("file", file);
-    uploadAction(fd);
+    setUploadError(null);
+    setUploadPending(true);
+    try {
+      const fd = new FormData();
+      fd.set("file", file);
+      const res = await fetch("/api/sortie/event-image-upload", {
+        method: "POST",
+        body: fd,
+      });
+      if (res.status === 429) {
+        const data = (await res.json().catch(() => null)) as { message?: string } | null;
+        setUploadError(data?.message ?? "Trop d'uploads — réessaie plus tard.");
+        return;
+      }
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { message?: string } | null;
+        setUploadError(data?.message ?? "L'upload a échoué — réessaie dans un instant.");
+        return;
+      }
+      const data = (await res.json()) as { url: string; ogUrl: string | null };
+      onPick(data.url);
+    } catch (err) {
+      console.error("[missing-image-picker] upload failed", err);
+      setUploadError("Connexion perdue — vérifie ta connexion.");
+    } finally {
+      setUploadPending(false);
+    }
   }
 
   const genericImages = getGenericImagesForVibe(vibe);
@@ -194,7 +208,7 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
         />
       </div>
 
-      {(searchError || (searchedAndEmpty && !searchError) || uploadState.message) && (
+      {(searchError || (searchedAndEmpty && !searchError) || uploadError) && (
         <div className="bg-surface-50 px-3 pb-2">
           {searchError && (
             <p className="text-xs text-destructive" role="alert">
@@ -206,9 +220,9 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
               Aucune autre image — essaie une image proposée ou importe la tienne.
             </p>
           )}
-          {uploadState.message && (
+          {uploadError && (
             <p className="text-xs text-destructive" role="alert">
-              {uploadState.message}
+              {uploadError}
             </p>
           )}
         </div>
