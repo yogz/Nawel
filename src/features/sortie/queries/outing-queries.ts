@@ -266,11 +266,54 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
       vibe: outings.vibe,
       ticketUrl: outings.eventLink,
       creatorName: user.name,
+      // Champs RFC 5545 nécessaires pour que les clients calendar
+      // (Apple, Outlook notamment) re-rendent leur copie locale au
+      // refresh : SEQUENCE, LAST-MODIFIED, CREATED. Cf. §3.8.7.4.
+      sequence: outings.sequence,
+      createdAt: outings.createdAt,
+      updatedAt: outings.updatedAt,
       confirmedCount: sql<number>`(
         SELECT COUNT(*)::int FROM ${participants}
         WHERE ${participants.outingId} = ${outings.id}
           AND ${participants.response} IN ('yes', 'handle_own')
       )`.as("confirmed_count"),
+      // Liste des prénoms des participants confirmés, créateur exclu
+      // (déjà mentionné via "Organisé par X" dans la DESCRIPTION) et
+      // user-courant exclu (il sait qu'il vient). Triés par
+      // `respondedAt` ASC pour garder les early birds en tête. Le LIMIT
+      // est posé sur le LATERAL pour ne pas peser inutilement quand une
+      // sortie a 30 RSVPs — l'affichage iCal cap à ~6 noms de toute
+      // façon.
+      confirmedNames: sql<string[]>`(
+        SELECT COALESCE(array_agg(name ORDER BY responded_at ASC), '{}'::text[])
+        FROM (
+          SELECT
+            COALESCE(${user.name}, ${participants.anonName}) AS name,
+            ${participants.respondedAt} AS responded_at
+          FROM ${participants}
+          LEFT JOIN ${user} ON ${user.id} = ${participants.userId}
+          WHERE ${participants.outingId} = ${outings.id}
+            AND ${participants.response} IN ('yes', 'handle_own')
+            AND ${participants.userId} IS DISTINCT FROM ${userId}
+            AND ${participants.userId} IS DISTINCT FROM ${outings.creatorUserId}
+          ORDER BY ${participants.respondedAt} ASC
+          LIMIT 12
+        ) confirmed_names_subquery
+      )`.as("confirmed_names"),
+      // Response du user-courant sur cette sortie. Sert au builder à
+      // décider TRANSP:OPAQUE (= il vient, ça bloque sa dispo) vs
+      // TRANSP:TRANSPARENT (= pas encore figé pour lui), et le suffixe
+      // " · à confirmer" sur le SUMMARY. NULL pour les sorties qu'il a
+      // créées mais auxquelles il n'a pas RSVP — traité comme "yes"
+      // côté builder (le créateur vient par défaut).
+      userResponse: sql<
+        "yes" | "no" | "handle_own" | "interested" | null
+      >`(
+        SELECT ${participants.response}::text FROM ${participants}
+        WHERE ${participants.outingId} = ${outings.id}
+          AND ${participants.userId} = ${userId}
+        LIMIT 1
+      )`.as("user_response"),
     })
     .from(outings)
     .leftJoin(user, eq(user.id, outings.creatorUserId))
@@ -297,6 +340,12 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
     )
     .orderBy(asc(outings.fixedDatetime));
 
+  // `userResponse === null` côté builder veut dire "le user n'a pas de
+  // row participant" — vu que la WHERE clause restreint aux sorties
+  // (créées par le user) OU (où le user a RSVP yes/handle_own), un
+  // userResponse null implique forcément que le user est le créateur.
+  // Le builder traitera ce cas comme "yes" implicite (le créateur vient
+  // par défaut sur ses propres sorties).
   return rows
     .filter((r): r is typeof r & { fixedDatetime: Date } => r.fixedDatetime !== null)
     .map((r) => ({
@@ -309,6 +358,11 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
       vibe: r.vibe,
       ticketUrl: r.ticketUrl,
       creatorName: r.creatorName,
+      sequence: r.sequence,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
       confirmedCount: r.confirmedCount,
+      confirmedNames: r.confirmedNames ?? [],
+      userResponse: r.userResponse,
     }));
 }

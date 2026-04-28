@@ -64,7 +64,23 @@ export type FeedOuting = {
   vibe: "theatre" | "opera" | "concert" | "cine" | "expo" | "autre" | null;
   ticketUrl: string | null;
   creatorName: string | null;
+  /** Bumpé en DB à chaque transition de status / édition de contenu.
+   *  RFC 5545 §3.8.7.4 — sans ça, Apple/Outlook ignorent les updates. */
+  sequence: number;
+  /** RFC 5545 §3.8.7.1 — propriété CREATED. */
+  createdAt: Date;
+  /** RFC 5545 §3.8.7.3 — propriété LAST-MODIFIED. */
+  updatedAt: Date;
   confirmedCount: number;
+  /** Prénoms des confirmed (créateur exclu, user-courant exclu, triés
+   *  par early bird). Capé côté query à 12 ; le builder n'en affiche
+   *  que 6 + "+N autres" pour ne pas saturer le panneau détail. */
+  confirmedNames: string[];
+  /** Response du user-courant sur cette sortie. NULL = user est le
+   *  créateur (cf. commentaire dans `feedOutingsForUser`). Sert à
+   *  décider TRANSP:OPAQUE vs TRANSP:TRANSPARENT et le suffixe
+   *  " · à confirmer" sur le SUMMARY. */
+  userResponse: "yes" | "no" | "handle_own" | "interested" | null;
 };
 
 export type BuildIcsFeedArgs = {
@@ -100,21 +116,42 @@ export function buildIcsFeed({
     const canonical = o.slug ? `${o.slug}-${o.shortId}` : o.shortId;
     const url = `${publicBase}/${canonical}`;
     const endsAt = new Date(o.fixedDatetime.getTime() + DEFAULT_DURATION_MS);
+    const isFigee = isOutingFigee(o);
 
     lines.push("BEGIN:VEVENT");
     lines.push(`UID:${o.shortId}@sortie.colist.fr`);
+    // SEQUENCE / CREATED / LAST-MODIFIED : indispensables pour que les
+    // clients calendar (Apple, Outlook surtout) re-rendent leur copie
+    // locale au refresh — sans ça, un changement de status / suffixe
+    // SUMMARY / TRANSP reste invisible côté agenda. RFC 5545 §3.8.7.
+    lines.push(`SEQUENCE:${o.sequence}`);
+    lines.push(`CREATED:${formatIcsUtc(o.createdAt)}`);
+    lines.push(`LAST-MODIFIED:${formatIcsUtc(o.updatedAt)}`);
     lines.push(`DTSTAMP:${formatIcsUtc(now)}`);
     lines.push(`DTSTART;TZID=Europe/Paris:${formatIcsLocal(o.fixedDatetime)}`);
     lines.push(`DTEND;TZID=Europe/Paris:${formatIcsLocal(endsAt)}`);
-    lines.push(`SUMMARY:${escapeIcsText(o.title)}`);
+    // Suffixe " · à confirmer" quand pas figé : signal humain visible
+    // sur tous les clients (vue mois Apple/Proton ignorent souvent
+    // STATUS:TENTATIVE, donc on porte la sémantique dans le titre).
+    const summary = isFigee ? o.title : `${o.title} · à confirmer`;
+    lines.push(`SUMMARY:${escapeIcsText(summary)}`);
     if (o.location) {
       lines.push(`LOCATION:${escapeIcsText(o.location)}`);
     }
     lines.push(`URL:${url}`);
     lines.push(`DESCRIPTION:${buildDescription(o, url)}`);
-    // STATUS:CANCELLED → la plupart des clients barrent l'event
-    // visuellement. CONFIRMED par défaut.
+    // STATUS reste binaire CONFIRMED / CANCELLED. On ne pose pas
+    // TENTATIVE pour les événements pas-encore-figés : mental model
+    // confus côté user (Outlook conditioning : italique grisé = "j'ai
+    // pas répondu à l'invit"), rendu incohérent par client (Apple iOS
+    // mois ≈ invisible, Proton ignoré). Le suffixe SUMMARY + TRANSP
+    // ci-dessous portent l'info plus proprement.
     lines.push(`STATUS:${o.status === "cancelled" ? "CANCELLED" : "CONFIRMED"}`);
+    // TRANSP:OPAQUE bloque la dispo dans free/busy (le user est engagé) ;
+    // TRANSP:TRANSPARENT laisse libre (rien n'est encore figé). RFC 5545
+    // §3.8.2.7. Sémantique propre et universellement supportée — Cal.com
+    // et autres outils de scheduling lisent ça pour proposer des slots.
+    lines.push(`TRANSP:${isFigee ? "OPAQUE" : "TRANSPARENT"}`);
     if (o.vibe) {
       lines.push(`CATEGORIES:${vibeLabel(o.vibe)}`);
     }
@@ -126,13 +163,46 @@ export function buildIcsFeed({
   return lines.map(foldLine).join("\r\n") + "\r\n";
 }
 
+/**
+ * Une sortie est "figée" pour le user-courant quand :
+ *   - elle n'est pas annulée,
+ *   - ET (les billets sont pris OU le user a déjà dit yes pour lui-même,
+ *     donc bloque sa dispo dans son agenda peu importe que les billets
+ *     soient achetés ou pas — son mental model "j'y vais" tient).
+ *
+ * Quand `userResponse === null`, le user est le créateur (cf. WHERE
+ * clause de `feedOutingsForUser`) — on le considère implicitement comme
+ * "yes" (le créateur vient sur ses propres sorties par défaut).
+ */
+function isOutingFigee(o: FeedOuting): boolean {
+  if (o.status === "cancelled") {
+    return false;
+  }
+  if (o.status === "purchased" || o.status === "past" || o.status === "settled") {
+    return true;
+  }
+  // status in (open, awaiting_purchase, stale_purchase) → dépend de la
+  // décision personnelle du user.
+  return o.userResponse === null || o.userResponse === "yes" || o.userResponse === "handle_own";
+}
+
+// Cap d'affichage des prénoms confirmed dans la description. Au-delà,
+// on tombe sur "+N autres" pour ne pas saturer le panneau détail des
+// clients calendar (qui rendent la DESCRIPTION en bloc pré-formaté).
+const NAMES_DISPLAY_CAP = 6;
+
 function buildDescription(o: FeedOuting, url: string): string {
   const parts: string[] = [];
   if (o.creatorName) {
     parts.push(`Organisé par ${o.creatorName}`);
   }
   if (o.confirmedCount > 0) {
-    parts.push(`${o.confirmedCount} confirmé${o.confirmedCount > 1 ? "s" : ""}`);
+    const namesLine = formatConfirmedNames(o);
+    if (namesLine) {
+      parts.push(namesLine);
+    } else {
+      parts.push(`${o.confirmedCount} confirmé${o.confirmedCount > 1 ? "s" : ""}`);
+    }
   }
   if (o.ticketUrl) {
     parts.push(`Billetterie : ${o.ticketUrl}`);
@@ -140,6 +210,28 @@ function buildDescription(o: FeedOuting, url: string): string {
   parts.push(`Détails et RSVP : ${url}`);
   // RFC 5545 escape : `\n` est literal dans la description.
   return escapeIcsText(parts.join("\n"));
+}
+
+/**
+ * Format "9 confirmés : Tom, Marc, Sophie, Anaïs, Julien, Yuki + 3 autres".
+ * Quand on n'a pas du tout de prénoms (créateur+user-courant exclus de
+ * la sub-query, et tous les autres sont anon sans nom — théorique
+ * vu que displayName est requis), on retombe sur le simple compteur
+ * via le caller.
+ */
+function formatConfirmedNames(o: FeedOuting): string | null {
+  if (o.confirmedNames.length === 0) {
+    return null;
+  }
+  const shown = o.confirmedNames.slice(0, NAMES_DISPLAY_CAP);
+  // confirmedCount = total des `yes`+`handle_own` (créateur inclus si
+  // créateur a son row participant) ; confirmedNames exclut user-courant
+  // ET créateur. Le "reste" affiché est le delta entre count et noms
+  // affichés, plancher 0.
+  const remaining = Math.max(0, o.confirmedCount - shown.length);
+  const list = shown.join(", ");
+  const suffix = remaining > 0 ? ` + ${remaining} autre${remaining > 1 ? "s" : ""}` : "";
+  return `${o.confirmedCount} confirmé${o.confirmedCount > 1 ? "s" : ""} : ${list}${suffix}`;
 }
 
 function vibeLabel(vibe: NonNullable<FeedOuting["vibe"]>): string {

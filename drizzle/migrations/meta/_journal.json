@@ -253,6 +253,13 @@
       "when": 1777324608615,
       "tag": "0035_mixed_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1777392021368,
+      "tag": "0036_outings_sequence",
+      "breakpoints": true
     }
   ]
 }

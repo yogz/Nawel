@@ -61,7 +61,14 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     // runs can't both see `open` and both notify.
     const flipped = await db
       .update(outings)
-      .set({ status: "awaiting_purchase", updatedAt: now })
+      .set({
+        status: "awaiting_purchase",
+        updatedAt: now,
+        // Bump SEQUENCE pour que les abonnés au flux iCal voient la
+        // transition (TRANSP / suffixe SUMMARY changent en
+        // conséquence). RFC 5545 §3.8.7.4.
+        sequence: sql`${outings.sequence} + 1`,
+      })
       .where(and(eq(outings.id, outing.id), eq(outings.status, "open")))
       .returning({ id: outings.id });
     if (flipped.length === 0) {
@@ -161,7 +168,11 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     }
     const flipped = await db
       .update(outings)
-      .set({ status: "past", updatedAt: now })
+      .set({
+        status: "past",
+        updatedAt: now,
+        sequence: sql`${outings.sequence} + 1`,
+      })
       .where(
         and(eq(outings.id, candidate.id), sql`${outings.status} in ('open','awaiting_purchase')`)
       )

@@ -101,6 +101,13 @@ export const outings = sortie.table(
     // compatible with all historical outings + to let the creator skip
     // the picker if they don't want to commit.
     vibe: outingVibe("vibe"),
+    // Bumpé à chaque transition de statut ou édition de contenu (titre,
+    // date, lieu…). Sert exclusivement au flux iCal — RFC 5545 §3.8.7.4
+    // exige un SEQUENCE incrémenté pour que les clients calendrier
+    // (Apple, Outlook notamment) re-rendent leur copie locale au refresh
+    // du feed. Sans bump, la transition open→awaiting_purchase ou
+    // l'annulation d'une sortie reste invisible côté agenda abonné.
+    sequence: integer("sequence").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
