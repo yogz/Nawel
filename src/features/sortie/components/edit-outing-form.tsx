@@ -50,8 +50,6 @@ export function EditOutingForm({
 
       <ImageEditor
         currentUrl={imageUrl}
-        title={title}
-        venue={venue ?? ""}
         vibe={vibe}
         open={pickerOpen}
         onToggle={() => setPickerOpen((s) => !s)}
@@ -146,8 +144,6 @@ export function EditOutingForm({
  */
 function ImageEditor({
   currentUrl,
-  title,
-  venue,
   vibe,
   open,
   onToggle,
@@ -155,8 +151,6 @@ function ImageEditor({
   onRemove,
 }: {
   currentUrl: string;
-  title: string;
-  venue: string;
   vibe: Vibe | null;
   open: boolean;
   onToggle: () => void;
@@ -208,13 +202,7 @@ function ImageEditor({
 
       {open && (
         <div className="overflow-hidden rounded-xl border border-ink-200">
-          <MissingImagePicker
-            title={title}
-            venue={venue}
-            vibe={vibe}
-            onPick={onPick}
-            hidePlaceholder
-          />
+          <MissingImagePicker vibe={vibe} onPick={onPick} hidePlaceholder />
         </div>
       )}
     </div>

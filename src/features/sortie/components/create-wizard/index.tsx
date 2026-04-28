@@ -1443,14 +1443,7 @@ function ConfirmPasteStep({
             className="aspect-[16/10] w-full bg-surface-100 object-cover object-top"
           />
         )}
-        {showPicker && (
-          <MissingImagePicker
-            title={draft.title}
-            venue={draft.venue}
-            vibe={draft.vibe}
-            onPick={onImagePick}
-          />
-        )}
+        {showPicker && <MissingImagePicker vibe={draft.vibe} onPick={onImagePick} />}
         <div className="flex flex-col gap-2 p-5">
           <InlineEditable
             value={draft.title}

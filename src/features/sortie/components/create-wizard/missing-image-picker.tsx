@@ -3,19 +3,14 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ImageIcon, Loader2, RefreshCw, Upload, X } from "lucide-react";
+import { ImageIcon, Loader2, Upload, X } from "lucide-react";
 import { compressImageIfNeeded } from "@/features/sortie/lib/compress-image-client";
 import { getGenericImagesForVibe } from "@/features/sortie/lib/generic-event-images";
 import type { Vibe } from "@/features/sortie/lib/vibe-config";
-import type { FindImageResult } from "@/lib/gemini-image-search";
 
 type Props = {
-  // Champs courants du draft : la recherche d'image a besoin du titre
-  // (et idéalement du venue) pour requêter, et la grille générique
-  // dépend de la catégorie. Tous facultatifs : sans titre on désactive
-  // simplement le bouton "Rechercher".
-  title: string;
-  venue: string;
+  // La grille générique dépend de la catégorie. Facultatif : sans
+  // vibe, on tombe sur la grille fallback "autre".
   vibe: Vibe | null;
   // Callback déclenché quand l'utilisateur valide une image (peu importe
   // la source). Le parent met à jour `draft.heroImageUrl`.
@@ -31,25 +26,18 @@ type SubFlow = "none" | "generic";
 
 /**
  * Panneau de récupération affiché quand l'image automatique est absente
- * ou cassée sur le confirm step. Trois options proposées, toutes
- * facultatives : l'utilisateur peut aussi continuer sans image (le hero
- * de la sortie tombera sur le visuel par défaut côté détail).
+ * ou cassée sur le confirm step. Deux options proposées : choisir dans
+ * la grille générique (fallback selon vibe) ou importer son propre
+ * fichier. L'utilisateur peut aussi continuer sans image (le hero de
+ * la sortie tombera sur le visuel par défaut côté détail).
  *
  * UX volontairement non-bloquante : tout se passe dans la même carte,
  * pas de modal plein écran. Les sous-flux (grille générique, upload) se
  * déploient inline et peuvent être refermés sans perdre l'état du
  * wizard.
  */
-export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder = false }: Props) {
+export function MissingImagePicker({ vibe, onPick, hidePlaceholder = false }: Props) {
   const [subFlow, setSubFlow] = useState<SubFlow>("none");
-  const [searchPending, setSearchPending] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [searchedAndEmpty, setSearchedAndEmpty] = useState(false);
-  // Garde la trace de la dernière URL retournée par la recherche pour
-  // exclure de futures suggestions identiques (en pratique : le cache
-  // bypass + une seconde tentative). Permet aussi à la grille générique
-  // de signaler "déjà essayée".
-  const triedUrlsRef = useRef<Set<string>>(new Set());
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Upload via fetch sur la route handler `/api/sortie/event-image-upload`,
@@ -60,66 +48,6 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
   // debug, même validation côté serveur.
   const [uploadPending, setUploadPending] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-
-  const trimmedTitle = title.trim();
-  const canSearch = trimmedTitle.length >= 3 && !searchPending;
-
-  async function runSearch() {
-    if (!canSearch) {
-      return;
-    }
-    setSearchError(null);
-    setSearchedAndEmpty(false);
-    setSearchPending(true);
-    try {
-      // Endpoint dédié recherche d'image : prompt Gemini focus sur
-      // UNE URL d'image directe, validation HEAD côté serveur (élimine
-      // les images cassées affichées côté client). Beaucoup plus
-      // permissif que `/api/sortie/find-event` qui cherche TOUT
-      // l'évent — pour un évent perso/custom, ce dernier tombait en
-      // "low_confidence" et le user voyait "Aucune autre image"
-      // systématiquement. Ici on autorise les illustrations génériques
-      // du genre quand pas de visuel officiel. `noCache` force un
-      // nouveau round-trip Gemini pour ne pas re-servir l'image
-      // rejetée au tour précédent.
-      const res = await fetch("/api/sortie/find-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: trimmedTitle,
-          venue: venue.trim() || undefined,
-          vibe: vibe ?? undefined,
-          noCache: true,
-        }),
-      });
-      if (res.status === 429) {
-        const data = (await res.json().catch(() => null)) as { message?: string } | null;
-        setSearchError(data?.message ?? "Trop de tentatives — réessaie plus tard.");
-        return;
-      }
-      if (!res.ok) {
-        setSearchError("La recherche a échoué — réessaie dans un instant.");
-        return;
-      }
-      const data = (await res.json()) as FindImageResult;
-      const newUrl = data.found ? data.url : "";
-      if (newUrl && !triedUrlsRef.current.has(newUrl)) {
-        triedUrlsRef.current.add(newUrl);
-        onPick(newUrl);
-        return;
-      }
-      // Soit Gemini n'a rien retourné, soit il propose la même URL
-      // qu'au tour précédent (cache HTTP côté Gemini). On le signale
-      // sans crier au feu : l'utilisateur peut basculer sur la grille
-      // ou l'upload.
-      setSearchedAndEmpty(true);
-    } catch (err) {
-      console.error("[missing-image-picker] search failed", err);
-      setSearchError("Connexion perdue — vérifie ta connexion.");
-    } finally {
-      setSearchPending(false);
-    }
-  }
 
   async function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -200,19 +128,9 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
         </div>
       )}
 
-      {/* Barre d'actions au pied du placeholder. 3 colonnes égales,
+      {/* Barre d'actions au pied du placeholder. 2 colonnes égales,
           touch targets ≥ 44px, label sur 2 lignes possible. */}
-      <div className="grid grid-cols-3 gap-2 bg-surface-50 p-3">
-        <PickerButton
-          icon={
-            searchPending ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />
-          }
-          label="Rechercher"
-          sublabel="une autre"
-          onClick={runSearch}
-          disabled={!canSearch}
-          active={false}
-        />
+      <div className="grid grid-cols-2 gap-2 bg-surface-50 p-3">
         <PickerButton
           icon={<ImageIcon size={18} />}
           label="Choisir"
@@ -233,23 +151,11 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
         />
       </div>
 
-      {(searchError || (searchedAndEmpty && !searchError) || uploadError) && (
+      {uploadError && (
         <div className="bg-surface-50 px-3 pb-2">
-          {searchError && (
-            <p className="text-xs text-destructive" role="alert">
-              {searchError}
-            </p>
-          )}
-          {searchedAndEmpty && !searchError && (
-            <p className="text-xs text-ink-500" role="status">
-              Aucune autre image — essaie une image proposée ou importe la tienne.
-            </p>
-          )}
-          {uploadError && (
-            <p className="text-xs text-destructive" role="alert">
-              {uploadError}
-            </p>
-          )}
+          <p className="text-xs text-destructive" role="alert">
+            {uploadError}
+          </p>
         </div>
       )}
 
@@ -267,7 +173,6 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
               <GenericImageGrid
                 images={genericImages}
                 onPick={(url) => {
-                  triedUrlsRef.current.add(url);
                   onPick(url);
                   setSubFlow("none");
                 }}
