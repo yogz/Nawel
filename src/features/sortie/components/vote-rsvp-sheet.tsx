@@ -171,39 +171,11 @@ export function VoteRsvpSheet({
             })}
           </ul>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="displayName" className="text-[13px] font-medium text-ink-500">
-              Ton prénom
-            </Label>
-            <Input
-              id="displayName"
-              name="displayName"
-              required
-              defaultValue={existingName}
-              maxLength={100}
-              placeholder="Claire"
-              autoComplete="given-name"
-            />
-            {state.errors?.displayName?.[0] && (
-              <p className="text-xs text-erreur-700">{state.errors.displayName[0]}</p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-[13px] font-medium text-ink-500">
-              Ton email <span className="text-ink-300">(facultatif)</span>
-            </Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={existingEmail}
-              placeholder="pour être prévenu·e quand la date est choisie"
-            />
-            {state.errors?.email?.[0] && (
-              <p className="text-xs text-erreur-700">{state.errors.email[0]}</p>
-            )}
-          </div>
+          <IdentityFields
+            existingName={existingName}
+            existingEmail={existingEmail}
+            errors={state.errors}
+          />
 
           {generalError && (
             <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
@@ -228,5 +200,89 @@ export function VoteRsvpSheet({
         </form>
       </SheetContent>
     </Sheet>
+  );
+}
+
+/**
+ * Bloc identité du formulaire de vote. Quand l'utilisateur est déjà
+ * connu (session Better Auth ou participant anonyme déjà reconnu via
+ * cookie token), on n'affiche plus les champs prénom + email — on
+ * indique juste qui vote ("Tu votes en tant que …") avec un lien
+ * "ce n'est pas moi" pour repasser en mode édition libre.
+ *
+ * Sans ça, le user saisissait son prénom à chaque visite (ou pire :
+ * voyait son prénom dans le champ et se demandait s'il devait le
+ * confirmer / le retaper). Friction inutile sur un sondage qui doit
+ * être rapide.
+ *
+ * Les valeurs connues sont posées en hidden inputs pour que la form
+ * action reçoive le payload attendu (`displayName` requis par
+ * `voteRsvpSchema`, `email` optionnel).
+ */
+function IdentityFields({
+  existingName,
+  existingEmail,
+  errors,
+}: {
+  existingName?: string;
+  existingEmail?: string;
+  errors: FormActionState["errors"];
+}) {
+  const isKnown = Boolean(existingName);
+  const [editing, setEditing] = useState(!isKnown);
+
+  if (isKnown && !editing) {
+    return (
+      <div className="flex items-center justify-between rounded-md border border-surface-400 bg-surface-50 px-3 py-2.5 text-sm">
+        <span className="text-ink-600">
+          Tu votes en tant que <strong className="text-ink-700">{existingName}</strong>
+        </span>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="text-xs font-medium text-acid-700 underline-offset-4 hover:underline"
+        >
+          ce n&rsquo;est pas moi
+        </button>
+        <input type="hidden" name="displayName" value={existingName} />
+        {existingEmail && <input type="hidden" name="email" value={existingEmail} />}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="displayName" className="text-[13px] font-medium text-ink-500">
+          Ton prénom
+        </Label>
+        <Input
+          id="displayName"
+          name="displayName"
+          required
+          defaultValue={existingName}
+          maxLength={100}
+          placeholder="Claire"
+          autoComplete="given-name"
+        />
+        {errors?.displayName?.[0] && (
+          <p className="text-xs text-erreur-700">{errors.displayName[0]}</p>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="email" className="text-[13px] font-medium text-ink-500">
+          Ton email <span className="text-ink-300">(facultatif)</span>
+        </Label>
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          defaultValue={existingEmail}
+          placeholder="pour être prévenu·e quand la date est choisie"
+        />
+        {errors?.email?.[0] && <p className="text-xs text-erreur-700">{errors.email[0]}</p>}
+      </div>
+    </>
   );
 }
