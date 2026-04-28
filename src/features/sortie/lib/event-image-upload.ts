@@ -3,6 +3,7 @@ import { fileTypeFromBuffer } from "file-type";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { generateOgThumbnail } from "./og-thumbnail";
+import { safeFetchExternal } from "./safe-fetch";
 
 // Couvres d'événements : on accepte plus large qu'un avatar parce que
 // c'est le hero plein-écran de la sortie. 5 MB couvre une photo HD au
@@ -181,42 +182,23 @@ export async function generateOgThumbnailFromRemoteUrl(remoteUrl: string): Promi
     return null;
   }
 
-  let url: URL;
-  try {
-    url = new URL(remoteUrl);
-  } catch {
+  // safeFetchExternal protège contre le SSRF (DNS rebind, IPs privées,
+  // redirections vers loopback) — nécessaire car remoteUrl vient d'une
+  // page tiers parsée (parse-ticket-url) ou d'un og:image utilisateur.
+  const fetched = await safeFetchExternal(remoteUrl, {
+    timeoutMs: REMOTE_FETCH_TIMEOUT_MS,
+    maxBytes: MAX_REMOTE_FETCH_BYTES,
+  });
+  if (!fetched.ok) {
+    if (fetched.reason !== "blocked_host" && fetched.reason !== "too_large") {
+      console.warn("[event-image-upload] remote fetch failed for og thumb", {
+        reason: fetched.reason,
+        remoteUrl,
+      });
+    }
     return null;
   }
-  if (url.protocol !== "https:" && url.protocol !== "http:") {
-    return null;
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REMOTE_FETCH_TIMEOUT_MS);
-  let buf: Buffer;
-  try {
-    const response = await fetch(remoteUrl, {
-      signal: controller.signal,
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      return null;
-    }
-    const contentLength = response.headers.get("content-length");
-    if (contentLength && Number(contentLength) > MAX_REMOTE_FETCH_BYTES) {
-      return null;
-    }
-    const arrayBuf = await response.arrayBuffer();
-    if (arrayBuf.byteLength > MAX_REMOTE_FETCH_BYTES) {
-      return null;
-    }
-    buf = Buffer.from(arrayBuf);
-  } catch (err) {
-    console.warn("[event-image-upload] remote fetch failed for og thumb", { err, remoteUrl });
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
+  const buf = fetched.body;
 
   const sniff = await fileTypeFromBuffer(buf).catch(() => undefined);
   if (!sniff || !ALLOWED_MIME.has(sniff.mime)) {
