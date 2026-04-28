@@ -6,6 +6,52 @@
 
 const TZ = "Europe/Paris";
 
+const parisDayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TZ,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const parisHourMinuteFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TZ,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/**
+ * Renvoie un Date pointant sur 23:59:59.999 du même jour calendaire
+ * Paris que `date`, en gérant proprement les transitions DST (l'offset
+ * Paris bascule entre +01:00 en hiver et +02:00 en été).
+ *
+ * Use-case principal : normaliser les deadlines RSVP pour qu'elles se
+ * terminent toujours en fin de journée, peu importe l'heure que l'user
+ * a saisie dans le picker. Garantit que "deadline samedi" veut dire
+ * "tu as toute la journée de samedi pour répondre" — pas un cut-off
+ * arbitraire à 14h dépendant du moment où le créateur a cliqué.
+ */
+export function endOfDayInParis(date: Date): Date {
+  const dayKey = parisDayKeyFormatter.format(date);
+  // On teste les deux offsets Paris possibles : +02:00 en été, +01:00
+  // en hiver. Critère de sélection : le candidat doit retomber à
+  // **23:59 heure Paris** (un mauvais offset décalerait l'heure d'un
+  // cran et tomberait à 22:59 ou 00:59).
+  for (const offset of ["+02:00", "+01:00"]) {
+    const candidate = new Date(`${dayKey}T23:59:59.999${offset}`);
+    if (
+      parisDayKeyFormatter.format(candidate) === dayKey &&
+      parisHourMinuteFormatter.format(candidate) === "23:59"
+    ) {
+      return candidate;
+    }
+  }
+  // Filet de sécurité : si rien ne matche (impossible en pratique sauf
+  // bug Intl), on rentre tout de même un Date valide à ~quelques
+  // minutes de la bonne valeur.
+  return new Date(`${dayKey}T23:59:59.999+01:00`);
+}
+
 const dayMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   weekday: "long",
   day: "numeric",
