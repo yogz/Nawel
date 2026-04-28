@@ -103,7 +103,7 @@ export function OutingHero({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-medium text-acid-600 underline-offset-4 hover:underline"
               >
-                Prendre mes places
+                Prendre tes billets / info sur l&rsquo;événement
                 <ArrowUpRight size={14} strokeWidth={2.4} />
               </a>
             )}
