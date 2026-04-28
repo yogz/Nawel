@@ -190,8 +190,15 @@ export function InlineRsvpSection({
     </>
   );
 
+  const hasResponded = currentResponse !== null;
+
   return (
     <div className="flex flex-col gap-2">
+      {hasResponded && (
+        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+          ✓ Ta réponse
+        </p>
+      )}
       <div className="grid grid-cols-[3fr_2fr] gap-2">
         <SegmentedButton
           icon={<Check size={14} strokeWidth={2.6} />}
@@ -202,7 +209,10 @@ export function InlineRsvpSection({
           onClick={handleYesTap}
         />
         <SegmentedButton
-          icon={<X size={14} strokeWidth={2.6} />}
+          // Swap X→Check quand sélectionné : le fill "Je passe" est
+          // gris-sur-gris à côté du voisin acid, l'icône porte le
+          // signal "réponse enregistrée".
+          icon={isNo ? <Check size={14} strokeWidth={2.6} /> : <X size={14} strokeWidth={2.6} />}
           label="Je passe"
           selected={isNo}
           tone="no"
@@ -237,17 +247,17 @@ function SegmentedButton({
   disabled: boolean;
   onClick: () => void;
 }) {
-  // Pattern segmented Material 3 : sélectionné = filled, non-sélectionné
-  // = outlined. Pour "yes" filled : acid green sur texte noir (lisible
-  // AAA). Pour "no" filled : ghost ink-200 + texte clair plutôt
-  // qu'hot pink (cf. review graphic designer — le rose est réservé aux
-  // signaux positifs countdown/best, le réutiliser pour "refus"
-  // casserait la grammaire visuelle).
+  // "no" filled = surface-300 + border ink-700 (PAS hot pink, réservé
+  // aux signaux positifs countdown/best). Unselected "no" = ink-400 au
+  // lieu d'ink-700 pour tirer l'œil vers l'affirmatif quand rien n'est
+  // répondu.
   const cls = selected
     ? tone === "yes"
       ? "bg-acid-600 text-surface-50 hover:bg-acid-700 border-acid-600"
-      : "bg-surface-200 text-ink-700 hover:bg-surface-300 border-surface-200"
-    : "bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200 border-ink-200";
+      : "bg-surface-300 text-ink-700 hover:bg-surface-400 border-ink-700 font-bold"
+    : tone === "yes"
+      ? "bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200 border-ink-200"
+      : "bg-surface-100 text-ink-400 hover:border-ink-300 hover:bg-surface-200 border-ink-200";
 
   return (
     <button

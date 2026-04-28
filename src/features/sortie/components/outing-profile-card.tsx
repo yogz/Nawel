@@ -215,14 +215,11 @@ export function OutingProfileCard({
   );
 
   if (needsVoteCta) {
-    // Cas mode vote sur lien privé : pas d'inline picker (la matrix
-    // de créneaux est trop riche pour une carte), mais on surface un
-    // CTA "Je vote →" qui mène à /<canonical> où la VoteRsvpSheet
-    // est dispo. Le bouton est en outlined neutre (PAS filled acid)
-    // pour ne pas voler la vedette aux cards mode fixed sur la même
-    // page : les 2 sont des actions à poids égal côté business.
-    // L'état "filled" sera réservé plus tard à "j'ai déjà voté"
-    // pour matcher le pattern segmented Material 3.
+    // Pas d'inline picker : la matrix de créneaux est trop riche pour
+    // une carte. Le CTA mène à /<canonical> où la VoteRsvpSheet
+    // prend le relais. Quand l'invité a déjà voté, on signale acid-50
+    // pour confirmer "système t'a entendu" sans poids primary-action.
+    const hasVoted = myRsvp !== null;
     return (
       <article
         className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
@@ -234,12 +231,21 @@ export function OutingProfileCard({
           {navigationRow}
         </Link>
         <div className="mt-3 border-t border-ink-700/5 pt-3">
+          {hasVoted && (
+            <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-700">
+              ✓ Tu as voté
+            </p>
+          )}
           <Link
             href={href}
-            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-ink-200 bg-surface-100 px-4 text-sm font-semibold text-ink-700 transition-colors hover:border-ink-300 hover:bg-surface-200 motion-safe:active:scale-95"
+            className={`inline-flex h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold transition-colors motion-safe:active:scale-95 ${
+              hasVoted
+                ? "border-acid-600 bg-acid-50 text-acid-700 hover:bg-acid-100"
+                : "border-ink-200 bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200"
+            }`}
           >
             <Check size={14} strokeWidth={2.6} className="text-acid-600" />
-            Je vote
+            {hasVoted ? "Modifier mon vote" : "Je vote"}
             <ArrowRight size={14} strokeWidth={2.4} />
           </Link>
         </div>
