@@ -12,7 +12,10 @@ export const alt = "Sortie";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export const runtime = "edge";
+// Pas de `runtime = "edge"` : la route importe `db` (postgres-js) qui
+// s'appuie sur les sockets TCP Node — incompatibles avec l'edge runtime
+// et faisaient hang la fonction jusqu'au timeout 25 s (FUNCTION_INVOCATION_
+// _TIMEOUT). Fluid Compute = mêmes régions, mêmes coûts, postgres natif.
 export const revalidate = 60;
 
 // "Acid Cabinet" palette — the share preview now matches the in-app

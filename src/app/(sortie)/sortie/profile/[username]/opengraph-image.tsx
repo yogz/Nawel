@@ -13,7 +13,8 @@ export const alt = "Sortie";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export const runtime = "edge";
+// Pas de `runtime = "edge"` : la route importe `db` (postgres-js) — voir
+// /[slugOrId]/opengraph-image.tsx pour le détail. Fluid Compute = OK.
 export const revalidate = 60;
 
 // "Acid Cabinet" palette — see /[slugOrId]/opengraph-image.tsx for the
