@@ -121,6 +121,12 @@ export default function Image() {
 
         <div
           style={{
+            // Satori : tout `<div>` à plusieurs enfants doit déclarer
+            // un `display: "flex"` explicite (sinon erreur build-time
+            // "Expected <div> to have explicit display: flex"). Ici on
+            // a 2 enfants (le mot "sortie" + le point ACID), donc on
+            // tag le parent en flex et on wrappe "sortie" en span.
+            display: "flex",
             fontSize: 168,
             fontWeight: 900,
             letterSpacing: "-0.05em",
@@ -129,7 +135,8 @@ export default function Image() {
             marginBottom: 24,
           }}
         >
-          sortie<span style={{ color: ACID }}>.</span>
+          <span>sortie</span>
+          <span style={{ color: ACID }}>.</span>
         </div>
 
         <div
