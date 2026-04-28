@@ -136,7 +136,7 @@ function renderStandard(args: {
         display: "flex",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
+        backgroundImage: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
@@ -194,7 +194,7 @@ function renderStandard(args: {
           style={{
             width: 60,
             height: 1,
-            background: HOT,
+            backgroundColor: HOT,
             opacity: 0.6,
             marginTop: 10,
             marginBottom: 24,
@@ -245,7 +245,7 @@ function renderWithHero(args: {
         height: "100%",
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
-        background: SCRIM,
+        backgroundColor: SCRIM,
       }}
     >
       {}
@@ -269,7 +269,7 @@ function renderWithHero(args: {
         style={{
           position: "absolute",
           inset: 0,
-          background:
+          backgroundImage:
             "linear-gradient(180deg, rgba(28,25,23,0.0) 0%, rgba(28,25,23,0.55) 55%, rgba(28,25,23,0.9) 100%)",
         }}
       />
@@ -358,7 +358,7 @@ function renderCancelled(args: { title: string }) {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: SURFACE,
+        backgroundColor: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         padding: 88,
         textAlign: "center",
@@ -411,7 +411,7 @@ function renderFallback() {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: SURFACE,
+        backgroundColor: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
     >
@@ -480,7 +480,7 @@ function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
         width: 88,
         height: 88,
         borderRadius: "50%",
-        background: ACID,
+        backgroundColor: ACID,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -572,7 +572,7 @@ function AvatarStack({ count, onDark }: { count: number; onDark: boolean }) {
             width: 40,
             height: 40,
             borderRadius: "50%",
-            background: onDark ? "rgba(250,247,242,0.2)" : HOT,
+            backgroundColor: onDark ? "rgba(250,247,242,0.2)" : HOT,
             border: `2px solid ${onDark ? "rgba(28,25,23,0.7)" : SURFACE}`,
             marginLeft: i === 0 ? 0 : -12,
           }}
@@ -598,7 +598,7 @@ function BrandInline({ variant = "onLight" }: { variant?: "onLight" | "onDark" }
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? HOT : ACID,
+          backgroundColor: onDark ? HOT : ACID,
         }}
       />
       <div
@@ -633,7 +633,7 @@ function BrandBottomRight({ variant = "onLight" }: { variant?: "onLight" | "onDa
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? HOT : ACID,
+          backgroundColor: onDark ? HOT : ACID,
         }}
       />
       <div
