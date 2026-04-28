@@ -7,7 +7,7 @@ import { ImageIcon, Loader2, RefreshCw, Upload, X } from "lucide-react";
 import { compressImageIfNeeded } from "@/features/sortie/lib/compress-image-client";
 import { getGenericImagesForVibe } from "@/features/sortie/lib/generic-event-images";
 import type { Vibe } from "@/features/sortie/lib/vibe-config";
-import type { FindEventResult } from "@/lib/gemini-search";
+import type { FindImageResult } from "@/lib/gemini-image-search";
 
 type Props = {
   // Champs courants du draft : la recherche d'image a besoin du titre
@@ -72,15 +72,25 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
     setSearchedAndEmpty(false);
     setSearchPending(true);
     try {
-      // On compose la query avec le venue si dispo : ça aide Gemini à
-      // distinguer deux événements homonymes (ex. "Roméo et Juliette" à
-      // l'Opéra de Paris vs. en tournée). `noCache` force un nouveau
-      // round-trip pour ne pas re-servir l'image rejetée.
-      const queryParts = [trimmedTitle, venue.trim()].filter(Boolean);
-      const res = await fetch("/api/sortie/find-event", {
+      // Endpoint dédié recherche d'image : prompt Gemini focus sur
+      // UNE URL d'image directe, validation HEAD côté serveur (élimine
+      // les images cassées affichées côté client). Beaucoup plus
+      // permissif que `/api/sortie/find-event` qui cherche TOUT
+      // l'évent — pour un évent perso/custom, ce dernier tombait en
+      // "low_confidence" et le user voyait "Aucune autre image"
+      // systématiquement. Ici on autorise les illustrations génériques
+      // du genre quand pas de visuel officiel. `noCache` force un
+      // nouveau round-trip Gemini pour ne pas re-servir l'image
+      // rejetée au tour précédent.
+      const res = await fetch("/api/sortie/find-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: queryParts.join(" "), noCache: true }),
+        body: JSON.stringify({
+          title: trimmedTitle,
+          venue: venue.trim() || undefined,
+          vibe: vibe ?? undefined,
+          noCache: true,
+        }),
       });
       if (res.status === 429) {
         const data = (await res.json().catch(() => null)) as { message?: string } | null;
@@ -91,8 +101,8 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
         setSearchError("La recherche a échoué — réessaie dans un instant.");
         return;
       }
-      const data = (await res.json()) as FindEventResult;
-      const newUrl = data.found ? data.data.heroImageUrl : "";
+      const data = (await res.json()) as FindImageResult;
+      const newUrl = data.found ? data.url : "";
       if (newUrl && !triedUrlsRef.current.has(newUrl)) {
         triedUrlsRef.current.add(newUrl);
         onPick(newUrl);
