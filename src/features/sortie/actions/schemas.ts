@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
 
 const trimmedString = z.string().trim();
 
@@ -95,10 +96,13 @@ export const createOutingSchema = z
       }
     }, z.array(timeslotInputSchema).min(2).max(8).optional()),
     // Optional on the form — derived server-side when missing.
+    // Toujours coercé à 23:59:59.999 du jour Paris choisi : une deadline
+    // doit donner une journée entière pour répondre, pas un cut-off
+    // arbitraire à l'heure où le créateur a cliqué.
     rsvpDeadline: z
       .union([z.literal(""), z.coerce.date()])
       .optional()
-      .transform((v) => (v instanceof Date ? v : undefined)),
+      .transform((v) => (v instanceof Date ? endOfDayInParis(v) : undefined)),
     ticketUrl: optionalSafeUrl,
     // Hero image URL — populated by the paster when it finds an `og:image`
     // on the ticket site. Same protocol refinement as `ticketUrl` so a
@@ -175,6 +179,9 @@ export function resolveDeadline(data: {
   startsAt: Date | undefined;
   timeslots: { startsAt: Date }[] | undefined;
 }): Date {
+  // L'utilisateur a déjà saisi une deadline : elle est passée par
+  // `endOfDayInParis` au niveau du schéma, donc retombe forcément en
+  // fin de journée — rien à recoercer ici.
   if (data.rsvpDeadline) {
     return data.rsvpDeadline;
   }
@@ -191,7 +198,11 @@ export function resolveDeadline(data: {
     return new Date();
   }
   const offset = computeDeadlineOffsetMs(anchor);
-  return new Date(anchor.getTime() - offset);
+  // Coerce la deadline dérivée à 23:59:59.999 Paris du jour calculé.
+  // L'offset garde au minimum 24 h de marge avec l'événement (cf.
+  // `computeDeadlineOffsetMs`), donc end-of-day reste avant le start
+  // dans tous les cas réalistes.
+  return endOfDayInParis(new Date(anchor.getTime() - offset));
 }
 
 export const updateOutingSchema = z
@@ -210,7 +221,9 @@ export const updateOutingSchema = z
       .union([z.literal(""), z.coerce.date()])
       .optional()
       .transform((v) => (v instanceof Date ? v : undefined)),
-    rsvpDeadline: z.coerce.date(),
+    // Toujours coercé à 23:59:59.999 du jour Paris choisi (cf.
+    // commentaire identique sur createOutingSchema).
+    rsvpDeadline: z.coerce.date().transform((v) => endOfDayInParis(v)),
     ticketUrl: optionalSafeUrl,
     heroImageUrl: optionalSafeUrl,
     heroImageOgUrl: optionalSafeUrl,
