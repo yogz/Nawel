@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createOutingAction } from "@/features/sortie/actions/outing-actions";
 import { computeDeadlineOffsetMs } from "@/features/sortie/actions/schemas";
+import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
 import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
@@ -1820,34 +1821,43 @@ function DeadlineSection({
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const autoOffsetMs = computeDeadlineOffsetMs(startsAt);
-  const autoDeadline = new Date(startsAt.getTime() - autoOffsetMs);
+  // L'auto-deadline retombe en fin de journée (cf. règle métier
+  // "23:59 Paris" enforce côté serveur via `endOfDayInParis`). On
+  // applique ici aussi pour que l'UI affiche la même valeur que ce qui
+  // sera stocké, sans surprise au reload après save.
+  const autoDeadline = endOfDayInParis(new Date(startsAt.getTime() - autoOffsetMs));
   const effective = deadline ?? autoDeadline;
   const isCustom = deadline !== null;
 
   // `now` is captured once per mount so the presets don't drift as the
-  // user lingers on the step. Deadlines are computed as `now + offset`
-  // (days after the invitation is published), not `event - offset` —
-  // easier mental model for the creator ("I want answers within a week
-  // of sending the link") than "I want to close 2 weeks before".
+  // user lingers on the step. Deadlines are computed comme "fin de la
+  // journée à `now + N jours`" — modèle mental simple ("clôture vendredi
+  // soir, j'ai 3 jours pour répondre"). Le serveur normalise quoi qu'il
+  // arrive via `endOfDayInParis`, mais on l'applique côté client aussi
+  // pour rester cohérent avec ce qui s'affiche dans le label.
   const now = useMemo(() => new Date(), []);
 
   const presets = useMemo(
     () => [
-      { label: "24h après", offsetMs: 24 * 60 * 60 * 1000 },
-      { label: "3 jours après", offsetMs: 3 * 24 * 60 * 60 * 1000 },
-      { label: "1 semaine après", offsetMs: 7 * 24 * 60 * 60 * 1000 },
-      { label: "2 semaines après", offsetMs: 14 * 24 * 60 * 60 * 1000 },
+      { label: "Dans 1 jour", days: 1 },
+      { label: "Dans 3 jours", days: 3 },
+      { label: "Dans 1 semaine", days: 7 },
+      { label: "Dans 2 semaines", days: 14 },
     ],
     []
   );
 
-  // Highlight the preset that matches the current deadline. Match is
-  // computed against `now + offset`, not `event - offset`, so the
-  // chip lighting is consistent with the new semantics. 1h tolerance
-  // to cover second-level drift between mount and render.
-  const currentOffsetFromNowMs = effective.getTime() - now.getTime();
+  function presetDeadline(days: number): Date {
+    const target = new Date(now);
+    target.setDate(target.getDate() + days);
+    return endOfDayInParis(target);
+  }
+
+  // Highlight le preset dont la date cible matche le jour Paris de la
+  // deadline courante. Comparaison de jour calendaire (pas d'offset
+  // horaire) vu que les deadlines sont toutes fixées à 23:59.
   const activePreset = presets.find(
-    (p) => Math.abs(p.offsetMs - currentOffsetFromNowMs) < 60 * 60 * 1000
+    (p) => isSameParisDay(presetDeadline(p.days), effective)
   );
 
   return (
@@ -1856,7 +1866,7 @@ function DeadlineSection({
         <CalendarClock size={18} className="mt-0.5 shrink-0 text-acid-600" />
         <div className="flex-1">
           <p className="text-xs font-black uppercase tracking-[0.12em] text-ink-400">
-            Fermeture des réponses
+            Dernier jour pour répondre
           </p>
           <p className="mt-0.5 text-sm font-semibold text-ink-700">
             {formatDeadline(effective)}
@@ -1893,19 +1903,18 @@ function DeadlineSection({
           </button>
           {presets.map((p) => {
             const active = activePreset === p;
-            // Hide presets whose "now + offset" lands after the event —
-            // asking people to reply past the date of the sortie doesn't
-            // make sense. Leaves `Auto` + valid ones visible.
-            const proposedDeadline = new Date(now.getTime() + p.offsetMs);
-            const wouldExceedEvent = proposedDeadline.getTime() >= startsAt.getTime();
-            if (wouldExceedEvent) {
+            // Hide presets whose deadline lands à/après la date de
+            // l'événement — demander de répondre après la sortie n'a
+            // pas de sens. Laisse `Auto` + presets valides visibles.
+            const proposedDeadline = presetDeadline(p.days);
+            if (proposedDeadline.getTime() >= startsAt.getTime()) {
               return null;
             }
             return (
               <button
                 key={p.label}
                 type="button"
-                onClick={() => onDeadlineChange(new Date(now.getTime() + p.offsetMs))}
+                onClick={() => onDeadlineChange(proposedDeadline)}
                 aria-pressed={active}
                 className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
                   active
@@ -1931,11 +1940,9 @@ function DeadlineSection({
               <SortieCalendar
                 selected={deadline ?? null}
                 onSelect={(d) => {
-                  // Copy the auto-deadline's time so the user only has
-                  // to pick a date, not also a time.
-                  const next = new Date(d);
-                  next.setHours(autoDeadline.getHours(), autoDeadline.getMinutes(), 0, 0);
-                  onDeadlineChange(next);
+                  // Toujours fin de journée : pas de second choix
+                  // d'heure (cf. règle métier 23:59 enforce serveur).
+                  onDeadlineChange(endOfDayInParis(d));
                   setCalendarOpen(false);
                 }}
               />
@@ -1947,17 +1954,30 @@ function DeadlineSection({
   );
 }
 
+// Toutes les deadlines tombent à 23:59 Paris (cf. règle métier
+// `endOfDayInParis`). Inutile de répéter "23h59" sur chaque card du
+// wizard — le hint "(clôture à 23h59)" sous le picker ou la copy
+// "Dernier jour pour répondre" suffisent à porter la sémantique.
+const deadlineDateFmt = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  timeZone: "Europe/Paris",
+});
+
 function formatDeadline(date: Date): string {
-  return new Intl.DateTimeFormat("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Europe/Paris",
-  })
-    .format(date)
-    .replace(":", "h");
+  return deadlineDateFmt.format(date);
+}
+
+const parisDayKeyFmt = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Paris",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+function isSameParisDay(a: Date, b: Date): boolean {
+  return parisDayKeyFmt.format(a) === parisDayKeyFmt.format(b);
 }
 
 function describeOffset(offsetMs: number): string {
