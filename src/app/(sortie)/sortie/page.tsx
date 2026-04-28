@@ -57,7 +57,9 @@ export default async function SortieHome() {
       .from(participants)
       .where(eq(participants.outingId, heroOuting.id));
     heroStats = {
-      confirmed: rows.filter((r) => r.response === "yes").length,
+      // `handle_own` = vient avec son propre billet. Sémantiquement confirmé,
+      // pas en attente — aligné avec emails J-1, dettes, achats, page détail.
+      confirmed: rows.filter((r) => r.response === "yes" || r.response === "handle_own").length,
       total: rows.filter((r) => r.response !== "no").length,
     };
   }

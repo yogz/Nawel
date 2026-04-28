@@ -29,7 +29,11 @@ type OutingForShare = {
 export function buildOutingShareMeta(outing: OutingForShare, now: Date = new Date()) {
   const firstName = getCreatorFirstName(outing);
   const rawTitle = outing.title.trim();
-  const confirmedCount = outing.participants.filter((p) => p.response === "yes").length;
+  // `handle_own` = vient avec son propre billet, donc confirmé. Aligné
+  // avec emails J-1, dettes, achats, page détail et home heroStats.
+  const confirmedCount = outing.participants.filter(
+    (p) => p.response === "yes" || p.response === "handle_own"
+  ).length;
 
   if (outing.status === "cancelled") {
     return {

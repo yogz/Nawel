@@ -96,7 +96,7 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       confirmedCount: sql<number>`(
         SELECT COUNT(*)::int FROM ${participants}
         WHERE ${participants.outingId} = ${outings.id}
-          AND ${participants.response} = 'yes'
+          AND ${participants.response} IN ('yes', 'handle_own')
       )`.as("confirmed_count"),
     })
     .from(outings)
@@ -141,7 +141,7 @@ export async function listPublicProfileOutings(userId: string, now = new Date())
       confirmedCount: sql<number>`(
         SELECT COUNT(*)::int FROM ${participants}
         WHERE ${participants.outingId} = ${outings.id}
-          AND ${participants.response} = 'yes'
+          AND ${participants.response} IN ('yes', 'handle_own')
       )`.as("confirmed_count"),
     })
     .from(outings)
@@ -269,7 +269,7 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
       confirmedCount: sql<number>`(
         SELECT COUNT(*)::int FROM ${participants}
         WHERE ${participants.outingId} = ${outings.id}
-          AND ${participants.response} = 'yes'
+          AND ${participants.response} IN ('yes', 'handle_own')
       )`.as("confirmed_count"),
     })
     .from(outings)
