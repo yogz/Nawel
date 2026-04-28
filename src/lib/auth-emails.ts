@@ -84,8 +84,8 @@ export function buildSortieAuthEmail(args: { kind: SortieEmailKind; ctaUrl: stri
 function renderSortieTemplate(c: Copy & { ctaUrl: string }): string {
   // HTML email-safe : tables imbriquées, styles inline, pas de
   // CSS variables (Outlook). Les couleurs hex viennent du tailwind
-  // config (`bordeaux-600 = #C7FF3C`, `or-500 = #FF3D81`,
-  // `ivoire-50 = #0F0F0F` pour le bg, `encre-700 = #F5F2EB`).
+  // config (`acid-600 = #C7FF3C`, `hot-500 = #FF3D81`,
+  // `surface-50 = #0F0F0F` pour le bg, `ink-700 = #F5F2EB`).
   //
   // Dark mode : Gmail, Apple Mail, Outlook ré-inversent les couleurs
   // si on ne déclare pas explicitement le color-scheme. La combo

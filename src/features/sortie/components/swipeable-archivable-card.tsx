@@ -81,7 +81,7 @@ export function SwipeableArchivableCard({
         aria-label={isPast ? "Retirer de mon profil" : "Archiver"}
         onClick={commit}
         style={{ opacity: actionOpacity }}
-        className="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-or-500 text-ivoire-50 active:bg-or-600"
+        className="absolute inset-y-0 right-0 flex w-[88px] items-center justify-center bg-hot-500 text-surface-50 active:bg-hot-600"
       >
         <motion.span style={{ scale: actionScale }} className="flex flex-col items-center gap-1">
           {isPast ? (

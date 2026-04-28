@@ -13,7 +13,7 @@ export function DeadlineBadge({ deadlineAt }: Props) {
 
   if (isPast) {
     return (
-      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400">
+      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400">
         ◉ liste close
       </p>
     );
@@ -23,8 +23,8 @@ export function DeadlineBadge({ deadlineAt }: Props) {
     <p
       className={
         urgent
-          ? "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-or-500"
-          : "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400"
+          ? "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-hot-500"
+          : "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400"
       }
     >
       {urgent && (
@@ -32,8 +32,8 @@ export function DeadlineBadge({ deadlineAt }: Props) {
           aria-hidden
           className={
             criticalSoon
-              ? "sortie-deadline-halo h-1.5 w-1.5 rounded-full bg-or-500"
-              : "h-1.5 w-1.5 animate-pulse rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+              ? "sortie-deadline-halo h-1.5 w-1.5 rounded-full bg-hot-500"
+              : "h-1.5 w-1.5 animate-pulse rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
           }
         />
       )}

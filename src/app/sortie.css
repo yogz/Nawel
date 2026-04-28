@@ -12,10 +12,11 @@
  *   - Accent:  hot pink (#FF3D81) — deadlines, money, secondary signals
  *   - Text:    off-white (#F5F2EB)
  *
- * The historical token names (`bordeaux-`, `or-`, `ivoire-`, `encre-`) are
- * preserved — they're remapped to the new palette in tailwind.config.ts so
- * existing className strings keep their semantic role (foreground stays
- * foreground, primary stays primary) without a global rename pass.
+ * Tailwind palette names (cf. tailwind.config.ts) :
+ *   acid-*    = primary (vert acide)
+ *   hot-*     = accent  (rose électrique)
+ *   surface-* = fonds dark
+ *   ink-*     = échelle foreground texte (muted → bright)
  */
 
 @layer base {

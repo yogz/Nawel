@@ -117,8 +117,8 @@ export function OutingProfileCard({
   // entre les mailles du JIT Tailwind selon la config) :
   //  - wrapper : opacité globale, restaurée au hover
   //  - image / fallback : grayscale + leger fade
-  //  - titre & meta : couleur abaissée d'un cran (encre-500 / encre-400
-  //    au lieu de encre-700 / encre-500), pour que le texte aussi se
+  //  - titre & meta : couleur abaissée d'un cran (ink-500 / ink-400
+  //    au lieu de ink-700 / ink-500), pour que le texte aussi se
   //    lise comme estompé et pas seulement transparent.
   const pastWrapperClasses = isPast
     ? "opacity-80 transition-opacity duration-300 hover:opacity-100"
@@ -126,8 +126,8 @@ export function OutingProfileCard({
   const pastImageClasses = isPast
     ? "grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
     : "";
-  const pastTitleClasses = isPast ? "text-encre-500" : "text-encre-700";
-  const pastMetaClasses = isPast ? "text-encre-400" : "text-encre-500";
+  const pastTitleClasses = isPast ? "text-ink-500" : "text-ink-700";
+  const pastMetaClasses = isPast ? "text-ink-400" : "text-ink-500";
 
   // First letter of the title for the poster-less fallback thumbnail.
   // Same visual vocabulary as the LiveStatusHero empty state — gradient
@@ -141,7 +141,7 @@ export function OutingProfileCard({
         <img
           src={outing.heroImageUrl}
           alt=""
-          className={`size-16 shrink-0 rounded-md bg-ivoire-100 object-cover object-top ${pastImageClasses}`}
+          className={`size-16 shrink-0 rounded-md bg-surface-100 object-cover object-top ${pastImageClasses}`}
           // Filter saturate + contrast aligné sur le hero détail
           // (`OutingHero`). Donne une cohérence visuelle malgré
           // les sources hétérogènes (Ticketmaster, Fnac, AllOcc,
@@ -160,7 +160,7 @@ export function OutingProfileCard({
           }}
         >
           <span
-            className="text-2xl font-black leading-none tracking-tight text-encre-50 opacity-50 select-none"
+            className="text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
             style={{
               fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
               mixBlendMode: "overlay",
@@ -172,12 +172,12 @@ export function OutingProfileCard({
       )}
       <div className="flex min-w-0 flex-1 flex-col">
         {dateLabel && (
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-bordeaux-600">
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-acid-600">
             {dateLabel}
           </p>
         )}
         <h3
-          className={`truncate text-[17px] leading-tight font-black tracking-[-0.025em] group-hover:text-bordeaux-600 ${pastTitleClasses}`}
+          className={`truncate text-[17px] leading-tight font-black tracking-[-0.025em] group-hover:text-acid-600 ${pastTitleClasses}`}
         >
           {outing.title}
         </h3>
@@ -197,14 +197,14 @@ export function OutingProfileCard({
           <p
             className={`mt-1 inline-flex w-fit items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
               countdown.tone === "urgent"
-                ? "rounded-full bg-or-50 px-2 py-0.5 text-or-500"
+                ? "rounded-full bg-hot-50 px-2 py-0.5 text-hot-500"
                 : toneClasses(countdown.tone)
             }`}
           >
             {countdown.tone === "urgent" && (
               <span
                 aria-hidden
-                className="sortie-deadline-halo inline-block h-1.5 w-1.5 rounded-full bg-or-500"
+                className="sortie-deadline-halo inline-block h-1.5 w-1.5 rounded-full bg-hot-500"
               />
             )}
             {countdown.label}
@@ -225,20 +225,20 @@ export function OutingProfileCard({
     // pour matcher le pattern segmented Material 3.
     return (
       <article
-        className={`rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 ${pastWrapperClasses}`}
+        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
       >
         <Link
           href={href}
-          className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-encre-700/[0.02]"
+          className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-ink-700/[0.02]"
         >
           {navigationRow}
         </Link>
-        <div className="mt-3 border-t border-encre-700/5 pt-3">
+        <div className="mt-3 border-t border-ink-700/5 pt-3">
           <Link
             href={href}
-            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-encre-200 bg-ivoire-100 px-4 text-sm font-semibold text-encre-700 transition-colors hover:border-encre-300 hover:bg-ivoire-200 motion-safe:active:scale-95"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-ink-200 bg-surface-100 px-4 text-sm font-semibold text-ink-700 transition-colors hover:border-ink-300 hover:bg-surface-200 motion-safe:active:scale-95"
           >
-            <Check size={14} strokeWidth={2.6} className="text-bordeaux-600" />
+            <Check size={14} strokeWidth={2.6} className="text-acid-600" />
             Je vote
             <ArrowRight size={14} strokeWidth={2.4} />
           </Link>
@@ -255,15 +255,15 @@ export function OutingProfileCard({
     // still discoverable.
     return (
       <article
-        className={`rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 ${pastWrapperClasses}`}
+        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
       >
         <Link
           href={href}
-          className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-encre-700/[0.02]"
+          className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-ink-700/[0.02]"
         >
           {navigationRow}
         </Link>
-        <div className="mt-3 border-t border-encre-700/5 pt-3">
+        <div className="mt-3 border-t border-ink-700/5 pt-3">
           <InlineRsvpSection
             shortId={outing.shortId}
             outingTitle={outing.title}
@@ -284,14 +284,14 @@ export function OutingProfileCard({
   return (
     <Link
       href={href}
-      className={`group flex items-center gap-3 rounded-xl bg-ivoire-50 p-3 ring-1 ring-encre-700/5 transition-colors hover:ring-or-500 ${pastWrapperClasses}`}
+      className={`group flex items-center gap-3 rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 transition-colors hover:ring-hot-500 ${pastWrapperClasses}`}
     >
       {navigationRow}
       <ChevronRight
         size={16}
         strokeWidth={2}
         aria-hidden="true"
-        className="shrink-0 text-encre-300 transition-colors group-hover:text-or-600"
+        className="shrink-0 text-ink-300 transition-colors group-hover:text-hot-600"
       />
     </Link>
   );
@@ -300,12 +300,12 @@ export function OutingProfileCard({
 function toneClasses(tone: DeadlineTone): string {
   switch (tone) {
     case "urgent":
-      return "text-or-500";
+      return "text-hot-500";
     case "soon":
-      return "text-or-600";
+      return "text-hot-600";
     case "neutral":
-      return "text-encre-400";
+      return "text-ink-400";
     case "closed":
-      return "text-encre-300";
+      return "text-ink-300";
   }
 }

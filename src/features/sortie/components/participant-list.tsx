@@ -30,11 +30,11 @@ export function ParticipantList({
   if (!hasAnyPositive) {
     return (
       <div className="text-center">
-        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           ─ first to commit ─
         </p>
         <p
-          className="text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
+          className="text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
           Radio silence.
@@ -42,11 +42,11 @@ export function ParticipantList({
           {isCreator ? (
             // Le créateur a accès aux boutons de partage juste au-dessus.
             // L'invitation à partager n'a de sens que pour lui.
-            <span className="text-bordeaux-600">Partage le lien.</span>
+            <span className="text-acid-600">Partage le lien.</span>
           ) : (
             // Pour un invité, on retourne l'incitation : c'est lui qui
             // peut être le premier à dire oui, pas un partageur de lien.
-            <span className="text-bordeaux-600">Sois le premier à dire oui.</span>
+            <span className="text-acid-600">Sois le premier à dire oui.</span>
           )}
         </p>
       </div>
@@ -79,11 +79,11 @@ export function ParticipantList({
 
   return (
     <div>
-      <p className="mb-2 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+      <p className="mb-2 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
         ─ they&rsquo;re in ─
       </p>
       <p
-        className="mb-4 text-center text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
+        className="mb-4 text-center text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
         style={{
           fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
           textWrap: "balance",
@@ -93,7 +93,7 @@ export function ParticipantList({
       </p>
 
       {totalHeads > yesList.length && (
-        <p className="mb-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+        <p className="mb-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
           ◉ <AnimatedCount value={totalHeads}>{numberToFrenchCap(totalHeads)}</AnimatedCount>{" "}
           personnes avec les accompagnants
         </p>
@@ -105,11 +105,11 @@ export function ParticipantList({
             const extras = formatExtras(p.extraAdults, p.extraChildren);
             const display = displayNameOf(p) ?? "Quelqu'un";
             return (
-              <li key={p.id} className="flex items-center gap-3 text-encre-600">
+              <li key={p.id} className="flex items-center gap-3 text-ink-600">
                 <UserAvatar name={display} image={p.user?.image ?? null} size={32} />
                 <span className="min-w-0 truncate text-base">
                   {display}
-                  {extras && <span className="text-encre-400"> {extras}</span>}
+                  {extras && <span className="text-ink-400"> {extras}</span>}
                 </span>
               </li>
             );
@@ -142,15 +142,15 @@ function SecondarySection({
   rows: Participant[];
 }) {
   return (
-    <div className="mt-5 border-t border-ivoire-400 pt-4">
-      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+    <div className="mt-5 border-t border-surface-400 pt-4">
+      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         {label} · {String(count).padStart(2, "0")}
       </p>
       <ul className="flex flex-col gap-2">
         {rows.map((p) => {
           const display = displayNameOf(p) ?? "Quelqu'un";
           return (
-            <li key={p.id} className="flex items-center gap-3 text-encre-500">
+            <li key={p.id} className="flex items-center gap-3 text-ink-500">
               <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
               <span className="min-w-0 truncate text-sm">{display}</span>
             </li>

@@ -34,7 +34,7 @@ type SheetMode = "idle" | "yes" | "no-name-needed";
  *     bouton créait une ambiguïté grammaticale "app me parle" vs
  *     "j'active mon engagement").
  *   - Sélectionné = filled. "Je viens" filled = acid green, "Je passe"
- *     filled = ghost neutre encre-200 (PAS hot pink — le rose est
+ *     filled = ghost neutre ink-200 (PAS hot pink — le rose est
  *     déjà overloaded sur les signaux positifs countdown urgent /
  *     best timeslot, l'utiliser pour "refus" casserait la grammaire
  *     visuelle Acid Cabinet).
@@ -239,15 +239,15 @@ function SegmentedButton({
 }) {
   // Pattern segmented Material 3 : sélectionné = filled, non-sélectionné
   // = outlined. Pour "yes" filled : acid green sur texte noir (lisible
-  // AAA). Pour "no" filled : ghost encre-200 + texte clair plutôt
+  // AAA). Pour "no" filled : ghost ink-200 + texte clair plutôt
   // qu'hot pink (cf. review graphic designer — le rose est réservé aux
   // signaux positifs countdown/best, le réutiliser pour "refus"
   // casserait la grammaire visuelle).
   const cls = selected
     ? tone === "yes"
-      ? "bg-bordeaux-600 text-ivoire-50 hover:bg-bordeaux-700 border-bordeaux-600"
-      : "bg-ivoire-200 text-encre-700 hover:bg-ivoire-300 border-ivoire-200"
-    : "bg-ivoire-100 text-encre-700 hover:border-encre-300 hover:bg-ivoire-200 border-encre-200";
+      ? "bg-acid-600 text-surface-50 hover:bg-acid-700 border-acid-600"
+      : "bg-surface-200 text-ink-700 hover:bg-surface-300 border-surface-200"
+    : "bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200 border-ink-200";
 
   return (
     <button
@@ -257,7 +257,7 @@ function SegmentedButton({
       aria-pressed={selected}
       className={`flex h-11 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
     >
-      <span className={selected && tone === "yes" ? "text-ivoire-50" : ""}>{icon}</span>
+      <span className={selected && tone === "yes" ? "text-surface-50" : ""}>{icon}</span>
       <span>{label}</span>
     </button>
   );

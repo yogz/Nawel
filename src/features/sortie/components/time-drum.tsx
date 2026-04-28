@@ -44,8 +44,8 @@ export function TimeDrum({ selected, onSelect }: Props) {
               aria-pressed={isSelected}
               className={`flex h-14 items-center justify-center rounded-xl border text-lg font-black tabular-nums tracking-tight transition-colors ${
                 isSelected
-                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                  : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
+                  ? "border-acid-600 bg-acid-600 text-surface-50"
+                  : "border-ink-300 bg-surface-200 text-ink-700 motion-safe:active:scale-95"
               }`}
             >
               {t.replace(":", "h")}
@@ -63,8 +63,8 @@ export function TimeDrum({ selected, onSelect }: Props) {
           aria-pressed={customOpen}
           className={`flex h-14 items-center justify-center rounded-xl border-2 text-sm font-bold transition-colors ${
             customOpen
-              ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-              : "border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 motion-safe:active:scale-95"
+              ? "border-acid-600 bg-acid-600 text-surface-50"
+              : "border-dashed border-acid-300 bg-transparent text-acid-600 motion-safe:active:scale-95"
           }`}
         >
           Autre heure
@@ -72,10 +72,10 @@ export function TimeDrum({ selected, onSelect }: Props) {
       </div>
 
       {customOpen && (
-        <div className="flex items-center gap-3 rounded-xl border border-encre-300 bg-ivoire-200 p-3">
+        <div className="flex items-center gap-3 rounded-xl border border-ink-300 bg-surface-200 p-3">
           <label
             htmlFor="custom-time-input"
-            className="text-xs font-black uppercase tracking-[0.12em] text-encre-400"
+            className="text-xs font-black uppercase tracking-[0.12em] text-ink-400"
           >
             Heure
           </label>
@@ -85,7 +85,7 @@ export function TimeDrum({ selected, onSelect }: Props) {
             step="900"
             value={selected ?? "20:00"}
             onChange={(e) => onSelect(e.target.value)}
-            className="ml-auto rounded-md border border-encre-100 bg-ivoire-50 px-3 py-2 text-lg font-black tabular-nums tracking-tight text-encre-700"
+            className="ml-auto rounded-md border border-ink-100 bg-surface-50 px-3 py-2 text-lg font-black tabular-nums tracking-tight text-ink-700"
           />
         </div>
       )}

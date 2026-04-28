@@ -62,8 +62,8 @@ export function TimeslotListEditor({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between">
-        <Label className="text-[13px] font-medium text-encre-500">Créneaux proposés</Label>
-        <span className="text-xs text-encre-400">
+        <Label className="text-[13px] font-medium text-ink-500">Créneaux proposés</Label>
+        <span className="text-xs text-ink-400">
           {slots.length} sur {MAX}
         </span>
       </div>
@@ -73,7 +73,7 @@ export function TimeslotListEditor({
       <ul className="flex flex-col gap-2">
         {slots.map((slot, idx) => (
           <li key={slot.key} className="flex items-center gap-2">
-            <span className="text-xs text-encre-300 tabular-nums">{idx + 1}</span>
+            <span className="text-xs text-ink-300 tabular-nums">{idx + 1}</span>
             <div className="flex-1">
               <DateTimePicker
                 name={`_timeslot_${slot.key}`}
@@ -86,7 +86,7 @@ export function TimeslotListEditor({
                 type="button"
                 aria-label="Supprimer ce créneau"
                 onClick={() => removeSlot(slot.key)}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-encre-400 transition-colors hover:bg-erreur-50 hover:text-erreur-700"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-ink-400 transition-colors hover:bg-erreur-50 hover:text-erreur-700"
               >
                 <Trash2 size={16} />
               </button>
@@ -99,7 +99,7 @@ export function TimeslotListEditor({
         <button
           type="button"
           onClick={addSlot}
-          className="mt-1 inline-flex items-center gap-1.5 self-start text-sm text-bordeaux-700 underline-offset-4 hover:underline"
+          className="mt-1 inline-flex items-center gap-1.5 self-start text-sm text-acid-700 underline-offset-4 hover:underline"
         >
           <Plus size={14} />
           Ajouter un créneau

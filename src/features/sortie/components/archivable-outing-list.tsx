@@ -141,7 +141,7 @@ export function ArchivableOutingList<R extends MinimalRow>({
             // `max-w-xl` matches the app's content column; `mx-auto`
             // centers it horizontally without Tailwind transforms.
             style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
-            className="fixed inset-x-4 z-50 mx-auto flex max-w-md items-center justify-between gap-4 rounded-full bg-encre-700 px-5 py-3 text-sm text-ivoire-50 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]"
+            className="fixed inset-x-4 z-50 mx-auto flex max-w-md items-center justify-between gap-4 rounded-full bg-ink-700 px-5 py-3 text-sm text-surface-50 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]"
           >
             <span className="truncate">
               {toast.isPast ? "Retirée de ton profil" : "Sortie archivée"}
@@ -149,7 +149,7 @@ export function ArchivableOutingList<R extends MinimalRow>({
             <button
               type="button"
               onClick={handleUndo}
-              className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-or-300 underline-offset-4 hover:underline"
+              className="shrink-0 text-xs font-black uppercase tracking-[0.12em] text-hot-300 underline-offset-4 hover:underline"
             >
               Annuler
             </button>

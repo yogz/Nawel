@@ -50,23 +50,23 @@ export function UsernameForm({ currentUsername }: Props) {
   // Display mode — compact single-row card with value + Modifier.
   if (!editing && currentUsername) {
     return (
-      <div className="flex items-center gap-3 rounded-2xl bg-ivoire-50 p-4 ring-1 ring-encre-700/5">
+      <div className="flex items-center gap-3 rounded-2xl bg-surface-50 p-4 ring-1 ring-ink-700/5">
         <span
           aria-hidden="true"
-          className="grid size-7 shrink-0 place-items-center rounded-full bg-bordeaux-50 text-bordeaux-600"
+          className="grid size-7 shrink-0 place-items-center rounded-full bg-acid-50 text-acid-600"
         >
           <AtSign size={14} strokeWidth={2.4} />
         </span>
         <div className="flex min-w-0 flex-1 flex-col">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-encre-400">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-400">
             Nom d&rsquo;utilisateur
           </p>
-          <p className="truncate text-sm font-semibold text-bordeaux-700">@{currentUsername}</p>
+          <p className="truncate text-sm font-semibold text-acid-700">@{currentUsername}</p>
         </div>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-ink-500 underline-offset-4 hover:text-acid-700 hover:underline"
         >
           <Pencil size={12} strokeWidth={2.2} />
           Modifier
@@ -81,17 +81,17 @@ export function UsernameForm({ currentUsername }: Props) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-2xl bg-ivoire-50 p-4 ring-1 ring-encre-700/5 transition-shadow focus-within:ring-2 focus-within:ring-bordeaux-600/30"
+      className="flex flex-col gap-3 rounded-2xl bg-surface-50 p-4 ring-1 ring-ink-700/5 transition-shadow focus-within:ring-2 focus-within:ring-acid-600/30"
     >
       <label
         htmlFor="username"
-        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-encre-500"
+        className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-500"
       >
-        <AtSign size={14} strokeWidth={2.2} className="text-bordeaux-600" />
+        <AtSign size={14} strokeWidth={2.2} className="text-acid-600" />
         Ton nom d&rsquo;utilisateur
       </label>
       <div className="flex items-center gap-1">
-        <span className="text-sm font-semibold text-encre-300">@</span>
+        <span className="text-sm font-semibold text-ink-300">@</span>
         <input
           id="username"
           name="username"
@@ -105,10 +105,10 @@ export function UsernameForm({ currentUsername }: Props) {
           spellCheck={false}
           pattern="[a-z0-9][a-z0-9_-]{1,28}[a-z0-9]"
           autoFocus
-          className="flex-1 bg-transparent text-sm text-encre-700 placeholder:text-encre-300 focus:outline-none"
+          className="flex-1 bg-transparent text-sm text-ink-700 placeholder:text-ink-300 focus:outline-none"
         />
       </div>
-      <p className="text-xs text-encre-400">
+      <p className="text-xs text-ink-400">
         3 à 30 caractères : minuscules, chiffres, tirets. Visible à{" "}
         <span className="font-mono">sortie.colist.fr/@{value || "ton-nom"}</span>.
       </p>
@@ -126,7 +126,7 @@ export function UsernameForm({ currentUsername }: Props) {
             type="button"
             onClick={cancelEdit}
             disabled={pending}
-            className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-xs font-semibold text-encre-500 hover:text-encre-700 disabled:opacity-50"
+            className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-xs font-semibold text-ink-500 hover:text-ink-700 disabled:opacity-50"
           >
             <X size={12} strokeWidth={2.4} />
             Annuler
@@ -135,7 +135,7 @@ export function UsernameForm({ currentUsername }: Props) {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="inline-flex h-9 items-center gap-1 rounded-full bg-bordeaux-600 px-4 text-xs font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700 disabled:opacity-50"
+          className="inline-flex h-9 items-center gap-1 rounded-full bg-acid-600 px-4 text-xs font-semibold text-surface-50 transition-colors hover:bg-acid-700 disabled:opacity-50"
         >
           <Check size={12} strokeWidth={3} />
           {pending ? "Enregistrement…" : currentUsername ? "Enregistrer" : "Réserver ce nom"}

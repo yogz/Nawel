@@ -101,43 +101,43 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
       <input type="hidden" name="ghostBuyer" value={ghostBuyer ? "on" : "false"} />
 
       {canGhost && (
-        <label className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3 text-sm text-encre-500">
+        <label className="flex items-start gap-3 rounded-lg border border-surface-400 bg-surface-50 p-3 text-sm text-ink-500">
           <input
             type="checkbox"
             checked={ghostBuyer}
             onChange={(e) => setGhostBuyer(e.target.checked)}
-            className="mt-0.5 h-4 w-4 accent-bordeaux-600"
+            className="mt-0.5 h-4 w-4 accent-acid-600"
           />
           <span className="flex flex-col">
-            <span className="font-medium text-encre-700">
+            <span className="font-medium text-ink-700">
               Je n&rsquo;assiste pas, je prends juste les billets
             </span>
-            <span className="text-xs text-encre-400">
+            <span className="text-xs text-ink-400">
               Tes places ne sont pas comptées. Tout le monde te doit sa part.
             </span>
           </span>
         </label>
       )}
 
-      <div className="rounded-lg bg-ivoire-50 p-4">
-        <p className="text-sm text-encre-500">Places à couvrir</p>
-        <p className="font-serif text-3xl text-encre-700">{totalPlaces}</p>
-        <p className="mt-1 text-xs text-encre-400">
+      <div className="rounded-lg bg-surface-50 p-4">
+        <p className="text-sm text-ink-500">Places à couvrir</p>
+        <p className="font-serif text-3xl text-ink-700">{totalPlaces}</p>
+        <p className="mt-1 text-xs text-ink-400">
           {adultCount} adulte{adultCount > 1 ? "s" : ""}
           {childCount > 0 && `, ${childCount} enfant${childCount > 1 ? "s" : ""}`}
         </p>
       </div>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="text-[13px] font-medium text-encre-500">Tarif</legend>
+        <legend className="text-[13px] font-medium text-ink-500">Tarif</legend>
         <div className="flex flex-col gap-2">
           {(Object.keys(MODE_COPY) as Mode[]).map((m) => (
             <label
               key={m}
               className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
                 mode === m
-                  ? "border-or-500 bg-or-50"
-                  : "border-ivoire-400 bg-ivoire-50 hover:border-or-500/50"
+                  ? "border-hot-500 bg-hot-50"
+                  : "border-surface-400 bg-surface-50 hover:border-hot-500/50"
               }`}
             >
               <input
@@ -146,11 +146,11 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
                 value={m}
                 checked={mode === m}
                 onChange={() => setMode(m)}
-                className="mt-1 h-4 w-4 accent-bordeaux-600"
+                className="mt-1 h-4 w-4 accent-acid-600"
               />
               <span className="flex flex-col">
-                <span className="text-sm font-medium text-encre-700">{MODE_COPY[m].title}</span>
-                <span className="text-xs text-encre-400">{MODE_COPY[m].hint}</span>
+                <span className="text-sm font-medium text-ink-700">{MODE_COPY[m].title}</span>
+                <span className="text-xs text-ink-400">{MODE_COPY[m].hint}</span>
               </span>
             </label>
           ))}
@@ -159,7 +159,7 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
 
       {mode === "unique" && (
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="unit-price" className="text-[13px] font-medium text-encre-500">
+          <Label htmlFor="unit-price" className="text-[13px] font-medium text-ink-500">
             Prix par place
           </Label>
           <EuroInput id="unit-price" value={uniquePrice} onChange={setUniquePrice} />
@@ -173,7 +173,7 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
       {mode === "category" && (
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="adult-price" className="text-[13px] font-medium text-encre-500">
+            <Label htmlFor="adult-price" className="text-[13px] font-medium text-ink-500">
               Adulte
             </Label>
             <EuroInput id="adult-price" value={adultPrice} onChange={setAdultPrice} />
@@ -183,7 +183,7 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
             )}
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="child-price" className="text-[13px] font-medium text-encre-500">
+            <Label htmlFor="child-price" className="text-[13px] font-medium text-ink-500">
               Enfant
             </Label>
             <EuroInput id="child-price" value={childPrice} onChange={setChildPrice} />
@@ -196,9 +196,9 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
       )}
 
       {mode === "nominal" && (
-        <div className="flex flex-col gap-2 rounded-lg bg-ivoire-50 p-4">
-          <p className="text-sm text-encre-500">Un tarif par place</p>
-          <ul className="flex flex-col divide-y divide-ivoire-400">
+        <div className="flex flex-col gap-2 rounded-lg bg-surface-50 p-4">
+          <p className="text-sm text-ink-500">Un tarif par place</p>
+          <ul className="flex flex-col divide-y divide-surface-400">
             {allocations.map((a, i) => {
               const key = `${ghostBuyer ? "g" : "n"}:${i}`;
               return (
@@ -206,9 +206,9 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
                   key={`${a.participantId}-${i}`}
                   className="flex items-center justify-between gap-3 py-2"
                 >
-                  <span className="text-sm text-encre-600">
+                  <span className="text-sm text-ink-600">
                     {a.displayName}
-                    {a.isChild && <span className="ml-2 text-xs text-encre-400">(enfant)</span>}
+                    {a.isChild && <span className="ml-2 text-xs text-ink-400">(enfant)</span>}
                   </span>
                   <EuroInput
                     value={nominalPricesByKey[key] ?? ""}
@@ -231,23 +231,23 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
       )}
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="proof-file" className="text-[13px] font-medium text-encre-500">
-          Preuve d&rsquo;achat <span className="text-encre-300">(facultatif)</span>
+        <Label htmlFor="proof-file" className="text-[13px] font-medium text-ink-500">
+          Preuve d&rsquo;achat <span className="text-ink-300">(facultatif)</span>
         </Label>
         <input
           id="proof-file"
           name="proofFile"
           type="file"
           accept="application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif"
-          className="text-sm text-encre-600 file:mr-3 file:rounded-md file:border file:border-ivoire-400 file:bg-ivoire-50 file:px-3 file:py-2 file:text-sm file:text-encre-600 hover:file:border-or-500"
+          className="text-sm text-ink-600 file:mr-3 file:rounded-md file:border file:border-surface-400 file:bg-surface-50 file:px-3 file:py-2 file:text-sm file:text-ink-600 hover:file:border-hot-500"
         />
-        <p className="text-xs text-encre-400">PDF ou image, 5 Mo max.</p>
+        <p className="text-xs text-ink-400">PDF ou image, 5 Mo max.</p>
       </div>
 
-      <div className="rounded-lg border border-or-500/30 bg-or-50 p-4">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">Total</p>
-        <p className="font-serif text-4xl text-encre-700">{formatCents(totalCents)}</p>
-        <p className="mt-1 text-xs text-encre-400">
+      <div className="rounded-lg border border-hot-500/30 bg-hot-50 p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">Total</p>
+        <p className="font-serif text-4xl text-ink-700">{formatCents(totalCents)}</p>
+        <p className="mt-1 text-xs text-ink-400">
           À répartir entre {totalPlaces} place{totalPlaces > 1 ? "s" : ""}.
         </p>
       </div>
@@ -290,7 +290,7 @@ function EuroInput({
         placeholder="0"
         className="pr-7"
       />
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-encre-400">
+      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-ink-400">
         €
       </span>
     </div>

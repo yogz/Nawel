@@ -67,20 +67,20 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-y-0 left-1/2 z-[100] flex w-full max-w-[520px] -translate-x-1/2 flex-col items-center justify-center bg-encre-700/70 px-6 backdrop-blur-sm"
+      className="fixed inset-y-0 left-1/2 z-[100] flex w-full max-w-[520px] -translate-x-1/2 flex-col items-center justify-center bg-ink-700/70 px-6 backdrop-blur-sm"
     >
       <button
         type="button"
         aria-label="Fermer"
         onClick={onClose}
-        className="absolute top-6 right-6 grid size-10 place-items-center rounded-full bg-white/90 text-encre-700 transition-colors hover:bg-white"
+        className="absolute top-6 right-6 grid size-10 place-items-center rounded-full bg-white/90 text-ink-700 transition-colors hover:bg-white"
       >
         <X size={18} />
       </button>
 
       <div
         ref={stubRef}
-        className="relative w-full max-w-[340px] rotate-[-3deg] overflow-hidden rounded-[28px] bg-ivoire-100 p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_16px_32px_-12px_rgba(199,255,60,0.25)]"
+        className="relative w-full max-w-[340px] rotate-[-3deg] overflow-hidden rounded-[28px] bg-surface-100 p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_16px_32px_-12px_rgba(199,255,60,0.25)]"
         style={{
           animation: "rsvp-stub-pop 480ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
           backgroundImage:
@@ -94,23 +94,23 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
         <div className="pointer-events-none absolute top-1/2 -right-3 h-6 w-6 -translate-y-1/2 rounded-full bg-[var(--sortie-bg)]" />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-4 left-4 h-0 -translate-y-1/2 border-t-2 border-dashed border-encre-300"
+          className="pointer-events-none absolute top-1/2 right-4 left-4 h-0 -translate-y-1/2 border-t-2 border-dashed border-ink-300"
         />
 
-        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-bordeaux-700">
+        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-acid-700">
           Confirmé
         </p>
-        <h2 className="mt-3 text-3xl leading-[0.98] font-black tracking-tight text-encre-700">
+        <h2 className="mt-3 text-3xl leading-[0.98] font-black tracking-tight text-ink-700">
           {outingTitle}
         </h2>
-        <p className="mt-2 text-sm font-semibold text-encre-500">{formatTicketDate(date)}</p>
+        <p className="mt-2 text-sm font-semibold text-ink-500">{formatTicketDate(date)}</p>
 
         <div className="mt-8 flex items-end justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-encre-400">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-ink-400">
               Sortie de
             </p>
-            <p className="mt-0.5 text-xl font-black text-encre-700">{userName}</p>
+            <p className="mt-0.5 text-xl font-black text-ink-700">{userName}</p>
           </div>
           {/* Barcode — repeating stripes via background-image gradient. Pure
               aesthetic, doesn't encode anything. */}
@@ -128,7 +128,7 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
       <button
         type="button"
         onClick={handleShare}
-        className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-bold text-encre-700 shadow-[var(--shadow-lg)] transition-transform motion-safe:active:scale-95"
+        className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 text-sm font-bold text-ink-700 shadow-[var(--shadow-lg)] transition-transform motion-safe:active:scale-95"
       >
         <Share2 size={16} />
         Partager

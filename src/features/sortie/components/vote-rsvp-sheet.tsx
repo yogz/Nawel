@@ -111,10 +111,10 @@ export function VoteRsvpSheet({
       </SheetTrigger>
       <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
         <SheetHeader className="mb-6 text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">
+          <SheetTitle className="font-serif text-2xl text-ink-700">
             Quand tu peux&nbsp;?
           </SheetTitle>
-          <p className="text-sm text-encre-400">
+          <p className="text-sm text-ink-400">
             Tape pour dire que tu peux, re-tape pour dire que tu peux pas, encore une fois pour
             effacer.
           </p>
@@ -144,10 +144,10 @@ export function VoteRsvpSheet({
                     aria-pressed={status === "yes"}
                     className={`flex w-full items-center justify-between gap-3 rounded-xl border p-4 text-left transition-all ${
                       status === "yes"
-                        ? "border-bordeaux-600 bg-bordeaux-50 text-bordeaux-700"
+                        ? "border-acid-600 bg-acid-50 text-acid-700"
                         : status === "no"
-                          ? "border-or-500 bg-or-50 text-or-700"
-                          : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300"
+                          ? "border-hot-500 bg-hot-50 text-hot-700"
+                          : "border-surface-400 bg-surface-50 text-ink-700 hover:border-acid-300"
                     }`}
                   >
                     <span className="text-sm font-medium">
@@ -156,10 +156,10 @@ export function VoteRsvpSheet({
                     <span
                       className={`grid size-6 place-items-center rounded-full border-2 transition-all ${
                         status === "yes"
-                          ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
+                          ? "border-acid-600 bg-acid-600 text-surface-50"
                           : status === "no"
-                            ? "border-or-500 bg-or-500 text-ivoire-50"
-                            : "border-encre-200"
+                            ? "border-hot-500 bg-hot-500 text-surface-50"
+                            : "border-ink-200"
                       }`}
                     >
                       {status === "yes" && <Check size={14} strokeWidth={3} />}
@@ -172,7 +172,7 @@ export function VoteRsvpSheet({
           </ul>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="displayName" className="text-[13px] font-medium text-encre-500">
+            <Label htmlFor="displayName" className="text-[13px] font-medium text-ink-500">
               Ton prénom
             </Label>
             <Input
@@ -190,8 +190,8 @@ export function VoteRsvpSheet({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
-              Ton email <span className="text-encre-300">(facultatif)</span>
+            <Label htmlFor="email" className="text-[13px] font-medium text-ink-500">
+              Ton email <span className="text-ink-300">(facultatif)</span>
             </Label>
             <Input
               id="email"
@@ -212,7 +212,7 @@ export function VoteRsvpSheet({
           )}
 
           <div
-            className="sticky -mx-6 -mb-6 flex items-center justify-end border-t border-ivoire-400 bg-ivoire-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+            className="sticky -mx-6 -mb-6 flex items-center justify-end border-t border-surface-400 bg-surface-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
             style={{ bottom: 0 }}
           >
             <Button type="submit" size="lg" disabled={pending}>

@@ -59,19 +59,19 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
 
   if (!token) {
     return (
-      <div className="rounded-2xl border border-ivoire-400 bg-ivoire-100 p-5">
-        <div className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+      <div className="rounded-2xl border border-surface-400 bg-surface-100 p-5">
+        <div className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           <Calendar size={12} strokeWidth={2.4} />─ mon agenda ─
         </div>
         <h3
-          className="mb-2 text-[20px] leading-[1.1] font-black tracking-[-0.025em] text-encre-700"
+          className="mb-2 text-[20px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
           Synchronise tes RSVP
           <br />
           avec ton agenda.
         </h3>
-        <p className="mb-4 text-[14px] leading-[1.5] text-encre-500">
+        <p className="mb-4 text-[14px] leading-[1.5] text-ink-500">
           Apple Calendar, Google Calendar, Outlook — toutes tes sorties confirmées apparaissent
           automatiquement, mises à jour en temps quasi-réel.
         </p>
@@ -79,7 +79,7 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
           type="button"
           onClick={handleActivate}
           disabled={pending}
-          className="inline-flex h-11 items-center gap-1.5 rounded-full bg-bordeaux-600 px-5 text-sm font-bold text-encre-50 transition-colors duration-300 hover:bg-bordeaux-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full bg-acid-600 px-5 text-sm font-bold text-ink-50 transition-colors duration-300 hover:bg-acid-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {pending ? "Activation…" : "Activer mon agenda"}
         </button>
@@ -105,12 +105,12 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
   }
 
   return (
-    <div className="rounded-2xl border border-ivoire-400 bg-ivoire-100 p-5">
-      <div className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+    <div className="rounded-2xl border border-surface-400 bg-surface-100 p-5">
+      <div className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
         <Calendar size={12} strokeWidth={2.4} />─ mon agenda ─
       </div>
 
-      <p className="mb-4 text-[14px] leading-[1.5] text-encre-500">
+      <p className="mb-4 text-[14px] leading-[1.5] text-ink-500">
         Tes sorties RSVP s&rsquo;affichent automatiquement dans ton agenda. Ajoute le lien
         ci-dessous à Apple Calendar, Google Calendar ou Outlook.
       </p>
@@ -118,13 +118,13 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
       <div className="mb-3 flex flex-col gap-2">
         <a
           href={webcalUrl}
-          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-bordeaux-600 px-4 text-sm font-bold text-encre-50 transition-colors duration-300 hover:bg-bordeaux-700"
+          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-acid-600 px-4 text-sm font-bold text-ink-50 transition-colors duration-300 hover:bg-acid-700"
         >
           Ajouter à mon agenda
         </a>
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+        <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
           ↳ ouvre le prompt sur iOS / macOS. Sur Google Calendar, copie le lien et colle-le dans{" "}
-          <span className="text-encre-600">Autres calendriers → À partir d&rsquo;une URL</span>.
+          <span className="text-ink-600">Autres calendriers → À partir d&rsquo;une URL</span>.
         </p>
       </div>
 
@@ -133,29 +133,29 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
           readOnly
           value={httpsUrl}
           onFocus={(e) => e.currentTarget.select()}
-          className="flex-1 truncate rounded-lg border border-ivoire-400 bg-ivoire-50 px-3 font-mono text-[11px] text-encre-500"
+          className="flex-1 truncate rounded-lg border border-surface-400 bg-surface-50 px-3 font-mono text-[11px] text-ink-500"
         />
         <button
           type="button"
           onClick={handleCopy}
           aria-label="Copier le lien"
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-ivoire-400 bg-ivoire-50 text-encre-700 transition-colors hover:border-encre-300 hover:bg-ivoire-200"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-surface-400 bg-surface-50 text-ink-700 transition-colors hover:border-ink-300 hover:bg-surface-200"
         >
-          {justCopied ? <Check size={16} className="text-bordeaux-600" /> : <Copy size={14} />}
+          {justCopied ? <Check size={16} className="text-acid-600" /> : <Copy size={14} />}
         </button>
       </div>
 
-      <div className="border-t border-ivoire-400 pt-3">
+      <div className="border-t border-surface-400 pt-3">
         <button
           type="button"
           onClick={handleRotate}
           disabled={pending}
-          className="inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400 underline-offset-4 transition-colors hover:text-or-500 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400 underline-offset-4 transition-colors hover:text-hot-500 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
         >
           <RotateCw size={11} strokeWidth={2.4} />
           Régénérer le lien
         </button>
-        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-encre-400">
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
           ↳ utile si tu as partagé le lien par erreur. L&rsquo;ancien arrête de marcher
           immédiatement.
         </p>

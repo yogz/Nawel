@@ -18,24 +18,22 @@ export const contentType = "image/png";
 // _TIMEOUT). Fluid Compute = mêmes régions, mêmes coûts, postgres natif.
 export const revalidate = 60;
 
-// "Acid Cabinet" palette — the share preview now matches the in-app
-// dark theme. Token names are kept as opaque ids (same trick as
-// tailwind.config) so no `Satori` JSX node has to be retouched.
-//   IVOIRE / IVOIRE_DEEP = primary surfaces (now dark)
-//   ENCRE_700 / ENCRE_500 = text foreground / muted (now light)
-//   OR / OR_DEEP = accent (hot pink)
-//   BORDEAUX / BORDEAUX_DEEP = primary (acid green)
-const IVOIRE = "#0A0A0A";
-const IVOIRE_DEEP = "#161616";
-const ENCRE_700 = "#F5F2EB";
-const ENCRE_500 = "#A0A0A0";
-const OR = "#FF3D81";
-const OR_DEEP = "#E63577";
-const BORDEAUX = "#C7FF3C";
-const BORDEAUX_DEEP = "#A8E62E";
-// Dark scrim used behind hero photos. The hero variant used to set its
-// background to ENCRE_700 (a dark ink) — that role moved here so we
-// could flip ENCRE_700 to "light text" in the dark theme.
+// "Acid Cabinet" palette — share preview alignée sur le thème dark in-app.
+// Constantes nommées par rôle (cf. tailwind.config) :
+//   SURFACE / SURFACE_DEEP = fonds dark (cartes, panneaux)
+//   INK_700 / INK_500      = texte foreground / muted
+//   HOT / HOT_DEEP         = accent secondaire (rose électrique)
+//   ACID / ACID_DEEP       = accent primaire (vert acide)
+const SURFACE = "#0A0A0A";
+const SURFACE_DEEP = "#161616";
+const INK_700 = "#F5F2EB";
+const INK_500 = "#A0A0A0";
+const HOT = "#FF3D81";
+const HOT_DEEP = "#E63577";
+const ACID = "#C7FF3C";
+const ACID_DEEP = "#A8E62E";
+// Scrim derrière les photos hero. Même teinte que SURFACE — split pour
+// expliciter l'intention quand on sur-densifie l'overlay sur photo claire.
 const SCRIM = "#0A0A0A";
 
 type Props = { params: Promise<{ slugOrId: string }> };
@@ -55,13 +53,23 @@ export default async function Image({ params }: Props) {
   }
 
   const startsAt = outing.fixedDatetime;
-  const eyebrow = startsAt ? buildEyebrow(startsAt) : "Sortie à venir";
-  const location = outing.location?.trim() ?? null;
+  // Eyebrow personnalisé "LÉA T'INVITE" : c'est le hook de conversion #1
+  // dans une preview WhatsApp/iMessage. La catégorie (`vibe`) est trop
+  // souvent vide pour qu'on s'y appuie, le firstName en revanche est
+  // toujours là (créateur connecté ou anon avec pseudo). Fallback
+  // "INVITATION" reste un signal universel "viens" même sans nom.
+  const inviteEyebrow = meta.firstName
+    ? `${meta.firstName.toUpperCase()} T'INVITE`
+    : "INVITATION";
+  // Méta-ligne : date relative + lieu, séparés par middle-dot. Les deux
+  // sont facultatifs — sans aucun, on ne rend pas la ligne du tout.
+  const dateLabel = startsAt ? buildDateLabel(startsAt) : null;
+  const location = outing.location?.trim() || null;
 
   // Hero-image variant: when the organiser pasted a ticket page, we have a
   // real photo at `heroImageUrl`. Compose it as cover with a noir overlay
-  // so the text stays legible — experts converge on noir over bordeaux
-  // (bordeaux on photo browns into mud).
+  // so the text stays legible — experts converge on noir over acid green
+  // (any chromatic overlay on photo browns into mud).
   //
   // Prefer the pre-resized 1200×630 JPEG companion (`heroImageOgUrl`):
   // running Satori over a 5 MB upload pushes the final PNG past the
@@ -73,23 +81,25 @@ export default async function Image({ params }: Props) {
     return renderWithHero({
       heroImageUrl: heroForOg,
       title: outing.title,
-      eyebrow,
+      eyebrow: inviteEyebrow,
+      dateLabel,
       location,
-      firstName: meta.firstName,
+      hideCreditInStrip: meta.firstName !== null,
       confirmedCount: meta.confirmedCount,
     });
   }
 
   return renderStandard({
     title: outing.title,
-    eyebrow,
+    eyebrow: inviteEyebrow,
+    dateLabel,
     location,
-    firstName: meta.firstName,
+    hideCreditInStrip: meta.firstName !== null,
     confirmedCount: meta.confirmedCount,
   });
 }
 
-function buildEyebrow(startsAt: Date): string {
+function buildDateLabel(startsAt: Date): string {
   const rel = formatRelativeDateForShare(startsAt);
   const time = formatTimeOnly(startsAt);
   return `${rel} · ${time}`.toUpperCase();
@@ -113,18 +123,20 @@ function titleSize(title: string): number {
 function renderStandard(args: {
   title: string;
   eyebrow: string;
+  dateLabel: string | null;
   location: string | null;
-  firstName: string | null;
+  hideCreditInStrip: boolean;
   confirmedCount: number;
 }) {
-  const { title, eyebrow, location, firstName, confirmedCount } = args;
+  const { title, eyebrow, dateLabel, location, hideCreditInStrip, confirmedCount } = args;
+  const metaLine = [dateLabel, location].filter(Boolean).join(" · ");
   return new ImageResponse(
     <div
       style={{
         display: "flex",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
+        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
@@ -142,12 +154,15 @@ function renderStandard(args: {
           position: "relative",
         }}
       >
+        {/* Eyebrow personnalisé "LÉA T'INVITE" — passé en ACID (vert
+              acide) plutôt qu'en HOT : le vert porte le signal "viens",
+              le rose reste réservé à la ponctuation (rule, seal). */}
         <div
           style={{
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            color: OR_DEEP,
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            color: ACID,
             textTransform: "uppercase",
             marginBottom: 24,
           }}
@@ -160,7 +175,7 @@ function renderStandard(args: {
             fontSize: titleSize(title),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.05,
             marginBottom: 20,
             display: "-webkit-box",
@@ -173,34 +188,37 @@ function renderStandard(args: {
           {title}
         </div>
 
-        {/* Hair-thin gold rule — ancrage typographique, replaces a heavier
-              divider without adding weight. */}
+        {/* Hot-pink hair rule — ponctuation typographique, conserve l'accent
+              secondaire dans le rythme vertical. */}
         <div
           style={{
             width: 60,
             height: 1,
-            background: OR,
+            background: HOT,
             opacity: 0.6,
             marginTop: 10,
             marginBottom: 24,
           }}
         />
 
-        {location && (
+        {metaLine && (
           <div
             style={{
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: 500,
-              color: ENCRE_500,
+              color: INK_500,
               maxWidth: 880,
               lineHeight: 1.3,
             }}
           >
-            {location}
+            {metaLine}
           </div>
         )}
 
-        <BottomStrip firstName={firstName} confirmedCount={confirmedCount} />
+        <BottomStrip
+          hideCredit={hideCreditInStrip}
+          confirmedCount={confirmedCount}
+        />
       </div>
     </div>,
     { ...size }
@@ -211,11 +229,14 @@ function renderWithHero(args: {
   heroImageUrl: string;
   title: string;
   eyebrow: string;
+  dateLabel: string | null;
   location: string | null;
-  firstName: string | null;
+  hideCreditInStrip: boolean;
   confirmedCount: number;
 }) {
-  const { heroImageUrl, title, eyebrow, location, firstName, confirmedCount } = args;
+  const { heroImageUrl, title, eyebrow, dateLabel, location, hideCreditInStrip, confirmedCount } =
+    args;
+  const metaLine = [dateLabel, location].filter(Boolean).join(" · ");
   return new ImageResponse(
     <div
       style={{
@@ -265,12 +286,16 @@ function renderWithHero(args: {
           position: "relative",
         }}
       >
+        {/* Eyebrow personnalisé "LÉA T'INVITE" en ACID — même rôle que
+              dans la variante standard : porter l'identité de
+              l'invitation au-dessus du titre, là où les crops carrés
+              iMessage/WhatsApp gardent encore le contenu visible. */}
         <div
           style={{
-            fontSize: 22,
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            color: OR,
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            color: ACID,
             textTransform: "uppercase",
             marginBottom: 18,
           }}
@@ -283,7 +308,7 @@ function renderWithHero(args: {
             fontSize: titleSize(title),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.05,
             marginBottom: 18,
             display: "-webkit-box",
@@ -297,10 +322,10 @@ function renderWithHero(args: {
           {title}
         </div>
 
-        {location && (
+        {metaLine && (
           <div
             style={{
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: 500,
               color: "rgba(250,247,242,0.85)",
               maxWidth: 900,
@@ -308,11 +333,15 @@ function renderWithHero(args: {
               lineHeight: 1.3,
             }}
           >
-            {location}
+            {metaLine}
           </div>
         )}
 
-        <BottomStrip firstName={firstName} confirmedCount={confirmedCount} variant="onDark" />
+        <BottomStrip
+          hideCredit={hideCreditInStrip}
+          confirmedCount={confirmedCount}
+          variant="onDark"
+        />
       </div>
     </div>,
     { ...size }
@@ -329,7 +358,7 @@ function renderCancelled(args: { title: string }) {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: IVOIRE,
+        background: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         padding: 88,
         textAlign: "center",
@@ -341,7 +370,7 @@ function renderCancelled(args: { title: string }) {
           fontSize: 22,
           fontWeight: 600,
           letterSpacing: "0.14em",
-          color: BORDEAUX,
+          color: ACID,
           textTransform: "uppercase",
           marginBottom: 32,
         }}
@@ -352,7 +381,7 @@ function renderCancelled(args: { title: string }) {
         style={{
           fontSize: 56,
           fontWeight: 700,
-          color: ENCRE_700,
+          color: INK_700,
           letterSpacing: "-0.02em",
           lineHeight: 1.1,
           maxWidth: 880,
@@ -365,7 +394,7 @@ function renderCancelled(args: { title: string }) {
       >
         {args.title}
       </div>
-      <div style={{ fontSize: 26, fontWeight: 500, color: ENCRE_500 }}>
+      <div style={{ fontSize: 26, fontWeight: 500, color: INK_500 }}>
         Cet événement n&rsquo;aura pas lieu. À la prochaine !
       </div>
     </div>,
@@ -382,7 +411,7 @@ function renderFallback() {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: IVOIRE,
+        background: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
     >
@@ -393,7 +422,7 @@ function renderFallback() {
             marginTop: 24,
             fontSize: 72,
             fontWeight: 700,
-            color: ENCRE_700,
+            color: INK_700,
             letterSpacing: "-0.02em",
           }}
         >
@@ -404,7 +433,7 @@ function renderFallback() {
             marginTop: 8,
             fontSize: 22,
             fontWeight: 500,
-            color: ENCRE_500,
+            color: INK_500,
             textTransform: "uppercase",
             letterSpacing: "0.12em",
           }}
@@ -429,7 +458,7 @@ function InnerPassepartout({ muted = false }: { muted?: boolean }) {
         left: 40,
         right: 40,
         bottom: 40,
-        border: `1px solid ${OR}`,
+        border: `1px solid ${HOT}`,
         opacity: muted ? 0.2 : 0.35,
         pointerEvents: "none",
       }}
@@ -438,9 +467,9 @@ function InnerPassepartout({ muted = false }: { muted?: boolean }) {
 }
 
 function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
-  // Wax seal — the signature motif. Bordeaux disc, gold monogram S,
+  // Wax seal — the signature motif. Acid disc, hot-pink monogram S,
   // rotated -6° so it feels stamped rather than placed. Stays the same
-  // on both palettes because bordeaux reads on ivoire and on dark photo.
+  // on both palettes because acid reads on surface and on dark photo.
   const onDark = variant === "onDark";
   return (
     <div
@@ -451,13 +480,13 @@ function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
         width: 88,
         height: 88,
         borderRadius: "50%",
-        background: BORDEAUX,
+        background: ACID,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transform: "rotate(-6deg)",
-        boxShadow: onDark ? "0 0 0 2px rgba(250,247,242,0.12)" : `0 0 0 2px ${BORDEAUX_DEEP}`,
-        color: OR,
+        boxShadow: onDark ? "0 0 0 2px rgba(250,247,242,0.12)" : `0 0 0 2px ${ACID_DEEP}`,
+        color: HOT,
         fontSize: 44,
         fontWeight: 800,
         letterSpacing: "-0.04em",
@@ -470,21 +499,23 @@ function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
 }
 
 function BottomStrip({
-  firstName,
+  hideCredit,
   confirmedCount,
   variant = "onLight",
 }: {
-  firstName: string | null;
+  // Quand `true`, le bandeau "PAR Léa" est masqué : le prénom est déjà
+  // remonté en eyebrow ("LÉA T'INVITE"), le répéter en bas duplique
+  // l'attribution et mange l'espace utile pour le social proof.
+  hideCredit: boolean;
   confirmedCount: number;
   variant?: "onLight" | "onDark";
 }) {
   const onDark = variant === "onDark";
-  const showByCredit = Boolean(firstName);
   // Social proof surfaces only when the threshold is crossed — single
   // confirmed guest reads as an empty event and inverts the effect.
   const showProof = confirmedCount >= 3;
 
-  if (!showByCredit && !showProof) {
+  if (!showProof) {
     return <BrandBottomRight variant={variant} />;
   }
 
@@ -497,78 +528,29 @@ function BottomStrip({
         marginTop: 44,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        {showByCredit && firstName && (
-          <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                background: onDark ? "rgba(245,242,235,0.12)" : BORDEAUX,
-                color: onDark ? ENCRE_700 : IVOIRE,
-                fontSize: 26,
-                fontWeight: 700,
-              }}
-            >
-              {firstName.charAt(0).toUpperCase()}
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 16,
-                  fontWeight: 500,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: onDark ? "rgba(250,247,242,0.6)" : ENCRE_500,
-                }}
-              >
-                Par
-              </div>
-              <div
-                style={{
-                  fontSize: 26,
-                  fontWeight: 600,
-                  color: onDark ? IVOIRE : ENCRE_700,
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {firstName}
-              </div>
-            </div>
-          </>
-        )}
-      </div>
+      {/* Spacer when credit hidden — keeps the brand right-aligned and
+            the proof left-aligned in the strip. Empty flex placeholder. */}
+      {hideCredit && <div />}
 
-      {showProof && (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+        }}
+      >
+        <AvatarStack count={Math.min(confirmedCount, 3)} onDark={onDark} />
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
+            fontSize: 22,
+            fontWeight: 600,
+            color: onDark ? SURFACE : ACID,
+            letterSpacing: "-0.005em",
           }}
         >
-          <AvatarStack count={Math.min(confirmedCount, 3)} onDark={onDark} />
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              color: onDark ? IVOIRE : BORDEAUX,
-              letterSpacing: "-0.005em",
-            }}
-          >
-            {confirmedCount} déjà partants
-          </div>
+          {confirmedCount} déjà partants
         </div>
-      )}
+      </div>
 
       <BrandInline variant={variant} />
     </div>
@@ -578,7 +560,7 @@ function BottomStrip({
 function AvatarStack({ count, onDark }: { count: number; onDark: boolean }) {
   // We render initials discs rather than remote user avatars: fetching
   // Google OAuth photos from edge inflates weight and latency, and risks
-  // 403s. A bordeaux-on-ivoire disc stack is recognisable social-proof
+  // 403s. An acid-on-surface disc stack is recognisable social-proof
   // shorthand and stays under budget.
   const discs = Array.from({ length: count });
   return (
@@ -590,8 +572,8 @@ function AvatarStack({ count, onDark }: { count: number; onDark: boolean }) {
             width: 40,
             height: 40,
             borderRadius: "50%",
-            background: onDark ? "rgba(250,247,242,0.2)" : OR,
-            border: `2px solid ${onDark ? "rgba(28,25,23,0.7)" : IVOIRE}`,
+            background: onDark ? "rgba(250,247,242,0.2)" : HOT,
+            border: `2px solid ${onDark ? "rgba(28,25,23,0.7)" : SURFACE}`,
             marginLeft: i === 0 ? 0 : -12,
           }}
         />
@@ -616,14 +598,14 @@ function BrandInline({ variant = "onLight" }: { variant?: "onLight" | "onDark" }
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? OR : BORDEAUX,
+          background: onDark ? HOT : ACID,
         }}
       />
       <div
         style={{
           fontSize: 22,
           fontWeight: 600,
-          color: onDark ? IVOIRE : BORDEAUX,
+          color: onDark ? SURFACE : ACID,
           letterSpacing: "0.02em",
         }}
       >
@@ -651,14 +633,14 @@ function BrandBottomRight({ variant = "onLight" }: { variant?: "onLight" | "onDa
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? OR : BORDEAUX,
+          background: onDark ? HOT : ACID,
         }}
       />
       <div
         style={{
           fontSize: 22,
           fontWeight: 600,
-          color: onDark ? IVOIRE : BORDEAUX,
+          color: onDark ? SURFACE : ACID,
           letterSpacing: "0.02em",
         }}
       >

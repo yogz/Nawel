@@ -40,14 +40,14 @@ export function CessionForm({ shortId, allocationId, label, targets, locked }: P
 
   if (locked) {
     return (
-      <p className="text-xs text-encre-400">
+      <p className="text-xs text-ink-400">
         Paiements déjà déclarés — les places ne sont plus transférables.
       </p>
     );
   }
 
   if (targets.length === 0) {
-    return <p className="text-xs text-encre-400">Personne d&rsquo;autre à qui céder.</p>;
+    return <p className="text-xs text-ink-400">Personne d&rsquo;autre à qui céder.</p>;
   }
 
   return (
@@ -62,7 +62,7 @@ export function CessionForm({ shortId, allocationId, label, targets, locked }: P
         name="targetParticipantId"
         value={target}
         onChange={(e) => setTarget(e.target.value)}
-        className="h-8 rounded-md border border-ivoire-400 bg-ivoire-50 px-2 text-xs text-encre-600"
+        className="h-8 rounded-md border border-surface-400 bg-surface-50 px-2 text-xs text-ink-600"
       >
         <option value="">Céder à…</option>
         {targets.map((t) => (
@@ -74,7 +74,7 @@ export function CessionForm({ shortId, allocationId, label, targets, locked }: P
       <button
         type="submit"
         disabled={pending || !target}
-        className="text-bordeaux-700 underline-offset-4 hover:underline disabled:opacity-40"
+        className="text-acid-700 underline-offset-4 hover:underline disabled:opacity-40"
       >
         {pending ? "…" : "Céder"}
       </button>

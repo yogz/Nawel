@@ -74,7 +74,7 @@ export default async function StatPage() {
       <nav className="mb-8">
         <Link
           href="/sortie"
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           accueil
@@ -82,17 +82,17 @@ export default async function StatPage() {
       </nav>
 
       <header className="mb-12">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
           />
           ─ supervision ─
         </p>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl">
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
           Stats
         </h1>
-        <p className="mt-4 text-[15px] text-encre-500">
+        <p className="mt-4 text-[15px] text-ink-500">
           Compteurs vie du scraper d&apos;URL et des services externes (Gemini, Discovery API
           Ticketmaster).
         </p>

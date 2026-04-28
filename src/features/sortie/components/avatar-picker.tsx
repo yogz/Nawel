@@ -115,18 +115,18 @@ export function AvatarPicker({ name, image, size = 80 }: Props) {
           // with your photo" unambiguously.
           <span
             aria-hidden="true"
-            className="absolute inset-0 grid place-items-center rounded-full bg-encre-700/40 backdrop-blur-[2px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-motion-standard"
+            className="absolute inset-0 grid place-items-center rounded-full bg-ink-700/40 backdrop-blur-[2px] motion-safe:animate-in motion-safe:fade-in motion-safe:duration-motion-standard"
           >
             <Loader2
               size={Math.round(size * 0.4)}
               strokeWidth={2.5}
-              className="text-ivoire-50 motion-safe:animate-spin"
+              className="text-surface-50 motion-safe:animate-spin"
             />
           </span>
         )}
         <span
           aria-hidden="true"
-          className="absolute grid place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-md)] ring-2 ring-ivoire-100"
+          className="absolute grid place-items-center rounded-full bg-acid-600 text-surface-50 shadow-[var(--shadow-md)] ring-2 ring-surface-100"
           style={{
             width: badgeSize,
             height: badgeSize,

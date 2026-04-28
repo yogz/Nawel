@@ -111,11 +111,11 @@ export function AvatarCropSheet({ file, onCancel, onCropped }: Props) {
         className="theme-sortie flex max-h-[92dvh] flex-col gap-5 overflow-hidden"
       >
         <SheetHeader className="text-left">
-          <SheetTitle className="font-serif text-2xl text-encre-700">Cadre ta photo</SheetTitle>
-          <p className="text-sm text-encre-400">Déplace avec le doigt, pince pour zoomer.</p>
+          <SheetTitle className="font-serif text-2xl text-ink-700">Cadre ta photo</SheetTitle>
+          <p className="text-sm text-ink-400">Déplace avec le doigt, pince pour zoomer.</p>
         </SheetHeader>
 
-        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-encre-700">
+        <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-ink-700">
           {imageSrc && (
             <Cropper
               image={imageSrc}
@@ -132,7 +132,7 @@ export function AvatarCropSheet({ file, onCancel, onCropped }: Props) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span aria-hidden="true" className="text-xs font-semibold text-encre-400">
+          <span aria-hidden="true" className="text-xs font-semibold text-ink-400">
             −
           </span>
           <input
@@ -143,9 +143,9 @@ export function AvatarCropSheet({ file, onCancel, onCropped }: Props) {
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
             aria-label="Zoom"
-            className="flex-1 accent-bordeaux-600"
+            className="flex-1 accent-acid-600"
           />
-          <span aria-hidden="true" className="text-xs font-semibold text-encre-400">
+          <span aria-hidden="true" className="text-xs font-semibold text-ink-400">
             +
           </span>
         </div>

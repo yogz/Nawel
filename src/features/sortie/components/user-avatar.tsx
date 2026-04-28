@@ -59,7 +59,7 @@ export function UserAvatar({ name, image, size = 36, className }: Props) {
   return (
     <span
       aria-label={name ?? "Avatar"}
-      className={`grid place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 ${className ?? ""}`}
+      className={`grid place-items-center rounded-full bg-acid-600 text-surface-50 ${className ?? ""}`}
       style={{ width: dim, height: dim, fontSize }}
     >
       <span className="font-semibold tracking-tight">{initials(name)}</span>

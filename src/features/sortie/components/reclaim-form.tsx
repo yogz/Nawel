@@ -23,7 +23,7 @@ export function ReclaimForm({ shortId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+        className="text-xs text-ink-400 underline-offset-4 hover:text-acid-700 hover:underline"
       >
         Pas reconnu&nbsp;? Je reçois un lien par email
       </button>
@@ -31,16 +31,16 @@ export function ReclaimForm({ shortId }: Props) {
   }
 
   if (state.message && !state.errors) {
-    return <p className="max-w-sm text-xs text-encre-500">{state.message}</p>;
+    return <p className="max-w-sm text-xs text-ink-500">{state.message}</p>;
   }
 
   return (
     <form
       action={formAction}
-      className="flex w-full max-w-sm flex-col gap-2 rounded-md border border-ivoire-400 bg-ivoire-50 p-3"
+      className="flex w-full max-w-sm flex-col gap-2 rounded-md border border-surface-400 bg-surface-50 p-3"
     >
       <input type="hidden" name="shortId" value={shortId} />
-      <Label htmlFor="reclaim-email" className="text-[12px] text-encre-500">
+      <Label htmlFor="reclaim-email" className="text-[12px] text-ink-500">
         Email donné à la création
       </Label>
       <div className="flex items-center gap-2">

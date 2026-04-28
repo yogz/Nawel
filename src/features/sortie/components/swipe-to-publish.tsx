@@ -105,32 +105,32 @@ export function SwipeToPublish({
           setTrackWidth(node.offsetWidth);
         }
       }}
-      className="relative h-16 w-full overflow-hidden rounded-full bg-bordeaux-600/15 px-1"
+      className="relative h-16 w-full overflow-hidden rounded-full bg-acid-600/15 px-1"
     >
       {/* Progress fill */}
       <motion.div
         aria-hidden="true"
         style={{ opacity: fillOpacity }}
-        className="absolute inset-0 rounded-full bg-bordeaux-600"
+        className="absolute inset-0 rounded-full bg-acid-600"
       />
 
       {/* Centered label */}
       <motion.p
         style={{ opacity: stage === "idle" ? textOpacity : 0 }}
-        className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[12px] font-bold tracking-[0.2em] text-bordeaux-700"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[12px] font-bold tracking-[0.2em] text-acid-700"
       >
         {label}
       </motion.p>
 
       {stage === "committed" && (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-ivoire-50">
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-surface-50">
           <Loader2 size={16} className="animate-spin" />
           GOING LIVE…
         </p>
       )}
 
       {stage === "done" && (
-        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-ivoire-50">
+        <p className="pointer-events-none absolute inset-0 flex items-center justify-center gap-2 font-mono text-[12px] font-bold tracking-[0.2em] text-surface-50">
           <Check size={18} strokeWidth={3} />
           {confirmedLabel}
         </p>
@@ -142,7 +142,7 @@ export function SwipeToPublish({
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="pointer-events-none absolute -top-7 left-0 right-0 text-center text-xs font-bold text-bordeaux-700"
+          className="pointer-events-none absolute -top-7 left-0 right-0 text-center text-xs font-bold text-acid-700"
           aria-live="polite"
         >
           Glisse pour confirmer →
@@ -190,8 +190,8 @@ export function SwipeToPublish({
             commit();
           }
         }}
-        className={`absolute top-1 left-1 grid size-14 cursor-grab place-items-center rounded-full bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-md)] touch-none active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bordeaux-400 ${
-          stage === "done" ? "bg-or-600" : ""
+        className={`absolute top-1 left-1 grid size-14 cursor-grab place-items-center rounded-full bg-acid-600 text-surface-50 shadow-[var(--shadow-md)] touch-none active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-400 ${
+          stage === "done" ? "bg-hot-600" : ""
         }`}
       >
         {stage === "idle" && <ArrowRight size={20} strokeWidth={2.5} />}

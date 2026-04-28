@@ -26,9 +26,9 @@ export function GuestCountStepper({
 
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-sm text-encre-500">{label}</span>
+      <span className="text-sm text-ink-500">{label}</span>
       <div
-        className="inline-flex items-center rounded-full border border-ivoire-400 bg-ivoire-50"
+        className="inline-flex items-center rounded-full border border-surface-400 bg-surface-50"
         role="group"
       >
         <button
@@ -36,13 +36,13 @@ export function GuestCountStepper({
           onClick={dec}
           disabled={disabled || value <= min}
           aria-label={`Moins de ${label}`}
-          className="grid size-11 place-items-center rounded-full text-encre-500 transition-colors hover:text-bordeaux-700 disabled:opacity-40"
+          className="grid size-11 place-items-center rounded-full text-ink-500 transition-colors hover:text-acid-700 disabled:opacity-40"
         >
           <Minus size={18} />
         </button>
         <span
           aria-live="polite"
-          className="min-w-[2.5rem] text-center font-serif text-lg text-encre-700"
+          className="min-w-[2.5rem] text-center font-serif text-lg text-ink-700"
         >
           {value}
         </span>
@@ -51,7 +51,7 @@ export function GuestCountStepper({
           onClick={inc}
           disabled={disabled || value >= max}
           aria-label={`Plus de ${label}`}
-          className="grid size-11 place-items-center rounded-full text-encre-500 transition-colors hover:text-bordeaux-700 disabled:opacity-40"
+          className="grid size-11 place-items-center rounded-full text-ink-500 transition-colors hover:text-acid-700 disabled:opacity-40"
         >
           <Plus size={18} />
         </button>

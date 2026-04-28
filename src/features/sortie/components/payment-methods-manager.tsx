@@ -28,15 +28,15 @@ export function PaymentMethodsManager({ shortId, methods }: Props) {
   return (
     <div className="flex flex-col gap-6">
       {methods.length > 0 && (
-        <ul className="flex flex-col divide-y divide-ivoire-400 rounded-md border border-ivoire-400 bg-ivoire-50">
+        <ul className="flex flex-col divide-y divide-surface-400 rounded-md border border-surface-400 bg-surface-50">
           {methods.map((m) => (
             <li key={m.id} className="flex items-center justify-between gap-3 p-3">
               <div className="flex flex-col">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
                   {TYPE_LABELS[m.type]}
                 </span>
-                <span className="font-mono text-sm text-encre-700">{m.valuePreview}</span>
-                {m.displayLabel && <span className="text-xs text-encre-400">{m.displayLabel}</span>}
+                <span className="font-mono text-sm text-ink-700">{m.valuePreview}</span>
+                {m.displayLabel && <span className="text-xs text-ink-400">{m.displayLabel}</span>}
               </div>
               <RemoveButton shortId={shortId} methodId={m.id} />
             </li>
@@ -69,13 +69,13 @@ function AddMethodForm({ shortId }: { shortId: string }) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-4 rounded-md border border-ivoire-400 bg-ivoire-50 p-4"
+      className="flex flex-col gap-4 rounded-md border border-surface-400 bg-surface-50 p-4"
     >
       <input type="hidden" name="shortId" value={shortId} />
-      <p className="text-sm text-encre-500">Ajouter un moyen</p>
+      <p className="text-sm text-ink-500">Ajouter un moyen</p>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="pm-type" className="text-[13px] font-medium text-encre-500">
+        <Label htmlFor="pm-type" className="text-[13px] font-medium text-ink-500">
           Type
         </Label>
         <select
@@ -83,7 +83,7 @@ function AddMethodForm({ shortId }: { shortId: string }) {
           name="type"
           value={type}
           onChange={(e) => setType(e.target.value as PaymentMethodPreview["type"])}
-          className="h-11 rounded-md border border-ivoire-400 bg-ivoire-50 px-3 text-sm text-encre-700"
+          className="h-11 rounded-md border border-surface-400 bg-surface-50 px-3 text-sm text-ink-700"
         >
           <option value="iban">IBAN</option>
           <option value="lydia">Lydia</option>
@@ -93,7 +93,7 @@ function AddMethodForm({ shortId }: { shortId: string }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="pm-value" className="text-[13px] font-medium text-encre-500">
+        <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
           {valueLabel}
         </Label>
         <Input
@@ -109,8 +109,8 @@ function AddMethodForm({ shortId }: { shortId: string }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="pm-label" className="text-[13px] font-medium text-encre-500">
-          Libellé <span className="text-encre-300">(facultatif)</span>
+        <Label htmlFor="pm-label" className="text-[13px] font-medium text-ink-500">
+          Libellé <span className="text-ink-300">(facultatif)</span>
         </Label>
         <Input
           id="pm-label"
@@ -149,7 +149,7 @@ function RemoveButton({ shortId, methodId }: { shortId: string; methodId: string
         type="submit"
         disabled={pending}
         aria-label="Supprimer ce moyen de paiement"
-        className="grid size-9 place-items-center rounded-full text-encre-400 transition-colors hover:bg-ivoire-200 hover:text-erreur-700 disabled:opacity-40"
+        className="grid size-9 place-items-center rounded-full text-ink-400 transition-colors hover:bg-surface-200 hover:text-erreur-700 disabled:opacity-40"
       >
         <Trash2 size={16} />
       </button>

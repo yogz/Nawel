@@ -19,14 +19,14 @@ export const revalidate = 60;
 
 // "Acid Cabinet" palette — see /[slugOrId]/opengraph-image.tsx for the
 // rationale. Token names stay opaque ids; only the hex values flip.
-const IVOIRE = "#0A0A0A";
-const IVOIRE_DEEP = "#161616";
-const ENCRE_700 = "#F5F2EB";
-const ENCRE_500 = "#A0A0A0";
-const ENCRE_400 = "#7A7A7A";
-const OR = "#FF3D81";
-const OR_DEEP = "#E63577";
-const BORDEAUX = "#C7FF3C";
+const SURFACE = "#0A0A0A";
+const SURFACE_DEEP = "#161616";
+const INK_700 = "#F5F2EB";
+const INK_500 = "#A0A0A0";
+const INK_400 = "#7A7A7A";
+const HOT = "#FF3D81";
+const HOT_DEEP = "#E63577";
+const ACID = "#C7FF3C";
 
 const TZ = "Europe/Paris";
 const dayFmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: TZ });
@@ -71,7 +71,7 @@ export default async function Image({ params }: Props) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
+        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         position: "relative",
         padding: "76px 100px",
@@ -88,7 +88,7 @@ export default async function Image({ params }: Props) {
             fontWeight: 600,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            color: OR_DEEP,
+            color: HOT_DEEP,
             marginBottom: 12,
           }}
         >
@@ -99,7 +99,7 @@ export default async function Image({ params }: Props) {
             fontSize: nameSize(row.name),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.0,
             maxWidth: 800,
           }}
@@ -110,7 +110,7 @@ export default async function Image({ params }: Props) {
           style={{
             width: 60,
             height: 1,
-            background: OR,
+            background: HOT,
             opacity: 0.6,
             marginTop: 18,
             marginBottom: 22,
@@ -122,7 +122,7 @@ export default async function Image({ params }: Props) {
             fontWeight: 500,
             letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: ENCRE_500,
+            color: INK_500,
           }}
         >
           {buildAgendaLabel(upcoming.length)}
@@ -146,7 +146,7 @@ export default async function Image({ params }: Props) {
             style={{
               fontSize: 20,
               fontWeight: 500,
-              color: ENCRE_400,
+              color: INK_400,
               letterSpacing: "0.04em",
               marginTop: 6,
             }}
@@ -162,7 +162,7 @@ export default async function Image({ params }: Props) {
             style={{
               fontSize: 22,
               fontWeight: 500,
-              color: ENCRE_500,
+              color: INK_500,
               lineHeight: 1.4,
               maxWidth: 760,
             }}
@@ -203,7 +203,7 @@ function MenuRow({ title, date }: { title: string; date: Date }) {
           style={{
             fontSize: 32,
             fontWeight: 700,
-            color: BORDEAUX,
+            color: ACID,
             letterSpacing: "-0.01em",
           }}
         >
@@ -214,7 +214,7 @@ function MenuRow({ title, date }: { title: string; date: Date }) {
             fontSize: 18,
             fontWeight: 600,
             letterSpacing: "0.14em",
-            color: BORDEAUX,
+            color: ACID,
           }}
         >
           {month}
@@ -224,7 +224,7 @@ function MenuRow({ title, date }: { title: string; date: Date }) {
         style={{
           fontSize: 26,
           fontWeight: 500,
-          color: ENCRE_700,
+          color: INK_700,
           lineHeight: 1.2,
           flex: 1,
           display: "-webkit-box",
@@ -264,7 +264,7 @@ function renderEmpty(name: string, username: string) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
+        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         position: "relative",
         padding: "76px 100px",
@@ -279,7 +279,7 @@ function renderEmpty(name: string, username: string) {
             fontWeight: 600,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            color: OR_DEEP,
+            color: HOT_DEEP,
             marginBottom: 12,
           }}
         >
@@ -290,7 +290,7 @@ function renderEmpty(name: string, username: string) {
             fontSize: nameSize(name),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.0,
           }}
         >
@@ -300,7 +300,7 @@ function renderEmpty(name: string, username: string) {
           style={{
             width: 60,
             height: 1,
-            background: OR,
+            background: HOT,
             opacity: 0.6,
             marginTop: 18,
             marginBottom: 24,
@@ -310,7 +310,7 @@ function renderEmpty(name: string, username: string) {
           style={{
             fontSize: 24,
             fontWeight: 500,
-            color: ENCRE_500,
+            color: INK_500,
             lineHeight: 1.3,
             maxWidth: 760,
           }}
@@ -333,7 +333,7 @@ function renderFallback() {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: IVOIRE,
+        background: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
     >
@@ -341,7 +341,7 @@ function renderFallback() {
         style={{
           fontSize: 56,
           fontWeight: 700,
-          color: ENCRE_700,
+          color: INK_700,
           letterSpacing: "-0.02em",
         }}
       >
@@ -361,7 +361,7 @@ function Passepartout() {
         left: 40,
         right: 40,
         bottom: 40,
-        border: `1px solid ${OR}`,
+        border: `1px solid ${HOT}`,
         opacity: 0.35,
       }}
     />
@@ -378,12 +378,12 @@ function Seal() {
         width: 88,
         height: 88,
         borderRadius: "50%",
-        background: BORDEAUX,
+        background: ACID,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transform: "rotate(-6deg)",
-        color: OR,
+        color: HOT,
         fontSize: 44,
         fontWeight: 800,
         letterSpacing: "-0.04em",
@@ -406,12 +406,12 @@ function BrandBottomLeft() {
         gap: 10,
       }}
     >
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: BORDEAUX }} />
+      <div style={{ width: 8, height: 8, borderRadius: "50%", background: ACID }} />
       <div
         style={{
           fontSize: 22,
           fontWeight: 600,
-          color: BORDEAUX,
+          color: ACID,
           letterSpacing: "0.02em",
         }}
       >

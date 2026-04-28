@@ -12,7 +12,7 @@ type Props = {
 /**
  * Bio-only form on /moi. Single rounded card with an icon label,
  * transparent textarea inside, 160-char counter + inline errors.
- * Matches the app's card vocabulary (ring-1, ivoire-50, focus-within
+ * Matches the app's card vocabulary (ring-1, surface-50, focus-within
  * cobalt ring).
  */
 export function ProfileDetailsForm({ bio }: Props) {
@@ -27,12 +27,12 @@ export function ProfileDetailsForm({ bio }: Props) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2 rounded-2xl bg-ivoire-50 p-4 ring-1 ring-encre-700/5 transition-shadow focus-within:ring-2 focus-within:ring-bordeaux-600/30">
+      <div className="flex flex-col gap-2 rounded-2xl bg-surface-50 p-4 ring-1 ring-ink-700/5 transition-shadow focus-within:ring-2 focus-within:ring-acid-600/30">
         <label
           htmlFor="bio"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-encre-500"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-500"
         >
-          <MessageSquareQuote size={14} strokeWidth={2.2} className="text-bordeaux-600" />
+          <MessageSquareQuote size={14} strokeWidth={2.2} className="text-acid-600" />
           Ta bio
         </label>
         <textarea
@@ -43,10 +43,10 @@ export function ProfileDetailsForm({ bio }: Props) {
           maxLength={160}
           rows={3}
           placeholder="En une ligne, tu sors où&nbsp;?"
-          className="w-full resize-none bg-transparent text-sm text-encre-700 placeholder:text-encre-300 focus:outline-none"
+          className="w-full resize-none bg-transparent text-sm text-ink-700 placeholder:text-ink-300 focus:outline-none"
         />
         <div className="flex items-center justify-between">
-          <p className={`text-xs ${bioAtLimit ? "text-destructive" : "text-encre-300"}`}>
+          <p className={`text-xs ${bioAtLimit ? "text-destructive" : "text-ink-300"}`}>
             {bioCount}/160
           </p>
           {state.errors?.bio?.[0] && (
@@ -56,7 +56,7 @@ export function ProfileDetailsForm({ bio }: Props) {
       </div>
 
       {state.message && !state.errors && (
-        <p className="inline-flex items-center gap-1 text-xs font-semibold text-bordeaux-700">
+        <p className="inline-flex items-center gap-1 text-xs font-semibold text-acid-700">
           <Check size={12} strokeWidth={3} />
           {state.message}
         </p>
@@ -66,7 +66,7 @@ export function ProfileDetailsForm({ bio }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-11 w-fit items-center justify-center rounded-full bg-bordeaux-600 px-5 text-sm font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700 disabled:opacity-50"
+        className="inline-flex h-11 w-fit items-center justify-center rounded-full bg-acid-600 px-5 text-sm font-semibold text-surface-50 transition-colors hover:bg-acid-700 disabled:opacity-50"
       >
         {pending ? "Enregistrement…" : "Enregistrer"}
       </button>

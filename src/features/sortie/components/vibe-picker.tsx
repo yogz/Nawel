@@ -17,8 +17,8 @@ const containerVariants: Variants = {
 };
 
 // Acid-green glow + a clearly visible bounce. The previous scale of
-// 1.045 read as static on the dark surface, and the bordeaux shadow
-// vanished against #0a0a0a — both swapped for the GenZ acid token.
+// 1.045 read as static on the dark surface, and the prior shadow
+// vanished against #0a0a0a — both swapped for the acid token.
 const itemVariants: Variants = {
   rest: { scale: 1, boxShadow: "0 0 0 0 rgba(199, 255, 60, 0)" },
   nudge: {
@@ -72,12 +72,12 @@ export function VibePicker({ value, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-encre-400">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-400">
         C&rsquo;est quoi&nbsp;?
       </p>
       {/* `mask-image` fades the pills themselves to transparent on the
           right edge instead of overlaying the page bg. Avoids the muddy
-          look the previous gradient overlay produced over `bg-ivoire-200`
+          look the previous gradient overlay produced over `bg-surface-200`
           pills (whose surface is slightly lighter than the page bg). */}
       <div
         className="-mx-6 overflow-x-auto px-6 pr-10 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%_-_2.5rem),transparent_100%)] [&::-webkit-scrollbar]:hidden"
@@ -102,8 +102,8 @@ export function VibePicker({ value, onChange }: Props) {
                   aria-pressed={active}
                   className={`inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors motion-safe:active:scale-95 ${
                     active
-                      ? "bg-bordeaux-600 text-ivoire-50"
-                      : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300"
+                      ? "bg-acid-600 text-surface-50"
+                      : "border border-ink-300 bg-surface-200 text-ink-700 hover:border-ink-400 hover:bg-surface-300"
                   }`}
                 >
                   {opt.label}

@@ -37,31 +37,31 @@ export default async function ProfileSettingsPage() {
         <nav className="mb-8">
           <Link
             href="/"
-            className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
           >
             <ArrowLeft size={14} strokeWidth={2.2} />
             accueil
           </Link>
         </nav>
         <header className="mb-10">
-          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             <span
               aria-hidden
-              className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+              className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
             />
             ─ mon profil ─
           </p>
-          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700">
+          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
             Connexion
             <br />
             requise.
           </h1>
         </header>
-        <p className="mb-6 text-[15px] text-encre-500">
+        <p className="mb-6 text-[15px] text-ink-500">
           Connecte-toi pour prendre un @nom et afficher tes sorties.
         </p>
         <LoginLink variant="primary" label="Se connecter" />
-        <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+        <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
           ↳ un email sans mot de passe arrive
         </p>
       </main>
@@ -100,7 +100,7 @@ export default async function ProfileSettingsPage() {
       <nav className="mb-8 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           accueil
@@ -112,7 +112,7 @@ export default async function ProfileSettingsPage() {
         <AvatarPicker name={name} image={image} size={96} />
         <div className="flex flex-col items-start gap-3">
           <h1
-            className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
+            className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
             style={{ textWrap: "balance" }}
           >
             {name}
@@ -122,14 +122,14 @@ export default async function ProfileSettingsPage() {
               <CopyableHandle username={username} origin={origin} />
               <Link
                 href={`/@${username}`}
-                className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-500 underline-offset-4 hover:text-bordeaux-600 hover:underline"
+                className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 hover:text-acid-600 hover:underline"
               >
                 profil public
                 <ArrowUpRight size={12} strokeWidth={2.4} />
               </Link>
             </div>
           ) : (
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
               ↳ choisis un @nom plus bas pour activer ton profil
             </p>
           )}
@@ -161,7 +161,7 @@ export default async function ProfileSettingsPage() {
             {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
             {archived.length > 0 && (
               <div className="mb-6">
-                <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+                <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
                   ─ archivées ─
                 </p>
                 <ul className="flex flex-col gap-2">
@@ -218,11 +218,11 @@ export default async function ProfileSettingsPage() {
 function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-5">
-      <h2 className="text-[28px] leading-[1.02] font-black tracking-[-0.03em] text-encre-700">
+      <h2 className="text-[28px] leading-[1.02] font-black tracking-[-0.03em] text-ink-700">
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
           ↳ {subtitle}
         </p>
       )}
@@ -234,7 +234,7 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle?: string 
  * room + a visual anchor the eye can use to re-orient after a
  * dense form block. */
 function SectionDivider() {
-  return <hr className="mb-10 border-t border-encre-100" />;
+  return <hr className="mb-10 border-t border-ink-100" />;
 }
 
 type OutingRow = {
@@ -257,7 +257,7 @@ function OutingListBlock({
 }) {
   return (
     <div className="mb-6">
-      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         ─ {title.toLowerCase()} ─
       </p>
       <ArchivableOutingList
@@ -274,17 +274,17 @@ function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: b
   return (
     <Link
       href={`/${canonical}`}
-      className={`flex flex-col gap-1 rounded-xl border border-ivoire-400 bg-ivoire-100 p-3 transition-colors hover:border-bordeaux-600 ${
+      className={`flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-3 transition-colors hover:border-acid-600 ${
         muted ? "opacity-50" : ""
       }`}
     >
       <span
-        className={`text-[16px] font-bold tracking-[-0.015em] ${muted ? "text-encre-500" : "text-encre-700"}`}
+        className={`text-[16px] font-bold tracking-[-0.015em] ${muted ? "text-ink-500" : "text-ink-700"}`}
         style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
       >
         {outing.title}
       </span>
-      <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+      <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
         {outing.startsAt ? formatOutingDateConversational(outing.startsAt) : "date à définir"}
         {outing.location ? ` · ${formatVenue(outing.location)}` : ""}
       </span>

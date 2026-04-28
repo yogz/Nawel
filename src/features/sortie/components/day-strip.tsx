@@ -97,13 +97,13 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-bordeaux-300 bg-transparent text-bordeaux-600 transition-colors motion-safe:active:scale-95 hover:border-bordeaux-600 hover:text-bordeaux-700 [scroll-snap-align:start]"
+            className="flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-acid-300 bg-transparent text-acid-600 transition-colors motion-safe:active:scale-95 hover:border-acid-600 hover:text-acid-700 [scroll-snap-align:start]"
           >
             <CalendarPlus size={22} />
             <span className="text-[11px] font-semibold leading-tight text-center">Autre date</span>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
+        <PopoverContent align="start" className="theme-sortie w-auto bg-surface-50 p-0">
           <Calendar
             mode="single"
             selected={selected ?? undefined}
@@ -131,7 +131,7 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
         return (
           <div key={d.toISOString()} className="relative flex shrink-0 items-stretch">
             {isMonthBreak && (
-              <span aria-hidden="true" className="mx-1 self-center h-20 w-px bg-encre-200" />
+              <span aria-hidden="true" className="mx-1 self-center h-20 w-px bg-ink-200" />
             )}
             <button
               type="button"
@@ -140,27 +140,27 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
               aria-pressed={isSelected}
               className={`relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 transition-all duration-300 [scroll-snap-align:center] [scroll-snap-stop:always] ${
                 isSelected
-                  ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50 motion-safe:scale-[1.04] motion-safe:shadow-[0_4px_18px_-6px_rgba(0,0,0,0.25)]"
-                  : "border-encre-100 bg-white text-encre-700 motion-safe:scale-100 motion-safe:active:scale-95"
+                  ? "border-acid-600 bg-acid-600 text-surface-50 motion-safe:scale-[1.04] motion-safe:shadow-[0_4px_18px_-6px_rgba(0,0,0,0.25)]"
+                  : "border-ink-100 bg-white text-ink-700 motion-safe:scale-100 motion-safe:active:scale-95"
               }`}
             >
               <span
                 className={`text-[10px] font-black uppercase tracking-[0.12em] ${
-                  isSelected ? "text-ivoire-200" : "text-encre-400"
+                  isSelected ? "text-surface-200" : "text-ink-400"
                 }`}
               >
                 {isToday ? "Aujourd'hui" : WEEKDAY_SHORT[d.getDay()]}
               </span>
               <span
                 className={`text-3xl font-black leading-none tracking-tight ${
-                  isSelected ? "text-ivoire-50" : "text-encre-700"
+                  isSelected ? "text-surface-50" : "text-ink-700"
                 }`}
               >
                 {d.getDate()}
               </span>
               <span
                 className={`text-[11px] font-semibold ${
-                  isSelected ? "text-ivoire-200" : "text-encre-400"
+                  isSelected ? "text-surface-200" : "text-ink-400"
                 }`}
               >
                 {MONTH_SHORT[d.getMonth()]}
@@ -170,7 +170,7 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
               {isToday && !isSelected && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-2 h-1.5 w-1.5 rounded-full bg-or-500"
+                  className="absolute bottom-2 h-1.5 w-1.5 rounded-full bg-hot-500"
                 />
               )}
             </button>
@@ -186,15 +186,15 @@ export function DayStrip({ selected, onSelect, daysAhead = 20 }: Props) {
           type="button"
           aria-pressed
           onClick={() => setFarOpen(true)}
-          className="relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-bordeaux-600 bg-bordeaux-600 text-ivoire-50 [scroll-snap-align:center]"
+          className="relative flex h-28 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-acid-600 bg-acid-600 text-surface-50 [scroll-snap-align:center]"
         >
-          <span className="text-[10px] font-black uppercase tracking-[0.12em] text-ivoire-200">
+          <span className="text-[10px] font-black uppercase tracking-[0.12em] text-surface-200">
             {WEEKDAY_SHORT[farSelected.getDay()]}
           </span>
           <span className="text-3xl font-black leading-none tracking-tight">
             {farSelected.getDate()}
           </span>
-          <span className="text-[11px] font-semibold text-ivoire-200">
+          <span className="text-[11px] font-semibold text-surface-200">
             {MONTH_SHORT[farSelected.getMonth()]}
           </span>
         </button>

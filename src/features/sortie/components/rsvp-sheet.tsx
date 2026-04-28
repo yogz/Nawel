@@ -118,7 +118,7 @@ export function RsvpSheet({
         </SheetTrigger>
         <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
           <SheetHeader className="mb-6 text-left">
-            <SheetTitle className="font-serif text-2xl text-encre-700">Tu viens&nbsp;?</SheetTitle>
+            <SheetTitle className="font-serif text-2xl text-ink-700">Tu viens&nbsp;?</SheetTitle>
           </SheetHeader>
 
           <form ref={formRef} action={formAction} className="flex flex-col gap-5">
@@ -143,7 +143,7 @@ export function RsvpSheet({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="displayName" className="text-[13px] font-medium text-encre-500">
+              <Label htmlFor="displayName" className="text-[13px] font-medium text-ink-500">
                 Ton prénom
               </Label>
               <Input
@@ -166,13 +166,13 @@ export function RsvpSheet({
                   <button
                     type="button"
                     onClick={() => setShowExtras(true)}
-                    className="self-start text-sm text-bordeaux-700 underline-offset-4 hover:underline"
+                    className="self-start text-sm text-acid-700 underline-offset-4 hover:underline"
                   >
                     + Tu viens accompagné&middot;e&nbsp;?
                   </button>
                 ) : (
-                  <div className="flex flex-col gap-3 rounded-lg bg-ivoire-50 p-4">
-                    <p className="text-sm text-encre-500">Combien vous êtes&nbsp;?</p>
+                  <div className="flex flex-col gap-3 rounded-lg bg-surface-50 p-4">
+                    <p className="text-sm text-ink-500">Combien vous êtes&nbsp;?</p>
                     <GuestCountStepper
                       label="Adultes en plus"
                       name="extraAdults"
@@ -194,16 +194,16 @@ export function RsvpSheet({
                   </>
                 )}
 
-                <label className="flex items-start gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3 text-sm text-encre-500">
+                <label className="flex items-start gap-3 rounded-lg border border-surface-400 bg-surface-50 p-3 text-sm text-ink-500">
                   <input
                     type="checkbox"
                     checked={chosen === "handle_own"}
                     onChange={(e) => setChosen(e.target.checked ? "handle_own" : "yes")}
-                    className="mt-0.5 h-4 w-4 accent-bordeaux-600"
+                    className="mt-0.5 h-4 w-4 accent-acid-600"
                   />
                   <span className="flex flex-col">
-                    <span className="font-medium text-encre-700">Je gère mon billet</span>
-                    <span className="text-xs text-encre-400">
+                    <span className="font-medium text-ink-700">Je gère mon billet</span>
+                    <span className="text-xs text-ink-400">
                       Coche si tu prends ta place toi-même. Sinon le groupe t&rsquo;en achète une,
                       tu rembourses après.
                     </span>
@@ -220,8 +220,8 @@ export function RsvpSheet({
             )}
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email" className="text-[13px] font-medium text-encre-500">
-                Ton email <span className="text-encre-300">(facultatif)</span>
+              <Label htmlFor="email" className="text-[13px] font-medium text-ink-500">
+                Ton email <span className="text-ink-300">(facultatif)</span>
               </Label>
               <Input
                 id="email"
@@ -246,7 +246,7 @@ export function RsvpSheet({
               name input is right above, so tapping submit used to mean
               scrolling past the keyboard first. */}
             <div
-              className="sticky -mx-6 -mb-6 flex justify-end border-t border-ivoire-400 bg-ivoire-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+              className="sticky -mx-6 -mb-6 flex justify-end border-t border-surface-400 bg-surface-50 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
               style={{ bottom: 0 }}
             >
               <Button type="submit" size="lg" disabled={pending || !chosen}>
@@ -275,9 +275,9 @@ function ResponsePill({
 }) {
   const palette = active
     ? tone === "yes"
-      ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-      : "border-encre-600 bg-encre-600 text-ivoire-50"
-    : "border-ivoire-400 bg-ivoire-50 text-encre-700 hover:border-bordeaux-300";
+      ? "border-acid-600 bg-acid-600 text-surface-50"
+      : "border-ink-600 bg-ink-600 text-surface-50"
+    : "border-surface-400 bg-surface-50 text-ink-700 hover:border-acid-300";
   return (
     <button
       type="button"

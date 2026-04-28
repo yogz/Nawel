@@ -110,7 +110,7 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href={`/${canonical}`}
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           {outing.title}
@@ -118,14 +118,14 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
           />
           ─ déclarer l&rsquo;achat ─
         </p>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700">
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Combien
           <br />
           ça a coûté&nbsp;?

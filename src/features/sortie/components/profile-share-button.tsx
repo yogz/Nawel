@@ -55,7 +55,7 @@ export function ProfileShareButton({ url, name }: Props) {
       type="button"
       onClick={handleShare}
       aria-label={justCopied ? "Lien copié" : "Partager ce profil"}
-      className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-700"
+      className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-700"
     >
       {justCopied ? (
         <>

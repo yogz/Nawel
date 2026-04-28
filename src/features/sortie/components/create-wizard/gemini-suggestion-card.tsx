@@ -54,9 +54,9 @@ export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="flex flex-col gap-3 rounded-2xl border border-bordeaux-300 bg-ivoire-100 p-4"
+      className="flex flex-col gap-3 rounded-2xl border border-acid-300 bg-surface-100 p-4"
     >
-      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
+      <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-acid-600">
         <Sparkles size={12} />
         Trouvé sur le web
       </div>
@@ -74,20 +74,20 @@ export function GeminiSuggestionCard({ data, onAccept, onDismiss }: Props) {
             className="size-16 shrink-0 rounded-lg object-cover"
           />
         ) : (
-          <div className="grid size-16 shrink-0 place-items-center rounded-lg bg-ivoire-300 text-encre-400">
+          <div className="grid size-16 shrink-0 place-items-center rounded-lg bg-surface-300 text-ink-400">
             <MapPin size={22} />
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold leading-snug text-encre-700">{data.title}</p>
-          {venueLine && <p className="mt-0.5 truncate text-xs text-encre-500">{venueLine}</p>}
+          <p className="text-sm font-bold leading-snug text-ink-700">{data.title}</p>
+          {venueLine && <p className="mt-0.5 truncate text-xs text-ink-500">{venueLine}</p>}
           {dateLine && (
-            <p className="mt-0.5 truncate text-xs font-medium text-bordeaux-600">{dateLine}</p>
+            <p className="mt-0.5 truncate text-xs font-medium text-acid-600">{dateLine}</p>
           )}
         </div>
       </div>
 
-      <p className="text-xs text-encre-500">C&apos;est bien ça ?</p>
+      <p className="text-xs text-ink-500">C&apos;est bien ça ?</p>
 
       <div className="flex gap-2">
         <Button

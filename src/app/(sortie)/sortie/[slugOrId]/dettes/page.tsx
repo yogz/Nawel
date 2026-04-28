@@ -84,7 +84,7 @@ export default async function DebtsPage({ params }: Props) {
       <nav className="mb-8">
         <Link
           href={`/${canonical}`}
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           {outing.title}
@@ -92,14 +92,14 @@ export default async function DebtsPage({ params }: Props) {
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
           />
           ─ l&rsquo;argent ─
         </p>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700">
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Où en est-on&nbsp;?
         </h1>
         {purchase?.proofFileUrl && (
@@ -108,7 +108,7 @@ export default async function DebtsPage({ params }: Props) {
               href={purchase.proofFileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-bordeaux-700 underline-offset-4 hover:underline"
+              className="inline-flex items-center gap-1 text-acid-700 underline-offset-4 hover:underline"
             >
               Voir la preuve d&rsquo;achat ↗
             </a>
@@ -118,7 +118,7 @@ export default async function DebtsPage({ params }: Props) {
 
       {myDebts.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
             Ce que tu dois
           </h2>
           <ul className="flex flex-col gap-3">
@@ -140,7 +140,7 @@ export default async function DebtsPage({ params }: Props) {
 
       {myCredits.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
             Ce qu&rsquo;on te doit
           </h2>
           <ul className="flex flex-col gap-3">
@@ -156,7 +156,7 @@ export default async function DebtsPage({ params }: Props) {
               />
             ))}
           </ul>
-          <p className="mt-3 text-xs text-encre-400">
+          <p className="mt-3 text-xs text-ink-400">
             Renseigne un{" "}
             <Link className="underline-offset-4 hover:underline" href={`/${canonical}/paiement`}>
               moyen de paiement
@@ -168,16 +168,16 @@ export default async function DebtsPage({ params }: Props) {
 
       {myAllocations.length > 0 && (
         <section className="mb-10">
-          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
             Mes places
           </h2>
           <ul className="flex flex-col gap-3">
             {myAllocations.map((a) => (
               <li
                 key={a.id}
-                className="flex flex-col gap-2 rounded-lg border border-ivoire-400 bg-ivoire-50 p-3"
+                className="flex flex-col gap-2 rounded-lg border border-surface-400 bg-surface-50 p-3"
               >
-                <span className="text-sm text-encre-700">{formatAllocationLabel(a)}</span>
+                <span className="text-sm text-ink-700">{formatAllocationLabel(a)}</span>
                 <CessionForm
                   shortId={outing.shortId}
                   allocationId={a.id}
@@ -192,7 +192,7 @@ export default async function DebtsPage({ params }: Props) {
       )}
 
       {myDebts.length === 0 && myCredits.length === 0 && (
-        <p className="text-encre-500">Rien à régler pour cette sortie — tant mieux.</p>
+        <p className="text-ink-500">Rien à régler pour cette sortie — tant mieux.</p>
       )}
     </main>
   );
