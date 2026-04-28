@@ -33,7 +33,13 @@ export default function Image() {
         display: "flex",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(ellipse at 20% 0%, rgba(199,255,60,0.08), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(255,61,129,0.10), transparent 55%), ${INK}`,
+        // Satori static-generation refuse `background: <color>` (interprété
+        // comme `background-image: <color>` invalide) et choke aussi sur
+        // une shorthand "gradient, gradient, color". On éclate proprement
+        // backgroundColor + backgroundImage.
+        backgroundColor: INK,
+        backgroundImage:
+          "radial-gradient(ellipse at 20% 0%, rgba(199,255,60,0.08), transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(255,61,129,0.10), transparent 55%)",
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
@@ -63,7 +69,7 @@ export default function Image() {
           width: 92,
           height: 92,
           borderRadius: "50%",
-          background: HOT,
+          backgroundColor: HOT,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -107,7 +113,7 @@ export default function Image() {
               width: 8,
               height: 8,
               borderRadius: "50%",
-              background: HOT,
+              backgroundColor: HOT,
             }}
           />
           Sortie
@@ -130,7 +136,7 @@ export default function Image() {
           style={{
             width: 80,
             height: 1,
-            background: ACID,
+            backgroundColor: ACID,
             opacity: 0.45,
             marginBottom: 28,
           }}

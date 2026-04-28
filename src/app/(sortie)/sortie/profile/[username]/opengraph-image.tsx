@@ -71,7 +71,7 @@ export default async function Image({ params }: Props) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
+        backgroundImage: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         position: "relative",
         padding: "76px 100px",
@@ -110,7 +110,7 @@ export default async function Image({ params }: Props) {
           style={{
             width: 60,
             height: 1,
-            background: HOT,
+            backgroundColor: HOT,
             opacity: 0.6,
             marginTop: 18,
             marginBottom: 22,
@@ -264,7 +264,7 @@ function renderEmpty(name: string, username: string) {
         flexDirection: "column",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
+        backgroundImage: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         position: "relative",
         padding: "76px 100px",
@@ -300,7 +300,7 @@ function renderEmpty(name: string, username: string) {
           style={{
             width: 60,
             height: 1,
-            background: HOT,
+            backgroundColor: HOT,
             opacity: 0.6,
             marginTop: 18,
             marginBottom: 24,
@@ -333,7 +333,7 @@ function renderFallback() {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: SURFACE,
+        backgroundColor: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
     >
@@ -378,7 +378,7 @@ function Seal() {
         width: 88,
         height: 88,
         borderRadius: "50%",
-        background: ACID,
+        backgroundColor: ACID,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -406,7 +406,7 @@ function BrandBottomLeft() {
         gap: 10,
       }}
     >
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: ACID }} />
+      <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: ACID }} />
       <div
         style={{
           fontSize: 22,
