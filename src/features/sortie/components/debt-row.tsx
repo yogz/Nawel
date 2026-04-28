@@ -60,13 +60,13 @@ export function DebtRow({
         : "À régler";
 
   return (
-    <li className="flex flex-col gap-3 rounded-lg border border-ivoire-400 bg-ivoire-50 p-4">
+    <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex flex-col">
-          <span className="font-serif text-lg text-encre-700">{personName(other)}</span>
-          <span className="text-xs uppercase tracking-[0.06em] text-or-600">{statusLabel}</span>
+          <span className="font-serif text-lg text-ink-700">{personName(other)}</span>
+          <span className="text-xs uppercase tracking-[0.06em] text-hot-600">{statusLabel}</span>
         </div>
-        <span className="font-serif text-2xl text-encre-700">{formatCents(amountCents)}</span>
+        <span className="font-serif text-2xl text-ink-700">{formatCents(amountCents)}</span>
       </div>
 
       {view === "debtor" && status !== "confirmed" && (
@@ -78,13 +78,13 @@ export function DebtRow({
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-encre-400">
+            <p className="text-xs text-ink-400">
               {personName(other)} n&rsquo;a pas encore renseigné de moyen de paiement.
             </p>
           )}
           {status === "pending" && <MarkPaidButton shortId={shortId} debtId={debtId} />}
           {status === "declared_paid" && (
-            <p className="text-xs text-encre-400">
+            <p className="text-xs text-ink-400">
               Tu as indiqué avoir réglé — en attente de sa confirmation.
             </p>
           )}
@@ -94,7 +94,7 @@ export function DebtRow({
       {view === "creditor" && status !== "confirmed" && (
         <>
           {status === "pending" && (
-            <p className="text-xs text-encre-400">En attente que {personName(other)} règle.</p>
+            <p className="text-xs text-ink-400">En attente que {personName(other)} règle.</p>
           )}
           {status === "declared_paid" && <ConfirmPaidButton shortId={shortId} debtId={debtId} />}
         </>
@@ -176,18 +176,18 @@ function MethodRow({
   return (
     <li className="flex items-center justify-between gap-2 rounded-md bg-white px-3 py-2">
       <div className="flex flex-col">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
           {TYPE_LABEL[method.type]}
           {method.displayLabel ? ` · ${method.displayLabel}` : ""}
         </span>
-        <span className="font-mono text-sm text-encre-700">{revealed ?? method.valuePreview}</span>
+        <span className="font-mono text-sm text-ink-700">{revealed ?? method.valuePreview}</span>
         {error && <span className="text-xs text-erreur-700">{error}</span>}
       </div>
       {revealed ? (
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1 rounded-full border border-ivoire-400 px-2.5 py-1 text-xs text-encre-500 hover:border-or-500 hover:text-bordeaux-700"
+          className="inline-flex items-center gap-1 rounded-full border border-surface-400 px-2.5 py-1 text-xs text-ink-500 hover:border-hot-500 hover:text-acid-700"
           aria-label="Copier"
         >
           <Copy size={12} /> Copier
@@ -197,7 +197,7 @@ function MethodRow({
           type="button"
           onClick={reveal}
           disabled={isPending}
-          className="inline-flex items-center gap-1 rounded-full border border-ivoire-400 px-2.5 py-1 text-xs text-encre-500 hover:border-or-500 hover:text-bordeaux-700 disabled:opacity-40"
+          className="inline-flex items-center gap-1 rounded-full border border-surface-400 px-2.5 py-1 text-xs text-ink-500 hover:border-hot-500 hover:text-acid-700 disabled:opacity-40"
         >
           <Eye size={12} /> Afficher
         </button>

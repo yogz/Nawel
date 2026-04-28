@@ -199,8 +199,8 @@ export function SortieAuthForm() {
   if (phase === "verifying") {
     return (
       <div className="flex flex-col items-center gap-4 py-12">
-        <Loader2 className="size-8 animate-spin text-bordeaux-600" />
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400">
+        <Loader2 className="size-8 animate-spin text-acid-600" />
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400">
           ─ vérification ─
         </p>
       </div>
@@ -210,21 +210,21 @@ export function SortieAuthForm() {
   if (phase === "magic-sent") {
     return (
       <div className="flex flex-col gap-6">
-        <p className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+        <p className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
           />
           ─ lien envoyé ─
         </p>
         <h1
-          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700"
+          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
           Check tes mails.
         </h1>
-        <p className="text-[15px] leading-[1.5] text-encre-400">
-          Lien magique envoyé à <span className="text-encre-700">{email}</span>. Clique-le pour
+        <p className="text-[15px] leading-[1.5] text-ink-400">
+          Lien magique envoyé à <span className="text-ink-700">{email}</span>. Clique-le pour
           revenir ici, déjà connecté. (Vérifie aussi tes spams — Resend, c&rsquo;est nouveau.)
         </p>
 
@@ -233,7 +233,7 @@ export function SortieAuthForm() {
             type="button"
             onClick={sendMagicLink}
             disabled={resendCountdown > 0 || pending}
-            className="inline-flex items-center gap-1 self-start font-mono text-[11px] uppercase tracking-[0.22em] text-or-500 underline-offset-4 transition-colors hover:underline disabled:cursor-not-allowed disabled:text-encre-400 disabled:no-underline"
+            className="inline-flex items-center gap-1 self-start font-mono text-[11px] uppercase tracking-[0.22em] text-hot-500 underline-offset-4 transition-colors hover:underline disabled:cursor-not-allowed disabled:text-ink-400 disabled:no-underline"
           >
             {resendCountdown > 0
               ? `Renvoyer le lien (dans ${resendCountdown}s)`
@@ -248,7 +248,7 @@ export function SortieAuthForm() {
               setEmail("");
               setError(null);
             }}
-            className="self-start font-mono text-[11px] uppercase tracking-[0.22em] text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-600 hover:underline"
+            className="self-start font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
           >
             Changer d&rsquo;email →
           </button>
@@ -274,15 +274,15 @@ export function SortieAuthForm() {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-5">
-        <p className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-or-500">
+        <p className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-hot-500">
           <span
             aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_12px_var(--sortie-hot)]"
+            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_12px_var(--sortie-hot)]"
           />
           sortie · v0.1
         </p>
         <h1
-          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-encre-700 sm:text-5xl"
+          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
           style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
         >
           Reviens.
@@ -308,7 +308,7 @@ export function SortieAuthForm() {
         <>
           <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
             <label className="flex flex-col gap-2">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+              <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
                 Email
               </span>
               <input
@@ -319,21 +319,21 @@ export function SortieAuthForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="ton@email.com"
-                className="h-12 w-full rounded-xl border border-ivoire-400 bg-ivoire-100 px-4 text-[15px] text-encre-700 placeholder:text-encre-400 focus:border-bordeaux-600 focus:outline-none focus:ring-2 focus:ring-bordeaux-600/30"
+                className="h-12 w-full rounded-xl border border-surface-400 bg-surface-100 px-4 text-[15px] text-ink-700 placeholder:text-ink-400 focus:border-acid-600 focus:outline-none focus:ring-2 focus:ring-acid-600/30"
               />
             </label>
 
             <button
               type="submit"
               disabled={pending}
-              className="mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-encre-700 px-5 text-[15px] font-bold text-ivoire-50 transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-encre-600 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:active:scale-95"
+              className="mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink-700 px-5 text-[15px] font-bold text-surface-50 transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-ink-600 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:active:scale-95"
             >
               {pending ? (
                 <Loader2 size={16} className="animate-spin" />
               ) : (
                 <>
                   Recevoir le lien
-                  <ArrowRight size={16} strokeWidth={2.6} className="text-bordeaux-600" />
+                  <ArrowRight size={16} strokeWidth={2.6} className="text-acid-600" />
                 </>
               )}
             </button>
@@ -349,18 +349,18 @@ export function SortieAuthForm() {
           </form>
 
           <div className="flex items-center gap-3">
-            <span className="h-px flex-1 bg-or-500/40" />
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+            <span className="h-px flex-1 bg-hot-500/40" />
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
               ou
             </span>
-            <span className="h-px flex-1 bg-or-500/40" />
+            <span className="h-px flex-1 bg-hot-500/40" />
           </div>
 
           <button
             type="button"
             onClick={handleGoogle}
             disabled={pending}
-            className="inline-flex h-12 items-center justify-center gap-3 rounded-full bg-ivoire-100 px-5 text-[15px] font-semibold text-encre-700 ring-1 ring-encre-300 transition-colors hover:bg-ivoire-200 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-12 items-center justify-center gap-3 rounded-full bg-surface-100 px-5 text-[15px] font-semibold text-ink-700 ring-1 ring-ink-300 transition-colors hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <GoogleIcon className="size-5" />
             Continuer avec Google
@@ -373,7 +373,7 @@ export function SortieAuthForm() {
                 setPhase("password");
                 setError(null);
               }}
-              className="self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500 underline-offset-4 transition-colors hover:underline"
+              className="self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500 underline-offset-4 transition-colors hover:underline"
             >
               J&rsquo;ai un mot de passe →
             </button>
@@ -395,7 +395,7 @@ export function SortieAuthForm() {
                   setError("On ne te connaît pas — lance le lien magique.");
                 }
               }}
-              className="self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400 underline-offset-4 transition-colors hover:text-or-500 hover:underline"
+              className="self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400 underline-offset-4 transition-colors hover:text-hot-500 hover:underline"
             >
               J&rsquo;ai un mot de passe →
             </button>
@@ -403,12 +403,12 @@ export function SortieAuthForm() {
         </>
       )}
 
-      <footer className="mt-4 border-t border-ivoire-400 pt-6">
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+      <footer className="mt-4 border-t border-surface-400 pt-6">
+        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
           ↳ pas de mot de passe oublié ici. Si tu en as besoin,{" "}
           <a
             href={`https://www.colist.fr/fr/login?callbackURL=${encodeURIComponent(callbackURL)}`}
-            className="text-or-500 underline-offset-4 hover:underline"
+            className="text-hot-500 underline-offset-4 hover:underline"
           >
             passe par colist.fr
           </a>
@@ -431,12 +431,12 @@ function PasswordForm(props: {
 }) {
   return (
     <form onSubmit={props.onSubmit} className="flex flex-col gap-4">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
         ↳ {props.email}
       </p>
 
       <label className="flex flex-col gap-2">
-        <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
           Mot de passe
         </span>
         <div className="relative">
@@ -451,13 +451,13 @@ function PasswordForm(props: {
             required
             value={props.password}
             onChange={(e) => props.onPasswordChange(e.target.value)}
-            className="h-12 w-full rounded-xl border border-ivoire-400 bg-ivoire-100 px-4 pr-12 text-[15px] text-encre-700 focus:border-bordeaux-600 focus:outline-none focus:ring-2 focus:ring-bordeaux-600/30"
+            className="h-12 w-full rounded-xl border border-surface-400 bg-surface-100 px-4 pr-12 text-[15px] text-ink-700 focus:border-acid-600 focus:outline-none focus:ring-2 focus:ring-acid-600/30"
           />
           <button
             type="button"
             onClick={props.onTogglePassword}
             aria-label={props.showPassword ? "Masquer" : "Afficher"}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-encre-400 transition-colors hover:text-encre-700"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-400 transition-colors hover:text-ink-700"
           >
             {props.showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -467,14 +467,14 @@ function PasswordForm(props: {
       <button
         type="submit"
         disabled={props.pending}
-        className="mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-encre-700 px-5 text-[15px] font-bold text-ivoire-50 transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-encre-600 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:active:scale-95"
+        className="mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink-700 px-5 text-[15px] font-bold text-surface-50 transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.01] hover:bg-ink-600 disabled:cursor-not-allowed disabled:opacity-60 motion-safe:active:scale-95"
       >
         {props.pending ? (
           <Loader2 size={16} className="animate-spin" />
         ) : (
           <>
             Connexion
-            <ArrowRight size={16} strokeWidth={2.6} className="text-bordeaux-600" />
+            <ArrowRight size={16} strokeWidth={2.6} className="text-acid-600" />
           </>
         )}
       </button>
@@ -491,7 +491,7 @@ function PasswordForm(props: {
       <button
         type="button"
         onClick={props.onBackToMagic}
-        className="inline-flex items-center gap-1.5 self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-600 hover:underline"
+        className="inline-flex items-center gap-1.5 self-start font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
       >
         <Mail size={12} />
         Plutôt un lien magique

@@ -44,14 +44,14 @@ export function VotingSection({
 
   return (
     <section
-      className="mt-8 rounded-2xl border border-ivoire-400 bg-ivoire-50 p-5"
+      className="mt-8 rounded-2xl border border-surface-400 bg-surface-50 p-5"
       aria-label="Vote de créneaux"
     >
       <header className="mb-4 flex items-baseline justify-between">
-        <h2 className="font-serif text-lg text-encre-700">
+        <h2 className="font-serif text-lg text-ink-700">
           {chosenTimeslotId ? "Sondage clôturé" : "Votes en cours"}
         </h2>
-        <span className="text-xs text-encre-400">
+        <span className="text-xs text-ink-400">
           {totalVoters === 0
             ? "Personne n'a voté"
             : `${totalVoters} vote${totalVoters > 1 ? "s" : ""}`}
@@ -73,7 +73,7 @@ export function VotingSection({
       </ul>
 
       {isCreator && !chosenTimeslotId && totalVotes === 0 && (
-        <p className="mt-3 text-xs text-encre-400">
+        <p className="mt-3 text-xs text-ink-400">
           Personne n&rsquo;a encore voté — partage le lien d&rsquo;abord, sinon tu figeras le
           sondage à l&rsquo;aveugle et plus personne ne pourra voter.
         </p>
@@ -118,30 +118,30 @@ function TimeslotRowView({
     <li
       className={`flex flex-col gap-2 rounded-lg border p-3 ${
         isChosen
-          ? "border-bordeaux-600 bg-bordeaux-50"
+          ? "border-acid-600 bg-acid-50"
           : isBest
-            ? "border-or-500 bg-ivoire-100"
-            : "border-ivoire-400 bg-ivoire-50"
+            ? "border-hot-500 bg-surface-100"
+            : "border-surface-400 bg-surface-50"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <span
-          className={`text-sm ${isChosen ? "font-semibold text-bordeaux-700" : "text-encre-700"}`}
+          className={`text-sm ${isChosen ? "font-semibold text-acid-700" : "text-ink-700"}`}
         >
           {formatOutingDateConversational(ts.startsAt)}
           {isChosen && (
-            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-bordeaux-600 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ivoire-100">
+            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-acid-600 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-surface-100">
               choisi
             </span>
           )}
         </span>
-        <div className="flex shrink-0 items-center gap-3 text-xs text-encre-500">
+        <div className="flex shrink-0 items-center gap-3 text-xs text-ink-500">
           <span className="inline-flex items-center gap-1">
-            <Check size={12} className="text-or-600" />
+            <Check size={12} className="text-hot-600" />
             {ts.yesCount}
           </span>
           <span className="inline-flex items-center gap-1">
-            <X size={12} className="text-encre-400" />
+            <X size={12} className="text-ink-400" />
             {ts.noCount}
           </span>
         </div>
@@ -161,7 +161,7 @@ function TimeslotRowView({
             // intentionnellement discrète pour qu'elle ne soit pas
             // confondue avec un CTA quotidien. Le confirm modal du
             // handler fait déjà le filet de sécurité côté UX.
-            className="self-end font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400 underline-offset-4 transition-colors duration-300 hover:text-bordeaux-600 hover:underline disabled:opacity-50"
+            className="self-end font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400 underline-offset-4 transition-colors duration-300 hover:text-acid-600 hover:underline disabled:opacity-50"
           >
             {pending ? "Choix en cours…" : "Choisir ce créneau"}
           </button>
@@ -193,7 +193,7 @@ function ReopenPollButton({ shortId }: { shortId: string }) {
   }
 
   return (
-    <div className="mt-4 border-t border-ivoire-400 pt-3">
+    <div className="mt-4 border-t border-surface-400 pt-3">
       <form ref={formRef} action={formAction} className="contents">
         <input type="hidden" name="shortId" value={shortId} />
       </form>
@@ -201,7 +201,7 @@ function ReopenPollButton({ shortId }: { shortId: string }) {
         type="button"
         onClick={handleClick}
         disabled={pending}
-        className="text-xs text-bordeaux-700 underline-offset-4 hover:underline disabled:opacity-50"
+        className="text-xs text-acid-700 underline-offset-4 hover:underline disabled:opacity-50"
       >
         {pending ? "Réouverture…" : "Rouvrir le sondage"}
       </button>

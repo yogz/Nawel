@@ -24,7 +24,7 @@ const SWAP_TRANSITION = { duration: 0.18, ease: [0.16, 1, 0.3, 1] as const };
 /**
  * Persistent share row affichée en haut de la page d'une sortie. Mirror
  * visuel du `CreateSuccessBanner` (même bouton WhatsApp en plein
- * or-600, même native share icon-only) pour que le créateur ne se
+ * hot-600, même native share icon-only) pour que le créateur ne se
  * retrouve pas avec deux esthétiques de partage différentes selon qu'il
  * arrive via `?from=create` ou non. La copie du lien reste exposée en
  * fallback texte pour les navigateurs sans Web Share API (Firefox
@@ -70,7 +70,7 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         href={whatsAppHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-or-500 bg-transparent px-4 text-sm font-semibold text-or-500 transition-colors duration-300 hover:border-or-400 hover:bg-or-50 hover:text-or-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500"
+        className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-hot-500 bg-transparent px-4 text-sm font-semibold text-hot-500 transition-colors duration-300 hover:border-hot-400 hover:bg-hot-50 hover:text-hot-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500"
       >
         <MessageCircle size={14} strokeWidth={2.4} />
         WhatsApp
@@ -80,7 +80,7 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
           type="button"
           onClick={handleNativeShare}
           aria-label="Partager via une autre application"
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-encre-300 bg-ivoire-300 text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-ink-300 bg-surface-300 text-ink-700 transition-colors duration-300 hover:border-ink-400 hover:bg-surface-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-300"
         >
           <Share2 size={14} />
         </button>
@@ -91,7 +91,7 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         <button
           type="button"
           onClick={copy}
-          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-encre-300 bg-ivoire-300 px-3 text-sm font-medium text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+          className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-ink-300 bg-surface-300 px-3 text-sm font-medium text-ink-700 transition-colors duration-300 hover:border-ink-400 hover:bg-surface-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-300"
           aria-live="polite"
         >
           <AnimatePresence mode="wait" initial={false}>

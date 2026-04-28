@@ -16,14 +16,16 @@ const config: Config = {
         mono: ["var(--font-pilot-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {
-        // Sortie design system — "Acid Cabinet" pivot (2026 GenZ direction).
-        // Token NAMES (`bordeaux`, `or`, `ivoire`, `encre`) are kept opaque
-        // for zero-churn across hundreds of className strings. Their VALUES
-        // were remapped from cream-and-cobalt to a deep dark palette with
-        // acid-green primary + hot-pink accent. Treat the keys as semantic
-        // roles: bordeaux = primary, or = accent, ivoire = surface, encre =
-        // foreground (its scale now runs muted→bright, NOT light→dark).
-        bordeaux: {
+        // Sortie design system — "Acid Cabinet". Palette nommée par rôle :
+        //   acid    = accent primaire (vert acide, signal "go")
+        //   hot     = accent secondaire (rose électrique, ponctuation)
+        //   surface = fonds dark (paliers de profondeur des cartes/panneaux)
+        //   ink     = échelle foreground texte (du muted au pur blanc)
+        // La couche shadcn (`primary`, `accent`, `muted`, `background`,
+        // `foreground`, `card`, `popover`, `destructive`) reste branchée sur
+        // les CSS vars HSL — préférer celle-ci pour les rôles stables et
+        // garder la palette pour les nuances précises.
+        acid: {
           50: "#1A2C0A",
           100: "#2E4A12",
           200: "#446F1A",
@@ -35,7 +37,7 @@ const config: Config = {
           800: "#7FB320",
           900: "#5A8016",
         },
-        or: {
+        hot: {
           50: "#2D0815",
           100: "#4D1024",
           200: "#75173A",
@@ -47,14 +49,17 @@ const config: Config = {
           800: "#8A2049",
           900: "#5C1531",
         },
-        ivoire: {
+        surface: {
+          // `bg-surface` sans shade reste la CSS var CoList (var(--surface)),
+          // les shades chiffrés sont les fonds dark de Sortie (Acid Cabinet).
+          DEFAULT: "var(--surface)",
           50: "#0F0F0F",
           100: "#161616",
           200: "#1F1F1F",
           300: "#2A2A2A",
           400: "#333333",
         },
-        encre: {
+        ink: {
           50: "#0F0F0F",
           100: "#1A1A1A",
           200: "#2A2A2A",
@@ -66,7 +71,6 @@ const config: Config = {
           800: "#FAFAFA",
           900: "#FFFFFF",
         },
-        surface: "var(--surface)",
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",

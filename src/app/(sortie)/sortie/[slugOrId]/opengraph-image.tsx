@@ -18,24 +18,22 @@ export const contentType = "image/png";
 // _TIMEOUT). Fluid Compute = mêmes régions, mêmes coûts, postgres natif.
 export const revalidate = 60;
 
-// "Acid Cabinet" palette — the share preview now matches the in-app
-// dark theme. Token names are kept as opaque ids (same trick as
-// tailwind.config) so no `Satori` JSX node has to be retouched.
-//   IVOIRE / IVOIRE_DEEP = primary surfaces (now dark)
-//   ENCRE_700 / ENCRE_500 = text foreground / muted (now light)
-//   OR / OR_DEEP = accent (hot pink)
-//   BORDEAUX / BORDEAUX_DEEP = primary (acid green)
-const IVOIRE = "#0A0A0A";
-const IVOIRE_DEEP = "#161616";
-const ENCRE_700 = "#F5F2EB";
-const ENCRE_500 = "#A0A0A0";
-const OR = "#FF3D81";
-const OR_DEEP = "#E63577";
-const BORDEAUX = "#C7FF3C";
-const BORDEAUX_DEEP = "#A8E62E";
-// Dark scrim used behind hero photos. The hero variant used to set its
-// background to ENCRE_700 (a dark ink) — that role moved here so we
-// could flip ENCRE_700 to "light text" in the dark theme.
+// "Acid Cabinet" palette — share preview alignée sur le thème dark in-app.
+// Constantes nommées par rôle (cf. tailwind.config) :
+//   SURFACE / SURFACE_DEEP = fonds dark (cartes, panneaux)
+//   INK_700 / INK_500      = texte foreground / muted
+//   HOT / HOT_DEEP         = accent secondaire (rose électrique)
+//   ACID / ACID_DEEP       = accent primaire (vert acide)
+const SURFACE = "#0A0A0A";
+const SURFACE_DEEP = "#161616";
+const INK_700 = "#F5F2EB";
+const INK_500 = "#A0A0A0";
+const HOT = "#FF3D81";
+const HOT_DEEP = "#E63577";
+const ACID = "#C7FF3C";
+const ACID_DEEP = "#A8E62E";
+// Scrim derrière les photos hero. Même teinte que SURFACE — split pour
+// expliciter l'intention quand on sur-densifie l'overlay sur photo claire.
 const SCRIM = "#0A0A0A";
 
 type Props = { params: Promise<{ slugOrId: string }> };
@@ -60,8 +58,8 @@ export default async function Image({ params }: Props) {
 
   // Hero-image variant: when the organiser pasted a ticket page, we have a
   // real photo at `heroImageUrl`. Compose it as cover with a noir overlay
-  // so the text stays legible — experts converge on noir over bordeaux
-  // (bordeaux on photo browns into mud).
+  // so the text stays legible — experts converge on noir over acid green
+  // (any chromatic overlay on photo browns into mud).
   //
   // Prefer the pre-resized 1200×630 JPEG companion (`heroImageOgUrl`):
   // running Satori over a 5 MB upload pushes the final PNG past the
@@ -124,7 +122,7 @@ function renderStandard(args: {
         display: "flex",
         width: "100%",
         height: "100%",
-        background: `radial-gradient(circle at 20% 10%, ${IVOIRE} 0%, ${IVOIRE_DEEP} 100%)`,
+        background: `radial-gradient(circle at 20% 10%, ${SURFACE} 0%, ${SURFACE_DEEP} 100%)`,
         position: "relative",
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
@@ -147,7 +145,7 @@ function renderStandard(args: {
             fontSize: 22,
             fontWeight: 600,
             letterSpacing: "0.12em",
-            color: OR_DEEP,
+            color: HOT_DEEP,
             textTransform: "uppercase",
             marginBottom: 24,
           }}
@@ -160,7 +158,7 @@ function renderStandard(args: {
             fontSize: titleSize(title),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.05,
             marginBottom: 20,
             display: "-webkit-box",
@@ -179,7 +177,7 @@ function renderStandard(args: {
           style={{
             width: 60,
             height: 1,
-            background: OR,
+            background: HOT,
             opacity: 0.6,
             marginTop: 10,
             marginBottom: 24,
@@ -191,7 +189,7 @@ function renderStandard(args: {
             style={{
               fontSize: 28,
               fontWeight: 500,
-              color: ENCRE_500,
+              color: INK_500,
               maxWidth: 880,
               lineHeight: 1.3,
             }}
@@ -270,7 +268,7 @@ function renderWithHero(args: {
             fontSize: 22,
             fontWeight: 600,
             letterSpacing: "0.12em",
-            color: OR,
+            color: HOT,
             textTransform: "uppercase",
             marginBottom: 18,
           }}
@@ -283,7 +281,7 @@ function renderWithHero(args: {
             fontSize: titleSize(title),
             fontWeight: 700,
             letterSpacing: "-0.02em",
-            color: ENCRE_700,
+            color: INK_700,
             lineHeight: 1.05,
             marginBottom: 18,
             display: "-webkit-box",
@@ -329,7 +327,7 @@ function renderCancelled(args: { title: string }) {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: IVOIRE,
+        background: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
         padding: 88,
         textAlign: "center",
@@ -341,7 +339,7 @@ function renderCancelled(args: { title: string }) {
           fontSize: 22,
           fontWeight: 600,
           letterSpacing: "0.14em",
-          color: BORDEAUX,
+          color: ACID,
           textTransform: "uppercase",
           marginBottom: 32,
         }}
@@ -352,7 +350,7 @@ function renderCancelled(args: { title: string }) {
         style={{
           fontSize: 56,
           fontWeight: 700,
-          color: ENCRE_700,
+          color: INK_700,
           letterSpacing: "-0.02em",
           lineHeight: 1.1,
           maxWidth: 880,
@@ -365,7 +363,7 @@ function renderCancelled(args: { title: string }) {
       >
         {args.title}
       </div>
-      <div style={{ fontSize: 26, fontWeight: 500, color: ENCRE_500 }}>
+      <div style={{ fontSize: 26, fontWeight: 500, color: INK_500 }}>
         Cet événement n&rsquo;aura pas lieu. À la prochaine !
       </div>
     </div>,
@@ -382,7 +380,7 @@ function renderFallback() {
         alignItems: "center",
         width: "100%",
         height: "100%",
-        background: IVOIRE,
+        background: SURFACE,
         fontFamily: '"Inter Tight", "Inter", system-ui',
       }}
     >
@@ -393,7 +391,7 @@ function renderFallback() {
             marginTop: 24,
             fontSize: 72,
             fontWeight: 700,
-            color: ENCRE_700,
+            color: INK_700,
             letterSpacing: "-0.02em",
           }}
         >
@@ -404,7 +402,7 @@ function renderFallback() {
             marginTop: 8,
             fontSize: 22,
             fontWeight: 500,
-            color: ENCRE_500,
+            color: INK_500,
             textTransform: "uppercase",
             letterSpacing: "0.12em",
           }}
@@ -429,7 +427,7 @@ function InnerPassepartout({ muted = false }: { muted?: boolean }) {
         left: 40,
         right: 40,
         bottom: 40,
-        border: `1px solid ${OR}`,
+        border: `1px solid ${HOT}`,
         opacity: muted ? 0.2 : 0.35,
         pointerEvents: "none",
       }}
@@ -438,9 +436,9 @@ function InnerPassepartout({ muted = false }: { muted?: boolean }) {
 }
 
 function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
-  // Wax seal — the signature motif. Bordeaux disc, gold monogram S,
+  // Wax seal — the signature motif. Acid disc, hot-pink monogram S,
   // rotated -6° so it feels stamped rather than placed. Stays the same
-  // on both palettes because bordeaux reads on ivoire and on dark photo.
+  // on both palettes because acid reads on surface and on dark photo.
   const onDark = variant === "onDark";
   return (
     <div
@@ -451,13 +449,13 @@ function Seal({ variant = "onLight" }: { variant?: "onLight" | "onDark" }) {
         width: 88,
         height: 88,
         borderRadius: "50%",
-        background: BORDEAUX,
+        background: ACID,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         transform: "rotate(-6deg)",
-        boxShadow: onDark ? "0 0 0 2px rgba(250,247,242,0.12)" : `0 0 0 2px ${BORDEAUX_DEEP}`,
-        color: OR,
+        boxShadow: onDark ? "0 0 0 2px rgba(250,247,242,0.12)" : `0 0 0 2px ${ACID_DEEP}`,
+        color: HOT,
         fontSize: 44,
         fontWeight: 800,
         letterSpacing: "-0.04em",
@@ -508,8 +506,8 @@ function BottomStrip({
                 width: 56,
                 height: 56,
                 borderRadius: "50%",
-                background: onDark ? "rgba(245,242,235,0.12)" : BORDEAUX,
-                color: onDark ? ENCRE_700 : IVOIRE,
+                background: onDark ? "rgba(245,242,235,0.12)" : ACID,
+                color: onDark ? INK_700 : SURFACE,
                 fontSize: 26,
                 fontWeight: 700,
               }}
@@ -528,7 +526,7 @@ function BottomStrip({
                   fontWeight: 500,
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  color: onDark ? "rgba(250,247,242,0.6)" : ENCRE_500,
+                  color: onDark ? "rgba(250,247,242,0.6)" : INK_500,
                 }}
               >
                 Par
@@ -537,7 +535,7 @@ function BottomStrip({
                 style={{
                   fontSize: 26,
                   fontWeight: 600,
-                  color: onDark ? IVOIRE : ENCRE_700,
+                  color: onDark ? SURFACE : INK_700,
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -561,7 +559,7 @@ function BottomStrip({
             style={{
               fontSize: 22,
               fontWeight: 600,
-              color: onDark ? IVOIRE : BORDEAUX,
+              color: onDark ? SURFACE : ACID,
               letterSpacing: "-0.005em",
             }}
           >
@@ -578,7 +576,7 @@ function BottomStrip({
 function AvatarStack({ count, onDark }: { count: number; onDark: boolean }) {
   // We render initials discs rather than remote user avatars: fetching
   // Google OAuth photos from edge inflates weight and latency, and risks
-  // 403s. A bordeaux-on-ivoire disc stack is recognisable social-proof
+  // 403s. An acid-on-surface disc stack is recognisable social-proof
   // shorthand and stays under budget.
   const discs = Array.from({ length: count });
   return (
@@ -590,8 +588,8 @@ function AvatarStack({ count, onDark }: { count: number; onDark: boolean }) {
             width: 40,
             height: 40,
             borderRadius: "50%",
-            background: onDark ? "rgba(250,247,242,0.2)" : OR,
-            border: `2px solid ${onDark ? "rgba(28,25,23,0.7)" : IVOIRE}`,
+            background: onDark ? "rgba(250,247,242,0.2)" : HOT,
+            border: `2px solid ${onDark ? "rgba(28,25,23,0.7)" : SURFACE}`,
             marginLeft: i === 0 ? 0 : -12,
           }}
         />
@@ -616,14 +614,14 @@ function BrandInline({ variant = "onLight" }: { variant?: "onLight" | "onDark" }
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? OR : BORDEAUX,
+          background: onDark ? HOT : ACID,
         }}
       />
       <div
         style={{
           fontSize: 22,
           fontWeight: 600,
-          color: onDark ? IVOIRE : BORDEAUX,
+          color: onDark ? SURFACE : ACID,
           letterSpacing: "0.02em",
         }}
       >
@@ -651,14 +649,14 @@ function BrandBottomRight({ variant = "onLight" }: { variant?: "onLight" | "onDa
           width: 8,
           height: 8,
           borderRadius: "50%",
-          background: onDark ? OR : BORDEAUX,
+          background: onDark ? HOT : ACID,
         }}
       />
       <div
         style={{
           fontSize: 22,
           fontWeight: 600,
-          color: onDark ? IVOIRE : BORDEAUX,
+          color: onDark ? SURFACE : ACID,
           letterSpacing: "0.02em",
         }}
       >

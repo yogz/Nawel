@@ -92,7 +92,7 @@ export function InviteLinkManager({ username, token, origin }: Props) {
   if (!token) {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-sm text-encre-500">
+        <p className="text-sm text-ink-500">
           Un lien privé pour tes amis&nbsp;: ils répondent à toutes tes sorties depuis ton profil,
           d&rsquo;un coup.
         </p>
@@ -112,21 +112,21 @@ export function InviteLinkManager({ username, token, origin }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-encre-500">
+      <p className="text-sm text-ink-500">
         Partage ce lien à ton cercle. Avec le lien, ils verront un bouton « J&rsquo;en suis » sur
         chaque sortie à venir, sans quitter ton profil.
       </p>
-      <div className="flex items-center gap-2 rounded-lg border border-ivoire-400 bg-ivoire-50 p-2">
+      <div className="flex items-center gap-2 rounded-lg border border-surface-400 bg-surface-50 p-2">
         <input
           readOnly
           value={url}
           onFocus={(e) => e.currentTarget.select()}
-          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-encre-600 outline-none"
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs text-ink-600 outline-none"
         />
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-bordeaux-600 px-3 py-1.5 text-xs font-semibold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-acid-600 px-3 py-1.5 text-xs font-semibold text-surface-50 transition-colors hover:bg-acid-700"
         >
           {copied ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
           {copied ? "Copié" : "Copier"}
@@ -137,7 +137,7 @@ export function InviteLinkManager({ username, token, origin }: Props) {
           <button
             type="submit"
             disabled={generating || revoking}
-            className="inline-flex items-center gap-1.5 text-xs text-encre-500 underline-offset-4 hover:text-bordeaux-700 hover:underline disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-xs text-ink-500 underline-offset-4 hover:text-acid-700 hover:underline disabled:opacity-50"
           >
             <RefreshCw size={12} />
             {generating ? "Régénération…" : "Régénérer"}
@@ -147,7 +147,7 @@ export function InviteLinkManager({ username, token, origin }: Props) {
           <button
             type="submit"
             disabled={generating || revoking}
-            className="inline-flex items-center gap-1.5 text-xs text-encre-500 underline-offset-4 hover:text-erreur-700 hover:underline disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 text-xs text-ink-500 underline-offset-4 hover:text-erreur-700 hover:underline disabled:opacity-50"
           >
             <Trash2 size={12} />
             {revoking ? "Suppression…" : "Révoquer"}

@@ -73,18 +73,18 @@ export function EventSuggestions({
         aria-busy="true"
         aria-live="polite"
       >
-        <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
+        <div className="flex items-center gap-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-acid-600">
           <Sparkles size={12} />
           Recherche en cours…
         </div>
         <ul className="flex flex-col gap-2">
           {[0, 1].map((i) => (
             <li key={i}>
-              <div className="flex items-start gap-3 rounded-xl border border-encre-200 bg-ivoire-100 p-3">
-                <div className="size-14 shrink-0 animate-pulse rounded-lg bg-ivoire-300" />
+              <div className="flex items-start gap-3 rounded-xl border border-ink-200 bg-surface-100 p-3">
+                <div className="size-14 shrink-0 animate-pulse rounded-lg bg-surface-300" />
                 <div className="min-w-0 flex-1 space-y-2 pt-1">
-                  <div className="h-3 w-3/4 animate-pulse rounded bg-ivoire-300" />
-                  <div className="h-3 w-1/2 animate-pulse rounded bg-ivoire-300" />
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-surface-300" />
+                  <div className="h-3 w-1/2 animate-pulse rounded bg-surface-300" />
                 </div>
               </div>
             </li>
@@ -103,18 +103,18 @@ export function EventSuggestions({
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="flex flex-col gap-2"
     >
-      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-bordeaux-600">
+      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-acid-600">
         <Sparkles size={12} />
         Suggestions
-        <span className="font-medium normal-case tracking-normal text-encre-400">
+        <span className="font-medium normal-case tracking-normal text-ink-400">
           (date modifiable ensuite)
         </span>
       </div>
       {correctedQuery && correctedQuery.toLowerCase() !== originalQuery.toLowerCase() && (
-        <p className="px-1 text-xs text-encre-500">
+        <p className="px-1 text-xs text-ink-500">
           Aucun résultat pour <span className="font-medium">«&nbsp;{originalQuery}&nbsp;»</span> —
           affichage pour{" "}
-          <span className="font-medium text-encre-700">«&nbsp;{correctedQuery}&nbsp;»</span>.
+          <span className="font-medium text-ink-700">«&nbsp;{correctedQuery}&nbsp;»</span>.
         </p>
       )}
       <ul className="flex flex-col gap-2">
@@ -128,7 +128,7 @@ export function EventSuggestions({
                 type="button"
                 onClick={() => onPick(result)}
                 aria-label={`Choisir ${result.title}`}
-                className="flex w-full items-start gap-3 rounded-xl border border-encre-200 bg-ivoire-100 p-3 text-left transition-colors duration-300 hover:border-bordeaux-300 hover:bg-ivoire-200 focus-visible:border-bordeaux-400 focus-visible:bg-ivoire-200 focus-visible:outline-none"
+                className="flex w-full items-start gap-3 rounded-xl border border-ink-200 bg-surface-100 p-3 text-left transition-colors duration-300 hover:border-acid-300 hover:bg-surface-200 focus-visible:border-acid-400 focus-visible:bg-surface-200 focus-visible:outline-none"
               >
                 {result.image ? (
                   // `unoptimized` skips Next's image proxy — les CDN tiers
@@ -145,18 +145,18 @@ export function EventSuggestions({
                     className="size-14 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-ivoire-300 text-encre-400">
+                  <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-surface-300 text-ink-400">
                     <MapPin size={20} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-encre-700">{result.title}</p>
-                  {venueLine && <p className="truncate text-xs text-encre-500">{venueLine}</p>}
+                  <p className="truncate text-sm font-bold text-ink-700">{result.title}</p>
+                  {venueLine && <p className="truncate text-xs text-ink-500">{venueLine}</p>}
                   <div className="mt-0.5 flex items-center gap-2">
                     {dateLine && (
-                      <p className="truncate text-xs font-medium text-bordeaux-600">{dateLine}</p>
+                      <p className="truncate text-xs font-medium text-acid-600">{dateLine}</p>
                     )}
-                    <span className="rounded-full bg-ivoire-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-encre-500">
+                    <span className="rounded-full bg-surface-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-500">
                       {sourceLabel}
                     </span>
                   </div>

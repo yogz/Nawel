@@ -173,7 +173,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       >
         <Link
           href={back.href}
-          className="inline-flex h-11 items-center gap-1.5 rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-700 backdrop-blur-md transition-colors hover:bg-black/55"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-700 backdrop-blur-md transition-colors hover:bg-black/55"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           {back.label}
@@ -181,7 +181,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         {isCreator && (
           <Link
             href={`/${canonical}/modifier`}
-            className="inline-flex h-11 items-center rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-700 backdrop-blur-md transition-colors hover:bg-black/55"
+            className="inline-flex h-11 items-center rounded-full border border-white/15 bg-black/35 px-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-700 backdrop-blur-md transition-colors hover:bg-black/55"
           >
             modifier ↗
           </Link>
@@ -233,12 +233,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       <section
-        className="mt-10 overflow-hidden rounded-[28px] border border-ivoire-400 bg-ivoire-100 p-6 shadow-[var(--shadow-velvet)]"
+        className="mt-10 overflow-hidden rounded-[28px] border border-surface-400 bg-surface-100 p-6 shadow-[var(--shadow-velvet)]"
         aria-label="Les confirmés"
       >
         <ParticipantList participants={outing.participants} isCreator={isCreator} />
 
-        <div className="mt-6 border-t border-ivoire-400 pt-4 text-center">
+        <div className="mt-6 border-t border-surface-400 pt-4 text-center">
           <DeadlineBadge deadlineAt={outing.deadlineAt} />
         </div>
       </section>
@@ -309,7 +309,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           {!existingPurchase && (
             <Link
               href={`/${canonical}/achat`}
-              className="inline-flex h-11 items-center rounded-full border border-or-500 bg-or-50 px-4 font-medium text-or-500 transition-all hover:border-or-400 hover:bg-or-100 hover:text-or-400"
+              className="inline-flex h-11 items-center rounded-full border border-hot-500 bg-hot-50 px-4 font-medium text-hot-500 transition-all hover:border-hot-400 hover:bg-hot-100 hover:text-hot-400"
             >
               Déclarer l&rsquo;achat
             </Link>
@@ -317,14 +317,14 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           {viewerHasMoneyRow && (
             <Link
               href={`/${canonical}/dettes`}
-              className="inline-flex h-11 items-center rounded-full border border-ivoire-400 bg-ivoire-100 px-4 text-encre-600 transition-colors hover:border-bordeaux-600 hover:text-bordeaux-600"
+              className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
             >
               Voir les dettes
             </Link>
           )}
           <Link
             href={`/${canonical}/paiement`}
-            className="inline-flex h-11 items-center rounded-full border border-ivoire-400 bg-ivoire-100 px-4 text-encre-600 transition-colors hover:border-bordeaux-600 hover:text-bordeaux-600"
+            className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
           >
             Mes moyens de paiement
           </Link>
@@ -332,7 +332,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {(outing.creatorAnonName || outing.creatorUserId) && (
-        <p className="mt-8 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+        <p className="mt-8 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
           ↳ organisé par{" "}
           {outing.creatorUser?.username ? (
             // Le créateur a un handle public — on en fait un lien vers
@@ -340,12 +340,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             // dire "un membre colist" anonyme.
             <Link
               href={`/@${outing.creatorUser.username}`}
-              className="text-encre-500 underline-offset-4 transition-colors duration-300 hover:text-bordeaux-600 hover:underline"
+              className="text-ink-500 underline-offset-4 transition-colors duration-300 hover:text-acid-600 hover:underline"
             >
               @{outing.creatorUser.username}
             </Link>
           ) : (
-            <span className="text-encre-500">
+            <span className="text-ink-500">
               {outing.creatorAnonName ?? outing.creatorUser?.name ?? "un membre colist"}
             </span>
           )}
@@ -362,7 +362,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
       {shouldStickRsvp && (
         <div
-          className="fixed inset-x-0 z-40 mx-auto max-w-[520px] border-t border-ivoire-400 bg-[var(--sortie-bg)]/92 backdrop-blur-md"
+          className="fixed inset-x-0 z-40 mx-auto max-w-[520px] border-t border-surface-400 bg-[var(--sortie-bg)]/92 backdrop-blur-md"
           style={{
             bottom: 0,
             paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
@@ -402,22 +402,22 @@ function countVoters(timeslots: Array<{ votes: Array<{ participantId: string }> 
 function CancelledView({ title }: { title: string }) {
   return (
     <main className="mx-auto max-w-xl px-6 py-20 text-center">
-      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         <span
           aria-hidden
-          className="h-1.5 w-1.5 rounded-full bg-or-500 shadow-[0_0_10px_var(--sortie-hot)]"
+          className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
         />
         ─ annulée ─
       </p>
-      <h1 className="mb-4 text-4xl leading-[1] font-black tracking-[-0.04em] text-encre-700 line-through decoration-or-500 decoration-2">
+      <h1 className="mb-4 text-4xl leading-[1] font-black tracking-[-0.04em] text-ink-700 line-through decoration-hot-500 decoration-2">
         {title}
       </h1>
-      <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+      <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
         on se rattrape au prochain ?
       </p>
       <Link
         href="/"
-        className="mt-8 inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-bordeaux-600 underline-offset-4 hover:underline"
+        className="mt-8 inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
       >
         ← retour à l&rsquo;accueil
       </Link>

@@ -97,7 +97,7 @@ export function EditOutingForm({
         />
       </div>
       {!startsAt && (
-        <p className="-mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+        <p className="-mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
           ↳ date à voter — ajuste les créneaux depuis la page du sondage
         </p>
       )}
@@ -165,9 +165,9 @@ function ImageEditor({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <Label className="text-[13px] font-medium text-encre-500">
+      <Label className="text-[13px] font-medium text-ink-500">
         Image
-        <span className="ml-1 text-encre-300">(facultatif)</span>
+        <span className="ml-1 text-ink-300">(facultatif)</span>
       </Label>
 
       {currentUrl ? (
@@ -175,10 +175,10 @@ function ImageEditor({
         <img
           src={currentUrl}
           alt=""
-          className="aspect-[16/10] w-full rounded-xl border border-encre-200 bg-ivoire-100 object-cover"
+          className="aspect-[16/10] w-full rounded-xl border border-ink-200 bg-surface-100 object-cover"
         />
       ) : (
-        <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl border border-dashed border-encre-300 bg-ivoire-100 text-encre-400">
+        <div className="flex aspect-[16/10] w-full items-center justify-center rounded-xl border border-dashed border-ink-300 bg-surface-100 text-ink-400">
           <div className="flex flex-col items-center gap-1.5">
             <ImageOff size={22} strokeWidth={1.6} />
             <p className="text-xs font-medium">Aucune image</p>
@@ -190,7 +190,7 @@ function ImageEditor({
         <button
           type="button"
           onClick={onToggle}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-bordeaux-700 underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-acid-700 underline-offset-4 hover:underline"
         >
           <Pencil size={14} />
           {open ? "Fermer" : currentUrl ? "Modifier l’image" : "Choisir une image"}
@@ -199,7 +199,7 @@ function ImageEditor({
           <button
             type="button"
             onClick={onRemove}
-            className="text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+            className="text-xs font-semibold text-ink-500 underline-offset-4 hover:text-ink-700 hover:underline"
           >
             Supprimer l&rsquo;image
           </button>
@@ -207,7 +207,7 @@ function ImageEditor({
       </div>
 
       {open && (
-        <div className="overflow-hidden rounded-xl border border-encre-200">
+        <div className="overflow-hidden rounded-xl border border-ink-200">
           <MissingImagePicker
             title={title}
             venue={venue}
@@ -236,7 +236,7 @@ function DateField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
+      <Label htmlFor={name} className="text-[13px] font-medium text-ink-500">
         {label}
       </Label>
       <DateTimePicker name={name} defaultValue={defaultValue} required={required} />

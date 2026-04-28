@@ -64,22 +64,22 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
   }
 
   return (
-    <div className="mb-6 flex items-start gap-3 rounded-2xl border border-bordeaux-300 bg-bordeaux-50 p-4">
+    <div className="mb-6 flex items-start gap-3 rounded-2xl border border-acid-300 bg-acid-50 p-4">
       <span
         aria-hidden="true"
-        className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-bordeaux-600 text-ivoire-50"
+        className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-acid-600 text-surface-50"
       >
         <Check size={16} strokeWidth={3} />
       </span>
       <div className="flex-1">
-        <p className="font-semibold text-bordeaux-700">C&rsquo;est en ligne.</p>
-        <p className="mt-1 text-sm text-encre-500">Plus qu&rsquo;à inviter tes potes.</p>
+        <p className="font-semibold text-acid-700">C&rsquo;est en ligne.</p>
+        <p className="mt-1 text-sm text-ink-500">Plus qu&rsquo;à inviter tes potes.</p>
         <div className="mt-3 flex items-center gap-2">
           <a
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-11 flex-1 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-or-600 px-3 text-sm font-bold text-ivoire-50 transition-colors duration-300 hover:bg-or-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-700 focus-visible:ring-offset-2 focus-visible:ring-offset-bordeaux-50"
+            className="inline-flex h-11 flex-1 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-hot-600 px-3 text-sm font-bold text-surface-50 transition-colors duration-300 hover:bg-hot-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-700 focus-visible:ring-offset-2 focus-visible:ring-offset-acid-50"
           >
             <MessageCircle size={16} strokeWidth={2.2} />
             Partager sur WhatsApp
@@ -93,7 +93,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
               type="button"
               onClick={handleNativeShare}
               aria-label="Partager via une autre application"
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-encre-300 bg-ivoire-200 text-encre-700 transition-colors duration-300 hover:border-encre-400 hover:bg-ivoire-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-encre-300"
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-ink-300 bg-surface-200 text-ink-700 transition-colors duration-300 hover:border-ink-400 hover:bg-surface-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-300"
             >
               <Share2 size={16} />
             </button>
@@ -104,7 +104,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
         type="button"
         aria-label="Fermer"
         onClick={() => setVisible(false)}
-        className="grid size-7 place-items-center rounded-full text-encre-400 transition-colors duration-300 hover:bg-bordeaux-100 hover:text-bordeaux-600"
+        className="grid size-7 place-items-center rounded-full text-ink-400 transition-colors duration-300 hover:bg-acid-100 hover:text-acid-600"
       >
         <X size={14} />
       </button>

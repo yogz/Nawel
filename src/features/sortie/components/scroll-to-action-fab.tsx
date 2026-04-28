@@ -89,7 +89,7 @@ export function ScrollToActionFab({ targetId, label }: Props) {
           style={{
             bottom: "max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))",
           }}
-          className="fixed right-5 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-bordeaux-600 px-5 text-[15px] font-bold text-encre-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] hover:bg-bordeaux-700 motion-safe:active:scale-95 sm:right-8"
+          className="fixed right-5 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-acid-600 px-5 text-[15px] font-bold text-ink-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] hover:bg-acid-700 motion-safe:active:scale-95 sm:right-8"
         >
           {label}
           <ArrowDown size={16} strokeWidth={2.6} />

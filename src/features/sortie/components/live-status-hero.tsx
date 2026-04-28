@@ -82,46 +82,46 @@ export function LiveStatusHero({
     // user rather than snapping into place. `motion-safe:` so reduced-
     // motion users get an instant render.
     <section className="mb-10 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized">
-      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
         <span
           aria-hidden
-          className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+          className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
         />
         {eyebrow}
       </p>
       <Link
         href={`/${canonical}`}
         aria-label={`Voir la sortie ${title}`}
-        className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bordeaux-600 focus-visible:ring-offset-4 focus-visible:ring-offset-ivoire-50 motion-safe:active:scale-[0.99]"
+        className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-4 focus-visible:ring-offset-surface-50 motion-safe:active:scale-[0.99]"
       >
-        <Heading className="text-[44px] leading-[0.95] font-black tracking-[-0.04em] text-encre-700 group-hover:text-bordeaux-600 sm:text-6xl">
+        <Heading className="text-[44px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 group-hover:text-acid-600 sm:text-6xl">
           {title}
         </Heading>
-        <p className="mt-3 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+        <p className="mt-3 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
           <CalendarDays
             size={14}
             strokeWidth={2.2}
             aria-hidden="true"
-            className="shrink-0 text-bordeaux-600"
+            className="shrink-0 text-acid-600"
           />
           <span>
-            {relative && <span className="text-encre-700">{relative} — </span>}
+            {relative && <span className="text-ink-700">{relative} — </span>}
             {formatOutingDate(startsAt)}
           </span>
         </p>
         {location && (
-          <p className="mt-1.5 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+          <p className="mt-1.5 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
             <MapPin
               size={14}
               strokeWidth={2.2}
               aria-hidden="true"
-              className="shrink-0 text-bordeaux-600"
+              className="shrink-0 text-acid-600"
             />
             <span>{formatVenue(location)}</span>
           </p>
         )}
         {headcount && (
-          <p className="mt-1.5 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-500">
+          <p className="mt-1.5 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
             ◉ {headcount}
           </p>
         )}
@@ -134,20 +134,20 @@ export function LiveStatusHero({
             src={heroImageUrl}
             alt=""
             data-vt-poster
-            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-ivoire-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-encre-700/10"
+            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
             style={{ filter: "saturate(1.15) contrast(1.05)" }}
           />
         ) : (
           <div
             aria-hidden="true"
-            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-encre-700/10"
+            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
             style={{
               background:
                 "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
             }}
           >
             <span
-              className="text-[6rem] leading-none font-black tracking-tight text-encre-50 opacity-40 select-none sm:text-[7rem]"
+              className="text-[6rem] leading-none font-black tracking-tight text-ink-50 opacity-40 select-none sm:text-[7rem]"
               style={{
                 fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
                 mixBlendMode: "overlay",

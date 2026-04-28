@@ -507,7 +507,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     tryRestoreDraft(storedDraft.payload) !== null;
 
   return (
-    <div className="absolute inset-0 z-40 flex flex-col bg-ivoire-100">
+    <div className="absolute inset-0 z-40 flex flex-col bg-surface-100">
       <WizardHeader progress={progress} onBack={back} />
 
       {showRestorePrompt && storedDraft && (
@@ -515,13 +515,13 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="border-b border-bordeaux-100 bg-bordeaux-50/70 px-6 py-3"
+          className="border-b border-acid-100 bg-acid-50/70 px-6 py-3"
           role="region"
           aria-label="Brouillon retrouvé"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-encre-600">
-              <span className="font-semibold text-encre-700">Brouillon retrouvé</span> — tu avais
+            <p className="text-sm text-ink-600">
+              <span className="font-semibold text-ink-700">Brouillon retrouvé</span> — tu avais
               commencé une sortie il y a peu.
             </p>
             <div className="flex items-center gap-2">
@@ -531,7 +531,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                   applyStoredDraft(storedDraft.payload);
                   setRestorePromptDismissed(true);
                 }}
-                className="rounded-full bg-bordeaux-600 px-4 py-1.5 text-xs font-bold text-ivoire-50 transition-colors hover:bg-bordeaux-700"
+                className="rounded-full bg-acid-600 px-4 py-1.5 text-xs font-bold text-surface-50 transition-colors hover:bg-acid-700"
               >
                 Reprendre
               </button>
@@ -542,7 +542,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                   dismissStoredDraft();
                   setRestorePromptDismissed(true);
                 }}
-                className="text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+                className="text-xs font-semibold text-ink-500 underline-offset-4 hover:text-ink-700 hover:underline"
               >
                 Recommencer
               </button>
@@ -683,23 +683,23 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
 function WizardHeader({ progress, onBack }: { progress: number; onBack: () => void }) {
   return (
     <header
-      className="relative flex shrink-0 items-center border-b border-encre-100 px-4 pb-3"
+      className="relative flex shrink-0 items-center border-b border-ink-100 px-4 pb-3"
       style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
     >
       <button
         type="button"
         onClick={onBack}
         aria-label="Retour"
-        className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors hover:bg-ivoire-200 hover:text-encre-700"
+        className="grid size-10 place-items-center rounded-full text-ink-500 transition-colors hover:bg-surface-200 hover:text-ink-700"
       >
         <ArrowLeft size={20} />
       </button>
-      <span className="ml-3 text-xs font-black uppercase tracking-[0.18em] text-encre-400">
+      <span className="ml-3 text-xs font-black uppercase tracking-[0.18em] text-ink-400">
         Nouvelle sortie
       </span>
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] bg-bordeaux-100">
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] bg-acid-100">
         <div
-          className="h-full bg-bordeaux-600 transition-[width] duration-500 ease-out"
+          className="h-full bg-acid-600 transition-[width] duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -725,7 +725,7 @@ function WizardContextChip({ title }: { title: string }) {
   }
   return (
     <span
-      className="mt-2 inline-flex max-w-full items-center rounded-full border border-encre-300/40 bg-ivoire-100/40 px-3 py-1.5 text-sm font-medium text-encre-500"
+      className="mt-2 inline-flex max-w-full items-center rounded-full border border-ink-300/40 bg-surface-100/40 px-3 py-1.5 text-sm font-medium text-ink-500"
       title={title}
     >
       <span className="truncate">{title}</span>
@@ -1148,12 +1148,12 @@ function PasteStep({
       <VibePicker value={vibe} onChange={onVibeChange} />
 
       <div>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Un lien,
           <br />
           ou juste un titre.
         </h1>
-        <p className="mt-4 text-base text-encre-500">
+        <p className="mt-4 text-base text-ink-500">
           {hint ?? "On remplit le reste si on peut, sinon on continue."}
         </p>
       </div>
@@ -1161,7 +1161,7 @@ function PasteStep({
       <div className="relative">
         <Link2
           size={18}
-          className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-encre-400"
+          className="pointer-events-none absolute top-1/2 left-5 -translate-y-1/2 text-ink-400"
         />
         <Input
           type="text"
@@ -1171,7 +1171,7 @@ function PasteStep({
           placeholder={placeholder ?? "https://… ou « La Belle et la Bête »"}
           autoCapitalize="sentences"
           spellCheck={false}
-          className="h-16 rounded-full border border-encre-300 bg-ivoire-200 pr-6 pl-12 text-base font-medium"
+          className="h-16 rounded-full border border-ink-300 bg-surface-200 pr-6 pl-12 text-base font-medium"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -1235,7 +1235,7 @@ function PasteStep({
         <button
           type="button"
           onClick={runGeminiOptIn}
-          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ink-500 underline-offset-4 hover:text-ink-700 hover:underline"
         >
           <Sparkles size={14} />
           Chercher pour moi (≈15 s)
@@ -1249,7 +1249,7 @@ function PasteStep({
         <button
           type="button"
           onClick={runGeminiOptInText}
-          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+          className="mx-auto inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-ink-500 underline-offset-4 hover:text-ink-700 hover:underline"
         >
           <Sparkles size={14} />
           Chercher pour moi (≈15 s)
@@ -1347,23 +1347,23 @@ function GeminiSearchProgress({
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="flex flex-col items-center gap-3 rounded-3xl border border-bordeaux-100 bg-bordeaux-50/40 px-6 py-8 text-center"
+      className="flex flex-col items-center gap-3 rounded-3xl border border-acid-100 bg-acid-50/40 px-6 py-8 text-center"
       role="status"
       aria-live="polite"
     >
-      <div className="grid size-12 place-items-center rounded-full bg-bordeaux-100 text-bordeaux-600">
+      <div className="grid size-12 place-items-center rounded-full bg-acid-100 text-acid-600">
         <Loader2 size={20} className="animate-spin" />
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-sm font-bold text-encre-700">{message}</p>
-        <p className="text-xs text-encre-500">
+        <p className="text-sm font-bold text-ink-700">{message}</p>
+        <p className="text-xs text-ink-500">
           Cette étape peut prendre une quinzaine de secondes.
         </p>
       </div>
       <button
         type="button"
         onClick={onCancel}
-        className="mt-1 text-xs font-semibold text-encre-500 underline-offset-4 hover:text-encre-700 hover:underline"
+        className="mt-1 text-xs font-semibold text-ink-500 underline-offset-4 hover:text-ink-700 hover:underline"
       >
         {cancelLabel}
       </button>
@@ -1410,27 +1410,27 @@ function ConfirmPasteStep({
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
       <div>
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-acid-600">
           Voilà ce qu&rsquo;on a trouvé
         </p>
-        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Ça colle&nbsp;?
         </h1>
-        <p className="mt-3 text-sm text-encre-400">Tape directement dans la carte pour corriger.</p>
+        <p className="mt-3 text-sm text-ink-400">Tape directement dans la carte pour corriger.</p>
       </div>
 
       {parserHint && (
-        <div className="flex flex-col gap-1 rounded-2xl border border-bordeaux-100 bg-bordeaux-50/60 px-4 py-3">
-          <p className="text-xs font-bold text-encre-700">
+        <div className="flex flex-col gap-1 rounded-2xl border border-acid-100 bg-acid-50/60 px-4 py-3">
+          <p className="text-xs font-bold text-ink-700">
             {parserHint.kind === "waf"
               ? `${parserHint.siteName} bloque le scraping`
               : `${parserHint.siteName} ne partage pas ses infos`}
           </p>
-          <p className="text-xs text-encre-500">{parserHint.suggestion}</p>
+          <p className="text-xs text-ink-500">{parserHint.suggestion}</p>
         </div>
       )}
 
-      <article className="overflow-hidden rounded-3xl border border-encre-300 bg-ivoire-200 shadow-[var(--shadow-md)]">
+      <article className="overflow-hidden rounded-3xl border border-ink-300 bg-surface-200 shadow-[var(--shadow-md)]">
         {draft.heroImageUrl && !imageFailed && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -1440,7 +1440,7 @@ function ConfirmPasteStep({
               setImageFailed(true);
               onImageBroken();
             }}
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
+            className="aspect-[16/10] w-full bg-surface-100 object-cover object-top"
           />
         )}
         {showPicker && (
@@ -1456,7 +1456,7 @@ function ConfirmPasteStep({
             value={draft.title}
             onChange={onTitleChange}
             placeholder="Titre à compléter"
-            className="text-2xl font-black leading-tight tracking-tight text-encre-700"
+            className="text-2xl font-black leading-tight tracking-tight text-ink-700"
             maxLength={200}
             as="textarea"
             rows={2}
@@ -1465,7 +1465,7 @@ function ConfirmPasteStep({
             value={draft.venue}
             onChange={onVenueChange}
             placeholder="Ajouter un lieu (facultatif)"
-            className="text-base text-encre-500"
+            className="text-base text-ink-500"
             maxLength={200}
           />
         </div>
@@ -1512,7 +1512,7 @@ function InlineEditable({
   rows?: number;
 }) {
   const shared =
-    "w-full resize-none bg-transparent outline-none transition-colors placeholder:text-encre-400 focus:ring-0";
+    "w-full resize-none bg-transparent outline-none transition-colors placeholder:text-ink-400 focus:ring-0";
   if (as === "textarea") {
     return (
       <textarea
@@ -1549,7 +1549,7 @@ function TitleStep({
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
       <div>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Comment ça s&rsquo;appelle ?
         </h1>
       </div>
@@ -1560,7 +1560,7 @@ function TitleStep({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Macbeth à la Comédie-Française"
         maxLength={200}
-        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-lg font-medium"
+        className="h-16 rounded-2xl border border-ink-300 bg-surface-200 text-lg font-medium"
         onKeyDown={(e) => {
           if (e.key === "Enter" && value.trim()) {
             onNext();
@@ -1680,12 +1680,12 @@ function WhenStep({
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
       <div className="flex flex-col items-start">
-        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
+        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-acid-600">
           <Calendar size={12} />
           Quand
         </p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           C&rsquo;est quand ?
         </h1>
       </div>
@@ -1697,10 +1697,10 @@ function WhenStep({
             return (
               <li
                 key={s.id}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-encre-300 bg-ivoire-200 p-3"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-ink-300 bg-surface-200 p-3"
               >
-                <div className="flex items-center gap-2 text-sm font-semibold text-encre-700">
-                  <CalendarDays size={14} className="text-bordeaux-600" />
+                <div className="flex items-center gap-2 text-sm font-semibold text-ink-700">
+                  <CalendarDays size={14} className="text-acid-600" />
                   {new Intl.DateTimeFormat("fr-FR", {
                     weekday: "long",
                     day: "numeric",
@@ -1716,7 +1716,7 @@ function WhenStep({
                   type="button"
                   onClick={() => removeSlot(s.id)}
                   aria-label="Retirer ce créneau"
-                  className="grid size-8 shrink-0 place-items-center rounded-full text-encre-400 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  className="grid size-8 shrink-0 place-items-center rounded-full text-ink-400 transition-colors hover:bg-destructive/10 hover:text-destructive"
                 >
                   <ArrowLeft size={14} strokeWidth={2.2} aria-hidden="true" className="rotate-45" />
                 </button>
@@ -1727,11 +1727,11 @@ function WhenStep({
       )}
 
       {pickerOpen && canAddMore && (
-        <div className="flex flex-col gap-3 rounded-3xl border border-bordeaux-300 bg-ivoire-200 p-4">
+        <div className="flex flex-col gap-3 rounded-3xl border border-acid-300 bg-surface-200 p-4">
           <SortieCalendar selected={pendingDate} onSelect={(d) => onPendingDateChange(d)} />
           {pendingDate && (
             <>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-encre-400">Heure</p>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-ink-400">Heure</p>
               <TimeDrum selected={pendingTime} onSelect={onPendingTimeChange} />
             </>
           )}
@@ -1760,7 +1760,7 @@ function WhenStep({
         <button
           type="button"
           onClick={commitPending}
-          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-encre-200 bg-transparent text-sm font-medium text-encre-400 transition-colors motion-safe:active:scale-[0.99] hover:border-bordeaux-300 hover:text-bordeaux-700"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 bg-transparent text-sm font-medium text-ink-400 transition-colors motion-safe:active:scale-[0.99] hover:border-acid-300 hover:text-acid-700"
         >
           + Proposer une autre date
         </button>
@@ -1771,14 +1771,14 @@ function WhenStep({
           type="button"
           variant="outline"
           onClick={() => setPickerOpen(true)}
-          className="h-12 w-full rounded-full border-2 border-dashed border-bordeaux-300 text-sm font-bold text-bordeaux-700"
+          className="h-12 w-full rounded-full border-2 border-dashed border-acid-300 text-sm font-bold text-acid-700"
         >
           + Proposer une autre date
         </Button>
       )}
 
       {!canAddMore && (
-        <p className="text-xs text-encre-400">
+        <p className="text-xs text-ink-400">
           Huit créneaux max — retires-en un pour en ajouter un autre.
         </p>
       )}
@@ -1858,17 +1858,17 @@ function DeadlineSection({
   );
 
   return (
-    <div className="rounded-2xl border border-encre-300 bg-ivoire-200 p-4">
+    <div className="rounded-2xl border border-ink-300 bg-surface-200 p-4">
       <div className="flex items-start gap-3">
-        <CalendarClock size={18} className="mt-0.5 shrink-0 text-bordeaux-600" />
+        <CalendarClock size={18} className="mt-0.5 shrink-0 text-acid-600" />
         <div className="flex-1">
-          <p className="text-xs font-black uppercase tracking-[0.12em] text-encre-400">
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-ink-400">
             Fermeture des réponses
           </p>
-          <p className="mt-0.5 text-sm font-semibold text-encre-700">
+          <p className="mt-0.5 text-sm font-semibold text-ink-700">
             {formatDeadline(effective)}
             {!isCustom && (
-              <span className="ml-1 text-xs font-medium text-encre-400">
+              <span className="ml-1 text-xs font-medium text-ink-400">
                 (auto, {describeOffset(autoOffsetMs)})
               </span>
             )}
@@ -1877,7 +1877,7 @@ function DeadlineSection({
         <button
           type="button"
           onClick={() => setEditOpen((v) => !v)}
-          className="inline-flex items-center gap-1 text-xs font-bold text-bordeaux-700 underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-bold text-acid-700 underline-offset-4 hover:underline"
         >
           <Pencil size={12} />
           {editOpen ? "Fermer" : "Changer"}
@@ -1892,8 +1892,8 @@ function DeadlineSection({
             aria-pressed={!isCustom}
             className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
               !isCustom
-                ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
+                ? "border-acid-600 bg-acid-600 text-surface-50"
+                : "border-ink-300 bg-surface-200 text-ink-700 motion-safe:active:scale-95"
             }`}
           >
             Auto
@@ -1916,8 +1916,8 @@ function DeadlineSection({
                 aria-pressed={active}
                 className={`inline-flex h-9 items-center rounded-full border-2 px-3 text-xs font-bold transition-colors ${
                   active
-                    ? "border-bordeaux-600 bg-bordeaux-600 text-ivoire-50"
-                    : "border-encre-300 bg-ivoire-200 text-encre-700 motion-safe:active:scale-95"
+                    ? "border-acid-600 bg-acid-600 text-surface-50"
+                    : "border-ink-300 bg-surface-200 text-ink-700 motion-safe:active:scale-95"
                 }`}
               >
                 {p.label}
@@ -1928,13 +1928,13 @@ function DeadlineSection({
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-9 items-center gap-1 rounded-full border-2 border-dashed border-bordeaux-300 bg-transparent px-3 text-xs font-bold text-bordeaux-600 transition-colors motion-safe:active:scale-95 hover:border-bordeaux-600"
+                className="inline-flex h-9 items-center gap-1 rounded-full border-2 border-dashed border-acid-300 bg-transparent px-3 text-xs font-bold text-acid-600 transition-colors motion-safe:active:scale-95 hover:border-acid-600"
               >
                 <CalendarDays size={12} />
                 Date précise
               </button>
             </PopoverTrigger>
-            <PopoverContent align="start" className="theme-sortie w-[320px] bg-ivoire-50 p-4">
+            <PopoverContent align="start" className="theme-sortie w-[320px] bg-surface-50 p-4">
               <SortieCalendar
                 selected={deadline ?? null}
                 onSelect={(d) => {
@@ -1997,15 +1997,15 @@ function VenueStep({
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
       <div className="flex flex-col items-start">
-        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
+        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-acid-600">
           <MapPin size={12} />
           Le lieu
         </p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Où ça se passe ?
         </h1>
-        <p className="mt-3 text-base text-encre-500">Facultatif.</p>
+        <p className="mt-3 text-base text-ink-500">Facultatif.</p>
       </div>
 
       <Input
@@ -2014,7 +2014,7 @@ function VenueStep({
         onChange={(e) => onChange(e.target.value)}
         placeholder="Salle Richelieu · Paris 1er"
         maxLength={200}
-        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-lg font-medium"
+        className="h-16 rounded-2xl border border-ink-300 bg-surface-200 text-lg font-medium"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             onNext();
@@ -2036,7 +2036,7 @@ function VenueStep({
           <button
             type="button"
             onClick={onSkip}
-            className="self-center text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+            className="self-center text-sm text-ink-400 underline-offset-4 hover:text-acid-700 hover:underline"
           >
             Sauter cette étape →
           </button>
@@ -2066,9 +2066,9 @@ function NameStep({
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
       <div className="flex flex-col items-start">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">Toi</p>
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-acid-600">Toi</p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           On signe comment&nbsp;?
         </h1>
       </div>
@@ -2079,10 +2079,10 @@ function NameStep({
         onChange={(e) => onNameChange(e.target.value)}
         placeholder="Ton prénom"
         maxLength={100}
-        className="h-16 rounded-2xl border border-encre-300 bg-ivoire-200 text-center text-2xl font-black tracking-tight"
+        className="h-16 rounded-2xl border border-ink-300 bg-surface-200 text-center text-2xl font-black tracking-tight"
       />
 
-      <label className="flex items-start gap-3 rounded-xl border border-encre-300 bg-ivoire-200 p-4 text-sm text-encre-500">
+      <label className="flex items-start gap-3 rounded-xl border border-ink-300 bg-surface-200 p-4 text-sm text-ink-500">
         <input
           type="checkbox"
           checked={wantEmail}
@@ -2092,11 +2092,11 @@ function NameStep({
               onEmailChange("");
             }
           }}
-          className="mt-0.5 h-4 w-4 accent-bordeaux-600"
+          className="mt-0.5 h-4 w-4 accent-acid-600"
         />
         <span className="flex flex-col">
-          <span className="font-bold text-encre-700">Me prévenir par email</span>
-          <span className="text-xs text-encre-400">
+          <span className="font-bold text-ink-700">Me prévenir par email</span>
+          <span className="text-xs text-ink-400">
             Quand quelqu&rsquo;un répond. Sinon c&rsquo;est tout bon.
           </span>
         </span>
@@ -2108,7 +2108,7 @@ function NameStep({
             onChange={(e) => onEmailChange(e.target.value)}
             type="email"
             placeholder="ton@email.com"
-            className="h-14 rounded-xl border border-encre-300 bg-ivoire-200 text-base"
+            className="h-14 rounded-xl border border-ink-300 bg-surface-200 text-base"
           />
           {email.length > 0 && !isValidEmail(email) && (
             <p className="text-xs text-erreur-700">Email invalide.</p>
@@ -2163,17 +2163,17 @@ function CommitStep({
   return (
     <section className="flex min-h-full flex-col gap-6 px-6 py-10">
       <div>
-        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-bordeaux-600">
+        <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-acid-600">
           <PartyPopper size={12} />
           Prêt
         </p>
-        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-encre-700">
+        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           On est prêts. Tu confirmes&nbsp;?
         </h1>
       </div>
 
       <article
-        className="relative overflow-hidden rounded-3xl bg-ivoire-100 shadow-[var(--shadow-velvet)]"
+        className="relative overflow-hidden rounded-3xl bg-surface-100 shadow-[var(--shadow-velvet)]"
         style={{
           backgroundImage:
             "radial-gradient(circle at 20% 0%, rgba(199,255,60,0.18) 0%, transparent 45%), radial-gradient(circle at 90% 100%, rgba(255,61,129,0.18) 0%, transparent 45%)",
@@ -2184,19 +2184,19 @@ function CommitStep({
           <img
             src={draft.heroImageUrl}
             alt=""
-            className="aspect-[16/10] w-full bg-ivoire-100 object-cover object-top"
+            className="aspect-[16/10] w-full bg-surface-100 object-cover object-top"
           />
         )}
         <div className="relative p-6">
-          <div className="pointer-events-none absolute top-0 -left-3 h-6 w-6 rounded-full bg-ivoire-100" />
-          <div className="pointer-events-none absolute top-0 -right-3 h-6 w-6 rounded-full bg-ivoire-100" />
-          <h2 className="text-2xl font-black leading-tight tracking-tight text-encre-700">
+          <div className="pointer-events-none absolute top-0 -left-3 h-6 w-6 rounded-full bg-surface-100" />
+          <div className="pointer-events-none absolute top-0 -right-3 h-6 w-6 rounded-full bg-surface-100" />
+          <h2 className="text-2xl font-black leading-tight tracking-tight text-ink-700">
             {draft.title}
           </h2>
-          <p className="mt-3 text-sm font-semibold text-bordeaux-700">{dateText}</p>
-          {draft.venue && <p className="mt-1 text-sm text-encre-500">{draft.venue}</p>}
+          <p className="mt-3 text-sm font-semibold text-acid-700">{dateText}</p>
+          {draft.venue && <p className="mt-1 text-sm text-ink-500">{draft.venue}</p>}
           {!isLoggedIn && draft.creatorDisplayName && (
-            <p className="mt-4 text-xs font-black uppercase tracking-[0.12em] text-encre-400">
+            <p className="mt-4 text-xs font-black uppercase tracking-[0.12em] text-ink-400">
               Organisé par {draft.creatorDisplayName}
             </p>
           )}
@@ -2211,7 +2211,7 @@ function CommitStep({
 
       <div className="mt-auto">
         <SwipeToPublish onConfirm={onPublish} />
-        <p className="mt-3 text-center text-xs text-encre-400">
+        <p className="mt-3 text-center text-xs text-ink-400">
           Les réponses se ferment toutes seules avant la date.
         </p>
       </div>

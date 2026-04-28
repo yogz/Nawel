@@ -134,7 +134,7 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
   const genericImages = getGenericImagesForVibe(vibe);
 
   return (
-    <div className="flex flex-col border-b border-encre-200">
+    <div className="flex flex-col border-b border-ink-200">
       {/* Empty-state hero — préserve le rythme visuel de la carte (16:10
           comme la vraie image) pour que l'absence d'image n'écrase pas
           la composition. Le pattern radial discret évite l'effet "trou
@@ -142,18 +142,18 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
           l'image au-dessus (mode édit). */}
       {!hidePlaceholder && (
         <div
-          className="relative aspect-[16/10] w-full overflow-hidden bg-ivoire-100"
+          className="relative aspect-[16/10] w-full overflow-hidden bg-surface-100"
           style={{
             backgroundImage:
               "radial-gradient(circle at 30% 20%, rgba(143,82,69,0.08) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(199,255,60,0.10) 0%, transparent 50%)",
           }}
         >
           <div className="absolute inset-0 grid place-items-center">
-            <div className="flex flex-col items-center gap-2 text-encre-400">
-              <div className="grid size-14 place-items-center rounded-full bg-ivoire-200/80 ring-1 ring-encre-200">
+            <div className="flex flex-col items-center gap-2 text-ink-400">
+              <div className="grid size-14 place-items-center rounded-full bg-surface-200/80 ring-1 ring-ink-200">
                 <ImageIcon size={26} strokeWidth={1.6} />
               </div>
-              <p className="px-6 text-center text-xs font-medium text-encre-500">
+              <p className="px-6 text-center text-xs font-medium text-ink-500">
                 Pas d&rsquo;image — choisis-en une ou continue sans.
               </p>
             </div>
@@ -163,7 +163,7 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
 
       {/* Barre d'actions au pied du placeholder. 3 colonnes égales,
           touch targets ≥ 44px, label sur 2 lignes possible. */}
-      <div className="grid grid-cols-3 gap-2 bg-ivoire-50 p-3">
+      <div className="grid grid-cols-3 gap-2 bg-surface-50 p-3">
         <PickerButton
           icon={
             searchPending ? <Loader2 size={18} className="animate-spin" /> : <RefreshCw size={18} />
@@ -195,14 +195,14 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
       </div>
 
       {(searchError || (searchedAndEmpty && !searchError) || uploadState.message) && (
-        <div className="bg-ivoire-50 px-3 pb-2">
+        <div className="bg-surface-50 px-3 pb-2">
           {searchError && (
             <p className="text-xs text-destructive" role="alert">
               {searchError}
             </p>
           )}
           {searchedAndEmpty && !searchError && (
-            <p className="text-xs text-encre-500" role="status">
+            <p className="text-xs text-ink-500" role="status">
               Aucune autre image — essaie une image proposée ou importe la tienne.
             </p>
           )}
@@ -222,7 +222,7 @@ export function MissingImagePicker({ title, venue, vibe, onPick, hidePlaceholder
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="overflow-hidden bg-ivoire-50"
+            className="overflow-hidden bg-surface-50"
           >
             <div className="px-3 pb-3">
               <GenericImageGrid
@@ -275,17 +275,17 @@ function PickerButton({
       className={[
         "flex min-h-[60px] flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 text-center leading-tight transition-colors duration-300",
         active
-          ? "border-bordeaux-600 bg-bordeaux-50 text-bordeaux-700"
-          : "border-encre-200 bg-ivoire-100 text-encre-700 hover:border-bordeaux-300 hover:bg-bordeaux-50/60",
-        "disabled:opacity-50 disabled:hover:border-encre-200 disabled:hover:bg-ivoire-100",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bordeaux-300",
+          ? "border-acid-600 bg-acid-50 text-acid-700"
+          : "border-ink-200 bg-surface-100 text-ink-700 hover:border-acid-300 hover:bg-acid-50/60",
+        "disabled:opacity-50 disabled:hover:border-ink-200 disabled:hover:bg-surface-100",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-300",
       ].join(" ")}
     >
       <span aria-hidden="true" className="mb-0.5">
         {icon}
       </span>
       <span className="text-[12px] font-bold">{label}</span>
-      {sublabel && <span className="text-[10px] font-medium text-encre-400">{sublabel}</span>}
+      {sublabel && <span className="text-[10px] font-medium text-ink-400">{sublabel}</span>}
     </button>
   );
 }
@@ -300,16 +300,16 @@ function GenericImageGrid({
   onClose: () => void;
 }) {
   return (
-    <div className="mt-1 flex flex-col gap-2 rounded-xl border border-encre-200 bg-ivoire-50 p-3">
+    <div className="mt-1 flex flex-col gap-2 rounded-xl border border-ink-200 bg-surface-50 p-3">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-encre-500">
+        <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-500">
           Images proposées
         </p>
         <button
           type="button"
           onClick={onClose}
           aria-label="Fermer la sélection"
-          className="grid size-6 place-items-center rounded-full text-encre-400 hover:bg-ivoire-200 hover:text-encre-700 transition-colors duration-300"
+          className="grid size-6 place-items-center rounded-full text-ink-400 hover:bg-surface-200 hover:text-ink-700 transition-colors duration-300"
         >
           <X size={14} />
         </button>
@@ -320,7 +320,7 @@ function GenericImageGrid({
             key={img.url}
             type="button"
             onClick={() => onPick(img.url)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-encre-200 transition-shadow duration-300 hover:border-bordeaux-400 hover:shadow-[var(--shadow-sm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bordeaux-300"
+            className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-ink-200 transition-shadow duration-300 hover:border-acid-400 hover:shadow-[var(--shadow-sm)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-300"
             aria-label={`Choisir l'image — photo de ${img.credit}`}
           >
             <Image

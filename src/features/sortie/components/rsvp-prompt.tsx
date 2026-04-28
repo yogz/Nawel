@@ -120,7 +120,7 @@ export function RsvpPrompt({
             <button
               type="button"
               onClick={handleYesTap}
-              className="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-bordeaux-700 hover:underline"
+              className="inline-flex items-center gap-1 text-sm text-ink-400 underline-offset-4 hover:text-acid-700 hover:underline"
             >
               <Pencil size={12} />
               Changer mes infos
@@ -128,7 +128,7 @@ export function RsvpPrompt({
           )}
           <RemoveRsvpButton
             shortId={shortId}
-            triggerClassName="inline-flex items-center gap-1 text-sm text-encre-400 underline-offset-4 hover:text-destructive hover:underline"
+            triggerClassName="inline-flex items-center gap-1 text-sm text-ink-400 underline-offset-4 hover:text-destructive hover:underline"
             triggerLabel="Retirer ma réponse"
             iconSize={12}
           />
@@ -263,13 +263,13 @@ function PageResponseButton({
   // contrast). Inactive = ghost on the dark surface: subtle fill, full-
   // contrast text, visible border. Pure white was previously used for the
   // inactive state but it screamed "primary CTA" against the Acid Cabinet
-  // dark theme and the encre-100 border vanished against it, leaving the
+  // dark theme and the ink-100 border vanished against it, leaving the
   // light-gray label nearly unreadable.
   const palette = active
     ? tone === "yes"
-      ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-lg)]"
-      : "bg-encre-700 text-ivoire-50 shadow-[var(--shadow-lg)]"
-    : "border border-encre-300 bg-ivoire-200 text-encre-700 hover:border-encre-400 hover:bg-ivoire-300";
+      ? "bg-acid-600 text-surface-50 shadow-[var(--shadow-lg)]"
+      : "bg-ink-700 text-surface-50 shadow-[var(--shadow-lg)]"
+    : "border border-ink-300 bg-surface-200 text-ink-700 hover:border-ink-400 hover:bg-surface-300";
   return (
     <button
       type="button"

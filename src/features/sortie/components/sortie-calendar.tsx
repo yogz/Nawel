@@ -93,15 +93,15 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
           onClick={goPrev}
           disabled={!canGoPrev}
           aria-label="Mois précédent"
-          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors motion-safe:active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700 disabled:cursor-not-allowed disabled:opacity-30"
+          className="grid size-10 place-items-center rounded-full text-ink-500 transition-colors motion-safe:active:scale-95 hover:bg-acid-50 hover:text-acid-700 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <ChevronLeft size={20} />
         </button>
         <div className="text-center">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-bordeaux-600">
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-acid-600">
             {viewDate.getFullYear()}
           </p>
-          <h3 className="text-xl font-black leading-tight text-encre-700">
+          <h3 className="text-xl font-black leading-tight text-ink-700">
             {MONTH_LABELS[viewDate.getMonth()]}
           </h3>
         </div>
@@ -109,7 +109,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
           type="button"
           onClick={goNext}
           aria-label="Mois suivant"
-          className="grid size-10 place-items-center rounded-full text-encre-500 transition-colors motion-safe:active:scale-95 hover:bg-bordeaux-50 hover:text-bordeaux-700"
+          className="grid size-10 place-items-center rounded-full text-ink-500 transition-colors motion-safe:active:scale-95 hover:bg-acid-50 hover:text-acid-700"
         >
           <ChevronRight size={20} />
         </button>
@@ -117,7 +117,7 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
 
       {/* Weekday labels. Tracking bumped to match the year eyebrow above
           so both uppercase micro-labels share a rhythm. */}
-      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-[0.18em] text-encre-400">
+      <div className="grid grid-cols-7 text-center text-[11px] font-black uppercase tracking-[0.18em] text-ink-400">
         {WEEKDAY_LABELS.map((w, i) => (
           <span key={`${w}-${i}`}>{w}</span>
         ))}
@@ -171,21 +171,21 @@ export function SortieCalendar({ selected, onSelect, fromDate }: Props) {
               aria-current={isToday ? "date" : undefined}
               className={`relative flex aspect-square min-h-11 items-center justify-center rounded-xl text-base font-bold transition-colors ${
                 isSelected
-                  ? "bg-bordeaux-600 text-ivoire-50 shadow-[var(--shadow-sm)]"
+                  ? "bg-acid-600 text-surface-50 shadow-[var(--shadow-sm)]"
                   : isPast
-                    ? "cursor-not-allowed text-encre-300 opacity-60"
+                    ? "cursor-not-allowed text-ink-300 opacity-60"
                     : isOutside
-                      ? "cursor-not-allowed text-encre-200"
+                      ? "cursor-not-allowed text-ink-200"
                       : isToday
-                        ? "text-bordeaux-700 ring-2 ring-inset ring-or-400 hover:bg-bordeaux-50"
-                        : "text-encre-700 hover:bg-bordeaux-50 motion-safe:active:scale-95"
+                        ? "text-acid-700 ring-2 ring-inset ring-hot-400 hover:bg-acid-50"
+                        : "text-ink-700 hover:bg-acid-50 motion-safe:active:scale-95"
               }`}
             >
               {cell.date.getDate()}
               {isToday && !isSelected && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-or-500"
+                  className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-hot-500"
                 />
               )}
             </button>

@@ -194,7 +194,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       <nav className="mb-8 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           accueil
@@ -211,7 +211,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           {isSelf && (
             <Link
               href="/moi"
-              className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400 transition-colors hover:text-bordeaux-600"
+              className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400 transition-colors hover:text-acid-600"
             >
               modifier ↗
             </Link>
@@ -228,15 +228,15 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         <div className={`flex items-center ${showRsvp ? "gap-4" : "gap-5"}`}>
           <UserAvatar name={row.name} image={row.image} size={showRsvp ? 56 : 88} />
           <div className="flex-1">
-            <p className="mb-2 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+            <p className="mb-2 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
               <span
                 aria-hidden
-                className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+                className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
               />
               @{row.username}
             </p>
             <h1
-              className={`leading-[0.95] font-black tracking-[-0.04em] text-encre-700 ${
+              className={`leading-[0.95] font-black tracking-[-0.04em] text-ink-700 ${
                 showRsvp ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"
               }`}
               style={{ textWrap: "balance" }}
@@ -246,32 +246,32 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           </div>
         </div>
         {row.bio && !showRsvp && (
-          <p className="mt-5 max-w-md text-[15px] leading-[1.5] text-encre-500">{row.bio}</p>
+          <p className="mt-5 max-w-md text-[15px] leading-[1.5] text-ink-500">{row.bio}</p>
         )}
       </header>
 
       {upcoming.length === 0 && past.length === 0 && (
-        <div className="rounded-2xl border border-ivoire-400 bg-ivoire-100 p-5">
+        <div className="rounded-2xl border border-surface-400 bg-surface-100 p-5">
           {isSelf ? (
             <>
-              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
                 ─ idle. fais le 1er pas ─
               </p>
               <p
-                className="mb-3 text-[20px] leading-[1.05] font-black tracking-[-0.025em] text-encre-700"
+                className="mb-3 text-[20px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
                 style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
               >
                 Rien à montrer pour l&rsquo;instant.
               </p>
               <Link
                 href="/nouvelle"
-                className="inline-flex items-center font-mono text-[11px] uppercase tracking-[0.22em] text-bordeaux-600 underline-offset-4 hover:underline"
+                className="inline-flex items-center font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
               >
                 lancer ma 1ʳᵉ sortie →
               </Link>
             </>
           ) : (
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
               ↳ aucune sortie publique pour l&rsquo;instant
             </p>
           )}
@@ -325,7 +325,7 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         ─ passées ─
       </p>
       <ul className="flex flex-col gap-4">
@@ -344,8 +344,8 @@ function PastSection({
       </ul>
 
       {hidden.length > 0 && (
-        <details className="group mt-4 border-t border-ivoire-400 pt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:text-bordeaux-600">
+        <details className="group mt-4 border-t border-surface-400 pt-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:text-acid-600">
             <span>+ voir les {String(hidden.length).padStart(2, "0")} autres</span>
             <ChevronRight
               size={14}
@@ -408,7 +408,7 @@ function OutingSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-or-500">
+      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         ─ {title.toLowerCase()} ─
       </p>
       <ul className="flex flex-col gap-4">

@@ -24,8 +24,8 @@ export function LoginLink({ className, label = "Se connecter", variant = "inline
 
   const base =
     variant === "primary"
-      ? "inline-flex h-11 items-center rounded-md bg-bordeaux-600 px-6 text-sm font-medium text-ivoire-100 transition-colors hover:bg-bordeaux-700"
-      : "text-sm text-encre-400 underline-offset-4 transition-colors hover:text-bordeaux-700 hover:underline";
+      ? "inline-flex h-11 items-center rounded-md bg-acid-600 px-6 text-sm font-medium text-surface-100 transition-colors hover:bg-acid-700"
+      : "text-sm text-ink-400 underline-offset-4 transition-colors hover:text-acid-700 hover:underline";
 
   return (
     <a href="/login" onClick={handleClick} className={`${base} ${className ?? ""}`}>

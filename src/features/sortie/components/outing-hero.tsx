@@ -24,7 +24,7 @@ type Props = {
  * déborder du scrim, peu importe le format de la photo source.
  *
  * Quand l'image est paysage courte et ne remplit pas le header, le
- * background `bg-ivoire-50` (noir du theme dark) prend le relais ;
+ * background `bg-surface-50` (noir du theme dark) prend le relais ;
  * le scrim continue son dégradé sans rupture visible.
  */
 export function OutingHero({
@@ -36,7 +36,7 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   return (
-    <header className="relative -mx-6 mb-6 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-ivoire-50">
+    <header className="relative -mx-6 mb-6 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-surface-50">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelister chaque domaine pour
         // next/image serait une charge de maintenance ; ces images
@@ -69,17 +69,17 @@ export function OutingHero({
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
         {startsAt && (
-          <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             <span
               aria-hidden
-              className="h-1.5 w-1.5 rounded-full bg-bordeaux-600 shadow-[0_0_12px_var(--sortie-acid)]"
+              className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
             />
             {formatOutingDate(startsAt).toUpperCase()}
           </p>
         )}
 
         <h1
-          className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-encre-700 sm:text-6xl"
+          className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
           style={{ textWrap: "balance" }}
         >
           {/* Plus de text-shadow : le scrim 95% en pied garantit déjà
@@ -89,7 +89,7 @@ export function OutingHero({
         </h1>
 
         {location && (
-          <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.18em] text-encre-600">
+          <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-600">
             ◉ {formatVenue(location)}
           </p>
         )}
@@ -101,7 +101,7 @@ export function OutingHero({
                 href={ticketUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-medium text-bordeaux-600 underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-1 font-medium text-acid-600 underline-offset-4 hover:underline"
               >
                 Prendre mes places
                 <ArrowUpRight size={14} strokeWidth={2.4} />
@@ -115,7 +115,7 @@ export function OutingHero({
                 // l'agenda" peu importe ; le filename rend le
                 // fallback download lisible côté desktop.
                 download={`sortie-${canonicalPath}.ics`}
-                className="inline-flex items-center gap-1 text-encre-600 underline-offset-4 hover:text-bordeaux-600 hover:underline"
+                className="inline-flex items-center gap-1 text-ink-600 underline-offset-4 hover:text-acid-600 hover:underline"
               >
                 <CalendarPlus size={14} strokeWidth={2.2} />
                 Ajouter à mon agenda

@@ -38,7 +38,7 @@ export default async function SortieLoginPage({ searchParams }: Props) {
       <nav className="mb-12">
         <Link
           href="/"
-          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400 transition-colors hover:bg-ivoire-100 hover:text-bordeaux-600"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
           accueil
@@ -67,10 +67,10 @@ export default async function SortieLoginPage({ searchParams }: Props) {
 function AuthFormSkeleton() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="h-3 w-24 animate-pulse rounded-full bg-ivoire-200" />
-      <div className="h-12 w-48 animate-pulse rounded-full bg-ivoire-200" />
-      <div className="h-12 w-full animate-pulse rounded-xl bg-ivoire-100" />
-      <div className="h-12 w-full animate-pulse rounded-full bg-ivoire-200" />
+      <div className="h-3 w-24 animate-pulse rounded-full bg-surface-200" />
+      <div className="h-12 w-48 animate-pulse rounded-full bg-surface-200" />
+      <div className="h-12 w-full animate-pulse rounded-xl bg-surface-100" />
+      <div className="h-12 w-full animate-pulse rounded-full bg-surface-200" />
     </div>
   );
 }

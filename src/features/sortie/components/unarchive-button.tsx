@@ -33,7 +33,7 @@ export function UnarchiveButton({ shortId }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-bordeaux-700 underline-offset-4 hover:underline disabled:opacity-50"
+        className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-acid-700 underline-offset-4 hover:underline disabled:opacity-50"
       >
         <Undo2 size={12} strokeWidth={2.2} />
         {pending ? "…" : "Restaurer"}

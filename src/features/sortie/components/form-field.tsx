@@ -29,9 +29,9 @@ export function FormField({
   const describedBy = helper || error ? `${name}-help` : undefined;
   return (
     <div className="flex flex-col gap-1.5">
-      <Label htmlFor={name} className="text-[13px] font-medium text-encre-500">
+      <Label htmlFor={name} className="text-[13px] font-medium text-ink-500">
         {label}
-        {!required && <span className="ml-1 text-encre-300">(facultatif)</span>}
+        {!required && <span className="ml-1 text-ink-300">(facultatif)</span>}
       </Label>
       <Input
         id={name}
@@ -46,7 +46,7 @@ export function FormField({
       {(helper || error) && (
         <p
           id={describedBy}
-          className={error ? "text-xs text-erreur-700" : "text-xs text-encre-400"}
+          className={error ? "text-xs text-erreur-700" : "text-xs text-ink-400"}
         >
           {error ?? helper}
         </p>

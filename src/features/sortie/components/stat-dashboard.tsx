@@ -112,12 +112,12 @@ function failureKindLabel(kind: string | null): string {
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">{label}</p>
-      <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-encre-700">
+    <div className="flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4">
+      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">{label}</p>
+      <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">
         {value}
       </p>
-      {sub && <p className="font-mono text-[11px] tracking-[0.04em] text-encre-500">{sub}</p>}
+      {sub && <p className="font-mono text-[11px] tracking-[0.04em] text-ink-500">{sub}</p>}
     </div>
   );
 }
@@ -144,10 +144,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 0 : sorties créées (vue produit) === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ création sorties ─
           </p>
-          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Sorties créées (7 derniers jours)
           </h2>
         </header>
@@ -157,8 +157,8 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
             value={totalCreated7d.toLocaleString("fr-FR")}
             sub={`${totalActive7d.toLocaleString("fr-FR")} actives`}
           />
-          <div className="col-span-2 flex flex-col gap-1 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4 sm:col-span-3">
-            <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+          <div className="col-span-2 flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4 sm:col-span-3">
+            <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
               Par jour
             </p>
             <div className="mt-1 flex h-24 items-end gap-2">
@@ -168,10 +168,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                 const cancelledRatio = d.totalCount > 0 ? cancelled / d.totalCount : 0;
                 return (
                   <div key={d.day} className="flex flex-1 flex-col items-center gap-1">
-                    <div className="relative flex h-full w-full items-end overflow-hidden rounded-md bg-ivoire-200">
+                    <div className="relative flex h-full w-full items-end overflow-hidden rounded-md bg-surface-200">
                       {d.totalCount > 0 && (
                         <div
-                          className="w-full bg-bordeaux-600"
+                          className="w-full bg-acid-600"
                           style={{ height: `${Math.max(8, height)}%` }}
                           aria-label={`${d.totalCount} sortie${d.totalCount > 1 ? "s" : ""}`}
                         >
@@ -185,10 +185,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                         </div>
                       )}
                     </div>
-                    <span className="font-mono text-[10px] tabular-nums text-encre-500">
+                    <span className="font-mono text-[10px] tabular-nums text-ink-500">
                       {DAY_LABEL_FMT.format(new Date(`${d.day}T12:00:00`))}
                     </span>
-                    <span className="font-mono text-[11px] font-bold tabular-nums text-encre-700">
+                    <span className="font-mono text-[11px] font-bold tabular-nums text-ink-700">
                       {d.totalCount}
                     </span>
                   </div>
@@ -202,23 +202,23 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 0bis : funnel wizard via API Umami === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ funnel wizard (umami) ─
           </p>
-          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Conversion création — {wizardUmami.rangeDays} derniers jours
           </h2>
         </header>
         {!wizardUmami.configured ? (
-          <p className="rounded-xl border border-dashed border-ivoire-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+          <p className="rounded-xl border border-dashed border-surface-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
             UMAMI_API_KEY non configurée — ajoute la clé dans .env pour voir cette section.
           </p>
         ) : (
           <div className="flex flex-col gap-4">
             {/* Funnel : barres horizontales empilées avec count + % */}
             {wizardUmami.funnel ? (
-              <div className="flex flex-col gap-2 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4">
-                <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-encre-400">
+              <div className="flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
+                <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
                   Steps
                 </p>
                 <ul className="flex flex-col gap-1.5">
@@ -227,17 +227,17 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                     const label = STEP_SHORT_LABEL[step.event] ?? step.event;
                     return (
                       <li key={step.event} className="flex items-center gap-3">
-                        <span className="w-16 font-mono text-[11.5px] text-encre-500">{label}</span>
-                        <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-ivoire-200">
+                        <span className="w-16 font-mono text-[11.5px] text-ink-500">{label}</span>
+                        <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-surface-200">
                           <div
-                            className="h-full bg-bordeaux-600"
+                            className="h-full bg-acid-600"
                             style={{ width: `${Math.max(2, ratio * 100)}%` }}
                           />
                         </div>
-                        <span className="w-12 text-right font-mono text-[11.5px] tabular-nums font-bold text-encre-700">
+                        <span className="w-12 text-right font-mono text-[11.5px] tabular-nums font-bold text-ink-700">
                           {step.count.toLocaleString("fr-FR")}
                         </span>
-                        <span className="w-12 text-right font-mono text-[11px] tabular-nums text-encre-500">
+                        <span className="w-12 text-right font-mono text-[11px] tabular-nums text-ink-500">
                           {funnelTopCount > 0 ? `${Math.round(ratio * 100)}%` : "—"}
                         </span>
                       </li>
@@ -246,7 +246,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                 </ul>
               </div>
             ) : (
-              <p className="rounded-xl border border-dashed border-ivoire-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+              <p className="rounded-xl border border-dashed border-surface-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
                 Funnel indisponible (Umami down ou aucune donnée).
               </p>
             )}
@@ -301,10 +301,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 1 : KPIs scraper OG === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ scraper og ─
           </p>
-          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Parsing d&apos;URL de billetterie
           </h2>
         </header>
@@ -335,15 +335,15 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 2 : services externes === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ services externes ─
           </p>
-          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Appels Gemini & Discovery API
           </h2>
         </header>
         {services.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-ivoire-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+          <p className="rounded-xl border border-dashed border-surface-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
             Aucun appel enregistré pour le moment.
           </p>
         ) : (
@@ -351,14 +351,14 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
             {services.map((g) => (
               <div
                 key={g.service}
-                className="flex flex-col gap-3 rounded-xl border border-ivoire-400 bg-ivoire-100 p-4"
+                className="flex flex-col gap-3 rounded-xl border border-surface-400 bg-surface-100 p-4"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-col gap-1">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-bordeaux-600">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-acid-600">
                       {g.service}
                     </p>
-                    <p className="text-[15px] text-encre-700">
+                    <p className="text-[15px] text-ink-700">
                       <span className="font-bold">{g.totalCalls.toLocaleString("fr-FR")}</span>{" "}
                       appels —{" "}
                       <span className="font-bold">{g.totalFound.toLocaleString("fr-FR")}</span>{" "}
@@ -369,24 +369,24 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                       erreurs
                     </p>
                   </div>
-                  <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-400 sm:text-right">
+                  <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400 sm:text-right">
                     dernier appel {formatRelative(g.lastCalledAt)}
                   </span>
                 </div>
                 {g.sources.length > 0 && (
-                  <ul className="flex flex-col gap-1 border-t border-ivoire-400/60 pt-2">
+                  <ul className="flex flex-col gap-1 border-t border-surface-400/60 pt-2">
                     {g.sources.map((s) => (
                       <li
                         key={s.source}
-                        className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-[11.5px] tabular-nums text-encre-700"
+                        className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 font-mono text-[11.5px] tabular-nums text-ink-700"
                       >
-                        <span className="text-encre-500">↳ {s.source}</span>
+                        <span className="text-ink-500">↳ {s.source}</span>
                         <span className="flex flex-wrap items-baseline gap-x-2">
                           <span>
                             <span className="font-bold">{s.callCount.toLocaleString("fr-FR")}</span>{" "}
                             appels
                           </span>
-                          <span className="text-encre-500">
+                          <span className="text-ink-500">
                             {pct(s.foundCount, s.callCount)} trouvés
                           </span>
                           {s.errorCount > 0 && (
@@ -394,7 +394,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                               {s.errorCount.toLocaleString("fr-FR")} err.
                             </span>
                           )}
-                          <span className="text-[10.5px] uppercase tracking-[0.18em] text-encre-400">
+                          <span className="text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
                             {formatRelative(s.lastCalledAt)}
                           </span>
                         </span>
@@ -411,24 +411,24 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 3 : tableau des hosts === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-bordeaux-600">
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ sites qui répondent ─
           </p>
-          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+          <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Détail par hostname
           </h2>
-          <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-encre-500">
+          <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-ink-500">
             Trié par volume, top {hosts.length}.
           </p>
         </header>
         {hosts.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-ivoire-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-encre-400">
+          <p className="rounded-xl border border-dashed border-surface-400 p-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
             Aucune requête de parsing enregistrée.
           </p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-ivoire-400">
+          <div className="overflow-x-auto rounded-xl border border-surface-400">
             <table className="w-full min-w-[640px] border-collapse text-left text-[14px]">
-              <thead className="bg-ivoire-100 font-mono text-[10.5px] uppercase tracking-[0.18em] text-encre-500">
+              <thead className="bg-surface-100 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500">
                 <tr>
                   <th className="px-3 py-2 font-medium">Host</th>
                   <th className="px-3 py-2 text-right font-medium">Req.</th>
@@ -441,9 +441,9 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                 {hosts.map((h) => {
                   const successRate = h.attempts > 0 ? h.successCount / h.attempts : 0;
                   return (
-                    <tr key={h.host} className="border-t border-ivoire-400/60">
-                      <td className="px-3 py-2 font-mono text-[12.5px] text-encre-700">{h.host}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums text-encre-700">
+                    <tr key={h.host} className="border-t border-surface-400/60">
+                      <td className="px-3 py-2 font-mono text-[12.5px] text-ink-700">{h.host}</td>
+                      <td className="px-3 py-2 text-right font-mono tabular-nums text-ink-700">
                         {h.attempts.toLocaleString("fr-FR")}
                       </td>
                       <td
@@ -451,10 +451,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                       >
                         {pct(h.successCount, h.attempts)}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums text-encre-500">
+                      <td className="px-3 py-2 text-right font-mono tabular-nums text-ink-500">
                         {pct(h.imageFoundCount, h.successCount)}
                       </td>
-                      <td className="px-3 py-2 font-mono text-[11.5px] text-encre-500">
+                      <td className="px-3 py-2 font-mono text-[11.5px] text-ink-500">
                         {h.lastFailureAt ? (
                           <span
                             title={`${h.lastFailurePath ?? ""} — ${DATE_FMT.format(h.lastFailureAt)}`}
@@ -482,10 +482,10 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
             <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-rose-700">
               ─ à fixer ─
             </p>
-            <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-encre-700">
+            <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
               Hosts à problèmes
             </h2>
-            <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-encre-500">
+            <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-ink-500">
               Au moins 5 requêtes et taux de succès &lt; 50 %.
             </p>
           </header>
@@ -495,7 +495,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                 key={h.host}
                 className="flex items-baseline justify-between gap-3 rounded-xl border border-rose-200 bg-rose-50/40 px-4 py-3"
               >
-                <span className="font-mono text-[12.5px] text-encre-700">{h.host}</span>
+                <span className="font-mono text-[12.5px] text-ink-700">{h.host}</span>
                 <span className="font-mono text-[11px] tabular-nums text-rose-700">
                   {pct(h.successCount, h.attempts)} sur {h.attempts.toLocaleString("fr-FR")} req.
                 </span>

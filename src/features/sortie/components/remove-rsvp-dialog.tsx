@@ -28,7 +28,7 @@ type Props = {
  */
 export function RemoveRsvpButton({
   shortId,
-  triggerClassName = "inline-flex items-center gap-1 text-xs text-encre-400 underline-offset-4 hover:text-destructive hover:underline",
+  triggerClassName = "inline-flex items-center gap-1 text-xs text-ink-400 underline-offset-4 hover:text-destructive hover:underline",
   triggerLabel = "Retirer",
   iconSize = 11,
 }: Props) {
@@ -85,15 +85,15 @@ export function RemoveRsvpButton({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-ivoire-100 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] ring-1 ring-encre-700/10"
+              className="fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-surface-100 p-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] ring-1 ring-ink-700/10"
             >
               <h3
                 id="remove-rsvp-title"
-                className="mb-2 font-serif text-lg leading-tight text-encre-700"
+                className="mb-2 font-serif text-lg leading-tight text-ink-700"
               >
                 Retirer ta réponse&nbsp;?
               </h3>
-              <p className="mb-6 text-sm text-encre-500">
+              <p className="mb-6 text-sm text-ink-500">
                 Ta réponse disparaîtra des compteurs. Tu pourras répondre à nouveau plus tard.
               </p>
               {error && (
@@ -106,7 +106,7 @@ export function RemoveRsvpButton({
                   type="button"
                   onClick={handleClose}
                   disabled={pending}
-                  className="inline-flex h-11 items-center justify-center rounded-md border border-encre-200 bg-ivoire-50 px-4 text-sm font-semibold text-encre-700 transition-colors hover:bg-ivoire-200 disabled:opacity-50"
+                  className="inline-flex h-11 items-center justify-center rounded-md border border-ink-200 bg-surface-50 px-4 text-sm font-semibold text-ink-700 transition-colors hover:bg-surface-200 disabled:opacity-50"
                 >
                   Retour
                 </button>

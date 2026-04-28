@@ -134,14 +134,14 @@ export function DateTimePicker({
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="group flex h-11 w-full items-center justify-between rounded-md border border-ivoire-400 bg-ivoire-50 px-3 text-left text-sm text-encre-700 transition-colors hover:border-or-500 focus-visible:border-or-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-or-500/30"
+            className="group flex h-11 w-full items-center justify-between rounded-md border border-surface-400 bg-surface-50 px-3 text-left text-sm text-ink-700 transition-colors hover:border-hot-500 focus-visible:border-hot-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500/30"
           >
-            <span className={value ? "" : "text-encre-300"}>{label}</span>
-            <CalendarIcon size={16} className="text-or-600" />
+            <span className={value ? "" : "text-ink-300"}>{label}</span>
+            <CalendarIcon size={16} className="text-hot-600" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="theme-sortie w-auto bg-ivoire-50 p-0">
-          <div className="flex flex-col divide-y divide-ivoire-400 md:flex-row md:divide-x md:divide-y-0">
+        <PopoverContent align="start" className="theme-sortie w-auto bg-surface-50 p-0">
+          <div className="flex flex-col divide-y divide-surface-400 md:flex-row md:divide-x md:divide-y-0">
             <Calendar
               mode="single"
               selected={value ?? undefined}
@@ -151,7 +151,7 @@ export function DateTimePicker({
               className="[--cell-size:2.25rem]"
             />
             <div className="flex flex-col gap-2 p-3">
-              <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-or-600">
+              <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
                 Heure
               </p>
               <div ref={timeListRef} className="h-[240px] w-[5.5rem] overflow-y-auto">
@@ -166,8 +166,8 @@ export function DateTimePicker({
                         onClick={() => handleTimePick(time)}
                         className={`rounded-md px-2 py-1.5 text-sm transition-colors ${
                           isSelected
-                            ? "bg-bordeaux-600 text-ivoire-100"
-                            : "text-encre-600 hover:bg-ivoire-200"
+                            ? "bg-acid-600 text-surface-100"
+                            : "text-ink-600 hover:bg-surface-200"
                         }`}
                       >
                         {time.replace(":", "h")}
