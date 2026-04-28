@@ -21,23 +21,31 @@ const DEFAULT_DURATION_MS = 3 * 60 * 60 * 1000; // 3h block
 // pas la zone (rare mais ça arrive) sachent quand passer en CET/CEST.
 // Source : standard tzdata, valable jusqu'en 2030 puis à régénérer
 // (ou faire pointer sur un service tzdata si on veut être strict).
-const PARIS_VTIMEZONE = `BEGIN:VTIMEZONE
-TZID:Europe/Paris
-BEGIN:STANDARD
-DTSTART:20251026T030000
-TZOFFSETFROM:+0200
-TZOFFSETTO:+0100
-TZNAME:CET
-RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
-END:STANDARD
-BEGIN:DAYLIGHT
-DTSTART:20260329T020000
-TZOFFSETFROM:+0100
-TZOFFSETTO:+0200
-TZNAME:CEST
-RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
-END:DAYLIGHT
-END:VTIMEZONE`;
+//
+// Stocké comme tableau de lignes (pas string multi-ligne) pour que
+// `foldLine` traite chaque ligne indépendamment. Sans ça, le bloc
+// entier était vu comme une seule ligne ~400 chars, replié à 73 par
+// foldLine, mélangeant CRLF de fold avec LF internes — résultat
+// invalide refusé par iCal/Calendar.app et tous les parsers stricts.
+const PARIS_VTIMEZONE_LINES = [
+  "BEGIN:VTIMEZONE",
+  "TZID:Europe/Paris",
+  "BEGIN:STANDARD",
+  "DTSTART:20251026T030000",
+  "TZOFFSETFROM:+0200",
+  "TZOFFSETTO:+0100",
+  "TZNAME:CET",
+  "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU",
+  "END:STANDARD",
+  "BEGIN:DAYLIGHT",
+  "DTSTART:20260329T020000",
+  "TZOFFSETFROM:+0100",
+  "TZOFFSETTO:+0200",
+  "TZNAME:CEST",
+  "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU",
+  "END:DAYLIGHT",
+  "END:VTIMEZONE",
+];
 
 export type FeedOuting = {
   shortId: string;
@@ -85,7 +93,7 @@ export function buildIcsFeed({
     "METHOD:PUBLISH",
     `X-WR-CALNAME:${escapeIcsText(calendarName)}`,
     "X-WR-TIMEZONE:Europe/Paris",
-    PARIS_VTIMEZONE,
+    ...PARIS_VTIMEZONE_LINES,
   ];
 
   for (const o of outings) {
