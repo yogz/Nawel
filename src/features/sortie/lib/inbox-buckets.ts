@@ -10,10 +10,19 @@
 //                  l'invité n'ait voté pour le slot gagnant.
 //                  cf. `pickTimeslotAction` qui laisse "interested" tel
 //                  quel pour les non-voteurs du créneau choisi.
+//                  Bascule en `declined` si l'action est devenue
+//                  impossible (deadline passée, statut hors "open" pour
+//                  RSVP — vote unconditionnellement bloqué deadline) :
+//                  un eyebrow "à toi de jouer" sur une card où l'invité
+//                  ne peut plus rien faire est un mensonge UX.
 //   2. going     — yes / handle_own
 //   3. waiting   — interested ET sondage non encore tranché
-//                  (`startsAt = null`)
-//   4. declined  — no
+//                  (`startsAt = null`). Reste valide même deadline
+//                  dépassée : c'est au créateur de pick.
+//   4. declined  — no, OU "raté la deadline" (cf. note bucket 1).
+//                  Sémantiquement large mais visuellement cohérent (les
+//                  deux sous-cas reçoivent le même traitement muet, et
+//                  l'invité n'a aucune action possible dans aucun cas).
 //
 // `startsAt` sert ici de proxy pour "chosen timeslot existe" :
 // `pickTimeslotAction` set `fixedDatetime + chosenTimeslotId` ensemble,
@@ -31,6 +40,11 @@ type Outingish = {
   startsAt: Date | null;
   deadlineAt: Date;
   mode: "fixed" | "vote";
+  // Statut DB. La valeur d'intérêt ici est "open" : tant que le
+  // créateur n'a pas avancé la sortie (vers `awaiting_purchase` etc.),
+  // les RSVP restent acceptés même après deadline (cf. rsvpAction). Pour
+  // le vote en revanche, la deadline est absolue.
+  status: string;
 };
 
 type MyRsvpish = {
@@ -56,7 +70,8 @@ export type ActionBucket<T extends Outingish> = {
  */
 export function bucketizeByAction<T extends Outingish>(
   outings: T[],
-  myRsvpByOuting: Map<string, MyRsvpish>
+  myRsvpByOuting: Map<string, MyRsvpish>,
+  now: Date = new Date()
 ): ActionBucket<T>[] {
   const aDecide: T[] = [];
   const going: T[] = [];
@@ -67,7 +82,13 @@ export function bucketizeByAction<T extends Outingish>(
     const my = myRsvpByOuting.get(o.id);
 
     if (!my) {
-      aDecide.push(o);
+      // Sans response, la sortie réclame une action ; mais si l'action
+      // n'est plus possible (deadline close), elle bascule en declined.
+      if (canTakeMissingResponseAction(o, now)) {
+        aDecide.push(o);
+      } else {
+        declined.push(o);
+      }
       continue;
     }
 
@@ -82,8 +103,13 @@ export function bucketizeByAction<T extends Outingish>(
       case "interested":
         // pickTimeslotAction n'a pas converti la response → l'invité n'a
         // pas voté pour le slot gagnant, doit re-RSVP explicitement.
+        // Si le RSVP n'est plus accepté, la sortie tombe en declined.
         if (o.startsAt !== null) {
-          aDecide.push(o);
+          if (canStillRsvp(o, now)) {
+            aDecide.push(o);
+          } else {
+            declined.push(o);
+          }
         } else {
           waiting.push(o);
         }
@@ -100,6 +126,25 @@ export function bucketizeByAction<T extends Outingish>(
     { key: "waiting", label: "en attente", outings: waiting },
     { key: "declined", label: "tu viens pas", outings: sortUpcomingByStartsAt(declined) },
   ];
+}
+
+/**
+ * Action attendue d'un invité sans participant row, selon la phase de
+ * la sortie :
+ *   - mode vote, sondage en cours (pas de chosen slot) → il faut voter,
+ *     bloqué inconditionnellement par la deadline (cf. castVoteAction)
+ *   - sinon (mode fixed, ou mode vote tranché) → il faut RSVP, bypass
+ *     possible si `status="open"` (cf. rsvpAction)
+ */
+function canTakeMissingResponseAction(o: Outingish, now: Date): boolean {
+  if (o.mode === "vote" && o.startsAt === null) {
+    return o.deadlineAt > now;
+  }
+  return canStillRsvp(o, now);
+}
+
+function canStillRsvp(o: Outingish, now: Date): boolean {
+  return o.deadlineAt > now || o.status === "open";
 }
 
 /**

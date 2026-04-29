@@ -7,6 +7,7 @@ type Outing = {
   startsAt: Date | null;
   deadlineAt: Date;
   mode: "fixed" | "vote";
+  status: string;
 };
 
 type Rsvp = { response: RsvpResponse | "interested" };
@@ -22,6 +23,7 @@ function outing(o: Partial<Outing> & { id: string }): Outing {
     startsAt: D_PLUS(7),
     deadlineAt: D_PLUS(2),
     mode: "fixed",
+    status: "open",
     ...o,
   };
 }
@@ -95,6 +97,81 @@ describe("bucketizeByAction", () => {
       "next",
       "undated",
     ]);
+  });
+
+  describe("deadline close → bascule vers declined", () => {
+    it("vote-mode sondage en cours, pas voté, deadline passée → declined", () => {
+      // Le visiteur ne peut plus voter (castVoteAction bloque sur
+      // deadline absolue), inutile de l'afficher en a-decide.
+      const o = outing({
+        id: "missed-vote",
+        mode: "vote",
+        startsAt: null,
+        deadlineAt: D_PLUS(-1),
+      });
+      const buckets = bucketizeByAction([o], new Map(), FROZEN_NOW);
+      expect(buckets.find((x) => x.key === "declined")?.outings).toEqual([o]);
+      expect(buckets.find((x) => x.key === "a-decide")?.outings).toEqual([]);
+    });
+
+    it("mode fixed, pas RSVP, deadline passée + status non open → declined", () => {
+      const o = outing({
+        id: "missed-rsvp",
+        mode: "fixed",
+        deadlineAt: D_PLUS(-1),
+        status: "awaiting_purchase",
+      });
+      const buckets = bucketizeByAction([o], new Map(), FROZEN_NOW);
+      expect(buckets.find((x) => x.key === "declined")?.outings).toEqual([o]);
+    });
+
+    it("mode fixed, pas RSVP, deadline passée + status='open' → reste a-decide", () => {
+      // Le créateur n'a pas avancé la sortie : RSVP toujours accepté
+      // (cf. rsvpAction `status !== "open"` bypass).
+      const o = outing({
+        id: "still-open",
+        mode: "fixed",
+        deadlineAt: D_PLUS(-1),
+        status: "open",
+      });
+      const buckets = bucketizeByAction([o], new Map(), FROZEN_NOW);
+      expect(buckets.find((x) => x.key === "a-decide")?.outings).toEqual([o]);
+    });
+
+    it("interested + chosen slot + deadline passée + status non open → declined", () => {
+      // Stuck-interested après pickTimeslotAction, mais re-RSVP bloqué.
+      const o = outing({
+        id: "stuck-closed",
+        mode: "vote",
+        startsAt: D_PLUS(10),
+        deadlineAt: D_PLUS(-1),
+        status: "purchased",
+      });
+      const buckets = bucketizeByAction(
+        [o],
+        new Map([["stuck-closed", rsvp("interested")]]),
+        FROZEN_NOW
+      );
+      expect(buckets.find((x) => x.key === "declined")?.outings).toEqual([o]);
+      expect(buckets.find((x) => x.key === "a-decide")?.outings).toEqual([]);
+    });
+
+    it("interested + sondage non tranché, deadline passée → reste waiting", () => {
+      // Le créateur peut encore picker même après deadline (pickTimeslotAction
+      // ne checke pas la deadline) ; l'invité a fait sa part, il attend.
+      const o = outing({
+        id: "voted-closed",
+        mode: "vote",
+        startsAt: null,
+        deadlineAt: D_PLUS(-1),
+      });
+      const buckets = bucketizeByAction(
+        [o],
+        new Map([["voted-closed", rsvp("interested")]]),
+        FROZEN_NOW
+      );
+      expect(buckets.find((x) => x.key === "waiting")?.outings).toEqual([o]);
+    });
   });
 
   it("précédence : 1 sortie 1 bucket, premier match gagne", () => {
