@@ -24,9 +24,13 @@ function resolveClient(): DbClient {
   if (!url) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
-  // Configuration optimisée pour serverless (Vercel)
+  // Configuration adaptée Vercel Fluid Compute : une instance Function
+  // est réutilisée entre invocations parallèles, donc max:1 sériel les
+  // queries d'une même instance — l'opposé de l'objectif Fluid. max:5
+  // permet d'exploiter la concurrence intra-instance sans saturer le
+  // pooler côté DB. idle_timeout:20s libère vite quand l'instance dort.
   const client = postgres(url, {
-    max: 1,
+    max: 5,
     idle_timeout: 20,
     max_lifetime: 60 * 30,
   });

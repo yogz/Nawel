@@ -5,6 +5,10 @@ import { user } from "@drizzle/schema";
 import { feedOutingsForUser } from "@/features/sortie/queries/outing-queries";
 import { buildIcsFeed } from "@/features/sortie/lib/build-ics-feed";
 
+// Runtime explicite : Edge déprécié sur Vercel + on utilise pg via
+// Drizzle (pas compatible Edge). Cohérent avec api/sortie/**.
+export const runtime = "nodejs";
+
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
 /**

@@ -5,6 +5,10 @@ import { magicLinks, outings } from "@drizzle/sortie-schema";
 import { ensureParticipantTokenHash, hashToken } from "@/features/sortie/lib/cookie-token";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 
+// Runtime explicite : Edge déprécié sur Vercel + on utilise pg via
+// Drizzle (pas compatible Edge). Cohérent avec api/sortie/**.
+export const runtime = "nodejs";
+
 const SORTIE_BASE = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
 
 export async function GET(request: NextRequest) {
