@@ -429,23 +429,15 @@ function InboxSection({
   const buckets = bucketizeByAction(outings, myRsvpByOuting);
 
   if (outings.length < INBOX_GROUPING_MIN_OUTINGS) {
-    const flat = flattenInboxByPriority(buckets);
     return (
       <section className="mb-10">
-        <ul className="flex flex-col gap-4">
-          {flat.map((o) => (
-            <li key={o.id}>
-              <OutingProfileCard
-                outing={o}
-                showRsvp
-                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-                loggedInName={loggedInName}
-                outingBaseUrl={PUBLIC_BASE}
-                isPast={false}
-              />
-            </li>
-          ))}
-        </ul>
+        <RsvpCardList
+          outings={flattenInboxByPriority(buckets)}
+          myRsvpByOuting={myRsvpByOuting}
+          loggedInName={loggedInName}
+          showRsvp
+          isPast={false}
+        />
       </section>
     );
   }
@@ -475,10 +467,9 @@ function InboxBucketSection({
   myRsvpByOuting: Map<string, ParticipantRow>;
   loggedInName: string | null;
 }) {
-  // "Tu viens pas" déjà décliné = info passée, pas une sortie active. On
-  // baisse l'opacité du header + des cards pour que l'œil passe sans
-  // s'arrêter, sans pour autant cacher l'info (rétractation possible
-  // d'un tap, signal social préservé).
+  // "Tu viens pas" déjà décliné = info passée. Opacité baissée pour
+  // que l'œil passe sans s'arrêter, sans cacher (rétractation + signal
+  // social préservés).
   const muted = bucket.key === "declined";
   return (
     <section className={muted ? "opacity-60" : undefined}>
@@ -486,21 +477,45 @@ function InboxBucketSection({
         <span>─ {bucket.label} ─</span>
         <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
       </p>
-      <ul className="flex flex-col gap-4">
-        {bucket.outings.map((o) => (
-          <li key={o.id}>
-            <OutingProfileCard
-              outing={o}
-              showRsvp
-              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-              loggedInName={loggedInName}
-              outingBaseUrl={PUBLIC_BASE}
-              isPast={false}
-            />
-          </li>
-        ))}
-      </ul>
+      <RsvpCardList
+        outings={bucket.outings}
+        myRsvpByOuting={myRsvpByOuting}
+        loggedInName={loggedInName}
+        showRsvp
+        isPast={false}
+      />
     </section>
+  );
+}
+
+function RsvpCardList({
+  outings,
+  myRsvpByOuting,
+  loggedInName,
+  showRsvp,
+  isPast,
+}: {
+  outings: OutingRow[];
+  myRsvpByOuting: Map<string, ParticipantRow>;
+  loggedInName: string | null;
+  showRsvp: boolean;
+  isPast: boolean;
+}) {
+  return (
+    <ul className="flex flex-col gap-4">
+      {outings.map((o) => (
+        <li key={o.id}>
+          <OutingProfileCard
+            outing={o}
+            showRsvp={showRsvp}
+            myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+            loggedInName={loggedInName}
+            outingBaseUrl={PUBLIC_BASE}
+            isPast={isPast}
+          />
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -549,20 +564,13 @@ function OutingSection({
       <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         ─ {title.toLowerCase()} ─
       </p>
-      <ul className="flex flex-col gap-4">
-        {outings.map((o) => (
-          <li key={o.id}>
-            <OutingProfileCard
-              outing={o}
-              showRsvp={showRsvp}
-              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-              loggedInName={loggedInName}
-              outingBaseUrl={PUBLIC_BASE}
-              isPast={isPast}
-            />
-          </li>
-        ))}
-      </ul>
+      <RsvpCardList
+        outings={outings}
+        myRsvpByOuting={myRsvpByOuting}
+        loggedInName={loggedInName}
+        showRsvp={showRsvp}
+        isPast={isPast}
+      />
     </section>
   );
 }
