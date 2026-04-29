@@ -5,13 +5,13 @@
  *
  *   - `closed`   : deadline passée → message gris non-urgent
  *   - `urgent`   : < 24 h → "Plus que 18h" en rouge hot, attire l'œil
- *   - `soon`     : 1–7 jours → "J-3" en or, signal de proximité
- *   - `neutral`  : ≥ 7 jours → "Réponds avant le 30 avril" en gris
+ *   - `soon`     : 1–3 jours → "J-3 pour répondre" en rose, signal d'urgence
+ *   - `neutral`  : ≥ 4 jours → "J-5 pour répondre" / "Réponds avant le X" en gris
  *
  * Toutes les sorties affichent une chip — uniforme pour le scan.
- * On ne pousse l'urgence visuelle qu'à partir de J-1 / 24h pour ne
- * pas crier au feu en permanence (un compteur "Plus que 5 jours" en
- * rouge banalise la couleur quand vraiment 18h restent).
+ * On ne pousse le rose qu'à partir de J-3 pour ne pas crier au feu en
+ * permanence : un "J-5" / "J-12" en rose banalisait la couleur dans un
+ * produit "entre potes" et sonnait anxiogène hors contexte d'urgence.
  */
 
 export type DeadlineTone = "neutral" | "soon" | "urgent" | "closed";
@@ -56,11 +56,19 @@ export function formatDeadlineCountdown(
   }
 
   if (deltaMs < SEVEN_DAYS_MS) {
-    // 1–7 jours : "J-4 pour répondre" — le J-N seul était ambigu
+    // 1–7 jours : "J-N pour répondre" — le J-N seul était ambigu
     // (référence à la sortie ou à la deadline RSVP ?), le suffixe
     // précise. Reste compact pour la chip mono uppercase.
+    //
+    // Tone : rose réservé à J-3 max (signal d'urgence vraie). J-4 à
+    // J-7 reste informatif mais en gris neutre — sinon la couleur
+    // urgence est banalisée et sonne anxiogène pour un produit "entre
+    // potes" où la deadline n'est pas critique sept jours en avance.
     const daysLeft = Math.ceil(deltaMs / ONE_DAY_MS);
-    return { label: `J-${daysLeft} pour répondre`, tone: "soon" };
+    return {
+      label: `J-${daysLeft} pour répondre`,
+      tone: daysLeft <= 3 ? "soon" : "neutral",
+    };
   }
 
   // ≥ 7 jours : on revient à l'absolu, parce que "Plus que 12 jours"

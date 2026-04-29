@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
@@ -192,16 +192,28 @@ export function InlineRsvpSection({
 
   const hasResponded = currentResponse !== null;
 
+  // Eyebrow toujours présent : stabilise la hauteur des cards en liste
+  // (sans slot fixe, idle vs répondu sautent verticalement et cassent
+  // le scan checklist). Wording :
+  //  - idle    → "↓ Ton tour"   (impératif court, dirige l'œil sur les pills)
+  //  - yes     → "✓ Tu viens"   (état confirmé, voix "l'app me parle")
+  //  - no      → "✓ Tu passes"  (réutilise verbatim le toast undo, lève la
+  //                              dissonance "✓ + négation" de l'ancien
+  //                              "Tu ne viens pas")
+  const eyebrowLabel = !hasResponded ? "↓ Ton tour" : isYes ? "✓ Tu viens" : "✓ Tu passes";
+
   return (
     <div className="flex flex-col gap-2">
-      {hasResponded && (
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-          {isYes ? "✓ Tu viens" : "✓ Tu ne viens pas"}
-        </p>
-      )}
+      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+        {eyebrowLabel}
+      </p>
       <div className="grid grid-cols-[3fr_2fr] gap-2">
         <SegmentedButton
-          icon={<Check size={14} strokeWidth={2.6} />}
+          // Icône uniquement quand selected : elle porte le signal
+          // "réponse enregistrée". En non-sélectionné, l'absence d'icône
+          // évite le bruit (le X sur "Je passe" idle tirait l'œil vers
+          // le refus par défaut, anti-pattern).
+          icon={isYes ? <Check size={14} strokeWidth={2.6} /> : null}
           label="Je viens"
           selected={isYes}
           tone="yes"
@@ -209,11 +221,8 @@ export function InlineRsvpSection({
           onClick={handleYesTap}
         />
         <SegmentedButton
-          // Swap X→Check quand sélectionné : le fill "Je passe" est
-          // gris-sur-gris à côté du voisin acid, l'icône porte le
-          // signal "réponse enregistrée".
-          icon={isNo ? <Check size={14} strokeWidth={2.6} /> : <X size={14} strokeWidth={2.6} />}
-          label="Je passe"
+          icon={isNo ? <Check size={14} strokeWidth={2.6} /> : null}
+          label="Je viens pas"
           selected={isNo}
           tone="no"
           disabled={pending}
@@ -247,15 +256,16 @@ function SegmentedButton({
   disabled: boolean;
   onClick: () => void;
 }) {
-  // "no" filled = ink-700 inversé (PAS hot pink, réservé aux signaux
-  // positifs countdown/best). Inversion ink donne un vrai contraste
-  // avec le voisin "Je viens" non-sélectionné (sinon les deux gris se
-  // confondent en lecture rapide). Unselected "no" = ink-400 au lieu
-  // d'ink-700 pour tirer l'œil vers l'affirmatif quand rien n'est répondu.
+  // "no" filled = ink-500 (gris-clair #AEAEB2), PAS ink-700 (#F5F2EB
+  // presque-blanc qui criait autant que l'acid-600 en luminance — la
+  // card "no" pesait plus que la card "yes", anti-pattern). PAS hot
+  // pink non plus (réservé aux signaux positifs countdown/best). Le
+  // gris graphite garde un contraste net contre le voisin idle
+  // (bg-surface-100 #161616) sans concurrencer l'acid en saillance.
   const cls = selected
     ? tone === "yes"
-      ? "bg-acid-600 text-surface-50 hover:bg-acid-700 border-acid-600"
-      : "bg-ink-700 text-surface-50 hover:bg-ink-600 border-ink-700"
+      ? "bg-acid-600 text-ink-50 hover:bg-acid-700 border-acid-600"
+      : "bg-ink-500 text-ink-50 hover:bg-ink-400 border-ink-500"
     : tone === "yes"
       ? "bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200 border-ink-200"
       : "bg-surface-100 text-ink-400 hover:border-ink-300 hover:bg-surface-200 border-ink-200";
@@ -266,9 +276,9 @@ function SegmentedButton({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
-      className={`flex h-11 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
+      className={`flex h-11 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
     >
-      <span className={selected ? "text-surface-50" : ""}>{icon}</span>
+      {icon && <span className={selected ? "text-ink-50" : ""}>{icon}</span>}
       <span>{label}</span>
     </button>
   );
