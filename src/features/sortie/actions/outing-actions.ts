@@ -23,6 +23,8 @@ import {
 } from "@/features/sortie/lib/event-image-upload";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
+import { isOutingOwner } from "@/features/sortie/lib/owner";
 import {
   archiveOutingSchema,
   cancelOutingSchema,
@@ -44,14 +46,12 @@ async function getSessionUser() {
   return session?.user ?? null;
 }
 
-function formDataToObject(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
-  for (const [key, value] of formData.entries()) {
-    obj[key] = typeof value === "string" ? value : "";
-  }
-  // Checkbox inputs post "on" or are absent — treat presence as true.
-  if (formData.has("showOnProfile")) {
-    obj.showOnProfile = true;
+// HTML checkbox inputs sont absents (false) ou postent "on" (true). On
+// transforme en boolean après le helper plat pour que Zod parse `true`
+// plutôt qu'une string ambiguë.
+function withCheckbox(obj: Record<string, unknown>, formData: FormData, key: string) {
+  if (formData.has(key)) {
+    obj[key] = true;
   }
   return obj;
 }
@@ -60,7 +60,9 @@ export async function createOutingAction(
   _prev: FormActionState,
   formData: FormData
 ): Promise<FormActionState> {
-  const parsed = createOutingSchema.safeParse(formDataToObject(formData));
+  const parsed = createOutingSchema.safeParse(
+    withCheckbox(formDataToObject(formData), formData, "showOnProfile")
+  );
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
@@ -192,7 +194,9 @@ export async function updateOutingAction(
   _prev: FormActionState,
   formData: FormData
 ): Promise<FormActionState> {
-  const parsed = updateOutingSchema.safeParse(formDataToObject(formData));
+  const parsed = updateOutingSchema.safeParse(
+    withCheckbox(formDataToObject(formData), formData, "showOnProfile")
+  );
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
@@ -213,9 +217,7 @@ export async function updateOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour modifier cette sortie." };
   }
@@ -334,9 +336,7 @@ export async function cancelOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour annuler cette sortie." };
   }
@@ -399,9 +399,7 @@ export async function archiveOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour archiver cette sortie." };
   }
@@ -440,9 +438,7 @@ export async function unarchiveOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits." };
   }
@@ -491,9 +487,7 @@ export async function pickTimeslotAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour choisir la date." };
   }
@@ -629,9 +623,7 @@ export async function reopenPollAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour rouvrir le sondage." };
   }

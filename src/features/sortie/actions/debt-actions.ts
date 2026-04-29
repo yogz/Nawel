@@ -1,33 +1,31 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
 import { decryptSecret } from "@/lib/crypto";
-import {
-  auditLog,
-  debts,
-  outings,
-  participants,
-  purchaserPaymentMethods,
-} from "@drizzle/sortie-schema";
+import { auditLog, debts, outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import { createHash } from "node:crypto";
-import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
   sendPaymentConfirmedEmail,
   sendPaymentDeclaredEmail,
 } from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
+import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
+import { shortIdSchema } from "./schemas";
 
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+// Source unique pour les valeurs auditLog.action écrites par debt-actions.
+// Évite les typos silencieux (le champ est `varchar(64)` libre côté Drizzle,
+// donc une faute de frappe ne casse pas le build mais brise la requêtabilité).
+const AUDIT_ACTION = {
+  DEBT_DECLARED_PAID: "DEBT_DECLARED_PAID",
+  DEBT_CONFIRMED: "DEBT_CONFIRMED",
+  IBAN_REVEALED: "IBAN_REVEALED",
+} as const;
 
 const debtSchema = z.object({
   shortId: shortIdSchema,
@@ -39,27 +37,6 @@ const revealIbanSchema = z.object({
   methodId: z.string().uuid(),
   debtId: z.string().uuid(),
 });
-
-function formDataToObject(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
-  for (const [k, v] of formData.entries()) {
-    obj[k] = typeof v === "string" ? v : "";
-  }
-  return obj;
-}
-
-async function getCurrentParticipant(outingId: string) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await ensureParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-  const row = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outingId),
-      userId ? eq(participants.userId, userId) : eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
-  });
-  return { participant: row ?? null, userId };
-}
 
 async function hashIp(): Promise<string | null> {
   const ip = await getClientIp();
@@ -118,7 +95,7 @@ export async function markDebtPaidAction(
         outingId: outing.id,
         actorParticipantId: participant.id,
         actorUserId: userId,
-        action: "DEBT_DECLARED_PAID",
+        action: AUDIT_ACTION.DEBT_DECLARED_PAID,
         ipHash,
         payload: JSON.stringify({ debtId: row.id }),
       });
@@ -173,7 +150,7 @@ export async function confirmDebtPaidAction(
         outingId: outing.id,
         actorParticipantId: participant.id,
         actorUserId: userId,
-        action: "DEBT_CONFIRMED",
+        action: AUDIT_ACTION.DEBT_CONFIRMED,
         ipHash,
         payload: JSON.stringify({ debtId: row.id }),
       });
@@ -269,7 +246,7 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
       outingId: outing.id,
       actorParticipantId: participant.id,
       actorUserId: userId,
-      action: "IBAN_REVEALED",
+      action: AUDIT_ACTION.IBAN_REVEALED,
       ipHash,
       payload: JSON.stringify({ methodId, debtId }),
     });

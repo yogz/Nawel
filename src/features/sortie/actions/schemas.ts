@@ -3,7 +3,9 @@ import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
 
 const trimmedString = z.string().trim();
 
-const shortIdSchema = z
+// Le set de chars du shortId est défini dans `lib/short-id.ts` (pas digits 0/1/o/l
+// pour éviter les confusions à l'oral). 8 chars = ~47 bits, collision négligeable.
+export const shortIdSchema = z
   .string()
   .trim()
   .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);

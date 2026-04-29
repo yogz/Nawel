@@ -1,24 +1,19 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
 import { encryptSecret } from "@/lib/crypto";
-import { outings, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
+import { outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { ibanPreview, isValidIban, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
+import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const addMethodSchema = z.discriminatedUnion("type", [
   z.object({
@@ -45,28 +40,6 @@ const removeMethodSchema = z.object({
   methodId: z.string().uuid(),
 });
 
-function formDataToObject(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
-  for (const [k, v] of formData.entries()) {
-    obj[k] = typeof v === "string" ? v : "";
-  }
-  return obj;
-}
-
-async function getCurrentParticipant(outingId: string) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await ensureParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-
-  const row = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outingId),
-      userId ? eq(participants.userId, userId) : eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
-  });
-  return row ?? null;
-}
-
 export async function addPaymentMethodAction(
   _prev: FormActionState,
   formData: FormData
@@ -84,7 +57,7 @@ export async function addPaymentMethodAction(
     return { message: "Sortie introuvable." };
   }
 
-  const me = await getCurrentParticipant(outing.id);
+  const { participant: me } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Tu dois répondre à la sortie avant d'ajouter un moyen de paiement." };
   }
@@ -133,7 +106,7 @@ export async function removePaymentMethodAction(
     return { message: "Sortie introuvable." };
   }
 
-  const me = await getCurrentParticipant(outing.id);
+  const { participant: me } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Non autorisé." };
   }

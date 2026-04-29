@@ -1,12 +1,10 @@
 "use server";
 
 import { and, asc, eq, ne, sql } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
 import {
   debts,
   outings,
@@ -15,17 +13,13 @@ import {
   purchases,
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
-import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { sendPurchaseConfirmedEmails } from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const MAX_CENTS = 10_000_00;
 const priceCents = z.coerce.number().int().min(0).max(MAX_CENTS);
@@ -88,19 +82,6 @@ function formDataToObject(formData: FormData): Record<string, unknown> {
   return obj;
 }
 
-async function getCurrentParticipant(outingId: string) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await ensureParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-  const row = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outingId),
-      userId ? eq(participants.userId, userId) : eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
-  });
-  return row ?? null;
-}
-
 export async function declarePurchaseAction(
   _prev: FormActionState,
   formData: FormData
@@ -121,7 +102,7 @@ export async function declarePurchaseAction(
     return { message: "Cette sortie est annulée." };
   }
 
-  const me = await getCurrentParticipant(outing.id);
+  const { participant: me } = await getCurrentParticipant(outing.id);
   if (!me || me.response !== "yes") {
     return { message: "Seul un confirmé peut déclarer l'achat." };
   }
@@ -335,7 +316,7 @@ export async function cedeAllocationAction(
     return { message: "Sortie introuvable." };
   }
 
-  const me = await getCurrentParticipant(outing.id);
+  const { participant: me } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Tu dois être inscrit·e pour céder ta place." };
   }

@@ -1,8 +1,8 @@
 import { sql } from "drizzle-orm";
-import { after } from "next/server";
 import { db } from "@/lib/db";
 import { serviceCallStats } from "@drizzle/sortie-schema";
 import { logger } from "@/lib/logger";
+import { runAfterResponse } from "./after-response";
 
 export type ServiceName = "gemini" | "ticketmaster";
 export type ServiceOutcome = "found" | "no_match" | "error";
@@ -29,12 +29,7 @@ export function trackServiceCall(
   outcome: ServiceOutcome,
   errorMessage?: string
 ): void {
-  const run = () => recordServiceCall(service, source, outcome, errorMessage).catch(() => {});
-  try {
-    after(run);
-  } catch {
-    void run();
-  }
+  runAfterResponse(() => recordServiceCall(service, source, outcome, errorMessage));
 }
 
 export async function recordServiceCall(

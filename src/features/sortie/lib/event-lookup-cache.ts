@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { eq, and, sql, lt } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { eventLookupCache, aiUsageDaily } from "@/../drizzle/schema";
 import { logger } from "@/lib/logger";
@@ -120,39 +120,5 @@ export async function incrementGeminiUsage(): Promise<void> {
   } catch (error) {
     // Une table d'usage indisponible ne doit pas bloquer l'appel produit.
     logger.error("[event-cache] usage counter failed", error);
-  }
-}
-
-/**
- * Lit l'usage du jour (pour dashboard admin éventuel).
- */
-export async function getTodayUsage(): Promise<number> {
-  try {
-    const [row] = await db
-      .select()
-      .from(aiUsageDaily)
-      .where(and(eq(aiUsageDaily.date, todayKey()), eq(aiUsageDaily.provider, PROVIDER)))
-      .limit(1);
-    return row?.count ?? 0;
-  } catch {
-    return 0;
-  }
-}
-
-/**
- * Purge les entrées de cache plus anciennes que TTL.
- * À appeler depuis un cron / admin tool, pas critique pour le runtime.
- */
-export async function purgeStaleCache(): Promise<number> {
-  const cutoff = new Date(Date.now() - CACHE_TTL_DAYS * 24 * 60 * 60 * 1000);
-  try {
-    const deleted = await db
-      .delete(eventLookupCache)
-      .where(lt(eventLookupCache.createdAt, cutoff))
-      .returning({ id: eventLookupCache.id });
-    return deleted.length;
-  } catch (error) {
-    logger.error("[event-cache] purge failed", error);
-    return 0;
   }
 }
