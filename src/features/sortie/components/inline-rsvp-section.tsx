@@ -190,23 +190,13 @@ export function InlineRsvpSection({
     </>
   );
 
-  const hasResponded = currentResponse !== null;
-
-  // Eyebrow toujours présent : stabilise la hauteur des cards en liste
-  // (sans slot fixe, idle vs répondu sautent verticalement et cassent
-  // le scan checklist). Wording :
-  //  - idle    → "↓ Ton tour"   (impératif court, dirige l'œil sur les pills)
-  //  - yes     → "✓ Tu viens"   (état confirmé, voix "l'app me parle")
-  //  - no      → "✓ Tu passes"  (réutilise verbatim le toast undo, lève la
-  //                              dissonance "✓ + négation" de l'ancien
-  //                              "Tu ne viens pas")
-  const eyebrowLabel = !hasResponded ? "↓ Ton tour" : isYes ? "✓ Tu viens" : "✓ Tu passes";
+  // Pas d'eyebrow état ici : le bucket "à toi de jouer" / "tu viens" /
+  // "tu viens pas" porte déjà le rôle au niveau section, et le filled
+  // vs ghost des chips signale réponse vs idle au niveau card. Mirroir
+  // exact de la branche vote-CTA pour parité cross-mode.
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-        {eyebrowLabel}
-      </p>
       <div className="grid grid-cols-2 gap-2">
         <SegmentedButton
           // Icône uniquement quand selected : elle porte le signal
