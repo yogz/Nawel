@@ -1,8 +1,8 @@
 import { sql } from "drizzle-orm";
-import { after } from "next/server";
 import { db } from "@/lib/db";
 import { parseStats } from "@drizzle/sortie-schema";
 import { logger } from "@/lib/logger";
+import { runAfterResponse } from "./after-response";
 
 export type ParseOutcome = "success" | "zero_data" | "fetch_error" | "blocked_waf";
 
@@ -25,12 +25,7 @@ export function trackParseAttempt(
   rawPath: string | null,
   imageFound = false
 ): void {
-  const run = () => recordParseStat(rawHost, outcome, rawPath, imageFound).catch(() => {});
-  try {
-    after(run);
-  } catch {
-    void run();
-  }
+  runAfterResponse(() => recordParseStat(rawHost, outcome, rawPath, imageFound));
 }
 
 /**
