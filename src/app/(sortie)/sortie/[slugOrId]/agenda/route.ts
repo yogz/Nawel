@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { extractShortId } from "@/features/sortie/lib/parse-outing-path";
 
+// Runtime explicite : Edge déprécié sur Vercel + on utilise pg via
+// Drizzle (pas compatible Edge). Cohérent avec api/sortie/**.
+export const runtime = "nodejs";
+
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
 // Default duration when the creator didn't supply one. Most theatre /
