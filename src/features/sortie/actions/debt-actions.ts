@@ -1,21 +1,12 @@
 "use server";
 
 import { and, eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
 import { decryptSecret } from "@/lib/crypto";
-import {
-  auditLog,
-  debts,
-  outings,
-  participants,
-  purchaserPaymentMethods,
-} from "@drizzle/sortie-schema";
+import { auditLog, debts, outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import { createHash } from "node:crypto";
-import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
   sendPaymentConfirmedEmail,
   sendPaymentDeclaredEmail,
@@ -23,6 +14,7 @@ import {
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
+import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
@@ -45,19 +37,6 @@ const revealIbanSchema = z.object({
   methodId: z.string().uuid(),
   debtId: z.string().uuid(),
 });
-
-async function getCurrentParticipant(outingId: string) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await ensureParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-  const row = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, outingId),
-      userId ? eq(participants.userId, userId) : eq(participants.cookieTokenHash, cookieTokenHash)
-    ),
-  });
-  return { participant: row ?? null, userId };
-}
 
 async function hashIp(): Promise<string | null> {
   const ip = await getClientIp();
