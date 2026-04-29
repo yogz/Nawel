@@ -167,6 +167,15 @@ describe("buildIcsFeed", () => {
       expect(feed).toContain("TRANSP:TRANSPARENT\r\n");
     });
 
+    it("STATUS:TENTATIVE quand candidateTimeslotId set (mode vote pas-encore-figé)", () => {
+      const feed = buildIcsFeed({
+        outings: [makeOuting({ userResponse: "interested", candidateTimeslotId: "ts-uuid-1" })],
+        publicBase: PUBLIC_BASE,
+      });
+      expect(feed).toContain("STATUS:TENTATIVE\r\n");
+      expect(feed).toContain("TRANSP:TRANSPARENT\r\n");
+    });
+
     it("OPAQUE quand status=purchased même si userResponse=no", () => {
       const feed = buildIcsFeed({
         outings: [makeOuting({ status: "purchased", userResponse: "no" })],

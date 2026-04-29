@@ -7,7 +7,8 @@
  * Différent du single-event `agenda/route.ts` :
  *   - Plusieurs VEVENT dans un seul VCALENDAR
  *   - TZID:Europe/Paris pour stabilité cross-timezone
- *   - STATUS:CANCELLED quand applicable (le calendar barre l'event)
+ *   - STATUS: CANCELLED (sortie annulée), TENTATIVE (mode vote, slot
+ *     candidat pas encore figé) ou CONFIRMED (date tranchée)
  *   - DESCRIPTION enrichie : organisateur, nb confirmés, lien billet
  *   - CATEGORIES depuis la vibe (théâtre, opéra...) — coloration
  *     auto sur Apple Calendar
@@ -155,13 +156,22 @@ export function buildIcsFeed({
     }
     lines.push(`URL:${url}`);
     lines.push(`DESCRIPTION:${buildDescription(o, url)}`);
-    // STATUS reste binaire CONFIRMED / CANCELLED. On ne pose pas
-    // TENTATIVE pour les événements pas-encore-figés : mental model
-    // confus côté user (Outlook conditioning : italique grisé = "j'ai
-    // pas répondu à l'invit"), rendu incohérent par client (Apple iOS
-    // mois ≈ invisible, Proton ignoré). Le suffixe SUMMARY + TRANSP
-    // ci-dessous portent l'info plus proprement.
-    lines.push(`STATUS:${o.status === "cancelled" ? "CANCELLED" : "CONFIRMED"}`);
+    // STATUS:TENTATIVE uniquement pour les *candidates* en mode vote
+    // pas-encore-figé (1 row par slot voté). Là, la sémantique iCal
+    // "événement candidat, date pas tranchée" colle exactement, et
+    // les clients qui le respectent (Google Calendar, Outlook
+    // desktop) rendent un visuel "à confirmer" cohérent. Pour un
+    // event canonique (date déjà figée) ou un user "interested" sur
+    // une sortie picked, on reste CONFIRMED — la date est tranchée,
+    // seul l'engagement personnel l'est pas, et c'est le rôle de
+    // TRANSP + suffixe SUMMARY de le porter.
+    const icsStatus =
+      o.status === "cancelled"
+        ? "CANCELLED"
+        : o.candidateTimeslotId !== null
+          ? "TENTATIVE"
+          : "CONFIRMED";
+    lines.push(`STATUS:${icsStatus}`);
     // TRANSP:OPAQUE bloque la dispo dans free/busy (le user est engagé) ;
     // TRANSP:TRANSPARENT laisse libre (rien n'est encore figé). RFC 5545
     // §3.8.2.7. Sémantique propre et universellement supportée — Cal.com
