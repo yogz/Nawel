@@ -270,6 +270,8 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             }
             existingName={me?.anonName ?? session?.user?.name ?? undefined}
             existingEmail={me?.anonEmail ?? undefined}
+            existingExtraAdults={me?.extraAdults ?? undefined}
+            existingExtraChildren={me?.extraChildren ?? undefined}
             hasVoted={Boolean(
               me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
             )}

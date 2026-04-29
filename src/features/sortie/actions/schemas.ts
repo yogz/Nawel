@@ -254,6 +254,11 @@ export const rsvpSchema = z.object({
 export const voteRsvpSchema = z.object({
   shortId: shortIdSchema,
   displayName: trimmedString.min(1).max(100),
+  // Mêmes bornes que rsvpSchema : on capte le +1 dès le vote pour que
+  // pickTimeslotAction puisse migrer en yes complet (avec le bon
+  // nombre de places) sans relance ni dépendance à l'email.
+  extraAdults: z.coerce.number().int().min(0).max(10).default(0),
+  extraChildren: z.coerce.number().int().min(0).max(10).default(0),
   email: z
     .union([z.literal(""), z.string().email().max(255)])
     .optional()

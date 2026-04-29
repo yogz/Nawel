@@ -315,6 +315,8 @@ export async function castVoteAction(
         .update(participants)
         .set({
           response,
+          extraAdults: data.extraAdults,
+          extraChildren: data.extraChildren,
           anonName: effectiveUserId ? null : displayName,
           anonEmail: effectiveUserId ? null : (data.email ?? null),
           userId: effectiveUserId ?? existing.userId,
@@ -333,6 +335,8 @@ export async function castVoteAction(
           anonEmail: effectiveUserId ? null : (data.email ?? null),
           cookieTokenHash,
           response,
+          extraAdults: data.extraAdults,
+          extraChildren: data.extraChildren,
         })
         .returning({ id: participants.id });
       participantId = row.id;

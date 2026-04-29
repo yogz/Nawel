@@ -8,6 +8,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { castVoteAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { readAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
+import { GuestCountStepper } from "./guest-count-stepper";
 import { IdentityFields } from "./identity-fields";
 
 type TimeslotOption = {
@@ -21,6 +23,8 @@ type Props = {
   existingVotes?: Record<string, boolean>;
   existingName?: string;
   existingEmail?: string;
+  existingExtraAdults?: number;
+  existingExtraChildren?: number;
   hasVoted: boolean;
 };
 
@@ -36,6 +40,8 @@ export function VoteRsvpSheet({
   existingVotes = {},
   existingName,
   existingEmail,
+  existingExtraAdults,
+  existingExtraChildren,
   hasVoted,
 }: Props) {
   const router = useRouter();
@@ -50,6 +56,21 @@ export function VoteRsvpSheet({
     }
     return init;
   });
+
+  // Capture du +1 dès le vote : on le persiste sur la row participant
+  // pour que pickTimeslotAction puisse migrer en yes complet quand
+  // l'orga fixe la date, sans relance ni dépendance à l'email (souvent
+  // facultatif côté voteur). Disclosure plié par défaut — un voteur
+  // qui vient seul ne voit qu'un lien tertiaire.
+  const prefs = readAnonPrefs();
+  const [adults, setAdults] = useState(existingExtraAdults || prefs?.extraAdults || 0);
+  const [children, setChildren] = useState(existingExtraChildren || prefs?.extraChildren || 0);
+  const [showExtras, setShowExtras] = useState(
+    (existingExtraAdults ?? 0) > 0 ||
+      (existingExtraChildren ?? 0) > 0 ||
+      (prefs?.extraAdults ?? 0) > 0 ||
+      (prefs?.extraChildren ?? 0) > 0
+  );
 
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     castVoteAction,
@@ -110,9 +131,7 @@ export function VoteRsvpSheet({
       </SheetTrigger>
       <SheetContent side="bottom" className="theme-sortie max-h-[92dvh] overflow-y-auto">
         <SheetHeader className="mb-6 text-left">
-          <SheetTitle className="font-serif text-2xl text-ink-700">
-            Quand tu peux&nbsp;?
-          </SheetTitle>
+          <SheetTitle className="font-serif text-2xl text-ink-700">Quand tu peux&nbsp;?</SheetTitle>
           <p className="text-sm text-ink-400">
             Tape pour dire que tu peux, re-tape pour dire que tu peux pas, encore une fois pour
             effacer.
@@ -178,6 +197,40 @@ export function VoteRsvpSheet({
             knownVerb="votes"
           />
 
+          <div className="flex flex-col gap-3">
+            {!showExtras ? (
+              <button
+                type="button"
+                onClick={() => setShowExtras(true)}
+                className="self-start text-sm text-acid-700 underline-offset-4 hover:underline"
+              >
+                + Tu viens accompagné&middot;e&nbsp;?
+              </button>
+            ) : (
+              <div className="flex flex-col gap-3 rounded-lg bg-surface-50 p-4">
+                <p className="text-sm text-ink-500">Combien vous êtes&nbsp;?</p>
+                <GuestCountStepper
+                  label="Adultes en plus"
+                  name="extraAdults"
+                  value={adults}
+                  onChange={setAdults}
+                />
+                <GuestCountStepper
+                  label="Enfants en plus"
+                  name="extraChildren"
+                  value={children}
+                  onChange={setChildren}
+                />
+              </div>
+            )}
+            {!showExtras && (
+              <>
+                <input type="hidden" name="extraAdults" value="0" />
+                <input type="hidden" name="extraChildren" value="0" />
+              </>
+            )}
+          </div>
+
           {generalError && (
             <p className="rounded-md border border-erreur-500/30 bg-erreur-50 p-3 text-sm text-erreur-700">
               {generalError}
@@ -194,7 +247,9 @@ export function VoteRsvpSheet({
                 : totalCast === 0
                   ? "Envoyer (rien tranché)"
                   : yesCount > 0
-                    ? `Envoyer (${yesCount} oui${noCount > 0 ? `, ${noCount} non` : ""})`
+                    ? `Envoyer (${yesCount} oui${noCount > 0 ? `, ${noCount} non` : ""}${
+                        adults + children > 0 ? ` · +${adults + children}` : ""
+                      })`
                     : `Envoyer (${noCount} non)`}
             </Button>
           </div>
@@ -203,4 +258,3 @@ export function VoteRsvpSheet({
     </Sheet>
   );
 }
-
