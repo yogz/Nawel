@@ -292,18 +292,35 @@ export async function listMyParticipantsForOutings(args: {
  * Sorties à inclure dans le flux iCal personnel d'un user :
  *   - sorties qu'il a créées (creator_user_id match)
  *   - OU sorties où il a une row participant avec response IN (yes,
- *     handle_own)
- *   - filtre temporel : on garde 30 jours d'historique pour ne pas
- *     vider les sorties récentes du calendrier (utile en prod pour
- *     les retours d'agenda type "tu te souviens où on était le X ?")
- *   - en mode vote sans créneau choisi (fixedDatetime null) → exclu
- *     (pas de date concrète à poser dans l'agenda)
- *   - sorties annulées : INCLUSES, mais avec STATUS:CANCELLED côté
- *     iCal. Le calendrier les barre — l'user voit l'annulation
- *     dans son agenda sans avoir à ouvrir Sortie.
+ *     handle_own, interested)
+ *
+ * Sémantique iCal côté builder :
+ *   - response = yes / handle_own → STATUS:CONFIRMED + TRANSP:OPAQUE
+ *     (bloque la dispo, l'user est engagé)
+ *   - response = interested → STATUS:CONFIRMED + TRANSP:TRANSPARENT +
+ *     suffixe " · à confirmer" sur le SUMMARY (visible dans l'agenda
+ *     mais ne bloque pas la dispo, l'user n'est pas encore figé)
+ *
+ * Cas mode vote :
+ *   - vote-mode picked (chosenTimeslotId set, fixedDatetime set) → 1
+ *     VEVENT canonique à fixedDatetime, sémantique selon userResponse
+ *   - vote-mode unpicked + user a voté `available = true` sur N
+ *     créneaux → N VEVENTs candidates (1 par créneau voté), chacun
+ *     marqué tentative. UID dérivé `${shortId}-${timeslotId}@...` pour
+ *     que les candidates cohabitent. Une fois pickTimeslot déclenché,
+ *     les candidate UIDs sortent du feed (calendar les retire) et le
+ *     UID canonique entre.
+ *   - vote-mode unpicked sans vote available → pas dans le feed (rien
+ *     à poser dans l'agenda)
+ *
+ * Filtres temporels :
+ *   - on garde 30 jours d'historique (cf. FEED_HISTORY_WINDOW_DAYS)
+ *
+ * Sorties annulées : INCLUSES, avec STATUS:CANCELLED. Le calendrier
+ * les barre — l'user voit l'annulation sans rouvrir Sortie.
  *
  * Retourne le format `FeedOuting` consommé directement par
- * `buildIcsFeed`.
+ * `buildIcsFeed`. Une row par VEVENT à émettre.
  */
 export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> {
   const cutoff = new Date(Date.now() - FEED_HISTORY_WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -378,7 +395,7 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
               .where(
                 and(
                   eq(participants.userId, userId),
-                  inArray(participants.response, ["yes", "handle_own"])
+                  inArray(participants.response, ["yes", "handle_own", "interested"])
                 )
               )
           )
@@ -387,13 +404,54 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
     )
     .orderBy(asc(outings.fixedDatetime));
 
+  // Query B : candidates en mode vote pas encore figé. Pour chaque
+  // sortie où l'user a voté `available = true` sur N timeslots, on
+  // émet N rows distinctes (une par timeslot voté) avec un UID dérivé.
+  // Une fois pickTimeslot déclenché, fixedDatetime est set → la sortie
+  // tombe dans Query A et les candidate UIDs disparaissent du feed.
+  const candidateRows = await db
+    .select({
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      status: outings.status,
+      vibe: outings.vibe,
+      ticketUrl: outings.eventLink,
+      creatorName: user.name,
+      sequence: outings.sequence,
+      createdAt: outings.createdAt,
+      updatedAt: outings.updatedAt,
+      confirmedCount: confirmedCountSql.as("confirmed_count"),
+      timeslotId: outingTimeslots.id,
+      timeslotStartsAt: outingTimeslots.startsAt,
+    })
+    .from(outings)
+    .leftJoin(user, eq(user.id, outings.creatorUserId))
+    .innerJoin(outingTimeslots, eq(outingTimeslots.outingId, outings.id))
+    .innerJoin(timeslotVotes, eq(timeslotVotes.timeslotId, outingTimeslots.id))
+    .innerJoin(
+      participants,
+      and(eq(participants.id, timeslotVotes.participantId), eq(participants.userId, userId))
+    )
+    .where(
+      and(
+        eq(outings.mode, "vote"),
+        isNull(outings.chosenTimeslotId),
+        ne(outings.status, "cancelled"),
+        eq(timeslotVotes.available, true),
+        gte(outingTimeslots.startsAt, cutoff)
+      )
+    )
+    .orderBy(asc(outingTimeslots.startsAt));
+
   // `userResponse === null` côté builder veut dire "le user n'a pas de
   // row participant" — vu que la WHERE clause restreint aux sorties
-  // (créées par le user) OU (où le user a RSVP yes/handle_own), un
-  // userResponse null implique forcément que le user est le créateur.
+  // (créées par le user) OU (où le user a RSVP yes/handle_own/interested),
+  // un userResponse null implique forcément que le user est le créateur.
   // Le builder traitera ce cas comme "yes" implicite (le créateur vient
   // par défaut sur ses propres sorties).
-  return rows
+  const canonical: FeedOuting[] = rows
     .filter((r): r is typeof r & { fixedDatetime: Date } => r.fixedDatetime !== null)
     .map((r) => ({
       shortId: r.shortId,
@@ -411,5 +469,32 @@ export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> 
       confirmedCount: r.confirmedCount,
       confirmedNames: r.confirmedNames ?? [],
       userResponse: r.userResponse,
+      candidateTimeslotId: null,
     }));
+
+  // Pour les candidates, userResponse forcé à "interested" → le builder
+  // déclenche TRANSP:TRANSPARENT + suffixe " · à confirmer". On laisse
+  // confirmedNames vide ici : la liste de confirmés n'a pas de sens
+  // tant que le créneau n'est pas figé (on ne connaît pas qui sera
+  // dispo sur ce slot précisément). Le count reste informatif.
+  const candidates: FeedOuting[] = candidateRows.map((r) => ({
+    shortId: r.shortId,
+    slug: r.slug,
+    title: r.title,
+    location: r.location,
+    fixedDatetime: r.timeslotStartsAt,
+    status: r.status,
+    vibe: r.vibe,
+    ticketUrl: r.ticketUrl,
+    creatorName: r.creatorName,
+    sequence: r.sequence,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+    confirmedCount: r.confirmedCount,
+    confirmedNames: [],
+    userResponse: "interested",
+    candidateTimeslotId: r.timeslotId,
+  }));
+
+  return [...canonical, ...candidates];
 }

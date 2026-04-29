@@ -81,6 +81,14 @@ export type FeedOuting = {
    *  décider TRANSP:OPAQUE vs TRANSP:TRANSPARENT et le suffixe
    *  " · à confirmer" sur le SUMMARY. */
   userResponse: "yes" | "no" | "handle_own" | "interested" | null;
+  /** ID du timeslot quand cette row représente une *candidate* en mode
+   *  vote pas-encore-figé (l'user a voté `available = true` sur ce
+   *  créneau). Le builder fabrique un UID dérivé `${shortId}-${id}` au
+   *  lieu du canonique pour que pluseurs candidates de la même sortie
+   *  cohabitent dans le flux. Null pour fixed-mode ou vote-mode picked.
+   *  Une fois pickTimeslot déclenché, les candidate UIDs sortent du
+   *  feed → le client agenda les retire ; le canonique entre. */
+  candidateTimeslotId: string | null;
 };
 
 export type BuildIcsFeedArgs = {
@@ -119,7 +127,14 @@ export function buildIcsFeed({
     const isFigee = isOutingFigee(o);
 
     lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${o.shortId}@sortie.colist.fr`);
+    // UID dérivé pour les candidates en mode vote unpicked : permet à
+    // plusieurs candidates de la même sortie de cohabiter dans le feed
+    // (1 par créneau voté). Une fois pickTimeslot fired, le UID
+    // canonique remplace tous les candidates → calendar les retire.
+    const uid = o.candidateTimeslotId
+      ? `${o.shortId}-${o.candidateTimeslotId}@sortie.colist.fr`
+      : `${o.shortId}@sortie.colist.fr`;
+    lines.push(`UID:${uid}`);
     // SEQUENCE / CREATED / LAST-MODIFIED : indispensables pour que les
     // clients calendar (Apple, Outlook surtout) re-rendent leur copie
     // locale au refresh — sans ça, un changement de status / suffixe

@@ -21,6 +21,7 @@ function makeOuting(overrides: Partial<FeedOuting> = {}): FeedOuting {
     confirmedCount: 3,
     confirmedNames: ["Tom", "Marc", "Anaïs"],
     userResponse: "yes",
+    candidateTimeslotId: null,
     ...overrides,
   };
 }
@@ -322,6 +323,91 @@ describe("buildIcsFeed", () => {
       expect(feed).toContain("END:VCALENDAR\r\n");
       expect(feed).toContain("BEGIN:VTIMEZONE\r\n");
       expect(feed).not.toContain("BEGIN:VEVENT");
+    });
+  });
+
+  describe("candidates mode vote — VEVENT par créneau voté", () => {
+    // Quand l'user a voté `available = true` sur N créneaux d'une sortie
+    // vote-mode pas encore figée, `feedOutingsForUser` émet N rows avec
+    // candidateTimeslotId distinct. Le builder doit produire des UIDs
+    // dérivés et marquer chaque event comme tentative.
+
+    it("UID dérivé `${shortId}-${candidateTimeslotId}` au lieu du canonique", () => {
+      const feed = buildIcsFeed({
+        outings: [
+          makeOuting({
+            candidateTimeslotId: "ts-uuid-1",
+            userResponse: "interested",
+          }),
+        ],
+        publicBase: PUBLIC_BASE,
+      });
+      expect(feed).toContain("UID:abc12345-ts-uuid-1@sortie.colist.fr\r\n");
+      expect(feed).not.toContain("UID:abc12345@sortie.colist.fr\r\n");
+    });
+
+    it("candidate force TRANSP:TRANSPARENT + suffixe SUMMARY (à confirmer)", () => {
+      const feed = buildIcsFeed({
+        outings: [
+          makeOuting({
+            candidateTimeslotId: "ts-1",
+            userResponse: "interested",
+          }),
+        ],
+        publicBase: PUBLIC_BASE,
+      });
+      expect(feed).toContain("TRANSP:TRANSPARENT\r\n");
+      expect(feed).toContain("SUMMARY:Noam à L'Européen · à confirmer\r\n");
+    });
+
+    it("plusieurs candidates de la même sortie cohabitent (UIDs distincts)", () => {
+      const base = makeOuting({ userResponse: "interested" });
+      const feed = buildIcsFeed({
+        outings: [
+          {
+            ...base,
+            candidateTimeslotId: "ts-1",
+            fixedDatetime: new Date("2026-06-15T19:30:00.000Z"),
+          },
+          {
+            ...base,
+            candidateTimeslotId: "ts-2",
+            fixedDatetime: new Date("2026-06-22T19:30:00.000Z"),
+          },
+          {
+            ...base,
+            candidateTimeslotId: "ts-3",
+            fixedDatetime: new Date("2026-06-29T19:30:00.000Z"),
+          },
+        ],
+        publicBase: PUBLIC_BASE,
+      });
+      const veventCount = feed.match(/BEGIN:VEVENT/g)?.length ?? 0;
+      expect(veventCount).toBe(3);
+      expect(feed).toContain("UID:abc12345-ts-1@sortie.colist.fr");
+      expect(feed).toContain("UID:abc12345-ts-2@sortie.colist.fr");
+      expect(feed).toContain("UID:abc12345-ts-3@sortie.colist.fr");
+      // chacun à sa propre date locale Paris (CEST UTC+2 en juin)
+      expect(feed).toContain("DTSTART;TZID=Europe/Paris:20260615T213000");
+      expect(feed).toContain("DTSTART;TZID=Europe/Paris:20260622T213000");
+      expect(feed).toContain("DTSTART;TZID=Europe/Paris:20260629T213000");
+    });
+
+    it("URL canonique (sans timeslot) — l'user clique → page de la sortie", () => {
+      // Le UID change par candidate, mais l'URL pointe toujours vers
+      // la page sortie (pas vers un timeslot spécifique). Le user
+      // tombe sur la page voting et peut re-voter / pickTimeslot.
+      const feed = buildIcsFeed({
+        outings: [
+          makeOuting({
+            candidateTimeslotId: "ts-uuid-1",
+            userResponse: "interested",
+          }),
+        ],
+        publicBase: PUBLIC_BASE,
+      });
+      expect(feed).toContain(`URL:${PUBLIC_BASE}/noam-leuropeen-abc12345\r\n`);
+      expect(feed).not.toContain("ts-uuid-1\r\n"); // pas dans l'URL
     });
   });
 
