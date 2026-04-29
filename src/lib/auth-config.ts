@@ -1,8 +1,11 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, magicLink } from "better-auth/plugins";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
+import { participants as sortieParticipants } from "@drizzle/sortie-schema";
+import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
@@ -440,6 +443,50 @@ export const auth = betterAuth({
       },
       emoji: {
         type: "string",
+      },
+    },
+  },
+  databaseHooks: {
+    session: {
+      create: {
+        // Auto-merge des participant rows cookie-only sur le user au moment
+        // du signin (n'importe quel path : Google OAuth, magic-link, mot de
+        // passe). Sans ça, un invité qui RSVP en anonyme puis signe via
+        // Google sur un autre device perd ses RSVP antérieurs (lookup
+        // getMyParticipant matche par cookieTokenHash OR userId, mais le
+        // nouveau cookie est différent et userId est null sur les rows
+        // attachées au cookie originel).
+        //
+        // L'idempotence repose sur le `WHERE userId IS NULL` — re-signin
+        // ou signin sur un device sans cookie sortie ne touche rien.
+        //
+        // Best-effort : un échec ne doit pas faire crasher le signin.
+        // Sortie est l'unique consumer aujourd'hui, donc le coût d'un
+        // hook qui ne match aucune row côté main app est nul (early
+        // return sur cookieTokenHash null).
+        after: async (session) => {
+          try {
+            const cookieTokenHash = await readParticipantTokenHash();
+            if (!cookieTokenHash || !session.userId) {
+              return;
+            }
+            await db
+              .update(sortieParticipants)
+              .set({
+                userId: session.userId,
+                anonEmail: null,
+                updatedAt: new Date(),
+              })
+              .where(
+                and(
+                  eq(sortieParticipants.cookieTokenHash, cookieTokenHash),
+                  isNull(sortieParticipants.userId)
+                )
+              );
+          } catch (err) {
+            console.error("[auth] sortie cookie→userId merge failed:", err);
+          }
+        },
       },
     },
   },
