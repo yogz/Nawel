@@ -166,6 +166,12 @@ export function YesDetailSheet({
       (prefs?.extraAdults ?? 0) > 0 ||
       (prefs?.extraChildren ?? 0) > 0
   );
+  // "Je gère mon billet" est un opt-in rare (la majorité laisse le
+  // groupe acheter). On le replie derrière un lien tertiaire — même
+  // pattern que "+ Tu viens accompagné" — pour alléger la sheet par
+  // défaut. Pré-révélé si l'utilisateur l'avait déjà coché lors d'un
+  // RSVP précédent sur cette sortie.
+  const [showHandleOwn, setShowHandleOwn] = useState(existingResponse === "handle_own");
 
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     rsvpAction,
@@ -264,21 +270,31 @@ export function YesDetailSheet({
               </>
             )}
 
-            <label className="flex items-start gap-3 rounded-lg border border-surface-400 bg-surface-50 p-3 text-sm text-ink-500">
-              <input
-                type="checkbox"
-                checked={chosen === "handle_own"}
-                onChange={(e) => setChosen(e.target.checked ? "handle_own" : "yes")}
-                className="mt-0.5 h-4 w-4 accent-acid-600"
-              />
-              <span className="flex flex-col">
-                <span className="font-medium text-ink-700">Je gère mon billet</span>
-                <span className="text-xs text-ink-400">
-                  Coche si tu prends ta place toi-même. Sinon le groupe t&rsquo;en achète une, tu
-                  rembourses après.
+            {!showHandleOwn ? (
+              <button
+                type="button"
+                onClick={() => setShowHandleOwn(true)}
+                className="self-start text-sm text-acid-700 underline-offset-4 hover:underline"
+              >
+                + Je gère mon billet
+              </button>
+            ) : (
+              <label className="flex items-start gap-3 rounded-lg border border-surface-400 bg-surface-50 p-3 text-sm text-ink-500">
+                <input
+                  type="checkbox"
+                  checked={chosen === "handle_own"}
+                  onChange={(e) => setChosen(e.target.checked ? "handle_own" : "yes")}
+                  className="mt-0.5 h-4 w-4 accent-acid-600"
+                />
+                <span className="flex flex-col">
+                  <span className="font-medium text-ink-700">Je gère mon billet</span>
+                  <span className="text-xs text-ink-400">
+                    Coche si tu prends ta place toi-même. Sinon le groupe t&rsquo;en achète une, tu
+                    rembourses après.
+                  </span>
                 </span>
-              </span>
-            </label>
+              </label>
+            )}
           </div>
 
           {generalError && (
