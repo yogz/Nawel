@@ -26,6 +26,15 @@ import { formDataToObject } from "@/features/sortie/lib/form-data";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
+// Source unique pour les valeurs auditLog.action écrites par debt-actions.
+// Évite les typos silencieux (le champ est `varchar(64)` libre côté Drizzle,
+// donc une faute de frappe ne casse pas le build mais brise la requêtabilité).
+const AUDIT_ACTION = {
+  DEBT_DECLARED_PAID: "DEBT_DECLARED_PAID",
+  DEBT_CONFIRMED: "DEBT_CONFIRMED",
+  IBAN_REVEALED: "IBAN_REVEALED",
+} as const;
+
 const debtSchema = z.object({
   shortId: shortIdSchema,
   debtId: z.string().uuid(),
@@ -107,7 +116,7 @@ export async function markDebtPaidAction(
         outingId: outing.id,
         actorParticipantId: participant.id,
         actorUserId: userId,
-        action: "DEBT_DECLARED_PAID",
+        action: AUDIT_ACTION.DEBT_DECLARED_PAID,
         ipHash,
         payload: JSON.stringify({ debtId: row.id }),
       });
@@ -162,7 +171,7 @@ export async function confirmDebtPaidAction(
         outingId: outing.id,
         actorParticipantId: participant.id,
         actorUserId: userId,
-        action: "DEBT_CONFIRMED",
+        action: AUDIT_ACTION.DEBT_CONFIRMED,
         ipHash,
         payload: JSON.stringify({ debtId: row.id }),
       });
@@ -258,7 +267,7 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
       outingId: outing.id,
       actorParticipantId: participant.id,
       actorUserId: userId,
-      action: "IBAN_REVEALED",
+      action: AUDIT_ACTION.IBAN_REVEALED,
       ipHash,
       payload: JSON.stringify({ methodId, debtId }),
     });
