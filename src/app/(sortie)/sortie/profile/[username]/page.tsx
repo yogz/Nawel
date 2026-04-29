@@ -13,11 +13,24 @@ import {
   listPublicProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
+import {
+  bucketizeByAction,
+  flattenInboxByPriority,
+  type ActionBucket,
+} from "@/features/sortie/lib/inbox-buckets";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
+
+/**
+ * Seuil en dessous duquel on bypass le grouping par bucket sur la
+ * checklist lien-privé : sur 1-2 cards, des headers de section bouffent
+ * plus de pixels qu'ils n'en organisent. À 3 sortes asymétriques (ex:
+ * 2 "à toi de jouer" + 1 "tu viens"), le grouping commence à payer.
+ */
+const INBOX_GROUPING_MIN_OUTINGS = 3;
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -295,16 +308,23 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         />
       )}
 
-      {restUpcoming.length > 0 && (
-        <OutingSection
-          title="À venir"
-          outings={restUpcoming}
-          showRsvp={showRsvp}
-          myRsvpByOuting={myRsvpByOuting}
-          loggedInName={session?.user?.name ?? null}
-          isPast={false}
-        />
-      )}
+      {restUpcoming.length > 0 &&
+        (showRsvp ? (
+          <InboxSection
+            outings={restUpcoming}
+            myRsvpByOuting={myRsvpByOuting}
+            loggedInName={session?.user?.name ?? null}
+          />
+        ) : (
+          <OutingSection
+            title="À venir"
+            outings={restUpcoming}
+            showRsvp={showRsvp}
+            myRsvpByOuting={myRsvpByOuting}
+            loggedInName={session?.user?.name ?? null}
+            isPast={false}
+          />
+        ))}
 
       {past.length > 0 && <PastSection outings={past} loggedInName={session?.user?.name ?? null} />}
     </main>
@@ -382,6 +402,133 @@ type OutingRow = Awaited<ReturnType<typeof listPublicProfileOutings>>["upcoming"
 type ParticipantRow =
   Awaited<ReturnType<typeof listMyParticipantsForOutings>> extends Map<string, infer V> ? V : never;
 
+/**
+ * Mode lien-privé uniquement : la liste des sorties à venir est groupée
+ * par état d'action côté invité (à toi de jouer / tu viens / en attente
+ * / tu viens pas) plutôt que chronologique. Transforme la page en
+ * checklist au lieu d'un agenda.
+ *
+ * Sous le seuil `INBOX_GROUPING_MIN_OUTINGS`, on retombe sur une liste
+ * plate triée par priorité d'action : sur 1-2 cards, des headers de
+ * section pèsent plus que la lecture qu'ils organisent.
+ *
+ * Le bucket "tu viens pas" reste **visible muet** (opacité réduite, pas
+ * de `<details>` caché) — cacher la rétractation force un geste de
+ * découverte sur l'edge case émotionnellement le plus coûteux. Cf.
+ * review UX devil's avocate / IA.
+ */
+function InboxSection({
+  outings,
+  myRsvpByOuting,
+  loggedInName,
+}: {
+  outings: OutingRow[];
+  myRsvpByOuting: Map<string, ParticipantRow>;
+  loggedInName: string | null;
+}) {
+  const buckets = bucketizeByAction(outings, myRsvpByOuting);
+
+  if (outings.length < INBOX_GROUPING_MIN_OUTINGS) {
+    const flat = flattenInboxByPriority(buckets);
+    return (
+      <section className="mb-10">
+        <ul className="flex flex-col gap-4">
+          {flat.map((o) => (
+            <li key={o.id}>
+              <OutingProfileCard
+                outing={o}
+                showRsvp
+                myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+                loggedInName={loggedInName}
+                outingBaseUrl={PUBLIC_BASE}
+                isPast={false}
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  return (
+    <div className="mb-10 flex flex-col gap-8">
+      {buckets
+        .filter((b) => b.outings.length > 0)
+        .map((bucket) => (
+          <InboxBucketSection
+            key={bucket.key}
+            bucket={bucket}
+            myRsvpByOuting={myRsvpByOuting}
+            loggedInName={loggedInName}
+          />
+        ))}
+    </div>
+  );
+}
+
+function InboxBucketSection({
+  bucket,
+  myRsvpByOuting,
+  loggedInName,
+}: {
+  bucket: ActionBucket<OutingRow>;
+  myRsvpByOuting: Map<string, ParticipantRow>;
+  loggedInName: string | null;
+}) {
+  // "Tu viens pas" déjà décliné = info passée, pas une sortie active. On
+  // baisse l'opacité du header + des cards pour que l'œil passe sans
+  // s'arrêter, sans pour autant cacher l'info (rétractation possible
+  // d'un tap, signal social préservé).
+  const muted = bucket.key === "declined";
+  return (
+    <section className={muted ? "opacity-60" : undefined}>
+      <p className="mb-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+        <span>─ {bucket.label} ─</span>
+        <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
+      </p>
+      <ul className="flex flex-col gap-4">
+        {bucket.outings.map((o) => (
+          <li key={o.id}>
+            <OutingProfileCard
+              outing={o}
+              showRsvp
+              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+              loggedInName={loggedInName}
+              outingBaseUrl={PUBLIC_BASE}
+              isPast={false}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * Centralise la coercion `participants` row → prop `myRsvp` attendue
+ * par `OutingProfileCard`. Filtre les responses inattendues (paranoia
+ * narrowing pour TS — la DB a un enum constraint).
+ */
+function resolveMyRsvp(p: ParticipantRow | undefined, loggedInName: string | null) {
+  if (
+    !p ||
+    (p.response !== "yes" &&
+      p.response !== "no" &&
+      p.response !== "handle_own" &&
+      p.response !== "interested")
+  ) {
+    return null;
+  }
+  return {
+    response: p.response as RsvpResponse | "interested",
+    name: p.anonName ?? loggedInName ?? "",
+    extraAdults: p.extraAdults,
+    extraChildren: p.extraChildren,
+    email: p.anonEmail ?? undefined,
+    votedSlots: p.votedSlots,
+  };
+}
+
 function OutingSection({
   title,
   outings,
@@ -397,30 +544,6 @@ function OutingSection({
   loggedInName: string | null;
   isPast: boolean;
 }) {
-  function resolveMyRsvp(p: ParticipantRow | undefined) {
-    // "interested" = a voté en mode sondage (au moins un slot available).
-    // On le laisse passer pour que la card vote affiche "✓ Tu as voté".
-    // Le narrow vers RsvpResponse strict se fait au point de passage à
-    // InlineRsvpSection (mode fixed uniquement).
-    if (
-      !p ||
-      (p.response !== "yes" &&
-        p.response !== "no" &&
-        p.response !== "handle_own" &&
-        p.response !== "interested")
-    ) {
-      return null;
-    }
-    return {
-      response: p.response as RsvpResponse | "interested",
-      name: p.anonName ?? loggedInName ?? "",
-      extraAdults: p.extraAdults,
-      extraChildren: p.extraChildren,
-      email: p.anonEmail ?? undefined,
-      votedSlots: p.votedSlots,
-    };
-  }
-
   return (
     <section className="mb-10">
       <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
@@ -432,7 +555,7 @@ function OutingSection({
             <OutingProfileCard
               outing={o}
               showRsvp={showRsvp}
-              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
+              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
               loggedInName={loggedInName}
               outingBaseUrl={PUBLIC_BASE}
               isPast={isPast}
