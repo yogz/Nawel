@@ -1,4 +1,4 @@
-import { CalendarCheck, Lock, Ticket, type LucideIcon } from "lucide-react";
+import { CalendarCheck, Check, Ticket, type LucideIcon } from "lucide-react";
 
 /**
  * Précédence temporelle pour le badge "verrouillé" affiché sur les
@@ -36,5 +36,5 @@ export function resolveLockReason(o: Outingish, now: Date = new Date()): LockRea
 export const LOCK_GLYPH: Record<LockReason, LucideIcon> = {
   purchased: Ticket,
   "vote-tranched": CalendarCheck,
-  "deadline-passed": Lock,
+  "deadline-passed": Check,
 };
