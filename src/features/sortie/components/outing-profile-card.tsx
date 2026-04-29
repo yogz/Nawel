@@ -249,12 +249,18 @@ export function OutingProfileCard({
           {navigationRow}
         </Link>
         <div className="mt-3 border-t border-ink-700/5 pt-3">
+          {/* Eyebrow uniforme cross-mode (RSVP fixe : ↓ Ton tour / ✓ Tu
+              viens / ✓ Tu passes ; vote : ↓ Ton tour / ✓ Tu as voté).
+              Stabilise la hauteur des cards et signale au scan si la
+              réponse a déjà été enregistrée — sans cet eyebrow, un
+              voteur pouvait croire qu'il n'avait pas répondu et
+              re-cliquer le CTA. */}
+          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+            {hasVoted ? "✓ Tu as voté" : "↓ Ton tour"}
+          </p>
           {hasVoted ? (
             <>
               <p className="mb-2 text-[13px] leading-snug text-ink-600">
-                <span className="mr-1.5 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-700">
-                  ✓ Tes dates
-                </span>
                 <span className="font-semibold text-ink-700">
                   {formatVotedSlotsCompact(votedSlots)}
                 </span>

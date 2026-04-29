@@ -207,7 +207,7 @@ export function InlineRsvpSection({
       <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
         {eyebrowLabel}
       </p>
-      <div className="grid grid-cols-[3fr_2fr] gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <SegmentedButton
           // Icône uniquement quand selected : elle porte le signal
           // "réponse enregistrée". En non-sélectionné, l'absence d'icône
@@ -276,7 +276,7 @@ function SegmentedButton({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
-      className={`flex h-11 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
+      className={`flex h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
     >
       {icon && <span className={selected ? "text-ink-50" : ""}>{icon}</span>}
       <span>{label}</span>
