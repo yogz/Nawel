@@ -3,8 +3,11 @@ import { z } from "zod";
 import { withErrorThrower, createSafeAction } from "./action-utils";
 import * as errorsModule from "./errors";
 
-// Mock isDatabaseError
-vi.mock("./errors", () => ({
+// On ne mocke que `isDatabaseError` — `action-utils.ts` importe aussi
+// `ServiceUnavailableError` depuis ce module et un mock total casserait
+// le `throw new ServiceUnavailableError()` du code testé.
+vi.mock("./errors", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./errors")>()),
   isDatabaseError: vi.fn(),
 }));
 
@@ -36,9 +39,7 @@ describe("action-utils.ts", () => {
       vi.mocked(errorsModule.isDatabaseError).mockReturnValue(true);
 
       const wrapped = withErrorThrower(action);
-      await expect(wrapped()).rejects.toThrow(
-        "Désolé, le service est temporairement indisponible. Notre base de données ne répond pas. Veuillez réessayer dans quelques instants."
-      );
+      await expect(wrapped()).rejects.toThrow("error.serviceUnavailable");
     });
   });
 
@@ -69,9 +70,7 @@ describe("action-utils.ts", () => {
       vi.mocked(errorsModule.isDatabaseError).mockReturnValue(true);
       const safeAction = createSafeAction(schema, internalAction);
 
-      await expect(safeAction({ name: "Valid" })).rejects.toThrow(
-        "Désolé, le service est temporairement indisponible"
-      );
+      await expect(safeAction({ name: "Valid" })).rejects.toThrow("error.serviceUnavailable");
     });
   });
 });
