@@ -65,13 +65,30 @@ async function umamiFetch<T>(
   }
 }
 
-// ─── Funnel counts (1 call par event = 6 calls totaux) ──────────────
-
+// ─── Funnel counts (1 call par event = 5 calls totaux) ──────────────
+//
+// On choisit uniquement des events **non-skippables** + monotones.
+// Avant 2026-04 le funnel incluait `venue_entered` et `name_entered` —
+// or les 2 sont conditionnellement skip côté wizard (`venue` skip si
+// déjà rempli par le paster, `name` skip si user loggé). Résultat : la
+// dashboard affichait 70%+ de "drop" entre date et venue qui était en
+// fait le ratio des users avec venue déjà connu — funnel mensonger.
+//
+// Le nouveau funnel garde 5 steps qui marquent une vraie progression :
+//   1. paste_entered    — visite la step initiale (toujours)
+//   2. paste_submitted  — a tapé qqch + cliqué next (signe d'engagement)
+//   3. date_entered     — a passé le branching paste/title/confirm
+//   4. commit_entered   — a atteint la step finale (revue avant publish)
+//   5. publish_succeeded — a cliqué publish ET serveur OK
+//
+// Les events `title_entered` (branche manual) et `confirm_entered`
+// (branche fixed) restent émis et exposés via `getConfirmEnteredCount`
+// (split de branche), mais ne sont pas dans le funnel principal pour
+// éviter la double comptabilité d'un user qui ne voit qu'une des 2.
 const WIZARD_STEP_EVENTS = [
   "wizard_step_paste_entered",
+  "wizard_paste_submitted",
   "wizard_step_date_entered",
-  "wizard_step_venue_entered",
-  "wizard_step_name_entered",
   "wizard_step_commit_entered",
   "wizard_publish_succeeded",
 ] as const;
@@ -158,6 +175,42 @@ export async function getGeminiTriggerBreakdown(
     eventName: "wizard_gemini_started",
     propertyName: "trigger",
   });
+}
+
+/**
+ * Breakdown URL vs texte libre sur la step paste : quelle proportion
+ * des users qui submit ont collé un lien (path FIXED, paster OG/TM
+ * actif) vs tapé du texte (path MANUAL, fallback Gemini).
+ *
+ * Output : `[{value: "url", total: N}, {value: "text", total: M}]` —
+ * lecture directe sans recompute, le dashboard fait juste le ratio.
+ */
+export async function getPasteKindBreakdown(range: Range): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "wizard_paste_submitted",
+    propertyName: "kind",
+  });
+}
+
+/**
+ * Count d'`wizard_step_confirm_entered` — la step n'apparaît QUE dans
+ * la branche FIXED (paste URL réussi → preview de la card avant
+ * date). Comparer ce count à `wizard_paste_submitted (kind=url)` donne
+ * le taux de conversion paster→confirm (combien d'URL parsées
+ * survivent jusqu'à la card de revue).
+ */
+export async function getConfirmEnteredCount(range: Range): Promise<number | null> {
+  const data = await umamiFetch<EventsStatsResponse>("/events/stats", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    event: "wizard_step_confirm_entered",
+  });
+  if (!data) {
+    return null;
+  }
+  return data.events?.value ?? 0;
 }
 
 // ─── Helper de calculs côté Node ─────────────────────────────────────

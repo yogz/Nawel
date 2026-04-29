@@ -1,6 +1,8 @@
 import {
   computePercentiles,
+  getConfirmEnteredCount,
   getGeminiTriggerBreakdown,
+  getPasteKindBreakdown,
   getPasteToPublishDistribution,
   getWizardFunnelCounts,
   isUmamiConfigured,
@@ -22,12 +24,20 @@ export type PasteToPublishStats = {
   p90: number;
 };
 
+export type PasteKindBreakdown = {
+  url: number;
+  text: number;
+  total: number;
+};
+
 export type WizardUmamiStats = {
   configured: boolean;
   rangeDays: number;
   funnel: WizardFunnelStep[] | null;
   pasteToPublish: PasteToPublishStats | null;
   geminiTriggers: GeminiTriggerCounts | null;
+  pasteKind: PasteKindBreakdown | null;
+  confirmEntered: number | null;
 };
 
 /**
@@ -45,13 +55,17 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
       funnel: null,
       pasteToPublish: null,
       geminiTriggers: null,
+      pasteKind: null,
+      confirmEntered: null,
     };
   }
   const range = lastNDaysRange(rangeDays);
-  const [funnel, distribution, triggers] = await Promise.all([
+  const [funnel, distribution, triggers, pasteKindRows, confirmEntered] = await Promise.all([
     getWizardFunnelCounts(range),
     getPasteToPublishDistribution(range),
     getGeminiTriggerBreakdown(range),
+    getPasteKindBreakdown(range),
+    getConfirmEnteredCount(range),
   ]);
 
   const pasteToPublish = distribution ? computePercentiles(distribution) : null;
@@ -70,5 +84,25 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     geminiTriggers = counts;
   }
 
-  return { configured, rangeDays, funnel, pasteToPublish, geminiTriggers };
+  let pasteKind: PasteKindBreakdown | null = null;
+  if (pasteKindRows) {
+    const breakdown: PasteKindBreakdown = { url: 0, text: 0, total: 0 };
+    for (const row of pasteKindRows) {
+      if (row.value === "url" || row.value === "text") {
+        breakdown[row.value] += row.total;
+      }
+      breakdown.total += row.total;
+    }
+    pasteKind = breakdown;
+  }
+
+  return {
+    configured,
+    rangeDays,
+    funnel,
+    pasteToPublish,
+    geminiTriggers,
+    pasteKind,
+    confirmEntered,
+  };
 }

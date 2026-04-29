@@ -66,6 +66,8 @@ export default async function StatPage() {
       funnel: null,
       pasteToPublish: null,
       geminiTriggers: null,
+      pasteKind: null,
+      confirmEntered: null,
     }),
   ]);
 

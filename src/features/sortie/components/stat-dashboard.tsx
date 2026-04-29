@@ -16,9 +16,8 @@ type Props = {
 
 const STEP_SHORT_LABEL: Record<string, string> = {
   wizard_step_paste_entered: "paste",
+  wizard_paste_submitted: "submit",
   wizard_step_date_entered: "date",
-  wizard_step_venue_entered: "venue",
-  wizard_step_name_entered: "name",
   wizard_step_commit_entered: "commit",
   wizard_publish_succeeded: "publish",
 };
@@ -114,9 +113,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub?: string
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4">
       <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">{label}</p>
-      <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">
-        {value}
-      </p>
+      <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">{value}</p>
       {sub && <p className="font-mono text-[11px] tracking-[0.04em] text-ink-500">{sub}</p>}
     </div>
   );
@@ -251,7 +248,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
               </p>
             )}
 
-            {/* KPIs paste→publish + Gemini triggers */}
+            {/* KPIs paste→publish + branche entrée (URL vs texte, confirm reached) */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Kpi
                 label="Paste → publish"
@@ -264,6 +261,37 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                   wizardUmami.pasteToPublish
                     ? `médiane sur ${wizardUmami.pasteToPublish.count} publish (p90 ${(wizardUmami.pasteToPublish.p90 / 1000).toFixed(0)} s)`
                     : "pas encore de publish"
+                }
+              />
+              <Kpi
+                label="Submit URL"
+                value={
+                  wizardUmami.pasteKind ? wizardUmami.pasteKind.url.toLocaleString("fr-FR") : "—"
+                }
+                sub={
+                  wizardUmami.pasteKind
+                    ? `${pct(wizardUmami.pasteKind.url, wizardUmami.pasteKind.total)} des paste · branche FIXED`
+                    : "—"
+                }
+              />
+              <Kpi
+                label="Submit texte"
+                value={
+                  wizardUmami.pasteKind ? wizardUmami.pasteKind.text.toLocaleString("fr-FR") : "—"
+                }
+                sub={
+                  wizardUmami.pasteKind
+                    ? `${pct(wizardUmami.pasteKind.text, wizardUmami.pasteKind.total)} des paste · branche MANUAL`
+                    : "—"
+                }
+              />
+              <Kpi
+                label="Confirm reached"
+                value={(wizardUmami.confirmEntered ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.confirmEntered !== null && wizardUmami.pasteKind
+                    ? `${pct(wizardUmami.confirmEntered, wizardUmami.pasteKind.url)} du submit URL · preview card`
+                    : "step FIXED-only"
                 }
               />
               <Kpi
