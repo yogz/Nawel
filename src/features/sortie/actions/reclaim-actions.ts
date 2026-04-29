@@ -8,6 +8,7 @@ import { magicLinks, outings } from "@drizzle/sortie-schema";
 import { hashToken } from "@/features/sortie/lib/cookie-token";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { renderEmail } from "@/features/sortie/lib/emails/layout";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { z } from "zod";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
@@ -19,14 +20,6 @@ const requestReclaimSchema = z.object({
 
 const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
 const MAGIC_LINK_TTL_MS = 24 * 60 * 60 * 1000;
-
-function formDataToObject(formData: FormData): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of formData.entries()) {
-    out[k] = typeof v === "string" ? v : "";
-  }
-  return out;
-}
 
 function escapeHtml(input: string): string {
   return input

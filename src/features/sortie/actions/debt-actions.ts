@@ -22,6 +22,7 @@ import {
 } from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
@@ -35,14 +36,6 @@ const revealIbanSchema = z.object({
   methodId: z.string().uuid(),
   debtId: z.string().uuid(),
 });
-
-function formDataToObject(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
-  for (const [k, v] of formData.entries()) {
-    obj[k] = typeof v === "string" ? v : "";
-  }
-  return obj;
-}
 
 async function getCurrentParticipant(outingId: string) {
   const session = await auth.api.getSession({ headers: await headers() });

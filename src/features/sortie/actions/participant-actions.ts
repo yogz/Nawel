@@ -14,6 +14,7 @@ import {
 import { sendRsvpReceivedEmail } from "@/features/sortie/lib/emails/send-outing-emails";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { removeRsvpSchema, rsvpSchema, voteRsvpSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
 
@@ -22,19 +23,11 @@ async function getSessionUser() {
   return session?.user ?? null;
 }
 
-function formDataToRsvp(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
-  for (const [key, value] of formData.entries()) {
-    obj[key] = typeof value === "string" ? value : "";
-  }
-  return obj;
-}
-
 export async function rsvpAction(
   _prev: FormActionState,
   formData: FormData
 ): Promise<FormActionState> {
-  const parsed = rsvpSchema.safeParse(formDataToRsvp(formData));
+  const parsed = rsvpSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
@@ -172,7 +165,7 @@ export async function removeRsvpAction(
   _prev: FormActionState,
   formData: FormData
 ): Promise<FormActionState> {
-  const parsed = removeRsvpSchema.safeParse(formDataToRsvp(formData));
+  const parsed = removeRsvpSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
@@ -228,7 +221,7 @@ export async function castVoteAction(
   _prev: FormActionState,
   formData: FormData
 ): Promise<FormActionState> {
-  const parsed = voteRsvpSchema.safeParse(formDataToRsvp(formData));
+  const parsed = voteRsvpSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
