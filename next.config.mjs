@@ -39,6 +39,31 @@ const nextConfig = {
       },
     ];
   },
+  async headers() {
+    // Headers globaux à faible risque de régression : XFO/Referrer/HSTS
+    // /Permissions/X-Content-Type. Une CSP stricte est volontairement
+    // omise — elle nécessite un round-trip de tests (Umami, Vercel
+    // Analytics, blob storage, framer-motion, fonts.googleapis) et sera
+    // ajoutée dans un PR dédié en mode report-only d'abord.
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+        ],
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // Fix for @floating-ui module resolution in Next.js webpack
     // Ensure @floating-ui is properly resolved and bundled

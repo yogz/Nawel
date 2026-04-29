@@ -194,6 +194,13 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
   if (!outing) {
     return { ok: false, message: "Sortie introuvable." };
   }
+  // Pas de révélation d'IBAN sur une sortie annulée : la dette n'a plus
+  // à être réglée et l'IBAN est une donnée sensible. Côté UI la dette
+  // reste affichée pour l'historique mais le bouton "voir l'IBAN" doit
+  // bloquer côté serveur même si l'utilisateur force le call.
+  if (outing.status === "cancelled") {
+    return { ok: false, message: "Sortie annulée." };
+  }
 
   const { participant, userId } = await getCurrentParticipant(outing.id);
   if (!participant) {

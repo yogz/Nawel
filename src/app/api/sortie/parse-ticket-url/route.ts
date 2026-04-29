@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 import { trackParseAttempt, type ParseOutcome } from "@/features/sortie/lib/parse-stats";
+import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { isLikelyPrivateHostname, safeFetchExternal } from "@/features/sortie/lib/safe-fetch";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,39 +25,6 @@ function extractFirstUrl(raw: string): string | null {
     url = url.slice(0, -1);
   }
   return url || null;
-}
-
-// Hostnames we refuse to fetch. Not a full SSRF defence (a sophisticated
-// attacker could point DNS at 127.0.0.1), but it catches the obvious probes
-// and is cheap. Full defence would require DNS resolution + IP-range
-// rejection — worth adding if/when this endpoint is abused.
-const BLOCKED_HOSTNAMES = new Set([
-  "localhost",
-  "0.0.0.0",
-  "127.0.0.1",
-  "::1",
-  "metadata.google.internal",
-]);
-
-function isPrivateIpLikeHost(hostname: string): boolean {
-  if (BLOCKED_HOSTNAMES.has(hostname)) {
-    return true;
-  }
-  // Cheap numeric-prefix check for obvious private ranges. Real IP parsing
-  // would belong in a helper, but we only need to stop casual probes.
-  if (/^10\./.test(hostname)) {
-    return true;
-  }
-  if (/^192\.168\./.test(hostname)) {
-    return true;
-  }
-  if (/^169\.254\./.test(hostname)) {
-    return true;
-  }
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(hostname)) {
-    return true;
-  }
-  return false;
 }
 
 const MAX_BYTES = 500 * 1024; // 500 KB — covers OG headers on any real page
@@ -670,6 +639,24 @@ function ticketmasterSearchKeyword(url: URL): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate-limit IP en tête de route : ce endpoint déclenche un fetch
+  // externe + potentiellement un appel Discovery API Ticketmaster, donc
+  // chaque requête a un coût. 10 req/min/IP couvre le cas d'usage normal
+  // (un user qui colle plusieurs URLs de suite dans le wizard) sans laisser
+  // un attaquant amplifier vers des cibles internes. IP lue directement
+  // depuis la NextRequest plutôt que via headers() — évite le request-scope
+  // async store, et c'est sync donc testable sans mock.
+  const xff = request.headers.get("x-forwarded-for");
+  const ip = xff ? xff.split(",")[0]!.trim() : (request.headers.get("x-real-ip") ?? "unknown");
+  const gate = await rateLimit({
+    key: `parse-ticket:${ip}`,
+    limit: 10,
+    windowSeconds: 60,
+  });
+  if (!gate.ok) {
+    return NextResponse.json({ error: "rate_limited", message: gate.message }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = inputSchema.safeParse(body);
   if (!parsed.success) {
@@ -692,7 +679,11 @@ export async function POST(request: NextRequest) {
   if (target.protocol !== "http:" && target.protocol !== "https:") {
     return NextResponse.json({ error: "unsupported_protocol" }, { status: 400 });
   }
-  if (isPrivateIpLikeHost(target.hostname)) {
+  // Court-circuit pour les IP littérales privées/loopback : feedback 400
+  // immédiat, pas de fetch tenté. Le DNS rebinding (domaine qui résout
+  // vers 127.0.0.1) reste couvert plus tard par safeFetchExternal qui
+  // refait la résolution + check IP au moment du fetch.
+  if (isLikelyPrivateHostname(target.hostname)) {
     trackParseAttempt(target.hostname, "fetch_error", target.pathname);
     return NextResponse.json({ error: "blocked_host" }, { status: 400 });
   }
@@ -826,65 +817,30 @@ export async function POST(request: NextRequest) {
 type FetchResult = { data: Parsed; fetched: boolean };
 
 async function fetchAndParseOg(target: URL): Promise<FetchResult> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
-    const response = await fetch(target.toString(), {
-      signal: controller.signal,
-      redirect: "follow",
-      headers: {
-        // Most French ticket sites (billetterie.chatelet.com, Fnac, etc.)
-        // gate their OG / JSON-LD output behind a realistic mobile
-        // browser UA. Our previous `SortieBot/1.0` identifier was
-        // greeted with a "Cookies appear to be disabled" stub page. A
-        // current-ish iOS Safari string is the sweet spot: we look like
-        // a real viewer (the whole premise of Sortie is mobile users
-        // sharing links), and ticket sites ship their full HTML.
-        "User-Agent":
-          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-      },
-    });
-    clearTimeout(timeout);
-
-    // Non-2xx ou redirection vers une 4xx/5xx résolue : on considère
-    // que c'est un fetch_error pour la télémétrie. La page ne nous a
-    // littéralement rien donné d'exploitable.
-    if (!response.ok) {
-      return { data: {}, fetched: false };
+  const result = await safeFetchExternal(target.toString(), {
+    timeoutMs: TIMEOUT_MS,
+    maxBytes: MAX_BYTES,
+    acceptContentTypes: ["text/html"],
+    headers: {
+      // Most French ticket sites (billetterie.chatelet.com, Fnac, etc.)
+      // gate their OG / JSON-LD output behind a realistic mobile
+      // browser UA. Our previous `SortieBot/1.0` identifier was
+      // greeted with a "Cookies appear to be disabled" stub page. A
+      // current-ish iOS Safari string is the sweet spot: we look like
+      // a real viewer (the whole premise of Sortie is mobile users
+      // sharing links), and ticket sites ship their full HTML.
+      "User-Agent":
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Mobile/15E148 Safari/604.1",
+      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+    },
+  });
+  if (!result.ok) {
+    if (result.reason !== "blocked_host" && result.reason !== "wrong_content_type") {
+      console.warn("[parse-ticket-url] fetch failed:", result.reason);
     }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.includes("text/html")) {
-      return { data: {}, fetched: false };
-    }
-
-    // Read at most MAX_BYTES so a giant HTML blob can't exhaust memory.
-    const reader = response.body?.getReader();
-    if (!reader) {
-      return { data: {}, fetched: false };
-    }
-    const chunks: Uint8Array[] = [];
-    let total = 0;
-    while (total < MAX_BYTES) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      chunks.push(value);
-      total += value.byteLength;
-    }
-    reader.cancel().catch(() => {});
-
-    const html = new TextDecoder("utf-8", { fatal: false }).decode(
-      Buffer.concat(chunks.map((c) => Buffer.from(c)))
-    );
-    return { data: extractOg(html), fetched: true };
-  } catch (err) {
-    clearTimeout(timeout);
-    const message = err instanceof Error ? err.message : "unknown";
-    console.warn("[parse-ticket-url] fetch failed:", message.slice(0, 120));
     return { data: {}, fetched: false };
   }
+  const html = new TextDecoder("utf-8", { fatal: false }).decode(result.body);
+  return { data: extractOg(html), fetched: true };
 }
