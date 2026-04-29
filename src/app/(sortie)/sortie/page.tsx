@@ -98,7 +98,7 @@ export default async function SortieHome() {
         <Link
           href="/moi"
           aria-label="Mon profil"
-          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
+          className="rounded-full ring-1 ring-acid-600/55 transition-all duration-300 hover:ring-acid-600/80 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
         >
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
