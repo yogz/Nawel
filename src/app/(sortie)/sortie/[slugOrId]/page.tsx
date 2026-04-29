@@ -114,27 +114,21 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
   const deadlinePassed = outing.deadlineAt < new Date();
 
-  // Money-layer context: does a purchase exist, does the viewer have debts or
-  // credits on this outing? Drives the "Déclarer l'achat" / "Voir les dettes"
-  // CTAs further down.
-  const existingPurchase = await db.query.purchases.findFirst({
-    where: eq(purchases.outingId, outing.id),
-  });
-  const myMoneyRow = me
-    ? await db.query.debts.findFirst({
-        where: and(
-          eq(debts.outingId, outing.id),
-          // OR (debtor or creditor) — Drizzle builder:
-          // we use two queries rather than OR to keep the types clean.
-          eq(debts.debtorParticipantId, me.id)
-        ),
-      })
-    : null;
-  const myCreditRow = me
-    ? await db.query.debts.findFirst({
-        where: and(eq(debts.outingId, outing.id), eq(debts.creditorParticipantId, me.id)),
-      })
-    : null;
+  // Money-layer context : 3 queries indépendantes (purchase + debts debtor +
+  // debts creditor) parallélisées — économise 2 RTT DB sur le hot path.
+  const [existingPurchase, myMoneyRow, myCreditRow] = await Promise.all([
+    db.query.purchases.findFirst({ where: eq(purchases.outingId, outing.id) }),
+    me
+      ? db.query.debts.findFirst({
+          where: and(eq(debts.outingId, outing.id), eq(debts.debtorParticipantId, me.id)),
+        })
+      : Promise.resolve(null),
+    me
+      ? db.query.debts.findFirst({
+          where: and(eq(debts.outingId, outing.id), eq(debts.creditorParticipantId, me.id)),
+        })
+      : Promise.resolve(null),
+  ]);
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
   // Creator's first name for the WhatsApp share opening — "Léa t'invite : …".
