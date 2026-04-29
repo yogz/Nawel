@@ -15,12 +15,18 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
-import { listAllMyOutings } from "@/features/sortie/queries/outing-queries";
+import {
+  listAllMyOutings,
+  listAnonInboxOutings,
+  listMyParticipantsForOutings,
+} from "@/features/sortie/queries/outing-queries";
 import { bucketizeUpcoming, sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
+import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -31,6 +37,18 @@ export default async function SortieHome() {
   const userId = session?.user?.id ?? null;
 
   if (!userId || !session) {
+    // Avant de servir le landing générique, on regarde si le visiteur
+    // est un anon déjà connu via son cookie token (a répondu à au
+    // moins une sortie via un lien partagé). Si oui, on lui ramène
+    // ses sorties — beaucoup plus utile qu'un "Organise. Ils
+    // répondent." quand il a déjà l'app dans son contexte.
+    const cookieTokenHash = await readParticipantTokenHash();
+    if (cookieTokenHash) {
+      const inbox = await listAnonInboxOutings(cookieTokenHash);
+      if (inbox.upcoming.length > 0 || inbox.past.length > 0) {
+        return <AnonInbox inbox={inbox} cookieTokenHash={cookieTokenHash} />;
+      }
+    }
     return <PublicHome />;
   }
 
@@ -199,9 +217,7 @@ function UpcomingBuckets({
           <section key={bucket.key}>
             <p className="mb-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
               <span>─ {bucket.label} ─</span>
-              <span className="text-ink-400">
-                {String(bucket.outings.length).padStart(2, "0")}
-              </span>
+              <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
             </p>
             <ul className="flex flex-col gap-4">
               {bucket.outings.map((o, oIdx) => (
@@ -388,6 +404,141 @@ function VibeButton({
         {label}
       </span>
     </Link>
+  );
+}
+
+/**
+ * Vue "anonyme reconnu" : un visiteur sans session mais avec un cookie
+ * token qui a déjà participé à au moins une sortie. Pas de hero (le
+ * mode est "checklist d'engagements", pas "vitrine"), pas d'avatar
+ * nav (l'identité serveur n'a pas de profil utilisateur). Les cards
+ * affichent le RSVP inline pour qu'il puisse modifier sa réponse en
+ * 1 tap, comme sur le profil organisateur en mode invité (?k=…).
+ *
+ * Push login en bas pour qu'il puisse récupérer son historique sur
+ * un autre device sans le perdre — la friction est volontairement
+ * basse (lien tertiaire underline mono), pas de bandeau qui crie.
+ */
+async function AnonInbox({
+  inbox,
+  cookieTokenHash,
+}: {
+  inbox: Awaited<ReturnType<typeof listAnonInboxOutings>>;
+  cookieTokenHash: string;
+}) {
+  const upcomingSorted = sortUpcomingByStartsAt(inbox.upcoming);
+  const myRsvpByOuting = await listMyParticipantsForOutings({
+    outingIds: [...inbox.upcoming, ...inbox.past].map((o) => o.id),
+    cookieTokenHash,
+    userId: null,
+  });
+
+  function resolveMyRsvp(outingId: string) {
+    const p = myRsvpByOuting.get(outingId);
+    if (
+      !p ||
+      (p.response !== "yes" &&
+        p.response !== "no" &&
+        p.response !== "handle_own" &&
+        p.response !== "interested")
+    ) {
+      return null;
+    }
+    return {
+      response: p.response as RsvpResponse | "interested",
+      name: p.anonName ?? "",
+      extraAdults: p.extraAdults,
+      extraChildren: p.extraChildren,
+      email: p.anonEmail ?? undefined,
+      votedSlots: p.votedSlots,
+    };
+  }
+
+  const greeting = inbox.anonName ? `Salut ${inbox.anonName}.` : "Tes sorties.";
+  const totalUpcoming = upcomingSorted.length;
+
+  return (
+    <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-10">
+      <header className="mb-10">
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
+          />
+          ─ ton inbox ─
+        </p>
+        <h1
+          className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
+          style={{ textWrap: "balance" }}
+        >
+          {greeting}
+        </h1>
+        {totalUpcoming > 0 && (
+          <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
+            {String(totalUpcoming).padStart(2, "0")}{" "}
+            {totalUpcoming > 1 ? "sorties à venir" : "sortie à venir"}
+          </p>
+        )}
+      </header>
+
+      {upcomingSorted.length > 0 && (
+        <section className="mb-10">
+          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+            ─ à venir ─
+          </p>
+          <ul className="flex flex-col gap-4">
+            {upcomingSorted.map((o) => (
+              <li key={o.id}>
+                <OutingProfileCard
+                  outing={o}
+                  showRsvp
+                  myRsvp={resolveMyRsvp(o.id)}
+                  loggedInName={null}
+                  outingBaseUrl={PUBLIC_BASE}
+                  isPast={false}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {inbox.past.length > 0 && (
+        <section className="mb-10">
+          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+            ─ passées ─
+          </p>
+          <ul className="flex flex-col gap-4">
+            {inbox.past.map((o) => (
+              <li key={o.id}>
+                <OutingProfileCard
+                  outing={o}
+                  showRsvp={false}
+                  myRsvp={null}
+                  loggedInName={null}
+                  outingBaseUrl={PUBLIC_BASE}
+                  isPast
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <div className="mt-12 border-t border-surface-400 pt-6">
+        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+          ─ ton appareil seul ─
+        </p>
+        <p className="mb-3 max-w-md text-[15px] leading-[1.5] text-ink-500">
+          Tes sorties sont liées à ce navigateur. Connecte-toi pour les retrouver partout, sans
+          perdre ton historique.
+        </p>
+        <LoginLink
+          className="font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
+          label="me connecter →"
+        />
+      </div>
+    </main>
   );
 }
 

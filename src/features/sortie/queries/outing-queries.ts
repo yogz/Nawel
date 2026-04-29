@@ -177,6 +177,45 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
 });
 
 /**
+ * "Inbox anon" — sorties auxquelles un visiteur anonyme a participé,
+ * identifié par son cookie token. Une `participants` row matchée sur
+ * `cookieTokenHash` suffit : le visiteur a forcément répondu (yes/no/
+ * handle_own) ou voté ("interested") pour qu'une row existe. Utilisé
+ * sur la home pour ramener un anon à ses sorties au lieu de lui
+ * resservir le landing public générique.
+ *
+ * On retourne aussi `anonName` (premier non-null trouvé) pour pouvoir
+ * personnaliser le header sans demander à l'utilisateur de se logger.
+ */
+export async function listAnonInboxOutings(cookieTokenHash: string, now = new Date()) {
+  const rows = await db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      startsAt: outings.fixedDatetime,
+      deadlineAt: outings.deadlineAt,
+      status: outings.status,
+      mode: outings.mode,
+      heroImageUrl: outings.heroImageUrl,
+      confirmedCount: confirmedCountSql.as("confirmed_count"),
+      anonName: participants.anonName,
+    })
+    .from(outings)
+    .innerJoin(participants, eq(participants.outingId, outings.id))
+    .where(and(eq(participants.cookieTokenHash, cookieTokenHash), ne(outings.status, "cancelled")))
+    .orderBy(desc(outings.createdAt))
+    .limit(50);
+
+  const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
+  const past = rows.filter((r) => r.startsAt && r.startsAt < now);
+  const anonName = rows.find((r) => r.anonName)?.anonName ?? null;
+  return { upcoming, past, anonName };
+}
+
+/**
  * Archived outings — only visible to the creator in their /moi page
  * under an "Archivées" section. Cancelled outings are *not* included
  * here (cancel and archive are distinct semantics).
