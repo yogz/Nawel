@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -25,7 +26,10 @@ type Props = {
   searchParams: Promise<{ k?: string }>;
 };
 
-async function resolveUser(raw: string) {
+// React.cache pour dédoublonner generateMetadata + Page sur la même
+// requête : sinon on tape la DB 2x pour la même row user. Indexe lookup
+// case-insensitive utilise user_username_lower_idx (PR 2).
+const resolveUser = cache(async (raw: string) => {
   // Stored usernames are lowercase; compare with lower() so visitors who
   // typed `@Bob` reach Bob's profile without a redirect round-trip.
   const lookup = decodeURIComponent(raw).toLowerCase();
@@ -41,7 +45,7 @@ async function resolveUser(raw: string) {
     },
   });
   return row ?? null;
-}
+});
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;

@@ -1,10 +1,16 @@
+import { cache } from "react";
 import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
-export async function getOutingByShortId(shortId: string) {
+// `React.cache` dédoublonne par requête : `getOutingByShortId(shortId)` est
+// appelé 2x sur la même page detail (generateMetadata + Page) et jusqu'à
+// 8x à travers les sub-routes (modifier, achat, dettes, paiement, agenda).
+// Sans cache, c'est 2 round-trips DB identiques par requête. La memo est
+// scopée à la requête — pas de stale entre utilisateurs.
+export const getOutingByShortId = cache(async (shortId: string) => {
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, shortId),
     with: {
@@ -32,7 +38,7 @@ export async function getOutingByShortId(shortId: string) {
     return null;
   }
   return outing;
-}
+});
 
 export async function getMyParticipant(args: {
   outingId: string;
@@ -125,7 +131,7 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
  * LEFT JOIN + GROUP BY — cleaner to compose alongside ORDER BY / LIMIT,
  * and the participants outing_id index covers the lookup.
  */
-export async function listPublicProfileOutings(userId: string, now = new Date()) {
+export const listPublicProfileOutings = cache(async (userId: string, now = new Date()) => {
   const rows = await db
     .select({
       id: outings.id,
@@ -159,7 +165,7 @@ export async function listPublicProfileOutings(userId: string, now = new Date())
   const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
   return { upcoming, past };
-}
+});
 
 /**
  * Archived outings — only visible to the creator in their /moi page
