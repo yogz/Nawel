@@ -16,7 +16,8 @@ import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
-import { removeRsvpSchema, rsvpSchema, voteRsvpSchema } from "./schemas";
+import { isOutingOwner } from "@/features/sortie/lib/owner";
+import { removeParticipantSchema, removeRsvpSchema, rsvpSchema, voteRsvpSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
 
 async function getSessionUser() {
@@ -205,6 +206,63 @@ export async function removeRsvpAction(
     // already committed to financial rows we can't orphan.
     return {
       message: "Impossible de retirer ta réponse (achats ou dépenses déjà enregistrés).",
+    };
+  }
+
+  revalidatePath(`/${shortId}`);
+  return {};
+}
+
+/**
+ * Owner-only : retirer un participant de la sortie. Seul le créateur
+ * (rattaché par userId ou par cookieTokenHash) peut appeler cette action.
+ * Les FK `restrict` sur purchases/allocations/debts protègent contre la
+ * suppression d'un participant déjà engagé financièrement — on remonte un
+ * message lisible à la place de l'erreur opaque.
+ */
+export async function removeParticipantAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = removeParticipantSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId, participantId } = parsed.data;
+  const user = await getSessionUser();
+  const cookieTokenHash = await readParticipantTokenHash();
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  if (
+    !isOutingOwner(outing, {
+      userId: user?.id ?? null,
+      cookieTokenHash,
+    })
+  ) {
+    return { message: "Action réservée à l'organisateur." };
+  }
+
+  // On scope la suppression à l'outing courant : un participantId valide
+  // d'une autre sortie ne doit jamais être effacé via cette action, même
+  // si l'appelant est créateur des deux sorties.
+  const target = await db.query.participants.findFirst({
+    where: and(eq(participants.id, participantId), eq(participants.outingId, outing.id)),
+  });
+  if (!target) {
+    return { message: "Participant introuvable." };
+  }
+
+  try {
+    await db.delete(participants).where(eq(participants.id, target.id));
+  } catch {
+    return {
+      message: "Impossible de retirer ce participant (achats ou dépenses déjà enregistrés).",
     };
   }
 

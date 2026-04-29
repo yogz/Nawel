@@ -230,7 +230,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         className="mt-10 overflow-hidden rounded-[28px] border border-surface-400 bg-surface-100 p-6 shadow-[var(--shadow-velvet)]"
         aria-label="Les confirmés"
       >
-        <ParticipantList participants={outing.participants} isCreator={isCreator} />
+        <ParticipantList
+          participants={outing.participants}
+          isCreator={isCreator}
+          shortId={outing.shortId}
+          meId={me?.id ?? null}
+        />
 
         <div className="mt-6 border-t border-surface-400 pt-4 text-center">
           <DeadlineBadge deadlineAt={outing.deadlineAt} />

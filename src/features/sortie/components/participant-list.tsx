@@ -1,6 +1,7 @@
 import { numberToFrenchCap } from "@/features/sortie/lib/number-fr";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { AnimatedCount } from "./animated-count";
+import { RemoveParticipantButton } from "./remove-participant-dialog";
 import { UserAvatar } from "./user-avatar";
 
 type Participant = {
@@ -16,9 +17,16 @@ type Participant = {
 export function ParticipantList({
   participants,
   isCreator = false,
+  shortId,
+  meId = null,
 }: {
   participants: Participant[];
   isCreator?: boolean;
+  /** Requis pour rendre les contrôles owner de retrait. */
+  shortId?: string;
+  /** Id du participant correspondant au viewer — sa propre ligne ne montre
+   * pas le bouton de retrait owner (il a déjà "Retirer ma réponse"). */
+  meId?: string | null;
 }) {
   const yesList = participants.filter((p) => p.response === "yes");
   const handleOwnList = participants.filter((p) => p.response === "handle_own");
@@ -107,10 +115,17 @@ export function ParticipantList({
             return (
               <li key={p.id} className="flex items-center gap-3 text-ink-600">
                 <UserAvatar name={display} image={p.user?.image ?? null} size={32} />
-                <span className="min-w-0 truncate text-base">
+                <span className="min-w-0 flex-1 truncate text-base">
                   {display}
                   {extras && <span className="text-ink-400"> {extras}</span>}
                 </span>
+                {isCreator && shortId && p.id !== meId && (
+                  <RemoveParticipantButton
+                    shortId={shortId}
+                    participantId={p.id}
+                    displayName={display}
+                  />
+                )}
               </li>
             );
           })}
@@ -122,11 +137,21 @@ export function ParticipantList({
           label="Avec leur propre billet"
           count={handleOwnList.length}
           rows={handleOwnList}
+          isCreator={isCreator}
+          shortId={shortId}
+          meId={meId}
         />
       )}
 
       {interestedList.length > 0 && (
-        <SecondarySection label="Intéressés" count={interestedList.length} rows={interestedList} />
+        <SecondarySection
+          label="Intéressés"
+          count={interestedList.length}
+          rows={interestedList}
+          isCreator={isCreator}
+          shortId={shortId}
+          meId={meId}
+        />
       )}
     </div>
   );
@@ -136,10 +161,16 @@ function SecondarySection({
   label,
   count,
   rows,
+  isCreator,
+  shortId,
+  meId,
 }: {
   label: string;
   count: number;
   rows: Participant[];
+  isCreator: boolean;
+  shortId: string | undefined;
+  meId: string | null;
 }) {
   return (
     <div className="mt-5 border-t border-surface-400 pt-4">
@@ -152,7 +183,14 @@ function SecondarySection({
           return (
             <li key={p.id} className="flex items-center gap-3 text-ink-500">
               <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
-              <span className="min-w-0 truncate text-sm">{display}</span>
+              <span className="min-w-0 flex-1 truncate text-sm">{display}</span>
+              {isCreator && shortId && p.id !== meId && (
+                <RemoveParticipantButton
+                  shortId={shortId}
+                  participantId={p.id}
+                  displayName={display}
+                />
+              )}
             </li>
           );
         })}

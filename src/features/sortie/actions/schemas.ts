@@ -288,6 +288,11 @@ export const removeRsvpSchema = z.object({
   shortId: shortIdSchema,
 });
 
+export const removeParticipantSchema = z.object({
+  shortId: shortIdSchema,
+  participantId: z.string().uuid(),
+});
+
 export const cancelOutingSchema = z.object({
   shortId: shortIdSchema,
 });
