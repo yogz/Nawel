@@ -33,7 +33,10 @@ type Props = {
   outing: Outing;
   showRsvp: boolean;
   myRsvp: {
-    response: RsvpResponse;
+    // "interested" = a voté en mode sondage (au moins un slot available).
+    // En mode fixed, ne peut être que RsvpResponse strict — narrow avant
+    // de passer à InlineRsvpSection.
+    response: RsvpResponse | "interested";
     name: string;
     extraAdults: number;
     extraChildren: number;
@@ -310,7 +313,11 @@ export function OutingProfileCard({
             outingTitle={outing.title}
             outingUrl={outingUrl}
             outingDate={outing.startsAt}
-            existing={myRsvp}
+            existing={
+              myRsvp && myRsvp.response !== "interested"
+                ? { ...myRsvp, response: myRsvp.response }
+                : null
+            }
             loggedInName={loggedInName}
           />
         </div>

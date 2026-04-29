@@ -398,11 +398,21 @@ function OutingSection({
   isPast: boolean;
 }) {
   function resolveMyRsvp(p: ParticipantRow | undefined) {
-    if (!p || (p.response !== "yes" && p.response !== "no" && p.response !== "handle_own")) {
+    // "interested" = a voté en mode sondage (au moins un slot available).
+    // On le laisse passer pour que la card vote affiche "✓ Tu as voté".
+    // Le narrow vers RsvpResponse strict se fait au point de passage à
+    // InlineRsvpSection (mode fixed uniquement).
+    if (
+      !p ||
+      (p.response !== "yes" &&
+        p.response !== "no" &&
+        p.response !== "handle_own" &&
+        p.response !== "interested")
+    ) {
       return null;
     }
     return {
-      response: p.response as RsvpResponse,
+      response: p.response as RsvpResponse | "interested",
       name: p.anonName ?? loggedInName ?? "",
       extraAdults: p.extraAdults,
       extraChildren: p.extraChildren,
