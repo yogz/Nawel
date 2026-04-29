@@ -181,9 +181,9 @@ export function LiveStatusHero({
           {LockGlyph && (
             <span
               aria-hidden="true"
-              className="absolute -right-2 -bottom-2 inline-flex size-9 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-2 ring-surface-50 shadow-[var(--shadow-md)]"
+              className="absolute -right-2 -bottom-2 inline-flex size-8 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-2 ring-surface-50 shadow-[var(--shadow-md)]"
             >
-              <LockGlyph size={18} strokeWidth={2.4} />
+              <LockGlyph size={16} strokeWidth={2.4} />
             </span>
           )}
         </div>

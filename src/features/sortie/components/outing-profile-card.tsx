@@ -189,9 +189,9 @@ export function OutingProfileCard({
         {LockGlyph && (
           <span
             aria-hidden="true"
-            className="absolute -right-1 -bottom-1 inline-flex size-5 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-1 ring-surface-50"
+            className="absolute -right-1 -bottom-1 inline-flex size-[18px] items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-1 ring-surface-50"
           >
-            <LockGlyph size={11} strokeWidth={2.4} />
+            <LockGlyph size={10} strokeWidth={2.4} />
           </span>
         )}
       </div>
