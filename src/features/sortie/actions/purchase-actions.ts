@@ -219,17 +219,20 @@ export async function declarePurchaseAction(
         .values(allocationRows.map((a) => ({ ...a, purchaseId: purchase.id })));
     }
 
-    if (debtsByParticipant.size > 0) {
-      await tx.insert(debts).values(
-        Array.from(debtsByParticipant.entries())
-          .filter(([, amount]) => amount > 0)
-          .map(([participantId, amount]) => ({
-            outingId: outing.id,
-            debtorParticipantId: participantId,
-            creditorParticipantId: me.id,
-            amountCents: amount,
-          }))
-      );
+    // Filtre sur amount > 0 AVANT le check size : un achat à prix 0
+    // (cadeau / prévente / abo) accumule des entrées à 0 dans la map
+    // mais aucune dette à insérer. `.values([])` est rejeté par
+    // Drizzle, donc on guard sur la liste filtrée elle-même.
+    const debtRows = Array.from(debtsByParticipant.entries())
+      .filter(([, amount]) => amount > 0)
+      .map(([participantId, amount]) => ({
+        outingId: outing.id,
+        debtorParticipantId: participantId,
+        creditorParticipantId: me.id,
+        amountCents: amount,
+      }));
+    if (debtRows.length > 0) {
+      await tx.insert(debts).values(debtRows);
     }
 
     await tx
