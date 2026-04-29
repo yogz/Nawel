@@ -98,12 +98,21 @@ export type WizardFunnelStep = {
   count: number;
 };
 
+// Format réel de `/events/stats` (testé en live 2026-04-30) — l'API
+// wrap les compteurs sous `data` et expose des nombres directs (pas
+// de `{ value: N }` à plat). Le code lisait précédemment
+// `data?.events?.value` ce qui restait toujours `undefined` →
+// fallback 0 partout sur le funnel. Le format `{ value }` correspond
+// peut-être à une vieille version de l'API ou à un autre endpoint
+// (cf. `/stats` global), pas à celui-ci.
 type EventsStatsResponse = {
-  pageviews?: { value: number };
-  visitors?: { value: number };
-  visits?: { value: number };
-  events?: { value: number };
-  uniqueEvents?: { value: number };
+  data?: {
+    pageviews?: number;
+    visitors?: number;
+    visits?: number;
+    events?: number;
+    uniqueEvents?: number;
+  };
 };
 
 /**
@@ -130,7 +139,7 @@ export async function getWizardFunnelCounts(range: Range): Promise<WizardFunnelS
         endAt: range.endAt,
         event,
       });
-      return { event, count: data?.events?.value ?? 0 };
+      return { event, count: data?.data?.events ?? 0 };
     })
   );
   return results;
@@ -210,7 +219,7 @@ export async function getConfirmEnteredCount(range: Range): Promise<number | nul
   if (!data) {
     return null;
   }
-  return data.events?.value ?? 0;
+  return data.data?.events ?? 0;
 }
 
 // ─── Helper de calculs côté Node ─────────────────────────────────────
