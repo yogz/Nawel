@@ -1,9 +1,10 @@
-import { put, del } from "@vercel/blob";
+import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import { randomUUID } from "node:crypto";
 import sharp from "sharp";
 import { generateOgThumbnail } from "./og-thumbnail";
 import { safeFetchExternal } from "./safe-fetch";
+import { deleteBlobIfOurs } from "./blob-cleanup";
 
 // Couvres d'événements : on accepte plus large qu'un avatar parce que
 // c'est le hero plein-écran de la sortie. 5 MB couvre une photo HD au
@@ -18,11 +19,6 @@ const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/he
 // voit l'upload "marcher" puis l'image ne s'affiche jamais.
 const NEEDS_TRANSCODE_TO_JPEG = new Set(["image/heic", "image/heif"]);
 
-// Same paranoid double-check as `avatar-upload.ts`: only nuke URLs we
-// can prove came from our blob store, under the events prefix. Anything
-// else — a hand-pasted CDN URL from a ticket page, a Google avatar,
-// a malformed string — we leave alone.
-const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
 const EVENT_PATH_PREFIX = "/sortie/events/";
 
 export type EventImageUploadResult =
@@ -157,7 +153,10 @@ export async function deletePreviousEventImage(
   url: string | null,
   ogUrl: string | null
 ): Promise<void> {
-  await Promise.all([deleteEventBlobIfOurs(url, "url"), deleteEventBlobIfOurs(ogUrl, "ogUrl")]);
+  await Promise.all([
+    deleteBlobIfOurs(url, EVENT_PATH_PREFIX, "event-image-upload"),
+    deleteBlobIfOurs(ogUrl, EVENT_PATH_PREFIX, "event-image-upload"),
+  ]);
 }
 
 // Hard cap on how many bytes we'll pull from a third-party CDN when
@@ -224,31 +223,5 @@ export async function generateOgThumbnailFromRemoteUrl(remoteUrl: string): Promi
   } catch (err) {
     console.warn("[event-image-upload] blob put failed for remote og thumb", { err, remoteUrl });
     return null;
-  }
-}
-
-async function deleteEventBlobIfOurs(url: string | null, label: string): Promise<void> {
-  if (!url) {
-    return;
-  }
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    console.warn("[event-image-upload] previous URL is not valid, skipping delete", { url, label });
-    return;
-  }
-  const isOurs =
-    parsed.hostname.endsWith(BLOB_HOST_SUFFIX) && parsed.pathname.startsWith(EVENT_PATH_PREFIX);
-  if (!isOurs) {
-    return;
-  }
-  try {
-    await del(url);
-  } catch (err) {
-    console.warn("[event-image-upload] previous-image cleanup failed (orphaned)", {
-      err,
-      label,
-    });
   }
 }

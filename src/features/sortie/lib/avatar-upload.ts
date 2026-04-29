@@ -1,6 +1,7 @@
-import { put, del } from "@vercel/blob";
+import { put } from "@vercel/blob";
 import { fileTypeFromBuffer } from "file-type";
 import { randomUUID } from "node:crypto";
+import { deleteBlobIfOurs } from "./blob-cleanup";
 
 // Avatars are smaller than proofs and we never need PDFs. 2 MB is a
 // generous cap for a mobile-captured photo after the browser's own
@@ -9,14 +10,6 @@ export const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
 
 const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
 
-// We only delete URLs we can prove are ours. Two checks: the hostname
-// must match the Vercel Blob domain, AND the path must include the
-// avatar prefix. The path check matters because `uploadPurchaseProof`
-// also writes to the same store under `sortie/proofs/`; a hostname
-// check alone would let a stale `image` column accidentally point at
-// — and us delete — a proof file. The double check is paranoid by
-// design.
-const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
 const AVATAR_PATH_PREFIX = "/sortie/avatars/";
 
 export type AvatarUploadResult = { ok: true; url: string } | { ok: false; message: string };
@@ -100,27 +93,5 @@ export async function uploadAvatar(file: File): Promise<AvatarUploadResult> {
  * Throwing would be a regression, not a fix.
  */
 export async function deletePreviousAvatar(url: string | null): Promise<void> {
-  if (!url) return;
-
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    // Malformed URL in the DB — nothing we can act on, but worth
-    // surfacing once so we know.
-    console.warn("[avatar-upload] previous URL is not a valid URL, skipping delete", { url });
-    return;
-  }
-
-  const isOurs =
-    parsed.hostname.endsWith(BLOB_HOST_SUFFIX) && parsed.pathname.startsWith(AVATAR_PATH_PREFIX);
-  if (!isOurs) {
-    return;
-  }
-
-  try {
-    await del(url);
-  } catch (err) {
-    console.warn("[avatar-upload] previous-avatar cleanup failed (orphaned)", { err });
-  }
+  await deleteBlobIfOurs(url, AVATAR_PATH_PREFIX, "avatar-upload");
 }
