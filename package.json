@@ -103,6 +103,9 @@
     "typescript": "5.4.5",
     "vitest": "^4.0.16"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,md,css}": [
       "prettier --write"
