@@ -14,11 +14,7 @@ import { ibanPreview, isValidIban, normalizeIban, phonePreview } from "@/feature
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const addMethodSchema = z.discriminatedUnion("type", [
   z.object({

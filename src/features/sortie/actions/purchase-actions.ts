@@ -21,11 +21,7 @@ import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const MAX_CENTS = 10_000_00;
 const priceCents = z.coerce.number().int().min(0).max(MAX_CENTS);

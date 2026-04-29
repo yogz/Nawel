@@ -23,11 +23,7 @@ import {
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const debtSchema = z.object({
   shortId: shortIdSchema,

@@ -10,11 +10,7 @@ import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { renderEmail } from "@/features/sortie/lib/emails/layout";
 import { z } from "zod";
 import type { FormActionState } from "./outing-actions";
-
-const shortIdSchema = z
-  .string()
-  .trim()
-  .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+import { shortIdSchema } from "./schemas";
 
 const requestReclaimSchema = z.object({
   shortId: shortIdSchema,
