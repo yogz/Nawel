@@ -1,5 +1,19 @@
 import { cache } from "react";
-import { and, asc, desc, eq, gt, gte, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  getTableColumns,
+  gt,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  ne,
+  or,
+  sql,
+} from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
@@ -188,6 +202,12 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
  * personnaliser le header sans demander à l'utilisateur de se logger.
  */
 export async function listAnonInboxOutings(cookieTokenHash: string, now = new Date()) {
+  // Le INNER JOIN ramène en un seul aller-retour les outings filtrées
+  // ET les rows participant complètes. On évite un 2e SELECT sur
+  // `participants` côté call-site (qui aurait juste re-matché les
+  // mêmes rows par cookieTokenHash). Les votedSlots restent en query
+  // séparée — un LEFT JOIN supplémentaire sur timeslot_votes
+  // multiplierait les rows et compliquerait la dédup côté JS.
   const rows = await db
     .select({
       id: outings.id,
@@ -201,7 +221,7 @@ export async function listAnonInboxOutings(cookieTokenHash: string, now = new Da
       mode: outings.mode,
       heroImageUrl: outings.heroImageUrl,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
-      anonName: participants.anonName,
+      participant: getTableColumns(participants),
     })
     .from(outings)
     .innerJoin(participants, eq(participants.outingId, outings.id))
@@ -209,10 +229,41 @@ export async function listAnonInboxOutings(cookieTokenHash: string, now = new Da
     .orderBy(desc(outings.createdAt))
     .limit(50);
 
+  const participantIds = rows.map((r) => r.participant.id);
+  const slotsByParticipant = new Map<string, Date[]>();
+  if (participantIds.length > 0) {
+    const slotRows = await db
+      .select({
+        participantId: timeslotVotes.participantId,
+        startsAt: outingTimeslots.startsAt,
+      })
+      .from(timeslotVotes)
+      .innerJoin(outingTimeslots, eq(outingTimeslots.id, timeslotVotes.timeslotId))
+      .where(
+        and(inArray(timeslotVotes.participantId, participantIds), eq(timeslotVotes.available, true))
+      )
+      .orderBy(asc(outingTimeslots.startsAt));
+    for (const slot of slotRows) {
+      const list = slotsByParticipant.get(slot.participantId) ?? [];
+      list.push(slot.startsAt);
+      slotsByParticipant.set(slot.participantId, list);
+    }
+  }
+
+  const myRsvpByOuting = new Map<string, MyParticipantWithSlots>();
+  for (const row of rows) {
+    if (!myRsvpByOuting.has(row.id)) {
+      myRsvpByOuting.set(row.id, {
+        ...row.participant,
+        votedSlots: slotsByParticipant.get(row.participant.id) ?? [],
+      });
+    }
+  }
+
   const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
-  const anonName = rows.find((r) => r.anonName)?.anonName ?? null;
-  return { upcoming, past, anonName };
+  const anonName = rows.find((r) => r.participant.anonName)?.participant.anonName ?? null;
+  return { upcoming, past, anonName, myRsvpByOuting };
 }
 
 /**

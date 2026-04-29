@@ -15,18 +15,14 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
-import {
-  listAllMyOutings,
-  listAnonInboxOutings,
-  listMyParticipantsForOutings,
-} from "@/features/sortie/queries/outing-queries";
+import { listAllMyOutings, listAnonInboxOutings } from "@/features/sortie/queries/outing-queries";
 import { bucketizeUpcoming, sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
+import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -46,7 +42,7 @@ export default async function SortieHome() {
     if (cookieTokenHash) {
       const inbox = await listAnonInboxOutings(cookieTokenHash);
       if (inbox.upcoming.length > 0 || inbox.past.length > 0) {
-        return <AnonInbox inbox={inbox} cookieTokenHash={cookieTokenHash} />;
+        return <AnonInbox inbox={inbox} />;
       }
     }
     return <PublicHome />;
@@ -419,41 +415,9 @@ function VibeButton({
  * un autre device sans le perdre — la friction est volontairement
  * basse (lien tertiaire underline mono), pas de bandeau qui crie.
  */
-async function AnonInbox({
-  inbox,
-  cookieTokenHash,
-}: {
-  inbox: Awaited<ReturnType<typeof listAnonInboxOutings>>;
-  cookieTokenHash: string;
-}) {
+function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOutings>> }) {
   const upcomingSorted = sortUpcomingByStartsAt(inbox.upcoming);
-  const myRsvpByOuting = await listMyParticipantsForOutings({
-    outingIds: [...inbox.upcoming, ...inbox.past].map((o) => o.id),
-    cookieTokenHash,
-    userId: null,
-  });
-
-  function resolveMyRsvp(outingId: string) {
-    const p = myRsvpByOuting.get(outingId);
-    if (
-      !p ||
-      (p.response !== "yes" &&
-        p.response !== "no" &&
-        p.response !== "handle_own" &&
-        p.response !== "interested")
-    ) {
-      return null;
-    }
-    return {
-      response: p.response as RsvpResponse | "interested",
-      name: p.anonName ?? "",
-      extraAdults: p.extraAdults,
-      extraChildren: p.extraChildren,
-      email: p.anonEmail ?? undefined,
-      votedSlots: p.votedSlots,
-    };
-  }
-
+  const myRsvpByOuting = inbox.myRsvpByOuting;
   const greeting = inbox.anonName ? `Salut ${inbox.anonName}.` : "Tes sorties.";
   const totalUpcoming = upcomingSorted.length;
 
@@ -492,7 +456,7 @@ async function AnonInbox({
                 <OutingProfileCard
                   outing={o}
                   showRsvp
-                  myRsvp={resolveMyRsvp(o.id)}
+                  myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id))}
                   loggedInName={null}
                   outingBaseUrl={PUBLIC_BASE}
                   isPast={false}
@@ -525,7 +489,7 @@ async function AnonInbox({
         </section>
       )}
 
-      <div className="mt-12 border-t border-surface-400 pt-6">
+      <footer className="mt-12 border-t border-surface-400 pt-6">
         <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
           ─ ton appareil seul ─
         </p>
@@ -537,7 +501,7 @@ async function AnonInbox({
           className="font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
           label="me connecter →"
         />
-      </div>
+      </footer>
     </main>
   );
 }

@@ -12,8 +12,8 @@ import {
   type DeadlineTone,
 } from "@/features/sortie/lib/deadline-countdown";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { isFixedRsvp, type RsvpResponseAny } from "@/features/sortie/lib/rsvp-response";
 import { InlineRsvpSection } from "./inline-rsvp-section";
-import type { RsvpResponse } from "./rsvp-sheets";
 
 type Outing = {
   id: string;
@@ -33,10 +33,7 @@ type Props = {
   outing: Outing;
   showRsvp: boolean;
   myRsvp: {
-    // "interested" = a voté en mode sondage (au moins un slot available).
-    // En mode fixed, ne peut être que RsvpResponse strict — narrow avant
-    // de passer à InlineRsvpSection.
-    response: RsvpResponse | "interested";
+    response: RsvpResponseAny;
     name: string;
     extraAdults: number;
     extraChildren: number;
@@ -308,11 +305,7 @@ export function OutingProfileCard({
             outingTitle={outing.title}
             outingUrl={outingUrl}
             outingDate={outing.startsAt}
-            existing={
-              myRsvp && myRsvp.response !== "interested"
-                ? { ...myRsvp, response: myRsvp.response }
-                : null
-            }
+            existing={myRsvp && isFixedRsvp(myRsvp) ? myRsvp : null}
             loggedInName={loggedInName}
           />
         </div>

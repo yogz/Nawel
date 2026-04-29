@@ -28,7 +28,7 @@ import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-prompt";
 import { cookies } from "next/headers";
-import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
+import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 
 /**
  * Seuil en dessous duquel on bypass le grouping par bucket sur la
@@ -544,31 +544,6 @@ function RsvpCardList({
       ))}
     </ul>
   );
-}
-
-/**
- * Centralise la coercion `participants` row → prop `myRsvp` attendue
- * par `OutingProfileCard`. Filtre les responses inattendues (paranoia
- * narrowing pour TS — la DB a un enum constraint).
- */
-function resolveMyRsvp(p: ParticipantRow | undefined, loggedInName: string | null) {
-  if (
-    !p ||
-    (p.response !== "yes" &&
-      p.response !== "no" &&
-      p.response !== "handle_own" &&
-      p.response !== "interested")
-  ) {
-    return null;
-  }
-  return {
-    response: p.response as RsvpResponse | "interested",
-    name: p.anonName ?? loggedInName ?? "",
-    extraAdults: p.extraAdults,
-    extraChildren: p.extraChildren,
-    email: p.anonEmail ?? undefined,
-    votedSlots: p.votedSlots,
-  };
 }
 
 function OutingSection({

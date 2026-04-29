@@ -20,7 +20,11 @@ function buildSheetStyle(inset: number, viewportHeight: number | null): React.CS
   };
 }
 
-export type RsvpResponse = "yes" | "no" | "handle_own";
+// Re-export depuis le module domain pour que les imports historiques
+// (`import type { RsvpResponse } from "./rsvp-sheets"`) continuent de
+// marcher tout en dérivant de l'enum Drizzle (single source of truth).
+import type { RsvpResponseFixed } from "@/features/sortie/lib/rsvp-response";
+export type RsvpResponse = RsvpResponseFixed;
 
 /** Minimal sheet — only prénom — for first-time anons declining. */
 export function NoNameSheet({
@@ -169,9 +173,12 @@ export function YesDetailSheet({
   // "Je gère mon billet" est un opt-in rare (la majorité laisse le
   // groupe acheter). On le replie derrière un lien tertiaire — même
   // pattern que "+ Tu viens accompagné" — pour alléger la sheet par
-  // défaut. Pré-révélé si l'utilisateur l'avait déjà coché lors d'un
-  // RSVP précédent sur cette sortie.
-  const [showHandleOwn, setShowHandleOwn] = useState(existingResponse === "handle_own");
+  // défaut. Le bloc reste révélé tant que la sheet est ouverte une
+  // fois que l'utilisateur a tapé le lien, ou si `chosen` repasse à
+  // "handle_own" via un toggle interne — d'où la dérivation depuis
+  // `chosen` plutôt qu'un state autonome qui pourrait diverger.
+  const [revealedHandleOwn, setRevealedHandleOwn] = useState(false);
+  const showHandleOwn = revealedHandleOwn || chosen === "handle_own";
 
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     rsvpAction,
@@ -273,7 +280,7 @@ export function YesDetailSheet({
             {!showHandleOwn ? (
               <button
                 type="button"
-                onClick={() => setShowHandleOwn(true)}
+                onClick={() => setRevealedHandleOwn(true)}
                 className="self-start text-sm text-acid-700 underline-offset-4 hover:underline"
               >
                 + Je gère mon billet
