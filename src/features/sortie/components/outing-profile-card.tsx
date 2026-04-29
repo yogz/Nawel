@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarCheck,
+  Check,
+  ChevronRight,
+  Lock,
+  Ticket,
+  type LucideIcon,
+} from "lucide-react";
 import {
   formatOutingDate,
   formatOutingDateShort,
@@ -27,6 +35,37 @@ type Outing = {
   mode: "fixed" | "vote";
   heroImageUrl: string | null;
   confirmedCount: number;
+};
+
+/**
+ * Précédence temporelle pour le badge "verrouillé" sur le thumb. Une
+ * sortie progresse naturellement : deadline passée → créneau tranché
+ * (mode vote) → places prises. Le glyph affiché reflète l'étape la
+ * plus avancée — un purchased a forcément deadline passée + vote
+ * tranché si applicable, mais on n'affiche que le ticket.
+ *
+ * Renvoie null quand aucune des 3 conditions n'est atteinte (sortie
+ * encore en flux : RSVP ouverts, créneau pas tranché, achat à venir).
+ */
+type LockReason = "purchased" | "vote-tranched" | "deadline-passed";
+
+function resolveLockReason(o: Outing): LockReason | null {
+  if (o.status === "purchased") {
+    return "purchased";
+  }
+  if (o.mode === "vote" && o.startsAt !== null) {
+    return "vote-tranched";
+  }
+  if (o.deadlineAt.getTime() < Date.now()) {
+    return "deadline-passed";
+  }
+  return null;
+}
+
+const LOCK_GLYPH: Record<LockReason, LucideIcon> = {
+  purchased: Ticket,
+  "vote-tranched": CalendarCheck,
+  "deadline-passed": Lock,
 };
 
 type Props = {
@@ -141,42 +180,59 @@ export function OutingProfileCard({
   // panel with a big typographic initial instead of a dead color swatch.
   const initial = (outing.title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
 
+  // Badge "verrouillé" en bottom-right du thumb. cf. `resolveLockReason`
+  // pour la précédence des 3 états (purchased > vote-tranché > deadline).
+  // Aria-hidden : l'info est déjà portée par le countdown texte de la
+  // card, le badge est purement visuel.
+  const lockReason = resolveLockReason(outing);
+  const LockGlyph = lockReason ? LOCK_GLYPH[lockReason] : null;
+
   const navigationRow = (
     <>
-      {outing.heroImageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={outing.heroImageUrl}
-          alt=""
-          className={`size-16 shrink-0 rounded-md bg-surface-100 object-cover object-top ${pastImageClasses}`}
-          // Filter saturate + contrast aligné sur le hero détail
-          // (`OutingHero`). Donne une cohérence visuelle malgré
-          // les sources hétérogènes (Ticketmaster, Fnac, AllOcc,
-          // uploads users) qui ont chacune leur propre balance
-          // colorimétrique. Pas appliqué aux past (le grayscale
-          // du `pastImageClasses` prend le dessus).
-          style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className={`relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md ${pastImageClasses}`}
-          style={{
-            background:
-              "radial-gradient(circle at 30% 20%, #FF3D81 0%, transparent 50%), radial-gradient(circle at 75% 80%, #C7FF3C 0%, transparent 50%), #1a1a1a",
-          }}
-        >
-          <span
-            className="text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
+      <div className="relative size-16 shrink-0">
+        {outing.heroImageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={outing.heroImageUrl}
+            alt=""
+            className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastImageClasses}`}
+            // Filter saturate + contrast aligné sur le hero détail
+            // (`OutingHero`). Donne une cohérence visuelle malgré
+            // les sources hétérogènes (Ticketmaster, Fnac, AllOcc,
+            // uploads users) qui ont chacune leur propre balance
+            // colorimétrique. Pas appliqué aux past (le grayscale
+            // du `pastImageClasses` prend le dessus).
+            style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className={`relative flex size-16 items-center justify-center overflow-hidden rounded-md ${pastImageClasses}`}
             style={{
-              fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-              mixBlendMode: "overlay",
+              background:
+                "radial-gradient(circle at 30% 20%, #FF3D81 0%, transparent 50%), radial-gradient(circle at 75% 80%, #C7FF3C 0%, transparent 50%), #1a1a1a",
             }}
           >
-            {initial}
+            <span
+              className="text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
+              style={{
+                fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
+                mixBlendMode: "overlay",
+              }}
+            >
+              {initial}
+            </span>
+          </div>
+        )}
+        {LockGlyph && (
+          <span
+            aria-hidden="true"
+            className="absolute -right-1 -bottom-1 inline-flex size-5 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-1 ring-surface-50"
+          >
+            <LockGlyph size={11} strokeWidth={2.4} />
           </span>
-        </div>
-      )}
+        )}
+      </div>
       <div className="flex min-w-0 flex-1 flex-col">
         {dateLabel && (
           <p className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-acid-600">
