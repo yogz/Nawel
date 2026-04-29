@@ -22,8 +22,11 @@ import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
 const MAX_CENTS = 10_000_00;
+// Tous les prix acceptent 0 — usage : prévente / abo / cadeau, l'orga
+// déclare l'achat pour fermer la sortie sans réclamer de remboursement.
+// Les debts sont filtrés en aval sur amount > 0, donc 0 ne crée aucune
+// row.
 const priceCents = z.coerce.number().int().min(0).max(MAX_CENTS);
-const positivePriceCents = z.coerce.number().int().min(1).max(MAX_CENTS);
 
 // Three pricing modes covered end to end:
 //  - unique:   one price for every seat
@@ -43,18 +46,13 @@ const declarePurchaseSchema = z.discriminatedUnion("pricingMode", [
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("unique"),
-    // Permet 0 — usage : l'orga avait déjà les places (prévente, abo
-    // opéra, cadeau). Pas d'argent à demander, mais on veut quand
-    // même marquer la sortie comme purchased pour la fermer.
-    // Côté aval, amount=0 fait `filter(([, amount]) => amount > 0)`
-    // exclure tous les debts → table debts reste vide, OK.
     uniquePriceCents: priceCents,
     ghostBuyer: ghostBuyerFlag,
   }),
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("category"),
-    adultPriceCents: positivePriceCents,
+    adultPriceCents: priceCents,
     childPriceCents: priceCents,
     ghostBuyer: ghostBuyerFlag,
   }),

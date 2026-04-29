@@ -88,16 +88,14 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
     childCount,
   ]);
 
-  // Le mode unique accepte 0 (prévente / abo / cadeau — pas de
+  // Tous les modes acceptent 0 (prévente / abo / cadeau — pas de
   // remboursement à réclamer mais on veut quand même fermer la
-  // sortie). On gate sur "champ rempli" plutôt que "> 0" pour ne
-  // pas re-bloquer ce cas. Les modes category et nominal restent
-  // sur "> 0" pour adultPrice — un mode catégorie sans prix adulte
-  // n'a pas de sens.
+  // sortie). On gate sur "champ rempli" plutôt que "> 0" partout
+  // pour ne pas re-bloquer ce cas.
   const canSubmit =
     totalPlaces > 0 &&
     ((mode === "unique" && uniquePrice.trim() !== "") ||
-      (mode === "category" && parseEuros(adultPrice) > 0) ||
+      (mode === "category" && adultPrice.trim() !== "") ||
       (mode === "nominal" && nominalPrices.every((v) => v.trim() !== "")));
 
   return (
