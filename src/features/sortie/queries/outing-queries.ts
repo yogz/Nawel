@@ -111,11 +111,15 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
 }
 
 /**
- * All outings the user created (upcoming + past), cancelled excluded.
- * Used on the Sortie home for the logged-in view, where we want to show
- * the creator every sortie they've organized regardless of the
- * `showOnProfile` flag (that flag only gates visibility on the public
- * profile).
+ * Sorties à afficher sur la home Sortie d'un user loggé : ses créations
+ * + les sorties où il a une row participant (yes/no/handle_own/
+ * interested). Sinon un user qui a uniquement RSVP (créé via le flow
+ * silent-account au RSVP avec email) atterrissait sur une home vide.
+ *
+ * `hiddenFromProfileAt` est un flag d'archive perso pour le créateur
+ * — on ne l'applique QUE sur ses propres sorties, pas sur les
+ * participations (le créateur archive de SA home, pas du monde
+ * entier).
  */
 export async function listAllMyOutings(userId: string, now = new Date()) {
   const rows = await db
@@ -135,9 +139,16 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
     .from(outings)
     .where(
       and(
-        eq(outings.creatorUserId, userId),
-        ne(outings.status, "cancelled"),
-        isNull(outings.hiddenFromProfileAt)
+        or(
+          and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
+          sql`${outings.id} IN (
+            SELECT ${participants.outingId}
+            FROM ${participants}
+            WHERE ${participants.userId} = ${userId}
+              AND ${participants.response} IN ('yes', 'no', 'handle_own', 'interested')
+          )`
+        ),
+        ne(outings.status, "cancelled")
       )
     )
     .orderBy(desc(outings.createdAt))

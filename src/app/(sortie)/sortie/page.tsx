@@ -15,7 +15,12 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
-import { listAllMyOutings, listAnonInboxOutings } from "@/features/sortie/queries/outing-queries";
+import {
+  listAllMyOutings,
+  listAnonInboxOutings,
+  listMyParticipantsForOutings,
+  type MyParticipantWithSlots,
+} from "@/features/sortie/queries/outing-queries";
 import { bucketizeUpcoming, sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
@@ -49,6 +54,16 @@ export default async function SortieHome() {
   }
 
   const { upcoming: upcomingRaw, past } = await listAllMyOutings(userId);
+  // Charge les participations du user sur ses outings (créations +
+  // celles où il a RSVP). Sans ça, l'eyebrow d'état "✓ Tu viens / ✓
+  // Tu as voté" ne s'affiche pas sur la home logged-in et un user
+  // qui est principalement participant (pas créateur) ne sait pas
+  // qu'il a déjà répondu.
+  const myRsvpByOuting = await listMyParticipantsForOutings({
+    outingIds: [...upcomingRaw, ...past].map((o) => o.id),
+    cookieTokenHash: null,
+    userId,
+  });
   // La query renvoie en `desc(createdAt)` par défaut — ce qui n'a aucun
   // sens côté UX dès qu'on a > 5 sorties (un événement loin créé hier
   // remonte avant un événement proche créé la semaine dernière). On
@@ -151,10 +166,20 @@ export default async function SortieHome() {
       )}
 
       {restUpcoming.length > 0 && (
-        <UpcomingBuckets outings={restUpcoming} loggedInName={session.user.name ?? null} />
+        <UpcomingBuckets
+          outings={restUpcoming}
+          loggedInName={session.user.name ?? null}
+          myRsvpByOuting={myRsvpByOuting}
+        />
       )}
 
-      {past.length > 0 && <PastSection outings={past} loggedInName={session.user.name ?? null} />}
+      {past.length > 0 && (
+        <PastSection
+          outings={past}
+          loggedInName={session.user.name ?? null}
+          myRsvpByOuting={myRsvpByOuting}
+        />
+      )}
 
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
           safe-area inset is what keeps it clear of Safari's bottom URL bar
@@ -193,9 +218,11 @@ export default async function SortieHome() {
 function UpcomingBuckets({
   outings,
   loggedInName,
+  myRsvpByOuting,
 }: {
   outings: HomeOutingRow[];
   loggedInName: string | null;
+  myRsvpByOuting: Map<string, MyParticipantWithSlots>;
 }) {
   const buckets = bucketizeUpcoming(outings).filter((b) => b.outings.length > 0);
   // Pré-calcule l'index absolu de la première carte de chaque bucket.
@@ -227,8 +254,8 @@ function UpcomingBuckets({
                 >
                   <OutingProfileCard
                     outing={o}
-                    showRsvp={false}
-                    myRsvp={null}
+                    showRsvp
+                    myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
                     loggedInName={loggedInName}
                     outingBaseUrl={PUBLIC_BASE}
                     isPast={false}
@@ -252,9 +279,11 @@ function UpcomingBuckets({
 function PastSection({
   outings,
   loggedInName,
+  myRsvpByOuting,
 }: {
   outings: HomeOutingRow[];
   loggedInName: string | null;
+  myRsvpByOuting: Map<string, MyParticipantWithSlots>;
 }) {
   const inline = outings.slice(0, 3);
   const hidden = outings.slice(3);
@@ -270,7 +299,7 @@ function PastSection({
             <OutingProfileCard
               outing={o}
               showRsvp={false}
-              myRsvp={null}
+              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
               loggedInName={loggedInName}
               outingBaseUrl={PUBLIC_BASE}
               isPast
@@ -296,7 +325,7 @@ function PastSection({
                 <OutingProfileCard
                   outing={o}
                   showRsvp={false}
-                  myRsvp={null}
+                  myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
                   loggedInName={loggedInName}
                   outingBaseUrl={PUBLIC_BASE}
                   isPast
