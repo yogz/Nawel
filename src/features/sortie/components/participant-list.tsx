@@ -172,18 +172,32 @@ function SecondarySection({
   shortId: string | undefined;
   meId: string | null;
 }) {
+  // Total des places projetées pour cette section (utile surtout pour
+  // "Intéressés" en mode vote : l'orga doit pouvoir réserver les places
+  // dès le sondage, donc visualiser combien de personnes sont à prévoir
+  // si tout le monde se confirme).
+  const sectionHeads = rows.reduce((acc, p) => acc + 1 + p.extraAdults + p.extraChildren, 0);
+  const showHeads = sectionHeads > rows.length;
+
   return (
     <div className="mt-5 border-t border-surface-400 pt-4">
       <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
         {label} · {String(count).padStart(2, "0")}
+        {showHeads && (
+          <span className="ml-2 text-ink-400">◉ {sectionHeads} avec les accompagnants</span>
+        )}
       </p>
       <ul className="flex flex-col gap-2">
         {rows.map((p) => {
           const display = displayNameOf(p) ?? "Quelqu'un";
+          const extras = formatExtras(p.extraAdults, p.extraChildren);
           return (
             <li key={p.id} className="flex items-center gap-3 text-ink-500">
               <UserAvatar name={display} image={p.user?.image ?? null} size={28} />
-              <span className="min-w-0 flex-1 truncate text-sm">{display}</span>
+              <span className="min-w-0 flex-1 truncate text-sm">
+                {display}
+                {extras && <span className="text-ink-400"> {extras}</span>}
+              </span>
               {isCreator && shortId && p.id !== meId && (
                 <RemoveParticipantButton
                   shortId={shortId}
