@@ -8,8 +8,10 @@ export const dynamic = "force-dynamic";
 // Node runtime needed — the sweeper uses pg + email fan-out which aren't
 // edge-compatible.
 export const runtime = "nodejs";
-// Give the sweeper a little room. Vercel Hobby caps at 10s, Pro at 300s.
-export const maxDuration = 60;
+// Pro plan dispo, on profite des 300s pour absorber un pic d'outings à
+// basculer (50k+ d'un coup en cas de migration ou de window manqué) et
+// la fan-out d'emails Resend qui peut être longue.
+export const maxDuration = 300;
 
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
@@ -25,12 +27,25 @@ export async function GET(request: NextRequest) {
   }
 
   const startedAt = Date.now();
+  // Le logger applicatif silence info en prod, mais on veut les bornes
+  // start/end visibles dans les logs Vercel pour confirmer que le cron
+  // tourne. console.info est délibéré ici, pas un oubli.
+  // eslint-disable-next-line no-console
+  console.info("[sortie-sweeper] start", { startedAt });
   try {
     const report = await runSortieSweeper();
     const durationMs = Date.now() - startedAt;
+    // eslint-disable-next-line no-console
+    console.info("[sortie-sweeper] end", {
+      durationMs,
+      closedRsvps: report.closedRsvps,
+      j1Reminders: report.j1Reminders,
+      markedPast: report.markedPast,
+      errors: report.errors.length,
+    });
     return NextResponse.json({ ok: true, durationMs, ...report });
   } catch (err) {
-    console.error("[sortie-sweeper] failed", err);
+    console.error("[sortie-sweeper] failed", { err, durationMs: Date.now() - startedAt });
     return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 500 });
   }
 }

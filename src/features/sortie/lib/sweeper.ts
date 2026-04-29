@@ -16,13 +16,19 @@
  * response reports them.
  */
 
-import { and, eq, isNull, lte, sql } from "drizzle-orm";
+import { and, eq, isNull, lte, notExists, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, purchases } from "@drizzle/sortie-schema";
 import {
   sendJ1ReminderEmails,
   sendRsvpClosedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
+
+// Plafond par phase. Permet au tick de finir dans le maxDuration de la
+// route même si une migration laisse 50k outings en bascule. Au-delà, le
+// tick suivant reprend les restantes (toutes les transitions sont
+// status-guardées et donc idempotentes par lot).
+const SWEEPER_BATCH_LIMIT = 500;
 
 export type SweeperReport = {
   closedRsvps: number;
@@ -54,6 +60,7 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
       fixedDatetime: true,
       location: true,
     },
+    limit: SWEEPER_BATCH_LIMIT,
   });
 
   for (const outing of closing) {
@@ -107,6 +114,7 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
       fixedDatetime: true,
       location: true,
     },
+    limit: SWEEPER_BATCH_LIMIT,
   });
 
   for (const outing of reminding) {
@@ -145,6 +153,10 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
   // row are left alone — those belong in the money-flow funnel.
   const pastCutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
+  // Anti-join NOT EXISTS — un round-trip au lieu de N+1 sur purchases.
+  // Outings qui ont une purchase associée vivent leur propre cycle
+  // (settled / stale_purchase) via le money-flow path : on les exclut
+  // directement dans la query plutôt que de les charger pour les filtrer.
   const candidates = await db
     .select({ id: outings.id, shortId: outings.shortId })
     .from(outings)
@@ -152,20 +164,18 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
       and(
         sql`${outings.status} in ('open','awaiting_purchase')`,
         sql`${outings.fixedDatetime} is not null`,
-        sql`${outings.fixedDatetime} <= ${pastCutoff.toISOString()}`
+        sql`${outings.fixedDatetime} <= ${pastCutoff.toISOString()}`,
+        notExists(
+          db
+            .select({ one: sql`1` })
+            .from(purchases)
+            .where(eq(purchases.outingId, outings.id))
+        )
       )
-    );
+    )
+    .limit(SWEEPER_BATCH_LIMIT);
 
   for (const candidate of candidates) {
-    // Skip if any purchase exists — those outings live in their own lifecycle
-    // and will reach `settled` (or stale_purchase) via the money-flow path.
-    const hasPurchase = await db.query.purchases.findFirst({
-      where: eq(purchases.outingId, candidate.id),
-      columns: { id: true },
-    });
-    if (hasPurchase) {
-      continue;
-    }
     const flipped = await db
       .update(outings)
       .set({
