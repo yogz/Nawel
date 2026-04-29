@@ -43,7 +43,12 @@ const declarePurchaseSchema = z.discriminatedUnion("pricingMode", [
   z.object({
     shortId: shortIdSchema,
     pricingMode: z.literal("unique"),
-    uniquePriceCents: positivePriceCents,
+    // Permet 0 — usage : l'orga avait déjà les places (prévente, abo
+    // opéra, cadeau). Pas d'argent à demander, mais on veut quand
+    // même marquer la sortie comme purchased pour la fermer.
+    // Côté aval, amount=0 fait `filter(([, amount]) => amount > 0)`
+    // exclure tous les debts → table debts reste vide, OK.
+    uniquePriceCents: priceCents,
     ghostBuyer: ghostBuyerFlag,
   }),
   z.object({
