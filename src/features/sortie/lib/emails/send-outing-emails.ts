@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { sendSortieEmail } from "@/lib/resend-sortie";
 import { participants } from "@drizzle/sortie-schema";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { isOutingOwner } from "@/features/sortie/lib/owner";
 import {
   j1ReminderEmail,
   outingCancelledEmail,
@@ -58,11 +59,12 @@ export async function sendRsvpReceivedEmail(args: {
   extraAdults: number;
   extraChildren: number;
 }): Promise<void> {
-  const isResponderCreator =
-    (args.responder.userId && args.responder.userId === args.outing.creatorUserId) ||
-    (args.outing.creatorCookieTokenHash !== null &&
-      args.outing.creatorCookieTokenHash === args.responder.cookieTokenHash);
-  if (isResponderCreator) {
+  if (
+    isOutingOwner(args.outing, {
+      userId: args.responder.userId,
+      cookieTokenHash: args.responder.cookieTokenHash,
+    })
+  ) {
     return;
   }
 

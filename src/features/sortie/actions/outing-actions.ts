@@ -24,6 +24,7 @@ import {
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
+import { isOutingOwner } from "@/features/sortie/lib/owner";
 import {
   archiveOutingSchema,
   cancelOutingSchema,
@@ -216,9 +217,7 @@ export async function updateOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour modifier cette sortie." };
   }
@@ -337,9 +336,7 @@ export async function cancelOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour annuler cette sortie." };
   }
@@ -402,9 +399,7 @@ export async function archiveOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour archiver cette sortie." };
   }
@@ -443,9 +438,7 @@ export async function unarchiveOutingAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits." };
   }
@@ -494,9 +487,7 @@ export async function pickTimeslotAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour choisir la date." };
   }
@@ -632,9 +623,7 @@ export async function reopenPollAction(
     return { message: "Sortie introuvable." };
   }
 
-  const isOwner =
-    (user && outing.creatorUserId === user.id) ||
-    (outing.creatorCookieTokenHash !== null && outing.creatorCookieTokenHash === cookieTokenHash);
+  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour rouvrir le sondage." };
   }
