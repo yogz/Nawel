@@ -196,7 +196,7 @@ export function InlineRsvpSection({
     <div className="flex flex-col gap-2">
       {hasResponded && (
         <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-          ✓ Ta réponse
+          {isYes ? "✓ Tu viens" : "✓ Tu ne viens pas"}
         </p>
       )}
       <div className="grid grid-cols-[3fr_2fr] gap-2">
@@ -247,14 +247,15 @@ function SegmentedButton({
   disabled: boolean;
   onClick: () => void;
 }) {
-  // "no" filled = surface-300 + border ink-700 (PAS hot pink, réservé
-  // aux signaux positifs countdown/best). Unselected "no" = ink-400 au
-  // lieu d'ink-700 pour tirer l'œil vers l'affirmatif quand rien n'est
-  // répondu.
+  // "no" filled = ink-700 inversé (PAS hot pink, réservé aux signaux
+  // positifs countdown/best). Inversion ink donne un vrai contraste
+  // avec le voisin "Je viens" non-sélectionné (sinon les deux gris se
+  // confondent en lecture rapide). Unselected "no" = ink-400 au lieu
+  // d'ink-700 pour tirer l'œil vers l'affirmatif quand rien n'est répondu.
   const cls = selected
     ? tone === "yes"
       ? "bg-acid-600 text-surface-50 hover:bg-acid-700 border-acid-600"
-      : "bg-surface-300 text-ink-700 hover:bg-surface-400 border-ink-700 font-bold"
+      : "bg-ink-700 text-surface-50 hover:bg-ink-600 border-ink-700"
     : tone === "yes"
       ? "bg-surface-100 text-ink-700 hover:border-ink-300 hover:bg-surface-200 border-ink-200"
       : "bg-surface-100 text-ink-400 hover:border-ink-300 hover:bg-surface-200 border-ink-200";
@@ -267,7 +268,7 @@ function SegmentedButton({
       aria-pressed={selected}
       className={`flex h-11 items-center justify-center gap-1.5 rounded-full border px-3 text-sm font-semibold transition-colors motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
     >
-      <span className={selected && tone === "yes" ? "text-surface-50" : ""}>{icon}</span>
+      <span className={selected ? "text-surface-50" : ""}>{icon}</span>
       <span>{label}</span>
     </button>
   );

@@ -273,7 +273,7 @@ export function OutingProfileCard({
               className="inline-flex h-11 items-center gap-1.5 rounded-full border border-acid-600 bg-acid-50 px-4 text-sm font-semibold text-acid-700 transition-colors hover:bg-acid-100 motion-safe:active:scale-95"
             >
               <Check size={14} strokeWidth={2.6} className="text-acid-600" />
-              Je vote
+              Je vote pour une date
               <ArrowRight size={14} strokeWidth={2.4} />
             </Link>
           )}
