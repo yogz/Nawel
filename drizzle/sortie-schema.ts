@@ -112,10 +112,23 @@ export const outings = sortie.table(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (t) => ({
-    shortIdIdx: index("sortie_outings_short_id_idx").on(t.shortId),
+    // shortId a déjà un unique index implicite via .unique() — pas besoin
+    // d'en re-déclarer un. (Drop de sortie_outings_short_id_idx hérité.)
     creatorUserIdx: index("sortie_outings_creator_user_idx").on(t.creatorUserId),
     creatorCookieIdx: index("sortie_outings_creator_cookie_idx").on(t.creatorCookieTokenHash),
     deadlineIdx: index("sortie_outings_deadline_idx").on(t.deadlineAt),
+    // Index partiel sweeper "closing" — la majorité des sorties ne sont
+    // pas open au moment du tick, on évite de scanner l'historique entier.
+    closingIdx: index("sortie_outings_closing_idx")
+      .on(t.status, t.deadlineAt)
+      .where(sql`status = 'open'`),
+    // Listings profil (4 fonctions partagent ce filtre) — le creator_user
+    // simple ne discrimine pas entre archivées vs visibles vs annulées.
+    profileListingIdx: index("sortie_outings_profile_listing_idx").on(
+      t.creatorUserId,
+      t.hiddenFromProfileAt,
+      t.status
+    ),
   })
 );
 
@@ -312,6 +325,9 @@ export const debts = sortie.table(
     outingIdx: index("sortie_debts_outing_idx").on(t.outingId),
     debtorIdx: index("sortie_debts_debtor_idx").on(t.debtorParticipantId),
     creditorIdx: index("sortie_debts_creditor_idx").on(t.creditorParticipantId),
+    // Composite (outing_id, status) pour cedeAllocation et dashboards
+    // dettes — outingIdx seul force un scan + filter sur status.
+    outingStatusIdx: index("sortie_debts_outing_status_idx").on(t.outingId, t.status),
   })
 );
 

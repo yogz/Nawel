@@ -557,27 +557,34 @@ export async function pickTimeslotAction(
     // voted === null (didn't vote on this slot) → keep current response.
   }
 
-  await db
-    .update(outings)
-    .set({
-      fixedDatetime: timeslot.startsAt,
-      chosenTimeslotId: timeslot.id,
-      updatedAt: new Date(),
-    })
-    .where(eq(outings.id, outing.id));
+  // Transaction : pick + flips de réponses doivent être atomiques. Sans
+  // ça, un crash après l'update outing mais avant les updates participants
+  // laisserait la sortie figée sur un créneau alors que les yes/no ne
+  // reflètent pas encore le vote — l'UI montrerait un mauvais headcount.
+  // Email reste hors transaction (Resend fire-and-forget).
+  await db.transaction(async (tx) => {
+    await tx
+      .update(outings)
+      .set({
+        fixedDatetime: timeslot.startsAt,
+        chosenTimeslotId: timeslot.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(outings.id, outing.id));
 
-  if (toYes.length > 0) {
-    await db
-      .update(participants)
-      .set({ response: "yes", updatedAt: new Date() })
-      .where(inArray(participants.id, toYes));
-  }
-  if (toNo.length > 0) {
-    await db
-      .update(participants)
-      .set({ response: "no", updatedAt: new Date() })
-      .where(inArray(participants.id, toNo));
-  }
+    if (toYes.length > 0) {
+      await tx
+        .update(participants)
+        .set({ response: "yes", updatedAt: new Date() })
+        .where(inArray(participants.id, toYes));
+    }
+    if (toNo.length > 0) {
+      await tx
+        .update(participants)
+        .set({ response: "no", updatedAt: new Date() })
+        .where(inArray(participants.id, toNo));
+    }
+  });
 
   await sendTimeslotPickedEmails({
     outing: {

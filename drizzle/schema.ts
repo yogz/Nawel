@@ -17,47 +17,57 @@ import { relations, sql } from "drizzle-orm";
 // Better Auth Tables
 // ============================================
 
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").notNull().default(false),
-  image: text("image"),
-  emoji: text("emoji"),
-  role: text("role").default("user"),
-  language: text("language").default("fr"),
-  // Optional Sortie handle — populated when the user picks one. Stored
-  // lowercase; the URL slug at `/sortie/@<username>` reads this column
-  // via a lower() match so visitors can type whatever case they want.
-  username: text("username").unique(),
-  // Private invite token that gates inline RSVP on the public profile page.
-  // Null until the owner mints one from /moi; rotated/revoked at will. The
-  // profile page matches `?k=<token>` server-side against this value and
-  // never exposes it in rendered HTML.
-  rsvpInviteToken: text("rsvp_invite_token"),
-  // Token secret pour le flux iCal personnel — l'URL
-  // `sortie.colist.fr/calendar/<calendarToken>.ics` retourne les
-  // sorties RSVP yes/handle_own + créées par l'utilisateur. Pas
-  // d'auth nécessaire au poll — le token EST le bearer. Null par
-  // défaut, généré à la demande via /moi. Rotatable pour révoquer
-  // un lien leaké.
-  calendarToken: text("calendar_token").unique(),
-  // Short free-text bio shown on the public profile (`/@<username>`).
-  // Capped at 160 chars by the action schema — plenty for a one-liner,
-  // short enough to stay readable on a 360px-wide viewport.
-  bio: text("bio"),
-  // Social handles stored without the `@` prefix and without the
-  // surrounding URL. `instagramHandle = "noam"` → profil rendu pointe
-  // vers https://instagram.com/noam. Max 30 chars (matches each
-  // platform's actual limit + room for dots / underscores).
-  instagramHandle: varchar("instagram_handle", { length: 30 }),
-  tiktokHandle: varchar("tiktok_handle", { length: 30 }),
-  banned: boolean("banned").default(false),
-  banReason: text("ban_reason"),
-  banExpires: timestamp("ban_expires"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const user = pgTable(
+  "user",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    emailVerified: boolean("email_verified").notNull().default(false),
+    image: text("image"),
+    emoji: text("emoji"),
+    role: text("role").default("user"),
+    language: text("language").default("fr"),
+    // Optional Sortie handle — populated when the user picks one. Stored
+    // lowercase; the URL slug at `/sortie/@<username>` reads this column
+    // via a lower() match so visitors can type whatever case they want.
+    username: text("username").unique(),
+    // Private invite token that gates inline RSVP on the public profile page.
+    // Null until the owner mints one from /moi; rotated/revoked at will. The
+    // profile page matches `?k=<token>` server-side against this value and
+    // never exposes it in rendered HTML.
+    rsvpInviteToken: text("rsvp_invite_token"),
+    // Token secret pour le flux iCal personnel — l'URL
+    // `sortie.colist.fr/calendar/<calendarToken>.ics` retourne les
+    // sorties RSVP yes/handle_own + créées par l'utilisateur. Pas
+    // d'auth nécessaire au poll — le token EST le bearer. Null par
+    // défaut, généré à la demande via /moi. Rotatable pour révoquer
+    // un lien leaké.
+    calendarToken: text("calendar_token").unique(),
+    // Short free-text bio shown on the public profile (`/@<username>`).
+    // Capped at 160 chars by the action schema — plenty for a one-liner,
+    // short enough to stay readable on a 360px-wide viewport.
+    bio: text("bio"),
+    // Social handles stored without the `@` prefix and without the
+    // surrounding URL. `instagramHandle = "noam"` → profil rendu pointe
+    // vers https://instagram.com/noam. Max 30 chars (matches each
+    // platform's actual limit + room for dots / underscores).
+    instagramHandle: varchar("instagram_handle", { length: 30 }),
+    tiktokHandle: varchar("tiktok_handle", { length: 30 }),
+    banned: boolean("banned").default(false),
+    banReason: text("ban_reason"),
+    banExpires: timestamp("ban_expires"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    // Indexes fonctionnels pour les lookups case-insensitive : profile/[username]
+    // et reclaim-actions matchent sur lower(...). Sans ces indexes, le query
+    // planner ignore le b-tree par défaut sur la colonne et fait un seq scan.
+    emailLowerIdx: index("user_email_lower_idx").on(sql`lower(${t.email})`),
+    usernameLowerIdx: index("user_username_lower_idx").on(sql`lower(${t.username})`),
+  })
+);
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),

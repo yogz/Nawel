@@ -305,48 +305,55 @@ export async function castVoteAction(
     where: and(eq(participants.outingId, outing.id), voteIdentityClause),
   });
 
-  let participantId: string;
-  if (existing) {
-    await db
-      .update(participants)
-      .set({
-        response,
-        anonName: effectiveUserId ? null : displayName,
-        anonEmail: effectiveUserId ? null : (data.email ?? null),
-        userId: effectiveUserId ?? existing.userId,
-        cookieTokenHash,
-        updatedAt: new Date(),
-      })
-      .where(eq(participants.id, existing.id));
-    participantId = existing.id;
-  } else {
-    const [row] = await db
-      .insert(participants)
-      .values({
-        outingId: outing.id,
-        userId: effectiveUserId,
-        anonName: effectiveUserId ? null : displayName,
-        anonEmail: effectiveUserId ? null : (data.email ?? null),
-        cookieTokenHash,
-        response,
-      })
-      .returning({ id: participants.id });
-    participantId = row.id;
-  }
+  // Transaction : upsert participant + wipe-and-rewrite des votes doivent
+  // être atomiques. Sans transaction, un crash entre le delete des votes
+  // et le insert laisserait le participant avec un set de votes vide alors
+  // que sa réponse vient d'être mise à jour à "interested" — état
+  // incohérent côté UI (badge "voté" sans aucun créneau).
+  await db.transaction(async (tx) => {
+    let participantId: string;
+    if (existing) {
+      await tx
+        .update(participants)
+        .set({
+          response,
+          anonName: effectiveUserId ? null : displayName,
+          anonEmail: effectiveUserId ? null : (data.email ?? null),
+          userId: effectiveUserId ?? existing.userId,
+          cookieTokenHash,
+          updatedAt: new Date(),
+        })
+        .where(eq(participants.id, existing.id));
+      participantId = existing.id;
+    } else {
+      const [row] = await tx
+        .insert(participants)
+        .values({
+          outingId: outing.id,
+          userId: effectiveUserId,
+          anonName: effectiveUserId ? null : displayName,
+          anonEmail: effectiveUserId ? null : (data.email ?? null),
+          cookieTokenHash,
+          response,
+        })
+        .returning({ id: participants.id });
+      participantId = row.id;
+    }
 
-  // Wipe-and-rewrite is fine here — composite PK on (participantId, timeslotId)
-  // means we can't UPSERT-with-conflict cheaply, and a handful of rows per
-  // participant keeps the write cost negligible.
-  await db.delete(timeslotVotes).where(eq(timeslotVotes.participantId, participantId));
-  if (filtered.length > 0) {
-    await db.insert(timeslotVotes).values(
-      filtered.map((v) => ({
-        participantId,
-        timeslotId: v.timeslotId,
-        available: v.available,
-      }))
-    );
-  }
+    // Wipe-and-rewrite is fine here — composite PK on (participantId, timeslotId)
+    // means we can't UPSERT-with-conflict cheaply, and a handful of rows per
+    // participant keeps the write cost négligeable.
+    await tx.delete(timeslotVotes).where(eq(timeslotVotes.participantId, participantId));
+    if (filtered.length > 0) {
+      await tx.insert(timeslotVotes).values(
+        filtered.map((v) => ({
+          participantId,
+          timeslotId: v.timeslotId,
+          available: v.available,
+        }))
+      );
+    }
+  });
 
   revalidatePath(`/${data.shortId}`);
   return {};
