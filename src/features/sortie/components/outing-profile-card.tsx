@@ -1,15 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarCheck,
-  Check,
-  ChevronRight,
-  Lock,
-  Ticket,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Check, ChevronRight } from "lucide-react";
 import {
   formatOutingDate,
   formatOutingDateShort,
@@ -20,6 +12,7 @@ import {
   type DeadlineTone,
 } from "@/features/sortie/lib/deadline-countdown";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { isFixedRsvp, type RsvpResponseAny } from "@/features/sortie/lib/rsvp-response";
 import { InlineRsvpSection } from "./inline-rsvp-section";
 
@@ -35,37 +28,6 @@ type Outing = {
   mode: "fixed" | "vote";
   heroImageUrl: string | null;
   confirmedCount: number;
-};
-
-/**
- * Précédence temporelle pour le badge "verrouillé" sur le thumb. Une
- * sortie progresse naturellement : deadline passée → créneau tranché
- * (mode vote) → places prises. Le glyph affiché reflète l'étape la
- * plus avancée — un purchased a forcément deadline passée + vote
- * tranché si applicable, mais on n'affiche que le ticket.
- *
- * Renvoie null quand aucune des 3 conditions n'est atteinte (sortie
- * encore en flux : RSVP ouverts, créneau pas tranché, achat à venir).
- */
-type LockReason = "purchased" | "vote-tranched" | "deadline-passed";
-
-function resolveLockReason(o: Outing): LockReason | null {
-  if (o.status === "purchased") {
-    return "purchased";
-  }
-  if (o.mode === "vote" && o.startsAt !== null) {
-    return "vote-tranched";
-  }
-  if (o.deadlineAt.getTime() < Date.now()) {
-    return "deadline-passed";
-  }
-  return null;
-}
-
-const LOCK_GLYPH: Record<LockReason, LucideIcon> = {
-  purchased: Ticket,
-  "vote-tranched": CalendarCheck,
-  "deadline-passed": Lock,
 };
 
 type Props = {

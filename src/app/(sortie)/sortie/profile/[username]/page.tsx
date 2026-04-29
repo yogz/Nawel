@@ -327,6 +327,9 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           startsAt={heroOuting.startsAt}
           confirmed={heroOuting.confirmedCount}
           heroImageUrl={heroOuting.heroImageUrl}
+          deadlineAt={heroOuting.deadlineAt}
+          status={heroOuting.status}
+          mode={heroOuting.mode}
           eyebrow={isSelf ? "Ta prochaine sortie" : "Prochaine sortie"}
         />
       )}

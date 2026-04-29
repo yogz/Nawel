@@ -123,6 +123,9 @@ export default async function SortieHome() {
             confirmed={heroStats.confirmed}
             total={heroStats.total}
             heroImageUrl={heroOuting.heroImageUrl}
+            deadlineAt={heroOuting.deadlineAt}
+            status={heroOuting.status}
+            mode={heroOuting.mode}
             headingLevel="h1"
           />
         </>

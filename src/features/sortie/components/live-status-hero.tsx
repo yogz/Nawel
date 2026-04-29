@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 
 type Props = {
@@ -18,6 +19,14 @@ type Props = {
    */
   total?: number;
   heroImageUrl?: string | null;
+  /**
+   * Champs pour résoudre le badge "verrouillé" sur le poster (cf.
+   * resolveLockReason). Optionnels — quand absents, pas de badge,
+   * legacy-friendly avec les 1-2 sites d'appel pas encore migrés.
+   */
+  deadlineAt?: Date;
+  status?: string;
+  mode?: "fixed" | "vote";
   /**
    * Eyebrow text above the headline. Defaults to "Ta prochaine sortie"
    * for the logged-in home view. Pass "Prochaine sortie" on a public
@@ -55,6 +64,9 @@ export function LiveStatusHero({
   confirmed,
   total,
   heroImageUrl,
+  deadlineAt,
+  status,
+  mode,
   eyebrow = "Ta prochaine sortie",
   headingLevel = "h2",
 }: Props) {
@@ -74,6 +86,14 @@ export function LiveStatusHero({
   // Returns null past 27 days out so we don't paint a relative phrase
   // that just repeats the absolute date. See `relativeOutingHero`.
   const relative = relativeOutingHero(startsAt);
+
+  // Badge "verrouillé" en bottom-right du poster — purchased / vote
+  // tranché / deadline passée. Une seule icône à la fois, précédence
+  // dans `resolveLockReason`. Skip si les champs status/mode/deadline
+  // ne sont pas passés (call site legacy).
+  const lockReason =
+    deadlineAt && status && mode ? resolveLockReason({ startsAt, deadlineAt, status, mode }) : null;
+  const LockGlyph = lockReason ? LOCK_GLYPH[lockReason] : null;
 
   return (
     // Emphasized fade-up on first mount only. The whole hero is the
@@ -126,37 +146,47 @@ export function LiveStatusHero({
           </p>
         )}
 
-        {heroImageUrl ? (
-          // `data-vt-poster` opts this image into the cross-document
-          // View Transitions morph (see sortie.css).
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={heroImageUrl}
-            alt=""
-            data-vt-poster
-            className="mt-5 aspect-[3/2] w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
-            style={{ filter: "saturate(1.15) contrast(1.05)" }}
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            className="relative mt-5 flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
-            style={{
-              background:
-                "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
-            }}
-          >
-            <span
-              className="text-[6rem] leading-none font-black tracking-tight text-ink-50 opacity-40 select-none sm:text-[7rem]"
+        <div className="relative mt-5">
+          {heroImageUrl ? (
+            // `data-vt-poster` opts this image into the cross-document
+            // View Transitions morph (see sortie.css).
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={heroImageUrl}
+              alt=""
+              data-vt-poster
+              className="aspect-[3/2] w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
+              style={{ filter: "saturate(1.15) contrast(1.05)" }}
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
               style={{
-                fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-                mixBlendMode: "overlay",
+                background:
+                  "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
               }}
             >
-              {initial}
+              <span
+                className="text-[6rem] leading-none font-black tracking-tight text-ink-50 opacity-40 select-none sm:text-[7rem]"
+                style={{
+                  fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
+                  mixBlendMode: "overlay",
+                }}
+              >
+                {initial}
+              </span>
+            </div>
+          )}
+          {LockGlyph && (
+            <span
+              aria-hidden="true"
+              className="absolute -right-2 -bottom-2 inline-flex size-9 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-2 ring-surface-50 shadow-[var(--shadow-md)]"
+            >
+              <LockGlyph size={18} strokeWidth={2.4} />
             </span>
-          </div>
-        )}
+          )}
+        </div>
       </Link>
     </section>
   );
