@@ -5,6 +5,13 @@ import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/
 import { user } from "@drizzle/schema";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
+// Fenêtre de rétention historique pour le flux iCal personnel : on garde
+// les sorties past des 30 derniers jours (utile pour relancer un paiement,
+// archiver une sortie via swipe). Au-delà, on considère que ça pollue
+// l'agenda du user — il peut toujours retrouver ses anciennes sorties via
+// /moi.
+const FEED_HISTORY_WINDOW_DAYS = 30;
+
 // Sub-query scalaire réutilisée par les listings (profile + feed) :
 // compte des participants ayant répondu yes ou handle_own pour une
 // sortie donnée. Préféré au LEFT JOIN + GROUP BY pour rester composable
@@ -299,7 +306,7 @@ export async function listMyParticipantsForOutings(args: {
  * `buildIcsFeed`.
  */
 export async function feedOutingsForUser(userId: string): Promise<FeedOuting[]> {
-  const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const cutoff = new Date(Date.now() - FEED_HISTORY_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
   const rows = await db
     .select({
