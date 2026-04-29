@@ -18,10 +18,16 @@ import {
   flattenInboxByPriority,
   type ActionBucket,
 } from "@/features/sortie/lib/inbox-buckets";
+import {
+  CLAIM_PROMPT_DISMISS_COOKIE,
+  shouldShowClaimPrompt,
+} from "@/features/sortie/lib/claim-prompt";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
+import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-prompt";
+import { cookies } from "next/headers";
 import type { RsvpResponse } from "@/features/sortie/components/rsvp-sheets";
 
 /**
@@ -206,6 +212,23 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       })
     : new Map();
 
+  // Prompt "lance les tiennes" : invité non-loggé avec ≥2 RSVP cookie-only,
+  // pas dismiss récemment. cf. claim-prompt.ts pour le predicate exact.
+  const claimDismissed = (await cookies()).get(CLAIM_PROMPT_DISMISS_COOKIE)?.value === "1";
+  const showClaimPrompt =
+    showRsvp &&
+    !session?.user &&
+    !claimDismissed &&
+    shouldShowClaimPrompt(Array.from(myRsvpByOuting.values()));
+
+  // Origin pour le callbackURL OAuth — pattern hérité de /moi page (proto
+  // depuis x-forwarded-proto, fallback localhost dev).
+  const requestHeaders = await headers();
+  const claimHost = requestHeaders.get("host") ?? "sortie.colist.fr";
+  const claimProto =
+    requestHeaders.get("x-forwarded-proto") ?? (claimHost.includes("localhost") ? "http" : "https");
+  const claimOrigin = `${claimProto}://${claimHost}`;
+
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8 flex items-center justify-between">
@@ -306,6 +329,10 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           heroImageUrl={heroOuting.heroImageUrl}
           eyebrow={isSelf ? "Ta prochaine sortie" : "Prochaine sortie"}
         />
+      )}
+
+      {showClaimPrompt && row.username && (
+        <InboxClaimPrompt creatorUsername={row.username} origin={claimOrigin} />
       )}
 
       {restUpcoming.length > 0 &&

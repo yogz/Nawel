@@ -293,6 +293,17 @@ export const removeParticipantSchema = z.object({
   participantId: z.string().uuid(),
 });
 
+export const claimPromptEmailSchema = z.object({
+  email: z.string().trim().email().max(255),
+  // L'username de l'organisateur permet de rebrand le callbackURL post-
+  // signin (l'invité revient sur la même page lien-privé) et de
+  // personnaliser le copy email (creatorName).
+  creatorUsername: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9_-]{1,50}$/i),
+});
+
 export const cancelOutingSchema = z.object({
   shortId: shortIdSchema,
 });

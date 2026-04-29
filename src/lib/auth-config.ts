@@ -7,7 +7,7 @@ import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { Redis } from "@upstash/redis";
-import { buildSortieAuthEmail, isSortieOrigin } from "./auth-emails";
+import { buildSortieAuthEmail, buildSortieClaimPromptEmail, isSortieOrigin } from "./auth-emails";
 
 // Lazy init — passing undefined to `new Resend()` throws at module-load time,
 // which breaks Next.js page-data collection on preview builds that don't have
@@ -217,10 +217,12 @@ export const auth = betterAuth({
         email,
         url,
         token,
+        metadata,
       }: {
         email: string;
         url: string;
         token: string;
+        metadata?: Record<string, unknown>;
       }) => {
         // Try to find user to get their language preference
         const user = await db.query.user.findFirst({
@@ -248,8 +250,28 @@ export const auth = betterAuth({
           ? `${origin}/login?token=${token}`
           : `${origin}/${locale}/login?token=${token}`;
 
+        // Variante post-claim : l'invité vient de donner son email après
+        // ≥2 RSVP via la prompt InboxClaimPrompt. La metadata transporte le
+        // nom du créateur + la liste des sorties pour personnaliser le corps
+        // — sans ça l'email "Connecte-toi à Sortie" est trop générique
+        // pour tenir la promesse "voici tes sorties chez X".
+        const claimPromptMeta =
+          fromSortie && metadata && metadata.source === "claim-prompt"
+            ? {
+                creatorName: typeof metadata.creatorName === "string" ? metadata.creatorName : "",
+                outings: Array.isArray(metadata.outings)
+                  ? (metadata.outings as { title: string; dateStr: string | null }[])
+                  : [],
+              }
+            : null;
         const sortieBranded = fromSortie
-          ? buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
+          ? claimPromptMeta
+            ? buildSortieClaimPromptEmail({
+                ctaUrl: magicUrl,
+                creatorName: claimPromptMeta.creatorName,
+                outings: claimPromptMeta.outings,
+              })
+            : buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
           : null;
 
         const { error } = await resend.emails.send({
