@@ -1,26 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { sendGAEvent } from "@/lib/umami";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
-
-// Mock plausible : sortie cultu type, futur proche, deadline pas encore
-// passée — la card ne doit montrer aucun lock badge (sinon faux signal
-// "déjà fermée"). 4 confirmés = nombre crédible pour un partage WhatsApp
-// d'un soir entre amis.
-const MOCK_OUTING = {
-  id: "demo-mock",
-  shortId: "demoshow",
-  slug: "phedre-comedie-francaise",
-  title: "Phèdre — Comédie-Française",
-  location: "Comédie-Française · Salle Richelieu",
-  startsAt: new Date(Date.now() + 30 * 86_400_000), // J+30
-  deadlineAt: new Date(Date.now() + 7 * 86_400_000), // J+7
-  status: "open",
-  mode: "fixed" as const,
-  heroImageUrl: null, // fallback gradient + initiale "P"
-  confirmedCount: 4,
-};
 
 const BULLETS = [
   "rsvp en 1 tap, sans compte",
@@ -29,18 +13,36 @@ const BULLETS = [
 ] as const;
 
 /**
- * Showcase d'une card de sortie pour répondre à "à quoi ça ressemble
- * une fois lancée ?". On rend la vraie `OutingProfileCard` avec data
- * mockée ; pas de phone-frame, pas de mockup chrome — direct sur fond
- * noir avec halo acid bas-opacité. La carte est inerte (le `Link`
- * intérieur cliquerait vers `/phedre-comedie-francaise-demoshow` qui
- * n'existe pas) — on l'enveloppe dans un `pointer-events-none` pour
- * éviter une 404 accidentelle.
+ * Showcase d'une card pour répondre à "à quoi ça ressemble une fois
+ * lancée ?". La carte est inerte (`pointer-events-none` + `inert` +
+ * `aria-hidden`) — son `<Link>` interne pointerait vers une 404 et
+ * un user kbd qui Tab dessus ne doit pas pouvoir Enter.
  */
 export function SectionCardShowcase() {
+  // useState lazy init : `new Date(Date.now() + …)` au module load
+  // finirait par dater (Vercel garde le module chaud entre requêtes).
+  // Au mount du composant on prend une fresh snapshot, stable pour la
+  // vie de l'instance. Si la deadline expirait, OutingProfileCard
+  // afficherait un lock badge — faux signal "déjà fermée".
+  const [mockOuting] = useState(() => ({
+    id: "demo-mock",
+    shortId: "demoshow",
+    slug: "phedre-comedie-francaise",
+    title: "Phèdre — Comédie-Française",
+    location: "Comédie-Française · Salle Richelieu",
+    startsAt: new Date(Date.now() + 30 * 86_400_000),
+    deadlineAt: new Date(Date.now() + 7 * 86_400_000),
+    status: "open",
+    mode: "fixed" as const,
+    heroImageUrl: null,
+    confirmedCount: 4,
+  }));
+
   return (
     <RevealOnScroll
-      onReveal={() => sendGAEvent("event", "landing_section_visible", { section: "card-showcase" })}
+      onReveal={() =>
+        sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "card-showcase" })
+      }
       className="mt-20 sm:mt-28"
     >
       <section className="px-6">
@@ -64,8 +66,6 @@ export function SectionCardShowcase() {
         </h2>
 
         <div className="relative mb-8">
-          {/* Halo acid bas-opacité derrière la card pour la décoller du
-              fond sans tomber dans le shadow SaaS classique. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 -z-10 -m-8 opacity-50"
@@ -74,19 +74,20 @@ export function SectionCardShowcase() {
                 "radial-gradient(circle at 50% 50%, rgba(199,255,60,0.18) 0%, transparent 65%)",
             }}
           />
-          <div className="-rotate-2 transition-transform duration-500 hover:rotate-0">
-            {/* pointer-events-none → la card est inerte au clic (sa
-                Link interne pointerait vers une 404). On garde le rendu
-                visuel complet mais on bloque la nav. */}
-            <div className="pointer-events-none">
-              <OutingProfileCard
-                outing={MOCK_OUTING}
-                showRsvp={false}
-                myRsvp={null}
-                outingBaseUrl="https://sortie.colist.fr"
-                isPast={false}
-              />
-            </div>
+          <div
+            aria-hidden
+            // @ts-expect-error — `inert` est dispo en HTML5 mais pas
+            // encore typé sur React.HTMLAttributes selon les versions.
+            inert=""
+            className="pointer-events-none -rotate-2"
+          >
+            <OutingProfileCard
+              outing={mockOuting}
+              showRsvp={false}
+              myRsvp={null}
+              outingBaseUrl="https://sortie.colist.fr"
+              isPast={false}
+            />
           </div>
         </div>
 

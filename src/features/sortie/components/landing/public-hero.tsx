@@ -1,21 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import { sendGAEvent } from "@/lib/umami";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { LandingCtaButton } from "./landing-cta-button";
+import { LANDING_EVENTS } from "./landing-events";
 
 /**
- * Hero du `/` pour visiteur unauth fresh. Bloc autonome (pas de
- * `<main>` wrapper, fourni par `LandingV2` qui compose plusieurs
- * sections). Reprend le hero historique de `PublicHome` à l'identique
- * sauf pour la ligne `sans compte · sans install · 30 secondes` glissée
- * entre le CTA et le LoginLink — résout l'objection procédurale "faut
- * un compte ? une install ?" qui freine au tap (cf. plan landing v2).
+ * Hero pour visiteur unauth fresh. Bloc autonome — le `<main>` wrapper
+ * est fourni par `LandingV2`.
  */
 export function PublicHero() {
   return (
     <header className="relative flex min-h-[100dvh] flex-col items-start justify-center px-6 pt-[max(env(safe-area-inset-top),2rem)] pb-12">
-      {/* Ambient acid + hot glow — pose le mood dès le paint. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-60"
@@ -47,24 +43,10 @@ export function PublicHero() {
         <span className="text-ink-700">Tout d&rsquo;un coup d&rsquo;œil.</span>
       </p>
 
-      <Link
-        href="/nouvelle"
-        onClick={() => sendGAEvent("event", "landing_cta_click", { position: "hero" })}
-        className="group inline-flex items-center gap-2 rounded-full bg-acid-600 px-7 py-4 text-[17px] font-black text-ink-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98]"
-        style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-      >
-        Lancer une sortie
-        <span
-          aria-hidden
-          className="transition-transform [transition-duration:var(--dur-base)] group-hover:translate-x-0.5"
-        >
-          →
-        </span>
-      </Link>
+      <LandingCtaButton position="hero" />
 
       {/* Bookend visuel avec l'eyebrow `sortie · v0.1` du haut. Lève les
-          deux objections les plus communes au CTA acide (compte ?
-          install ?) en mono brut, sans rajouter de chrome. */}
+          objections au CTA (compte ? install ?) sans rajouter de chrome. */}
       <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400">
         sans compte · sans install · 30 secondes
       </p>
@@ -72,7 +54,7 @@ export function PublicHero() {
       <LoginLink
         className="mt-3 font-mono text-xs uppercase tracking-[0.22em] text-ink-500 hover:text-ink-700"
         label="j&rsquo;ai déjà un compte →"
-        onClick={() => sendGAEvent("event", "landing_login_click", { position: "hero" })}
+        onClick={() => sendGAEvent("event", LANDING_EVENTS.loginClick, { position: "hero" })}
       />
     </header>
   );

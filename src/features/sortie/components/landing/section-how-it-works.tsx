@@ -1,33 +1,21 @@
 "use client";
 
 import { sendGAEvent } from "@/lib/umami";
+import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
 const STEPS = [
-  {
-    n: "01",
-    text: "Tu choisis ce que tu vas voir. Date, lieu, prix.",
-  },
-  {
-    n: "02",
-    text: "Tu balances le lien sur le groupe. Ils répondent d'un tap.",
-  },
-  {
-    n: "03",
-    text: "Tu vois qui vient. Qui doit combien. Qui a payé.",
-  },
+  { n: "01", text: "Tu choisis ce que tu vas voir. Date, lieu, prix." },
+  { n: "02", text: "Tu balances le lien sur le groupe. Ils répondent d'un tap." },
+  { n: "03", text: "Tu vois qui vient. Qui doit combien. Qui a payé." },
 ] as const;
 
-/**
- * Triptyque typographique pur (numéros + texte, pas de screenshot ni
- * d'icône). Le H1 hero ("Organise. Ils répondent. Tu sais.") nomme les
- * 3 phases ; cette section les concrétise (date+lieu+prix → lien
- * groupé → comptes). Granularité différente, pas de redite.
- */
 export function SectionHowItWorks() {
   return (
     <RevealOnScroll
-      onReveal={() => sendGAEvent("event", "landing_section_visible", { section: "how-it-works" })}
+      onReveal={() =>
+        sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "how-it-works" })
+      }
       className="mt-16 sm:mt-24"
     >
       <section className="px-6">

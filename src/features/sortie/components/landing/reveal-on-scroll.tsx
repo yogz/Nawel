@@ -4,31 +4,23 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = {
   children: React.ReactNode;
-  /** Optional callback fired once when the element enters the viewport.
-   * Used by sections to emit an Umami `landing_section_visible` event. */
+  /** Fired once when the element enters the viewport. */
   onReveal?: () => void;
-  /** Threshold pour IntersectionObserver. Default 0.4 — assez pour
-   * déclencher avant que la section soit pleinement visible (au scroll
-   * un user voit le contenu apparaître au lieu d'arriver "déjà animé"). */
-  threshold?: number;
   className?: string;
 };
 
-/**
- * Wrap any block to reveal-on-scroll once. Used by landing sections to
- * stagger entrance sans animer au paint initial (no FOUC). Si JS est
- * désactivé, le fallback CSS via `noscript` n'est pas câblé — Sortie
- * suppose JS dispo (auth client-side, Umami, etc.).
- *
- * État initial `revealed=false` → opacity-0 + translate-y-3. Au mount
- * client, l'IO démarre. Si l'élément est déjà au-dessus du fold (cas
- * landing courte ou ancre directe), l'IO fire immédiatement → reveal
- * sans flash perceptible. Si l'élément est en dessous, on garde caché
- * jusqu'au scroll qui le ramène dans le viewport.
- */
-export function RevealOnScroll({ children, onReveal, threshold = 0.4, className = "" }: Props) {
+const THRESHOLD = 0.4;
+
+export function RevealOnScroll({ children, onReveal, className = "" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
+  // Stable ref pour onReveal : sans ça un nouveau callback à chaque render
+  // parent recrée l'observer (deps churn). Pattern standard pour les
+  // callbacks-in-effect.
+  const onRevealRef = useRef(onReveal);
+  useEffect(() => {
+    onRevealRef.current = onReveal;
+  });
 
   useEffect(() => {
     if (revealed || !ref.current) {
@@ -39,15 +31,15 @@ export function RevealOnScroll({ children, onReveal, threshold = 0.4, className 
       ([entry]) => {
         if (entry?.isIntersecting) {
           setRevealed(true);
-          onReveal?.();
+          onRevealRef.current?.();
           observer.disconnect();
         }
       },
-      { threshold }
+      { threshold: THRESHOLD }
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [revealed, threshold, onReveal]);
+  }, [revealed]);
 
   return (
     <div
