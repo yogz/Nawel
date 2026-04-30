@@ -1,6 +1,7 @@
 import { CalendarPlus } from "lucide-react";
 import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { RotatingTicketLink } from "@/features/sortie/components/rotating-ticket-link";
 
 type Props = {
@@ -70,13 +71,9 @@ export function OutingHero({
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
         {startsAt && (
-          <p className="mb-4 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            <span
-              aria-hidden
-              className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-            />
+          <Eyebrow glow className="mb-4">
             {formatOutingDate(startsAt).toUpperCase()}
-          </p>
+          </Eyebrow>
         )}
 
         <h1

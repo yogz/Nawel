@@ -4,6 +4,7 @@ import { formatOutingDate } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   slug: string | null;
@@ -102,13 +103,9 @@ export function LiveStatusHero({
     // user rather than snapping into place. `motion-safe:` so reduced-
     // motion users get an instant render.
     <section className="mb-10 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized">
-      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-        <span
-          aria-hidden
-          className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-        />
+      <Eyebrow glow className="mb-3">
         {eyebrow}
-      </p>
+      </Eyebrow>
       <Link
         href={`/${canonical}`}
         aria-label={`Voir la sortie ${title}`}

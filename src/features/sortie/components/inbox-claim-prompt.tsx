@@ -9,6 +9,7 @@ import {
   submitEmailClaimAction,
 } from "@/features/sortie/actions/claim-prompt-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   /** Username de l'organisateur (route segment) — sert au callback OAuth
@@ -95,9 +96,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
           onClick={() => setOpen(true)}
           className="block w-full px-4 py-4 pr-12 text-left transition-colors hover:bg-ink-700/[0.02]"
         >
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ à toi de jouer ─
-          </p>
+          <Eyebrow className="mb-2">─ à toi de jouer ─</Eyebrow>
           <p className="font-display text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700">
             Lance les tiennes, invite tes potes.
             <span className="text-acid-600"> →</span>
@@ -126,9 +125,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
             className="overflow-hidden"
           >
             <div className="px-4 pb-5 pt-4 pr-12">
-              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-                ─ à toi de jouer ─
-              </p>
+              <Eyebrow className="mb-2">─ à toi de jouer ─</Eyebrow>
               <h2 className="mb-2 font-display text-[22px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700">
                 Lance ta sortie. Invite tes potes.
               </h2>
@@ -187,9 +184,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
             transition={{ duration: 0.18 }}
             className="px-4 py-5 pr-12"
           >
-            <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-              ─ envoyé ─
-            </p>
+            <Eyebrow className="mb-2">─ envoyé ─</Eyebrow>
             <p className="font-display text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700">
               {state.message}
             </p>

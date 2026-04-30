@@ -1,6 +1,7 @@
 import { numberToFrenchCap } from "@/features/sortie/lib/number-fr";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { AnimatedCount } from "./animated-count";
+import { Eyebrow } from "./eyebrow";
 import { RemoveParticipantButton } from "./remove-participant-dialog";
 import { UserAvatar } from "./user-avatar";
 
@@ -38,9 +39,7 @@ export function ParticipantList({
   if (!hasAnyPositive) {
     return (
       <div className="text-center">
-        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          ─ first to commit ─
-        </p>
+        <Eyebrow className="mb-2">─ first to commit ─</Eyebrow>
         <p className="font-display text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
           Radio silence.
           <br />
@@ -84,9 +83,7 @@ export function ParticipantList({
 
   return (
     <div>
-      <p className="mb-2 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-        ─ they&rsquo;re in ─
-      </p>
+      <Eyebrow className="mb-2 text-center">─ they&rsquo;re in ─</Eyebrow>
       <p
         className="mb-4 text-center font-display text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
         style={{ textWrap: "balance" }}
@@ -175,12 +172,12 @@ function SecondarySection({
 
   return (
     <div className="mt-5 border-t border-surface-400 pt-4">
-      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+      <Eyebrow tone="hot" className="mb-2">
         {label} · {String(count).padStart(2, "0")}
         {showHeads && (
           <span className="ml-2 text-ink-400">◉ {sectionHeads} avec les accompagnants</span>
         )}
-      </p>
+      </Eyebrow>
       <ul className="flex flex-col gap-2">
         {rows.map((p) => {
           const display = displayNameOf(p) ?? "Quelqu'un";
