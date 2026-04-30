@@ -15,12 +15,16 @@ export async function getSortieAdminSession() {
 
 /**
  * À utiliser dans les Server Components / layouts admin. Redirect
- * vers `/sortie` si non authentifié OU non-admin. Pas de message
+ * vers la home si non authentifié OU non-admin. Pas de message
  * d'erreur — on ne donne aucune info à un attaquant.
+ *
+ * NB : path public (`/`), pas le path interne `/sortie`. Sur
+ * sortie.colist.fr le proxy ré-écrit `/` → `/sortie`. Rediriger
+ * vers `/sortie` causerait un double-rewrite `/sortie/sortie` et 404.
  */
 export async function requireSortieAdmin() {
   const session = await getSortieAdminSession();
-  if (!session) redirect("/sortie");
+  if (!session) redirect("/");
   return session;
 }
 
