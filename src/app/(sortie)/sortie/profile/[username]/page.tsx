@@ -18,6 +18,7 @@ import {
   flattenInboxByPriority,
   type ActionBucket,
 } from "@/features/sortie/lib/inbox-buckets";
+import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import {
   CLAIM_PROMPT_DISMISS_COOKIE,
   shouldShowClaimPrompt,
@@ -189,7 +190,12 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
     row.rsvpInviteToken !== null &&
     row.rsvpInviteToken === k;
 
-  const { upcoming, past } = await listPublicProfileOutings(row.id);
+  const { upcoming: upcomingRaw, past } = await listPublicProfileOutings(row.id);
+  // La query renvoie `desc(createdAt)` — sans tri par horizon temporel,
+  // une sortie créée hier qui se passe dans 3 mois remonte avant une
+  // sortie de samedi prochain créée la semaine dernière. Aligne sur
+  // l'ordre de la home `/` (cf. note dans page.tsx du même flow).
+  const upcoming = sortUpcomingByStartsAt(upcomingRaw);
   const session = await auth.api.getSession({ headers: await headers() });
   const isSelf = session?.user?.id === row.id;
 
