@@ -1357,9 +1357,7 @@ function GeminiSearchProgress({
       </div>
       <div className="flex flex-col gap-1">
         <p className="text-sm font-bold text-ink-700">{message}</p>
-        <p className="text-xs text-ink-500">
-          Cette étape peut prendre une quinzaine de secondes.
-        </p>
+        <p className="text-xs text-ink-500">Cette étape peut prendre une quinzaine de secondes.</p>
       </div>
       <button
         type="button"
@@ -1856,9 +1854,7 @@ function DeadlineSection({
   // Highlight le preset dont la date cible matche le jour Paris de la
   // deadline courante. Comparaison de jour calendaire (pas d'offset
   // horaire) vu que les deadlines sont toutes fixées à 23:59.
-  const activePreset = presets.find(
-    (p) => isSameParisDay(presetDeadline(p.days), effective)
-  );
+  const activePreset = presets.find((p) => isSameParisDay(presetDeadline(p.days), effective));
 
   return (
     <div className="rounded-2xl border border-ink-300 bg-surface-200 p-4">

@@ -34,10 +34,7 @@ export async function POST(request: NextRequest) {
     windowSeconds: 3600,
   });
   if (!gate.ok) {
-    return NextResponse.json(
-      { error: "rate_limited", message: gate.message },
-      { status: 429 }
-    );
+    return NextResponse.json({ error: "rate_limited", message: gate.message }, { status: 429 });
   }
 
   let formData: FormData;
@@ -49,10 +46,7 @@ export async function POST(request: NextRequest) {
 
   const file = formData.get("file");
   if (!(file instanceof File)) {
-    return NextResponse.json(
-      { error: "no_file", message: "Aucun fichier reçu." },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "no_file", message: "Aucun fichier reçu." }, { status: 400 });
   }
 
   const result = await uploadEventImage(file);

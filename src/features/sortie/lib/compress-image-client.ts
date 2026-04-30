@@ -36,11 +36,7 @@ export async function compressImageIfNeeded(file: File): Promise<File> {
     objectUrl = URL.createObjectURL(file);
     const img = await loadImage(objectUrl);
 
-    const ratio = Math.min(
-      MAX_DIMENSION / img.naturalWidth,
-      MAX_DIMENSION / img.naturalHeight,
-      1
-    );
+    const ratio = Math.min(MAX_DIMENSION / img.naturalWidth, MAX_DIMENSION / img.naturalHeight, 1);
     const w = Math.max(1, Math.round(img.naturalWidth * ratio));
     const h = Math.max(1, Math.round(img.naturalHeight * ratio));
 

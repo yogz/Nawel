@@ -79,9 +79,7 @@ export function VibePicker({ value, onChange }: Props) {
           right edge instead of overlaying the page bg. Avoids the muddy
           look the previous gradient overlay produced over `bg-surface-200`
           pills (whose surface is slightly lighter than the page bg). */}
-      <div
-        className="-mx-6 overflow-x-auto px-6 pr-10 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%_-_2.5rem),transparent_100%)] [&::-webkit-scrollbar]:hidden"
-      >
+      <div className="-mx-6 overflow-x-auto px-6 pr-10 [scrollbar-width:none] [mask-image:linear-gradient(to_right,black_0,black_calc(100%_-_2.5rem),transparent_100%)] [&::-webkit-scrollbar]:hidden">
         <motion.ul
           className="flex w-max gap-2 py-1"
           variants={containerVariants}
@@ -91,11 +89,7 @@ export function VibePicker({ value, onChange }: Props) {
           {VIBE_OPTIONS.map((opt) => {
             const active = value === opt.value;
             return (
-              <motion.li
-                key={opt.value}
-                className="shrink-0 rounded-full"
-                variants={itemVariants}
-              >
+              <motion.li key={opt.value} className="shrink-0 rounded-full" variants={itemVariants}>
                 <button
                   type="button"
                   onClick={() => onChange(active ? null : opt.value)}

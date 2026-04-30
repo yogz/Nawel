@@ -97,9 +97,7 @@ export function RsvpStub({ outingTitle, outingUrl, date, userName, onClose }: Pr
           className="pointer-events-none absolute top-1/2 right-4 left-4 h-0 -translate-y-1/2 border-t-2 border-dashed border-ink-300"
         />
 
-        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-acid-700">
-          Confirmé
-        </p>
+        <p className="text-[10px] font-black uppercase tracking-[0.28em] text-acid-700">Confirmé</p>
         <h2 className="mt-3 text-3xl leading-[0.98] font-black tracking-tight text-ink-700">
           {outingTitle}
         </h2>

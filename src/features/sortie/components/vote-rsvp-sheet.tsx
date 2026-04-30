@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { castVoteAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
-import { readAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
+import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
 import { GuestCountStepper } from "./guest-count-stepper";
 import { IdentityFields } from "./identity-fields";
 
@@ -77,17 +77,34 @@ export function VoteRsvpSheet({
     {} as FormActionState
   );
 
+  const formRef = useRef<HTMLFormElement>(null);
   const wasPending = useRef(false);
   useEffect(() => {
     const justFinished = wasPending.current && !pending;
     wasPending.current = pending;
     if (justFinished && !state.errors && !state.message) {
+      // Persiste le prénom / email saisis pour pré-remplir les
+      // prochaines sorties RSVP depuis ce device. Best-effort —
+      // localStorage origin-scoped, pas de fuite vers Colist www.
+      const submittedName =
+        (formRef.current?.elements.namedItem("displayName") as HTMLInputElement | null)?.value ??
+        "";
+      const submittedEmail =
+        (formRef.current?.elements.namedItem("email") as HTMLInputElement | null)?.value ?? "";
+      if (submittedName) {
+        writeAnonPrefs({
+          name: submittedName,
+          email: submittedEmail,
+          extraAdults: adults,
+          extraChildren: children,
+        });
+      }
       queueMicrotask(() => {
         setOpen(false);
         router.refresh();
       });
     }
-  }, [pending, state, router]);
+  }, [pending, state, router, adults, children]);
 
   const hiddenFieldErrors = state.errors
     ? Object.entries(state.errors)
@@ -138,7 +155,7 @@ export function VoteRsvpSheet({
           </p>
         </SheetHeader>
 
-        <form action={formAction} className="flex flex-col gap-5">
+        <form ref={formRef} action={formAction} className="flex flex-col gap-5">
           <input type="hidden" name="shortId" value={shortId} />
           <input type="hidden" name="votes" value={serializedVotes} />
 
@@ -190,8 +207,8 @@ export function VoteRsvpSheet({
           </ul>
 
           <IdentityFields
-            defaultName={existingName}
-            defaultEmail={existingEmail}
+            defaultName={existingName ?? prefs?.name}
+            defaultEmail={existingEmail ?? prefs?.email}
             errors={state.errors}
             emailHint="pour être prévenu·e quand la date est choisie"
             knownVerb="votes"

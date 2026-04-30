@@ -44,10 +44,7 @@ export function FormField({
         aria-describedby={describedBy}
       />
       {(helper || error) && (
-        <p
-          id={describedBy}
-          className={error ? "text-xs text-erreur-700" : "text-xs text-ink-400"}
-        >
+        <p id={describedBy} className={error ? "text-xs text-erreur-700" : "text-xs text-ink-400"}>
           {error ?? helper}
         </p>
       )}

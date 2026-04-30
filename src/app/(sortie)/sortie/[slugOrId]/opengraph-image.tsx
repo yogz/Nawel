@@ -58,9 +58,7 @@ export default async function Image({ params }: Props) {
   // souvent vide pour qu'on s'y appuie, le firstName en revanche est
   // toujours là (créateur connecté ou anon avec pseudo). Fallback
   // "INVITATION" reste un signal universel "viens" même sans nom.
-  const inviteEyebrow = meta.firstName
-    ? `${meta.firstName.toUpperCase()} T'INVITE`
-    : "INVITATION";
+  const inviteEyebrow = meta.firstName ? `${meta.firstName.toUpperCase()} T'INVITE` : "INVITATION";
   // Méta-ligne : date relative + lieu, séparés par middle-dot. Les deux
   // sont facultatifs — sans aucun, on ne rend pas la ligne du tout.
   const dateLabel = startsAt ? buildDateLabel(startsAt) : null;
@@ -215,10 +213,7 @@ function renderStandard(args: {
           </div>
         )}
 
-        <BottomStrip
-          hideCredit={hideCreditInStrip}
-          confirmedCount={confirmedCount}
-        />
+        <BottomStrip hideCredit={hideCreditInStrip} confirmedCount={confirmedCount} />
       </div>
     </div>,
     { ...size }
