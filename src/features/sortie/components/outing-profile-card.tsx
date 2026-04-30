@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Check, ChevronRight } from "lucide-react";
-import {
-  formatOutingDate,
-  formatOutingDateShort,
-  formatVotedSlotsCompact,
-} from "@/features/sortie/lib/date-fr";
+import { formatOutingDateShort, formatVotedSlotsCompact } from "@/features/sortie/lib/date-fr";
 import {
   formatDeadlineCountdown,
   type DeadlineTone,
@@ -90,11 +86,12 @@ export function OutingProfileCard({
   const canInlineRsvp = showRsvp && !isPast && !deadlinePassed && outing.mode === "fixed";
   const needsVoteCta = showRsvp && !isPast && !deadlinePassed && outing.mode === "vote";
 
-  const dateLabel = outing.startsAt
-    ? isPast
-      ? formatOutingDateShort(outing.startsAt)
-      : formatOutingDate(outing.startsAt)
-    : null;
+  // Format compact partout sur la card ("jeu. 12 déc. · 20h30") — le
+  // long format ("vendredi 12 décembre · 20h30") wrappait sur 2 lignes
+  // en eyebrow sur les cards en liste (cas Céline Dion 18 sept, Werther
+  // 14 fév 2027), cassait le scan vertical. Le hero garde le format
+  // long via `formatOutingDate` directement (place pour respirer là-bas).
+  const dateLabel = outing.startsAt ? formatOutingDateShort(outing.startsAt) : null;
 
   const meta = [
     formatVenue(outing.location),

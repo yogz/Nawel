@@ -265,14 +265,16 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       </nav>
 
-      {/* Header compact en mode lien privé : l'invité est en mode
-          "checklist d'actions à faire", l'identité de l'organisateur
-          n'a pas besoin d'être hero. Avatar 56px + h1 3xl gagnent
-          ~80px de fold (~1 card supplémentaire visible). Vitrine
-          publique (`!showRsvp`) garde le hero plein. */}
-      <header className={showRsvp ? "mb-7" : "mb-10"}>
-        <div className={`flex items-center ${showRsvp ? "gap-4" : "gap-5"}`}>
-          <UserAvatar name={row.name} image={row.image} size={showRsvp ? 56 : 88} />
+      {/* Header compact unifié sur les 2 modes (vitrine + lien privé) :
+          la version "hero plein" 88px + text-5xl mangeait ~40% du 1er
+          viewport sur la vitrine publique alors que le visiteur cherche
+          la prochaine sortie, pas la photo de Nicolas en plein écran.
+          Avatar 56px + h1 3xl/4xl libère ~150px de fold = 1 card de plus
+          visible au scroll initial. L'eyebrow @username reste — c'est le
+          handle système, complémentaire du display name. */}
+      <header className="mb-7">
+        <div className="flex items-center gap-4">
+          <UserAvatar name={row.name} image={row.image} size={56} />
           <div className="flex-1">
             <p className="mb-2 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
               <span
@@ -282,9 +284,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               @{row.username}
             </p>
             <h1
-              className={`leading-[0.95] font-black tracking-[-0.04em] text-ink-700 ${
-                showRsvp ? "text-3xl sm:text-4xl" : "text-4xl sm:text-5xl"
-              }`}
+              className="text-3xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-4xl"
               style={{ textWrap: "balance" }}
             >
               {row.name}
