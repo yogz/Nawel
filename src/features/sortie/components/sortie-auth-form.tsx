@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Loader2, Mail } from "lucide-react";
 import { authClient, signIn, useSession } from "@/lib/auth-client";
 import { GoogleIcon } from "@/components/auth/google-icon";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import {
   checkAccountStatus,
   type AccountStatus,
@@ -210,13 +211,7 @@ export function SortieAuthForm() {
   if (phase === "magic-sent") {
     return (
       <div className="flex flex-col gap-6">
-        <p className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
-          ─ lien envoyé ─
-        </p>
+        <Eyebrow glow>─ lien envoyé ─</Eyebrow>
         <h1 className="font-display text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Check tes mails.
         </h1>
@@ -398,7 +393,7 @@ export function SortieAuthForm() {
       )}
 
       <footer className="mt-4 border-t border-surface-400 pt-6">
-        <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+        <Eyebrow tone="muted">
           ↳ pas de mot de passe oublié ici. Si tu en as besoin,{" "}
           <a
             href={`https://www.colist.fr/fr/login?callbackURL=${encodeURIComponent(callbackURL)}`}
@@ -406,7 +401,7 @@ export function SortieAuthForm() {
           >
             passe par colist.fr
           </a>
-        </p>
+        </Eyebrow>
       </footer>
     </div>
   );
@@ -425,9 +420,7 @@ function PasswordForm(props: {
 }) {
   return (
     <form onSubmit={props.onSubmit} className="flex flex-col gap-4">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-        ↳ {props.email}
-      </p>
+      <Eyebrow tone="muted">↳ {props.email}</Eyebrow>
 
       <label className="flex flex-col gap-2">
         <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">

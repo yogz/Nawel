@@ -5,6 +5,7 @@ import type {
   ServiceCallGroup,
 } from "@/features/sortie/queries/stat-queries";
 import type { WizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   parseAgg: ParseAggregate;
@@ -112,7 +113,7 @@ function failureKindLabel(kind: string | null): string {
 function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4">
-      <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">{label}</p>
+      <Eyebrow tone="muted">{label}</Eyebrow>
       <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">{value}</p>
       {sub && <p className="font-mono text-[11px] tracking-[0.04em] text-ink-500">{sub}</p>}
     </div>
@@ -141,9 +142,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 0 : sorties créées (vue produit) === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ création sorties ─
-          </p>
+          <Eyebrow className="mb-2">─ création sorties ─</Eyebrow>
           <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Sorties créées (7 derniers jours)
           </h2>
@@ -155,9 +154,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
             sub={`${totalActive7d.toLocaleString("fr-FR")} actives`}
           />
           <div className="col-span-2 flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4 sm:col-span-3">
-            <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-              Par jour
-            </p>
+            <Eyebrow tone="muted">Par jour</Eyebrow>
             <div className="mt-1 flex h-24 items-end gap-2">
               {days.map((d) => {
                 const height = (d.totalCount / maxCount) * 100;
@@ -199,9 +196,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 0bis : funnel wizard via API Umami === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ funnel wizard (umami) ─
-          </p>
+          <Eyebrow className="mb-2">─ funnel wizard (umami) ─</Eyebrow>
           <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Conversion création — {wizardUmami.rangeDays} derniers jours
           </h2>
@@ -215,9 +210,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
             {/* Funnel : barres horizontales empilées avec count + % */}
             {wizardUmami.funnel ? (
               <div className="flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
-                <p className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
-                  Steps
-                </p>
+                <Eyebrow tone="muted">Steps</Eyebrow>
                 <ul className="flex flex-col gap-1.5">
                   {wizardUmami.funnel.map((step) => {
                     const ratio = funnelTopCount > 0 ? step.count / funnelTopCount : 0;
@@ -329,9 +322,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 1 : KPIs scraper OG === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ scraper og ─
-          </p>
+          <Eyebrow className="mb-2">─ scraper og ─</Eyebrow>
           <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Parsing d&apos;URL de billetterie
           </h2>
@@ -363,9 +354,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 2 : services externes === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ services externes ─
-          </p>
+          <Eyebrow className="mb-2">─ services externes ─</Eyebrow>
           <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Appels Gemini & Discovery API
           </h2>
@@ -439,9 +428,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {/* === Section 3 : tableau des hosts === */}
       <section>
         <header className="mb-4">
-          <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            ─ sites qui répondent ─
-          </p>
+          <Eyebrow className="mb-2">─ sites qui répondent ─</Eyebrow>
           <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
             Détail par hostname
           </h2>
@@ -507,9 +494,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
       {problemHosts.length > 0 && (
         <section>
           <header className="mb-4">
-            <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-rose-700">
-              ─ à fixer ─
-            </p>
+            <Eyebrow className="mb-2 text-rose-700">─ à fixer ─</Eyebrow>
             <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
               Hosts à problèmes
             </h2>
