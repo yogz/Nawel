@@ -26,11 +26,11 @@ import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 // /moi.
 const FEED_HISTORY_WINDOW_DAYS = 30;
 
-// Sub-query scalaire réutilisée par les listings (profile + feed) :
+// Sub-query scalaire réutilisée par les listings (profile + feed + admin) :
 // compte des participants ayant répondu yes ou handle_own pour une
 // sortie donnée. Préféré au LEFT JOIN + GROUP BY pour rester composable
 // avec ORDER BY / LIMIT au niveau de l'outing.
-const confirmedCountSql = sql<number>`(
+export const confirmedCountSql = sql<number>`(
   SELECT COUNT(*)::int FROM ${participants}
   WHERE ${participants.outingId} = ${outings.id}
     AND ${participants.response} IN ('yes', 'handle_own')
