@@ -303,10 +303,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
                 ─ idle. fais le 1er pas ─
               </p>
-              <p
-                className="mb-3 text-[20px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
-                style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-              >
+              <p className="mb-3 font-display text-[20px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
                 Rien à montrer pour l&rsquo;instant.
               </p>
               <Link

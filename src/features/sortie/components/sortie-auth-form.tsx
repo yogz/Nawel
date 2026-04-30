@@ -217,10 +217,7 @@ export function SortieAuthForm() {
           />
           ─ lien envoyé ─
         </p>
-        <h1
-          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700"
-          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-        >
+        <h1 className="font-display text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Check tes mails.
         </h1>
         <p className="text-[15px] leading-[1.5] text-ink-400">
@@ -281,10 +278,7 @@ export function SortieAuthForm() {
           />
           sortie · v0.1
         </p>
-        <h1
-          className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
-          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-        >
+        <h1 className="font-display text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
           Reviens.
         </h1>
       </header>

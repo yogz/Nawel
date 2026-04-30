@@ -173,11 +173,8 @@ export function OutingProfileCard({
             }}
           >
             <span
-              className="text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
-              style={{
-                fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-                mixBlendMode: "overlay",
-              }}
+              className="font-display text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
+              style={{ mixBlendMode: "overlay" }}
             >
               {initial}
             </span>

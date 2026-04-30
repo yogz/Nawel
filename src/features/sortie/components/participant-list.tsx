@@ -41,10 +41,7 @@ export function ParticipantList({
         <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           ─ first to commit ─
         </p>
-        <p
-          className="text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
-          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-        >
+        <p className="font-display text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
           Radio silence.
           <br />
           {isCreator ? (
@@ -91,11 +88,8 @@ export function ParticipantList({
         ─ they&rsquo;re in ─
       </p>
       <p
-        className="mb-4 text-center text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
-        style={{
-          fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-          textWrap: "balance",
-        }}
+        className="mb-4 text-center font-display text-[24px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700"
+        style={{ textWrap: "balance" }}
       >
         {headline}
       </p>

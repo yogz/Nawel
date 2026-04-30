@@ -168,11 +168,8 @@ export function LiveStatusHero({
               }}
             >
               <span
-                className="text-[6rem] leading-none font-black tracking-tight text-ink-50 opacity-40 select-none sm:text-[7rem]"
-                style={{
-                  fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-                  mixBlendMode: "overlay",
-                }}
+                className="font-display text-[6rem] leading-none font-black tracking-tight text-ink-50 opacity-40 select-none sm:text-[7rem]"
+                style={{ mixBlendMode: "overlay" }}
               >
                 {initial}
               </span>

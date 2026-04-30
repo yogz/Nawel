@@ -63,10 +63,7 @@ export function CalendarFeedManager({ initialToken, origin }: Props) {
         <div className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
           <Calendar size={12} strokeWidth={2.4} />─ mon agenda ─
         </div>
-        <h3
-          className="mb-2 text-[20px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700"
-          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-        >
+        <h3 className="mb-2 font-display text-[20px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700">
           Synchronise tes RSVP
           <br />
           avec ton agenda.

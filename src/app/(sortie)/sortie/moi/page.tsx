@@ -279,8 +279,7 @@ function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: b
       }`}
     >
       <span
-        className={`text-[16px] font-bold tracking-[-0.015em] ${muted ? "text-ink-500" : "text-ink-700"}`}
-        style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+        className={`font-display text-[16px] font-bold tracking-[-0.015em] ${muted ? "text-ink-500" : "text-ink-700"}`}
       >
         {outing.title}
       </span>

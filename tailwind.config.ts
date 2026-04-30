@@ -13,6 +13,11 @@ const config: Config = {
         // typefaces, zero churn. The Tailwind keys stay opaque ids.
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         serif: ["var(--font-inter-tight)", "var(--font-inter)", "system-ui", "sans-serif"],
+        // `display` = Unbounded sur Sortie. Sémantique propre vs
+        // `serif` (qui marche aussi mais nom faux : c'est un sans-serif
+        // display). Utiliser `font-display` plutôt que l'inline
+        // `style={{ fontFamily: "var(--font-inter-tight), …" }}`.
+        display: ["var(--font-inter-tight)", "system-ui", "sans-serif"],
         mono: ["var(--font-pilot-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {

@@ -133,12 +133,8 @@ function GradientFallback({ title }: { title: string }) {
       }}
     >
       <span
-        className="text-[14rem] leading-none font-black opacity-40 select-none sm:text-[18rem]"
-        style={{
-          fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-          color: "#0A0A0A",
-          mixBlendMode: "overlay",
-        }}
+        className="font-display text-[14rem] leading-none font-black opacity-40 select-none sm:text-[18rem]"
+        style={{ color: "#0A0A0A", mixBlendMode: "overlay" }}
       >
         {initial}
       </span>

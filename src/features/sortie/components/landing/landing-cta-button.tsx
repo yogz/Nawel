@@ -20,8 +20,7 @@ export function LandingCtaButton({ position, fullWidthOnMobile = false }: Props)
     <Link
       href="/nouvelle"
       onClick={() => sendGAEvent("event", LANDING_EVENTS.ctaClick, { position })}
-      className={`group inline-flex items-center gap-2 rounded-full bg-acid-600 px-7 py-4 text-[17px] font-black text-ink-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98] ${widthClass}`}
-      style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+      className={`group inline-flex items-center gap-2 rounded-full bg-acid-600 px-7 py-4 font-display text-[17px] font-black text-ink-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98] ${widthClass}`}
     >
       Lancer une sortie
       <span

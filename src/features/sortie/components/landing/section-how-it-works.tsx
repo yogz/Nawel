@@ -27,11 +27,8 @@ export function SectionHowItWorks() {
           ─ comment ça marche ─
         </p>
         <h2
-          className="mb-10 text-[36px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
-          style={{
-            textWrap: "balance",
-            fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-          }}
+          className="mb-10 font-display text-[36px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
+          style={{ textWrap: "balance" }}
         >
           Tu colles le lien.
           <br />
@@ -43,8 +40,7 @@ export function SectionHowItWorks() {
             <li key={step.n} className="flex items-start gap-4">
               <span
                 aria-hidden
-                className="shrink-0 text-[44px] leading-[0.85] font-black tracking-[-0.04em] text-acid-600/40 sm:text-[56px]"
-                style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
+                className="shrink-0 font-display text-[44px] leading-[0.85] font-black tracking-[-0.04em] text-acid-600/40 sm:text-[56px]"
               >
                 {step.n}
               </span>

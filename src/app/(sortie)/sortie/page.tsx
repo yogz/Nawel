@@ -426,10 +426,7 @@ function VibeButton({
       className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-[24px] p-4 shadow-[var(--shadow-md)] transition-transform [transition-duration:var(--dur-fast)] motion-safe:active:scale-95 active:rotate-[-1deg]"
     >
       <span style={{ color: fg }}>{icon}</span>
-      <span
-        className="text-[20px] font-black leading-[0.95] tracking-[-0.025em]"
-        style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-      >
+      <span className="font-display text-[20px] font-black leading-[0.95] tracking-[-0.025em]">
         {label}
       </span>
     </Link>

@@ -98,10 +98,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
           <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
             ─ à toi de jouer ─
           </p>
-          <p
-            className="text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700"
-            style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-          >
+          <p className="font-display text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700">
             Lance les tiennes, invite tes potes.
             <span className="text-acid-600"> →</span>
           </p>
@@ -132,10 +129,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
               <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
                 ─ à toi de jouer ─
               </p>
-              <h2
-                className="mb-2 text-[22px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700"
-                style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-              >
+              <h2 className="mb-2 font-display text-[22px] leading-[1.1] font-black tracking-[-0.025em] text-ink-700">
                 Lance ta sortie. Invite tes potes.
               </h2>
               <p className="mb-4 text-[14px] leading-[1.5] text-ink-500">
@@ -196,10 +190,7 @@ export function InboxClaimPrompt({ creatorUsername, origin }: Props) {
             <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
               ─ envoyé ─
             </p>
-            <p
-              className="text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700"
-              style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-            >
+            <p className="font-display text-[18px] leading-[1.15] font-black tracking-[-0.02em] text-ink-700">
               {state.message}
             </p>
             <p className="mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">

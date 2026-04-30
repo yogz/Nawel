@@ -54,11 +54,8 @@ export function SectionCardShowcase() {
           ─ une carte, tout dedans ─
         </p>
         <h2
-          className="mb-10 text-[36px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
-          style={{
-            textWrap: "balance",
-            fontFamily: "var(--font-inter-tight), system-ui, sans-serif",
-          }}
+          className="mb-10 font-display text-[36px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
+          style={{ textWrap: "balance" }}
         >
           La sortie,
           <br />
