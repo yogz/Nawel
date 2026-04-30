@@ -27,6 +27,7 @@ import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
@@ -50,7 +51,7 @@ export default async function SortieHome() {
         return <AnonInbox inbox={inbox} />;
       }
     }
-    return <PublicHome />;
+    return <LandingV2 />;
   }
 
   const { upcoming: upcomingRaw, past } = await listAllMyOutings(userId);
@@ -534,68 +535,6 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
           label="me connecter →"
         />
       </footer>
-    </main>
-  );
-}
-
-function PublicHome() {
-  return (
-    <main className="relative mx-auto flex min-h-[100dvh] max-w-2xl flex-col px-6 pb-12 pt-[max(env(safe-area-inset-top),2rem)]">
-      {/* Ambient acid glow on the top-right corner — sets the mood the
-          moment the page paints. The radial gradient sits behind the
-          content layer at low opacity so it never trips contrast. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
-        style={{
-          background:
-            "radial-gradient(circle at 95% 0%, rgba(199,255,60,0.18) 0%, transparent 45%), radial-gradient(circle at 5% 95%, rgba(255,61,129,0.14) 0%, transparent 50%)",
-        }}
-      />
-
-      <header className="flex flex-1 flex-col items-start justify-center">
-        <p className="mb-5 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.24em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
-          sortie · v0.1
-        </p>
-        <h1
-          className="mb-6 -mx-2 text-[56px] leading-[0.92] font-black tracking-[-0.04em] text-ink-700 sm:text-[76px]"
-          style={{ textWrap: "balance" }}
-        >
-          Organise.
-          <br />
-          Ils répondent.
-          <br />
-          <span className="text-acid-600">Tu sais.</span>
-        </h1>
-        <p className="mb-10 max-w-md text-[17px] leading-[1.5] text-ink-400">
-          Tu lances la sortie, tout le monde répond d&rsquo;un tap. Qui vient, qui prend les places,
-          qui rembourse combien.{" "}
-          <span className="text-ink-700">Tout d&rsquo;un coup d&rsquo;œil.</span>
-        </p>
-
-        <Link
-          href="/nouvelle"
-          className="group inline-flex items-center gap-2 rounded-full bg-acid-600 px-7 py-4 text-[17px] font-black text-ink-50 shadow-[var(--shadow-acid)] transition-transform [transition-duration:var(--dur-fast)] hover:scale-[1.02] motion-safe:active:scale-[0.98]"
-          style={{ fontFamily: "var(--font-inter-tight), system-ui, sans-serif" }}
-        >
-          Lancer une sortie
-          <span
-            aria-hidden
-            className="transition-transform [transition-duration:var(--dur-base)] group-hover:translate-x-0.5"
-          >
-            →
-          </span>
-        </Link>
-
-        <LoginLink
-          className="mt-5 font-mono text-xs uppercase tracking-[0.22em] text-ink-500 hover:text-ink-700"
-          label="j&rsquo;ai déjà un compte →"
-        />
-      </header>
     </main>
   );
 }

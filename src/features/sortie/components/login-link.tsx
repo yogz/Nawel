@@ -4,6 +4,11 @@ type Props = {
   className?: string;
   label?: string;
   variant?: "primary" | "inline";
+  /** Hook optionnel appelé avant la redirection — utile pour tracker
+   * un clic via Umami sans bypass le redirect natif (le handler pose
+   * `window.location.href` derrière, donc l'event a quand même le
+   * temps d'être émis). */
+  onClick?: () => void;
 };
 
 // Pointe désormais vers `/sortie/login` (page interne avec charte Sortie)
@@ -15,9 +20,15 @@ type Props = {
 // Compute le href au click — sans ça le SSR pre-renderer pose un href
 // arbitraire qui fuirait le `window.location` de la page cliente. Le
 // handler pre-empte le default anchor et substitue la bonne URL.
-export function LoginLink({ className, label = "Se connecter", variant = "inline" }: Props) {
+export function LoginLink({
+  className,
+  label = "Se connecter",
+  variant = "inline",
+  onClick,
+}: Props) {
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
+    onClick?.();
     const callback = encodeURIComponent(window.location.href);
     window.location.href = `/login?callbackURL=${callback}`;
   }
