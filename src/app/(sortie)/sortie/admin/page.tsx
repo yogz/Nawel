@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   BarChart3,
   CalendarRange,
+  Mail,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -34,6 +35,12 @@ const TILES: Tile[] = [
     label: "Utilisateurs",
     blurb: "Recherche par email ou pseudo, activité.",
     Icon: Users,
+  },
+  {
+    href: "/admin/emails",
+    label: "Emails",
+    blurb: "Catalogue des templates envoyés, déclencheurs, preview.",
+    Icon: Mail,
   },
 ];
 
