@@ -66,7 +66,7 @@ export default async function AdminOutingsPage({ searchParams }: { searchParams:
     <main className="mx-auto max-w-5xl px-6 pb-24 pt-10">
       <nav className="mb-8">
         <Link
-          href="/sortie/admin"
+          href="/admin"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
@@ -141,7 +141,7 @@ export default async function AdminOutingsPage({ searchParams }: { searchParams:
                 </p>
               </div>
               <Link
-                href={`/sortie/${o.shortId}`}
+                href={`/${o.shortId}`}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex h-9 items-center gap-1 rounded-full border border-surface-300 px-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-600"
@@ -174,7 +174,7 @@ function PageLink({ page, disabled, label }: { page: number; disabled: boolean; 
   }
   return (
     <Link
-      href={`/sortie/admin/outings?page=${page}`}
+      href={`/admin/outings?page=${page}`}
       className="rounded-full border border-surface-300 px-3 py-2 transition-colors hover:border-acid-600 hover:text-acid-600"
     >
       {label}

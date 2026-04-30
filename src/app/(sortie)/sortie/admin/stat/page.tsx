@@ -59,7 +59,7 @@ export default async function StatPage() {
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
       <nav className="mb-8">
         <Link
-          href="/sortie/admin"
+          href="/admin"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />

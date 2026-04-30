@@ -28,7 +28,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
     <main className="mx-auto max-w-4xl px-6 pb-24 pt-10">
       <nav className="mb-8">
         <Link
-          href="/sortie/admin"
+          href="/admin"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
@@ -46,7 +46,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
         </p>
       </header>
 
-      <form method="get" action="/sortie/admin/users" className="mb-8">
+      <form method="get" action="/admin/users" className="mb-8">
         <label className="relative flex items-center">
           <Search
             size={16}
@@ -110,7 +110,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
                 </div>
                 {u.username ? (
                   <Link
-                    href={`/sortie/profile/${u.username}`}
+                    href={`/@${u.username}`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex h-9 items-center gap-1 rounded-full border border-surface-300 px-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-600"

@@ -18,19 +18,19 @@ type Tile = {
 
 const TILES: Tile[] = [
   {
-    href: "/sortie/admin/stat",
+    href: "/admin/stat",
     label: "Stats",
     blurb: "Parser, services externes, wizard funnel, sorties / jour.",
     Icon: BarChart3,
   },
   {
-    href: "/sortie/admin/outings",
+    href: "/admin/outings",
     label: "Sorties",
     blurb: "Liste, statuts, créateurs, lien direct.",
     Icon: CalendarRange,
   },
   {
-    href: "/sortie/admin/users",
+    href: "/admin/users",
     label: "Utilisateurs",
     blurb: "Recherche par email ou pseudo, activité.",
     Icon: Users,
@@ -42,7 +42,7 @@ export default function SortieAdminHome() {
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
       <nav className="mb-8">
         <Link
-          href="/sortie"
+          href="/"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
         >
           <ArrowLeft size={14} strokeWidth={2.2} />
