@@ -21,6 +21,7 @@ import { ProfileShareButton } from "@/features/sortie/components/profile-share-b
 import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
 import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
 import { CalendarFeedManager } from "@/features/sortie/components/calendar-feed-manager";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 export const metadata = {
   title: "Mon profil",
@@ -44,13 +45,9 @@ export default async function ProfileSettingsPage() {
           </Link>
         </nav>
         <header className="mb-10">
-          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            <span
-              aria-hidden
-              className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-            />
+          <Eyebrow glow className="mb-3">
             ─ mon profil ─
-          </p>
+          </Eyebrow>
           <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
             Connexion
             <br />
@@ -61,9 +58,9 @@ export default async function ProfileSettingsPage() {
           Connecte-toi pour prendre un @nom et afficher tes sorties.
         </p>
         <LoginLink variant="primary" label="Se connecter" />
-        <p className="mt-4 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+        <Eyebrow tone="muted" className="mt-4">
           ↳ un email sans mot de passe arrive
-        </p>
+        </Eyebrow>
       </main>
     );
   }
@@ -161,9 +158,9 @@ export default async function ProfileSettingsPage() {
             {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
             {archived.length > 0 && (
               <div className="mb-6">
-                <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+                <Eyebrow tone="muted" className="mb-2">
                   ─ archivées ─
-                </p>
+                </Eyebrow>
                 <ul className="flex flex-col gap-2">
                   {archived.map((o) => (
                     <li key={o.id} className="flex items-center gap-3">
@@ -257,9 +254,9 @@ function OutingListBlock({
 }) {
   return (
     <div className="mb-6">
-      <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+      <Eyebrow tone="hot" className="mb-2">
         ─ {title.toLowerCase()} ─
-      </p>
+      </Eyebrow>
       <ArchivableOutingList
         items={rows.map((o) => ({ row: o, node: <OutingRowCard outing={o} /> }))}
         isPast={isPast}

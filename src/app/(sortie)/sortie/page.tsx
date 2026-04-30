@@ -27,6 +27,7 @@ import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 
@@ -126,10 +127,10 @@ export default async function SortieHome() {
               an upcoming outing, exactly when the page felt most data-rich
               and least personal. Keeping it small + muted so it sets the
               tone without competing with the LiveStatusHero headline. */}
-          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+          <Eyebrow tone="muted" className="mb-3 inline-flex items-center gap-2">
             <span aria-hidden>◉</span>
             salut {firstName.toLowerCase()}
-          </p>
+          </Eyebrow>
           <LiveStatusHero
             slug={heroOuting.slug}
             shortId={heroOuting.shortId}
@@ -147,13 +148,9 @@ export default async function SortieHome() {
         </>
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
-          <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-            <span
-              aria-hidden
-              className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-            />
+          <Eyebrow glow className="mb-3">
             ─ ta liste ─
-          </p>
+          </Eyebrow>
           <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
             Salut {firstName}.
           </h1>
@@ -242,10 +239,10 @@ function UpcomingBuckets({
         const baseIndex = baseIndices[bIdx] ?? 0;
         return (
           <section key={bucket.key}>
-            <p className="mb-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+            <Eyebrow tone="hot" className="mb-3 flex items-center gap-2 text-hot-600">
               <span>─ {bucket.label} ─</span>
               <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
-            </p>
+            </Eyebrow>
             <ul className="flex flex-col gap-4">
               {bucket.outings.map((o, oIdx) => (
                 <li
@@ -291,9 +288,9 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+      <Eyebrow tone="hot" className="mb-3 text-hot-600">
         ─ passées ─
-      </p>
+      </Eyebrow>
       <ul className="flex flex-col gap-4">
         {inline.map((o) => (
           <li key={o.id}>
@@ -344,13 +341,9 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
   return (
     <>
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ idle. choisis ton ambiance ─
-        </p>
+        </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
           Salut {firstName}.
         </h1>
@@ -454,13 +447,9 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-10">
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ ton inbox ─
-        </p>
+        </Eyebrow>
         <h1
           className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
           style={{ textWrap: "balance" }}
@@ -477,9 +466,9 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
 
       {upcomingSorted.length > 0 && (
         <section className="mb-10">
-          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+          <Eyebrow tone="hot" className="mb-3 text-hot-600">
             ─ à venir ─
-          </p>
+          </Eyebrow>
           <ul className="flex flex-col gap-4">
             {upcomingSorted.map((o) => (
               <li key={o.id}>
@@ -499,9 +488,9 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
 
       {inbox.past.length > 0 && (
         <section className="mb-10">
-          <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-600">
+          <Eyebrow tone="hot" className="mb-3 text-hot-600">
             ─ passées ─
-          </p>
+          </Eyebrow>
           <ul className="flex flex-col gap-4">
             {inbox.past.map((o) => (
               <li key={o.id}>
@@ -520,9 +509,9 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
       )}
 
       <footer className="mt-12 border-t border-surface-400 pt-6">
-        <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+        <Eyebrow tone="muted" className="mb-2">
           ─ ton appareil seul ─
-        </p>
+        </Eyebrow>
         <p className="mb-3 max-w-md text-[15px] leading-[1.5] text-ink-500">
           Tes sorties sont liées à ce navigateur. Connecte-toi pour les retrouver partout, sans
           perdre ton historique.

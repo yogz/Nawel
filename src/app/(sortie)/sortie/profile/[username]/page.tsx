@@ -30,6 +30,7 @@ import { ProfileShareButton } from "@/features/sortie/components/profile-share-b
 import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-prompt";
 import { cookies } from "next/headers";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 /**
  * Seuil en dessous duquel on bypass le grouping par bucket sur la
@@ -276,13 +277,9 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         <div className="flex items-center gap-4">
           <UserAvatar name={row.name} image={row.image} size={56} />
           <div className="flex-1">
-            <p className="mb-2 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-              <span
-                aria-hidden
-                className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-              />
+            <Eyebrow glow className="mb-2">
               @{row.username}
-            </p>
+            </Eyebrow>
             <h1
               className="text-3xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-4xl"
               style={{ textWrap: "balance" }}
@@ -300,9 +297,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         <div className="rounded-2xl border border-surface-400 bg-surface-100 p-5">
           {isSelf ? (
             <>
-              <p className="mb-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-                ─ idle. fais le 1er pas ─
-              </p>
+              <Eyebrow className="mb-2">─ idle. fais le 1er pas ─</Eyebrow>
               <p className="mb-3 font-display text-[20px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
                 Rien à montrer pour l&rsquo;instant.
               </p>
@@ -382,9 +377,9 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+      <Eyebrow tone="hot" className="mb-3">
         ─ passées ─
-      </p>
+      </Eyebrow>
       <ul className="flex flex-col gap-4">
         {inline.map((o) => (
           <li key={o.id}>
@@ -506,10 +501,10 @@ function InboxBucketSection({
   const muted = bucket.key === "declined";
   return (
     <section className={muted ? "opacity-60" : undefined}>
-      <p className="mb-3 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+      <Eyebrow tone="hot" className="mb-3 flex items-center gap-2">
         <span>─ {bucket.label} ─</span>
         <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
-      </p>
+      </Eyebrow>
       <RsvpCardList
         outings={bucket.outings}
         myRsvpByOuting={myRsvpByOuting}
@@ -569,9 +564,9 @@ function OutingSection({
 }) {
   return (
     <section className="mb-10">
-      <p className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
+      <Eyebrow tone="hot" className="mb-3">
         ─ {title.toLowerCase()} ─
-      </p>
+      </Eyebrow>
       <RsvpCardList
         outings={outings}
         myRsvpByOuting={myRsvpByOuting}

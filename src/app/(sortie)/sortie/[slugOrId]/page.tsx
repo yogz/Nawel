@@ -23,6 +23,7 @@ import { ScrollToActionFab } from "@/features/sortie/components/scroll-to-action
 import { ShareActions } from "@/features/sortie/components/share-actions";
 import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
 import { VotingSection } from "@/features/sortie/components/voting-section";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -333,7 +334,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {(outing.creatorAnonName || outing.creatorUserId) && (
-        <p className="mt-8 text-center font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
+        <Eyebrow tone="muted" className="mt-8 text-center">
           ↳ organisé par{" "}
           {outing.creatorUser?.username ? (
             // Le créateur a un handle public — on en fait un lien vers
@@ -350,7 +351,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
               {outing.creatorAnonName ?? outing.creatorUser?.name ?? "un membre colist"}
             </span>
           )}
-        </p>
+        </Eyebrow>
       )}
 
       {!isCreator && outing.creatorAnonEmail && (
@@ -403,13 +404,9 @@ function countVoters(timeslots: Array<{ votes: Array<{ participantId: string }> 
 function CancelledView({ title }: { title: string }) {
   return (
     <main className="mx-auto max-w-xl px-6 py-20 text-center">
-      <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
-        <span
-          aria-hidden
-          className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
-        />
+      <Eyebrow tone="hot" glow className="mb-3">
         ─ annulée ─
-      </p>
+      </Eyebrow>
       <h1 className="mb-4 text-4xl leading-[1] font-black tracking-[-0.04em] text-ink-700 line-through decoration-hot-500 decoration-2">
         {title}
       </h1>
