@@ -29,7 +29,9 @@ import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
+import { ResetDeviceTrigger } from "@/features/sortie/components/reset-device-trigger";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
+import { getResetReclaimability } from "@/features/sortie/queries/reset-device-queries";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
@@ -47,9 +49,12 @@ export default async function SortieHome() {
     // répondent." quand il a déjà l'app dans son contexte.
     const cookieTokenHash = await readParticipantTokenHash();
     if (cookieTokenHash) {
-      const inbox = await listAnonInboxOutings(cookieTokenHash);
+      const [inbox, reclaim] = await Promise.all([
+        listAnonInboxOutings(cookieTokenHash),
+        getResetReclaimability(cookieTokenHash),
+      ]);
       if (inbox.upcoming.length > 0 || inbox.past.length > 0) {
-        return <AnonInbox inbox={inbox} />;
+        return <AnonInbox inbox={inbox} reclaim={reclaim} />;
       }
     }
     return <LandingV2 />;
@@ -438,7 +443,13 @@ function VibeButton({
  * un autre device sans le perdre — la friction est volontairement
  * basse (lien tertiaire underline mono), pas de bandeau qui crie.
  */
-function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOutings>> }) {
+function AnonInbox({
+  inbox,
+  reclaim,
+}: {
+  inbox: Awaited<ReturnType<typeof listAnonInboxOutings>>;
+  reclaim: Awaited<ReturnType<typeof getResetReclaimability>>;
+}) {
   const upcomingSorted = sortUpcomingByStartsAt(inbox.upcoming);
   const myRsvpByOuting = inbox.myRsvpByOuting;
   const greeting = inbox.anonName ? `Salut ${inbox.anonName}.` : "Tes sorties.";
@@ -516,10 +527,18 @@ function AnonInbox({ inbox }: { inbox: Awaited<ReturnType<typeof listAnonInboxOu
           Tes sorties sont liées à ce navigateur. Connecte-toi pour les retrouver partout, sans
           perdre ton historique.
         </p>
-        <LoginLink
-          className="font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
-          label="me connecter →"
-        />
+        <div className="flex flex-col items-start gap-2">
+          <LoginLink
+            className="font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600 underline-offset-4 hover:underline"
+            label="me connecter →"
+          />
+          <ResetDeviceTrigger
+            reclaimableEmail={reclaim.reclaimableEmail}
+            hasReclaimableEmail={reclaim.hasReclaimableEmail}
+            isCreatorWithoutEmail={reclaim.isCreatorWithoutEmail}
+            anonName={inbox.anonName}
+          />
+        </div>
       </footer>
     </main>
   );
