@@ -31,7 +31,6 @@ import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-promp
 import { cookies } from "next/headers";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { SortieMark } from "@/features/sortie/components/branding/sortie-mark";
 
 /**
  * Seuil en dessous duquel on bypass le grouping par bucket sur la
@@ -239,8 +238,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
-      <SortieMark />
-      <nav className="mt-3 mb-8 flex items-center justify-between">
+      <nav className="mb-8 flex items-center justify-between">
         <Link
           href="/"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
