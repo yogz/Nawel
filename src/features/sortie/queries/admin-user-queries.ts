@@ -16,14 +16,20 @@ export type AdminUserRow = {
   rsvpCount: number;
 };
 
+// Sous-requêtes corrélées : on inline `"user"."id"` en raw SQL parce
+// que `${user.id}` dans un template Drizzle génère un identifier non
+// qualifié (`"id"`), que Postgres résout dans le scope local de la
+// sous-requête (= `outings.id` / `participants.id`, tous deux uuid)
+// au lieu de la colonne corrélée du parent (`user.id`, text). Résultat
+// sans la qualif explicite : `operator does not exist: text = uuid`.
 const outingsCreatedSql = sql<number>`(
   SELECT COUNT(*)::int FROM ${outings}
-  WHERE ${outings.creatorUserId} = ${user.id}
+  WHERE ${outings.creatorUserId} = "user"."id"
 )`;
 
 const rsvpCountSql = sql<number>`(
   SELECT COUNT(*)::int FROM ${participants}
-  WHERE ${participants.userId} = ${user.id}
+  WHERE ${participants.userId} = "user"."id"
 )`;
 
 /**
