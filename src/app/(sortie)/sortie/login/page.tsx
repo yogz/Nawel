@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/lib/auth-config";
 import { SortieAuthForm } from "@/features/sortie/components/sortie-auth-form";
+import { SortieMark } from "@/features/sortie/components/branding/sortie-mark";
 
 export const metadata = {
   title: "Connexion",
@@ -32,10 +33,12 @@ export default async function SortieLoginPage({ searchParams }: Props) {
 
   return (
     <main className="relative mx-auto flex min-h-[100dvh] max-w-md flex-col px-6 pt-[max(env(safe-area-inset-top),2rem)] pb-12">
+      <SortieMark />
+
       {/* Petite nav back vers la home Sortie — utile pour les invités
           qui ont cliqué LoginLink par erreur depuis une page profil
           ou /moi. */}
-      <nav className="mb-12">
+      <nav className="mt-3 mb-12">
         <Link
           href="/"
           className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
