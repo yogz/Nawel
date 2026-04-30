@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Ban, ShieldCheck, Search } from "lucide-react";
 import { searchAdminUsers, countUsers } from "@/features/sortie/queries/admin-user-queries";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 export const metadata = {
   title: "Utilisateurs — admin",
@@ -36,9 +37,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
       </nav>
 
       <header className="mb-6">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          ─ utilisateurs ─
-        </p>
+        <Eyebrow className="mb-3">─ utilisateurs ─</Eyebrow>
         <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
           Utilisateurs
         </h1>

@@ -11,6 +11,7 @@ import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { listPaymentMethodsForParticipant } from "@/features/sortie/queries/payment-method-queries";
 import { PaymentMethodsManager } from "@/features/sortie/components/payment-methods-manager";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -74,13 +75,9 @@ export default async function PaymentMethodsPage({ params }: Props) {
       </nav>
 
       <header className="mb-8">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
-          />
+        <Eyebrow tone="hot" glow className="mb-3">
           ─ moyens de paiement ─
-        </p>
+        </Eyebrow>
         <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
           Comment
           <br />

@@ -12,6 +12,7 @@ import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -118,13 +119,9 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
-          />
+        <Eyebrow tone="hot" glow className="mb-3">
           ─ déclarer l&rsquo;achat ─
-        </p>
+        </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Combien
           <br />

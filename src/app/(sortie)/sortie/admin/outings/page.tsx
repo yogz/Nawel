@@ -5,6 +5,7 @@ import {
   countAdminOutings,
   type AdminOutingRow,
 } from "@/features/sortie/queries/admin-outing-queries";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 export const metadata = {
   title: "Sorties — admin",
@@ -74,9 +75,7 @@ export default async function AdminOutingsPage({ searchParams }: { searchParams:
       </nav>
 
       <header className="mb-8">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          ─ sorties ─
-        </p>
+        <Eyebrow className="mb-3">─ sorties ─</Eyebrow>
         <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
           Sorties
         </h1>

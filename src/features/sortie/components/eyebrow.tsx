@@ -4,10 +4,9 @@ type Tone = "acid" | "hot" | "muted";
 
 type Props = {
   tone?: Tone;
-  /** Préfixe avec un dot acid pulsé (réservé aux eyebrows "action/CTA").
-   * Le glow est toujours acid quel que soit le `tone` — c'est le pattern
-   * actuel du repo (les eyebrows "go" sont en acid). Si un futur usage
-   * exige un glow hot/muted, refactorer alors. */
+  /** Préfixe avec un dot pulsé matchant le `tone`. Acid (12px halo) pour
+   * "action/CTA", hot (10px halo) pour "urgence" (achat, paiement,
+   * dettes). Muted+glow rend juste le dot ink-400 sans halo. */
   glow?: boolean;
   className?: string;
   children: React.ReactNode;
@@ -17,6 +16,12 @@ const TONE_COLOR: Record<Tone, string> = {
   acid: "text-acid-600",
   hot: "text-hot-500",
   muted: "text-ink-400",
+};
+
+const TONE_GLOW: Record<Tone, string> = {
+  acid: "bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]",
+  hot: "bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]",
+  muted: "bg-ink-400",
 };
 
 /**
@@ -40,12 +45,7 @@ export function Eyebrow({ tone = "acid", glow = false, className, children }: Pr
         className
       )}
     >
-      {glow && (
-        <span
-          aria-hidden
-          className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-        />
-      )}
+      {glow && <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", TONE_GLOW[tone])} />}
       {children}
     </p>
   );

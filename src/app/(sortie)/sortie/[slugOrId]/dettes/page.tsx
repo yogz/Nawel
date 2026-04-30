@@ -18,6 +18,7 @@ import {
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { CessionForm } from "@/features/sortie/components/cession-form";
 import { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -92,13 +93,9 @@ export default async function DebtsPage({ params }: Props) {
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-hot-500">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]"
-          />
+        <Eyebrow tone="hot" glow className="mb-3">
           ─ l&rsquo;argent ─
-        </p>
+        </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Où en est-on&nbsp;?
         </h1>

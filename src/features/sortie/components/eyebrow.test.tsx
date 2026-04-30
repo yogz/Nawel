@@ -35,6 +35,17 @@ describe("Eyebrow", () => {
     expect(container.querySelector("p")!.className).toContain("inline-flex");
   });
 
+  it("affiche le dot glow hot quand tone='hot' + glow=true", () => {
+    const { container } = render(
+      <Eyebrow tone="hot" glow>
+        achat
+      </Eyebrow>
+    );
+    const dot = container.querySelector("span[aria-hidden]")!;
+    expect(dot.className).toContain("bg-hot-500");
+    expect(dot.className).toContain("shadow-[0_0_10px_var(--sortie-hot)]");
+  });
+
   it("omet le dot quand glow=false (défaut)", () => {
     const { container } = render(<Eyebrow>section</Eyebrow>);
     expect(container.querySelector("span[aria-hidden]")).toBeNull();

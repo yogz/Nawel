@@ -9,6 +9,7 @@ import {
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
 import { logger } from "@/lib/logger";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 // Une query qui plante ne doit pas casser tout le dashboard. On les
 // wrap individuellement et on retombe sur un défaut vide en cas
@@ -67,13 +68,9 @@ export default async function StatPage() {
       </nav>
 
       <header className="mb-12">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ supervision ─
-        </p>
+        </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
           Stats
         </h1>

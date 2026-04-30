@@ -8,6 +8,7 @@ import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/pars
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { EditOutingForm } from "@/features/sortie/components/edit-outing-form";
 import { CancelOutingButton } from "@/features/sortie/components/cancel-outing-button";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
@@ -62,13 +63,9 @@ export default async function EditOutingPage({ params }: Props) {
       </nav>
 
       <header className="mb-10">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ modifier ─
-        </p>
+        </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700">
           Les détails.
         </h1>
