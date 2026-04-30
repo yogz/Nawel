@@ -20,19 +20,17 @@ const HAIRLINE = "rgba(10,10,10,0.08)";
 const H1 = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-0.03em;font-weight:800;color:${INK};`;
 const BODY_P = `color:${INK_BODY};line-height:1.6;font-size:15px;`;
 const MICRO_TAG = `font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:${HOT};`;
-const TEXT_LINK = `color:${HOT};text-decoration:underline;font-weight:600;`;
 
 function formatCents(cents: number): string {
   return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 }
 
 function ctaButton(href: string, label: string): string {
-  // Noir solide + acid green : ratio ~14:1, lit comme un tampon.
+  // Noir solide + acid green : ratio ~14:1, lit comme un tampon. Seul
+  // type de CTA dans tous les emails Sortie — cohérence visuelle prime
+  // sur la nuance "action requise / juste un retour" qu'on faisait
+  // avant via un `textLink` rose dédié pour les emails de closure.
   return `<a href="${escapeHtml(href)}" style="display:inline-block;padding:14px 26px;background:${INK};color:${ACID};text-decoration:none;border-radius:999px;font-weight:700;font-size:14px;letter-spacing:0.01em;">${escapeHtml(label)}</a>`;
-}
-
-function textLink(href: string, label: string): string {
-  return `<a href="${escapeHtml(href)}" style="${TEXT_LINK}">${escapeHtml(label)}</a>`;
 }
 
 function methodsBlock(methods: PaymentMethodPreview[]): string {
@@ -144,7 +142,7 @@ export function paymentConfirmedEmail(args: {
       ${escapeHtml(args.creditorName)} a confirmé avoir reçu les <strong>${escapeHtml(formatCents(args.amountCents))}</strong> pour <strong>${title}</strong>. Merci.
     </p>
     <p style="margin:28px 0 0;">
-      ${textLink(args.outingUrl, "Retour à la sortie")}
+      ${ctaButton(args.outingUrl, "Retour à la sortie")}
     </p>
   `;
   return {
@@ -188,7 +186,7 @@ export function rsvpReceivedEmail(args: {
       Pour <strong>${title}</strong>${guestsLine}.
     </p>
     <p style="margin:28px 0 0;">
-      ${textLink(args.outingUrl, "Voir les réponses")}
+      ${ctaButton(args.outingUrl, "Voir les réponses")}
     </p>
   `;
   return {
@@ -215,7 +213,7 @@ export function outingCancelledEmail(args: { outingTitle: string; homeUrl: strin
       La sortie ne se fera pas. On se rattrape au prochain.
     </p>
     <p style="margin:28px 0 0;">
-      ${textLink(args.homeUrl, "Accueil Sortie")}
+      ${ctaButton(args.homeUrl, "Accueil Sortie")}
     </p>
   `;
   return {
@@ -293,7 +291,7 @@ export function rsvpClosedEmail(args: {
       La deadline est passée, plus personne ne peut répondre. Rendez-vous ${dateLine}${locationLine}.
     </p>
     <p style="margin:28px 0 0;">
-      ${textLink(args.outingUrl, "Voir la sortie")}
+      ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
   `;
   return {
