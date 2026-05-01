@@ -5,6 +5,7 @@ import {
   BarChart3,
   CalendarRange,
   Mail,
+  UserPlus,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -41,6 +42,12 @@ const TILES: Tile[] = [
     label: "Emails",
     blurb: "Catalogue des templates envoyés, déclencheurs, preview.",
     Icon: Mail,
+  },
+  {
+    href: "/admin/assign",
+    label: "Assignations",
+    blurb: "Ajouter manuellement un user (par email) à une sortie.",
+    Icon: UserPlus,
   },
 ];
 
