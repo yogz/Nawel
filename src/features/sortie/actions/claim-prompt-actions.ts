@@ -7,7 +7,6 @@ import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { outings, participants } from "@drizzle/sortie-schema";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
-import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -25,10 +24,12 @@ const SORTIE_BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.f
 
 /**
  * Invité non-loggé qui a RSVP à ≥2 sorties d'un organisateur donne son
- * email. On crée un silent user account, on rattache toutes ses rows
- * participant cookie-only à ce userId (cross-device travel sans relog),
- * puis on lui envoie un magic-link customisé via Better Auth (cf.
- * sendMagicLink dans auth-config qui branche selon metadata.source).
+ * email. On lui envoie un magic-link customisé via Better Auth ; aucune
+ * écriture sur participants ici. La merge cookie→userId se fait à la
+ * vérification du lien via le hook `databaseHooks.session.create.after`
+ * dans `auth-config.ts` — preuve d'identité requise avant rattachement,
+ * sinon n'importe qui pourrait s'attribuer les RSVPs d'un autre en
+ * tapant son email.
  */
 export async function submitEmailClaimAction(
   _prev: FormActionState,
@@ -56,13 +57,11 @@ export async function submitEmailClaimAction(
     return { message: gate.message };
   }
 
-  // Récupère les rows participant existantes pour cet invité (par cookie)
-  // ET qui n'ont pas déjà un userId — les autres ont déjà été claimées.
-  // On a besoin du anonName pour ensureSilentUserAccount, et des outingIds
-  // pour résoudre les sorties à lister dans l'email.
+  // Rows participant cookie-only de l'invité — utilisées uniquement pour
+  // personnaliser l'email (anonName + outingIds). Pas de write ici : le
+  // rattachement attend la verif du magic-link.
   const myRows = await db
     .select({
-      id: participants.id,
       outingId: participants.outingId,
       anonName: participants.anonName,
     })
@@ -75,19 +74,6 @@ export async function submitEmailClaimAction(
 
   const displayName =
     myRows.find((r) => r.anonName !== null && r.anonName.trim() !== "")?.anonName ?? "";
-
-  const silentUserId = await ensureSilentUserAccount({ email, name: displayName });
-  if (!silentUserId) {
-    return { message: "Cet email ne peut pas être utilisé." };
-  }
-
-  // Bulk merge : on rattache toutes les rows cookie-only au silent user.
-  // anonEmail mis à null pour aligner sur la convention rsvpAction (quand
-  // userId est set, l'identité est dans la table user, pas dupliquée).
-  await db
-    .update(participants)
-    .set({ userId: silentUserId, anonEmail: null, updatedAt: new Date() })
-    .where(and(eq(participants.cookieTokenHash, cookieTokenHash), isNull(participants.userId)));
 
   // Récupère les sorties pour personnaliser l'email — titre + date courte,
   // 5 max pour ne pas faire un mail-mur. Tri par startsAt asc (les plus
@@ -118,15 +104,13 @@ export async function submitEmailClaimAction(
   });
   const creatorDisplay = creatorRow?.name?.trim() || creatorRow?.username || creatorUsername;
 
-  // Magic-link Better Auth — `auth.api.signInMagicLink` est le pendant
-  // server-side de `authClient.signIn.magicLink`. La metadata est
-  // forwardée au callback `sendMagicLink` qui branche sur
-  // `metadata.source === "claim-prompt"` pour utiliser le template
-  // personnalisé (cf. auth-config.ts).
-  // Le callbackURL ramène l'invité sur la même page lien-privé, mais
-  // sans le `?k=token` (on perd le token au passage par l'email pour
-  // pas qu'il fuite côté inbox). Il sera re-loggué via session, donc
-  // showRsvp passera par session.user au lieu du token.
+  // `signInMagicLink` crée le user automatiquement s'il n'existe pas
+  // (Better Auth sign-up implicite, pas désactivé). `name: displayName`
+  // alimente la row user à la création — sans ça, Better Auth retombe
+  // sur la part locale de l'email. La metadata branche `sendMagicLink`
+  // sur `metadata.source === "claim-prompt"` pour le template personnalisé.
+  // Le callbackURL ramène l'invité sur la même page lien-privé, sans le
+  // `?k=token` (on évite que le token fuite côté inbox).
   const callbackURL = `${SORTIE_BASE_URL}/@${creatorUsername}`;
 
   try {
@@ -134,9 +118,8 @@ export async function submitEmailClaimAction(
       headers: await headers(),
       body: {
         email,
+        name: displayName || undefined,
         callbackURL,
-        // Better Auth typage flou sur metadata — cast en `unknown` pour
-        // contourner sans relâcher le type des fields utilisés.
         metadata: {
           source: "claim-prompt",
           creatorName: creatorDisplay,
@@ -146,8 +129,6 @@ export async function submitEmailClaimAction(
     });
   } catch (err) {
     console.error("[claim-prompt] magic-link send failed:", err);
-    // Bulk update déjà passé : on ne le défait pas (next signin manuel
-    // récupère quand même les rows). Juste, l'email n'est pas parti.
     return { message: "Lien introuvable — réessaie dans un instant." };
   }
 
