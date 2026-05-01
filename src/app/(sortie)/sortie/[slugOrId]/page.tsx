@@ -193,7 +193,11 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         canonicalPath={canonical}
       />
 
-      {outing.fixedDatetime && <OutingTicketStub startsAt={outing.fixedDatetime} />}
+      {outing.fixedDatetime ? (
+        <OutingTicketStub startsAt={outing.fixedDatetime} />
+      ) : outing.mode === "vote" && outing.timeslots.length > 0 ? (
+        <OutingTicketStub candidates={outing.timeslots.map((t) => t.startsAt)} />
+      ) : null}
 
       {/* Just-created state: surface le banner sous le hero (titre +
           image), en flow normal. L'overlay absolute des versions
