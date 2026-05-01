@@ -1,23 +1,19 @@
-import { AgendaDailyStrip } from "@/features/sortie/components/agenda-daily-strip";
 import { AgendaMonthView } from "@/features/sortie/components/agenda-month-view";
-import type { DailyStripDay, DayBucket, MonthGrid } from "@/features/sortie/lib/agenda-grid";
+import type { DayBucket } from "@/features/sortie/lib/agenda-grid";
 
 type Props = {
-  dailyStrip: DailyStripDay[];
-  months: MonthGrid[];
+  now: Date;
   buckets: Map<string, DayBucket>;
   fixedCount: number;
   voteCount: number;
 };
 
 /**
- * Hub d'agenda : carte unique stats + strip 14 jours + vue mois unique.
- * Empilement vertical :
- *   1. stats hero (gros chiffres datées/sondages)
- *   2. daily strip horizontal scrollable — "ce qui arrive vite"
- *   3. vue mois swipeable mai/juin/juillet — "le plan large"
+ * Hub d'agenda : stats hero (totaux fenêtre data) + calendrier mois
+ * unique navigable (flèches + swipe) sans cap. Les events au-delà de la
+ * fenêtre data côté serveur ne s'afficheront pas mais la nav reste libre.
  */
-export function AgendaHub({ dailyStrip, months, buckets, fixedCount, voteCount }: Props) {
+export function AgendaHub({ now, buckets, fixedCount, voteCount }: Props) {
   const total = fixedCount + voteCount;
 
   return (
@@ -25,7 +21,7 @@ export function AgendaHub({ dailyStrip, months, buckets, fixedCount, voteCount }
       <header className="mb-5 flex items-end justify-between gap-4 border-b border-white/5 pb-5">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-            ─ 3 mois ─
+            ─ ton agenda ─
           </p>
           <p className="mt-2 font-display text-6xl font-black leading-[0.9] tracking-[-0.04em] text-ink-700">
             {total}
@@ -40,14 +36,7 @@ export function AgendaHub({ dailyStrip, months, buckets, fixedCount, voteCount }
         </div>
       </header>
 
-      <div className="mb-6">
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-          ─ 14 jours ─
-        </p>
-        <AgendaDailyStrip days={dailyStrip} />
-      </div>
-
-      <AgendaMonthView months={months} buckets={buckets} />
+      <AgendaMonthView now={now} buckets={buckets} />
     </section>
   );
 }
