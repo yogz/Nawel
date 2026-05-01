@@ -94,12 +94,43 @@ export function DebtRow({
       {view === "creditor" && status !== "confirmed" && (
         <>
           {status === "pending" && (
-            <p className="text-xs text-ink-400">En attente que {personName(other)} règle.</p>
+            <>
+              <p className="text-xs text-ink-400">En attente que {personName(other)} règle.</p>
+              {/* Court-circuit créancier : si tu as vu le virement
+                  arriver sur ta banque avant que le débiteur n'ait pensé
+                  à taper « j'ai payé », tu peux clore la dette toi-même.
+                  Bouton ghost volontairement discret pour ne pas dévaloriser
+                  le flow ping-mutuel par défaut. L'action serveur envoie
+                  un `paymentConfirmedEmail` au débiteur dans tous les cas. */}
+              <CreditorMarkReceivedButton shortId={shortId} debtId={debtId} />
+            </>
           )}
           {status === "declared_paid" && <ConfirmPaidButton shortId={shortId} debtId={debtId} />}
         </>
       )}
     </li>
+  );
+}
+
+function CreditorMarkReceivedButton({ shortId, debtId }: { shortId: string; debtId: string }) {
+  const [, formAction, pending] = useActionState<FormActionState, FormData>(
+    confirmDebtPaidAction,
+    {} as FormActionState
+  );
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="shortId" value={shortId} />
+      <input type="hidden" name="debtId" value={debtId} />
+      <Button
+        type="submit"
+        size="sm"
+        variant="ghost"
+        disabled={pending}
+        className="h-auto self-start px-2 py-1 text-xs text-ink-500 hover:text-acid-700"
+      >
+        {pending ? "…" : "j'ai déjà reçu →"}
+      </Button>
+    </form>
   );
 }
 
