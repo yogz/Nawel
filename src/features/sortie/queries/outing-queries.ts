@@ -287,6 +287,7 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
       status: outings.status,
       mode: outings.mode,
       heroImageUrl: outings.heroImageUrl,
+      createdAt: outings.createdAt,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
     })
     .from(outings)
