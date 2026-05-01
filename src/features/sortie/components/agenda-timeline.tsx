@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { UserAvatar } from "@/features/sortie/components/user-avatar";
+import { AvatarStack, type AvatarVM } from "@/features/sortie/components/avatar-stack";
 import {
   bucketKey,
   bucketLabel,
@@ -16,10 +16,7 @@ import {
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 
-export type AvatarVM = {
-  name: string | null;
-  image: string | null;
-};
+export type { AvatarVM };
 
 export type TicketVM = {
   id: string;
@@ -352,51 +349,6 @@ function TodayDot() {
       animate={reduce ? undefined : { scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
       transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
     />
-  );
-}
-
-/* ─────────────────────────  AVATAR STACK  ──────────────────────── */
-
-const MAX_VISIBLE_AVATARS = 4;
-
-/**
- * Empile les visages des confirmés (yes/handle_own) en pastilles
- * circulaires qui se chevauchent. Quand on dépasse `MAX_VISIBLE_AVATARS`,
- * on rend une bulle "+N" en queue plutôt qu'un overflow infini.
- */
-function AvatarStack({
-  avatars,
-  total,
-  size,
-}: {
-  avatars: AvatarVM[];
-  total: number;
-  size: number;
-}) {
-  const visible = avatars.slice(0, MAX_VISIBLE_AVATARS);
-  const overflow = total - visible.length;
-  return (
-    <div className="flex items-center">
-      <div className="flex">
-        {visible.map((a, i) => (
-          <span
-            key={i}
-            className="-ml-1.5 inline-block rounded-full ring-2 ring-surface-50 first:ml-0"
-            style={{ width: size, height: size }}
-          >
-            <UserAvatar name={a.name} image={a.image} size={size} />
-          </span>
-        ))}
-        {overflow > 0 && (
-          <span
-            className="-ml-1.5 inline-flex items-center justify-center rounded-full bg-surface-100 ring-2 ring-surface-50 font-mono uppercase tracking-[0.04em] text-ink-400"
-            style={{ width: size, height: size, fontSize: Math.round(size * 0.36) }}
-          >
-            +{overflow}
-          </span>
-        )}
-      </div>
-    </div>
   );
 }
 
