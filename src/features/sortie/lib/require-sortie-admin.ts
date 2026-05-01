@@ -27,3 +27,16 @@ export async function requireSortieAdmin() {
   if (!session) redirect("/");
   return session;
 }
+
+/**
+ * À utiliser dans les Server Actions admin (mutations). Throw si
+ * non-admin. Le layout admin ne protège que la vue ; chaque action
+ * doit re-vérifier — défense en profondeur.
+ */
+export async function assertSortieAdmin() {
+  const session = await getSortieAdminSession();
+  if (!session) {
+    throw new Error("Accès refusé");
+  }
+  return session;
+}
