@@ -4,10 +4,33 @@ type Props = {
   deadlineAt: Date;
 };
 
+/**
+ * Complément "(dans X jours)" / "(plus que Xh)" / "(plus que X min)"
+ * collé à la deadline absolue. Sans le countdown, l'invité doit
+ * faire la soustraction mentale ; avec, le sentiment d'urgence est
+ * lisible d'un regard. On bascule la formulation à <48h ("plus que")
+ * pour insister sur le compte à rebours, alors que >48h reste neutre
+ * ("dans").
+ */
+function formatCountdown(msLeft: number): string {
+  const minutesLeft = Math.max(0, Math.floor(msLeft / 60_000));
+  const hoursLeft = Math.floor(minutesLeft / 60);
+  const daysLeft = Math.floor(hoursLeft / 24);
+
+  if (hoursLeft < 1) {
+    return minutesLeft <= 1 ? "plus qu'une minute" : `plus que ${minutesLeft} min`;
+  }
+  if (hoursLeft < 48) {
+    return hoursLeft === 1 ? "plus qu'une heure" : `plus que ${hoursLeft}h`;
+  }
+  return daysLeft === 1 ? "dans 1 jour" : `dans ${daysLeft} jours`;
+}
+
 export function DeadlineBadge({ deadlineAt }: Props) {
   const now = new Date();
-  const isPast = deadlineAt < now;
-  const hoursLeft = (deadlineAt.getTime() - now.getTime()) / 3_600_000;
+  const msLeft = deadlineAt.getTime() - now.getTime();
+  const isPast = msLeft < 0;
+  const hoursLeft = msLeft / 3_600_000;
   const urgent = !isPast && hoursLeft < 48;
   const criticalSoon = !isPast && hoursLeft < 1;
 
@@ -18,6 +41,8 @@ export function DeadlineBadge({ deadlineAt }: Props) {
       </p>
     );
   }
+
+  const countdown = formatCountdown(msLeft);
 
   return (
     <p
@@ -37,7 +62,10 @@ export function DeadlineBadge({ deadlineAt }: Props) {
           }
         />
       )}
-      <span>réponds avant le {formatOutingDateConversational(deadlineAt)}</span>
+      <span>
+        réponds avant le {formatOutingDateConversational(deadlineAt)}{" "}
+        <span className={urgent ? "text-hot-400" : "text-ink-300"}>({countdown})</span>
+      </span>
     </p>
   );
 }
