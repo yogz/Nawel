@@ -98,6 +98,36 @@ export function bucketAgendaByDay(items: AgendaItem[]): Map<string, DayBucket> {
 }
 
 /**
+ * Identifie le mois calendaire situé à `monthOffset` mois du mois de
+ * `now`. Calcul léger (pas de grille hebdo) : utilisé pour synchroniser
+ * la timeline avec le mois affiché par la vue calendrier sans rebuild.
+ * Le label drop l'année quand elle matche celle de `now` (cas majoritaire).
+ */
+export function monthAtOffset(
+  now: Date,
+  monthOffset: number
+): { monthKey: string; label: string; monthStart: Date } {
+  const todayKey = parisDayKey(now);
+  const [startYear, startMonth] = todayKey.slice(0, 7).split("-").map(Number);
+  // Index 0-based combiné (year-mois) puis modulo 12 avec correction
+  // pour les offsets négatifs (en JS, `-1 % 12 === -1` au lieu de `11`).
+  const combined = startMonth - 1 + monthOffset;
+  const year = startYear + Math.floor(combined / 12);
+  const month = (((combined % 12) + 12) % 12) + 1;
+
+  const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+  const monthStart = new Date(`${monthKey}-01T12:00:00+02:00`);
+
+  const nowYear = Number(parisYearFormatter.format(now));
+  const label =
+    year === nowYear
+      ? monthOnlyFormatter.format(monthStart)
+      : longMonthFormatter.format(monthStart);
+
+  return { monthKey, label, monthStart };
+}
+
+/**
  * Construit la grille hebdo lundi-first d'un mois calendaire situé à
  * `monthOffset` mois du mois courant. `0` = mois de today, `+1` = mois
  * suivant, `-1` = mois précédent. Pas de borne supérieure : le composant
@@ -113,16 +143,9 @@ export function buildMonthGrid(
   const todayKey = parisDayKey(now);
   const windowEndKey = parisDayKey(new Date(now.getTime() + windowDays * 24 * 60 * 60 * 1000));
 
-  const [startYear, startMonth] = todayKey.slice(0, 7).split("-").map(Number);
-  // Index 0-based combiné (year-mois) puis modulo 12 avec correction
-  // pour les offsets négatifs (en JS, `-1 % 12 === -1` au lieu de `11`).
-  const combined = startMonth - 1 + monthOffset;
-  const year = startYear + Math.floor(combined / 12);
-  const month = (((combined % 12) + 12) % 12) + 1;
-
-  const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+  const { monthKey, label, monthStart } = monthAtOffset(now, monthOffset);
+  const [year, month] = monthKey.split("-").map(Number);
   const monthStartKey = `${monthKey}-01`;
-  const monthStart = new Date(`${monthStartKey}T12:00:00+02:00`);
 
   // Nombre de jours du mois : différence en jours entre le 1er du mois
   // suivant et celui-ci. On évite les pièges 28/29/30/31 ainsi.
@@ -165,16 +188,6 @@ export function buildMonthGrid(
     }
     weeks.push(week);
   }
-
-  // Drop l'année quand elle est identique à celle de `now` — pattern déjà
-  // utilisé pour `formatOutingDate` ; "novembre 2026" déborde l'en-tête
-  // entre les deux flèches sur mobile, "novembre" tient large. L'année
-  // n'apparaît que quand la nav fait franchir un Nouvel An.
-  const nowYear = Number(parisYearFormatter.format(now));
-  const label =
-    year === nowYear
-      ? monthOnlyFormatter.format(monthStart)
-      : longMonthFormatter.format(monthStart);
 
   return {
     monthKey,

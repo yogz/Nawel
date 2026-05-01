@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { AgendaHub } from "@/features/sortie/components/agenda-hub";
 import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { bucketAgendaByDay } from "@/features/sortie/lib/agenda-grid";
+import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
+import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
@@ -37,6 +38,9 @@ export function AgendaView({ items, nowIso }: Props) {
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [activeTypes, setActiveTypes] = useState<Set<TypeFilter>>(() => new Set(ALL_TYPES));
   const [activeRsvps, setActiveRsvps] = useState<Set<AgendaRsvpBucket>>(() => new Set(ALL_RSVP));
+  // Offset du mois affiché par le calendrier — owné ici pour synchroniser
+  // la timeline en dessous avec le mois en cours d'affichage.
+  const [monthOffset, setMonthOffset] = useState(0);
 
   const filteredItems = useMemo(
     () =>
@@ -63,6 +67,24 @@ export function AgendaView({ items, nowIso }: Props) {
     return { buckets: b, fixedCount: fixed, voteCount: vote };
   }, [filteredItems]);
 
+  const activeMonth = useMemo(() => monthAtOffset(now, monthOffset), [now, monthOffset]);
+
+  // Items dont la date primaire (fixedDate ou un slot candidat) tombe
+  // dans le mois affiché par le calendrier. Un sondage avec un candidat
+  // en mai apparaît dans la timeline de mai, même si d'autres candidats
+  // sont sur juin — match sur "au moins un slot dans le mois".
+  const monthFilteredItems = useMemo(() => {
+    return filteredItems.filter((item) => {
+      if (item.mode === "fixed" && item.fixedDate) {
+        return parisDayKey(item.fixedDate).startsWith(activeMonth.monthKey);
+      }
+      if (item.mode === "vote") {
+        return item.candidateDates.some((d) => parisDayKey(d).startsWith(activeMonth.monthKey));
+      }
+      return false;
+    });
+  }, [filteredItems, activeMonth.monthKey]);
+
   const toggleType = (key: TypeFilter) => setActiveTypes((s) => toggle(s, key));
   const toggleRsvp = (key: AgendaRsvpBucket) => setActiveRsvps((s) => toggle(s, key));
 
@@ -75,13 +97,20 @@ export function AgendaView({ items, nowIso }: Props) {
         onToggleRsvp={toggleRsvp}
       />
 
-      <AgendaHub now={now} buckets={buckets} fixedCount={fixedCount} voteCount={voteCount} />
+      <AgendaHub
+        now={now}
+        buckets={buckets}
+        fixedCount={fixedCount}
+        voteCount={voteCount}
+        monthOffset={monthOffset}
+        onMonthOffsetChange={setMonthOffset}
+      />
 
       <section className="mt-10">
         <Eyebrow tone="acid" className="mb-4">
-          ─ chronologie ─
+          ─ chronologie · {activeMonth.label} ─
         </Eyebrow>
-        <AgendaTimeline items={filteredItems} now={now} />
+        <AgendaTimeline items={monthFilteredItems} now={now} />
       </section>
     </>
   );

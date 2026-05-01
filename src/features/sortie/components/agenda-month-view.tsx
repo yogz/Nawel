@@ -8,6 +8,9 @@ import { buildMonthGrid, type DayBucket, type DayCell } from "@/features/sortie/
 type Props = {
   now: Date;
   buckets: Map<string, DayBucket>;
+  /** Offset contrôlé par le parent (sync avec la timeline filtrée). */
+  offset: number;
+  onOffsetChange: (offset: number) => void;
 };
 
 const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"] as const;
@@ -31,21 +34,22 @@ const slideVariants = {
  * dériver dans le futur autant qu'il veut, les mois hors fenêtre data
  * affichent leur grille mais grisée.
  */
-export function AgendaMonthView({ now, buckets }: Props) {
-  const [offset, setOffset] = useState(0);
+export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props) {
   // Direction du dernier swap : sert à orienter l'animation enter/exit
   // pour que le mois entrant glisse depuis le côté "naturel" du geste.
+  // Reste local — l'offset est contrôlé par le parent, mais le sens
+  // d'animation est purement visuel et n'a pas besoin de remonter.
   const [direction, setDirection] = useState<1 | -1>(1);
 
   const month = useMemo(() => buildMonthGrid(now, buckets, offset), [now, buckets, offset]);
 
   const goPrev = () => {
     setDirection(-1);
-    setOffset((o) => o - 1);
+    onOffsetChange(offset - 1);
   };
   const goNext = () => {
     setDirection(1);
-    setOffset((o) => o + 1);
+    onOffsetChange(offset + 1);
   };
 
   return (
@@ -123,7 +127,7 @@ export function AgendaMonthView({ now, buckets }: Props) {
             type="button"
             onClick={() => {
               setDirection(offset < 0 ? 1 : -1);
-              setOffset(0);
+              onOffsetChange(0);
             }}
             className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:text-acid-500"
           >
