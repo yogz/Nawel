@@ -9,6 +9,9 @@ type Props = {
    * dettes). Muted+glow rend juste le dot ink-400 sans halo. */
   glow?: boolean;
   className?: string;
+  /** Forwardé sur le `<p>` racine — permet à un `aria-labelledby` parent
+   * de cibler l'eyebrow comme heading sans wrapper span supplémentaire. */
+  id?: string;
   children: React.ReactNode;
 };
 
@@ -35,9 +38,10 @@ const TONE_GLOW: Record<EyebrowTone, string> = {
  * du contexte, override via `className`). Children libre — l'auteur
  * compose son texte avec ou sans brackets `─ X ─`, c'est du contenu.
  */
-export function Eyebrow({ tone = "acid", glow = false, className, children }: Props) {
+export function Eyebrow({ tone = "acid", glow = false, className, id, children }: Props) {
   return (
     <p
+      id={id}
       className={cn(
         "font-mono text-[10.5px] uppercase tracking-[0.22em]",
         TONE_COLOR[tone],

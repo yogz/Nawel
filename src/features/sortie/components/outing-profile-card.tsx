@@ -11,6 +11,7 @@ import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { isFixedRsvp, type RsvpResponseAny } from "@/features/sortie/lib/rsvp-response";
 import { InlineRsvpSection } from "./inline-rsvp-section";
+import { OutingPosterFallback } from "./outing-poster-fallback";
 
 type Outing = {
   id: string;
@@ -134,11 +135,6 @@ export function OutingProfileCard({
   const pastTitleClasses = isPast ? "text-ink-500" : "text-ink-700";
   const pastMetaClasses = isPast ? "text-ink-400" : "text-ink-500";
 
-  // First letter of the title for the poster-less fallback thumbnail.
-  // Same visual vocabulary as the LiveStatusHero empty state — gradient
-  // panel with a big typographic initial instead of a dead color swatch.
-  const initial = (outing.title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
-
   // Badge "verrouillé" en bottom-right du thumb. cf. `resolveLockReason`
   // pour la précédence des 3 états (purchased > vote-tranché > deadline).
   // Aria-hidden : l'info est déjà portée par le countdown texte de la
@@ -164,21 +160,11 @@ export function OutingProfileCard({
             style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
           />
         ) : (
-          <div
-            aria-hidden="true"
-            className={`relative flex size-16 items-center justify-center overflow-hidden rounded-md ${pastImageClasses}`}
-            style={{
-              background:
-                "radial-gradient(circle at 30% 20%, #FF3D81 0%, transparent 50%), radial-gradient(circle at 75% 80%, #C7FF3C 0%, transparent 50%), #1a1a1a",
-            }}
-          >
-            <span
-              className="font-display text-2xl font-black leading-none tracking-tight text-ink-50 opacity-50 select-none"
-              style={{ mixBlendMode: "overlay" }}
-            >
-              {initial}
-            </span>
-          </div>
+          <OutingPosterFallback
+            title={outing.title}
+            className={`size-16 rounded-md ${pastImageClasses}`}
+            textClassName="text-2xl opacity-50"
+          />
         )}
         {LockGlyph && (
           <span

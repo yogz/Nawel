@@ -209,19 +209,15 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   const heroOuting = showRsvp ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
   const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
-  // Bandeau "derniers ajoutés" — vitrine éditoriale de fraîcheur de
-  // curation, distincte de la checklist "À venir" plus bas. Filtre :
-  // RSVP/vote encore ouvert (deadline future) + exclusion de la sortie
-  // déjà featurée par le hero (un seul emplacement par sortie).
-  // Désactivé en mode lien privé : la checklist actionnable doit garder
-  // le focus, un carrousel éditorial casserait l'intention.
-  // Seuil ≥2 : à 1 card un carrousel n'a pas de sens.
+  // Tri createdAt desc pour matcher la promesse "derniers ajoutés".
+  // On garde la sortie featurée en hero pour ne pas amputer la rangée
+  // du tout dernier ajout, et on affiche aussi en mode lien privé : la
+  // rangée éditoriale se lit comme un teaser au-dessus de la checklist.
   const now = new Date();
-  const recentlyAdded = showRsvp
-    ? []
-    : upcoming
-        .filter((o) => o.deadlineAt.getTime() > now.getTime() && o.id !== heroOuting?.id)
-        .slice(0, 8);
+  const recentlyAdded = [...upcoming]
+    .filter((o) => o.deadlineAt.getTime() > now.getTime())
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 8);
 
   // Only load the viewer's existing RSVPs when the token unlocks inline RSVP
   // — otherwise there's nothing to render and the round-trip is wasted.
@@ -331,7 +327,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       )}
 
-      {recentlyAdded.length >= 2 && <RecentlyAddedRow outings={recentlyAdded} />}
+      {recentlyAdded.length >= 1 && <RecentlyAddedRow outings={recentlyAdded} />}
 
       {heroOuting && heroOuting.startsAt && (
         <LiveStatusHero
