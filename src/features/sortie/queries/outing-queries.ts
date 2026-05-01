@@ -8,6 +8,7 @@ import {
   gt,
   gte,
   inArray,
+  lte,
   isNotNull,
   isNull,
   ne,
@@ -171,6 +172,153 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
   const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
   return { upcoming, past };
+}
+
+// Fenêtre de la heatmap agenda : 3 mois glissants à partir de `now`.
+// 90j est un compromis : assez pour englober la saison de Noël ou un
+// trimestre festivalier, assez court pour que la grille reste lisible
+// sur mobile (~13 colonnes-semaines).
+const AGENDA_WINDOW_DAYS = 90;
+
+export type AgendaItem = {
+  outingId: string;
+  shortId: string;
+  slug: string;
+  title: string;
+  location: string | null;
+  heroImageUrl: string | null;
+  mode: "fixed" | "vote";
+  status:
+    | "open"
+    | "awaiting_purchase"
+    | "stale_purchase"
+    | "purchased"
+    | "past"
+    | "settled"
+    | "cancelled";
+  isCreator: boolean;
+  // `null` = aucune row participant côté user (créateur seul, ou voteur
+  // qui n'a pas encore RSVP). Le mapping vers les filtres "yes/maybe/no/
+  // pending" se fait côté UI pour rester libre de l'agréger comme on veut.
+  myResponse: "yes" | "no" | "handle_own" | "interested" | null;
+  fixedDate: Date | null;
+  // Vide si `mode === 'fixed'`. Sinon, dates des timeslots candidats qui
+  // tombent dans la fenêtre 3 mois (un sondage avec 5 candidats peut n'en
+  // avoir que 2 dans la fenêtre — on n'affiche que ceux-là).
+  candidateDates: Date[];
+};
+
+/**
+ * Données pour `/sortie/agenda` (heatmap + timeline 3 mois) :
+ *   1. sorties datées dont l'user est créateur (non archivée) ou
+ *      participant (yes / no / handle_own / interested), avec
+ *      `fixedDatetime` dans la fenêtre [now, now+90j].
+ *   2. sondages dans le même périmètre user, avec au moins un timeslot
+ *      candidat dans la fenêtre. Les candidats hors fenêtre sont
+ *      ignorés (cas rare — un sondage qui propose dans 4 mois).
+ *
+ * On exclut `cancelled` (les annulées disparaissent de l'agenda).
+ * `closed` (sondage tranché → daté avec succès) n'apparaît que si
+ * `fixedDatetime` est posé, donc traité comme datée via la branche 1.
+ */
+export async function listMyAgendaActivity(userId: string, now = new Date()) {
+  const windowEnd = new Date(now.getTime() + AGENDA_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+
+  const rows = await db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      heroImageUrl: outings.heroImageUrl,
+      mode: outings.mode,
+      status: outings.status,
+      fixedDatetime: outings.fixedDatetime,
+      creatorUserId: outings.creatorUserId,
+      // Sub-query scalaire : la `response` de l'user pour cette sortie.
+      // `LIMIT 1` par sécurité, mais l'index unique
+      // (outing_id, cookie_token_hash) ne garantit pas l'unicité par user
+      // dans tous les cas (un user peut avoir plusieurs cookies). En pratique
+      // c'est rare et on prend la première.
+      myResponse: sql<
+        "yes" | "no" | "handle_own" | "interested" | null
+      >`(SELECT response FROM ${participants} WHERE outing_id = ${outings.id} AND user_id = ${userId} LIMIT 1)`,
+    })
+    .from(outings)
+    .where(
+      and(
+        ne(outings.status, "cancelled"),
+        or(
+          and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
+          sql`${outings.id} IN (
+            SELECT ${participants.outingId}
+            FROM ${participants}
+            WHERE ${participants.userId} = ${userId}
+          )`
+        ),
+        or(
+          and(
+            eq(outings.mode, "fixed"),
+            isNotNull(outings.fixedDatetime),
+            gte(outings.fixedDatetime, now),
+            lte(outings.fixedDatetime, windowEnd)
+          ),
+          and(
+            eq(outings.mode, "vote"),
+            sql`EXISTS (
+              SELECT 1 FROM ${outingTimeslots}
+              WHERE ${outingTimeslots.outingId} = ${outings.id}
+                AND ${outingTimeslots.startsAt} >= ${now}
+                AND ${outingTimeslots.startsAt} <= ${windowEnd}
+            )`
+          )
+        )
+      )
+    )
+    .limit(200);
+
+  // 2e query bornée aux outings vote retournées : récupère leurs timeslots
+  // qui tombent dans la fenêtre. On ne joint pas dans la 1re query pour
+  // éviter de multiplier les rows par N candidats.
+  const voteOutingIds = rows.filter((r) => r.mode === "vote").map((r) => r.id);
+  const candidatesByOuting = new Map<string, Date[]>();
+  if (voteOutingIds.length > 0) {
+    const slots = await db
+      .select({
+        outingId: outingTimeslots.outingId,
+        startsAt: outingTimeslots.startsAt,
+      })
+      .from(outingTimeslots)
+      .where(
+        and(
+          inArray(outingTimeslots.outingId, voteOutingIds),
+          gte(outingTimeslots.startsAt, now),
+          lte(outingTimeslots.startsAt, windowEnd)
+        )
+      )
+      .orderBy(asc(outingTimeslots.startsAt));
+    for (const s of slots) {
+      const list = candidatesByOuting.get(s.outingId) ?? [];
+      list.push(s.startsAt);
+      candidatesByOuting.set(s.outingId, list);
+    }
+  }
+
+  return rows.map<AgendaItem>((r) => ({
+    outingId: r.id,
+    shortId: r.shortId,
+    slug: r.slug,
+    title: r.title,
+    location: r.location,
+    heroImageUrl: r.heroImageUrl,
+    mode: r.mode,
+    status: r.status,
+    isCreator: r.creatorUserId === userId,
+    myResponse: r.myResponse,
+    fixedDate: r.fixedDatetime,
+    candidateDates: candidatesByOuting.get(r.id) ?? [],
+  }));
 }
 
 /**
