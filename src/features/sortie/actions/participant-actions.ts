@@ -153,7 +153,7 @@ export async function rsvpAction(
   // Revalidate the bare-shortId form; the public page's canonical redirect
   // takes care of both the /<shortId> and /<slug-shortId> cache entries.
   revalidatePath(`/${data.shortId}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
 
@@ -211,7 +211,7 @@ export async function removeRsvpAction(
   }
 
   revalidatePath(`/${shortId}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
 
@@ -269,7 +269,7 @@ export async function removeParticipantAction(
   }
 
   revalidatePath(`/${shortId}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
 
@@ -419,6 +419,6 @@ export async function castVoteAction(
   });
 
   revalidatePath(`/${data.shortId}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }

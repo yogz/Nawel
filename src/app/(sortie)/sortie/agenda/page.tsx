@@ -116,7 +116,7 @@ function BackLink() {
   return (
     <nav className="mb-8">
       <Link
-        href="/sortie/moi"
+        href="/moi"
         className="inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-acid-600"
       >
         <ArrowLeft size={14} strokeWidth={2.2} />

@@ -153,7 +153,7 @@ export default async function ProfileSettingsPage() {
             action={
               upcoming.length > 0 ? (
                 <Link
-                  href="/sortie/agenda"
+                  href="/agenda"
                   className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
                 >
                   agenda

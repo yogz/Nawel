@@ -121,7 +121,7 @@ function EmptyAgenda() {
         Ton agenda est vide.
       </p>
       <Link
-        href="/sortie/nouvelle"
+        href="/nouvelle"
         className="inline-flex h-12 items-center gap-2 rounded-full bg-acid-600 px-6 font-mono text-[12px] font-semibold uppercase tracking-[0.18em] text-acid-50 shadow-[0_0_24px_var(--sortie-acid)] transition-transform duration-200 hover:scale-[1.02] active:scale-95"
       >
         créer une sortie

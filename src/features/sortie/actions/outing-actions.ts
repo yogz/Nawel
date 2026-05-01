@@ -183,7 +183,7 @@ export async function createOutingAction(
   // /sortie/sortie/<id>, which doesn't exist → 404.
   const path = `/${canonicalPathSegment({ slug, shortId })}`;
   revalidatePath(path);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   // `?from=create` triggers the "preview-as-success" banner on the outing
   // page — same destination as the public view, but with a contextual
   // "share this now" affordance overlaid so the creator doesn't have to
@@ -315,7 +315,7 @@ export async function updateOutingAction(
 
   const path = `/${canonicalPathSegment({ slug, shortId: data.shortId })}`;
   revalidatePath(path);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   redirect(path);
 }
 
@@ -368,7 +368,7 @@ export async function cancelOutingAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   redirect(`/${canonical}`);
 }
 
@@ -410,7 +410,7 @@ export async function archiveOutingAction(
   // Idempotent — already archived.
   if (outing.hiddenFromProfileAt) {
     revalidatePath("/moi");
-    revalidatePath("/agenda");
+    revalidatePath("/sortie/agenda");
     return {};
   }
 
@@ -420,7 +420,7 @@ export async function archiveOutingAction(
     .where(eq(outings.id, outing.id));
 
   revalidatePath("/moi");
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
 
@@ -458,7 +458,7 @@ export async function unarchiveOutingAction(
     .where(eq(outings.id, outing.id));
 
   revalidatePath("/moi");
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
 
@@ -599,7 +599,7 @@ export async function pickTimeslotAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   redirect(`/${canonical}`);
 }
 
@@ -655,6 +655,6 @@ export async function reopenPollAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
-  revalidatePath("/agenda");
+  revalidatePath("/sortie/agenda");
   return {};
 }
