@@ -3,13 +3,7 @@ import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth-config";
 import { listMyUpcomingForAgenda } from "@/features/sortie/queries/outing-queries";
-import {
-  bucketForOuting,
-  daysUntilParis,
-  jLabel,
-  BUCKET_ORDER,
-  type AgendaBucket,
-} from "@/features/sortie/lib/agenda-buckets";
+import { daysUntilParis, groupAgendaOutings } from "@/features/sortie/lib/agenda-buckets";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import {
@@ -47,27 +41,16 @@ export default async function AgendaPage() {
     );
   }
 
+  // `now` capturé une fois pour rester cohérent entre bucketing et J-N.
   const now = new Date();
   const rows = await listMyUpcomingForAgenda(session.user.id, now);
 
-  // Bucketing déterministe côté serveur. `now` capturé une seule fois,
-  // partagé entre bucket et compte de jours pour rester cohérent (sinon
-  // une sortie à minuit pile pourrait être bucketée "today" mais avec
-  // J-1 dans la colonne mono).
-  const groupsMap = new Map<AgendaBucket, TicketVM[]>();
+  // Premier daté de tout le résultat (ordre SQL ASC NULLS LAST) → tag "next up".
+  const nextUpId = rows.find((r) => r.startsAt !== null)?.id ?? null;
 
-  // Le premier billet datable rencontré (ordre SQL ASC NULLS LAST)
-  // décroche le tag `next up`. Un seul par page.
-  let nextUpAssigned = false;
-
-  for (const row of rows) {
-    const bucket = bucketForOuting(row.startsAt, now);
-    const days = daysUntilParis(row.startsAt, now);
-    const isNextUp = !nextUpAssigned && row.startsAt !== null;
-    if (isNextUp) {
-      nextUpAssigned = true;
-    }
-    const ticket: TicketVM = {
+  const groups = groupAgendaOutings(rows, now).map((group) => ({
+    bucket: group.bucket,
+    items: group.items.map<TicketVM>((row) => ({
       id: row.id,
       shortId: row.shortId,
       slug: row.slug,
@@ -76,31 +59,16 @@ export default async function AgendaPage() {
       startsAt: row.startsAt,
       heroImageUrl: row.heroImageUrl,
       confirmedCount: row.confirmedCount,
-      daysUntil: days,
-      jLabel: jLabel(days),
-      isNextUp,
-    };
-    const list = groupsMap.get(bucket) ?? [];
-    list.push(ticket);
-    groupsMap.set(bucket, list);
-  }
-
-  const groups = BUCKET_ORDER.filter((b) => (groupsMap.get(b)?.length ?? 0) > 0).map((bucket) => ({
-    bucket,
-    items: groupsMap.get(bucket)!,
+      daysUntil: daysUntilParis(row.startsAt, now),
+      isNextUp: row.id === nextUpId,
+    })),
   }));
 
   const totalCount = rows.length;
-  const tbdCount = groupsMap.get("tbd")?.length ?? 0;
+  const tbdCount = totalCount - rows.filter((r) => r.startsAt !== null).length;
   const datedCount = totalCount - tbdCount;
 
-  const data: AgendaData = {
-    groups,
-    totalCount,
-    datedCount,
-    tbdCount,
-    now: now.toISOString(),
-  };
+  const data: AgendaData = { groups, totalCount };
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">

@@ -153,7 +153,6 @@ export async function rsvpAction(
   // Revalidate the bare-shortId form; the public page's canonical redirect
   // takes care of both the /<shortId> and /<slug-shortId> cache entries.
   revalidatePath(`/${data.shortId}`);
-  // Le RSVP fait apparaître/disparaître la sortie de l'agenda du user.
   revalidatePath("/agenda");
   return {};
 }
@@ -212,7 +211,6 @@ export async function removeRsvpAction(
   }
 
   revalidatePath(`/${shortId}`);
-  // Retirer son RSVP retire la sortie de /agenda.
   revalidatePath("/agenda");
   return {};
 }
@@ -421,7 +419,6 @@ export async function castVoteAction(
   });
 
   revalidatePath(`/${data.shortId}`);
-  // Vote RSVP fait apparaître la sortie de l'agenda (interested/yes).
   revalidatePath("/agenda");
   return {};
 }

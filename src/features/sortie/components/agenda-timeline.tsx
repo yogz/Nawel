@@ -5,7 +5,12 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { BUCKET_LABEL, type AgendaBucket } from "@/features/sortie/lib/agenda-buckets";
+import {
+  BUCKET_LABEL,
+  BUCKET_TONE,
+  jLabel,
+  type AgendaBucket,
+} from "@/features/sortie/lib/agenda-buckets";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 
@@ -19,33 +24,49 @@ export type TicketVM = {
   heroImageUrl: string | null;
   confirmedCount: number;
   daysUntil: number | null;
-  jLabel: string;
   isNextUp: boolean;
 };
 
 export type AgendaData = {
   groups: Array<{ bucket: AgendaBucket; items: TicketVM[] }>;
   totalCount: number;
-  datedCount: number;
-  tbdCount: number;
-  now: string; // ISO, sert juste à invalider la cache React si on refetche
 };
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+type Variant = "next" | "tbd" | "default";
+
+function variantFor(ticket: TicketVM): Variant {
+  if (ticket.isNextUp) return "next";
+  if (ticket.startsAt === null) return "tbd";
+  return "default";
+}
+
+const DOT_CLASS: Record<Variant, string> = {
+  next: "bg-acid-600 shadow-[0_0_10px_var(--sortie-acid)]",
+  tbd: "bg-hot-500",
+  default: "bg-ink-300",
+};
+
+const TEXT_CLASS: Record<Variant, string> = {
+  next: "text-acid-600",
+  tbd: "text-hot-500",
+  default: "text-ink-400",
+};
+
+const BORDER_CLASS: Record<Variant, string> = {
+  next: "border-l-2 border-acid-600",
+  tbd: "border-l border-ink-100",
+  default: "border-l border-ink-100",
+};
+
 /**
  * Vue chronologique adaptative. Trois modes :
- *
  *   total === 0  → empty hero centré, CTA acid
  *   total === 1  → billet seul agrandi (poster), pas de rail/col-J
- *   total >= 2   → timeline complète : rail vertical + colonne J-N +
- *                  billets + headers de bucket (sticky si volume
- *                  justifie, voir SHOULD_STICKY plus bas)
+ *   total >= 2   → timeline complète (rail vertical + col J-N + headers)
  *
- * Les animations Framer Motion sont court-circuitées si l'OS
- * `prefers-reduced-motion: reduce` est actif. Toute la chorégraphie
- * (stagger entrée, count-up, pulse aujourd'hui) tombe à durée 0 dans
- * ce cas, le contenu apparaît instantanément à son état final.
+ * `useReducedMotion()` court-circuite stagger + pulse marqueur.
  */
 export function AgendaTimeline({ data }: { data: AgendaData }) {
   if (data.totalCount === 0) {
@@ -59,10 +80,8 @@ export function AgendaTimeline({ data }: { data: AgendaData }) {
     }
   }
 
-  // Sticky activé seulement quand ça défile vraiment (devil's advocate :
-  // un sticky qui ne se déclenche jamais = juste un header fixe inutile).
-  const buckets = data.groups.length;
-  const shouldStick = data.totalCount >= 8 && buckets >= 2;
+  // Sticky activé seulement si le scroll défile assez pour que ça ait du sens.
+  const shouldStick = data.totalCount >= 8 && data.groups.length >= 2;
 
   return <FullTimeline data={data} shouldStick={shouldStick} />;
 }
@@ -95,11 +114,110 @@ function EmptyAgenda() {
   );
 }
 
+/* ───────────────────────────  TICKET CARD  ──────────────────────── */
+
+type TicketCardProps = {
+  ticket: TicketVM;
+  size: "row" | "hero";
+};
+
+function TicketCard({ ticket, size }: TicketCardProps) {
+  const canonical = ticket.slug ? `${ticket.slug}-${ticket.shortId}` : ticket.shortId;
+  const variant = variantFor(ticket);
+  const isTbd = ticket.startsAt === null;
+  const isHero = size === "hero";
+
+  return (
+    <Link
+      href={`/${canonical}`}
+      className={`group relative block overflow-hidden ${
+        isHero ? "rounded-2xl" : "rounded-xl"
+      } bg-surface-50 ring-1 ring-ink-700/5 transition-colors hover:bg-surface-100 ${BORDER_CLASS[variant]}`}
+    >
+      {ticket.heroImageUrl && (
+        <div className="absolute inset-0 -z-0 opacity-30">
+          <Image
+            src={ticket.heroImageUrl}
+            alt=""
+            fill
+            sizes={isHero ? "(max-width: 768px) 100vw, 640px" : "(max-width: 768px) 100vw, 480px"}
+            className="object-cover"
+            priority={isHero}
+          />
+          <div
+            className={`absolute inset-0 bg-gradient-to-${
+              isHero
+                ? "tr from-surface-50 via-surface-50/40"
+                : "r from-surface-50 via-surface-50/60"
+            } to-transparent`}
+          />
+        </div>
+      )}
+      <div className={`relative z-10 flex flex-col ${isHero ? "gap-4 p-6" : "gap-2 p-4"}`}>
+        <Eyebrow
+          tone={ticket.isNextUp ? "acid" : isTbd ? "hot" : "muted"}
+          glow={ticket.isNextUp && isHero}
+          className={isHero ? "font-semibold" : undefined}
+        >
+          {isHero && (
+            <>
+              {jLabel(ticket.daysUntil)}
+              {ticket.startsAt ? ` · ${formatOutingDateShort(ticket.startsAt)}` : " · à programmer"}
+            </>
+          )}
+          {!isHero && (
+            <>
+              {isTbd ? "à programmer" : formatOutingDateShort(ticket.startsAt!)}
+              {ticket.isNextUp && " · prochaine"}
+            </>
+          )}
+        </Eyebrow>
+        {isHero ? (
+          <h2 className="font-display text-[40px] leading-[0.98] font-black tracking-[-0.035em] text-ink-700">
+            {ticket.title}
+          </h2>
+        ) : (
+          <h3 className="font-display text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
+            {ticket.title}
+          </h3>
+        )}
+        {ticket.location && (
+          <p
+            className={`font-mono uppercase ${
+              isHero ? "text-[12.5px] tracking-[0.14em]" : "text-[12px] tracking-[0.14em]"
+            } text-ink-500`}
+          >
+            ◉ {formatVenue(ticket.location)}
+          </p>
+        )}
+        {!isHero && (
+          <div className="flex items-center gap-3">
+            {ticket.confirmedCount > 0 && (
+              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
+                {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""}
+              </span>
+            )}
+            {isTbd && (
+              <span className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-hot-500">
+                <Calendar size={11} strokeWidth={2.4} />→ choisir la date
+              </span>
+            )}
+          </div>
+        )}
+        {isHero && ticket.confirmedCount > 0 && (
+          <Eyebrow tone="muted">
+            ─ {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""} ─
+          </Eyebrow>
+        )}
+      </div>
+    </Link>
+  );
+}
+
 /* ─────────────────────────  SOLO POSTER  ───────────────────────── */
 
 function SoloPoster({ ticket }: { ticket: TicketVM }) {
   const reduce = useReducedMotion();
-  const canonical = ticket.slug ? `${ticket.slug}-${ticket.shortId}` : ticket.shortId;
   return (
     <motion.div
       initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -109,43 +227,7 @@ function SoloPoster({ ticket }: { ticket: TicketVM }) {
       <Eyebrow glow tone="acid" className="mb-3">
         ─ ta prochaine sortie ─
       </Eyebrow>
-      <Link
-        href={`/${canonical}`}
-        className="group relative block overflow-hidden rounded-2xl border-l-2 border-acid-600 bg-surface-50 ring-1 ring-ink-700/5 transition-colors hover:bg-surface-100"
-      >
-        {ticket.heroImageUrl && (
-          <div className="absolute inset-0 -z-0 opacity-30">
-            <Image
-              src={ticket.heroImageUrl}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 640px"
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-tr from-surface-50 via-surface-50/40 to-transparent" />
-          </div>
-        )}
-        <div className="relative z-10 flex flex-col gap-4 p-6">
-          <Eyebrow tone="acid" className="font-semibold">
-            {ticket.jLabel}
-            {ticket.startsAt ? ` · ${formatOutingDateShort(ticket.startsAt)}` : " · à programmer"}
-          </Eyebrow>
-          <h2 className="font-display text-[40px] leading-[0.98] font-black tracking-[-0.035em] text-ink-700">
-            {ticket.title}
-          </h2>
-          {ticket.location && (
-            <p className="font-mono text-[12.5px] uppercase tracking-[0.14em] text-ink-500">
-              ◉ {formatVenue(ticket.location)}
-            </p>
-          )}
-          {ticket.confirmedCount > 0 && (
-            <Eyebrow tone="muted">
-              ─ {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""} ─
-            </Eyebrow>
-          )}
-        </div>
-      </Link>
+      <TicketCard ticket={ticket} size="hero" />
     </motion.div>
   );
 }
@@ -155,31 +237,23 @@ function SoloPoster({ ticket }: { ticket: TicketVM }) {
 function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: boolean }) {
   const reduce = useReducedMotion();
 
-  // Stagger plafonné — sur 30 items, 0.08 * 30 = 2.4s c'est interminable.
-  // À partir de 10 items on resserre à 0.04s, cap implicite à ~0.6s.
-  const totalItems = data.groups.reduce((acc, g) => acc + g.items.length, 0);
-  const stagger = totalItems > 10 ? 0.04 : 0.08;
+  // Stagger plafonné — sur 30 items, 0.08 × 30 = 2.4s c'est interminable.
+  const stagger = data.totalCount > 10 ? 0.04 : 0.08;
 
   const containerVariants: Variants = {
     hidden: {},
-    show: {
-      transition: { staggerChildren: stagger, delayChildren: 0.05 },
-    },
+    show: { transition: { staggerChildren: stagger, delayChildren: 0.05 } },
   };
 
   const showHeaders = data.groups.length > 1;
 
   return (
     <motion.div
-      // `relative` car le rail est dessiné via ::before. On laisse le
-      // padding-left vide côté wrapper et on positionne le rail à
-      // 1.25rem (centre de la col 1 du grid à 2.5rem).
       className="relative"
+      // Rail vertical continu — un seul trait sur toute la timeline.
+      // `::before` cassé sous motion.div à cause des transforms,
+      // backgroundImage est plus robuste.
       style={{
-        // Rail vertical continu — un seul trait pour toute la timeline.
-        // En CSS direct car ::before sur un motion.div serait override
-        // par layout transform. backgroundImage + linear-gradient évite
-        // la dépendance à un pseudo-element non-thémable côté Tailwind.
         backgroundImage:
           "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.06) 100%)",
         backgroundSize: "1px 100%",
@@ -192,9 +266,7 @@ function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: bo
     >
       {data.groups.map((group, gi) => (
         <section key={group.bucket} className={gi === 0 ? "" : "mt-8"}>
-          {showHeaders && (
-            <BucketHeader bucket={group.bucket} sticky={shouldStick} isFirst={gi === 0} />
-          )}
+          {showHeaders && <BucketHeader bucket={group.bucket} sticky={shouldStick} />}
           <ol className="flex flex-col gap-3">
             {group.items.map((ticket) => (
               <TicketRow key={ticket.id} ticket={ticket} />
@@ -208,26 +280,15 @@ function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: bo
 
 /* ─────────────────────────  BUCKET HEADER  ─────────────────────── */
 
-function BucketHeader({
-  bucket,
-  sticky,
-  isFirst,
-}: {
-  bucket: AgendaBucket;
-  sticky: boolean;
-  isFirst: boolean;
-}) {
-  const tone = bucket === "today" ? "acid" : bucket === "tbd" ? "hot" : "muted";
+function BucketHeader({ bucket, sticky }: { bucket: AgendaBucket; sticky: boolean }) {
   return (
     <div
-      className={[
-        "z-10 mb-4 grid grid-cols-[2.5rem_1fr] items-center gap-3",
-        sticky ? "sticky top-2 bg-surface-50/85 py-2 backdrop-blur-sm" : "",
-        isFirst ? "" : "mt-2",
-      ].join(" ")}
+      className={`z-10 mb-4 grid grid-cols-[2.5rem_1fr] items-center gap-3 ${
+        sticky ? "sticky top-2 bg-surface-50/85 py-2 backdrop-blur-sm" : ""
+      }`}
     >
       {bucket === "today" ? <TodayDot /> : <span aria-hidden />}
-      <Eyebrow glow={bucket === "today"} tone={tone}>
+      <Eyebrow glow={bucket === "today"} tone={BUCKET_TONE[bucket]}>
         ─ {BUCKET_LABEL[bucket]} ─
       </Eyebrow>
     </div>
@@ -237,18 +298,16 @@ function BucketHeader({
 function TodayDot() {
   const reduce = useReducedMotion();
   return (
-    <span className="relative flex h-5 items-center justify-center">
-      <motion.span
-        aria-hidden
-        className="block h-2 w-2 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-        animate={reduce ? undefined : { scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
-        transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      />
-    </span>
+    <motion.span
+      aria-hidden
+      className="mx-auto block h-2 w-2 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
+      animate={reduce ? undefined : { scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
+      transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    />
   );
 }
 
-/* ───────────────────────────  TICKET  ──────────────────────────── */
+/* ───────────────────────────  TICKET ROW  ──────────────────────── */
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
@@ -256,88 +315,22 @@ const itemVariants: Variants = {
 };
 
 function TicketRow({ ticket }: { ticket: TicketVM }) {
-  const canonical = ticket.slug ? `${ticket.slug}-${ticket.shortId}` : ticket.shortId;
-  const isTbd = ticket.startsAt === null;
-
+  const variant = variantFor(ticket);
   return (
     <motion.li
       variants={itemVariants}
       className="grid grid-cols-[2.5rem_3.25rem_1fr] items-stretch gap-3"
     >
-      {/* Col rail — dot perso par billet */}
-      <div className="flex items-start justify-center pt-4">
-        <span
-          aria-hidden
-          className={[
-            "block h-2 w-2 rounded-full",
-            ticket.isNextUp
-              ? "bg-acid-600 shadow-[0_0_10px_var(--sortie-acid)]"
-              : isTbd
-                ? "bg-hot-500"
-                : "bg-ink-300",
-          ].join(" ")}
-        />
-      </div>
-
-      {/* Col J-N */}
-      <div className="pt-4">
-        <span
-          className={[
-            "font-mono text-[11px] uppercase tracking-[0.18em]",
-            ticket.isNextUp ? "text-acid-600" : isTbd ? "text-hot-500" : "text-ink-400",
-          ].join(" ")}
-        >
-          {ticket.jLabel}
-        </span>
-      </div>
-
-      {/* Carte billet */}
-      <Link
-        href={`/${canonical}`}
-        className={[
-          "group relative overflow-hidden rounded-xl bg-surface-50 ring-1 ring-ink-700/5 transition-colors hover:bg-surface-100",
-          ticket.isNextUp ? "border-l-2 border-acid-600" : "border-l border-ink-100",
-        ].join(" ")}
+      <span
+        aria-hidden
+        className={`mx-auto mt-4 block h-2 w-2 rounded-full ${DOT_CLASS[variant]}`}
+      />
+      <span
+        className={`pt-4 font-mono text-[11px] uppercase tracking-[0.18em] ${TEXT_CLASS[variant]}`}
       >
-        {ticket.heroImageUrl && (
-          <div className="absolute inset-0 -z-0 opacity-30">
-            <Image
-              src={ticket.heroImageUrl}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 480px"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface-50 via-surface-50/60 to-transparent" />
-          </div>
-        )}
-        <div className="relative z-10 flex flex-col gap-2 p-4">
-          <Eyebrow tone={ticket.isNextUp ? "acid" : "muted"} glow={ticket.isNextUp}>
-            {isTbd ? "à programmer" : ticket.startsAt ? formatOutingDateShort(ticket.startsAt) : ""}
-            {ticket.isNextUp && " · prochaine"}
-          </Eyebrow>
-          <h3 className="font-display text-[22px] leading-[1.05] font-black tracking-[-0.025em] text-ink-700">
-            {ticket.title}
-          </h3>
-          {ticket.location && (
-            <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-ink-500">
-              ◉ {formatVenue(ticket.location)}
-            </p>
-          )}
-          <div className="flex items-center gap-3">
-            {ticket.confirmedCount > 0 && (
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
-                {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""}
-              </span>
-            )}
-            {isTbd && (
-              <span className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-hot-500">
-                <Calendar size={11} strokeWidth={2.4} />→ choisir la date
-              </span>
-            )}
-          </div>
-        </div>
-      </Link>
+        {jLabel(ticket.daysUntil)}
+      </span>
+      <TicketCard ticket={ticket} size="row" />
     </motion.li>
   );
 }

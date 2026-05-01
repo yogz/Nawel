@@ -13,6 +13,11 @@ const parisDayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
+/** "YYYY-MM-DD" stable key pour le jour calendaire Paris d'une date. */
+export function parisDayKey(date: Date): string {
+  return parisDayKeyFormatter.format(date);
+}
+
 const parisHourMinuteFormatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: TZ,
   hour: "2-digit",

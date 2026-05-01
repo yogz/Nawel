@@ -208,8 +208,6 @@ export async function listMyUpcomingForAgenda(userId: string, now = new Date()) 
     .limit(100);
 }
 
-export type AgendaOutingRow = Awaited<ReturnType<typeof listMyUpcomingForAgenda>>[number];
-
 /**
  * Public profile view — only surfaces outings the user chose to show
  * (`showOnProfile`) and excludes cancelled ones. Splits into upcoming vs

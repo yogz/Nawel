@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "acid" | "hot" | "muted";
+export type EyebrowTone = "acid" | "hot" | "muted";
 
 type Props = {
-  tone?: Tone;
+  tone?: EyebrowTone;
   /** Préfixe avec un dot pulsé matchant le `tone`. Acid (12px halo) pour
    * "action/CTA", hot (10px halo) pour "urgence" (achat, paiement,
    * dettes). Muted+glow rend juste le dot ink-400 sans halo. */
@@ -12,13 +12,13 @@ type Props = {
   children: React.ReactNode;
 };
 
-const TONE_COLOR: Record<Tone, string> = {
+const TONE_COLOR: Record<EyebrowTone, string> = {
   acid: "text-acid-600",
   hot: "text-hot-500",
   muted: "text-ink-400",
 };
 
-const TONE_GLOW: Record<Tone, string> = {
+const TONE_GLOW: Record<EyebrowTone, string> = {
   acid: "bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]",
   hot: "bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]",
   muted: "bg-ink-400",
