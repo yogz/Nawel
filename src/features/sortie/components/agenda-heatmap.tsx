@@ -7,12 +7,6 @@ type Props = {
 
 const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"];
 
-/**
- * Heatmap calendaire 3 mois — vert acid pour les sorties datées, rose
- * hot pour les sondages, intensité = nb d'items du jour. Cellules carrées,
- * 7 colonnes lundi-first. Pas de tooltip pour l'instant : un click ira
- * scroller vers la timeline plus tard.
- */
 export function AgendaHeatmap({ months, buckets }: Props) {
   return (
     <div className="space-y-8">

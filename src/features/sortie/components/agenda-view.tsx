@@ -5,6 +5,7 @@ import { AgendaHeatmap } from "@/features/sortie/components/agenda-heatmap";
 import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, buildMonthGrids } from "@/features/sortie/lib/agenda-grid";
+import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
 type Props = {
@@ -16,16 +17,15 @@ type Props = {
 };
 
 type TypeFilter = "fixed" | "vote";
-type RsvpFilter = "yes" | "maybe" | "no" | "pending" | "creator";
 
 const ALL_TYPES: TypeFilter[] = ["fixed", "vote"];
-const ALL_RSVP: RsvpFilter[] = ["yes", "maybe", "no", "creator", "pending"];
+const ALL_RSVP: AgendaRsvpBucket[] = ["yes", "maybe", "no", "creator", "pending"];
 
 const TYPE_LABEL: Record<TypeFilter, string> = {
   fixed: "datée",
   vote: "sondage",
 };
-const RSVP_LABEL: Record<RsvpFilter, string> = {
+const RSVP_LABEL: Record<AgendaRsvpBucket, string> = {
   yes: "tu y vas",
   maybe: "intéressé",
   no: "non",
@@ -36,10 +36,13 @@ const RSVP_LABEL: Record<RsvpFilter, string> = {
 export function AgendaView({ items, nowIso }: Props) {
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [activeTypes, setActiveTypes] = useState<Set<TypeFilter>>(() => new Set(ALL_TYPES));
-  const [activeRsvps, setActiveRsvps] = useState<Set<RsvpFilter>>(() => new Set(ALL_RSVP));
+  const [activeRsvps, setActiveRsvps] = useState<Set<AgendaRsvpBucket>>(() => new Set(ALL_RSVP));
 
   const filteredItems = useMemo(
-    () => items.filter((item) => activeTypes.has(item.mode) && activeRsvps.has(rsvpKey(item))),
+    () =>
+      items.filter(
+        (item) => activeTypes.has(item.mode) && activeRsvps.has(getAgendaRsvpBucket(item))
+      ),
     [items, activeTypes, activeRsvps]
   );
 
@@ -49,7 +52,7 @@ export function AgendaView({ items, nowIso }: Props) {
   }, [filteredItems, now]);
 
   const toggleType = (key: TypeFilter) => setActiveTypes((s) => toggle(s, key));
-  const toggleRsvp = (key: RsvpFilter) => setActiveRsvps((s) => toggle(s, key));
+  const toggleRsvp = (key: AgendaRsvpBucket) => setActiveRsvps((s) => toggle(s, key));
 
   return (
     <>
@@ -79,9 +82,9 @@ function Filters({
   onToggleRsvp,
 }: {
   activeTypes: Set<TypeFilter>;
-  activeRsvps: Set<RsvpFilter>;
+  activeRsvps: Set<AgendaRsvpBucket>;
   onToggleType: (k: TypeFilter) => void;
-  onToggleRsvp: (k: RsvpFilter) => void;
+  onToggleRsvp: (k: AgendaRsvpBucket) => void;
 }) {
   return (
     <div className="mb-6 space-y-3">
@@ -158,7 +161,7 @@ function FilterPill({
   );
 }
 
-function rsvpTone(k: RsvpFilter): PillTone {
+function rsvpTone(k: AgendaRsvpBucket): PillTone {
   if (k === "yes") {
     return "acid";
   }
@@ -166,22 +169,6 @@ function rsvpTone(k: RsvpFilter): PillTone {
     return "hot";
   }
   return "neutral";
-}
-
-function rsvpKey(item: AgendaItem): RsvpFilter {
-  if (item.myResponse === "yes" || item.myResponse === "handle_own") {
-    return "yes";
-  }
-  if (item.myResponse === "interested") {
-    return "maybe";
-  }
-  if (item.myResponse === "no") {
-    return "no";
-  }
-  if (item.isCreator) {
-    return "creator";
-  }
-  return "pending";
 }
 
 function toggle<T>(set: Set<T>, key: T): Set<T> {

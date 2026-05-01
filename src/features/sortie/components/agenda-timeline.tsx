@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatOutingDateShort, formatVotedSlotsCompact } from "@/features/sortie/lib/date-fr";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
 type Props = {
@@ -83,43 +84,31 @@ function TypeBadge({ isVote }: { isVote: boolean }) {
   );
 }
 
+const RSVP_BADGE_LABEL: Record<AgendaRsvpBucket, string> = {
+  yes: "tu y vas",
+  maybe: "intéressé",
+  no: "non",
+  creator: "tu organises",
+  pending: "à répondre",
+};
+
+const RSVP_BADGE_TONE_CLASS: Record<AgendaRsvpBucket, string> = {
+  yes: "bg-acid-500/15 text-acid-500",
+  maybe: "bg-hot-500/15 text-hot-500",
+  no: "bg-surface-300 text-ink-400",
+  creator: "bg-ink-700/15 text-ink-600",
+  pending: "bg-surface-300 text-ink-500",
+};
+
 function RsvpBadge({ item }: { item: AgendaItem }) {
-  const { label, tone } = rsvpBadgeContent(item);
-  const toneClass =
-    tone === "yes"
-      ? "bg-acid-500/15 text-acid-500"
-      : tone === "maybe"
-        ? "bg-hot-500/15 text-hot-500"
-        : tone === "no"
-          ? "bg-surface-300 text-ink-400"
-          : tone === "creator"
-            ? "bg-ink-700/15 text-ink-600"
-            : "bg-surface-300 text-ink-500";
+  const bucket = getAgendaRsvpBucket(item);
   return (
     <span
-      className={`inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] ${toneClass}`}
+      className={`inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] ${RSVP_BADGE_TONE_CLASS[bucket]}`}
     >
-      {label}
+      {RSVP_BADGE_LABEL[bucket]}
     </span>
   );
-}
-
-type RsvpTone = "yes" | "maybe" | "no" | "pending" | "creator";
-
-function rsvpBadgeContent(item: AgendaItem): { label: string; tone: RsvpTone } {
-  if (item.myResponse === "yes" || item.myResponse === "handle_own") {
-    return { label: "tu y vas", tone: "yes" };
-  }
-  if (item.myResponse === "interested") {
-    return { label: "intéressé", tone: "maybe" };
-  }
-  if (item.myResponse === "no") {
-    return { label: "non", tone: "no" };
-  }
-  if (item.isCreator) {
-    return { label: "tu organises", tone: "creator" };
-  }
-  return { label: "à répondre", tone: "pending" };
 }
 
 function formatItemSchedule(item: AgendaItem, now: Date): string {

@@ -224,7 +224,23 @@ export type AgendaItem = {
 export async function listMyAgendaActivity(userId: string, now = new Date()) {
   const windowEnd = new Date(now.getTime() + AGENDA_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
+  // LEFT JOIN sur la row participant de l'user (s'il y en a une) pour
+  // récupérer `response` en une passe. La WHERE assure qu'on a au moins
+  // un lien (créateur ou participant) — pour un créateur sans participant,
+  // `myResponse` reste null. Index `sortie_participants_user_idx` couvre
+  // la jointure.
+  const myParticipant = db.$with("my_participant").as(
+    db
+      .select({
+        outingId: participants.outingId,
+        response: participants.response,
+      })
+      .from(participants)
+      .where(eq(participants.userId, userId))
+  );
+
   const rows = await db
+    .with(myParticipant)
     .select({
       id: outings.id,
       shortId: outings.shortId,
@@ -236,26 +252,16 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
       status: outings.status,
       fixedDatetime: outings.fixedDatetime,
       creatorUserId: outings.creatorUserId,
-      // Sub-query scalaire : la `response` de l'user pour cette sortie.
-      // `LIMIT 1` par sécurité, mais l'index unique
-      // (outing_id, cookie_token_hash) ne garantit pas l'unicité par user
-      // dans tous les cas (un user peut avoir plusieurs cookies). En pratique
-      // c'est rare et on prend la première.
-      myResponse: sql<
-        "yes" | "no" | "handle_own" | "interested" | null
-      >`(SELECT response FROM ${participants} WHERE outing_id = ${outings.id} AND user_id = ${userId} LIMIT 1)`,
+      myResponse: myParticipant.response,
     })
     .from(outings)
+    .leftJoin(myParticipant, eq(myParticipant.outingId, outings.id))
     .where(
       and(
         ne(outings.status, "cancelled"),
         or(
           and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
-          sql`${outings.id} IN (
-            SELECT ${participants.outingId}
-            FROM ${participants}
-            WHERE ${participants.userId} = ${userId}
-          )`
+          isNotNull(myParticipant.response)
         ),
         or(
           and(
