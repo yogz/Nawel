@@ -1,4 +1,5 @@
-import { displayNameOf } from "@/features/sortie/lib/participant-name";
+import { isOutingOwner } from "./owner";
+import { displayNameOf } from "./participant-name";
 
 export type VoterSummary = {
   participantId: string;
@@ -14,6 +15,14 @@ export type EnrichedTimeslot = {
   noCount: number;
   yesVoters: VoterSummary[];
   noVoters: VoterSummary[];
+};
+
+export type EnrichResult = {
+  timeslots: EnrichedTimeslot[];
+  /** Participants uniques ayant voté ≥1 fois sur n'importe quel créneau. */
+  totalVoters: number;
+  /** Id du participant correspondant à l'organisateur, ou null s'il n'a pas RSVP. */
+  creatorParticipantId: string | null;
 };
 
 type ParticipantInput = {
@@ -44,23 +53,38 @@ type OutingShape = {
  * est partagée avec `generateMetadata` / OG image, on ne veut pas
  * payer le join là où il n'est pas consommé.
  *
- * La duplication possible d'un voteur (si il vote oui sur N créneaux)
+ * La duplication possible d'un voteur (s'il vote oui sur N créneaux)
  * est volontaire — c'est ce qui nous permet d'afficher "qui veut
  * quand" en un coup d'œil. L'effet "même tête répétée" est en fait un
  * bon signal de disponibilité large.
+ *
+ * Retourne aussi `totalVoters` et `creatorParticipantId` calculés au
+ * passage — la page consommait ces deux valeurs en re-scannant les
+ * mêmes structures, ce qui faisait trois passes sur les votes en hot
+ * path public.
  */
-export function enrichTimeslots(outing: OutingShape): EnrichedTimeslot[] {
+export function enrichTimeslots(outing: OutingShape): EnrichResult {
   const byId = new Map<string, VoterSummary>();
+  let creatorParticipantId: string | null = null;
+
   for (const p of outing.participants) {
+    const isCreator = isOutingOwner(outing, {
+      userId: p.userId,
+      cookieTokenHash: p.cookieTokenHash,
+    });
+    if (isCreator) {
+      creatorParticipantId = p.id;
+    }
     byId.set(p.id, {
       participantId: p.id,
       name: displayNameOf(p),
       image: p.user?.image ?? null,
-      isCreator: isCreatorParticipant(p, outing),
+      isCreator,
     });
   }
 
-  return outing.timeslots.map((ts) => {
+  const voterSet = new Set<string>();
+  const timeslots = outing.timeslots.map((ts) => {
     const yesVoters: VoterSummary[] = [];
     const noVoters: VoterSummary[] = [];
     for (const v of ts.votes) {
@@ -68,6 +92,7 @@ export function enrichTimeslots(outing: OutingShape): EnrichedTimeslot[] {
       if (!summary) {
         continue;
       }
+      voterSet.add(v.participantId);
       (v.available ? yesVoters : noVoters).push(summary);
     }
     return {
@@ -79,20 +104,6 @@ export function enrichTimeslots(outing: OutingShape): EnrichedTimeslot[] {
       noVoters,
     };
   });
-}
 
-function isCreatorParticipant(
-  p: ParticipantInput,
-  outing: { creatorUserId: string | null; creatorCookieTokenHash: string | null }
-): boolean {
-  if (outing.creatorUserId !== null && p.userId === outing.creatorUserId) {
-    return true;
-  }
-  if (
-    outing.creatorCookieTokenHash !== null &&
-    p.cookieTokenHash === outing.creatorCookieTokenHash
-  ) {
-    return true;
-  }
-  return false;
+  return { timeslots, totalVoters: voterSet.size, creatorParticipantId };
 }

@@ -132,7 +132,11 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         })
       : Promise.resolve(null),
   ]);
-  const enrichedTimeslots = enrichTimeslots(outing);
+  const {
+    timeslots: enrichedTimeslots,
+    totalVoters,
+    creatorParticipantId,
+  } = enrichTimeslots(outing);
   const isOpenPoll = outing.mode === "vote" && !outing.chosenTimeslotId;
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
@@ -155,9 +159,17 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   // qu'un invité qui scrolle dans les détails de la sortie ne perde
   // pas l'action principale de vue. En mode fixed (et vote-with-
   // chosen) le `RsvpPrompt` sticky bottom prend déjà ce rôle.
-  const hasVotedAlready = Boolean(
-    me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
-  );
+  const myExistingVotes: Record<string, boolean> = {};
+  if (me) {
+    for (const t of enrichedTimeslots) {
+      if (t.yesVoters.some((v) => v.participantId === me.id)) {
+        myExistingVotes[t.id] = true;
+      } else if (t.noVoters.some((v) => v.participantId === me.id)) {
+        myExistingVotes[t.id] = false;
+      }
+    }
+  }
+  const hasVotedAlready = Object.keys(myExistingVotes).length > 0;
   const showVoteFab =
     outing.mode === "vote" && !outing.chosenTimeslotId && !deadlinePassed && !hasVotedAlready;
 
@@ -247,14 +259,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             isCreator={isCreator}
             shortId={outing.shortId}
             meId={me?.id ?? null}
-            creatorParticipantId={
-              outing.participants.find(
-                (p) =>
-                  (outing.creatorUserId !== null && p.userId === outing.creatorUserId) ||
-                  (outing.creatorCookieTokenHash !== null &&
-                    p.cookieTokenHash === outing.creatorCookieTokenHash)
-              )?.id ?? null
-            }
+            creatorParticipantId={creatorParticipantId}
           />
 
           <div className="mt-6 border-t border-surface-400 pt-4 text-center">
@@ -268,7 +273,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           shortId={outing.shortId}
           chosenTimeslotId={outing.chosenTimeslotId}
           isCreator={isCreator}
-          totalVoters={countVoters(outing.timeslots)}
+          totalVoters={totalVoters}
           timeslots={enrichedTimeslots}
           inlineDeadlineAt={isOpenPoll ? outing.deadlineAt : undefined}
         />

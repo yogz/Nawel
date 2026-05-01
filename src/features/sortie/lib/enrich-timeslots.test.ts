@@ -21,7 +21,7 @@ function p(args: {
 
 describe("enrichTimeslots", () => {
   it("renvoie les voteurs yes et no résolus depuis participants", () => {
-    const out = enrichTimeslots({
+    const { timeslots, totalVoters, creatorParticipantId } = enrichTimeslots({
       creatorUserId: null,
       creatorCookieTokenHash: "creator-hash",
       participants: [
@@ -39,16 +39,18 @@ describe("enrichTimeslots", () => {
         },
       ],
     });
-    expect(out).toHaveLength(1);
-    expect(out[0]!.yesCount).toBe(1);
-    expect(out[0]!.noCount).toBe(1);
-    expect(out[0]!.yesVoters[0]!.name).toBe("Léa");
-    expect(out[0]!.yesVoters[0]!.isCreator).toBe(true);
-    expect(out[0]!.noVoters[0]!.name).toBe("Marc");
+    expect(timeslots).toHaveLength(1);
+    expect(timeslots[0]!.yesCount).toBe(1);
+    expect(timeslots[0]!.noCount).toBe(1);
+    expect(timeslots[0]!.yesVoters[0]!.name).toBe("Léa");
+    expect(timeslots[0]!.yesVoters[0]!.isCreator).toBe(true);
+    expect(timeslots[0]!.noVoters[0]!.name).toBe("Marc");
+    expect(totalVoters).toBe(2);
+    expect(creatorParticipantId).toBe("p1");
   });
 
   it("ignore les votes orphelins (participant supprimé entre-temps)", () => {
-    const out = enrichTimeslots({
+    const { timeslots, totalVoters } = enrichTimeslots({
       creatorUserId: null,
       creatorCookieTokenHash: null,
       participants: [],
@@ -60,12 +62,13 @@ describe("enrichTimeslots", () => {
         },
       ],
     });
-    expect(out[0]!.yesCount).toBe(0);
-    expect(out[0]!.yesVoters).toEqual([]);
+    expect(timeslots[0]!.yesCount).toBe(0);
+    expect(timeslots[0]!.yesVoters).toEqual([]);
+    expect(totalVoters).toBe(0);
   });
 
   it("priorise userId sur cookieTokenHash pour détecter le créateur", () => {
-    const out = enrichTimeslots({
+    const { timeslots, creatorParticipantId } = enrichTimeslots({
       creatorUserId: "user-x",
       creatorCookieTokenHash: "h-other",
       participants: [p({ id: "p1", name: "Léa", userId: "user-x" })],
@@ -77,12 +80,13 @@ describe("enrichTimeslots", () => {
         },
       ],
     });
-    expect(out[0]!.yesVoters[0]!.isCreator).toBe(true);
+    expect(timeslots[0]!.yesVoters[0]!.isCreator).toBe(true);
+    expect(creatorParticipantId).toBe("p1");
   });
 
   it("préserve l'ordre des créneaux d'entrée", () => {
     const t2 = new Date(baseDate.getTime() + 86400000);
-    const out = enrichTimeslots({
+    const { timeslots } = enrichTimeslots({
       creatorUserId: null,
       creatorCookieTokenHash: null,
       participants: [],
@@ -91,6 +95,28 @@ describe("enrichTimeslots", () => {
         { id: "t2", startsAt: t2, votes: [] },
       ],
     });
-    expect(out.map((r) => r.id)).toEqual(["t1", "t2"]);
+    expect(timeslots.map((r) => r.id)).toEqual(["t1", "t2"]);
+  });
+
+  it("comptabilise un voteur multi-créneaux une seule fois dans totalVoters", () => {
+    const t2 = new Date(baseDate.getTime() + 86400000);
+    const { totalVoters } = enrichTimeslots({
+      creatorUserId: null,
+      creatorCookieTokenHash: null,
+      participants: [p({ id: "p1", name: "Léa", cookie: "h1" })],
+      timeslots: [
+        {
+          id: "t1",
+          startsAt: baseDate,
+          votes: [{ participantId: "p1", available: true }],
+        },
+        {
+          id: "t2",
+          startsAt: t2,
+          votes: [{ participantId: "p1", available: false }],
+        },
+      ],
+    });
+    expect(totalVoters).toBe(1);
   });
 });
