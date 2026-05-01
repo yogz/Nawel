@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
+import { cn } from "@/lib/utils";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 
 type Props = {
@@ -197,7 +198,10 @@ export function InlineRsvpSection({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-2">
+      {/* Layout asymétrique : sélectionné = chip auto-width, l'autre
+          flex-1. Réduit la surface du filled à ~25-30% de la row une
+          fois engagé sans cacher l'option de bascule. */}
+      <div className="flex gap-2">
         <SegmentedButton
           // Icône uniquement quand selected : elle porte le signal
           // "réponse enregistrée". En non-sélectionné, l'absence d'icône
@@ -266,9 +270,13 @@ function SegmentedButton({
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
-      className={`flex h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${cls}`}
+      className={cn(
+        "flex h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 motion-safe:active:scale-95 disabled:cursor-not-allowed disabled:opacity-60",
+        selected ? "flex-none" : "flex-1",
+        cls
+      )}
     >
-      {icon && <span className={selected ? "text-ink-50" : ""}>{icon}</span>}
+      {icon && <span>{icon}</span>}
       <span>{label}</span>
     </button>
   );
