@@ -6,6 +6,10 @@ type Props = {
   buckets: Map<string, DayBucket>;
   fixedCount: number;
   voteCount: number;
+  /** Offset contrôlé par le parent — sert à synchroniser la timeline
+   * affichée plus bas avec le mois rendu par le calendrier. */
+  monthOffset: number;
+  onMonthOffsetChange: (offset: number) => void;
 };
 
 /**
@@ -13,7 +17,14 @@ type Props = {
  * unique navigable (flèches + swipe) sans cap. Les events au-delà de la
  * fenêtre data côté serveur ne s'afficheront pas mais la nav reste libre.
  */
-export function AgendaHub({ now, buckets, fixedCount, voteCount }: Props) {
+export function AgendaHub({
+  now,
+  buckets,
+  fixedCount,
+  voteCount,
+  monthOffset,
+  onMonthOffsetChange,
+}: Props) {
   const total = fixedCount + voteCount;
 
   return (
@@ -36,7 +47,12 @@ export function AgendaHub({ now, buckets, fixedCount, voteCount }: Props) {
         </div>
       </header>
 
-      <AgendaMonthView now={now} buckets={buckets} />
+      <AgendaMonthView
+        now={now}
+        buckets={buckets}
+        offset={monthOffset}
+        onOffsetChange={onMonthOffsetChange}
+      />
     </section>
   );
 }
