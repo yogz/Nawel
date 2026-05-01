@@ -63,7 +63,7 @@ function TimelineRow({ item, now }: { item: AgendaItem; now: Date }) {
   );
 }
 
-function TypeStripe({ isVote }: { isVote: boolean }) {
+export function TypeStripe({ isVote }: { isVote: boolean }) {
   return (
     <div
       aria-hidden
@@ -72,7 +72,7 @@ function TypeStripe({ isVote }: { isVote: boolean }) {
   );
 }
 
-function TypeBadge({ isVote }: { isVote: boolean }) {
+export function TypeBadge({ isVote }: { isVote: boolean }) {
   return (
     <span
       className={`inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] ${
@@ -100,7 +100,7 @@ const RSVP_BADGE_TONE_CLASS: Record<AgendaRsvpBucket, string> = {
   pending: "bg-surface-300 text-ink-500",
 };
 
-function RsvpBadge({ item }: { item: AgendaItem }) {
+export function RsvpBadge({ item }: { item: AgendaItem }) {
   const bucket = getAgendaRsvpBucket(item);
   return (
     <span
