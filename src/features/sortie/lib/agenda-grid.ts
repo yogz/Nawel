@@ -163,14 +163,19 @@ export function buildAgendaHeatmap(
     // le 1er jour de la colonne qui change de mois — typiquement la
     // colonne contenant le 1er du mois). On évite les doublons via
     // `prevMonth` pour qu'un mois traversant 4 colonnes ne s'étiquette
-    // qu'une fois.
+    // qu'une fois. On saute le mois résiduel hors fenêtre (typiquement
+    // le mois de la 1re semaine quand today est en début de mois) :
+    // pas de label pour des jours grisés inaccessibles, ça libère la
+    // place visuelle pour le 1er vrai mois de la fenêtre.
     for (const cell of week) {
       const monthYear = cell.dayKey.slice(0, 7);
       if (monthYear !== prevMonth) {
-        monthLabels.push({
-          colIndex: col,
-          label: shortMonthFormatter.format(cell.date).replace(".", ""),
-        });
+        if (!cell.outOfWindow) {
+          monthLabels.push({
+            colIndex: col,
+            label: shortMonthFormatter.format(cell.date).replace(".", ""),
+          });
+        }
         prevMonth = monthYear;
         break;
       }
