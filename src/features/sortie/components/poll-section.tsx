@@ -1,8 +1,7 @@
-import { Check, X } from "lucide-react";
-import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import type { EnrichedTimeslot } from "@/features/sortie/lib/enrich-timeslots";
 import { PickTimeslotButton } from "./pick-timeslot-button";
 import { ReopenPollButton } from "./reopen-poll-button";
+import { TimeslotDetailSheet } from "./timeslot-detail-sheet";
 
 type Props = {
   shortId: string;
@@ -103,27 +102,7 @@ function TimeslotRow({
             : "border-surface-400 bg-surface-50"
       }`}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className={`text-sm ${isChosen ? "font-semibold text-acid-700" : "text-ink-700"}`}>
-          {formatOutingDateConversational(ts.startsAt)}
-          {isChosen && (
-            <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-acid-600 px-2 py-0.5 text-[10px] font-medium tracking-wide text-surface-100 uppercase">
-              choisi
-            </span>
-          )}
-        </span>
-        <div className="flex shrink-0 items-center gap-3 text-xs text-ink-500">
-          <span className="inline-flex items-center gap-1">
-            <Check size={12} className="text-hot-600" />
-            {ts.yesCount}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <X size={12} className="text-ink-400" />
-            {ts.noCount}
-          </span>
-        </div>
-      </div>
-
+      <TimeslotDetailSheet ts={ts} isBest={isBest} isChosen={isChosen} />
       {canPick && (
         <PickTimeslotButton shortId={shortId} timeslotId={ts.id} startsAt={ts.startsAt} />
       )}
