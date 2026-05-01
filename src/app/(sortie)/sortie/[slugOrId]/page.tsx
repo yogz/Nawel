@@ -24,7 +24,7 @@ import { RsvpPrompt } from "@/features/sortie/components/rsvp-prompt";
 import { ScrollToActionFab } from "@/features/sortie/components/scroll-to-action-fab";
 import { ShareActions } from "@/features/sortie/components/share-actions";
 import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
-import { VotingSection } from "@/features/sortie/components/voting-section";
+import { PollSection } from "@/features/sortie/components/poll-section";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
@@ -261,7 +261,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       </section>
 
       {outing.mode === "vote" && outing.timeslots.length > 0 && (
-        <VotingSection
+        <PollSection
           shortId={outing.shortId}
           chosenTimeslotId={outing.chosenTimeslotId}
           isCreator={isCreator}
