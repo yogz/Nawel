@@ -2,11 +2,9 @@ import { ArrowLeft } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth-config";
-import { AgendaHeatmap } from "@/features/sortie/components/agenda-heatmap";
-import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
+import { AgendaView } from "@/features/sortie/components/agenda-view";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
-import { bucketAgendaByDay, buildMonthGrids } from "@/features/sortie/lib/agenda-grid";
 import { listMyAgendaActivity } from "@/features/sortie/queries/outing-queries";
 
 export const metadata = {
@@ -40,8 +38,6 @@ export default async function AgendaPage() {
 
   const now = new Date();
   const items = await listMyAgendaActivity(session.user.id, now);
-  const buckets = bucketAgendaByDay(items);
-  const months = buildMonthGrids(now, buckets);
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -61,32 +57,8 @@ export default async function AgendaPage() {
         </h1>
       </header>
 
-      <Legend />
-
-      <AgendaHeatmap months={months} buckets={buckets} />
-
-      <section className="mt-10">
-        <Eyebrow tone="acid" className="mb-4">
-          ─ chronologie ─
-        </Eyebrow>
-        <AgendaTimeline items={items} now={now} />
-      </section>
+      <AgendaView items={items} nowIso={now.toISOString()} />
     </main>
-  );
-}
-
-function Legend() {
-  return (
-    <div className="mb-6 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-      <span className="flex items-center gap-1.5">
-        <span aria-hidden className="block h-2.5 w-2.5 rounded-sm bg-acid-500/60" />
-        datée
-      </span>
-      <span className="flex items-center gap-1.5">
-        <span aria-hidden className="block h-2.5 w-2.5 rounded-sm bg-hot-500/60" />
-        sondage
-      </span>
-    </div>
   );
 }
 
