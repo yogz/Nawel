@@ -126,6 +126,40 @@ export function paymentDeclaredEmail(args: {
 }
 
 /**
+ * Sent to the debtor when the creditor taps "Relancer par email". Tone
+ * léger volontaire — c'est entre potes, pas un recouvrement. Rate-limit
+ * 1×/48h appliqué côté Server Action via audit_log pour éviter le spam.
+ */
+export function debtReminderEmail(args: {
+  outingTitle: string;
+  creditorName: string;
+  amountCents: number;
+  debtsUrl: string;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">Petit rappel</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${escapeHtml(args.creditorName)} attend toujours ta part pour <strong>${title}</strong> —
+      <strong>${escapeHtml(formatCents(args.amountCents))}</strong>.
+    </p>
+    <p style="margin:0 0 28px;${BODY_P}">
+      Tu peux régler en deux taps depuis la page dettes. Une fois le virement parti, tape « j&rsquo;ai payé » pour fermer la boucle.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.debtsUrl, "Régler ma part")}
+    </p>
+  `;
+  return {
+    subject: `Rappel — ${formatCents(args.amountCents)} pour ${args.outingTitle}`,
+    html: renderEmail({
+      preheader: `${args.creditorName} te rappelle ta part de ${formatCents(args.amountCents)}.`,
+      body,
+    }),
+  };
+}
+
+/**
  * Sent to the debtor once the creditor confirmed receipt — "c'est bouclé".
  * No CTA, just closure.
  */

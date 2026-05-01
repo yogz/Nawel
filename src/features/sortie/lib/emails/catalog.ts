@@ -12,6 +12,7 @@
  */
 import { buildSortieAuthEmail, buildSortieClaimPromptEmail } from "@/lib/auth-emails";
 import {
+  debtReminderEmail,
   j1ReminderEmail,
   outingCancelledEmail,
   outingModifiedEmail,
@@ -157,6 +158,20 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
       paymentDeclaredEmail({
         outingTitle: MOCK_OUTING_TITLE,
         debtorName: "Bob",
+        amountCents: 2400,
+        debtsUrl: MOCK_DEBTS_URL,
+      }),
+  },
+  {
+    id: "debt-reminder",
+    name: "Relance dette (par email)",
+    trigger:
+      "Server Action `remindDebtAction` — créancier tape « Relancer par email » sur une dette pending. Rate-limit 1×/48h par dette via audit_log.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:130",
+    render: () =>
+      debtReminderEmail({
+        outingTitle: MOCK_OUTING_TITLE,
+        creditorName: "Léa",
         amountCents: 2400,
         debtsUrl: MOCK_DEBTS_URL,
       }),

@@ -1,12 +1,13 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { Copy, Eye } from "lucide-react";
+import { Copy, Eye, Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import {
   confirmDebtPaidAction,
   markDebtPaidAction,
+  remindDebtAction,
   revealIbanAction,
 } from "@/features/sortie/actions/debt-actions";
 
@@ -26,6 +27,10 @@ type Props = {
   other: PersonRef;
   view: "debtor" | "creditor";
   methods?: PaymentMethod[];
+  /** Titre de la sortie — utilisé par le bouton WhatsApp pour
+   * personnaliser le message de relance. Required pour ne pas avoir
+   * à brancher sur un fallback côté creditor. */
+  outingTitle: string;
 };
 
 const TYPE_LABEL: Record<PaymentMethod["type"], string> = {
@@ -51,6 +56,7 @@ export function DebtRow({
   other,
   view,
   methods = [],
+  outingTitle,
 }: Props) {
   const statusLabel =
     status === "confirmed"
@@ -96,19 +102,82 @@ export function DebtRow({
           {status === "pending" && (
             <>
               <p className="text-xs text-ink-400">En attente que {personName(other)} règle.</p>
-              {/* Court-circuit créancier : si tu as vu le virement
-                  arriver sur ta banque avant que le débiteur n'ait pensé
-                  à taper « j'ai payé », tu peux clore la dette toi-même.
-                  Bouton ghost volontairement discret pour ne pas dévaloriser
-                  le flow ping-mutuel par défaut. L'action serveur envoie
-                  un `paymentConfirmedEmail` au débiteur dans tous les cas. */}
-              <CreditorMarkReceivedButton shortId={shortId} debtId={debtId} />
+              {/* Trois actions sur une dette pending côté créancier :
+                  - Relancer via WhatsApp (deeplink, message pré-rempli) :
+                    canal natif pour des potes, manuel mais chaleureux.
+                  - Relancer par email (Server Action, rate-limit 1×/48h) :
+                    impersonnel mais traçable et marche pour les amis pas WA.
+                  - « j'ai déjà reçu » (court-circuit) : tu vois le virement
+                    sur ta banque avant que le débiteur ait tapé « j'ai payé ». */}
+              <div className="flex flex-wrap items-center gap-1">
+                <WhatsAppNudgeLink
+                  shortId={shortId}
+                  debtorName={personName(other)}
+                  amountCents={amountCents}
+                  outingTitle={outingTitle}
+                />
+                <EmailNudgeButton shortId={shortId} debtId={debtId} />
+                <CreditorMarkReceivedButton shortId={shortId} debtId={debtId} />
+              </div>
             </>
           )}
           {status === "declared_paid" && <ConfirmPaidButton shortId={shortId} debtId={debtId} />}
         </>
       )}
     </li>
+  );
+}
+
+function WhatsAppNudgeLink({
+  shortId,
+  debtorName,
+  amountCents,
+  outingTitle,
+}: {
+  shortId: string;
+  debtorName: string;
+  amountCents: number;
+  outingTitle: string;
+}) {
+  // wa.me sans destinataire = WhatsApp s'ouvre avec le message
+  // pré-rempli et l'utilisateur choisit le contact lui-même. Évite
+  // de stocker des numéros côté Sortie. Le path interne `/{shortId}/dettes`
+  // est rewriten correctement par le proxy sur sortie.colist.fr.
+  const link = `https://sortie.colist.fr/${shortId}/dettes`;
+  const message = `Salut ${debtorName} ! Tu peux régler les ${formatCents(amountCents)} pour ${outingTitle} quand tu peux ? ${link}`;
+  const href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink-500 transition-colors hover:text-acid-700"
+    >
+      <MessageCircle size={12} aria-hidden /> WhatsApp
+    </a>
+  );
+}
+
+function EmailNudgeButton({ shortId, debtId }: { shortId: string; debtId: string }) {
+  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
+    remindDebtAction,
+    {} as FormActionState
+  );
+  return (
+    <form action={formAction} className="contents">
+      <input type="hidden" name="shortId" value={shortId} />
+      <input type="hidden" name="debtId" value={debtId} />
+      <Button
+        type="submit"
+        size="sm"
+        variant="ghost"
+        disabled={pending}
+        className="h-auto px-2 py-1 text-xs text-ink-500 hover:text-acid-700"
+        title={state.message ?? undefined}
+      >
+        <Mail size={12} aria-hidden /> {pending ? "…" : "Email"}
+      </Button>
+    </form>
   );
 }
 

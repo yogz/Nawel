@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -8,6 +8,7 @@ import { decryptSecret } from "@/lib/crypto";
 import { auditLog, debts, outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import { createHash } from "node:crypto";
 import {
+  sendDebtReminderEmail,
   sendPaymentConfirmedEmail,
   sendPaymentDeclaredEmail,
 } from "@/features/sortie/lib/emails/send-money-emails";
@@ -24,8 +25,14 @@ import { shortIdSchema } from "./schemas";
 const AUDIT_ACTION = {
   DEBT_DECLARED_PAID: "DEBT_DECLARED_PAID",
   DEBT_CONFIRMED: "DEBT_CONFIRMED",
+  DEBT_REMINDED: "DEBT_REMINDED",
   IBAN_REVEALED: "IBAN_REVEALED",
 } as const;
+
+// Combien de temps un créancier doit attendre entre deux relances email
+// pour la même dette. Garde-fou anti-spam — si tu cliques trop vite, on
+// te dit non plutôt que de bombarder le débiteur.
+const REMINDER_COOLDOWN_HOURS = 48;
 
 const debtSchema = z.object({
   shortId: shortIdSchema,
@@ -164,6 +171,87 @@ export async function confirmDebtPaidAction(
       debtId: updated.id,
     });
   }
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}/dettes`);
+  return {};
+}
+
+/**
+ * Bouton « Relancer par email » côté créancier. Envoie un
+ * `debtReminderEmail` au débiteur avec rate-limit 1×/48h par dette
+ * (vérifié via audit_log — pas de colonne DB dédiée). Le contrôle
+ * d'accès est : créancier de cette dette uniquement, status != confirmed
+ * (relancer une dette déjà réglée n'a pas de sens et serait gênant).
+ */
+export async function remindDebtAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = debtSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, parsed.data.shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+
+  const { participant, userId } = await getCurrentParticipant(outing.id);
+  if (!participant) {
+    return { message: "Non autorisé." };
+  }
+
+  // Vérif d'accès + état : créancier de cette dette ET non confirmée.
+  const debt = await db.query.debts.findFirst({
+    where: and(
+      eq(debts.id, parsed.data.debtId),
+      eq(debts.outingId, outing.id),
+      eq(debts.creditorParticipantId, participant.id)
+    ),
+    columns: { id: true, status: true },
+  });
+  if (!debt || debt.status === "confirmed") {
+    return { message: "Cette dette ne peut pas être relancée." };
+  }
+
+  // Rate-limit via audit_log : on cherche une entry DEBT_REMINDED sur
+  // ce debtId dans les `REMINDER_COOLDOWN_HOURS` dernières heures.
+  // payload est stocké en text JSON ; cast en jsonb pour le matcher.
+  const recent = await db.query.auditLog.findFirst({
+    where: and(
+      eq(auditLog.action, AUDIT_ACTION.DEBT_REMINDED),
+      sql`${auditLog.payload}::jsonb ->> 'debtId' = ${parsed.data.debtId}`,
+      sql`${auditLog.createdAt} > NOW() - (${REMINDER_COOLDOWN_HOURS} || ' hours')::interval`
+    ),
+    orderBy: desc(auditLog.createdAt),
+    columns: { createdAt: true },
+  });
+  if (recent) {
+    return {
+      message: `Tu as déjà relancé récemment. Réessaie dans quelques heures.`,
+    };
+  }
+
+  // Audit log écrit AVANT l'envoi : on préfère un log fantôme (rare,
+  // si Resend down) qu'un envoi non tracé qui contournerait le cooldown.
+  const ipHash = await hashIp();
+  await db.insert(auditLog).values({
+    outingId: outing.id,
+    actorParticipantId: participant.id,
+    actorUserId: userId,
+    action: AUDIT_ACTION.DEBT_REMINDED,
+    ipHash,
+    payload: JSON.stringify({ debtId: debt.id }),
+  });
+
+  await sendDebtReminderEmail({
+    outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
+    debtId: debt.id,
+  });
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}/dettes`);

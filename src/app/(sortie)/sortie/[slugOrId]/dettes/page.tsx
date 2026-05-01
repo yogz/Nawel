@@ -129,6 +129,7 @@ export default async function DebtsPage({ params }: Props) {
                 other={d.creditor}
                 view="debtor"
                 methods={d.creditorMethods}
+                outingTitle={outing.title}
               />
             ))}
           </ul>
@@ -150,6 +151,7 @@ export default async function DebtsPage({ params }: Props) {
                 status={d.status}
                 other={d.debtor}
                 view="creditor"
+                outingTitle={outing.title}
               />
             ))}
           </ul>

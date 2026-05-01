@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { sendSortieEmail } from "@/lib/resend-sortie";
 import { debts, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import {
+  debtReminderEmail,
   paymentConfirmedEmail,
   paymentDeclaredEmail,
   purchaseConfirmedEmail,
@@ -136,6 +137,36 @@ export async function sendPaymentDeclaredEmail(args: {
     debtsUrl: `${BASE_URL}${canonical}/dettes`,
   });
   await safeSend({ to: creditor.email, subject, html, trigger: "payment-declared" });
+}
+
+/**
+ * Called when the creditor taps "Relancer par email" on a still-open debt.
+ * Notifies the debtor avec un rappel léger + CTA vers la page dettes.
+ * Le rate-limit (1×/48h par dette) est appliqué côté Server Action — ici on
+ * envoie sans question. Skip si le débiteur n'a pas d'email on file.
+ */
+export async function sendDebtReminderEmail(args: {
+  outing: { title: string; slug: string | null; shortId: string };
+  debtId: string;
+}): Promise<void> {
+  const [debt] = await db.select().from(debts).where(eq(debts.id, args.debtId)).limit(1);
+  if (!debt) {
+    return;
+  }
+  const contacts = await fetchContacts([debt.debtorParticipantId, debt.creditorParticipantId]);
+  const debtor = contacts.find((c) => c.participantId === debt.debtorParticipantId);
+  const creditor = contacts.find((c) => c.participantId === debt.creditorParticipantId);
+  if (!debtor?.email) {
+    return;
+  }
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const { subject, html } = debtReminderEmail({
+    outingTitle: args.outing.title,
+    creditorName: creditor?.name ?? "Quelqu'un",
+    amountCents: debt.amountCents,
+    debtsUrl: `${BASE_URL}${canonical}/dettes`,
+  });
+  await safeSend({ to: debtor.email, subject, html, trigger: "debt-reminder" });
 }
 
 /**
