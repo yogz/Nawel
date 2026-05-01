@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SortieAdminLayout({ children }: { children: React.ReactNode }) {
   // Gate unique de toute la zone — chaque server action admin doit
-  // re-vérifier via `assertSortieAdmin()` (défense en profondeur).
+  // re-vérifier l'admin via `getSortieAdminSession()` (défense en profondeur).
   await requireSortieAdmin();
   return <>{children}</>;
 }

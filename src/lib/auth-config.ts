@@ -449,21 +449,26 @@ export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
-        // Auto-merge des participant rows cookie-only sur le user au moment
-        // du signin (n'importe quel path : Google OAuth, magic-link, mot de
-        // passe). Sans ça, un invité qui RSVP en anonyme puis signe via
-        // Google sur un autre device perd ses RSVP antérieurs (lookup
-        // getMyParticipant matche par cookieTokenHash OR userId, mais le
-        // nouveau cookie est différent et userId est null sur les rows
-        // attachées au cookie originel).
+        // ⚠️ SÉCU — INVARIANT À NE PAS CASSER : ce hook DOIT rester sur
+        // `after` (post-vérification), JAMAIS ailleurs (pas de `before`,
+        // pas dans une action server-side qui prend l'email en input).
+        // C'est le SEUL endroit où on rattache cookie→userId, parce que
+        // Better Auth garantit ici qu'une signin a été prouvée (clic
+        // magic-link, OAuth verifié, password validé). Faire ce merge
+        // avant la preuve = vecteur d'usurpation : un invité tape l'email
+        // d'une victime, ses rows anon basculent sur le compte victime.
+        // Cf. commit 3474834 (claim-prompt) + 9f41c1c (silent-user).
+        //
+        // Use case fonctionnel : un invité qui RSVP anon puis signe via
+        // Google sur un autre device récupère ses RSVP antérieurs sans
+        // ReclaimForm (lookup getMyParticipant matche par cookieTokenHash
+        // OR userId, mais nouveau cookie ≠ ancien et userId est null sur
+        // les rows attachées au cookie originel).
         //
         // L'idempotence repose sur le `WHERE userId IS NULL` — re-signin
         // ou signin sur un device sans cookie sortie ne touche rien.
         //
         // Best-effort : un échec ne doit pas faire crasher le signin.
-        // Sortie est l'unique consumer aujourd'hui, donc le coût d'un
-        // hook qui ne match aucune row côté main app est nul (early
-        // return sur cookieTokenHash null).
         after: async (session) => {
           try {
             const cookieTokenHash = await readParticipantTokenHash();

@@ -43,32 +43,3 @@ export function relativeOutingHero(date: Date, now = new Date()): string | null 
   }
   return null;
 }
-
-/**
- * Forme télégraphique du même écart, pour la colonne mono d'un agenda
- * (registre éditorial différent de `relativeOutingHero` : on optimise
- * le scan vertical, pas la prose). `null` → "?" pour bien dénoter
- * l'incertitude d'une sortie sans date arrêtée.
- */
-export function jLabel(daysUntil: number | null): string {
-  if (daysUntil === null) {
-    return "?";
-  }
-  if (daysUntil <= 0) {
-    return "auj.";
-  }
-  if (daysUntil === 1) {
-    return "demain";
-  }
-  if (daysUntil < 30) {
-    return `J-${daysUntil}`;
-  }
-  if (daysUntil < 60) {
-    return "1 mois";
-  }
-  if (daysUntil < 365) {
-    return `${Math.round(daysUntil / 30)} mois`;
-  }
-  const years = Math.round(daysUntil / 365);
-  return `${years} an${years > 1 ? "s" : ""}`;
-}
