@@ -85,6 +85,10 @@ export type AgendaGroup<T> = {
    * AU-DESSUS de ce groupe — quand le mois change vs le groupe
    * précédent. `null` si pas de graduation à dessiner ici. */
   monthGraduation: string | null;
+  /** Total de sorties dans ce mois (utilisé pour le compteur posé
+   * à côté du label de graduation). `null` quand `monthGraduation`
+   * l'est aussi — un seul groupe par mois porte la somme. */
+  monthTotal: number | null;
 };
 
 type Datable = { startsAt: Date | null };
@@ -129,7 +133,12 @@ export function groupAgendaOutings<T extends Datable>(
   // 1) Construit la liste finale des groups dans l'ordre d'affichage.
   const ordered: AgendaGroup<T>[] = [];
   if (today.length > 0) {
-    ordered.push({ bucket: { kind: "today" }, items: today, monthGraduation: null });
+    ordered.push({
+      bucket: { kind: "today" },
+      items: today,
+      monthGraduation: null,
+      monthTotal: null,
+    });
   }
   for (const key of [...weeksMap.keys()].sort()) {
     const slot = weeksMap.get(key)!;
@@ -140,18 +149,28 @@ export function groupAgendaOutings<T extends Datable>(
       bucket: { kind: "week", mondayDate: slot.mondayDate, mondayKey: key, weeksFromNow },
       items: slot.items,
       monthGraduation: null,
+      monthTotal: null,
     });
   }
   if (tbd.length > 0) {
-    ordered.push({ bucket: { kind: "tbd" }, items: tbd, monthGraduation: null });
+    ordered.push({
+      bucket: { kind: "tbd" },
+      items: tbd,
+      monthGraduation: null,
+      monthTotal: null,
+    });
   }
 
   // 2) Passe de graduations. Pour un bucket week, on prend le mois du
-  // *dernier* item (les items sont triés ASC ; pour une semaine à
-  // cheval avril/mai, le dernier item — le plus tard — porte le mois
-  // qu'on veut afficher au lecteur). Pour today, le mois calendaire
-  // de `now`. `tbd` n'a pas de mois et ne participe pas à la chaîne.
+  // *dernier* item ; pour today, le mois calendaire de `now`. `tbd`
+  // n'a pas de mois et ne participe pas à la chaîne.
+  // En même temps, on accumule `monthTotal` : compteur d'items
+  // appartenant au même mois successif, posé sur le groupe qui
+  // *ouvre* le mois (i.e. celui qui porte la graduation, ou le
+  // premier groupe si pas de graduation amont).
   let prevMonthKey: string | null = null;
+  let monthOpener: AgendaGroup<T> | null = null;
+  let monthRunningTotal = 0;
   for (const group of ordered) {
     let currentDate: Date | null = null;
     if (group.bucket.kind === "today") {
@@ -164,10 +183,26 @@ export function groupAgendaOutings<T extends Datable>(
       continue;
     }
     const monthKey = parisMonthKey(currentDate);
-    if (prevMonthKey !== null && monthKey !== prevMonthKey) {
+    if (prevMonthKey === null) {
+      monthOpener = group;
+      monthRunningTotal = group.items.length;
+    } else if (monthKey !== prevMonthKey) {
+      // On clôt le mois précédent — `monthTotal` n'est posé QUE si le
+      // mois était introduit par une graduation. Le premier mois de la
+      // page n'en a pas (sa somme se lit dans le compteur global du H1).
+      if (monthOpener && monthOpener.monthGraduation !== null) {
+        monthOpener.monthTotal = monthRunningTotal;
+      }
       group.monthGraduation = parisMonthFormatter.format(currentDate);
+      monthOpener = group;
+      monthRunningTotal = group.items.length;
+    } else {
+      monthRunningTotal += group.items.length;
     }
     prevMonthKey = monthKey;
+  }
+  if (monthOpener && monthOpener.monthGraduation !== null) {
+    monthOpener.monthTotal = monthRunningTotal;
   }
 
   return ordered;

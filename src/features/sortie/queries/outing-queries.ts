@@ -30,10 +30,19 @@ const FEED_HISTORY_WINDOW_DAYS = 30;
 // compte des participants ayant répondu yes ou handle_own pour une
 // sortie donnée. Préféré au LEFT JOIN + GROUP BY pour rester composable
 // avec ORDER BY / LIMIT au niveau de l'outing.
+//
+// IMPORTANT : on qualifie explicitement les colonnes avec
+// `${participants}.…` et `${outings}.…` plutôt que `${participants.outingId}`
+// (qui génère un nom de colonne nu). Sans qualif, le `${outings.id}` du
+// sub-select corrélé est inliné comme `"id"` brut, qui collide avec la
+// colonne `id` de `participants` au scope du sub-query — résultat : la
+// jointure devient `outing_id = participants.id` (toujours faux) et le
+// COUNT renvoie 0 partout. Bug subtil qui était caché tant que personne
+// n'inspectait les compteurs réels.
 export const confirmedCountSql = sql<number>`(
   SELECT COUNT(*)::int FROM ${participants}
-  WHERE ${participants.outingId} = ${outings.id}
-    AND ${participants.response} IN ('yes', 'handle_own')
+  WHERE ${participants}.outing_id = ${outings}.id
+    AND ${participants}.response IN ('yes', 'handle_own')
 )`;
 
 // `React.cache` dédoublonne par requête : `getOutingByShortId(shortId)` est
@@ -206,6 +215,53 @@ export async function listMyUpcomingForAgenda(userId: string, now = new Date()) 
     )
     .orderBy(sql`${outings.fixedDatetime} ASC NULLS LAST`)
     .limit(100);
+}
+
+/**
+ * Batch fetch des participants confirmés (yes / handle_own) pour un
+ * lot de sorties — alimente le stack d'avatars affiché sur chaque
+ * billet de l'agenda.
+ *
+ * Une seule requête couvre N sorties (vs N+1). Pas de LIMIT par
+ * outing côté SQL : trim au caller (typiquement 4-5 visibles + count
+ * d'overflow). Ordre : `respondedAt` ASC pour que les premiers
+ * confirmés soient en tête (cohérent avec la ParticipantList).
+ */
+export type AgendaAttendee = {
+  outingId: string;
+  name: string | null;
+  image: string | null;
+};
+
+export async function listConfirmedAttendeesForOutings(outingIds: string[]) {
+  if (outingIds.length === 0) {
+    return new Map<string, AgendaAttendee[]>();
+  }
+  const rows = await db
+    .select({
+      outingId: participants.outingId,
+      anonName: participants.anonName,
+      userName: user.name,
+      userImage: user.image,
+    })
+    .from(participants)
+    .leftJoin(user, eq(user.id, participants.userId))
+    .where(
+      and(
+        inArray(participants.outingId, outingIds),
+        inArray(participants.response, ["yes", "handle_own"])
+      )
+    )
+    .orderBy(asc(participants.respondedAt));
+
+  const map = new Map<string, AgendaAttendee[]>();
+  for (const row of rows) {
+    const name = row.userName ?? row.anonName ?? null;
+    const list = map.get(row.outingId) ?? [];
+    list.push({ outingId: row.outingId, name, image: row.userImage });
+    map.set(row.outingId, list);
+  }
+  return map;
 }
 
 /**

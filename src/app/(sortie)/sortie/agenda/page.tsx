@@ -2,7 +2,10 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/lib/auth-config";
-import { listMyUpcomingForAgenda } from "@/features/sortie/queries/outing-queries";
+import {
+  listConfirmedAttendeesForOutings,
+  listMyUpcomingForAgenda,
+} from "@/features/sortie/queries/outing-queries";
 import { daysUntilParis, groupAgendaOutings } from "@/features/sortie/lib/agenda-buckets";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
@@ -46,12 +49,16 @@ export default async function AgendaPage() {
   const now = new Date();
   const rows = await listMyUpcomingForAgenda(session.user.id, now);
 
+  // Avatars confirmés (yes/handle_own) batchés en une seule query — N+1 évité.
+  const attendeesByOuting = await listConfirmedAttendeesForOutings(rows.map((r) => r.id));
+
   // Premier daté de tout le résultat (ordre SQL ASC NULLS LAST) → tag "next up".
   const nextUpId = rows.find((r) => r.startsAt !== null)?.id ?? null;
 
   const groups: AgendaGroupVM[] = groupAgendaOutings(rows, now).map((group) => ({
     bucket: group.bucket,
     monthGraduation: group.monthGraduation,
+    monthTotal: group.monthTotal,
     items: group.items.map<TicketVM>((row) => ({
       id: row.id,
       shortId: row.shortId,
@@ -63,6 +70,10 @@ export default async function AgendaPage() {
       confirmedCount: row.confirmedCount,
       daysUntil: daysUntilParis(row.startsAt, now),
       isNextUp: row.id === nextUpId,
+      attendees: (attendeesByOuting.get(row.id) ?? []).map((a) => ({
+        name: a.name,
+        image: a.image,
+      })),
     })),
   }));
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import {
   bucketKey,
   bucketLabel,
@@ -14,6 +15,11 @@ import {
 } from "@/features/sortie/lib/agenda-buckets";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+
+export type AvatarVM = {
+  name: string | null;
+  image: string | null;
+};
 
 export type TicketVM = {
   id: string;
@@ -26,12 +32,14 @@ export type TicketVM = {
   confirmedCount: number;
   daysUntil: number | null;
   isNextUp: boolean;
+  attendees: AvatarVM[];
 };
 
 export type AgendaGroupVM = {
   bucket: AgendaBucket;
   items: TicketVM[];
   monthGraduation: string | null;
+  monthTotal: number | null;
 };
 
 export type AgendaData = {
@@ -199,12 +207,14 @@ function TicketCard({ ticket, size }: TicketCardProps) {
             ◉ {formatVenue(ticket.location)}
           </p>
         )}
-        {!isHero && (
+        {!isHero && (ticket.confirmedCount > 0 || isTbd) && (
           <div className="flex items-center gap-3">
             {ticket.confirmedCount > 0 && (
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
-                {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""}
-              </span>
+              <AvatarStack
+                avatars={ticket.attendees}
+                total={ticket.confirmedCount}
+                size={isHero ? 26 : 22}
+              />
             )}
             {isTbd && (
               <span className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-hot-500">
@@ -214,9 +224,7 @@ function TicketCard({ ticket, size }: TicketCardProps) {
           </div>
         )}
         {isHero && ticket.confirmedCount > 0 && (
-          <Eyebrow tone="muted">
-            ─ {ticket.confirmedCount} confirmé{ticket.confirmedCount > 1 ? "s" : ""} ─
-          </Eyebrow>
+          <AvatarStack avatars={ticket.attendees} total={ticket.confirmedCount} size={28} />
         )}
       </div>
     </Link>
@@ -265,9 +273,13 @@ function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: bo
     >
       {data.groups.map((group, gi) => (
         <div key={bucketKey(group.bucket)}>
-          {group.monthGraduation && <MonthGraduation label={group.monthGraduation} />}
+          {group.monthGraduation && (
+            <MonthGraduation label={group.monthGraduation} total={group.monthTotal} />
+          )}
           <section className={gi === 0 ? "" : "mt-8"}>
-            {showHeaders && <BucketHeader bucket={group.bucket} sticky={shouldStick} />}
+            {showHeaders && (
+              <BucketHeader bucket={group.bucket} count={group.items.length} sticky={shouldStick} />
+            )}
             <ol className="flex flex-col gap-3">
               {group.items.map((ticket) => (
                 <TicketRow key={ticket.id} ticket={ticket} />
@@ -288,12 +300,17 @@ function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: bo
  * sur une règle. Visible seulement quand le mois change entre deux
  * groupes adjacents (calculé serveur).
  */
-function MonthGraduation({ label }: { label: string }) {
+function MonthGraduation({ label, total }: { label: string; total: number | null }) {
   return (
     <div className="my-10 flex items-center gap-3">
       <span aria-hidden className="block h-px w-10 bg-acid-600/50" />
       <span className="bg-surface-50 px-2 font-display text-[15px] font-black uppercase tracking-[0.32em] text-acid-600">
         {label}
+        {total !== null && (
+          <span className="ml-2 font-mono text-[10.5px] tracking-[0.22em] text-acid-600/70">
+            · {total}
+          </span>
+        )}
       </span>
       <span aria-hidden className="block h-px flex-1 bg-acid-600/20" />
     </div>
@@ -302,7 +319,15 @@ function MonthGraduation({ label }: { label: string }) {
 
 /* ─────────────────────────  BUCKET HEADER  ─────────────────────── */
 
-function BucketHeader({ bucket, sticky }: { bucket: AgendaBucket; sticky: boolean }) {
+function BucketHeader({
+  bucket,
+  count,
+  sticky,
+}: {
+  bucket: AgendaBucket;
+  count: number;
+  sticky: boolean;
+}) {
   return (
     <div
       className={`z-10 mb-4 grid grid-cols-[2.5rem_1fr] items-center gap-3 ${
@@ -311,7 +336,8 @@ function BucketHeader({ bucket, sticky }: { bucket: AgendaBucket; sticky: boolea
     >
       {bucket.kind === "today" ? <TodayDot /> : <span aria-hidden />}
       <Eyebrow glow={bucket.kind === "today"} tone={bucketTone(bucket)}>
-        ─ {bucketLabel(bucket)} ─
+        ─ {bucketLabel(bucket)}
+        {count > 1 && ` · ${count}`} ─
       </Eyebrow>
     </div>
   );
@@ -326,6 +352,51 @@ function TodayDot() {
       animate={reduce ? undefined : { scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
       transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
     />
+  );
+}
+
+/* ─────────────────────────  AVATAR STACK  ──────────────────────── */
+
+const MAX_VISIBLE_AVATARS = 4;
+
+/**
+ * Empile les visages des confirmés (yes/handle_own) en pastilles
+ * circulaires qui se chevauchent. Quand on dépasse `MAX_VISIBLE_AVATARS`,
+ * on rend une bulle "+N" en queue plutôt qu'un overflow infini.
+ */
+function AvatarStack({
+  avatars,
+  total,
+  size,
+}: {
+  avatars: AvatarVM[];
+  total: number;
+  size: number;
+}) {
+  const visible = avatars.slice(0, MAX_VISIBLE_AVATARS);
+  const overflow = total - visible.length;
+  return (
+    <div className="flex items-center">
+      <div className="flex">
+        {visible.map((a, i) => (
+          <span
+            key={i}
+            className="-ml-1.5 inline-block rounded-full ring-2 ring-surface-50 first:ml-0"
+            style={{ width: size, height: size }}
+          >
+            <UserAvatar name={a.name} image={a.image} size={size} />
+          </span>
+        ))}
+        {overflow > 0 && (
+          <span
+            className="-ml-1.5 inline-flex items-center justify-center rounded-full bg-surface-100 ring-2 ring-surface-50 font-mono uppercase tracking-[0.04em] text-ink-400"
+            style={{ width: size, height: size, fontSize: Math.round(size * 0.36) }}
+          >
+            +{overflow}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 
