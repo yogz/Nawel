@@ -1,4 +1,5 @@
 import type { EnrichedTimeslot } from "@/features/sortie/lib/enrich-timeslots";
+import { DeadlineBadge } from "./deadline-badge";
 import { PickTimeslotButton } from "./pick-timeslot-button";
 import { ReopenPollButton } from "./reopen-poll-button";
 import { TimeslotDetailSheet } from "./timeslot-detail-sheet";
@@ -9,6 +10,13 @@ type Props = {
   totalVoters: number;
   isCreator: boolean;
   chosenTimeslotId: string | null;
+  /**
+   * Quand fourni, la deadline est rendue dans le header du sondage —
+   * mode "ouvert" où la PollSection absorbe le rôle social et la
+   * `ParticipantList` standalone est masquée. En sondage clôturé /
+   * mode fixé, la deadline reste dans la section confirmés.
+   */
+  inlineDeadlineAt?: Date;
 };
 
 /**
@@ -31,6 +39,7 @@ export function PollSection({
   totalVoters,
   isCreator,
   chosenTimeslotId,
+  inlineDeadlineAt,
 }: Props) {
   const best = timeslots.reduce((acc, t) => Math.max(acc, t.yesCount), 0);
   const bestCandidates = best > 0 ? timeslots.filter((t) => t.yesCount === best).length : 0;
@@ -43,15 +52,22 @@ export function PollSection({
       className="mt-8 rounded-2xl border border-surface-400 bg-surface-50 p-5"
       aria-label="Vote de créneaux"
     >
-      <header className="mb-4 flex items-baseline justify-between">
-        <h2 className="font-serif text-lg text-ink-700">
-          {chosenTimeslotId ? "Sondage clôturé" : "Votes en cours"}
-        </h2>
-        <span className="text-xs text-ink-400">
-          {totalVoters === 0
-            ? "Personne n'a voté"
-            : `${totalVoters} vote${totalVoters > 1 ? "s" : ""}`}
-        </span>
+      <header className="mb-4 flex flex-col gap-1.5">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="font-serif text-lg text-ink-700">
+            {chosenTimeslotId ? "Sondage clôturé" : "Sondage"}
+          </h2>
+          <span className="text-xs text-ink-400">
+            {totalVoters === 0
+              ? "Personne n'a voté"
+              : `${totalVoters} votant${totalVoters > 1 ? "s" : ""}`}
+          </span>
+        </div>
+        {inlineDeadlineAt && (
+          <div className="text-xs">
+            <DeadlineBadge deadlineAt={inlineDeadlineAt} />
+          </div>
+        )}
       </header>
 
       <ul className="flex flex-col gap-2">

@@ -133,6 +133,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       : Promise.resolve(null),
   ]);
   const enrichedTimeslots = enrichTimeslots(outing);
+  const isOpenPoll = outing.mode === "vote" && !outing.chosenTimeslotId;
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
   // Creator's first name for the WhatsApp share opening — "Léa t'invite : …".
@@ -236,29 +237,31 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         </div>
       )}
 
-      <section
-        className="mt-10 overflow-hidden rounded-[28px] border border-surface-400 bg-surface-100 p-6 shadow-[var(--shadow-velvet)]"
-        aria-label="Les confirmés"
-      >
-        <ParticipantList
-          participants={outing.participants}
-          isCreator={isCreator}
-          shortId={outing.shortId}
-          meId={me?.id ?? null}
-          creatorParticipantId={
-            outing.participants.find(
-              (p) =>
-                (outing.creatorUserId !== null && p.userId === outing.creatorUserId) ||
-                (outing.creatorCookieTokenHash !== null &&
-                  p.cookieTokenHash === outing.creatorCookieTokenHash)
-            )?.id ?? null
-          }
-        />
+      {!isOpenPoll && (
+        <section
+          className="mt-10 overflow-hidden rounded-[28px] border border-surface-400 bg-surface-100 p-6 shadow-[var(--shadow-velvet)]"
+          aria-label="Les confirmés"
+        >
+          <ParticipantList
+            participants={outing.participants}
+            isCreator={isCreator}
+            shortId={outing.shortId}
+            meId={me?.id ?? null}
+            creatorParticipantId={
+              outing.participants.find(
+                (p) =>
+                  (outing.creatorUserId !== null && p.userId === outing.creatorUserId) ||
+                  (outing.creatorCookieTokenHash !== null &&
+                    p.cookieTokenHash === outing.creatorCookieTokenHash)
+              )?.id ?? null
+            }
+          />
 
-        <div className="mt-6 border-t border-surface-400 pt-4 text-center">
-          <DeadlineBadge deadlineAt={outing.deadlineAt} />
-        </div>
-      </section>
+          <div className="mt-6 border-t border-surface-400 pt-4 text-center">
+            <DeadlineBadge deadlineAt={outing.deadlineAt} />
+          </div>
+        </section>
+      )}
 
       {outing.mode === "vote" && outing.timeslots.length > 0 && (
         <PollSection
@@ -267,6 +270,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           isCreator={isCreator}
           totalVoters={countVoters(outing.timeslots)}
           timeslots={enrichedTimeslots}
+          inlineDeadlineAt={isOpenPoll ? outing.deadlineAt : undefined}
         />
       )}
 
