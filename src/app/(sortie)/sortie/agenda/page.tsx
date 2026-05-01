@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth-config";
 import { AgendaHeatmap } from "@/features/sortie/components/agenda-heatmap";
+import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { bucketAgendaByDay, buildMonthGrids } from "@/features/sortie/lib/agenda-grid";
@@ -63,6 +64,13 @@ export default async function AgendaPage() {
       <Legend />
 
       <AgendaHeatmap months={months} buckets={buckets} />
+
+      <section className="mt-10">
+        <Eyebrow tone="acid" className="mb-4">
+          ─ chronologie ─
+        </Eyebrow>
+        <AgendaTimeline items={items} now={now} />
+      </section>
     </main>
   );
 }
