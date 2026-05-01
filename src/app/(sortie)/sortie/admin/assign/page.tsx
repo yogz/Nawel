@@ -1,5 +1,9 @@
+import { asc, desc, ne } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { db } from "@/lib/db";
+import { user } from "@drizzle/schema";
+import { outings } from "@drizzle/sortie-schema";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { AssignForm } from "./assign-form";
 
@@ -8,7 +12,36 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminAssignPage() {
+const OUTINGS_DROPDOWN_LIMIT = 200;
+const USERS_DROPDOWN_LIMIT = 500;
+
+export default async function AdminAssignPage() {
+  // Sorties non-annulées les plus récentes en tête. Cap à 200 pour
+  // garder un native <select> performant sur mobile — au-delà, on
+  // basculera sur un combobox cherchable.
+  const outingsList = await db
+    .select({
+      shortId: outings.shortId,
+      title: outings.title,
+      fixedDatetime: outings.fixedDatetime,
+      createdAt: outings.createdAt,
+    })
+    .from(outings)
+    .where(ne(outings.status, "cancelled"))
+    .orderBy(desc(outings.createdAt))
+    .limit(OUTINGS_DROPDOWN_LIMIT);
+
+  // Users triés par nom alphabétique pour rendre la recherche
+  // type-to-jump du native picker utile.
+  const usersList = await db
+    .select({
+      email: user.email,
+      name: user.name,
+    })
+    .from(user)
+    .orderBy(asc(user.name))
+    .limit(USERS_DROPDOWN_LIMIT);
+
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
       <nav className="mb-8">
@@ -35,7 +68,7 @@ export default function AdminAssignPage() {
         </p>
       </header>
 
-      <AssignForm />
+      <AssignForm outings={outingsList} users={usersList} />
     </main>
   );
 }

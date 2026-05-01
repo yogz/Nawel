@@ -1,8 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
-import { adminAssignUserToOutingAction } from "@/features/sortie/actions/admin-assign-actions";
-import type { AssignActionState } from "@/features/sortie/actions/admin-assign-actions";
+import {
+  adminAssignUserToOutingAction,
+  type AssignActionState,
+} from "@/features/sortie/actions/admin-assign-actions";
 
 const RESPONSE_OPTIONS: { value: "yes" | "no" | "handle_own" | "interested"; label: string }[] = [
   { value: "yes", label: "yes — il y va" },
@@ -11,7 +13,31 @@ const RESPONSE_OPTIONS: { value: "yes" | "no" | "handle_own" | "interested"; lab
   { value: "no", label: "no — il ne vient pas" },
 ];
 
-export function AssignForm() {
+const DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "Europe/Paris",
+});
+
+type OutingOption = {
+  shortId: string;
+  title: string;
+  fixedDatetime: Date | null;
+  createdAt: Date;
+};
+
+type UserOption = {
+  email: string;
+  name: string;
+};
+
+type Props = {
+  outings: OutingOption[];
+  users: UserOption[];
+};
+
+export function AssignForm({ outings, users }: Props) {
   const [state, formAction, pending] = useActionState<AssignActionState, FormData>(
     adminAssignUserToOutingAction,
     {}
@@ -19,30 +45,43 @@ export function AssignForm() {
 
   return (
     <form action={formAction} className="space-y-5">
-      <Field label="shortId de la sortie" hint="Les 8 derniers chars de l'URL (ex: tSHgTLPq).">
-        <input
-          type="text"
+      <Field
+        label="sortie"
+        hint={`${outings.length} sorties non-annulées (plus récentes en tête).`}
+      >
+        <select
           name="shortId"
           required
-          maxLength={8}
-          autoComplete="off"
-          spellCheck={false}
-          placeholder="tSHgTLPq"
-          className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 font-mono text-[14px] text-ink-700 placeholder:text-ink-400 focus:border-acid-600 focus:outline-none"
-        />
+          defaultValue=""
+          className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
+        >
+          <option value="" disabled>
+            choisir une sortie…
+          </option>
+          {outings.map((o) => (
+            <option key={o.shortId} value={o.shortId}>
+              {formatOutingLabel(o)}
+            </option>
+          ))}
+        </select>
       </Field>
 
-      <Field label="email du user" hint="Le compte doit déjà exister (lookup case-insensitive).">
-        <input
-          type="email"
+      <Field label="user" hint={`${users.length} comptes (alphabétique).`}>
+        <select
           name="email"
           required
-          maxLength={255}
-          autoComplete="off"
-          spellCheck={false}
-          placeholder="ericdevaure@hotmail.fr"
-          className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 placeholder:text-ink-400 focus:border-acid-600 focus:outline-none"
-        />
+          defaultValue=""
+          className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
+        >
+          <option value="" disabled>
+            choisir un user…
+          </option>
+          {users.map((u) => (
+            <option key={u.email} value={u.email}>
+              {u.name} — {u.email}
+            </option>
+          ))}
+        </select>
       </Field>
 
       <Field label="response">
@@ -109,6 +148,11 @@ export function AssignForm() {
       </button>
     </form>
   );
+}
+
+function formatOutingLabel(o: OutingOption): string {
+  const dateLabel = o.fixedDatetime ? DATE_FMT.format(o.fixedDatetime) : "à voter";
+  return `${o.title} — ${dateLabel}`;
 }
 
 function Field({
