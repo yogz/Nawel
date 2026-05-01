@@ -5,17 +5,11 @@ import { Check, X } from "lucide-react";
 import { pickTimeslotAction, reopenPollAction } from "@/features/sortie/actions/outing-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
-
-type TimeslotRow = {
-  id: string;
-  startsAt: Date;
-  yesCount: number;
-  noCount: number;
-};
+import type { EnrichedTimeslot } from "@/features/sortie/lib/enrich-timeslots";
 
 type Props = {
   shortId: string;
-  timeslots: TimeslotRow[];
+  timeslots: EnrichedTimeslot[];
   totalVoters: number;
   isCreator: boolean;
   chosenTimeslotId: string | null;
@@ -93,7 +87,7 @@ function TimeslotRowView({
   canPick,
 }: {
   shortId: string;
-  ts: TimeslotRow;
+  ts: EnrichedTimeslot;
   isBest: boolean;
   isChosen: boolean;
   isCreator: boolean;

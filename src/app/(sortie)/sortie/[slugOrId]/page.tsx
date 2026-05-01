@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { debts, purchases } from "@drizzle/sortie-schema";
 import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/outing-queries";
+import { enrichTimeslots } from "@/features/sortie/lib/enrich-timeslots";
 import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { resolveBackLink } from "@/features/sortie/lib/back-link";
@@ -131,6 +132,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         })
       : Promise.resolve(null),
   ]);
+  const enrichedTimeslots = enrichTimeslots(outing);
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
   // Creator's first name for the WhatsApp share opening — "Léa t'invite : …".
@@ -264,12 +266,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           chosenTimeslotId={outing.chosenTimeslotId}
           isCreator={isCreator}
           totalVoters={countVoters(outing.timeslots)}
-          timeslots={outing.timeslots.map((t) => ({
-            id: t.id,
-            startsAt: t.startsAt,
-            yesCount: t.votes.filter((v) => v.available).length,
-            noCount: t.votes.filter((v) => !v.available).length,
-          }))}
+          timeslots={enrichedTimeslots}
         />
       )}
 
