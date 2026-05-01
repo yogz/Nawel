@@ -4,6 +4,7 @@ import {
   asc,
   desc,
   eq,
+  exists,
   getTableColumns,
   gt,
   gte,
@@ -272,12 +273,18 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
           ),
           and(
             eq(outings.mode, "vote"),
-            sql`EXISTS (
-              SELECT 1 FROM ${outingTimeslots}
-              WHERE ${outingTimeslots.outingId} = ${outings.id}
-                AND ${outingTimeslots.startsAt} >= ${now}
-                AND ${outingTimeslots.startsAt} <= ${windowEnd}
-            )`
+            exists(
+              db
+                .select({ id: outingTimeslots.id })
+                .from(outingTimeslots)
+                .where(
+                  and(
+                    eq(outingTimeslots.outingId, outings.id),
+                    gte(outingTimeslots.startsAt, now),
+                    lte(outingTimeslots.startsAt, windowEnd)
+                  )
+                )
+            )
           )
         )
       )
