@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,12 @@ import {
 } from "@/features/sortie/actions/payment-method-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import type { PaymentMethodPreview } from "@/features/sortie/queries/payment-method-queries";
+import {
+  readLastValue,
+  saveLastValue,
+  trackPaymentMethodAdded,
+  trackPaymentMethodPrefilled,
+} from "@/features/sortie/lib/payment-method-prefill";
 
 const TYPE_LABELS: Record<PaymentMethodPreview["type"], string> = {
   iban: "IBAN",
@@ -50,21 +56,53 @@ export function PaymentMethodsManager({ shortId, methods }: Props) {
 }
 
 function AddMethodForm({ shortId }: { shortId: string }) {
+  const [type, setType] = useState<PaymentMethodPreview["type"]>("iban");
+  const [value, setValue] = useState("");
+  const [prefilledValue, setPrefilledValue] = useState<string | null>(null);
+
+  // On ne persiste / ne tape la télémétrie qu'après succès serveur — sinon
+  // on mémoriserait des IBAN invalides ou rate-limités.
+  const wrappedAction = async (
+    prev: FormActionState,
+    formData: FormData
+  ): Promise<FormActionState> => {
+    const submittedType = formData.get("type") as PaymentMethodPreview["type"];
+    const submittedValue = (formData.get("value") as string | null) ?? "";
+    const result = await addPaymentMethodAction(prev, formData);
+    const success = !result.errors && !result.message;
+    if (success) {
+      saveLastValue(submittedType, submittedValue);
+      trackPaymentMethodAdded({
+        type: submittedType,
+        wasPrefilled: prefilledValue !== null,
+        valueUnchanged: prefilledValue !== null && prefilledValue === submittedValue,
+      });
+    }
+    return result;
+  };
+
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
-    addPaymentMethodAction,
+    wrappedAction,
     {} as FormActionState
   );
-  const [type, setType] = useState<PaymentMethodPreview["type"]>("iban");
   const errors = state.errors ?? {};
 
-  const valueHint =
-    type === "iban"
-      ? "FR76 1234 5678 9012 3456 7890 123"
-      : type === "wero"
-        ? "+33 6 12 34 56 78"
-        : "+33 6 12 34 56 78";
+  // Synchro depuis localStorage (système externe) à chaque changement de type.
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const last = readLastValue(type);
+    setPrefilledValue(last);
+    setValue(last ?? "");
+    if (last) {
+      trackPaymentMethodPrefilled(type);
+    }
+  }, [type]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  const valueHint = type === "iban" ? "FR76 1234 5678 9012 3456 7890 123" : "+33 6 12 34 56 78";
 
   const valueLabel = type === "iban" ? "IBAN" : "Numéro de téléphone";
+  const isPrefilled = prefilledValue !== null && value === prefilledValue;
 
   return (
     <form
@@ -104,7 +142,12 @@ function AddMethodForm({ shortId }: { shortId: string }) {
           placeholder={valueHint}
           autoComplete="off"
           spellCheck={false}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
         />
+        {isPrefilled && (
+          <p className="text-[11px] text-ink-400">Pré-rempli depuis ta dernière saisie.</p>
+        )}
         {errors.value?.[0] && <p className="text-xs text-erreur-700">{errors.value[0]}</p>}
       </div>
 
