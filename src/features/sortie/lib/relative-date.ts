@@ -66,5 +66,9 @@ export function jLabel(daysUntil: number | null): string {
   if (daysUntil < 60) {
     return "1 mois";
   }
-  return `${Math.round(daysUntil / 30)} mois`;
+  if (daysUntil < 365) {
+    return `${Math.round(daysUntil / 30)} mois`;
+  }
+  const years = Math.round(daysUntil / 365);
+  return `${years} an${years > 1 ? "s" : ""}`;
 }

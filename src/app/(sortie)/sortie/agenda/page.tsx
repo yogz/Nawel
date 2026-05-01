@@ -9,6 +9,7 @@ import { LoginLink } from "@/features/sortie/components/login-link";
 import {
   AgendaTimeline,
   type AgendaData,
+  type AgendaGroupVM,
   type TicketVM,
 } from "@/features/sortie/components/agenda-timeline";
 
@@ -48,8 +49,9 @@ export default async function AgendaPage() {
   // Premier daté de tout le résultat (ordre SQL ASC NULLS LAST) → tag "next up".
   const nextUpId = rows.find((r) => r.startsAt !== null)?.id ?? null;
 
-  const groups = groupAgendaOutings(rows, now).map((group) => ({
+  const groups: AgendaGroupVM[] = groupAgendaOutings(rows, now).map((group) => ({
     bucket: group.bucket,
+    monthGraduation: group.monthGraduation,
     items: group.items.map<TicketVM>((row) => ({
       id: row.id,
       shortId: row.shortId,

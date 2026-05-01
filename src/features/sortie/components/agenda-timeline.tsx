@@ -6,8 +6,9 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { ArrowRight, Calendar } from "lucide-react";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import {
-  BUCKET_LABEL,
-  BUCKET_TONE,
+  bucketKey,
+  bucketLabel,
+  bucketTone,
   jLabel,
   type AgendaBucket,
 } from "@/features/sortie/lib/agenda-buckets";
@@ -27,8 +28,14 @@ export type TicketVM = {
   isNextUp: boolean;
 };
 
+export type AgendaGroupVM = {
+  bucket: AgendaBucket;
+  items: TicketVM[];
+  monthGraduation: string | null;
+};
+
 export type AgendaData = {
-  groups: Array<{ bucket: AgendaBucket; items: TicketVM[] }>;
+  groups: AgendaGroupVM[];
   totalCount: number;
 };
 
@@ -43,9 +50,9 @@ function variantFor(ticket: TicketVM): Variant {
 }
 
 const DOT_CLASS: Record<Variant, string> = {
-  next: "bg-acid-600 shadow-[0_0_10px_var(--sortie-acid)]",
-  tbd: "bg-hot-500",
-  default: "bg-ink-300",
+  next: "bg-acid-600 shadow-[0_0_14px_var(--sortie-acid)]",
+  tbd: "bg-hot-500 shadow-[0_0_10px_var(--sortie-hot)]",
+  default: "bg-ink-300 shadow-[0_0_6px_rgba(255,255,255,0.15)]",
 };
 
 const TEXT_CLASS: Record<Variant, string> = {
@@ -60,14 +67,17 @@ const BORDER_CLASS: Record<Variant, string> = {
   default: "border-l border-ink-100",
 };
 
-/**
- * Vue chronologique adaptative. Trois modes :
- *   total === 0  → empty hero centré, CTA acid
- *   total === 1  → billet seul agrandi (poster), pas de rail/col-J
- *   total >= 2   → timeline complète (rail vertical + col J-N + headers)
- *
- * `useReducedMotion()` court-circuite stagger + pulse marqueur.
- */
+/** Rail vertical fortement gradient — acide en haut (proche), ink en
+ * bas (lointain). 2px d'épaisseur, posé à `1.25rem - 1px` pour être
+ * centré sur la colonne 1 du grid (2.5rem). */
+const RAIL_BACKGROUND: React.CSSProperties = {
+  backgroundImage:
+    "linear-gradient(to bottom, rgba(199, 255, 60, 0.55) 0%, rgba(199, 255, 60, 0.18) 18%, rgba(255, 255, 255, 0.10) 60%, rgba(255, 255, 255, 0.06) 100%)",
+  backgroundSize: "2px 100%",
+  backgroundPosition: "calc(1.25rem - 1px) 0",
+  backgroundRepeat: "no-repeat",
+};
+
 export function AgendaTimeline({ data }: { data: AgendaData }) {
   if (data.totalCount === 0) {
     return <EmptyAgenda />;
@@ -80,7 +90,6 @@ export function AgendaTimeline({ data }: { data: AgendaData }) {
     }
   }
 
-  // Sticky activé seulement si le scroll défile assez pour que ça ait du sens.
   const shouldStick = data.totalCount >= 8 && data.groups.length >= 2;
 
   return <FullTimeline data={data} shouldStick={shouldStick} />;
@@ -237,7 +246,6 @@ function SoloPoster({ ticket }: { ticket: TicketVM }) {
 function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: boolean }) {
   const reduce = useReducedMotion();
 
-  // Stagger plafonné — sur 30 items, 0.08 × 30 = 2.4s c'est interminable.
   const stagger = data.totalCount > 10 ? 0.04 : 0.08;
 
   const containerVariants: Variants = {
@@ -250,31 +258,45 @@ function FullTimeline({ data, shouldStick }: { data: AgendaData; shouldStick: bo
   return (
     <motion.div
       className="relative"
-      // Rail vertical continu — un seul trait sur toute la timeline.
-      // `::before` cassé sous motion.div à cause des transforms,
-      // backgroundImage est plus robuste.
-      style={{
-        backgroundImage:
-          "linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.06) 100%)",
-        backgroundSize: "1px 100%",
-        backgroundPosition: "1.25rem 0",
-        backgroundRepeat: "no-repeat",
-      }}
+      style={RAIL_BACKGROUND}
       variants={containerVariants}
       initial={reduce ? false : "hidden"}
       animate="show"
     >
       {data.groups.map((group, gi) => (
-        <section key={group.bucket} className={gi === 0 ? "" : "mt-8"}>
-          {showHeaders && <BucketHeader bucket={group.bucket} sticky={shouldStick} />}
-          <ol className="flex flex-col gap-3">
-            {group.items.map((ticket) => (
-              <TicketRow key={ticket.id} ticket={ticket} />
-            ))}
-          </ol>
-        </section>
+        <div key={bucketKey(group.bucket)}>
+          {group.monthGraduation && <MonthGraduation label={group.monthGraduation} />}
+          <section className={gi === 0 ? "" : "mt-8"}>
+            {showHeaders && <BucketHeader bucket={group.bucket} sticky={shouldStick} />}
+            <ol className="flex flex-col gap-3">
+              {group.items.map((ticket) => (
+                <TicketRow key={ticket.id} ticket={ticket} />
+              ))}
+            </ol>
+          </section>
+        </div>
       ))}
     </motion.div>
+  );
+}
+
+/* ───────────────────────  MONTH GRADUATION  ────────────────────── */
+
+/**
+ * Marqueur de mois qui traverse le rail. Pose un bandeau bg-surface-50
+ * pour "couper" visuellement le rail à hauteur du label, façon repère
+ * sur une règle. Visible seulement quand le mois change entre deux
+ * groupes adjacents (calculé serveur).
+ */
+function MonthGraduation({ label }: { label: string }) {
+  return (
+    <div className="my-10 flex items-center gap-3">
+      <span aria-hidden className="block h-px w-10 bg-acid-600/50" />
+      <span className="bg-surface-50 px-2 font-display text-[15px] font-black uppercase tracking-[0.32em] text-acid-600">
+        {label}
+      </span>
+      <span aria-hidden className="block h-px flex-1 bg-acid-600/20" />
+    </div>
   );
 }
 
@@ -287,9 +309,9 @@ function BucketHeader({ bucket, sticky }: { bucket: AgendaBucket; sticky: boolea
         sticky ? "sticky top-2 bg-surface-50/85 py-2 backdrop-blur-sm" : ""
       }`}
     >
-      {bucket === "today" ? <TodayDot /> : <span aria-hidden />}
-      <Eyebrow glow={bucket === "today"} tone={BUCKET_TONE[bucket]}>
-        ─ {BUCKET_LABEL[bucket]} ─
+      {bucket.kind === "today" ? <TodayDot /> : <span aria-hidden />}
+      <Eyebrow glow={bucket.kind === "today"} tone={bucketTone(bucket)}>
+        ─ {bucketLabel(bucket)} ─
       </Eyebrow>
     </div>
   );
@@ -300,8 +322,8 @@ function TodayDot() {
   return (
     <motion.span
       aria-hidden
-      className="mx-auto block h-2 w-2 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-      animate={reduce ? undefined : { scale: [1, 1.4, 1], opacity: [0.7, 1, 0.7] }}
+      className="mx-auto block h-2.5 w-2.5 rounded-full bg-acid-600 shadow-[0_0_14px_var(--sortie-acid)]"
+      animate={reduce ? undefined : { scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
       transition={reduce ? undefined : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
     />
   );
@@ -323,7 +345,7 @@ function TicketRow({ ticket }: { ticket: TicketVM }) {
     >
       <span
         aria-hidden
-        className={`mx-auto mt-4 block h-2 w-2 rounded-full ${DOT_CLASS[variant]}`}
+        className={`mx-auto mt-4 block h-2.5 w-2.5 rounded-full ${DOT_CLASS[variant]}`}
       />
       <span
         className={`pt-4 font-mono text-[11px] uppercase tracking-[0.18em] ${TEXT_CLASS[variant]}`}
