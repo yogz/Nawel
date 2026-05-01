@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Ban, ShieldCheck, Search } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Ban, EyeOff, ShieldCheck, Search } from "lucide-react";
 import { searchAdminUsers, countUsers } from "@/features/sortie/queries/admin-user-queries";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { CreateUserButton, EditUserButton } from "./admin-user-sheets";
 
 export const metadata = {
   title: "Utilisateurs — admin",
@@ -36,14 +37,17 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
         </Link>
       </nav>
 
-      <header className="mb-6">
-        <Eyebrow className="mb-3">─ utilisateurs ─</Eyebrow>
-        <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
-          Utilisateurs
-        </h1>
-        <p className="mt-3 text-[14px] text-ink-500">
-          {total !== null ? `${total} comptes Better Auth.` : `Recherche : ${q}`}
-        </p>
+      <header className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <Eyebrow className="mb-3">─ utilisateurs ─</Eyebrow>
+          <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
+            Utilisateurs
+          </h1>
+          <p className="mt-3 text-[14px] text-ink-500">
+            {total !== null ? `${total} comptes Better Auth.` : `Recherche : ${q}`}
+          </p>
+        </div>
+        <CreateUserButton />
       </header>
 
       <form method="get" action="/admin/users" className="mb-8">
@@ -85,6 +89,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
                         <ShieldCheck size={10} strokeWidth={2.2} /> admin
                       </span>
                     ) : null}
+                    {!u.emailVerified ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-amber-800">
+                        <EyeOff size={10} strokeWidth={2.2} /> anonyme
+                      </span>
+                    ) : null}
                     {u.banned ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-red-900">
                         <Ban size={10} strokeWidth={2.2} /> banni
@@ -108,17 +117,29 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: S
                     <span>· {u.rsvpCount} RSVP</span>
                   </p>
                 </div>
-                {u.username ? (
-                  <Link
-                    href={`/@${u.username}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-9 items-center gap-1 rounded-full border border-surface-300 px-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-600"
-                  >
-                    profil
-                    <ArrowUpRight size={12} strokeWidth={2.2} />
-                  </Link>
-                ) : null}
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <EditUserButton
+                    user={{
+                      id: u.id,
+                      name: u.name,
+                      email: u.email,
+                      username: u.username,
+                      role: u.role,
+                      emailVerified: u.emailVerified,
+                    }}
+                  />
+                  {u.username ? (
+                    <Link
+                      href={`/@${u.username}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex h-9 items-center gap-1 rounded-full border border-surface-300 px-3 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-600"
+                    >
+                      profil
+                      <ArrowUpRight size={12} strokeWidth={2.2} />
+                    </Link>
+                  ) : null}
+                </div>
               </div>
             </li>
           ))}
