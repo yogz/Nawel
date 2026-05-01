@@ -42,9 +42,9 @@ export function RecentlyAddedRow({ outings }: Props) {
         aria-label="Sorties récemment ajoutées, faites défiler horizontalement"
         className="flex snap-x snap-proximity gap-3 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-2 [-webkit-overflow-scrolling:touch] [mask-image:linear-gradient(to_right,black_calc(100%-32px),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {outings.map((o) => (
+        {outings.map((o, i) => (
           <li key={o.id} className="shrink-0 snap-start">
-            <RecentCard outing={o} />
+            <RecentCard outing={o} eager={i === 0} />
           </li>
         ))}
       </ul>
@@ -52,7 +52,7 @@ export function RecentlyAddedRow({ outings }: Props) {
   );
 }
 
-function RecentCard({ outing }: { outing: Outing }) {
+function RecentCard({ outing, eager }: { outing: Outing; eager: boolean }) {
   const href = `/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`;
 
   return (
@@ -66,7 +66,10 @@ function RecentCard({ outing }: { outing: Outing }) {
           <img
             src={outing.heroImageUrl}
             alt=""
-            loading="lazy"
+            // En mode lien privé la rangée est tout en haut de page (pas
+            // de hero) — la 1ère card peut être le LCP. Reste lazy pour
+            // les suivantes (off-screen sur mobile).
+            loading={eager ? "eager" : "lazy"}
             decoding="async"
             className="size-full object-cover object-top"
             // Saturate/contrast aligné sur OutingProfileCard et LiveStatusHero

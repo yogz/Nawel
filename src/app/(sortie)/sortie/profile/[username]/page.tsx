@@ -209,14 +209,14 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   const heroOuting = showRsvp ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
   const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
-  // Tri createdAt desc pour matcher la promesse "derniers ajoutés".
-  // On garde la sortie featurée en hero pour ne pas amputer la rangée
-  // du tout dernier ajout, et on affiche aussi en mode lien privé : la
-  // rangée éditoriale se lit comme un teaser au-dessus de la checklist.
+  // On part de `upcomingRaw` (déjà trié `desc(createdAt)` par la query)
+  // plutôt que de `upcoming` re-trié par startsAt — évite un sort
+  // redondant. La sortie featurée en hero reste dans la rangée et le
+  // mode lien privé l'affiche aussi : teaser éditorial au-dessus de la
+  // checklist.
   const now = new Date();
-  const recentlyAdded = [...upcoming]
+  const recentlyAdded = upcomingRaw
     .filter((o) => o.deadlineAt.getTime() > now.getTime())
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 8);
 
   // Only load the viewer's existing RSVPs when the token unlocks inline RSVP
@@ -327,7 +327,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
         </div>
       )}
 
-      {recentlyAdded.length >= 1 && <RecentlyAddedRow outings={recentlyAdded} />}
+      {recentlyAdded.length > 0 && <RecentlyAddedRow outings={recentlyAdded} />}
 
       {heroOuting && heroOuting.startsAt && (
         <LiveStatusHero
