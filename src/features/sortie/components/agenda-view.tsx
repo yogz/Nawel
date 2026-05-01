@@ -4,7 +4,11 @@ import { useMemo, useState } from "react";
 import { AgendaHub } from "@/features/sortie/components/agenda-hub";
 import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { bucketAgendaByDay, buildAgendaHeatmap } from "@/features/sortie/lib/agenda-grid";
+import {
+  bucketAgendaByDay,
+  buildDailyStrip,
+  buildMonthGrids,
+} from "@/features/sortie/lib/agenda-grid";
 import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
@@ -46,9 +50,27 @@ export function AgendaView({ items, nowIso }: Props) {
     [items, activeTypes, activeRsvps]
   );
 
-  const { buckets, heatmap } = useMemo(() => {
+  const { buckets, dailyStrip, months, fixedCount, voteCount } = useMemo(() => {
     const b = bucketAgendaByDay(filteredItems);
-    return { buckets: b, heatmap: buildAgendaHeatmap(now, b) };
+    // Totaux event-level (1 sondage = 1 unité, peu importe le nombre de
+    // candidats) — sémantique attendue par les stats hero, distincte
+    // du compte slot-level utilisé pour les heatmaps.
+    let fixed = 0;
+    let vote = 0;
+    for (const item of filteredItems) {
+      if (item.mode === "fixed") {
+        fixed += 1;
+      } else if (item.candidateDates.length > 0) {
+        vote += 1;
+      }
+    }
+    return {
+      buckets: b,
+      dailyStrip: buildDailyStrip(now, b),
+      months: buildMonthGrids(now, b),
+      fixedCount: fixed,
+      voteCount: vote,
+    };
   }, [filteredItems, now]);
 
   const toggleType = (key: TypeFilter) => setActiveTypes((s) => toggle(s, key));
@@ -63,7 +85,13 @@ export function AgendaView({ items, nowIso }: Props) {
         onToggleRsvp={toggleRsvp}
       />
 
-      <AgendaHub heatmap={heatmap} buckets={buckets} />
+      <AgendaHub
+        dailyStrip={dailyStrip}
+        months={months}
+        buckets={buckets}
+        fixedCount={fixedCount}
+        voteCount={voteCount}
+      />
 
       <section className="mt-10">
         <Eyebrow tone="acid" className="mb-4">
