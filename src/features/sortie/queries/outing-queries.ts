@@ -143,6 +143,11 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       status: outings.status,
       mode: outings.mode,
       heroImageUrl: outings.heroImageUrl,
+      // Champs requis par computePendingActions sur la home — discriminer
+      // créateur vs participant et détecter "vote tranché à faire"
+      // (mode=vote + chosenTimeslotId null + deadline passée).
+      creatorUserId: outings.creatorUserId,
+      chosenTimeslotId: outings.chosenTimeslotId,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
     })
     .from(outings)

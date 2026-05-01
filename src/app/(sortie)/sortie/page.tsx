@@ -27,7 +27,9 @@ import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { PendingActionsStrip } from "@/features/sortie/components/pending-actions-strip";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { computePendingActions } from "@/features/sortie/lib/pending-actions";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
 import { ResetDeviceTrigger } from "@/features/sortie/components/reset-device-trigger";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
@@ -114,6 +116,18 @@ export default async function SortieHome() {
   const firstName = session.user.name?.split(" ")[0] ?? "Toi";
   const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
+  // Inbox d'actions transverses : ce que la home doit dire au user
+  // *en plus* du hero. On exclut la sortie déjà héro-isée — son
+  // countdown et CTA portent déjà la nudge, doublonner ajoute du bruit.
+  // Ne charge rien de plus côté DB : tout dérivable des outings + RSVP
+  // déjà fetchés.
+  const pendingActions = computePendingActions({
+    outings: upcoming,
+    userId,
+    myRsvpByOuting,
+    excludeOutingId: heroOuting?.id ?? null,
+  });
+
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
       <nav className="mb-8 flex items-center justify-end">
@@ -125,6 +139,8 @@ export default async function SortieHome() {
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
+
+      <PendingActionsStrip actions={pendingActions} />
 
       {heroOuting && heroOuting.startsAt && heroStats ? (
         <>
