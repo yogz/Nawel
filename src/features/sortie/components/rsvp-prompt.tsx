@@ -285,10 +285,10 @@ function PageResponseButton({
 
 function summariseResponse(response: Response, extraAdults: number, extraChildren: number): string {
   if (response === "no") {
-    return "Tu ne viens pas";
+    return "J'y suis pas";
   }
   const extras = extraAdults + extraChildren;
-  const base = response === "handle_own" ? "Tu viens (billet perso)" : "Tu viens";
+  const base = response === "handle_own" ? "J'y suis (billet perso)" : "J'y suis";
   if (extras === 0) {
     return base;
   }
