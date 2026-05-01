@@ -45,20 +45,30 @@ export function AgendaHub({ heatmap, buckets }: Props) {
         </div>
       </header>
 
-      <div className="grid gap-1" style={{ gridTemplateColumns: gridTemplate }}>
-        <div aria-hidden />
-        {Array.from({ length: weekCount }).map((_, col) => {
-          const label = monthLabels.find((m) => m.colIndex === col)?.label ?? "";
+      {/* Ligne d'étiquettes de mois — chaque label spanne sa plage réelle
+          (jusqu'au début du mois suivant) pour éviter la troncature à 1 col. */}
+      <div className="mb-1 grid gap-1" style={{ gridTemplateColumns: gridTemplate }} aria-hidden>
+        {monthLabels.map((label, i) => {
+          const nextStart = monthLabels[i + 1]?.colIndex ?? weekCount;
+          const span = nextStart - label.colIndex;
           return (
             <div
-              key={`m-${col}`}
-              className="mb-1 h-3 truncate font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400"
+              key={label.colIndex}
+              style={{
+                // +2 : grid-column 1-indexé, et la 1re col est réservée aux
+                // labels jours (L/M/M/J/V/S/D) sur la grille des cellules.
+                gridColumnStart: label.colIndex + 2,
+                gridColumnEnd: `span ${span}`,
+              }}
+              className="h-3 truncate font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400"
             >
-              {label}
+              {label.label}
             </div>
           );
         })}
+      </div>
 
+      <div className="grid gap-1" style={{ gridTemplateColumns: gridTemplate }}>
         {WEEKDAY_LABELS.map((wd, row) => (
           <Fragment key={`row-${row}`}>
             <div className="self-center pr-1 text-right font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400">
