@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AgendaHeatmap } from "@/features/sortie/components/agenda-heatmap";
+import { AgendaHub } from "@/features/sortie/components/agenda-hub";
 import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { bucketAgendaByDay, buildMonthGrids } from "@/features/sortie/lib/agenda-grid";
+import { bucketAgendaByDay, buildAgendaHeatmap } from "@/features/sortie/lib/agenda-grid";
 import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
@@ -46,9 +46,9 @@ export function AgendaView({ items, nowIso }: Props) {
     [items, activeTypes, activeRsvps]
   );
 
-  const { buckets, months } = useMemo(() => {
+  const { buckets, heatmap } = useMemo(() => {
     const b = bucketAgendaByDay(filteredItems);
-    return { buckets: b, months: buildMonthGrids(now, b) };
+    return { buckets: b, heatmap: buildAgendaHeatmap(now, b) };
   }, [filteredItems, now]);
 
   const toggleType = (key: TypeFilter) => setActiveTypes((s) => toggle(s, key));
@@ -63,7 +63,7 @@ export function AgendaView({ items, nowIso }: Props) {
         onToggleRsvp={toggleRsvp}
       />
 
-      <AgendaHeatmap months={months} buckets={buckets} />
+      <AgendaHub heatmap={heatmap} buckets={buckets} />
 
       <section className="mt-10">
         <Eyebrow tone="acid" className="mb-4">
