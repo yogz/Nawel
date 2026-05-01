@@ -15,6 +15,7 @@ import { buildOutingShareMeta } from "@/features/sortie/lib/outing-share-meta";
 import { getCreatorFirstName } from "@/features/sortie/lib/creator-display";
 import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
+import { OutingTicketStub } from "@/features/sortie/components/outing-ticket-stub";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
 import { ReclaimForm } from "@/features/sortie/components/reclaim-form";
@@ -191,6 +192,8 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         heroImageUrl={outing.heroImageUrl}
         canonicalPath={canonical}
       />
+
+      {outing.fixedDatetime && <OutingTicketStub startsAt={outing.fixedDatetime} />}
 
       {/* Just-created state: surface le banner sous le hero (titre +
           image), en flow normal. L'overlay absolute des versions

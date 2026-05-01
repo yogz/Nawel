@@ -1,8 +1,5 @@
-import { CalendarPlus } from "lucide-react";
-import { formatOutingDate } from "@/features/sortie/lib/date-fr";
+import { ArrowUpRight, CalendarPlus } from "lucide-react";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
-import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { RotatingTicketLink } from "@/features/sortie/components/rotating-ticket-link";
 
 type Props = {
   title: string;
@@ -38,7 +35,7 @@ export function OutingHero({
   canonicalPath,
 }: Props) {
   return (
-    <header className="relative -mx-6 mb-6 h-[60dvh] max-h-[720px] min-h-[480px] overflow-hidden bg-surface-50">
+    <header className="relative -mx-6 mb-0 h-[55dvh] max-h-[600px] min-h-[400px] overflow-hidden bg-surface-50">
       {heroImageUrl ? (
         // Remote ticket-CDN image. Whitelister chaque domaine pour
         // next/image serait une charge de maintenance ; ces images
@@ -70,12 +67,6 @@ export function OutingHero({
       />
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
-        {startsAt && (
-          <Eyebrow glow className="mb-4">
-            {formatOutingDate(startsAt).toUpperCase()}
-          </Eyebrow>
-        )}
-
         <h1
           className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
           style={{ textWrap: "balance" }}
@@ -94,7 +85,17 @@ export function OutingHero({
 
         {(ticketUrl || (startsAt && canonicalPath)) && (
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-            {ticketUrl && <RotatingTicketLink href={ticketUrl} />}
+            {ticketUrl && (
+              <a
+                href={ticketUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-medium text-acid-600 underline-offset-4 hover:underline"
+              >
+                Voir l&rsquo;événement
+                <ArrowUpRight size={14} strokeWidth={2.4} />
+              </a>
+            )}
             {startsAt && canonicalPath && (
               <a
                 href={`/${canonicalPath}/agenda`}
