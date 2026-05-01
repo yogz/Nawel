@@ -9,6 +9,16 @@ const longMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: TZ,
 });
 
+const monthOnlyFormatter = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  timeZone: TZ,
+});
+
+const parisYearFormatter = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  timeZone: TZ,
+});
+
 // Lundi-first weekday position (lundi=0 … dimanche=6) du jour Paris.
 // `Intl.DateTimeFormat({ weekday: 'short' })` ne donne pas l'index, donc
 // on passe par toLocaleString avec `weekday: 'narrow'` puis lookup. Plus
@@ -156,9 +166,19 @@ export function buildMonthGrid(
     weeks.push(week);
   }
 
+  // Drop l'année quand elle est identique à celle de `now` — pattern déjà
+  // utilisé pour `formatOutingDate` ; "novembre 2026" déborde l'en-tête
+  // entre les deux flèches sur mobile, "novembre" tient large. L'année
+  // n'apparaît que quand la nav fait franchir un Nouvel An.
+  const nowYear = Number(parisYearFormatter.format(now));
+  const label =
+    year === nowYear
+      ? monthOnlyFormatter.format(monthStart)
+      : longMonthFormatter.format(monthStart);
+
   return {
     monthKey,
-    label: longMonthFormatter.format(monthStart),
+    label,
     monthStart,
     itemCount,
     weeks,
