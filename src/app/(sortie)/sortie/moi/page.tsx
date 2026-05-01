@@ -150,6 +150,17 @@ export default async function ProfileSettingsPage() {
           <SectionHeading
             title="Tes sorties"
             subtitle="Glisse une sortie à gauche pour l’archiver. L’archiver la retire de ton profil, jamais des invités."
+            action={
+              upcoming.length > 0 ? (
+                <Link
+                  href="/sortie/agenda"
+                  className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
+                >
+                  agenda
+                  <ArrowUpRight size={12} strokeWidth={2.4} />
+                </Link>
+              ) : undefined
+            }
           />
           <section className="mb-14">
             {upcoming.length > 0 && (
@@ -212,17 +223,28 @@ export default async function ProfileSettingsPage() {
  * the 11px coral eyebrow it replaces — was the single biggest cost
  * of readability on this page.
  */
-function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+function SectionHeading({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="mb-5">
-      <h2 className="text-[28px] leading-[1.02] font-black tracking-[-0.03em] text-ink-700">
-        {title}
-      </h2>
-      {subtitle && (
-        <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-          ↳ {subtitle}
-        </p>
-      )}
+    <div className="mb-5 flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1">
+        <h2 className="text-[28px] leading-[1.02] font-black tracking-[-0.03em] text-ink-700">
+          {title}
+        </h2>
+        {subtitle && (
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            ↳ {subtitle}
+          </p>
+        )}
+      </div>
+      {action && <div className="shrink-0 pt-1">{action}</div>}
     </div>
   );
 }

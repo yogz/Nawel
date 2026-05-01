@@ -183,6 +183,9 @@ export async function createOutingAction(
   // /sortie/sortie/<id>, which doesn't exist → 404.
   const path = `/${canonicalPathSegment({ slug, shortId })}`;
   revalidatePath(path);
+  // L'agenda du créateur affiche cette sortie dès sa publication —
+  // sans revalidate il faut un hard reload pour la voir apparaître.
+  revalidatePath("/agenda");
   // `?from=create` triggers the "preview-as-success" banner on the outing
   // page — same destination as the public view, but with a contextual
   // "share this now" affordance overlaid so the creator doesn't have to
@@ -314,6 +317,8 @@ export async function updateOutingAction(
 
   const path = `/${canonicalPathSegment({ slug, shortId: data.shortId })}`;
   revalidatePath(path);
+  // L'update peut changer la date → bucket dans /agenda, donc revalide.
+  revalidatePath("/agenda");
   redirect(path);
 }
 
@@ -366,6 +371,8 @@ export async function cancelOutingAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
+  // Cancel exclut la sortie de /agenda (filtré côté query) — revalide.
+  revalidatePath("/agenda");
   redirect(`/${canonical}`);
 }
 
@@ -407,6 +414,7 @@ export async function archiveOutingAction(
   // Idempotent — already archived.
   if (outing.hiddenFromProfileAt) {
     revalidatePath("/moi");
+    revalidatePath("/agenda");
     return {};
   }
 
@@ -416,6 +424,7 @@ export async function archiveOutingAction(
     .where(eq(outings.id, outing.id));
 
   revalidatePath("/moi");
+  revalidatePath("/agenda");
   return {};
 }
 
@@ -453,6 +462,7 @@ export async function unarchiveOutingAction(
     .where(eq(outings.id, outing.id));
 
   revalidatePath("/moi");
+  revalidatePath("/agenda");
   return {};
 }
 
@@ -593,6 +603,8 @@ export async function pickTimeslotAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
+  // Le pick fait sortir la sortie du bucket "tbd" → vraie date.
+  revalidatePath("/agenda");
   redirect(`/${canonical}`);
 }
 
@@ -648,5 +660,7 @@ export async function reopenPollAction(
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
+  // Reopen poll renvoie la sortie en bucket "tbd" sur /agenda.
+  revalidatePath("/agenda");
   return {};
 }
