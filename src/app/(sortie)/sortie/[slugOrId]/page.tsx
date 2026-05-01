@@ -239,6 +239,14 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           isCreator={isCreator}
           shortId={outing.shortId}
           meId={me?.id ?? null}
+          creatorParticipantId={
+            outing.participants.find(
+              (p) =>
+                (outing.creatorUserId !== null && p.userId === outing.creatorUserId) ||
+                (outing.creatorCookieTokenHash !== null &&
+                  p.cookieTokenHash === outing.creatorCookieTokenHash)
+            )?.id ?? null
+          }
         />
 
         <div className="mt-6 border-t border-surface-400 pt-4 text-center">

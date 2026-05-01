@@ -20,6 +20,7 @@ export function ParticipantList({
   isCreator = false,
   shortId,
   meId = null,
+  creatorParticipantId = null,
 }: {
   participants: Participant[];
   isCreator?: boolean;
@@ -28,6 +29,11 @@ export function ParticipantList({
   /** Id du participant correspondant au viewer — sa propre ligne ne montre
    * pas le bouton de retrait owner (il a déjà "Retirer ma réponse"). */
   meId?: string | null;
+  /** Id du participant qui correspond au créateur de la sortie. Sert à
+   * détecter le cas "le seul oui est l'auto-RSVP du créateur" pour
+   * éviter une headline tautologique du genre "Léa a déjà dit oui." sur
+   * sa propre sortie. */
+  creatorParticipantId?: string | null;
 }) {
   const yesList = participants.filter((p) => p.response === "yes");
   const handleOwnList = participants.filter((p) => p.response === "handle_own");
@@ -58,6 +64,15 @@ export function ParticipantList({
   }
 
   const firstName = yesList.length === 1 ? displayNameOf(yesList[0]!) : null;
+  // Cas "yes solo = créateur qui s'auto-RSVP sa propre sortie" — banal
+  // ("Léa a déjà dit oui." sur la sortie de Léa). Inverser en preuve
+  // sociale active : c'est l'orga qui ouvre la liste, à un invité d'y
+  // entrer (ou au créateur de partager le lien). Même philosophie que
+  // l'empty state : le copy s'adapte au viewer.
+  const onlyYesIsCreator =
+    yesList.length === 1 &&
+    creatorParticipantId !== null &&
+    yesList[0]!.id === creatorParticipantId;
 
   // Singular form reads "Un a déjà dit oui." which is broken French —
   // "un" isolé n'est pas un pronom. Use the person's name when there's
@@ -65,6 +80,20 @@ export function ParticipantList({
   const headline =
     yesList.length === 0 ? (
       "Pas encore de oui ferme."
+    ) : onlyYesIsCreator ? (
+      isCreator ? (
+        <>
+          Pour l&rsquo;instant, juste toi.
+          <br />
+          <span className="text-acid-600">Partage le lien.</span>
+        </>
+      ) : (
+        <>
+          Pour l&rsquo;instant, juste {firstName ?? "l'orga"}.
+          <br />
+          <span className="text-acid-600">Sois le premier à le rejoindre.</span>
+        </>
+      )
     ) : yesList.length === 1 ? (
       `${firstName ?? "Quelqu'un"} a déjà dit oui.`
     ) : (
