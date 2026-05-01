@@ -7,6 +7,7 @@ export type AdminUserRow = {
   id: string;
   name: string;
   email: string;
+  emailVerified: boolean;
   username: string | null;
   role: "user" | "admin";
   banned: boolean;
@@ -54,6 +55,7 @@ export async function searchAdminUsers({
       id: user.id,
       name: user.name,
       email: user.email,
+      emailVerified: user.emailVerified,
       username: user.username,
       role: user.role,
       banned: user.banned,
@@ -71,6 +73,7 @@ export async function searchAdminUsers({
     id: r.id,
     name: r.name,
     email: r.email,
+    emailVerified: r.emailVerified,
     username: r.username,
     role: r.role === "admin" ? "admin" : "user",
     banned: r.banned ?? false,
