@@ -4,11 +4,7 @@ import { useMemo, useState } from "react";
 import { AgendaHub } from "@/features/sortie/components/agenda-hub";
 import { AgendaTimeline } from "@/features/sortie/components/agenda-timeline";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import {
-  bucketAgendaByDay,
-  buildDailyStrip,
-  buildMonthGrids,
-} from "@/features/sortie/lib/agenda-grid";
+import { bucketAgendaByDay } from "@/features/sortie/lib/agenda-grid";
 import { getAgendaRsvpBucket, type AgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 
@@ -50,7 +46,7 @@ export function AgendaView({ items, nowIso }: Props) {
     [items, activeTypes, activeRsvps]
   );
 
-  const { buckets, dailyStrip, months, fixedCount, voteCount } = useMemo(() => {
+  const { buckets, fixedCount, voteCount } = useMemo(() => {
     const b = bucketAgendaByDay(filteredItems);
     // Totaux event-level (1 sondage = 1 unité, peu importe le nombre de
     // candidats) — sémantique attendue par les stats hero, distincte
@@ -64,14 +60,8 @@ export function AgendaView({ items, nowIso }: Props) {
         vote += 1;
       }
     }
-    return {
-      buckets: b,
-      dailyStrip: buildDailyStrip(now, b),
-      months: buildMonthGrids(now, b),
-      fixedCount: fixed,
-      voteCount: vote,
-    };
-  }, [filteredItems, now]);
+    return { buckets: b, fixedCount: fixed, voteCount: vote };
+  }, [filteredItems]);
 
   const toggleType = (key: TypeFilter) => setActiveTypes((s) => toggle(s, key));
   const toggleRsvp = (key: AgendaRsvpBucket) => setActiveRsvps((s) => toggle(s, key));
@@ -85,13 +75,7 @@ export function AgendaView({ items, nowIso }: Props) {
         onToggleRsvp={toggleRsvp}
       />
 
-      <AgendaHub
-        dailyStrip={dailyStrip}
-        months={months}
-        buckets={buckets}
-        fixedCount={fixedCount}
-        voteCount={voteCount}
-      />
+      <AgendaHub now={now} buckets={buckets} fixedCount={fixedCount} voteCount={voteCount} />
 
       <section className="mt-10">
         <Eyebrow tone="acid" className="mb-4">

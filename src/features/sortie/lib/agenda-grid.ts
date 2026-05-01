@@ -9,16 +9,6 @@ const longMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   timeZone: TZ,
 });
 
-const shortMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
-  month: "short",
-  timeZone: TZ,
-});
-
-const weekdayShortFormatter = new Intl.DateTimeFormat("fr-FR", {
-  weekday: "short",
-  timeZone: TZ,
-});
-
 // Lundi-first weekday position (lundi=0 … dimanche=6) du jour Paris.
 // `Intl.DateTimeFormat({ weekday: 'short' })` ne donne pas l'index, donc
 // on passe par toLocaleString avec `weekday: 'narrow'` puis lookup. Plus
@@ -29,16 +19,6 @@ function parisWeekdayMondayFirst(dayKey: string): number {
   // getDay() : 0 = dimanche, 1 = lundi … 6 = samedi.
   const sundayFirst = noon.getDay();
   return (sundayFirst + 6) % 7;
-}
-
-// Avance/recule un dayKey de N jours en Paris. On pivote via UTC midi : un
-// shift par 86400 s donne toujours le jour Paris suivant, peu importe le
-// passage DST (Paris bascule à 03:00, midi UTC est toujours bien dans la
-// même journée Paris).
-function addDaysToDayKey(dayKey: string, days: number): string {
-  const noonUtc = new Date(`${dayKey}T12:00:00Z`);
-  noonUtc.setUTCDate(noonUtc.getUTCDate() + days);
-  return parisDayKey(noonUtc);
 }
 
 export type DayBucket = {
@@ -54,40 +34,19 @@ export type DayCell = {
   dayKey: string;
   date: Date;
   dayOfMonth: number;
-  /** `true` si la cellule est en dehors de la fenêtre [now, now+90j]. */
+  /** `true` si la cellule est en dehors de la fenêtre [now, now+windowDays].
+   * Les jours hors fenêtre sont rendus grisés ; le user peut naviguer
+   * vers eux mais aucun event n'y figure (pas de data côté serveur). */
   outOfWindow: boolean;
   /** `true` si c'est aujourd'hui (Paris). */
   isToday: boolean;
 };
 
-/**
- * Une journée projetée dans le strip horizontal (14 prochains jours).
- * Pré-formatée pour la consommation directe par le composant — on évite
- * de re-instancier des `Intl.DateTimeFormat` à chaque cellule.
- */
-export type DailyStripDay = {
-  dayKey: string;
-  date: Date;
-  dayOfMonth: number;
-  /** "lun", "mar"… (point final retiré) */
-  weekdayLabel: string;
-  fixedCount: number;
-  voteCount: number;
-  isToday: boolean;
-  /** Posé seulement quand ce jour est le 1er d'un nouveau mois traversé
-   * dans le strip (sauf le 1er jour du strip = today). Sert à substituer
-   * le label jour-de-semaine par le nom du mois pour signaler la
-   * transition mai → juin sans ajouter de divider inline. */
-  monthLabel?: string;
-};
-
 export type MonthGrid = {
-  /** "2026-05" — clé stable pour onglets et keys React. */
+  /** "2026-05" — clé stable pour keys React et animation slide. */
   monthKey: string;
   /** "mai 2026" — affiché en gros au-dessus de la grille. */
   label: string;
-  /** "mai" — pour les onglets compacts en haut. */
-  shortLabel: string;
   /** Y-M de référence pour le mois (1er du mois en Paris). */
   monthStart: Date;
   /** Compteur d'items (datée + sondage) sur le mois entier. */
@@ -129,115 +88,79 @@ export function bucketAgendaByDay(items: AgendaItem[]): Map<string, DayBucket> {
 }
 
 /**
- * 14 prochains jours à partir d'aujourd'hui (inclus) — pré-formatés pour
- * un strip horizontal compact. Le label de mois apparaît seulement à la
- * 1re cellule de chaque nouveau mois traversé (et jamais sur la cellule
- * 0 : today, dont le mois est implicite).
+ * Construit la grille hebdo lundi-first d'un mois calendaire situé à
+ * `monthOffset` mois du mois courant. `0` = mois de today, `+1` = mois
+ * suivant, `-1` = mois précédent. Pas de borne supérieure : le composant
+ * gère l'état d'offset, le user peut naviguer librement (les jours hors
+ * fenêtre data sont juste rendus grisés sans events).
  */
-export function buildDailyStrip(
+export function buildMonthGrid(
   now: Date,
   buckets: Map<string, DayBucket>,
-  days = 14
-): DailyStripDay[] {
-  const todayKey = parisDayKey(now);
-  const result: DailyStripDay[] = [];
-  for (let i = 0; i < days; i++) {
-    const dayKey = addDaysToDayKey(todayKey, i);
-    const date = new Date(`${dayKey}T12:00:00+02:00`);
-    const bucket = buckets.get(dayKey);
-    const isFirstOfMonth = dayKey.endsWith("-01");
-    const monthLabel =
-      i > 0 && isFirstOfMonth ? shortMonthFormatter.format(date).replace(".", "") : undefined;
-    result.push({
-      dayKey,
-      date,
-      dayOfMonth: Number(dayKey.slice(8, 10)),
-      weekdayLabel: weekdayShortFormatter.format(date).replace(".", ""),
-      fixedCount: bucket?.fixed.length ?? 0,
-      voteCount: bucket?.vote.length ?? 0,
-      isToday: dayKey === todayKey,
-      monthLabel,
-    });
-  }
-  return result;
-}
-
-/**
- * Construit `monthCount` mois calendaires à partir du mois de `now`,
- * en grille hebdo lundi-first. Marque `outOfWindow` les jours hors de
- * [now, now+windowDays] pour les rendre en grisé.
- */
-export function buildMonthGrids(
-  now: Date,
-  buckets: Map<string, DayBucket>,
-  monthCount = 3,
-  windowDays = 90
-): MonthGrid[] {
+  monthOffset: number,
+  windowDays = 365
+): MonthGrid {
   const todayKey = parisDayKey(now);
   const windowEndKey = parisDayKey(new Date(now.getTime() + windowDays * 24 * 60 * 60 * 1000));
 
-  // 1er jour du mois courant en Paris : on prend YYYY-MM-01.
-  const firstMonthKey = todayKey.slice(0, 7) + "-01";
-  const [startYear, startMonth] = firstMonthKey.split("-").map(Number);
+  const [startYear, startMonth] = todayKey.slice(0, 7).split("-").map(Number);
+  // Index 0-based combiné (year-mois) puis modulo 12 avec correction
+  // pour les offsets négatifs (en JS, `-1 % 12 === -1` au lieu de `11`).
+  const combined = startMonth - 1 + monthOffset;
+  const year = startYear + Math.floor(combined / 12);
+  const month = (((combined % 12) + 12) % 12) + 1;
 
-  const grids: MonthGrid[] = [];
-  for (let i = 0; i < monthCount; i++) {
-    const year = startYear + Math.floor((startMonth - 1 + i) / 12);
-    const month = ((startMonth - 1 + i) % 12) + 1;
-    const monthKey = `${year}-${String(month).padStart(2, "0")}`;
-    const monthStartKey = `${monthKey}-01`;
-    const monthStart = new Date(`${monthStartKey}T12:00:00+02:00`);
+  const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+  const monthStartKey = `${monthKey}-01`;
+  const monthStart = new Date(`${monthStartKey}T12:00:00+02:00`);
 
-    // Nombre de jours du mois : différence en jours entre le 1er du mois
-    // suivant et celui-ci. On évite les pièges 28/29/30/31 ainsi.
-    const nextMonth = month === 12 ? 1 : month + 1;
-    const nextYear = month === 12 ? year + 1 : year;
-    const nextMonthStartKey = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
-    const daysInMonth = Math.round(
-      (new Date(`${nextMonthStartKey}T12:00:00+02:00`).getTime() - monthStart.getTime()) /
-        (1000 * 60 * 60 * 24)
-    );
+  // Nombre de jours du mois : différence en jours entre le 1er du mois
+  // suivant et celui-ci. On évite les pièges 28/29/30/31 ainsi.
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextYear = month === 12 ? year + 1 : year;
+  const nextMonthStartKey = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+  const daysInMonth = Math.round(
+    (new Date(`${nextMonthStartKey}T12:00:00+02:00`).getTime() - monthStart.getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
 
-    const firstWeekday = parisWeekdayMondayFirst(monthStartKey);
-    const weeks: Array<Array<DayCell | null>> = [];
-    let week: Array<DayCell | null> = Array(firstWeekday).fill(null);
-    let itemCount = 0;
+  const firstWeekday = parisWeekdayMondayFirst(monthStartKey);
+  const weeks: Array<Array<DayCell | null>> = [];
+  let week: Array<DayCell | null> = Array(firstWeekday).fill(null);
+  let itemCount = 0;
 
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dayKey = `${monthKey}-${String(d).padStart(2, "0")}`;
-      const date = new Date(`${dayKey}T12:00:00+02:00`);
-      const cell: DayCell = {
-        dayKey,
-        date,
-        dayOfMonth: d,
-        outOfWindow: dayKey < todayKey || dayKey > windowEndKey,
-        isToday: dayKey === todayKey,
-      };
-      week.push(cell);
-      const bucket = buckets.get(dayKey);
-      if (bucket) {
-        itemCount += bucket.fixed.length + bucket.vote.length;
-      }
-      if (week.length === 7) {
-        weeks.push(week);
-        week = [];
-      }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayKey = `${monthKey}-${String(d).padStart(2, "0")}`;
+    const date = new Date(`${dayKey}T12:00:00+02:00`);
+    const cell: DayCell = {
+      dayKey,
+      date,
+      dayOfMonth: d,
+      outOfWindow: dayKey < todayKey || dayKey > windowEndKey,
+      isToday: dayKey === todayKey,
+    };
+    week.push(cell);
+    const bucket = buckets.get(dayKey);
+    if (bucket) {
+      itemCount += bucket.fixed.length + bucket.vote.length;
     }
-    if (week.length > 0) {
-      while (week.length < 7) {
-        week.push(null);
-      }
+    if (week.length === 7) {
       weeks.push(week);
+      week = [];
     }
-
-    grids.push({
-      monthKey,
-      label: longMonthFormatter.format(monthStart),
-      shortLabel: shortMonthFormatter.format(monthStart).replace(".", ""),
-      monthStart,
-      itemCount,
-      weeks,
-    });
   }
-  return grids;
+  if (week.length > 0) {
+    while (week.length < 7) {
+      week.push(null);
+    }
+    weeks.push(week);
+  }
+
+  return {
+    monthKey,
+    label: longMonthFormatter.format(monthStart),
+    monthStart,
+    itemCount,
+    weeks,
+  };
 }

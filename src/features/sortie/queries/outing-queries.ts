@@ -175,11 +175,12 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
   return { upcoming, past };
 }
 
-// Fenêtre de la heatmap agenda : 3 mois glissants à partir de `now`.
-// 90j est un compromis : assez pour englober la saison de Noël ou un
-// trimestre festivalier, assez court pour que la grille reste lisible
-// sur mobile (~13 colonnes-semaines).
-const AGENDA_WINDOW_DAYS = 90;
+// Fenêtre data agenda : 1 an glissant à partir de `now`. La vue mois
+// du hub est navigable sans cap (flèches + swipe), donc on alimente
+// large pour que la nav forward montre des events réels au lieu de
+// mois grisés vides. 365j couvre les saisons festives lointaines
+// (festivals d'été planifiés en hiver, calendriers scolaires).
+const AGENDA_WINDOW_DAYS = 365;
 
 export type AgendaItem = {
   outingId: string;
