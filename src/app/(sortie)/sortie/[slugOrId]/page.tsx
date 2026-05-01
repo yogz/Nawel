@@ -284,24 +284,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           <VoteRsvpSheet
             shortId={outing.shortId}
             timeslots={outing.timeslots.map((t) => ({ id: t.id, startsAt: t.startsAt }))}
-            existingVotes={
-              me
-                ? Object.fromEntries(
-                    outing.timeslots.flatMap((t) =>
-                      t.votes
-                        .filter((v) => v.participantId === me.id)
-                        .map((v) => [t.id, v.available])
-                    )
-                  )
-                : {}
-            }
+            existingVotes={myExistingVotes}
             existingName={me?.anonName ?? session?.user?.name ?? undefined}
             existingEmail={me?.anonEmail ?? undefined}
             existingExtraAdults={me?.extraAdults ?? undefined}
             existingExtraChildren={me?.extraChildren ?? undefined}
-            hasVoted={Boolean(
-              me && outing.timeslots.some((t) => t.votes.some((v) => v.participantId === me.id))
-            )}
+            hasVoted={hasVotedAlready}
           />
         </div>
       )}
@@ -410,16 +398,6 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
     </main>
   );
-}
-
-function countVoters(timeslots: Array<{ votes: Array<{ participantId: string }> }>): number {
-  const unique = new Set<string>();
-  for (const t of timeslots) {
-    for (const v of t.votes) {
-      unique.add(v.participantId);
-    }
-  }
-  return unique.size;
 }
 
 function CancelledView({ title }: { title: string }) {

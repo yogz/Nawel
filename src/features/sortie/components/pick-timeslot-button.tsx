@@ -12,11 +12,9 @@ type Props = {
 };
 
 /**
- * Client island isolé pour figer un créneau. Garde son propre
- * `useActionState` pour que l'éventuel message d'erreur reste collé
- * à la ligne qui a soumis (chaque instance porte son state). Le
- * confirm() natif fait office de filet — l'action est destructive
- * (notifie tous les inscrits).
+ * `useActionState` par instance pour que le message d'erreur reste
+ * collé à la ligne qui a soumis. `confirm()` sert de filet — l'action
+ * notifie tous les inscrits, pas réversible côté UX.
  */
 export function PickTimeslotButton({ shortId, timeslotId, startsAt }: Props) {
   const formRef = useRef<HTMLFormElement>(null);

@@ -6,11 +6,6 @@ import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 
 type Props = { shortId: string };
 
-/**
- * Client island pour rouvrir un sondage clôturé. Le confirm() natif
- * sert de filet de sécurité — réouverture remet le créneau choisi
- * en jeu et permet à tout le monde de re-voter.
- */
 export function ReopenPollButton({ shortId }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(

@@ -20,18 +20,13 @@ type Props = {
 };
 
 /**
- * Server Component qui rend le sondage de créneaux. Tout le tri /
- * highlight `best` / empty state est statique — seules les actions
- * destructives (figer, rouvrir) sont des Client islands isolés.
+ * On ne highlight le "meilleur" créneau que s'il y a UN gagnant
+ * clair — quand plusieurs sont à égalité (ou tous à zéro), border le
+ * rose hot revient à dire "n'importe lequel" et noie le signal.
  *
- * On ne signale visuellement le "meilleur" créneau que s'il y a UN
- * gagnant clair — quand plusieurs créneaux sont à égalité (ou tous
- * à zéro), border le rose hot sur tous les rangs revient à dire
- * "n'importe lequel" et noie la signal value de la couleur.
- *
- * `totalVotes` (somme des yes+no sur tous les créneaux) gate l'action
- * de figer, distinct de `totalVoters` (participants uniques) — on veut
- * "y a-t-il eu un vote quelconque", pas "combien de têtes".
+ * `totalVotes` (somme yes+no) gate l'action de figer, distinct de
+ * `totalVoters` (participants uniques) — on veut "y a-t-il eu un
+ * vote quelconque", pas "combien de têtes".
  */
 export function PollSection({
   shortId,
@@ -41,10 +36,19 @@ export function PollSection({
   chosenTimeslotId,
   inlineDeadlineAt,
 }: Props) {
-  const best = timeslots.reduce((acc, t) => Math.max(acc, t.yesCount), 0);
-  const bestCandidates = best > 0 ? timeslots.filter((t) => t.yesCount === best).length : 0;
-  const hasUniqueBest = bestCandidates === 1;
-  const totalVotes = timeslots.reduce((acc, t) => acc + t.yesCount + t.noCount, 0);
+  let best = 0;
+  let bestCount = 0;
+  let totalVotes = 0;
+  for (const t of timeslots) {
+    totalVotes += t.yesCount + t.noCount;
+    if (t.yesCount > best) {
+      best = t.yesCount;
+      bestCount = 1;
+    } else if (t.yesCount === best && best > 0) {
+      bestCount += 1;
+    }
+  }
+  const hasUniqueBest = bestCount === 1;
   const canPick = isCreator && !chosenTimeslotId && totalVotes > 0;
 
   return (
