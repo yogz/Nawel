@@ -3,8 +3,19 @@ import { parisDayKey } from "./date-fr";
 
 const TZ = "Europe/Paris";
 
+const longMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  year: "numeric",
+  timeZone: TZ,
+});
+
 const shortMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
   month: "short",
+  timeZone: TZ,
+});
+
+const weekdayShortFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "short",
   timeZone: TZ,
 });
 
@@ -50,28 +61,39 @@ export type DayCell = {
 };
 
 /**
- * Étiquette de mois positionnée au-dessus de la grille heatmap. Une seule
- * entrée par mois rencontré, calée sur la 1re colonne où ce mois apparaît.
+ * Une journée projetée dans le strip horizontal (14 prochains jours).
+ * Pré-formatée pour la consommation directe par le composant — on évite
+ * de re-instancier des `Intl.DateTimeFormat` à chaque cellule.
  */
-export type HeatmapMonthLabel = {
-  colIndex: number;
-  /** "mai", "juin"… abrégé pour entrer au-dessus d'une colonne étroite. */
-  label: string;
-};
-
-/**
- * Grille style "GitHub contributions" : N colonnes-semaines (lundi-first)
- * × 7 lignes-jours (L→D). Les jours hors fenêtre [now, now+90j] sont
- * marqués `outOfWindow` pour rendu grisé. La grille démarre toujours sur
- * le lundi de la semaine courante pour aligner le repère "aujourd'hui".
- */
-export type AgendaHeatmap = {
-  /** `weeks[col][row]` — chaque colonne = 1 semaine, 7 entrées L→D. */
-  weeks: DayCell[][];
-  monthLabels: HeatmapMonthLabel[];
-  /** Total cumulé sur la fenêtre, séparé par mode pour le hero stats. */
+export type DailyStripDay = {
+  dayKey: string;
+  date: Date;
+  dayOfMonth: number;
+  /** "lun", "mar"… (point final retiré) */
+  weekdayLabel: string;
   fixedCount: number;
   voteCount: number;
+  isToday: boolean;
+  /** Posé seulement quand ce jour est le 1er d'un nouveau mois traversé
+   * dans le strip (sauf le 1er jour du strip = today). Sert à substituer
+   * le label jour-de-semaine par le nom du mois pour signaler la
+   * transition mai → juin sans ajouter de divider inline. */
+  monthLabel?: string;
+};
+
+export type MonthGrid = {
+  /** "2026-05" — clé stable pour onglets et keys React. */
+  monthKey: string;
+  /** "mai 2026" — affiché en gros au-dessus de la grille. */
+  label: string;
+  /** "mai" — pour les onglets compacts en haut. */
+  shortLabel: string;
+  /** Y-M de référence pour le mois (1er du mois en Paris). */
+  monthStart: Date;
+  /** Compteur d'items (datée + sondage) sur le mois entier. */
+  itemCount: number;
+  /** Lignes de 7 cellules (lundi-first). Cases adj des mois voisins = null. */
+  weeks: Array<Array<DayCell | null>>;
 };
 
 /**
@@ -107,80 +129,115 @@ export function bucketAgendaByDay(items: AgendaItem[]): Map<string, DayBucket> {
 }
 
 /**
- * Construit une grille continue (style GitHub) sur `weekCount` semaines
- * à partir du lundi de la semaine courante. Couvre la fenêtre [now,
- * now+windowDays] : 13 semaines = ~91 jours, suffisant pour 3 mois
- * glissants sans découper en cartes mensuelles séparées.
+ * 14 prochains jours à partir d'aujourd'hui (inclus) — pré-formatés pour
+ * un strip horizontal compact. Le label de mois apparaît seulement à la
+ * 1re cellule de chaque nouveau mois traversé (et jamais sur la cellule
+ * 0 : today, dont le mois est implicite).
  */
-export function buildAgendaHeatmap(
+export function buildDailyStrip(
   now: Date,
   buckets: Map<string, DayBucket>,
-  weekCount = 13,
+  days = 14
+): DailyStripDay[] {
+  const todayKey = parisDayKey(now);
+  const result: DailyStripDay[] = [];
+  for (let i = 0; i < days; i++) {
+    const dayKey = addDaysToDayKey(todayKey, i);
+    const date = new Date(`${dayKey}T12:00:00+02:00`);
+    const bucket = buckets.get(dayKey);
+    const isFirstOfMonth = dayKey.endsWith("-01");
+    const monthLabel =
+      i > 0 && isFirstOfMonth ? shortMonthFormatter.format(date).replace(".", "") : undefined;
+    result.push({
+      dayKey,
+      date,
+      dayOfMonth: Number(dayKey.slice(8, 10)),
+      weekdayLabel: weekdayShortFormatter.format(date).replace(".", ""),
+      fixedCount: bucket?.fixed.length ?? 0,
+      voteCount: bucket?.vote.length ?? 0,
+      isToday: dayKey === todayKey,
+      monthLabel,
+    });
+  }
+  return result;
+}
+
+/**
+ * Construit `monthCount` mois calendaires à partir du mois de `now`,
+ * en grille hebdo lundi-first. Marque `outOfWindow` les jours hors de
+ * [now, now+windowDays] pour les rendre en grisé.
+ */
+export function buildMonthGrids(
+  now: Date,
+  buckets: Map<string, DayBucket>,
+  monthCount = 3,
   windowDays = 90
-): AgendaHeatmap {
+): MonthGrid[] {
   const todayKey = parisDayKey(now);
   const windowEndKey = parisDayKey(new Date(now.getTime() + windowDays * 24 * 60 * 60 * 1000));
 
-  // Lundi de la semaine courante : on remonte de N jours selon le
-  // weekday de today (0=lundi, donc shift = 0 si on est lundi).
-  const todayWeekday = parisWeekdayMondayFirst(todayKey);
-  const startMonday = addDaysToDayKey(todayKey, -todayWeekday);
+  // 1er jour du mois courant en Paris : on prend YYYY-MM-01.
+  const firstMonthKey = todayKey.slice(0, 7) + "-01";
+  const [startYear, startMonth] = firstMonthKey.split("-").map(Number);
 
-  const weeks: DayCell[][] = [];
-  const monthLabels: HeatmapMonthLabel[] = [];
-  let fixedCount = 0;
-  let voteCount = 0;
-  let prevMonth = "";
+  const grids: MonthGrid[] = [];
+  for (let i = 0; i < monthCount; i++) {
+    const year = startYear + Math.floor((startMonth - 1 + i) / 12);
+    const month = ((startMonth - 1 + i) % 12) + 1;
+    const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+    const monthStartKey = `${monthKey}-01`;
+    const monthStart = new Date(`${monthStartKey}T12:00:00+02:00`);
 
-  for (let col = 0; col < weekCount; col++) {
-    const week: DayCell[] = [];
-    for (let row = 0; row < 7; row++) {
-      const dayKey = addDaysToDayKey(startMonday, col * 7 + row);
-      // Date à midi Paris de la cellule — utilisée pour le formatter de
-      // mois (qui re-projette via `timeZone: 'Europe/Paris'` donc l'offset
-      // littéral ici importe peu).
+    // Nombre de jours du mois : différence en jours entre le 1er du mois
+    // suivant et celui-ci. On évite les pièges 28/29/30/31 ainsi.
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const nextMonthStartKey = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
+    const daysInMonth = Math.round(
+      (new Date(`${nextMonthStartKey}T12:00:00+02:00`).getTime() - monthStart.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    const firstWeekday = parisWeekdayMondayFirst(monthStartKey);
+    const weeks: Array<Array<DayCell | null>> = [];
+    let week: Array<DayCell | null> = Array(firstWeekday).fill(null);
+    let itemCount = 0;
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayKey = `${monthKey}-${String(d).padStart(2, "0")}`;
       const date = new Date(`${dayKey}T12:00:00+02:00`);
       const cell: DayCell = {
         dayKey,
         date,
-        dayOfMonth: Number(dayKey.slice(8, 10)),
+        dayOfMonth: d,
         outOfWindow: dayKey < todayKey || dayKey > windowEndKey,
         isToday: dayKey === todayKey,
       };
       week.push(cell);
-
-      if (!cell.outOfWindow) {
-        const bucket = buckets.get(dayKey);
-        if (bucket) {
-          fixedCount += bucket.fixed.length;
-          voteCount += bucket.vote.length;
-        }
+      const bucket = buckets.get(dayKey);
+      if (bucket) {
+        itemCount += bucket.fixed.length + bucket.vote.length;
+      }
+      if (week.length === 7) {
+        weeks.push(week);
+        week = [];
       }
     }
-    weeks.push(week);
-
-    // Label du mois : 1re colonne où apparaît un nouveau mois (on prend
-    // le 1er jour de la colonne qui change de mois — typiquement la
-    // colonne contenant le 1er du mois). On évite les doublons via
-    // `prevMonth` pour qu'un mois traversant 4 colonnes ne s'étiquette
-    // qu'une fois. On saute le mois résiduel hors fenêtre (typiquement
-    // le mois de la 1re semaine quand today est en début de mois) :
-    // pas de label pour des jours grisés inaccessibles, ça libère la
-    // place visuelle pour le 1er vrai mois de la fenêtre.
-    for (const cell of week) {
-      const monthYear = cell.dayKey.slice(0, 7);
-      if (monthYear !== prevMonth) {
-        if (!cell.outOfWindow) {
-          monthLabels.push({
-            colIndex: col,
-            label: shortMonthFormatter.format(cell.date).replace(".", ""),
-          });
-        }
-        prevMonth = monthYear;
-        break;
+    if (week.length > 0) {
+      while (week.length < 7) {
+        week.push(null);
       }
+      weeks.push(week);
     }
+
+    grids.push({
+      monthKey,
+      label: longMonthFormatter.format(monthStart),
+      shortLabel: shortMonthFormatter.format(monthStart).replace(".", ""),
+      monthStart,
+      itemCount,
+      weeks,
+    });
   }
-
-  return { weeks, monthLabels, fixedCount, voteCount };
+  return grids;
 }

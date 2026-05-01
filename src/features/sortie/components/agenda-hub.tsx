@@ -1,36 +1,31 @@
-import { Fragment } from "react";
-import type { AgendaHeatmap, DayBucket, DayCell } from "@/features/sortie/lib/agenda-grid";
+import { AgendaDailyStrip } from "@/features/sortie/components/agenda-daily-strip";
+import { AgendaMonthView } from "@/features/sortie/components/agenda-month-view";
+import type { DailyStripDay, DayBucket, MonthGrid } from "@/features/sortie/lib/agenda-grid";
 
 type Props = {
-  heatmap: AgendaHeatmap;
+  dailyStrip: DailyStripDay[];
+  months: MonthGrid[];
   buckets: Map<string, DayBucket>;
+  fixedCount: number;
+  voteCount: number;
 };
 
-const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"] as const;
-
 /**
- * Hub d'agenda : un seul bloc unifié style "GitHub contributions" sur
- * 13 semaines (~3 mois glissants). Stats hero en tête, puis grille 7×13
- * avec cellules colorées par densité — datée (acid) vs sondage (hot).
- *
- * Remplace les 3 cartes-mois empilées : un seul calendrier continu plus
- * dense et lisible d'un coup d'œil sur mobile.
+ * Hub d'agenda : carte unique stats + strip 14 jours + vue mois unique.
+ * Empilement vertical :
+ *   1. stats hero (gros chiffres datées/sondages)
+ *   2. daily strip horizontal scrollable — "ce qui arrive vite"
+ *   3. vue mois swipeable mai/juin/juillet — "le plan large"
  */
-export function AgendaHub({ heatmap, buckets }: Props) {
-  const { weeks, monthLabels, fixedCount, voteCount } = heatmap;
+export function AgendaHub({ dailyStrip, months, buckets, fixedCount, voteCount }: Props) {
   const total = fixedCount + voteCount;
-  const weekCount = weeks.length;
-
-  // Template colonnes : 1 col labels jours + N cols semaines, toutes en
-  // `minmax(0, 1fr)` pour partager la largeur disponible à parts égales.
-  const gridTemplate = `auto repeat(${weekCount}, minmax(0, 1fr))`;
 
   return (
     <section className="rounded-2xl bg-surface-100 p-5 ring-1 ring-white/5">
       <header className="mb-5 flex items-end justify-between gap-4 border-b border-white/5 pb-5">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-            ─ {weekCount} semaines · 3 mois ─
+            ─ 3 mois ─
           </p>
           <p className="mt-2 font-display text-6xl font-black leading-[0.9] tracking-[-0.04em] text-ink-700">
             {total}
@@ -45,95 +40,15 @@ export function AgendaHub({ heatmap, buckets }: Props) {
         </div>
       </header>
 
-      {/* Ligne d'étiquettes de mois — chaque label spanne sa plage réelle
-          (jusqu'au début du mois suivant) pour éviter la troncature à 1 col. */}
-      <div className="mb-1 grid gap-1" style={{ gridTemplateColumns: gridTemplate }} aria-hidden>
-        {monthLabels.map((label, i) => {
-          const nextStart = monthLabels[i + 1]?.colIndex ?? weekCount;
-          const span = nextStart - label.colIndex;
-          return (
-            <div
-              key={label.colIndex}
-              style={{
-                // +2 : grid-column 1-indexé, et la 1re col est réservée aux
-                // labels jours (L/M/M/J/V/S/D) sur la grille des cellules.
-                gridColumnStart: label.colIndex + 2,
-                gridColumnEnd: `span ${span}`,
-              }}
-              className="h-3 truncate font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400"
-            >
-              {label.label}
-            </div>
-          );
-        })}
+      <div className="mb-6">
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+          ─ 14 jours ─
+        </p>
+        <AgendaDailyStrip days={dailyStrip} />
       </div>
 
-      <div className="grid gap-1" style={{ gridTemplateColumns: gridTemplate }}>
-        {WEEKDAY_LABELS.map((wd, row) => (
-          <Fragment key={`row-${row}`}>
-            <div className="self-center pr-1 text-right font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400">
-              {row === 0 || row === 2 || row === 4 || row === 6 ? wd : ""}
-            </div>
-            {weeks.map((week, col) => (
-              <DayCellView
-                key={`${col}-${row}`}
-                cell={week[row]}
-                bucket={buckets.get(week[row].dayKey)}
-              />
-            ))}
-          </Fragment>
-        ))}
-      </div>
-
-      <Legend />
+      <AgendaMonthView months={months} buckets={buckets} />
     </section>
-  );
-}
-
-function DayCellView({ cell, bucket }: { cell: DayCell; bucket: DayBucket | undefined }) {
-  const fixedCount = bucket?.fixed.length ?? 0;
-  const voteCount = bucket?.vote.length ?? 0;
-  const total = fixedCount + voteCount;
-
-  const isOut = cell.outOfWindow;
-  const hasFixed = fixedCount > 0;
-  const hasVote = voteCount > 0;
-
-  // Intensité 1/2/3 → opacités progressives sur la couleur de base.
-  const intensity = total === 0 ? 0 : total === 1 ? 1 : total === 2 ? 2 : 3;
-
-  // Choix de la couleur de fond :
-  //   vide → surface-200 (placeholder très discret, style GitHub)
-  //   datée seule → acid (vert)
-  //   sondage seul → hot (rose)
-  //   mix → acid en fond + ring hot pour signaler le sondage
-  const bgClass = hasFixed
-    ? intensity === 1
-      ? "bg-acid-300/30"
-      : intensity === 2
-        ? "bg-acid-400/55"
-        : "bg-acid-500/80"
-    : hasVote
-      ? intensity === 1
-        ? "bg-hot-400/30"
-        : intensity === 2
-          ? "bg-hot-500/55"
-          : "bg-hot-500/80"
-      : "bg-surface-200/50";
-
-  const ringClass = hasFixed && hasVote ? "ring-1 ring-hot-500/70" : "";
-  const todayRing = cell.isToday ? "ring-1 ring-acid-500" : "";
-  const dimmed = isOut ? "opacity-30" : "";
-
-  return (
-    <div
-      className={`aspect-square rounded-[3px] ${bgClass} ${ringClass} ${todayRing} ${dimmed} transition-colors duration-motion-standard`}
-      aria-label={
-        total > 0
-          ? `${cell.dayKey} — ${fixedCount} datée${fixedCount > 1 ? "s" : ""}, ${voteCount} sondage${voteCount > 1 ? "s" : ""}`
-          : cell.dayKey
-      }
-    />
   );
 }
 
@@ -152,19 +67,6 @@ function StatPill({ label, value, tone }: { label: string; value: number; tone: 
       <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
         {label}
       </span>
-    </div>
-  );
-}
-
-function Legend() {
-  return (
-    <div className="mt-4 flex items-center justify-end gap-2 font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400">
-      <span>moins</span>
-      <span aria-hidden className="h-2.5 w-2.5 rounded-[2px] bg-surface-200/50" />
-      <span aria-hidden className="h-2.5 w-2.5 rounded-[2px] bg-acid-300/30" />
-      <span aria-hidden className="h-2.5 w-2.5 rounded-[2px] bg-acid-400/55" />
-      <span aria-hidden className="h-2.5 w-2.5 rounded-[2px] bg-acid-500/80" />
-      <span>plus</span>
     </div>
   );
 }
