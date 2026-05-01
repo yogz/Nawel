@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
+import { AgendaDayDrawer } from "@/features/sortie/components/agenda-day-drawer";
 import { buildMonthGrid, type DayBucket, type DayCell } from "@/features/sortie/lib/agenda-grid";
 
 type Props = {
@@ -40,6 +41,9 @@ export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props)
   // Reste local — l'offset est contrôlé par le parent, mais le sens
   // d'animation est purement visuel et n'a pas besoin de remonter.
   const [direction, setDirection] = useState<1 | -1>(1);
+  // dayKey du jour ouvert dans le drawer (null = fermé). Local : le
+  // drawer est interne au calendrier, pas besoin de remonter au parent.
+  const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 
   const month = useMemo(() => buildMonthGrid(now, buckets, offset), [now, buckets, offset]);
 
@@ -112,7 +116,12 @@ export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props)
               .flat()
               .map((cell, i) =>
                 cell ? (
-                  <BigDayCell key={cell.dayKey} cell={cell} bucket={buckets.get(cell.dayKey)} />
+                  <BigDayCell
+                    key={cell.dayKey}
+                    cell={cell}
+                    bucket={buckets.get(cell.dayKey)}
+                    onSelect={setSelectedDayKey}
+                  />
                 ) : (
                   <div key={`empty-${i}`} aria-hidden className="aspect-square" />
                 )
@@ -135,6 +144,12 @@ export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props)
           </button>
         </div>
       )}
+
+      <AgendaDayDrawer
+        dayKey={selectedDayKey}
+        bucket={selectedDayKey ? buckets.get(selectedDayKey) : undefined}
+        onClose={() => setSelectedDayKey(null)}
+      />
     </section>
   );
 }
@@ -160,13 +175,22 @@ function NavButton({
   );
 }
 
-function BigDayCell({ cell, bucket }: { cell: DayCell; bucket: DayBucket | undefined }) {
+function BigDayCell({
+  cell,
+  bucket,
+  onSelect,
+}: {
+  cell: DayCell;
+  bucket: DayBucket | undefined;
+  onSelect: (dayKey: string) => void;
+}) {
   const fixedCount = bucket?.fixed.length ?? 0;
   const voteCount = bucket?.vote.length ?? 0;
   const total = fixedCount + voteCount;
 
   const hasFixed = fixedCount > 0;
   const hasVote = voteCount > 0;
+  const interactive = total > 0;
 
   // Cap à 3+3 dots visibles : au-delà, on ajoute "+N" pour signaler
   // l'overflow sans surcharger une cellule de ~60 px.
@@ -185,16 +209,20 @@ function BigDayCell({ cell, bucket }: { cell: DayCell; bucket: DayBucket | undef
 
   const todayRing = cell.isToday ? "ring-2 ring-acid-500" : "";
   const dimmed = cell.outOfWindow ? "opacity-30" : "";
+  // Cellules vides : non-cliquables, juste un placeholder visuel.
+  // Cellules avec events : <button> qui ouvre le drawer du jour.
+  const interactiveClass = interactive
+    ? "cursor-pointer hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
+    : "cursor-default";
 
-  return (
-    <div
-      className={`flex aspect-square flex-col rounded-lg p-1.5 ${bgClass} ${todayRing} ${dimmed} transition-colors duration-motion-standard`}
-      aria-label={
-        total > 0
-          ? `${cell.dayKey} — ${fixedCount} datée${fixedCount > 1 ? "s" : ""}, ${voteCount} sondage${voteCount > 1 ? "s" : ""}`
-          : cell.dayKey
-      }
-    >
+  const className = `flex aspect-square flex-col rounded-lg p-1.5 text-left ${bgClass} ${todayRing} ${dimmed} ${interactiveClass} transition-all duration-motion-standard`;
+  const ariaLabel =
+    total > 0
+      ? `${cell.dayKey} — ${fixedCount} datée${fixedCount > 1 ? "s" : ""}, ${voteCount} sondage${voteCount > 1 ? "s" : ""}`
+      : cell.dayKey;
+
+  const content = (
+    <>
       <span
         className={`font-mono text-[11px] leading-none tabular-nums ${
           total > 0 || cell.isToday ? "font-bold text-ink-700" : "text-ink-500"
@@ -217,6 +245,25 @@ function BigDayCell({ cell, bucket }: { cell: DayCell; bucket: DayBucket | undef
           )}
         </div>
       )}
-    </div>
+    </>
+  );
+
+  if (!interactive) {
+    return (
+      <div className={className} aria-label={ariaLabel}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(cell.dayKey)}
+      className={className}
+      aria-label={ariaLabel}
+    >
+      {content}
+    </button>
   );
 }
