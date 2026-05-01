@@ -34,5 +34,14 @@ export function buildWhatsAppMessage(args: WhatsAppShareArgs): string {
 }
 
 export function buildWhatsAppHref(args: WhatsAppShareArgs): string {
-  return `https://wa.me/?text=${encodeURIComponent(buildWhatsAppMessage(args))}`;
+  return buildWaHref(buildWhatsAppMessage(args));
+}
+
+/**
+ * Wrap minimal autour de `wa.me/?text=…`. Sans destinataire : WhatsApp
+ * s'ouvre avec le texte pré-rempli et l'utilisateur choisit le contact.
+ * Évite de stocker des numéros côté Sortie.
+ */
+export function buildWaHref(message: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
 }

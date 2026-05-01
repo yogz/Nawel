@@ -195,6 +195,7 @@ export async function remindDebtAction(
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, parsed.data.shortId),
+    columns: { id: true, title: true, slug: true, shortId: true },
   });
   if (!outing) {
     return { message: "Sortie introuvable." };
@@ -205,31 +206,35 @@ export async function remindDebtAction(
     return { message: "Non autorisé." };
   }
 
-  // Vérif d'accès + état : créancier de cette dette ET non confirmée.
-  const debt = await db.query.debts.findFirst({
-    where: and(
-      eq(debts.id, parsed.data.debtId),
-      eq(debts.outingId, outing.id),
-      eq(debts.creditorParticipantId, participant.id)
-    ),
-    columns: { id: true, status: true },
-  });
+  // Lookup debt + lookup audit_log sont indépendants une fois participant
+  // connu — paralléliser pour gagner un round-trip DB.
+  const [debt, recent] = await Promise.all([
+    // Vérif d'accès + état : créancier de cette dette ET non confirmée.
+    db.query.debts.findFirst({
+      where: and(
+        eq(debts.id, parsed.data.debtId),
+        eq(debts.outingId, outing.id),
+        eq(debts.creditorParticipantId, participant.id)
+      ),
+      columns: { id: true, status: true },
+    }),
+    // Rate-limit via audit_log : on cherche une entry DEBT_REMINDED sur
+    // ce debtId dans les `REMINDER_COOLDOWN_HOURS` dernières heures.
+    // payload est stocké en text JSON ; cast en jsonb pour le matcher.
+    db.query.auditLog.findFirst({
+      where: and(
+        eq(auditLog.action, AUDIT_ACTION.DEBT_REMINDED),
+        sql`${auditLog.payload}::jsonb ->> 'debtId' = ${parsed.data.debtId}`,
+        sql`${auditLog.createdAt} > NOW() - (${REMINDER_COOLDOWN_HOURS} || ' hours')::interval`
+      ),
+      orderBy: desc(auditLog.createdAt),
+      columns: { createdAt: true },
+    }),
+  ]);
+
   if (!debt || debt.status === "confirmed") {
     return { message: "Cette dette ne peut pas être relancée." };
   }
-
-  // Rate-limit via audit_log : on cherche une entry DEBT_REMINDED sur
-  // ce debtId dans les `REMINDER_COOLDOWN_HOURS` dernières heures.
-  // payload est stocké en text JSON ; cast en jsonb pour le matcher.
-  const recent = await db.query.auditLog.findFirst({
-    where: and(
-      eq(auditLog.action, AUDIT_ACTION.DEBT_REMINDED),
-      sql`${auditLog.payload}::jsonb ->> 'debtId' = ${parsed.data.debtId}`,
-      sql`${auditLog.createdAt} > NOW() - (${REMINDER_COOLDOWN_HOURS} || ' hours')::interval`
-    ),
-    orderBy: desc(auditLog.createdAt),
-    columns: { createdAt: true },
-  });
   if (recent) {
     return {
       message: `Tu as déjà relancé récemment. Réessaie dans quelques heures.`,

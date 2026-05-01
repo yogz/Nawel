@@ -129,7 +129,6 @@ export default async function DebtsPage({ params }: Props) {
                 other={d.creditor}
                 view="debtor"
                 methods={d.creditorMethods}
-                outingTitle={outing.title}
               />
             ))}
           </ul>
