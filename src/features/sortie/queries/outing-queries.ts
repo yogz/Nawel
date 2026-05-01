@@ -160,6 +160,57 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
 }
 
 /**
+ * Sorties à venir pour la page `/sortie/agenda` — filtre tout côté SQL
+ * (futur + tbd, hors `no` et hors cancelled). Différent de
+ * `listAllMyOutings` qui mélange futur/passé sur 50 rows et inclut `no`
+ * pour la liste profil. Ici on veut uniquement les engagements positifs
+ * (yes/handle_own/interested) et le créateur, datés après maintenant ou
+ * sans date arrêtée (mode vote en cours).
+ *
+ * Tri : `fixedDatetime` ASC avec NULLS LAST — les sorties datées
+ * remontent en premier, les `tbd` finissent en queue (et seront placées
+ * dans un bucket dédié côté UI). Limit large mais pas illimité — un
+ * power user à 18 sorties est dans le top 1% mesuré, 100 couvre
+ * confortablement la croissance.
+ */
+export async function listMyUpcomingForAgenda(userId: string, now = new Date()) {
+  return db
+    .select({
+      id: outings.id,
+      shortId: outings.shortId,
+      slug: outings.slug,
+      title: outings.title,
+      location: outings.location,
+      startsAt: outings.fixedDatetime,
+      deadlineAt: outings.deadlineAt,
+      status: outings.status,
+      mode: outings.mode,
+      heroImageUrl: outings.heroImageUrl,
+      confirmedCount: confirmedCountSql.as("confirmed_count"),
+    })
+    .from(outings)
+    .where(
+      and(
+        or(
+          and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
+          sql`${outings.id} IN (
+            SELECT ${participants.outingId}
+            FROM ${participants}
+            WHERE ${participants.userId} = ${userId}
+              AND ${participants.response} IN ('yes', 'handle_own', 'interested')
+          )`
+        ),
+        ne(outings.status, "cancelled"),
+        or(isNull(outings.fixedDatetime), gte(outings.fixedDatetime, now))
+      )
+    )
+    .orderBy(sql`${outings.fixedDatetime} ASC NULLS LAST`)
+    .limit(100);
+}
+
+export type AgendaOutingRow = Awaited<ReturnType<typeof listMyUpcomingForAgenda>>[number];
+
+/**
  * Public profile view — only surfaces outings the user chose to show
  * (`showOnProfile`) and excludes cancelled ones. Splits into upcoming vs
  * past by the current time against `fixedDatetime` (vote-mode outings
