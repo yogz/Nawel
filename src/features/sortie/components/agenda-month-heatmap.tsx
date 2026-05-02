@@ -2,7 +2,6 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
-import { NavButton } from "@/features/sortie/components/agenda-month-view";
 import { type DayBucket, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import { cn } from "@/lib/utils";
@@ -69,9 +68,9 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
   return (
     <section>
       <header className="mb-2 flex items-center justify-between gap-2">
-        <NavButton label="mois précédent" onClick={() => onOffsetChange(offset - 1)}>
+        <MiniChevron label="mois précédent" onClick={() => onOffsetChange(offset - 1)}>
           <ChevronLeft size={14} strokeWidth={2.4} />
-        </NavButton>
+        </MiniChevron>
         <div className="flex items-baseline gap-2">
           <h3 className="font-display text-[16px] font-black uppercase leading-none tracking-tight text-ink-700">
             {month.label}
@@ -82,13 +81,13 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
               : "─"}
           </span>
         </div>
-        <NavButton label="mois suivant" onClick={() => onOffsetChange(offset + 1)}>
+        <MiniChevron label="mois suivant" onClick={() => onOffsetChange(offset + 1)}>
           <ChevronRight size={14} strokeWidth={2.4} />
-        </NavButton>
+        </MiniChevron>
       </header>
 
       <div
-        className="grid h-12 gap-px overflow-hidden rounded-md bg-surface-50"
+        className="grid h-12 overflow-hidden rounded-md bg-surface-200/40"
         style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
       >
         {days.map((d) => (
@@ -102,6 +101,27 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         <span>{totalDays}</span>
       </div>
     </section>
+  );
+}
+
+function MiniChevron({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-500 transition-colors duration-motion-standard hover:bg-surface-200/60 hover:text-acid-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
+    >
+      {children}
+    </button>
   );
 }
 
@@ -122,14 +142,18 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
   const we = isWeekend(day.weekday);
   const heightPct = barHeightPct(day.count);
 
-  // Fond explicite par jour — le gap-px du parent laisse passer le
-  // bg-surface-50 du container et fait une fine séparation entre
-  // chaque colonne, rendant chaque jour distinctement lisible.
+  // Pas de gap dans le grid — chaque jour porte une border-l 1 px (sauf
+  // 1er du mois et dimanche). Du coup samedi+dimanche restent collés
+  // pour matérialiser le WE comme un bloc, et tous les autres jours
+  // sont séparés.
+  const noBorderLeft = day.dayOfMonth === 1 || day.weekday === 0;
+
   const wrapperClass = cn(
     "relative flex h-full w-full items-end justify-center transition-colors duration-motion-standard",
-    we ? "bg-surface-300/60" : "bg-surface-200/50",
-    day.isToday && "bg-ink-700/20",
-    day.count > 0 && "hover:bg-acid-500/20 focus-visible:bg-acid-500/20 focus-visible:outline-none"
+    we ? "bg-surface-300/85" : "bg-transparent",
+    day.isToday && "bg-ink-700/25",
+    !noBorderLeft && "border-l border-surface-50/90",
+    day.count > 0 && "hover:bg-acid-500/25 focus-visible:bg-acid-500/25 focus-visible:outline-none"
   );
 
   const ariaLabel =

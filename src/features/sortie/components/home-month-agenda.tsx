@@ -162,7 +162,14 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
   return (
     <>
       <section className="mb-10 rounded-2xl bg-surface-100 p-4 ring-1 ring-white/5">
-        <div className="mb-3 flex justify-end">
+        <AgendaMonthHeatmap
+          now={now}
+          buckets={buckets}
+          offset={monthOffset}
+          onOffsetChange={setMonthOffset}
+          onDaySelect={handleDaySelect}
+        />
+        <div className="mt-3 flex justify-end">
           <Link
             href="/agenda"
             className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
@@ -171,13 +178,6 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
             <ArrowUpRight size={12} strokeWidth={2.4} />
           </Link>
         </div>
-        <AgendaMonthHeatmap
-          now={now}
-          buckets={buckets}
-          offset={monthOffset}
-          onOffsetChange={setMonthOffset}
-          onDaySelect={handleDaySelect}
-        />
       </section>
 
       <section className="mb-10">
