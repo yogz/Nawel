@@ -411,8 +411,8 @@ function PastSection({
 
   return (
     <section className="mb-10">
-      <Eyebrow tone="hot" className="mb-3">
-        ─ passées ─
+      <Eyebrow tone="muted" className="mb-3">
+        ─ passées
       </Eyebrow>
       <ul className="flex flex-col gap-4">
         {inline.map((o) => (
@@ -535,8 +535,8 @@ function InboxBucketSection({
   const muted = bucket.key === "declined";
   return (
     <section className={muted ? "opacity-60" : undefined}>
-      <Eyebrow tone="hot" className="mb-3 flex items-center gap-2">
-        <span>─ {bucket.label} ─</span>
+      <Eyebrow tone="muted" className="mb-3 flex items-center gap-2">
+        <span>─ {bucket.label}</span>
         <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
       </Eyebrow>
       <RsvpCardList
@@ -598,8 +598,8 @@ function OutingSection({
 }) {
   return (
     <section className="mb-10">
-      <Eyebrow tone="hot" className="mb-3">
-        ─ {title.toLowerCase()} ─
+      <Eyebrow tone="muted" className="mb-3">
+        ─ {title.toLowerCase()}
       </Eyebrow>
       <RsvpCardList
         outings={outings}

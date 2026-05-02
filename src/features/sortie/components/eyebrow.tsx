@@ -34,9 +34,27 @@ const TONE_GLOW: Record<EyebrowTone, string> = {
  * tracking-[0.22em]` + couleur par tone, pour qu'un futur tone shift
  * (ex: passer le tracking à 0.20em) se fasse en 1 fichier.
  *
- * Le `tone` driveue la couleur. Pas de margin par défaut (responsabilité
+ * Le `tone` drive la couleur. Pas de margin par défaut (responsabilité
  * du contexte, override via `className`). Children libre — l'auteur
  * compose son texte avec ou sans brackets `─ X ─`, c'est du contenu.
+ *
+ * --- Règles de désinflation visuelle (post-audit avril 2026) ----------
+ *
+ * 1. **Un seul `glow` par page max.** Réservé au moment fort (le hero du
+ *    moment, ou son substitut empty-state). Sur les sections décor
+ *    secondaires (carrousels, listes, footers), pas de `glow` — sinon
+ *    l'accent acide cesse d'être un signal et devient du wallpaper.
+ *
+ * 2. **`tone="hot"` strictement réservé aux nudges actionnables /
+ *    signaux d'urgence** (deadlines, paiement, achat, dettes, état
+ *    annulé). Un label de section "passées" ou "qui vient" est du
+ *    décor → `tone="muted"`. Le hot-500 doit garder son punch
+ *    d'alerte, pas se diluer dans des labels neutres.
+ *
+ * 3. **Grammaire des tirets : asymétrie à gauche `─ texte`** (programme
+ *    de salle, ticket de spectacle), pas `─ texte ─` symétrique
+ *    (flyer rave amateur). Référence éditoriale → on signe l'opening
+ *    de section, on n'emballe pas le mot.
  */
 export function Eyebrow({ tone = "acid", glow = false, className, id, children }: Props) {
   return (

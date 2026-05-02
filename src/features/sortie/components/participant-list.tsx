@@ -201,7 +201,7 @@ function SecondarySection({
 
   return (
     <div className="mt-5 border-t border-surface-400 pt-4">
-      <Eyebrow tone="hot" className="mb-2">
+      <Eyebrow tone="muted" className="mb-2">
         {label} · {String(count).padStart(2, "0")}
         {showHeads && (
           <span className="ml-2 text-ink-400">◉ {sectionHeads} avec les accompagnants</span>
