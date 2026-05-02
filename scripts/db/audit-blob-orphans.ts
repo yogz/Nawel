@@ -46,10 +46,7 @@ async function listAllBlobs(prefix: string): Promise<string[]> {
 }
 
 async function loadReferencedAvatarUrls(): Promise<Set<string>> {
-  const rows = await db
-    .select({ image: user.image })
-    .from(user)
-    .where(isNotNull(user.image));
+  const rows = await db.select({ image: user.image }).from(user).where(isNotNull(user.image));
 
   const referenced = new Set<string>();
   for (const row of rows) {

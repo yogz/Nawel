@@ -21,12 +21,7 @@ export function useRetry<T extends (...args: unknown[]) => Promise<unknown>>(
   isRetrying: boolean;
   retryCount: number;
 } {
-  const {
-    maxRetries = 3,
-    initialDelay = 1000,
-    maxDelay = 10000,
-    backoffMultiplier = 2,
-  } = options;
+  const { maxRetries = 3, initialDelay = 1000, maxDelay = 10000, backoffMultiplier = 2 } = options;
 
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);

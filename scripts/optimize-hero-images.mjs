@@ -47,27 +47,18 @@ async function optimizeHeroImage({ file, baseName }) {
       }
 
       // Generate AVIF (best compression)
-      const avifBuffer = await pipeline
-        .avif({ quality: 75, effort: 4 })
-        .toBuffer();
+      const avifBuffer = await pipeline.avif({ quality: 75, effort: 4 }).toBuffer();
 
       const avifPath = path.join(PUBLIC_DIR, `${baseName}-${suffix}.avif`);
       fs.writeFileSync(avifPath, avifBuffer);
-      console.log(
-        `  ✅ ${baseName}-${suffix}.avif: ${(avifBuffer.length / 1024).toFixed(0)}KB`
-      );
+      console.log(`  ✅ ${baseName}-${suffix}.avif: ${(avifBuffer.length / 1024).toFixed(0)}KB`);
 
       // Generate WebP (fallback)
-      const webpBuffer = await pipeline
-        .clone()
-        .webp({ quality: 80, effort: 6 })
-        .toBuffer();
+      const webpBuffer = await pipeline.clone().webp({ quality: 80, effort: 6 }).toBuffer();
 
       const webpPath = path.join(PUBLIC_DIR, `${baseName}-${suffix}.webp`);
       fs.writeFileSync(webpPath, webpBuffer);
-      console.log(
-        `  ✅ ${baseName}-${suffix}.webp: ${(webpBuffer.length / 1024).toFixed(0)}KB`
-      );
+      console.log(`  ✅ ${baseName}-${suffix}.webp: ${(webpBuffer.length / 1024).toFixed(0)}KB`);
     }
 
     // Also create a default size (1920w) without suffix for backward compatibility
@@ -84,17 +75,13 @@ async function optimizeHeroImage({ file, baseName }) {
     const defaultAvif = await finalPipeline.clone().avif({ quality: 75, effort: 4 }).toBuffer();
     const defaultAvifPath = path.join(PUBLIC_DIR, `${baseName}.avif`);
     fs.writeFileSync(defaultAvifPath, defaultAvif);
-    console.log(
-      `  ✅ ${baseName}.avif (default): ${(defaultAvif.length / 1024).toFixed(0)}KB`
-    );
+    console.log(`  ✅ ${baseName}.avif (default): ${(defaultAvif.length / 1024).toFixed(0)}KB`);
 
     // Default WebP
     const defaultWebp = await finalPipeline.clone().webp({ quality: 80, effort: 6 }).toBuffer();
     const defaultWebpPath = path.join(PUBLIC_DIR, `${baseName}.webp`);
     fs.writeFileSync(defaultWebpPath, defaultWebp);
-    console.log(
-      `  ✅ ${baseName}.webp (default): ${(defaultWebp.length / 1024).toFixed(0)}KB`
-    );
+    console.log(`  ✅ ${baseName}.webp (default): ${(defaultWebp.length / 1024).toFixed(0)}KB`);
 
     const totalSavings = ((originalSize - defaultAvif.length) / originalSize) * 100;
     console.log(

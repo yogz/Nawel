@@ -74,7 +74,9 @@ async function main() {
   }
 
   console.log("\n✨ Done! Feature images optimized with AVIF and WebP formats.\n");
-  console.log("📝 Next step: Update FeatureCard component to use optimized formats with lazy loading\n");
+  console.log(
+    "📝 Next step: Update FeatureCard component to use optimized formats with lazy loading\n"
+  );
 }
 
 main().catch(console.error);

@@ -52,10 +52,10 @@ Utilisez l'échelle d'espacement standardisée pour maintenir la cohérence :
 Aligné Material 3 + Apple HIG. Trois durées + deux courbes d'easing,
 plus une règle non-négociable sur `prefers-reduced-motion`.
 
-| Token | Durée | Easing | Usage |
-|-------|-------|--------|-------|
-| `motion-tap` | 100ms | `ease-out` | Feedback tactile (`active:scale-*`) |
-| `motion-standard` | 250ms | `cubic-bezier(0.2, 0, 0, 1)` | Hover, color, opacity, transitions UI courantes |
+| Token               | Durée | Easing                            | Usage                                             |
+| ------------------- | ----- | --------------------------------- | ------------------------------------------------- |
+| `motion-tap`        | 100ms | `ease-out`                        | Feedback tactile (`active:scale-*`)               |
+| `motion-standard`   | 250ms | `cubic-bezier(0.2, 0, 0, 1)`      | Hover, color, opacity, transitions UI courantes   |
 | `motion-emphasized` | 400ms | `cubic-bezier(0.05, 0.7, 0.1, 1)` | Entrées d'éléments, changements d'état importants |
 
 Disponibles via Tailwind :
@@ -67,11 +67,11 @@ Disponibles via Tailwind :
 
 **Tap feedback** — deux registres valides selon l'élément :
 
-| Élément | Scale | Pourquoi |
-|---------|-------|----------|
-| Bouton (CTA, chip, FAB) | `motion-safe:active:scale-95` | Feedback affirmé sur un élément où on s'attend à appuyer |
-| Carte tappable, lien-bloc | `motion-safe:active:scale-[0.98]` | Feedback discret, la carte n'est pas un bouton |
-| Hero / large container | `motion-safe:active:scale-[0.99]` | Quasi-imperceptible, juste un signe que c'est interactif |
+| Élément                   | Scale                             | Pourquoi                                                 |
+| ------------------------- | --------------------------------- | -------------------------------------------------------- |
+| Bouton (CTA, chip, FAB)   | `motion-safe:active:scale-95`     | Feedback affirmé sur un élément où on s'attend à appuyer |
+| Carte tappable, lien-bloc | `motion-safe:active:scale-[0.98]` | Feedback discret, la carte n'est pas un bouton           |
+| Hero / large container    | `motion-safe:active:scale-[0.99]` | Quasi-imperceptible, juste un signe que c'est interactif |
 
 **Toujours `motion-safe:` en préfixe** — sinon l'animation ignore
 la préférence système.
@@ -82,14 +82,19 @@ ou s'effondrer à ≤ 80ms. Tailwind ships `motion-safe:` et
 `motion-reduce:` variants.
 
 ```tsx
-{/* ✅ animation respecte la préférence système */}
-<div className="motion-safe:animate-in motion-safe:fade-in" />
+{
+  /* ✅ animation respecte la préférence système */
+}
+<div className="motion-safe:animate-in motion-safe:fade-in" />;
 
-{/* ❌ animation systématique, ignore l'utilisateur */}
-<div className="animate-in fade-in" />
+{
+  /* ❌ animation systématique, ignore l'utilisateur */
+}
+<div className="animate-in fade-in" />;
 ```
 
 **Quand animer** :
+
 - ✅ Entrée d'une nouvelle liste (stagger)
 - ✅ Feedback de tap (instant, < 150ms)
 - ✅ Changement d'état important (succès d'upload, RSVP envoyé)
