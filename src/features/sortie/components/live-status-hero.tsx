@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
-import { formatOutingDate } from "@/features/sortie/lib/date-fr";
+import { formatOutingDate, formatOutingDayMonthTime } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
@@ -12,13 +12,6 @@ type Props = {
   title: string;
   location: string | null;
   startsAt: Date;
-  confirmed: number;
-  /**
-   * Total of everyone-not-saying-no — used to add "· N en attente" to the
-   * headcount string. Optional: on the public profile view we don't pull
-   * that figure and it's fine to show just the confirmed count.
-   */
-  total?: number;
   heroImageUrl?: string | null;
   /**
    * Champs pour résoudre le badge "verrouillé" sur le poster (cf.
@@ -68,8 +61,6 @@ export function LiveStatusHero({
   title,
   location,
   startsAt,
-  confirmed,
-  total,
   heroImageUrl,
   deadlineAt,
   status,
@@ -80,11 +71,6 @@ export function LiveStatusHero({
 }: Props) {
   const canonical = slug ? `${slug}-${shortId}` : shortId;
   const Heading = headingLevel;
-  const pending = total !== undefined ? Math.max(0, total - confirmed) : 0;
-  const headcount =
-    confirmed > 0
-      ? `${confirmed} confirmé${confirmed > 1 ? "s" : ""}${pending > 0 ? ` · ${pending} en attente` : ""}`
-      : null;
 
   // First letter of the title, rendered huge on the gradient when we
   // don't have a poster. Gives the empty state a focal point — closer
@@ -139,8 +125,14 @@ export function LiveStatusHero({
             className="shrink-0 text-acid-600"
           />
           <span>
-            {relative && <span className="text-ink-700">{relative} — </span>}
-            {formatOutingDate(startsAt)}
+            {relative ? (
+              <>
+                <span className="text-ink-700">{relative} — </span>
+                {formatOutingDayMonthTime(startsAt)}
+              </>
+            ) : (
+              formatOutingDate(startsAt)
+            )}
           </span>
         </p>
         {location && (
@@ -154,12 +146,6 @@ export function LiveStatusHero({
             <span>{formatVenue(location)}</span>
           </p>
         )}
-        {headcount && (
-          <p className="mt-1.5 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
-            ◉ {headcount}
-          </p>
-        )}
-
         <div className={compact ? "relative mt-4" : "relative mt-5"}>
           {heroImageUrl ? (
             // `data-vt-poster` opts this image into the cross-document

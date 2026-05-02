@@ -164,6 +164,15 @@ export function formatOutingDateShort(date: Date, now: Date = new Date()): strin
   return `${day}${yearSuffixIfNeeded(date, now)} · ${time}`;
 }
 
+/** "12 décembre · 20h30" — sans le jour de la semaine, pour quand le
+ * weekday est déjà dit ailleurs (ex : phrase relative type "Mardi, dans
+ * 3 jours" qui précède la date dans le hero). */
+export function formatOutingDayMonthTime(date: Date, now: Date = new Date()): string {
+  const day = dayMonthNumericFormatter.format(date);
+  const time = timeFormatter.format(date).replace(":", "h");
+  return `${day}${yearSuffixIfNeeded(date, now)} · ${time}`;
+}
+
 /** "12 décembre à 20h30" — used in emails, ajoute l'année si nécessaire */
 export function formatOutingDateConversational(date: Date, now: Date = new Date()): string {
   const day = new Intl.DateTimeFormat("fr-FR", {

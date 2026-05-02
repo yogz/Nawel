@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
-import { participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
 import {
   listAllMyOutings,
@@ -100,22 +99,6 @@ export default async function SortieHome() {
   // bucket "date à voter" parce qu'on faisait `upcoming.slice(1)`.
   const heroOuting = upcoming.find((o) => o.startsAt !== null) ?? null;
 
-  // Headline needs a headcount for the next outing — fetch once from the
-  // participants table and compute yes/total in memory (tiny rows, fine).
-  let heroStats: { confirmed: number; total: number } | null = null;
-  if (heroOuting) {
-    const rows = await db
-      .select({ response: participants.response })
-      .from(participants)
-      .where(eq(participants.outingId, heroOuting.id));
-    heroStats = {
-      // `handle_own` = vient avec son propre billet. Sémantiquement confirmé,
-      // pas en attente — aligné avec emails J-1, dettes, achats, page détail.
-      confirmed: rows.filter((r) => r.response === "yes" || r.response === "handle_own").length,
-      total: rows.filter((r) => r.response !== "no").length,
-    };
-  }
-
   // Read the avatar from the DB rather than the session: Better Auth caches
   // `session.user.image` in the cookie at sign-in time, so a fresh upload
   // doesn't propagate to the nav avatar until the session is renewed. The
@@ -154,7 +137,7 @@ export default async function SortieHome() {
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
-      {heroOuting && heroOuting.startsAt && heroStats ? (
+      {heroOuting && heroOuting.startsAt ? (
         <>
           {/* Personal anchor: this used to disappear the moment a user had
               an upcoming outing, exactly when the page felt most data-rich
@@ -170,8 +153,6 @@ export default async function SortieHome() {
             title={heroOuting.title}
             location={heroOuting.location}
             startsAt={heroOuting.startsAt}
-            confirmed={heroStats.confirmed}
-            total={heroStats.total}
             heroImageUrl={heroOuting.heroImageUrl}
             deadlineAt={heroOuting.deadlineAt}
             status={heroOuting.status}

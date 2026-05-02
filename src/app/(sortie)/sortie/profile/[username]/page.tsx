@@ -358,7 +358,6 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           title={heroOuting.title}
           location={heroOuting.location}
           startsAt={heroOuting.startsAt}
-          confirmed={heroOuting.confirmedCount}
           heroImageUrl={heroOuting.heroImageUrl}
           deadlineAt={heroOuting.deadlineAt}
           status={heroOuting.status}
