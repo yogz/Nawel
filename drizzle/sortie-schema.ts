@@ -408,6 +408,37 @@ export const serviceCallStats = sortie.table(
 
 // === audit_log (append-only) ===
 
+// === user_follows ===
+//
+// Suivi asymétrique entre comptes Sortie. Un follow donne au suiveur :
+//   1. la sortie du créateur dans son carrousel home (sans avoir à
+//      retomber sur un lien privé `?k=…` à chaque fois) ;
+//   2. l'inline RSVP sur le profil du créateur (équivalent au gate
+//      `?k=<rsvpInviteToken>` mais persistant).
+//
+// Le gate d'entrée se fait au moment du `followUser` action — il faut
+// que le suiveur ait passé une fois par le lien privé ET soit connecté.
+// Une fois la row insérée, elle survit à la rotation du token (le
+// créateur retire à la main depuis sa liste s'il veut couper).
+export const userFollows = sortie.table(
+  "user_follows",
+  {
+    followerUserId: text("follower_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    followedUserId: text("followed_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.followerUserId, t.followedUserId] }),
+    // Lookup "qui me suit" pour la liste sur /moi — l'index PK couvre
+    // déjà "qui je suis" via le préfixe followerUserId.
+    followedIdx: index("sortie_user_follows_followed_idx").on(t.followedUserId),
+  })
+);
+
 export const auditLog = sortie.table(
   "audit_log",
   {
@@ -521,5 +552,18 @@ export const magicLinksRelations = relations(magicLinks, ({ one }) => ({
   outing: one(outings, {
     fields: [magicLinks.outingId],
     references: [outings.id],
+  }),
+}));
+
+export const userFollowsRelations = relations(userFollows, ({ one }) => ({
+  follower: one(user, {
+    fields: [userFollows.followerUserId],
+    references: [user.id],
+    relationName: "follower",
+  }),
+  followed: one(user, {
+    fields: [userFollows.followedUserId],
+    references: [user.id],
+    relationName: "followed",
   }),
 }));

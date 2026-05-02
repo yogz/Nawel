@@ -415,3 +415,38 @@ export function outingModifiedEmail(args: {
     }),
   };
 }
+
+/**
+ * Envoyé au créateur à chaque nouvelle row dans `user_follows`. Sert de
+ * chien de garde si le `rsvpInviteToken` a leaké : le créateur voit
+ * arriver un nom inconnu et peut le retirer depuis sa liste sur /moi.
+ *
+ * Pas de CTA dur (le destinataire ne *doit* rien faire) — juste un
+ * lien tertiaire vers /moi pour gérer la liste si besoin.
+ */
+export function newFollowerEmail(args: {
+  followedName: string;
+  followerName: string;
+  manageUrl: string;
+}): { subject: string; html: string } {
+  const follower = escapeHtml(args.followerName);
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${follower} te suit</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${follower} verra tes prochaines sorties dans son fil et pourra répondre directement.
+    </p>
+    <p style="margin:0 0 28px;${BODY_P};font-size:13px;color:${INK_MUTED};">
+      Si tu ne reconnais pas ce nom, tu peux le retirer depuis ta liste de suiveurs.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.manageUrl, "Gérer mes suiveurs")}
+    </p>
+  `;
+  return {
+    subject: `${args.followerName} te suit sur Sortie`,
+    html: renderEmail({
+      preheader: `${args.followerName} verra tes prochaines sorties.`,
+      body,
+    }),
+  };
+}

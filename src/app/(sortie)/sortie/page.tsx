@@ -28,8 +28,10 @@ import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { PendingActionsStrip } from "@/features/sortie/components/pending-actions-strip";
+import { FollowedOutingsRow } from "@/features/sortie/components/followed-outings-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { computePendingActions } from "@/features/sortie/lib/pending-actions";
+import { listFollowedOutingsForCarousel } from "@/features/sortie/queries/follow-queries";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
 import { ResetDeviceTrigger } from "@/features/sortie/components/reset-device-trigger";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
@@ -62,7 +64,10 @@ export default async function SortieHome() {
     return <LandingV2 />;
   }
 
-  const { upcoming: upcomingRaw, past } = await listAllMyOutings(userId);
+  const [{ upcoming: upcomingRaw, past }, followedCarouselRows] = await Promise.all([
+    listAllMyOutings(userId),
+    listFollowedOutingsForCarousel(userId),
+  ]);
   // Charge les participations du user sur ses outings (créations +
   // celles où il a RSVP). Sans ça, l'eyebrow d'état "✓ Tu viens / ✓
   // Tu as voté" ne s'affiche pas sur la home logged-in et un user
@@ -183,6 +188,14 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
+
+      {/* Carrousel des sorties des comptes que le user suit, sur lesquelles
+          il n'a pas (encore) RSVP. Posé entre le hero / vibes et les
+          UpcomingBuckets pour laisser à l'écran principal sa hiérarchie :
+          d'abord ce que tu as à faire (PendingActionsStrip + hero), puis
+          ce que tes potes proposent, puis ta propre checklist. Section
+          silencieuse si vide — pas de header orphelin. */}
+      {followedCarouselRows.length > 0 && <FollowedOutingsRow outings={followedCarouselRows} />}
 
       {restUpcoming.length > 0 && (
         <UpcomingBuckets

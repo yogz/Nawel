@@ -29,6 +29,8 @@ import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { RecentlyAddedRow } from "@/features/sortie/components/recently-added-row";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-prompt";
+import { FollowToggle } from "@/features/sortie/components/follow-toggle";
+import { isFollowing } from "@/features/sortie/queries/follow-queries";
 import { cookies } from "next/headers";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
@@ -186,11 +188,29 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   // Token validation is server-side only — we never expose `rsvpInviteToken`
   // to the client, and we give no signal distinguishing "no token" from
   // "wrong token" (the whole page renders as vitrine in both cases).
-  const showRsvp =
+  const tokenValid =
     typeof k === "string" &&
     k.length > 0 &&
     row.rsvpInviteToken !== null &&
     row.rsvpInviteToken === k;
+
+  const session = await auth.api.getSession({ headers: await headers() });
+  const isSelf = session?.user?.id === row.id;
+
+  // Le suiveur passe le gate sans avoir besoin du `?k=` — la relation
+  // user_follows est persistante (la rotation du token n'affecte pas
+  // les follows existants ; cf. follow-actions.ts). Ne lookup que si
+  // un user est connecté ET n'est pas le proprio (pas de self-follow).
+  const viewerFollows =
+    session?.user && !isSelf
+      ? await isFollowing({ followerUserId: session.user.id, followedUserId: row.id })
+      : false;
+
+  // Showcase = vitrine. Lien privé = checklist d'engagements. Le
+  // gate s'ouvre désormais via deux portes : (a) le `?k=` token, (b)
+  // une relation `user_follows` déjà établie. Sémantique conservée :
+  // un visiteur sans aucun des deux ne voit que la vitrine.
+  const showRsvp = tokenValid || viewerFollows;
 
   const { upcoming: upcomingRaw, past } = await listPublicProfileOutings(row.id);
   // La query renvoie `desc(createdAt)` — sans tri par horizon temporel,
@@ -198,8 +218,6 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   // sortie de samedi prochain créée la semaine dernière. Aligne sur
   // l'ordre de la home `/` (cf. note dans page.tsx du même flow).
   const upcoming = sortUpcomingByStartsAt(upcomingRaw);
-  const session = await auth.api.getSession({ headers: await headers() });
-  const isSelf = session?.user?.id === row.id;
 
   // Vitrine publique : on featured la prochaine sortie en hero
   // (LiveStatusHero) pour donner une accroche au visiteur curieux.
@@ -298,6 +316,18 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               {row.name}
             </h1>
           </div>
+          {/* Follow toggle visible quand le visiteur est connecté ET
+              n'est pas le proprio. Si déjà follower, montre toujours le
+              bouton (pour pouvoir se désabonner). Sinon, affiché si le
+              token `?k=` est valide — sans token, le bouton ne s'affiche
+              pas (le composant retourne null). */}
+          {session?.user && !isSelf && (
+            <FollowToggle
+              targetUserId={row.id}
+              isFollowing={viewerFollows}
+              inviteToken={tokenValid && typeof k === "string" ? k : ""}
+            />
+          )}
         </div>
         {row.bio && !showRsvp && (
           <p className="mt-5 max-w-md text-[15px] leading-[1.5] text-ink-500">{row.bio}</p>

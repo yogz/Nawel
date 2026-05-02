@@ -14,6 +14,7 @@ import { buildSortieAuthEmail, buildSortieClaimPromptEmail } from "@/lib/auth-em
 import {
   debtReminderEmail,
   j1ReminderEmail,
+  newFollowerEmail,
   outingCancelledEmail,
   outingModifiedEmail,
   paymentConfirmedEmail,
@@ -212,6 +213,21 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
     sourcePath: "src/lib/auth-emails.ts:73",
     render: () => buildSortieAuthEmail({ kind: "email-verification", ctaUrl: MOCK_CTA_URL }),
   },
+  // --- Follow flow ---
+  {
+    id: "new-follower",
+    name: "Nouveau suiveur",
+    trigger:
+      "Server Action `followUserAction` — un visiteur logué clique « Suivre » via lien privé.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:425",
+    render: () =>
+      newFollowerEmail({
+        followedName: "Léa",
+        followerName: "Bob",
+        manageUrl: `${MOCK_HOME_URL}/moi`,
+      }),
+  },
+
   {
     id: "auth-claim-prompt",
     name: "Bienvenue post-claim (≥ 2 RSVP même orga)",

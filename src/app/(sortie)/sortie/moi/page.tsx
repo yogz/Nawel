@@ -9,6 +9,7 @@ import {
   listArchivedOutings,
   listPublicProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
+import { listFollowers } from "@/features/sortie/queries/follow-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { UsernameForm } from "@/features/sortie/components/username-form";
@@ -21,6 +22,7 @@ import { ProfileShareButton } from "@/features/sortie/components/profile-share-b
 import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
 import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
 import { CalendarFeedManager } from "@/features/sortie/components/calendar-feed-manager";
+import { FollowerList } from "@/features/sortie/components/follower-list";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 export const metadata = {
@@ -78,8 +80,11 @@ export default async function ProfileSettingsPage() {
     },
   });
 
-  const { upcoming, past } = await listPublicProfileOutings(session.user.id);
-  const archived = await listArchivedOutings(session.user.id);
+  const [{ upcoming, past }, archived, followers] = await Promise.all([
+    listPublicProfileOutings(session.user.id),
+    listArchivedOutings(session.user.id),
+    listFollowers(session.user.id),
+  ]);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
   // and prod (sortie.colist.fr) both produce a correct shareable URL without
@@ -201,6 +206,15 @@ export default async function ProfileSettingsPage() {
               token={row?.rsvpInviteToken ?? null}
               origin={origin}
             />
+          </section>
+
+          <SectionDivider />
+          <SectionHeading
+            title="Tes suiveurs"
+            subtitle="Ils verront tes prochaines sorties dans leur fil et pourront répondre directement, sans repasser par ton lien."
+          />
+          <section className="mb-14">
+            <FollowerList followers={followers} />
           </section>
         </>
       )}
