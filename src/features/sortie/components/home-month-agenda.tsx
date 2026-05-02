@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
-import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
+import { AgendaMonthStrip } from "@/features/sortie/components/agenda-month-strip";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
@@ -161,11 +161,8 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
 
   return (
     <>
-      <section className="mb-10 rounded-2xl bg-surface-100 p-5 ring-1 ring-white/5">
-        <header className="mb-4 flex items-baseline justify-between gap-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-            ─ ton calendrier ─
-          </p>
+      <section className="mb-10 rounded-2xl bg-surface-100 p-4 ring-1 ring-white/5">
+        <div className="mb-3 flex justify-end">
           <Link
             href="/agenda"
             className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
@@ -173,8 +170,8 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
             vue détaillée
             <ArrowUpRight size={12} strokeWidth={2.4} />
           </Link>
-        </header>
-        <AgendaMonthHeatmap
+        </div>
+        <AgendaMonthStrip
           now={now}
           buckets={buckets}
           offset={monthOffset}
