@@ -25,6 +25,12 @@ type Props = {
  * était dupliqué dans `OutingProfileCard` et `RecentlyAddedRow` (le
  * `LiveStatusHero` garde sa propre variante avec un transparent stop
  * différent — fallback à pleine taille hero, calibré séparément).
+ *
+ * Hot-spots calibrés "atténués" : alpha 0.55 au centre, transparent à
+ * 38% (au lieu de 0% / 50%). Sur les rangées denses (carrousel "dans ton
+ * réseau"), les halos pleins-saturés mangeaient le titre et volaient
+ * l'attention au hero. La signature couleur reste lisible, l'intensité
+ * redescend au niveau d'une texture, pas d'un signal.
  */
 export function OutingPosterFallback({
   title,
@@ -41,7 +47,7 @@ export function OutingPosterFallback({
       aria-hidden="true"
       className={`relative flex items-center justify-center overflow-hidden ${className ?? ""}`}
       style={{
-        background: `radial-gradient(circle at ${hotPos}, #FF3D81 0%, transparent 50%), radial-gradient(circle at ${acidPos}, #C7FF3C 0%, transparent 50%), #1a1a1a`,
+        background: `radial-gradient(circle at ${hotPos}, rgba(255,61,129,0.55) 0%, transparent 38%), radial-gradient(circle at ${acidPos}, rgba(199,255,60,0.55) 0%, transparent 38%), #0f0f0f`,
       }}
     >
       {mode === "title" ? (

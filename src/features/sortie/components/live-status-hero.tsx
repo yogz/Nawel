@@ -169,7 +169,7 @@ export function LiveStatusHero({
               } w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10`}
               style={{
                 background:
-                  "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
+                  "radial-gradient(circle at 25% 20%, rgba(255,61,129,0.55) 0%, transparent 38%), radial-gradient(circle at 80% 80%, rgba(199,255,60,0.55) 0%, transparent 38%), #0f0f0f",
               }}
             >
               <span
