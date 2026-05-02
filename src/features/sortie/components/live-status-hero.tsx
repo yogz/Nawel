@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, MapPin } from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate, formatOutingDayMonthTime } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
@@ -117,6 +117,19 @@ export function LiveStatusHero({
           } font-black tracking-[-0.04em] text-ink-700 group-hover:text-acid-600`}
         >
           {title}
+          {/* Chevron inline qui suit le titre comme un mot final (pattern
+              NYT/Apple News). Sur titre multi-lignes il colle naturellement
+              à la fin de la dernière ligne, sans wrapper flex qui casserait
+              le wrapping. `align-baseline` fait reposer le SVG sur la
+              baseline du texte plutôt que sur sa box, ce qui aligne le
+              hampe du chevron avec les capitales du titre. */}
+          <ArrowUpRight
+            aria-hidden="true"
+            strokeWidth={2.4}
+            className={`${
+              compact ? "ml-1.5 size-6 sm:size-8" : "ml-2 size-8 sm:size-10"
+            } inline-block shrink-0 align-baseline text-ink-500 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-acid-600`}
+          />
         </Heading>
         <p className="mt-3 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
           <CalendarDays
