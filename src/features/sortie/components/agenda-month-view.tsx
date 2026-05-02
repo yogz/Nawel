@@ -4,7 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AgendaDayDrawer } from "@/features/sortie/components/agenda-day-drawer";
-import { buildMonthGrid, type DayBucket, type DayCell } from "@/features/sortie/lib/agenda-grid";
+import {
+  AGENDA_WINDOW_DAYS,
+  buildMonthGrid,
+  type DayBucket,
+  type DayCell,
+} from "@/features/sortie/lib/agenda-grid";
 
 type Props = {
   now: Date;
@@ -45,12 +50,11 @@ export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props)
   // drawer est interne au calendrier, pas besoin de remonter au parent.
   const [selectedDayKey, setSelectedDayKey] = useState<string | null>(null);
 
-  // 365j en arrière : la fenêtre data de /agenda est symétrique (cf.
-  // `listMyAgendaActivity`), donc les mois passés dans cet horizon ne
-  // doivent pas être grisés — le user peut les browser et y voir ses
-  // events historiques.
+  // Fenêtre symétrique sur /agenda : les mois passés dans l'horizon
+  // `AGENDA_WINDOW_DAYS` ne doivent pas être grisés, sinon le user ne
+  // peut pas browse son historique.
   const month = useMemo(
-    () => buildMonthGrid(now, buckets, offset, 365, 365),
+    () => buildMonthGrid(now, buckets, offset, AGENDA_WINDOW_DAYS, AGENDA_WINDOW_DAYS),
     [now, buckets, offset]
   );
 

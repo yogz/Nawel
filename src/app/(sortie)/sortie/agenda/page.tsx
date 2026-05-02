@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth-config";
 import { AgendaView } from "@/features/sortie/components/agenda-view";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { resolveBackLink } from "@/features/sortie/lib/back-link";
 import { listMyAgendaActivity } from "@/features/sortie/queries/outing-queries";
 
 export const metadata = {
@@ -12,22 +13,15 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AgendaPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ from?: string }>;
-}) {
+export default async function AgendaPage() {
   const h = await headers();
   const session = await auth.api.getSession({ headers: h });
-  // Back contextuel : la home pousse `?from=home` sur le lien "vue
-  // détaillée". On retombe sur /moi sinon (entrée par bookmark, profil).
-  const fromHome = (await searchParams).from === "home";
-  const back = fromHome ? { href: "/", label: "accueil" } : { href: "/moi", label: "profil" };
+  const back = resolveBackLink(h.get("referer"), h.get("host"));
 
   if (!session?.user) {
     return (
       <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
-        <BackLink href={back.href} label={back.label} />
+        <BackLink {...back} />
         <header className="mb-10">
           <Eyebrow glow className="mb-3">
             ─ ton agenda ─

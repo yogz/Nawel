@@ -19,6 +19,7 @@ import {
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
+import { AGENDA_WINDOW_DAYS } from "@/features/sortie/lib/agenda-grid";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
 // Fenêtre de rétention historique pour le flux iCal personnel : on garde
@@ -168,13 +169,6 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
   return { upcoming, past };
 }
-
-// Fenêtre data agenda : 1 an glissant à partir de `now`. La vue mois
-// du hub est navigable sans cap (flèches + swipe), donc on alimente
-// large pour que la nav forward montre des events réels au lieu de
-// mois grisés vides. 365j couvre les saisons festives lointaines
-// (festivals d'été planifiés en hiver, calendriers scolaires).
-const AGENDA_WINDOW_DAYS = 365;
 
 export type AgendaItem = {
   outingId: string;

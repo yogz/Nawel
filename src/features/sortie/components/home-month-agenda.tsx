@@ -167,7 +167,7 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
         />
         <div className="mt-3 flex justify-end">
           <Link
-            href="/agenda?from=home"
+            href="/agenda"
             className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
           >
             vue détaillée

@@ -1,6 +1,18 @@
 import type { AgendaItem } from "@/features/sortie/queries/outing-queries";
 import { parisDayKey } from "./date-fr";
 
+// Fenêtre data agenda : 1 an de chaque côté de `now`. La vue mois est
+// navigable sans cap (flèches + swipe) ; on alimente large pour que la
+// nav forward montre des events réels et que la nav backward laisse
+// browser l'historique. 365j couvre les saisons festives lointaines
+// (festivals d'été planifiés en hiver, calendriers scolaires).
+//
+// Source unique partagée entre le filtre serveur (`listMyAgendaActivity`)
+// et la grille client (`buildMonthGrid` via `AgendaMonthView`) — un drift
+// entre les deux ferait apparaître des cellules data sur des jours
+// marqués `outOfWindow` (ou l'inverse).
+export const AGENDA_WINDOW_DAYS = 365;
+
 const TZ = "Europe/Paris";
 
 const longMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
@@ -138,10 +150,10 @@ export function buildMonthGrid(
   now: Date,
   buckets: Map<string, DayBucket>,
   monthOffset: number,
-  windowDays = 365,
+  windowDays = AGENDA_WINDOW_DAYS,
   // Borne basse de la fenêtre data (jours en arrière de `now`). 0 par
   // défaut — comportement historique "future-only" pour les surfaces
-  // home. Sur /agenda on passe 365 pour permettre de browse les passées.
+  // home. Sur /agenda on passe `AGENDA_WINDOW_DAYS` pour browse les passées.
   windowDaysBack = 0
 ): MonthGrid {
   const todayKey = parisDayKey(now);
