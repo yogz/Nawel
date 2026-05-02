@@ -207,9 +207,7 @@ export default async function SortieHome() {
           }))}
           agendaItems={agendaItems}
           viewerUserId={userId}
-          loggedInName={session.user.name ?? null}
           nowIso={now.toISOString()}
-          outingBaseUrl={PUBLIC_BASE}
         />
       )}
       {past.length > 0 && (

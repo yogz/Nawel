@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
-import { AgendaMonthView } from "@/features/sortie/components/agenda-month-view";
-import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
+import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { parisDayKey } from "@/features/sortie/lib/date-fr";
@@ -38,9 +38,7 @@ type Props = {
    * le calendrier ET sert d'index "ce qui a une date" vs "à dater". */
   agendaItems: AgendaItem[];
   viewerUserId: string;
-  loggedInName: string | null;
   nowIso: string;
-  outingBaseUrl: string;
 };
 
 /**
@@ -61,14 +59,7 @@ type Props = {
  *  - Mois vide : placeholder pointillé pour signifier "rien ici, le
  *    calendrier marche toujours" plutôt qu'absence muette.
  */
-export function HomeMonthAgenda({
-  outings,
-  agendaItems,
-  viewerUserId,
-  loggedInName,
-  nowIso,
-  outingBaseUrl,
-}: Props) {
+export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: Props) {
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [monthOffset, setMonthOffset] = useState(0);
 
@@ -125,6 +116,28 @@ export function HomeMonthAgenda({
 
   const hasArchivableInMonth = monthFiltered.some((o) => o.creatorUserId === viewerUserId);
 
+  // Tap sur une cellule heatmap : scroll vers la 1re row de ce jour dans
+  // la liste compacte juste en dessous, et flash 1 s pour la signaler.
+  // Si plusieurs outings tombent ce jour-là, on prend simplement le 1er
+  // (datée prioritaire sur sondage — déjà l'ordre dans le bucket).
+  const handleDaySelect = useCallback(
+    (dayKey: string) => {
+      const bucket = buckets.get(dayKey);
+      const firstOutingId = bucket?.fixed[0]?.outingId ?? bucket?.vote[0]?.item.outingId;
+      if (!firstOutingId) {
+        return;
+      }
+      const el = document.getElementById(`outing-row-${firstOutingId}`);
+      if (!el) {
+        return;
+      }
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.setAttribute("data-flash", "true");
+      window.setTimeout(() => el.removeAttribute("data-flash"), 1000);
+    },
+    [buckets]
+  );
+
   return (
     <>
       <section className="mb-10 rounded-2xl bg-surface-100 p-5 ring-1 ring-white/5">
@@ -140,11 +153,12 @@ export function HomeMonthAgenda({
             <ArrowUpRight size={12} strokeWidth={2.4} />
           </Link>
         </header>
-        <AgendaMonthView
+        <AgendaMonthHeatmap
           now={now}
           buckets={buckets}
           offset={monthOffset}
           onOffsetChange={setMonthOffset}
+          onDaySelect={handleDaySelect}
         />
       </section>
 
@@ -161,21 +175,26 @@ export function HomeMonthAgenda({
           <>
             {hasArchivableInMonth && (
               <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
-                ↳ swipe une carte vers la gauche pour l&rsquo;archiver
+                ↳ swipe une ligne vers la gauche pour l&rsquo;archiver
               </p>
             )}
             <ArchivableOutingList
               isPast={false}
-              listClassName="flex flex-col gap-4"
+              listClassName="flex flex-col gap-2"
               items={monthFiltered.map((o, idx) => ({
                 row: o,
                 canArchive: o.creatorUserId === viewerUserId,
                 node: (
                   <div
-                    className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
+                    id={`outing-row-${o.id}`}
+                    className="group/flash motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
                     style={{ animationDelay: `${Math.min(idx, 9) * 40}ms` }}
                   >
-                    <OutingCard outing={o} loggedInName={loggedInName} baseUrl={outingBaseUrl} />
+                    <CompactOutingRow
+                      outing={o}
+                      resolvedRsvp={o.resolvedRsvp}
+                      viewerUserId={viewerUserId}
+                    />
                   </div>
                 ),
               }))}
@@ -184,26 +203,5 @@ export function HomeMonthAgenda({
         )}
       </section>
     </>
-  );
-}
-
-function OutingCard({
-  outing,
-  loggedInName,
-  baseUrl,
-}: {
-  outing: HomeOuting;
-  loggedInName: string | null;
-  baseUrl: string;
-}) {
-  return (
-    <OutingProfileCard
-      outing={outing}
-      showRsvp
-      myRsvp={outing.resolvedRsvp}
-      loggedInName={loggedInName}
-      outingBaseUrl={baseUrl}
-      isPast={false}
-    />
   );
 }
