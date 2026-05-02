@@ -53,9 +53,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
           {month.label}
         </h3>
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-          {eventDayCount > 0
-            ? `${String(eventDayCount).padStart(2, "0")} jour${eventDayCount > 1 ? "s" : ""}`
-            : "─"}
+          ({String(eventDayCount).padStart(2, "0")})
         </span>
       </header>
 
@@ -107,7 +105,7 @@ function DaySquare({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string)
   // (~8 px sur mobile 360 px). Vide = surface neutre, datée = lime,
   // sondage = rose, mixte = split diagonal 45°.
   const squareClass = cn(
-    "block aspect-square w-full rounded-sm transition-colors duration-motion-standard",
+    "block aspect-square w-full transition-colors duration-motion-standard",
     !hasEvent && "bg-surface-300/50",
     day.hasFixed && day.hasVote && "bg-gradient-to-tr from-acid-500 from-50% to-hot-500 to-50%",
     day.hasFixed && !day.hasVote && "bg-acid-500",

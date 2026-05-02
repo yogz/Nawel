@@ -161,7 +161,7 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
 
   return (
     <>
-      <section className="mb-10 rounded-2xl bg-surface-100 p-4 ring-1 ring-white/5">
+      <section className="mb-10">
         <AgendaMonthHeatmap
           now={now}
           buckets={buckets}
