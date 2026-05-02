@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import type { ResolvedMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
@@ -158,6 +159,9 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
   return (
     <>
       <section className="mb-10">
+        <Eyebrow tone="muted" className="mb-3">
+          ─ ton agenda
+        </Eyebrow>
         <AgendaMonthHeatmap
           now={now}
           buckets={buckets}
