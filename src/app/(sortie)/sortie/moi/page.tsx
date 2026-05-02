@@ -6,10 +6,12 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { listArchivedOutings } from "@/features/sortie/queries/outing-queries";
+import { listFollowers } from "@/features/sortie/queries/follow-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
+import { FollowerList } from "@/features/sortie/components/follower-list";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
@@ -74,7 +76,10 @@ export default async function ProfileSettingsPage() {
     },
   });
 
-  const archived = await listArchivedOutings(session.user.id);
+  const [archived, followers] = await Promise.all([
+    listArchivedOutings(session.user.id),
+    listFollowers(session.user.id),
+  ]);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
   // and prod (sortie.colist.fr) both produce a correct shareable URL without
@@ -189,6 +194,19 @@ export default async function ProfileSettingsPage() {
               token={row?.rsvpInviteToken ?? null}
               origin={origin}
             />
+          </section>
+
+          <SectionDivider />
+          <SectionHeading
+            title="Tes suiveurs"
+            subtitle={
+              followers.length > 0
+                ? "Ils voient tes prochaines sorties dans leur fil. Tu peux retirer un suiveur en deux taps."
+                : "Personne ne te suit encore. Partage ton lien privé pour qu'on puisse s'abonner."
+            }
+          />
+          <section className="mb-14">
+            <FollowerList followers={followers} />
           </section>
         </>
       )}

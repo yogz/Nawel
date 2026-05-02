@@ -14,6 +14,7 @@ import { buildSortieAuthEmail, buildSortieClaimPromptEmail } from "@/lib/auth-em
 import {
   debtReminderEmail,
   j1ReminderEmail,
+  newFollowerEmail,
   outingCancelledEmail,
   outingModifiedEmail,
   paymentConfirmedEmail,
@@ -187,6 +188,21 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
         creditorName: "Léa",
         amountCents: 2400,
         outingUrl: MOCK_OUTING_URL,
+      }),
+  },
+
+  // --- Follow ---
+  {
+    id: "new-follower",
+    name: "Nouveau suiveur",
+    trigger:
+      "Server Action `followUserAction` — notifie le créateur quand quelqu'un commence à le suivre.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:380",
+    render: () =>
+      newFollowerEmail({
+        followedName: "Léa",
+        followerName: "Bob",
+        manageUrl: "https://sortie.colist.fr/moi",
       }),
   },
 

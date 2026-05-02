@@ -22,12 +22,14 @@ import {
   listMyParticipantsForOutings,
   type MyParticipantWithSlots,
 } from "@/features/sortie/queries/outing-queries";
+import { listFollowedOutingsForCarousel } from "@/features/sortie/queries/follow-queries";
 import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { HomeMonthAgenda } from "@/features/sortie/components/home-month-agenda";
+import { FollowedOutingsRow } from "@/features/sortie/components/followed-outings-row";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
@@ -75,9 +77,10 @@ export default async function SortieHome() {
   //    l'eyebrow "✓ Tu viens / ✓ Tu as voté" sur les cards. (Note :
   //    cette query a besoin des `outingIds` retournés par la 1re —
   //    on l'enchaîne après.)
-  const [{ upcoming: upcomingRaw, past }, agendaItems] = await Promise.all([
+  const [{ upcoming: upcomingRaw, past }, agendaItems, followedCarousel] = await Promise.all([
     listAllMyOutings(userId, now),
     listMyAgendaActivity(userId, now),
+    listFollowedOutingsForCarousel(userId, now),
   ]);
   const myRsvpByOuting = await listMyParticipantsForOutings({
     outingIds: [...upcomingRaw, ...past].map((o) => o.id),
@@ -193,6 +196,7 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
+      <FollowedOutingsRow outings={followedCarousel} />
       {(restUpcoming.length > 0 || agendaItems.length > 0) && (
         <HomeMonthAgenda
           outings={restUpcoming.map((o) => ({
