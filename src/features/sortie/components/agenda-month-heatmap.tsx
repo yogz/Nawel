@@ -88,7 +88,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
       </header>
 
       <div
-        className="grid h-12 overflow-hidden rounded-md bg-surface-200/40"
+        className="grid h-12 gap-px overflow-hidden rounded-md bg-surface-50"
         style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
       >
         {days.map((d) => (
@@ -122,11 +122,14 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
   const we = isWeekend(day.weekday);
   const heightPct = barHeightPct(day.count);
 
+  // Fond explicite par jour — le gap-px du parent laisse passer le
+  // bg-surface-50 du container et fait une fine séparation entre
+  // chaque colonne, rendant chaque jour distinctement lisible.
   const wrapperClass = cn(
     "relative flex h-full w-full items-end justify-center transition-colors duration-motion-standard",
-    we && "bg-surface-300/50",
-    day.isToday && "bg-ink-700/10",
-    day.count > 0 && "hover:bg-acid-500/15 focus-visible:bg-acid-500/15 focus-visible:outline-none"
+    we ? "bg-surface-300/60" : "bg-surface-200/50",
+    day.isToday && "bg-ink-700/20",
+    day.count > 0 && "hover:bg-acid-500/20 focus-visible:bg-acid-500/20 focus-visible:outline-none"
   );
 
   const ariaLabel =
