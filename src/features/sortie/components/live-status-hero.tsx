@@ -41,6 +41,12 @@ type Props = {
    * `h1` there so the document has exactly one.
    */
   headingLevel?: "h1" | "h2";
+  /**
+   * Variante densifiée pour la home `/` : titre plus petit, poster
+   * 16/9 au lieu de 3/2, marge basse réduite. Le profil public garde
+   * la version "vitrine" par défaut où le hero est la pièce centrale.
+   */
+  compact?: boolean;
 };
 
 /**
@@ -70,6 +76,7 @@ export function LiveStatusHero({
   mode,
   eyebrow = "Ta prochaine sortie",
   headingLevel = "h2",
+  compact = false,
 }: Props) {
   const canonical = slug ? `${slug}-${shortId}` : shortId;
   const Heading = headingLevel;
@@ -102,7 +109,11 @@ export function LiveStatusHero({
     // (400ms) makes the headline feel like it's been waiting for the
     // user rather than snapping into place. `motion-safe:` so reduced-
     // motion users get an instant render.
-    <section className="mb-10 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized">
+    <section
+      className={`${
+        compact ? "mb-6" : "mb-10"
+      } motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized`}
+    >
       <Eyebrow glow className="mb-3">
         {eyebrow}
       </Eyebrow>
@@ -111,7 +122,13 @@ export function LiveStatusHero({
         aria-label={`Voir la sortie ${title}`}
         className="group block rounded-2xl transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-4 focus-visible:ring-offset-surface-50 motion-safe:active:scale-[0.99]"
       >
-        <Heading className="text-[44px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 group-hover:text-acid-600 sm:text-6xl">
+        <Heading
+          className={`${
+            compact
+              ? "text-[32px] leading-[0.98] sm:text-[44px]"
+              : "text-[44px] leading-[0.95] sm:text-6xl"
+          } font-black tracking-[-0.04em] text-ink-700 group-hover:text-acid-600`}
+        >
           {title}
         </Heading>
         <p className="mt-3 flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.18em] text-ink-500">
@@ -143,7 +160,7 @@ export function LiveStatusHero({
           </p>
         )}
 
-        <div className="relative mt-5">
+        <div className={compact ? "relative mt-4" : "relative mt-5"}>
           {heroImageUrl ? (
             // `data-vt-poster` opts this image into the cross-document
             // View Transitions morph (see sortie.css).
@@ -152,13 +169,17 @@ export function LiveStatusHero({
               src={heroImageUrl}
               alt=""
               data-vt-poster
-              className="aspect-[3/2] w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
+              className={`${
+                compact ? "aspect-[16/9]" : "aspect-[3/2]"
+              } w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10`}
               style={{ filter: "saturate(1.15) contrast(1.05)" }}
             />
           ) : (
             <div
               aria-hidden="true"
-              className="relative flex aspect-[3/2] w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10"
+              className={`relative flex ${
+                compact ? "aspect-[16/9]" : "aspect-[3/2]"
+              } w-full items-center justify-center overflow-hidden rounded-2xl shadow-[var(--shadow-md)] ring-1 ring-ink-700/10`}
               style={{
                 background:
                   "radial-gradient(circle at 25% 20%, #FF3D81 0%, transparent 45%), radial-gradient(circle at 80% 80%, #C7FF3C 0%, transparent 45%), #1a1a1a",
