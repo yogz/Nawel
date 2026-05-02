@@ -15,19 +15,13 @@ type Props = {
 };
 
 /**
- * Heatmap façon GitHub contributions — 7 lignes (jours de la semaine,
- * lundi-first) × N colonnes (semaines du mois). Une seule scale acid à
- * 4 paliers (1 / 2 / 3 / 4+ events). Pas de distinction type
- * datée/sondage dans la couleur — le détail se lit dans la liste sous
- * le calendrier. Today = ring acid autour de la case.
+ * Grille pleine largeur du mois — 7 colonnes, cellules carrées (aspect-
+ * square) avec numéro du jour visible. Cases pleines en lime acid quand
+ * un event est présent, intensité scale 1/2/3+ pour signaler la charge.
+ * Today = ring crème pour contraste sur n'importe quel fond.
  */
 export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDaySelect }: Props) {
   const month = useMemo(() => buildMonthGrid(now, buckets, offset), [now, buckets, offset]);
-
-  // L'ordre `month.weeks.flat()` est par-semaine lundi-first :
-  // [L1, M1, M1, J1, V1, S1, D1, L2, M2, ...]. Avec `grid-flow-col`
-  // + `grid-rows-7`, ça remplit colonne par colonne (lundi…dimanche en
-  // bas), exactement le layout GitHub.
   const cells = useMemo(() => month.weeks.flat(), [month.weeks]);
 
   return (
@@ -51,50 +45,56 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         </NavButton>
       </header>
 
-      <div className="flex justify-center gap-1.5">
-        <div className="grid grid-rows-7 gap-1">
-          {WEEKDAY_LABELS.map((label, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="flex h-6 w-3 items-center justify-center font-mono text-[8px] uppercase tracking-[0.15em] text-ink-400"
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-        <div className="grid auto-cols-max grid-flow-col grid-rows-7 gap-1">
-          {cells.map((cell, idx) =>
-            cell ? (
-              <HeatCell
-                key={cell.dayKey}
-                cell={cell}
-                bucket={buckets.get(cell.dayKey)}
-                onSelect={onDaySelect}
-              />
-            ) : (
-              <div key={`empty-${idx}`} aria-hidden className="h-6 w-6" />
-            )
-          )}
-        </div>
+      <div className="mb-1 grid grid-cols-7 gap-1">
+        {WEEKDAY_LABELS.map((label, i) => (
+          <span
+            key={i}
+            aria-hidden
+            className="text-center font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400"
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map((cell, idx) =>
+          cell ? (
+            <HeatCell
+              key={cell.dayKey}
+              cell={cell}
+              bucket={buckets.get(cell.dayKey)}
+              onSelect={onDaySelect}
+            />
+          ) : (
+            <div key={`empty-${idx}`} aria-hidden className="aspect-square" />
+          )
+        )}
       </div>
     </section>
   );
 }
 
-// 4 paliers d'intensité acide façon GitHub. Plafond à 3+ pour tasser
-// les jours hyper-chargés au max sans gradient infini.
-function intensityClass(count: number): string {
+function intensityBg(count: number): string {
   if (count === 0) {
     return "bg-surface-300/30";
   }
   if (count === 1) {
-    return "bg-acid-500/30";
+    return "bg-acid-500/45";
   }
   if (count === 2) {
-    return "bg-acid-500/60";
+    return "bg-acid-500/75";
   }
   return "bg-acid-500";
+}
+
+function intensityText(count: number): string {
+  if (count === 0) {
+    return "text-ink-700/40";
+  }
+  // Tous les paliers actifs ont assez de contraste lime pour porter du
+  // surface-50 (noir) — meilleure lisibilité qu'un crème sur lime.
+  return "text-surface-50";
 }
 
 function HeatCell({
@@ -106,15 +106,14 @@ function HeatCell({
   bucket: DayBucket | undefined;
   onSelect: (dayKey: string) => void;
 }) {
-  const fixedCount = bucket?.fixed.length ?? 0;
-  const voteCount = bucket?.vote.length ?? 0;
-  const total = fixedCount + voteCount;
+  const total = (bucket?.fixed.length ?? 0) + (bucket?.vote.length ?? 0);
 
   const wrapperClass = cn(
-    "h-6 w-6 rounded-sm transition-colors duration-motion-standard",
-    intensityClass(total),
-    cell.outOfWindow && "opacity-40",
-    cell.isToday && "ring-1 ring-acid-500 ring-offset-1 ring-offset-surface-100",
+    "flex aspect-square items-center justify-center rounded-md font-mono text-[12px] font-semibold tabular-nums transition-colors duration-motion-standard",
+    intensityBg(total),
+    intensityText(total),
+    cell.outOfWindow && "opacity-30",
+    cell.isToday && "ring-2 ring-ink-700 ring-offset-1 ring-offset-surface-100",
     total > 0 &&
       "hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
   );
@@ -123,7 +122,11 @@ function HeatCell({
     total > 0 ? `${cell.dayKey} — ${total} événement${total > 1 ? "s" : ""}` : cell.dayKey;
 
   if (total === 0) {
-    return <div className={wrapperClass} aria-label={ariaLabel} />;
+    return (
+      <div className={wrapperClass} aria-label={ariaLabel}>
+        {cell.dayOfMonth}
+      </div>
+    );
   }
 
   return (
@@ -132,6 +135,8 @@ function HeatCell({
       onClick={() => onSelect(cell.dayKey)}
       className={wrapperClass}
       aria-label={ariaLabel}
-    />
+    >
+      {cell.dayOfMonth}
+    </button>
   );
 }
