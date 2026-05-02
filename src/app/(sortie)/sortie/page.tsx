@@ -30,7 +30,7 @@ import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { MiniMonthCalendar } from "@/features/sortie/components/mini-month-calendar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
-import { PendingActionsStrip } from "@/features/sortie/components/pending-actions-strip";
+import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { computePendingActions } from "@/features/sortie/lib/pending-actions";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
@@ -141,16 +141,16 @@ export default async function SortieHome() {
 
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
-      <nav className="mb-8 flex items-center justify-end">
+      <nav className="mb-8 flex items-center justify-between gap-3">
+        <PendingActionsInbox actions={pendingActions} />
         <Link
           href="/moi"
           aria-label="Mon profil"
-          className="rounded-full ring-1 ring-acid-600/55 transition-all duration-300 hover:ring-acid-600/80 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
+          className="ml-auto rounded-full ring-1 ring-acid-600/55 transition-all duration-300 hover:ring-acid-600/80 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
         >
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
-      <PendingActionsStrip actions={pendingActions} />
       {heroOuting && heroOuting.startsAt && heroStats ? (
         <>
           {/* Personal anchor: this used to disappear the moment a user had
