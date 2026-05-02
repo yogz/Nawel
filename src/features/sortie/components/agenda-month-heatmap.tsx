@@ -3,7 +3,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo } from "react";
 import { type DayBucket, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
-import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -14,10 +13,6 @@ type Props = {
   onDaySelect: (dayKey: string) => void;
 };
 
-function isWeekend(weekday: number): boolean {
-  return weekday === 0 || weekday === 6;
-}
-
 function daysInMonth(monthKey: string): number {
   const [year, month] = monthKey.split("-").map(Number);
   return new Date(year, month, 0).getDate();
@@ -26,77 +21,59 @@ function daysInMonth(monthKey: string): number {
 type DayMark = {
   dayKey: string;
   dayOfMonth: number;
-  weekday: number;
   hasFixed: boolean;
   hasVote: boolean;
-  isToday: boolean;
 };
 
 export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDaySelect }: Props) {
   const month = useMemo(() => monthAtOffset(now, offset), [now, offset]);
-  const todayKey = useMemo(() => parisDayKey(now), [now]);
   const totalDays = useMemo(() => daysInMonth(month.monthKey), [month.monthKey]);
 
   const days = useMemo<DayMark[]>(() => {
     const out: DayMark[] = [];
     for (let d = 1; d <= totalDays; d++) {
       const dayKey = `${month.monthKey}-${String(d).padStart(2, "0")}`;
-      const date = new Date(`${dayKey}T12:00:00+02:00`);
       const bucket = buckets.get(dayKey);
       out.push({
         dayKey,
         dayOfMonth: d,
-        weekday: date.getDay(),
         hasFixed: (bucket?.fixed.length ?? 0) > 0,
         hasVote: (bucket?.vote.length ?? 0) > 0,
-        isToday: dayKey === todayKey,
       });
     }
     return out;
-  }, [buckets, month.monthKey, todayKey, totalDays]);
+  }, [buckets, month.monthKey, totalDays]);
 
   const eventDayCount = days.filter((d) => d.hasFixed || d.hasVote).length;
 
-  const gridStyle = { gridTemplateColumns: `repeat(${totalDays}, 1fr)` };
-
   return (
     <section>
-      <header className="mb-2 flex items-center justify-between gap-2">
+      <header className="mb-2 flex items-baseline justify-center gap-2">
+        <h3 className="font-display text-[14px] font-bold uppercase leading-none tracking-tight text-ink-700">
+          {month.label}
+        </h3>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+          {eventDayCount > 0
+            ? `${String(eventDayCount).padStart(2, "0")} jour${eventDayCount > 1 ? "s" : ""}`
+            : "─"}
+        </span>
+      </header>
+
+      <div className="flex items-center gap-2">
         <MiniChevron label="mois précédent" onClick={() => onOffsetChange(offset - 1)}>
           <ChevronLeft size={14} strokeWidth={2.4} />
         </MiniChevron>
-        <div className="flex items-baseline gap-2">
-          <h3 className="font-display text-[14px] font-bold uppercase leading-none tracking-tight text-ink-700">
-            {month.label}
-          </h3>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-            {eventDayCount > 0
-              ? `${String(eventDayCount).padStart(2, "0")} jour${eventDayCount > 1 ? "s" : ""}`
-              : "─"}
-          </span>
+        <div
+          className="grid flex-1 items-center gap-px"
+          style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
+        >
+          {days.map((d) => (
+            <DaySquare key={d.dayKey} day={d} onSelect={onDaySelect} />
+          ))}
         </div>
         <MiniChevron label="mois suivant" onClick={() => onOffsetChange(offset + 1)}>
           <ChevronRight size={14} strokeWidth={2.4} />
         </MiniChevron>
-      </header>
-
-      <div className="grid h-12 overflow-hidden rounded-md bg-surface-200/40" style={gridStyle}>
-        {days.map((d) => (
-          <DayBar key={d.dayKey} day={d} onSelect={onDaySelect} />
-        ))}
-      </div>
-
-      {/* Today est marqué par un underline 2 px hot directement sous la
-          colonne du jour (DayBar) — couplé à la donnée plutôt qu'orphelin
-          dans une row séparée. Économise 12 px verticaux. */}
-
-      {/* Brackets terminal en lieu et place des graduations 01/16/31. Le 16
-          dégage : un range entre crochets se lit comme une cote/n° de
-          série, plus brand que trois nombres dispersés. */}
-      <div className="mt-1 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.18em] text-ink-400">
-        <span>[ 01</span>
-        <span aria-hidden className="h-px flex-1 bg-ink-400/25" />
-        <span>{String(totalDays).padStart(2, "0")} ]</span>
       </div>
     </section>
   );
@@ -123,17 +100,18 @@ function MiniChevron({
   );
 }
 
-function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) => void }) {
-  const we = isWeekend(day.weekday);
+function DaySquare({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) => void }) {
   const hasEvent = day.hasFixed || day.hasVote;
-  const noBorderLeft = day.dayOfMonth === 1;
 
-  const wrapperClass = cn(
-    "relative flex h-full w-full items-end justify-center transition-colors duration-motion-standard",
-    // Bg WE seulement quand pas d'event : sinon le fond foncé
-    // concurrence le bâton et l'œil croit voir un event sur tous les WE.
-    we && !hasEvent && "bg-surface-300/80",
-    !noBorderLeft && "border-l border-surface-50/90",
+  // Carré aspect-square — la largeur 1fr du grid détermine la taille
+  // (~8 px sur mobile 360 px). Vide = surface neutre, datée = lime,
+  // sondage = rose, mixte = split diagonal 45°.
+  const squareClass = cn(
+    "block aspect-square w-full rounded-sm transition-colors duration-motion-standard",
+    !hasEvent && "bg-surface-300/50",
+    day.hasFixed && day.hasVote && "bg-gradient-to-tr from-acid-500 from-50% to-hot-500 to-50%",
+    day.hasFixed && !day.hasVote && "bg-acid-500",
+    !day.hasFixed && day.hasVote && "bg-hot-500",
     hasEvent && "hover:brightness-110 focus-visible:outline-none focus-visible:brightness-110"
   );
 
@@ -141,46 +119,16 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
     day.hasFixed && day.hasVote ? "datée + sondage" : day.hasFixed ? "datée" : "sondage";
   const ariaLabel = hasEvent ? `${day.dayKey} — ${typeLabel}` : day.dayKey;
 
-  // Bâton plein hauteur. Datée = lime, sondage = rose. Mixte = split
-  // diagonal 45° (acid bottom-left, hot top-right) au lieu de moitié-
-  // moitié horizontal qui lisait comme un bug de rendu.
-  const bar = hasEvent && (
-    <span
-      aria-hidden
-      className={cn(
-        "block h-full w-full",
-        day.hasFixed && day.hasVote
-          ? "bg-gradient-to-tr from-acid-500 from-50% to-hot-500 to-50%"
-          : day.hasFixed
-            ? "bg-acid-500"
-            : "bg-hot-500"
-      )}
-    />
-  );
-
-  // Today : underline 2 px hot collé en bas de la colonne, en absolute
-  // par-dessus le bâton si présent. Couplé à la donnée, pas orphelin.
-  const todayUnderline = day.isToday && (
-    <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 bg-hot-500" />
-  );
-
   if (!hasEvent) {
-    return (
-      <div className={wrapperClass} aria-label={ariaLabel}>
-        {todayUnderline}
-      </div>
-    );
+    return <div className={squareClass} aria-label={ariaLabel} />;
   }
 
   return (
     <button
       type="button"
       onClick={() => onSelect(day.dayKey)}
-      className={wrapperClass}
+      className={squareClass}
       aria-label={ariaLabel}
-    >
-      {bar}
-      {todayUnderline}
-    </button>
+    />
   );
 }
