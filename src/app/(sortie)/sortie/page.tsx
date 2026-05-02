@@ -119,36 +119,25 @@ export default async function SortieHome() {
         <Link
           href="/moi"
           aria-label="Mon profil"
-          className="ml-auto rounded-full ring-1 ring-acid-600/55 transition-all duration-300 hover:ring-acid-600/80 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
+          className="ml-auto rounded-full ring-1 ring-surface-400 transition-all duration-300 hover:ring-acid-600 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
         >
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
       {heroOuting && heroOuting.startsAt ? (
-        <>
-          {/* Personal anchor: this used to disappear the moment a user had
-              an upcoming outing, exactly when the page felt most data-rich
-              and least personal. Keeping it small + muted so it sets the
-              tone without competing with the LiveStatusHero headline. */}
-          <Eyebrow tone="muted" className="mb-3 inline-flex items-center gap-2">
-            <span aria-hidden>─ ◉ live ·</span>
-            {firstName.toLowerCase()}
-            <span aria-hidden>─</span>
-          </Eyebrow>
-          <LiveStatusHero
-            slug={heroOuting.slug}
-            shortId={heroOuting.shortId}
-            title={heroOuting.title}
-            location={heroOuting.location}
-            startsAt={heroOuting.startsAt}
-            heroImageUrl={heroOuting.heroImageUrl}
-            deadlineAt={heroOuting.deadlineAt}
-            status={heroOuting.status}
-            mode={heroOuting.mode}
-            headingLevel="h1"
-            compact
-          />
-        </>
+        <LiveStatusHero
+          slug={heroOuting.slug}
+          shortId={heroOuting.shortId}
+          title={heroOuting.title}
+          location={heroOuting.location}
+          startsAt={heroOuting.startsAt}
+          heroImageUrl={heroOuting.heroImageUrl}
+          deadlineAt={heroOuting.deadlineAt}
+          status={heroOuting.status}
+          mode={heroOuting.mode}
+          headingLevel="h1"
+          compact
+        />
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
           <Eyebrow glow className="mb-3">
@@ -336,8 +325,8 @@ function AnonInbox({
 
       {upcomingSorted.length > 0 && (
         <section className="mb-10">
-          <Eyebrow tone="hot" className="mb-3 text-hot-600">
-            ─ à venir ─
+          <Eyebrow tone="muted" className="mb-3">
+            ─ à venir
           </Eyebrow>
           <ul className="flex flex-col gap-4">
             {upcomingSorted.map((o) => (
@@ -358,8 +347,8 @@ function AnonInbox({
 
       {inbox.past.length > 0 && (
         <section className="mb-10">
-          <Eyebrow tone="hot" className="mb-3 text-hot-600">
-            ─ passées ─
+          <Eyebrow tone="muted" className="mb-3">
+            ─ passées
           </Eyebrow>
           <ul className="flex flex-col gap-4">
             {inbox.past.map((o) => (
