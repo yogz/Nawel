@@ -50,11 +50,12 @@ type Props = {
  * sorties dont une date (fixedDatetime ou un candidat de sondage) tombe
  * dans le mois affiché.
  *
- * Cas spéciaux :
- *  - Sorties "à dater" (vote sans aucun timeslot, ou outing sans
- *    fixedDatetime) : invisibles dans le calendrier ; on les remonte
- *    dans une section persistante au-dessus pour qu'elles ne
- *    disparaissent pas de la home.
+ * Contrat strict "list = calendar" :
+ *  - Si une sortie n'a aucune date dans la fenêtre agenda (sondage sans
+ *    timeslot proposé, ou legacy sans fixedDatetime), elle n'apparaît
+ *    nulle part sur `/`. Cohérence avec la grille — pas de date, pas
+ *    de jour, pas d'entrée. Le user la retrouve via la boîte de
+ *    réception (action "choisir la date" post-deadline) ou `/agenda`.
  *  - Hero : déjà mis en avant en haut de la page, donc volontairement
  *    exclu de cette liste (passé filtré côté page via `restUpcoming`).
  *  - Mois vide : placeholder pointillé pour signifier "rien ici, le
@@ -75,8 +76,12 @@ export function HomeMonthAgenda({
   const activeMonth = useMemo(() => monthAtOffset(now, monthOffset), [now, monthOffset]);
 
   // Index des outings qui ont au moins une date dans la fenêtre agenda.
-  // Sert à séparer "à dater" (absent du calendrier) des outings filtrables
-  // par mois — sans cet index on confondrait les deux cas.
+  // Les outings absents de cet index (sondages sans aucun timeslot, ou
+  // legacy sans fixedDatetime) sont volontairement invisibles sur `/` :
+  // pas de date ⇒ pas de mois ⇒ rien à afficher dans la liste filtrée
+  // par mois. Le user les retrouve via la boîte de réception (action
+  // "choisir la date" déclenchée par le sweeper post-deadline) ou via
+  // `/agenda`.
   const agendaItemByOutingId = useMemo(() => {
     const m = new Map<string, AgendaItem>();
     for (const it of agendaItems) {
@@ -84,11 +89,6 @@ export function HomeMonthAgenda({
     }
     return m;
   }, [agendaItems]);
-
-  const undated = useMemo(
-    () => outings.filter((o) => !agendaItemByOutingId.has(o.id)),
-    [outings, agendaItemByOutingId]
-  );
 
   // Filtrage mensuel : un outing apparaît dans la liste si une de ses
   // dates connues (fixedDate ou un candidat de sondage) tombe dans le
@@ -116,33 +116,9 @@ export function HomeMonthAgenda({
   }, [outings, agendaItemByOutingId, activeMonth.monthKey]);
 
   const hasArchivableInMonth = monthFiltered.some((o) => o.creatorUserId === viewerUserId);
-  const hasArchivableUndated = undated.some((o) => o.creatorUserId === viewerUserId);
 
   return (
     <>
-      {undated.length > 0 && (
-        <section className="mb-10">
-          <Eyebrow tone="hot" className="mb-3 flex items-center gap-2 text-hot-600">
-            <span>─ à dater ─</span>
-            <span className="text-ink-400">{String(undated.length).padStart(2, "0")}</span>
-          </Eyebrow>
-          {hasArchivableUndated && (
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
-              ↳ swipe une carte vers la gauche pour l&rsquo;archiver
-            </p>
-          )}
-          <ArchivableOutingList
-            isPast={false}
-            listClassName="flex flex-col gap-4"
-            items={undated.map((o) => ({
-              row: o,
-              canArchive: o.creatorUserId === viewerUserId,
-              node: <OutingCard outing={o} loggedInName={loggedInName} baseUrl={outingBaseUrl} />,
-            }))}
-          />
-        </section>
-      )}
-
       <section className="mb-10 rounded-2xl bg-surface-100 p-5 ring-1 ring-white/5">
         <header className="mb-4 flex items-baseline justify-between gap-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
