@@ -6,7 +6,6 @@ import Link from "next/link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
-import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import type { ResolvedMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
@@ -181,10 +180,6 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
       </section>
 
       <section className="mb-10">
-        <Eyebrow tone="hot" className="mb-3 flex items-center gap-2 text-hot-600">
-          <span>─ en {activeMonth.label} ─</span>
-          <span className="text-ink-400">{String(monthFiltered.length).padStart(2, "0")}</span>
-        </Eyebrow>
         {monthFiltered.length === 0 ? (
           <p className="rounded-xl border border-dashed border-surface-400 bg-surface-100/50 px-4 py-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
             ↳ rien sur ce mois — navigue le calendrier

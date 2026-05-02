@@ -197,9 +197,9 @@ export default async function SortieHome() {
         <EmptyHeroWithVibes firstName={firstName} />
       )}
       <FollowedOutingsRow outings={followedCarousel} />
-      {(restUpcoming.length > 0 || agendaItems.length > 0) && (
+      {(upcoming.length > 0 || agendaItems.length > 0) && (
         <HomeMonthAgenda
-          outings={restUpcoming.map((o) => ({
+          outings={upcoming.map((o) => ({
             ...o,
             // Résolu côté server pour ne pas faire traverser un Map<…, …>
             // à la frontière RSC vers HomeMonthAgenda (client).
