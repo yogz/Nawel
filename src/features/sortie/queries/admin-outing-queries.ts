@@ -16,7 +16,6 @@ export type AdminOutingRow = {
   fixedDatetime: Date | null;
   deadlineAt: Date;
   cancelledAt: Date | null;
-  hiddenFromProfileAt: Date | null;
   createdAt: Date;
   creator: { name: string; email: string | null; isAnon: boolean };
   confirmedCount: number;
@@ -24,8 +23,8 @@ export type AdminOutingRow = {
 
 /**
  * Liste admin paginée des sorties (plus récentes d'abord). On expose
- * tout : ouvert, annulé, archivé, settled. C'est de la supervision —
- * pas de filtre côté query, le filtrage est UI.
+ * tout : ouvert, annulé, settled. C'est de la supervision — pas de
+ * filtre côté query, le filtrage est UI.
  */
 export async function listAdminOutings({
   limit = 30,
@@ -41,7 +40,6 @@ export async function listAdminOutings({
       fixedDatetime: outings.fixedDatetime,
       deadlineAt: outings.deadlineAt,
       cancelledAt: outings.cancelledAt,
-      hiddenFromProfileAt: outings.hiddenFromProfileAt,
       createdAt: outings.createdAt,
       creatorUserId: outings.creatorUserId,
       creatorAnonName: outings.creatorAnonName,
@@ -65,7 +63,6 @@ export async function listAdminOutings({
     fixedDatetime: r.fixedDatetime,
     deadlineAt: r.deadlineAt,
     cancelledAt: r.cancelledAt,
-    hiddenFromProfileAt: r.hiddenFromProfileAt,
     createdAt: r.createdAt,
     confirmedCount: r.confirmedCount,
     creator: r.creatorUserId

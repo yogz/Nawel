@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
@@ -113,8 +112,6 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
     return matching.map((m) => m.outing);
   }, [outings, agendaItemByOutingId, activeMonth.monthKey]);
 
-  const hasArchivableInMonth = monthFiltered.some((o) => o.creatorUserId === viewerUserId);
-
   // Tap sur une cellule heatmap : scroll vers la 1re row de ce jour dans
   // la liste compacte juste en dessous, et flash 1 s pour la signaler.
   // Si plusieurs outings tombent ce jour-là, on prend simplement le 1er
@@ -185,34 +182,23 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
             ↳ rien sur ce mois — navigue le calendrier
           </p>
         ) : (
-          <>
-            {hasArchivableInMonth && (
-              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
-                ↳ swipe une ligne vers la gauche pour l&rsquo;archiver
-              </p>
-            )}
-            <ArchivableOutingList
-              isPast={false}
-              listClassName="flex flex-col gap-2"
-              items={monthFiltered.map((o, idx) => ({
-                row: o,
-                canArchive: o.creatorUserId === viewerUserId,
-                node: (
-                  <div
-                    id={`outing-row-${o.id}`}
-                    className="group/flash motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
-                    style={{ animationDelay: `${Math.min(idx, 9) * 40}ms` }}
-                  >
-                    <CompactOutingRow
-                      outing={o}
-                      resolvedRsvp={o.resolvedRsvp}
-                      viewerUserId={viewerUserId}
-                    />
-                  </div>
-                ),
-              }))}
-            />
-          </>
+          <ul className="flex flex-col gap-2">
+            {monthFiltered.map((o, idx) => (
+              <li key={o.id}>
+                <div
+                  id={`outing-row-${o.id}`}
+                  className="group/flash motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
+                  style={{ animationDelay: `${Math.min(idx, 9) * 40}ms` }}
+                >
+                  <CompactOutingRow
+                    outing={o}
+                    resolvedRsvp={o.resolvedRsvp}
+                    viewerUserId={viewerUserId}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </>

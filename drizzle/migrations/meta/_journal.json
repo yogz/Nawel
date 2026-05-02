@@ -274,6 +274,13 @@
       "when": 1777742833624,
       "tag": "0038_breezy_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1777758754718,
+      "tag": "0039_broken_nighthawk",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight, Ban, Archive, Clock } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Ban, Clock } from "lucide-react";
 import {
   listAdminOutings,
   countAdminOutings,
@@ -98,11 +98,6 @@ export default async function AdminOutingsPage({ searchParams }: { searchParams:
                   >
                     {STATUS_LABEL[o.status]}
                   </span>
-                  {o.hiddenFromProfileAt ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-surface-200 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-500">
-                      <Archive size={10} strokeWidth={2.2} /> archivée
-                    </span>
-                  ) : null}
                   {o.cancelledAt ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-red-900">
                       <Ban size={10} strokeWidth={2.2} /> annulée le{" "}

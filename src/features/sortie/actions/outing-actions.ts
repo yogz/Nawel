@@ -26,13 +26,11 @@ import { ensureSilentUserAccount } from "@/features/sortie/lib/silent-user";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { isOutingOwner } from "@/features/sortie/lib/owner";
 import {
-  archiveOutingSchema,
   cancelOutingSchema,
   createOutingSchema,
   pickTimeslotSchema,
   reopenPollSchema,
   resolveDeadline,
-  unarchiveOutingSchema,
   updateOutingSchema,
 } from "./schemas";
 
@@ -370,96 +368,6 @@ export async function cancelOutingAction(
   revalidatePath(`/${canonical}`);
   revalidatePath("/sortie/agenda");
   redirect(`/${canonical}`);
-}
-
-/**
- * Soft-archive — hides the outing from the creator's profile lists
- * without cancelling it. No email is sent, attendees still see the
- * outing at its canonical URL, and the creator can un-archive from
- * their "Archivées" tab. Distinct from `cancelOutingAction`, which
- * flips status + emails everyone.
- *
- * Returns `{ ok: true }` instead of redirecting so the caller (swipe
- * card with undo toast) can render an optimistic update + allow
- * reverting within 5s without a page reload.
- */
-export async function archiveOutingAction(
-  _prev: FormActionState,
-  formData: FormData
-): Promise<FormActionState> {
-  const parsed = archiveOutingSchema.safeParse(formDataToObject(formData));
-  if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
-  }
-  const { shortId } = parsed.data;
-  const user = await getSessionUser();
-  const cookieTokenHash = await ensureParticipantTokenHash();
-
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.shortId, shortId),
-  });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
-  }
-
-  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
-  if (!isOwner) {
-    return { message: "Tu n'as pas les droits pour archiver cette sortie." };
-  }
-
-  // Idempotent — already archived.
-  if (outing.hiddenFromProfileAt) {
-    revalidatePath("/moi");
-    revalidatePath("/sortie/agenda");
-    return {};
-  }
-
-  await db
-    .update(outings)
-    .set({ hiddenFromProfileAt: new Date(), updatedAt: new Date() })
-    .where(eq(outings.id, outing.id));
-
-  revalidatePath("/moi");
-  revalidatePath("/sortie/agenda");
-  return {};
-}
-
-export async function unarchiveOutingAction(
-  _prev: FormActionState,
-  formData: FormData
-): Promise<FormActionState> {
-  const parsed = unarchiveOutingSchema.safeParse(formDataToObject(formData));
-  if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors };
-  }
-  const { shortId } = parsed.data;
-  const user = await getSessionUser();
-  const cookieTokenHash = await ensureParticipantTokenHash();
-
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.shortId, shortId),
-  });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
-  }
-
-  const isOwner = isOutingOwner(outing, { userId: user?.id, cookieTokenHash });
-  if (!isOwner) {
-    return { message: "Tu n'as pas les droits." };
-  }
-
-  if (!outing.hiddenFromProfileAt) {
-    return {};
-  }
-
-  await db
-    .update(outings)
-    .set({ hiddenFromProfileAt: null, updatedAt: new Date() })
-    .where(eq(outings.id, outing.id));
-
-  revalidatePath("/moi");
-  revalidatePath("/sortie/agenda");
-  return {};
 }
 
 /**

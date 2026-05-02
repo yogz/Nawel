@@ -5,15 +5,11 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
-import { listArchivedOutings } from "@/features/sortie/queries/outing-queries";
 import { listFollowers } from "@/features/sortie/queries/follow-queries";
-import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
-import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { FollowerList } from "@/features/sortie/components/follower-list";
 import { LoginLink } from "@/features/sortie/components/login-link";
-import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
@@ -76,10 +72,7 @@ export default async function ProfileSettingsPage() {
     },
   });
 
-  const [archived, followers] = await Promise.all([
-    listArchivedOutings(session.user.id),
-    listFollowers(session.user.id),
-  ]);
+  const followers = await listFollowers(session.user.id);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
   // and prod (sortie.colist.fr) both produce a correct shareable URL without
@@ -142,43 +135,6 @@ export default async function ProfileSettingsPage() {
           <UsernameForm currentUsername={username} />
           <ProfileDetailsForm bio={row?.bio ?? null} />
         </div>
-      </section>
-
-      <SectionDivider />
-      <SectionHeading
-        title="Sorties archivées"
-        subtitle={
-          archived.length > 0
-            ? "Retirées de ton profil public mais visibles pour tes invités. Tu peux les rétablir."
-            : "Glisse une sortie vers la gauche depuis ta home pour la cacher de ton profil public."
-        }
-        action={
-          <Link
-            href="/agenda"
-            className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
-          >
-            agenda
-            <ArrowUpRight size={12} strokeWidth={2.4} />
-          </Link>
-        }
-      />
-      <section className="mb-14">
-        {archived.length > 0 ? (
-          <ul className="flex flex-col gap-2">
-            {archived.map((o) => (
-              <li key={o.id} className="flex items-center gap-3">
-                <div className="min-w-0 flex-1">
-                  <OutingRowCard outing={o} muted />
-                </div>
-                <UnarchiveButton shortId={o.shortId} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="rounded-xl border border-dashed border-surface-400 bg-surface-100/50 px-4 py-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-            ↳ rien d&rsquo;archivé pour l&rsquo;instant
-          </p>
-        )}
       </section>
 
       {username && (
@@ -260,35 +216,4 @@ function SectionHeading({
  * dense form block. */
 function SectionDivider() {
   return <hr className="mb-10 border-t border-ink-100" />;
-}
-
-type OutingRow = {
-  id: string;
-  shortId: string;
-  slug: string | null;
-  title: string;
-  location: string | null;
-  startsAt: Date | null;
-};
-
-function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: boolean }) {
-  const canonical = outing.slug ? `${outing.slug}-${outing.shortId}` : outing.shortId;
-  return (
-    <Link
-      href={`/${canonical}`}
-      className={`flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-3 transition-colors hover:border-acid-600 ${
-        muted ? "opacity-50" : ""
-      }`}
-    >
-      <span
-        className={`font-display text-[16px] font-bold tracking-[-0.015em] ${muted ? "text-ink-500" : "text-ink-700"}`}
-      >
-        {outing.title}
-      </span>
-      <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
-        {outing.startsAt ? formatOutingDateConversational(outing.startsAt) : "date à définir"}
-        {outing.location ? ` · ${formatVenue(outing.location)}` : ""}
-      </span>
-    </Link>
-  );
 }

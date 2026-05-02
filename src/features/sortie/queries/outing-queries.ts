@@ -22,10 +22,10 @@ import { user } from "@drizzle/schema";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
 // Fenêtre de rétention historique pour le flux iCal personnel : on garde
-// les sorties past des 30 derniers jours (utile pour relancer un paiement,
-// archiver une sortie via swipe). Au-delà, on considère que ça pollue
-// l'agenda du user — il peut toujours retrouver ses anciennes sorties via
-// /moi.
+// les sorties past des 30 derniers jours (utile pour relancer un paiement
+// ou retrouver les détails d'une sortie récente). Au-delà, on considère
+// que ça pollue l'agenda du user — il peut toujours retrouver ses
+// anciennes sorties via /moi.
 const FEED_HISTORY_WINDOW_DAYS = 30;
 
 // Sub-query scalaire réutilisée par les listings (profile + feed + admin) :
@@ -113,7 +113,6 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
       and(
         eq(outings.creatorUserId, userId),
         ne(outings.status, "cancelled"),
-        isNull(outings.hiddenFromProfileAt),
         gt(outings.deadlineAt, new Date())
       )
     )
@@ -126,11 +125,6 @@ export async function listMyOutingsForProfile(userId: string, limit = 10) {
  * + les sorties où il a une row participant (yes/no/handle_own/
  * interested). Sinon un user qui a uniquement RSVP (créé via le flow
  * silent-account au RSVP avec email) atterrissait sur une home vide.
- *
- * `hiddenFromProfileAt` est un flag d'archive perso pour le créateur
- * — on ne l'applique QUE sur ses propres sorties, pas sur les
- * participations (le créateur archive de SA home, pas du monde
- * entier).
  */
 export async function listAllMyOutings(userId: string, now = new Date()) {
   const rows = await db
@@ -156,7 +150,7 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
     .where(
       and(
         or(
-          and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
+          eq(outings.creatorUserId, userId),
           sql`${outings.id} IN (
             SELECT ${participants.outingId}
             FROM ${participants}
@@ -212,9 +206,9 @@ export type AgendaItem = {
 
 /**
  * Données pour `/sortie/agenda` (heatmap + timeline 3 mois) :
- *   1. sorties datées dont l'user est créateur (non archivée) ou
- *      participant (yes / no / handle_own / interested), avec
- *      `fixedDatetime` dans la fenêtre [now, now+90j].
+ *   1. sorties datées dont l'user est créateur ou participant (yes / no /
+ *      handle_own / interested), avec `fixedDatetime` dans la fenêtre
+ *      [now, now+90j].
  *   2. sondages dans le même périmètre user, avec au moins un timeslot
  *      candidat dans la fenêtre. Les candidats hors fenêtre sont
  *      ignorés (cas rare — un sondage qui propose dans 4 mois).
@@ -261,10 +255,7 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
     .where(
       and(
         ne(outings.status, "cancelled"),
-        or(
-          and(eq(outings.creatorUserId, userId), isNull(outings.hiddenFromProfileAt)),
-          isNotNull(myParticipant.response)
-        ),
+        or(eq(outings.creatorUserId, userId), isNotNull(myParticipant.response)),
         or(
           and(
             eq(outings.mode, "fixed"),
@@ -366,8 +357,7 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
       and(
         eq(outings.creatorUserId, userId),
         eq(outings.showOnProfile, true),
-        ne(outings.status, "cancelled"),
-        isNull(outings.hiddenFromProfileAt)
+        ne(outings.status, "cancelled")
       )
     )
     .orderBy(desc(outings.createdAt))
@@ -452,36 +442,6 @@ export async function listAnonInboxOutings(cookieTokenHash: string, now = new Da
   const past = rows.filter((r) => r.startsAt && r.startsAt < now);
   const anonName = rows.find((r) => r.participant.anonName)?.participant.anonName ?? null;
   return { upcoming, past, anonName, myRsvpByOuting };
-}
-
-/**
- * Archived outings — only visible to the creator in their /moi page
- * under an "Archivées" section. Cancelled outings are *not* included
- * here (cancel and archive are distinct semantics).
- */
-export async function listArchivedOutings(userId: string) {
-  return db
-    .select({
-      id: outings.id,
-      shortId: outings.shortId,
-      slug: outings.slug,
-      title: outings.title,
-      location: outings.location,
-      startsAt: outings.fixedDatetime,
-      deadlineAt: outings.deadlineAt,
-      status: outings.status,
-      hiddenFromProfileAt: outings.hiddenFromProfileAt,
-    })
-    .from(outings)
-    .where(
-      and(
-        eq(outings.creatorUserId, userId),
-        ne(outings.status, "cancelled"),
-        isNotNull(outings.hiddenFromProfileAt)
-      )
-    )
-    .orderBy(desc(outings.hiddenFromProfileAt))
-    .limit(50);
 }
 
 /**

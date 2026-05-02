@@ -30,7 +30,6 @@ import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { HomeMonthAgenda } from "@/features/sortie/components/home-month-agenda";
 import { FollowedOutingsRow } from "@/features/sortie/components/followed-outings-row";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { computePendingActions } from "@/features/sortie/lib/pending-actions";
@@ -178,9 +177,9 @@ export default async function SortieHome() {
         <EmptyHeroWithVibes firstName={firstName} />
       )}
       <FollowedOutingsRow outings={followedCarousel} />
-      {(upcoming.length > 0 || agendaItems.length > 0) && (
+      {(restUpcoming.length > 0 || agendaItems.length > 0) && (
         <HomeMonthAgenda
-          outings={upcoming.map((o) => ({
+          outings={restUpcoming.map((o) => ({
             ...o,
             // Résolu côté server pour ne pas faire traverser un Map<…, …>
             // à la frontière RSC vers HomeMonthAgenda (client).
@@ -196,7 +195,6 @@ export default async function SortieHome() {
           outings={past}
           loggedInName={session.user.name ?? null}
           myRsvpByOuting={myRsvpByOuting}
-          viewerUserId={userId}
         />
       )}
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
@@ -231,37 +229,35 @@ function PastSection({
   outings,
   loggedInName,
   myRsvpByOuting,
-  viewerUserId,
 }: {
   outings: HomeOutingRow[];
   loggedInName: string | null;
   myRsvpByOuting: Map<string, MyParticipantWithSlots>;
-  viewerUserId: string;
 }) {
   const inline = outings.slice(0, 3);
   const hidden = outings.slice(3);
 
-  const toItem = (o: HomeOutingRow) => ({
-    row: o,
-    canArchive: o.creatorUserId === viewerUserId,
-    node: (
-      <OutingProfileCard
-        outing={o}
-        showRsvp={false}
-        myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-        loggedInName={loggedInName}
-        outingBaseUrl={PUBLIC_BASE}
-        isPast
-      />
-    ),
-  });
+  const renderCard = (o: HomeOutingRow) => (
+    <OutingProfileCard
+      outing={o}
+      showRsvp={false}
+      myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+      loggedInName={loggedInName}
+      outingBaseUrl={PUBLIC_BASE}
+      isPast
+    />
+  );
 
   return (
     <section className="mb-10">
       <Eyebrow tone="hot" className="mb-3 text-hot-600">
         ─ passées ─
       </Eyebrow>
-      <ArchivableOutingList isPast listClassName="flex flex-col gap-4" items={inline.map(toItem)} />
+      <ul className="flex flex-col gap-4">
+        {inline.map((o) => (
+          <li key={o.id}>{renderCard(o)}</li>
+        ))}
+      </ul>
 
       {hidden.length > 0 && (
         <details className="group mt-4 border-t border-ink-100 pt-4">
@@ -274,13 +270,11 @@ function PastSection({
               className="transition-transform duration-200 group-open:rotate-90"
             />
           </summary>
-          <div className="mt-4">
-            <ArchivableOutingList
-              isPast
-              listClassName="flex flex-col gap-4"
-              items={hidden.map(toItem)}
-            />
-          </div>
+          <ul className="mt-4 flex flex-col gap-4">
+            {hidden.map((o) => (
+              <li key={o.id}>{renderCard(o)}</li>
+            ))}
+          </ul>
         </details>
       )}
     </section>

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gt, isNull, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, ne, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, participants, userFollows } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
@@ -96,7 +96,6 @@ export async function listFollowedOutingsForCarousel(
       and(
         ne(outings.status, "cancelled"),
         eq(outings.showOnProfile, true),
-        isNull(outings.hiddenFromProfileAt),
         gt(outings.deadlineAt, now),
         sql`NOT EXISTS (
           SELECT 1 FROM ${participants}
