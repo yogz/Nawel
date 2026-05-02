@@ -431,6 +431,34 @@ export const auditLog = sortie.table(
   })
 );
 
+// === user_follows ===
+
+// Relation non-symétrique follower → followed. PK composite couvre la
+// lookup par follower (`isFollowing`, `listFollowedOutingsForCarousel`) ;
+// l'index dédié sur `followed_user_id` couvre le sens inverse
+// (`listFollowers`). Cascade des deux côtés : si l'un des users est
+// supprimé, ses relations disparaissent (cohérent RGPD).
+//
+// Le portail d'entrée pour créer un follow est le `rsvpInviteToken` du
+// followed (gate côté action serveur). Une fois la relation insérée,
+// elle survit à la rotation du token — la table ne stocke pas le token.
+export const userFollows = sortie.table(
+  "user_follows",
+  {
+    followerUserId: text("follower_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    followedUserId: text("followed_user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.followerUserId, t.followedUserId] }),
+    followedIdx: index("sortie_user_follows_followed_idx").on(t.followedUserId),
+  })
+);
+
 // === Relations ===
 
 export const outingsRelations = relations(outings, ({ many, one }) => ({

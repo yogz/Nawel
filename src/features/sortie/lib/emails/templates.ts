@@ -376,6 +376,38 @@ export function j1ReminderEmail(args: {
 }
 
 /**
+ * Sent to the creator the first time someone follows them. Heads-up only —
+ * le destinataire n'a rien à faire. Le CTA pointe vers /moi pour qu'il
+ * puisse jeter un œil à sa liste de suiveurs (et en retirer un si besoin).
+ */
+export function newFollowerEmail(args: {
+  followedName: string;
+  followerName: string;
+  manageUrl: string;
+}): { subject: string; html: string } {
+  const follower = escapeHtml(args.followerName);
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${follower} te suit</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${follower} verra tes prochaines sorties et pourra y répondre directement, sans repasser par ton lien privé.
+    </p>
+    <p style="margin:0 0 28px;${BODY_P}">
+      Rien à faire de ton côté — c'est juste pour info.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.manageUrl, "Gérer mes suiveurs")}
+    </p>
+  `;
+  return {
+    subject: `${args.followerName} te suit sur Sortie`,
+    html: renderEmail({
+      preheader: `${args.followerName} a commencé à suivre tes sorties.`,
+      body,
+    }),
+  };
+}
+
+/**
  * Sent to every non-"no" RSVP when the creator edits a material field (title,
  * date, venue, deadline, or ticket URL). Lists only the fields that actually
  * changed so the reader doesn't have to diff the email against memory.

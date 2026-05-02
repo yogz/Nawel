@@ -27,6 +27,8 @@ import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
 import { RecentlyAddedRow } from "@/features/sortie/components/recently-added-row";
+import { FollowToggle } from "@/features/sortie/components/follow-toggle";
+import { isFollowing } from "@/features/sortie/queries/follow-queries";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
 import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-prompt";
 import { cookies } from "next/headers";
@@ -186,7 +188,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   // Token validation is server-side only — we never expose `rsvpInviteToken`
   // to the client, and we give no signal distinguishing "no token" from
   // "wrong token" (the whole page renders as vitrine in both cases).
-  const showRsvp =
+  const tokenValid =
     typeof k === "string" &&
     k.length > 0 &&
     row.rsvpInviteToken !== null &&
@@ -201,12 +203,25 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   const session = await auth.api.getSession({ headers: await headers() });
   const isSelf = session?.user?.id === row.id;
 
+  // Le viewer suit déjà ce profil → on bascule en mode "inbox" (RSVP
+  // inline + cards groupées par bucket d'action) sans qu'il ait besoin
+  // de re-visiter le lien `?k=…`. Le token reste le portail d'entrée
+  // pour *créer* le follow (gate côté followUserAction).
+  const viewerFollows =
+    !isSelf && session?.user?.id
+      ? await isFollowing({
+          followerUserId: session.user.id,
+          followedUserId: row.id,
+        })
+      : false;
+  const inboxMode = tokenValid || viewerFollows;
+
   // Vitrine publique : on featured la prochaine sortie en hero
   // (LiveStatusHero) pour donner une accroche au visiteur curieux.
   // Lien privé : pas de hero — l'invité doit RSVP à toutes les
   // sorties, l'asymétrie d'un hero ralentit le scan. Toutes en
   // OutingProfileCard uniformes, format Doodle / checklist.
-  const heroOuting = showRsvp ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
+  const heroOuting = inboxMode ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
   const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
 
   // On part de `upcomingRaw` (déjà trié `desc(createdAt)` par la query)
@@ -219,10 +234,10 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
     .filter((o) => o.deadlineAt.getTime() > now.getTime())
     .slice(0, 8);
 
-  // Only load the viewer's existing RSVPs when the token unlocks inline RSVP
+  // Only load the viewer's existing RSVPs when the inbox mode unlocks inline RSVP
   // — otherwise there's nothing to render and the round-trip is wasted.
-  const cookieTokenHash = showRsvp ? await readParticipantTokenHash() : null;
-  const myRsvpByOuting = showRsvp
+  const cookieTokenHash = inboxMode ? await readParticipantTokenHash() : null;
+  const myRsvpByOuting = inboxMode
     ? await listMyParticipantsForOutings({
         outingIds: upcoming.map((o) => o.id),
         cookieTokenHash,
@@ -234,7 +249,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
   // pas dismiss récemment. cf. claim-prompt.ts pour le predicate exact.
   const claimDismissed = (await cookies()).get(CLAIM_PROMPT_DISMISS_COOKIE)?.value === "1";
   const showClaimPrompt =
-    showRsvp &&
+    inboxMode &&
     !session?.user &&
     !claimDismissed &&
     shouldShowClaimPrompt(Array.from(myRsvpByOuting.values()));
@@ -263,7 +278,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               du créateur à des tiers, et le bouton brouillerait l'idée
               que ce lien lui est personnel. Le créateur lui-même
               continue à pouvoir partager via `/moi` (modifier ↗). */}
-          {!showRsvp && (
+          {!inboxMode && (
             <ProfileShareButton url={`${PUBLIC_BASE}/@${row.username}`} name={row.name} />
           )}
           {isSelf && (
@@ -287,7 +302,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       <header className="mb-7">
         <div className="flex items-center gap-4">
           <UserAvatar name={row.name} image={row.image} size={56} />
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <Eyebrow glow className="mb-2">
               @{row.username}
             </Eyebrow>
@@ -298,8 +313,15 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
               {row.name}
             </h1>
           </div>
+          {!isSelf && session?.user && (
+            <FollowToggle
+              targetUserId={row.id}
+              inviteToken={tokenValid ? (k as string) : ""}
+              initialIsFollowing={viewerFollows}
+            />
+          )}
         </div>
-        {row.bio && !showRsvp && (
+        {row.bio && !inboxMode && (
           <p className="mt-5 max-w-md text-[15px] leading-[1.5] text-ink-500">{row.bio}</p>
         )}
       </header>
@@ -350,7 +372,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       )}
 
       {restUpcoming.length > 0 &&
-        (showRsvp ? (
+        (inboxMode ? (
           <InboxSection
             outings={restUpcoming}
             myRsvpByOuting={myRsvpByOuting}
@@ -360,7 +382,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
           <OutingSection
             title="À venir"
             outings={restUpcoming}
-            showRsvp={showRsvp}
+            showRsvp={inboxMode}
             myRsvpByOuting={myRsvpByOuting}
             loggedInName={session?.user?.name ?? null}
             isPast={false}
