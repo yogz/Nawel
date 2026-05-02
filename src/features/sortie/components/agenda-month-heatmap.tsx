@@ -86,28 +86,14 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         ))}
       </div>
 
-      {/* Today marker row — glyphe ▶ hot-500 sous la colonne d'aujourd'hui,
-          aligné par le même grid 1fr × N. Un cursor terminal pointant
-          vers le haut, plutôt qu'un bg teinté défensif sur la colonne. */}
-      <div className="mt-0.5 grid h-3" style={gridStyle} aria-hidden>
-        {days.map((d) =>
-          d.isToday ? (
-            <span
-              key={d.dayKey}
-              className="flex items-start justify-center font-mono text-[8px] leading-none text-hot-500"
-            >
-              ▲
-            </span>
-          ) : (
-            <span key={d.dayKey} />
-          )
-        )}
-      </div>
+      {/* Today est marqué par un underline 2 px hot directement sous la
+          colonne du jour (DayBar) — couplé à la donnée plutôt qu'orphelin
+          dans une row séparée. Économise 12 px verticaux. */}
 
       {/* Brackets terminal en lieu et place des graduations 01/16/31. Le 16
           dégage : un range entre crochets se lit comme une cote/n° de
           série, plus brand que trois nombres dispersés. */}
-      <div className="mt-0.5 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.18em] text-ink-400">
+      <div className="mt-1 flex items-center gap-2 font-mono text-[8px] uppercase tracking-[0.18em] text-ink-400">
         <span>[ 01</span>
         <span aria-hidden className="h-px flex-1 bg-ink-400/25" />
         <span>{String(totalDays).padStart(2, "0")} ]</span>
@@ -144,7 +130,9 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
 
   const wrapperClass = cn(
     "relative flex h-full w-full items-end justify-center transition-colors duration-motion-standard",
-    we ? "bg-surface-400" : "bg-transparent",
+    // Bg WE seulement quand pas d'event : sinon le fond foncé
+    // concurrence le bâton et l'œil croit voir un event sur tous les WE.
+    we && !hasEvent && "bg-surface-300/80",
     !noBorderLeft && "border-l border-surface-50/90",
     hasEvent && "hover:brightness-110 focus-visible:outline-none focus-visible:brightness-110"
   );
@@ -153,26 +141,35 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
     day.hasFixed && day.hasVote ? "datée + sondage" : day.hasFixed ? "datée" : "sondage";
   const ariaLabel = hasEvent ? `${day.dayKey} — ${typeLabel}` : day.dayKey;
 
-  // Bâton plein hauteur. Datée = lime, sondage = rose. Mixte = moitié-
-  // moitié vertical (sondage en haut, datée en bas).
-  const content = hasEvent && (
-    <span className="block h-full w-full">
-      {day.hasFixed && day.hasVote ? (
-        <>
-          <span aria-hidden className="block h-1/2 w-full bg-hot-500" />
-          <span aria-hidden className="block h-1/2 w-full bg-acid-500" />
-        </>
-      ) : (
-        <span
-          aria-hidden
-          className={cn("block h-full w-full", day.hasFixed ? "bg-acid-500" : "bg-hot-500")}
-        />
+  // Bâton plein hauteur. Datée = lime, sondage = rose. Mixte = split
+  // diagonal 45° (acid bottom-left, hot top-right) au lieu de moitié-
+  // moitié horizontal qui lisait comme un bug de rendu.
+  const bar = hasEvent && (
+    <span
+      aria-hidden
+      className={cn(
+        "block h-full w-full",
+        day.hasFixed && day.hasVote
+          ? "bg-gradient-to-tr from-acid-500 from-50% to-hot-500 to-50%"
+          : day.hasFixed
+            ? "bg-acid-500"
+            : "bg-hot-500"
       )}
-    </span>
+    />
+  );
+
+  // Today : underline 2 px hot collé en bas de la colonne, en absolute
+  // par-dessus le bâton si présent. Couplé à la donnée, pas orphelin.
+  const todayUnderline = day.isToday && (
+    <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 bg-hot-500" />
   );
 
   if (!hasEvent) {
-    return <div className={wrapperClass} aria-label={ariaLabel} />;
+    return (
+      <div className={wrapperClass} aria-label={ariaLabel}>
+        {todayUnderline}
+      </div>
+    );
   }
 
   return (
@@ -182,7 +179,8 @@ function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) =>
       className={wrapperClass}
       aria-label={ariaLabel}
     >
-      {content}
+      {bar}
+      {todayUnderline}
     </button>
   );
 }
