@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
-import { AgendaMonthStrip } from "@/features/sortie/components/agenda-month-strip";
+import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
@@ -171,7 +171,7 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
             <ArrowUpRight size={12} strokeWidth={2.4} />
           </Link>
         </div>
-        <AgendaMonthStrip
+        <AgendaMonthHeatmap
           now={now}
           buckets={buckets}
           offset={monthOffset}
