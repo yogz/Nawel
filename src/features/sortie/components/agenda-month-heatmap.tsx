@@ -1,9 +1,18 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { type DayBucket, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { cn } from "@/lib/utils";
+
+const SWIPE_THRESHOLD = 60;
+
+const slideVariants = {
+  enter: (direction: 1 | -1) => ({ x: direction * 30, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction: 1 | -1) => ({ x: -direction * 30, opacity: 0 }),
+};
 
 type Props = {
   now: Date;
@@ -26,8 +35,18 @@ type DayMark = {
 };
 
 export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDaySelect }: Props) {
+  const [direction, setDirection] = useState<1 | -1>(1);
   const month = useMemo(() => monthAtOffset(now, offset), [now, offset]);
   const totalDays = useMemo(() => daysInMonth(month.monthKey), [month.monthKey]);
+
+  const goPrev = () => {
+    setDirection(-1);
+    onOffsetChange(offset - 1);
+  };
+  const goNext = () => {
+    setDirection(1);
+    onOffsetChange(offset + 1);
+  };
 
   const days = useMemo<DayMark[]>(() => {
     const out: DayMark[] = [];
@@ -49,7 +68,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
   return (
     <section>
       <header className="mb-2 flex items-center justify-between gap-2">
-        <MiniChevron label="mois précédent" onClick={() => onOffsetChange(offset - 1)}>
+        <MiniChevron label="mois précédent" onClick={goPrev}>
           <ChevronLeft size={14} strokeWidth={2.4} />
         </MiniChevron>
         <div className="flex items-baseline gap-2">
@@ -60,18 +79,39 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
             ({String(eventDayCount).padStart(2, "0")})
           </span>
         </div>
-        <MiniChevron label="mois suivant" onClick={() => onOffsetChange(offset + 1)}>
+        <MiniChevron label="mois suivant" onClick={goNext}>
           <ChevronRight size={14} strokeWidth={2.4} />
         </MiniChevron>
       </header>
 
-      <div
-        className="grid items-center gap-px"
-        style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
-      >
-        {days.map((d) => (
-          <DaySquare key={d.dayKey} day={d} onSelect={onDaySelect} />
-        ))}
+      <div className="overflow-hidden">
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
+          <motion.div
+            key={month.monthKey}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.25}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -SWIPE_THRESHOLD) {
+                goNext();
+              } else if (info.offset.x > SWIPE_THRESHOLD) {
+                goPrev();
+              }
+            }}
+            className="grid touch-pan-y items-center gap-px"
+            style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
+          >
+            {days.map((d) => (
+              <DaySquare key={d.dayKey} day={d} onSelect={onDaySelect} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );
