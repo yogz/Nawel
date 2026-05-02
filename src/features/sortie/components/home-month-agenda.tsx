@@ -23,6 +23,9 @@ export type HomeOuting = {
   mode: "fixed" | "vote";
   heroImageUrl: string | null;
   creatorUserId: string | null;
+  creatorName: string | null;
+  creatorUsername: string | null;
+  creatorAnonName: string | null;
   chosenTimeslotId: string | null;
   confirmedCount: number;
   /** Pré-résolu côté server pour traverser la frontière RSC sans manipuler

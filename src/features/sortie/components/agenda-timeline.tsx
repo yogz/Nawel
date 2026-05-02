@@ -49,7 +49,7 @@ function TimelineRow({ item, now }: { item: AgendaItem; now: Date }) {
       <TypeStripe isVote={isVote} />
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2">
-          <TypeBadge isVote={isVote} />
+          {isVote && <TypeBadge isVote={isVote} />}
           <RsvpBadge item={item} />
         </div>
         <h3 className="line-clamp-1 font-display text-[15px] font-bold tracking-tight text-ink-700 transition-colors group-hover:text-acid-600">

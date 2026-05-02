@@ -104,7 +104,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
                 goPrev();
               }
             }}
-            className="grid touch-pan-y items-center gap-px"
+            className="grid touch-pan-y items-center gap-px py-3"
             style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
           >
             {days.map((d) => (
@@ -113,6 +113,12 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
           </motion.div>
         </AnimatePresence>
       </div>
+      <p
+        aria-hidden
+        className="mt-1 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400"
+      >
+        ↔ glisse pour changer de mois
+      </p>
     </section>
   );
 }

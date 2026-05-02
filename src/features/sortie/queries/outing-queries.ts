@@ -144,10 +144,14 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       // créateur vs participant et détecter "vote tranché à faire"
       // (mode=vote + chosenTimeslotId null + deadline passée).
       creatorUserId: outings.creatorUserId,
+      creatorName: user.name,
+      creatorUsername: user.username,
+      creatorAnonName: outings.creatorAnonName,
       chosenTimeslotId: outings.chosenTimeslotId,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
     })
     .from(outings)
+    .leftJoin(user, eq(user.id, outings.creatorUserId))
     .where(
       and(
         or(

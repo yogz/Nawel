@@ -29,6 +29,9 @@ type Outing = {
   mode: "fixed" | "vote";
   heroImageUrl: string | null;
   creatorUserId: string | null;
+  creatorName?: string | null;
+  creatorUsername?: string | null;
+  creatorAnonName?: string | null;
   confirmedCount?: number;
 };
 
@@ -53,10 +56,20 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
   const dateLabel = outing.startsAt ? formatOutingDateShort(outing.startsAt) : null;
   const venue = formatVenue(outing.location);
 
+  const isCreator = outing.creatorUserId === viewerUserId;
   const rsvpBucket = getAgendaRsvpBucket({
     myResponse: resolvedRsvp?.response ?? null,
-    isCreator: outing.creatorUserId === viewerUserId,
+    isCreator,
   });
+
+  // Crédit organisateur : on n'affiche que pour les sorties d'un autre.
+  // @username quand dispo (le pattern follow-by-handle), sinon prénom du
+  // user (account ou anon). Cache si pas de signal d'identité.
+  const organizerLabel = isCreator
+    ? null
+    : outing.creatorUsername
+      ? `@${outing.creatorUsername}`
+      : (outing.creatorName ?? outing.creatorAnonName ?? null);
 
   const lockReason = resolveLockReason(outing);
   const LockGlyph = lockReason ? LOCK_GLYPH[lockReason] : null;
@@ -107,12 +120,17 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
-          <TypeBadge isVote={isVote} />
+          {isVote && <TypeBadge isVote={isVote} />}
           <span
             className={`inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.18em] ${RSVP_BADGE_TONE_CLASS[rsvpBucket]}`}
           >
             {RSVP_BADGE_LABEL[rsvpBucket]}
           </span>
+          {organizerLabel && (
+            <span className="truncate font-mono text-[9px] uppercase tracking-[0.18em] text-ink-400">
+              par {organizerLabel}
+            </span>
+          )}
         </div>
         <h3
           className={`line-clamp-1 font-display text-[17px] leading-tight font-black tracking-[-0.025em] transition-colors group-hover:text-acid-600 ${pastClasses.title}`}
