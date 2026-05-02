@@ -92,27 +92,35 @@ export function HomeMonthAgenda({
 
   // Filtrage mensuel : un outing apparaît dans la liste si une de ses
   // dates connues (fixedDate ou un candidat de sondage) tombe dans le
-  // mois actif. Tri ascendant par date primaire pour rester lisible.
+  // mois actif. Tri par la *date la plus tôt qui tombe dans ce mois* —
+  // sinon un sondage avec un candidat le 1er juin se ferait doubler par
+  // une sortie fixed le 15 juin parce que `startsAt` du sondage est null.
   const monthFiltered = useMemo(() => {
-    const matching: HomeOuting[] = [];
+    type Matched = { outing: HomeOuting; primaryTime: number };
+    const matching: Matched[] = [];
     for (const o of outings) {
       const item = agendaItemByOutingId.get(o.id);
       if (!item) {
         continue;
       }
-      const inMonth =
-        (item.fixedDate && parisDayKey(item.fixedDate).startsWith(activeMonth.monthKey)) ||
-        item.candidateDates.some((d) => parisDayKey(d).startsWith(activeMonth.monthKey));
-      if (inMonth) {
-        matching.push(o);
+      let earliestInMonth = Number.POSITIVE_INFINITY;
+      if (item.fixedDate && parisDayKey(item.fixedDate).startsWith(activeMonth.monthKey)) {
+        earliestInMonth = item.fixedDate.getTime();
+      }
+      for (const d of item.candidateDates) {
+        if (parisDayKey(d).startsWith(activeMonth.monthKey)) {
+          const t = d.getTime();
+          if (t < earliestInMonth) {
+            earliestInMonth = t;
+          }
+        }
+      }
+      if (earliestInMonth !== Number.POSITIVE_INFINITY) {
+        matching.push({ outing: o, primaryTime: earliestInMonth });
       }
     }
-    matching.sort((a, b) => {
-      const aTime = a.startsAt?.getTime() ?? Number.POSITIVE_INFINITY;
-      const bTime = b.startsAt?.getTime() ?? Number.POSITIVE_INFINITY;
-      return aTime - bTime;
-    });
-    return matching;
+    matching.sort((a, b) => a.primaryTime - b.primaryTime);
+    return matching.map((m) => m.outing);
   }, [outings, agendaItemByOutingId, activeMonth.monthKey]);
 
   const hasArchivableInMonth = monthFiltered.some((o) => o.creatorUserId === viewerUserId);
