@@ -8,7 +8,10 @@ import {
   type DeadlineTone,
 } from "@/features/sortie/lib/deadline-countdown";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
+import { getPastOutingClasses } from "@/features/sortie/lib/past-outing-classes";
+import { plural } from "@/features/sortie/lib/plural";
 import { isFixedRsvp, type RsvpResponseAny } from "@/features/sortie/lib/rsvp-response";
 import { InlineRsvpSection } from "./inline-rsvp-section";
 import { OutingPosterFallback } from "./outing-poster-fallback";
@@ -97,7 +100,7 @@ export function OutingProfileCard({
   const meta = [
     formatVenue(outing.location),
     outing.confirmedCount > 0
-      ? `${outing.confirmedCount} confirmé${outing.confirmedCount > 1 ? "s" : ""}`
+      ? `${outing.confirmedCount} ${plural(outing.confirmedCount, "confirmé")}`
       : null,
   ]
     .filter(Boolean)
@@ -117,23 +120,7 @@ export function OutingProfileCard({
   // designer + UX. La date (en eyebrow vert) reste l'unique repère
   // temporel sur la card.
 
-  // Sortie passée : on dégrade visuellement pour qu'elle se lise comme
-  // un souvenir et non comme une action en attente. Trois axes appliqués
-  // explicitement (pas via arbitrary variant `[&_img]`, qui peut filer
-  // entre les mailles du JIT Tailwind selon la config) :
-  //  - wrapper : opacité globale, restaurée au hover
-  //  - image / fallback : grayscale + leger fade
-  //  - titre & meta : couleur abaissée d'un cran (ink-500 / ink-400
-  //    au lieu de ink-700 / ink-500), pour que le texte aussi se
-  //    lise comme estompé et pas seulement transparent.
-  const pastWrapperClasses = isPast
-    ? "opacity-80 transition-opacity duration-300 hover:opacity-100"
-    : "";
-  const pastImageClasses = isPast
-    ? "grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
-    : "";
-  const pastTitleClasses = isPast ? "text-ink-500" : "text-ink-700";
-  const pastMetaClasses = isPast ? "text-ink-400" : "text-ink-500";
+  const pastClasses = getPastOutingClasses(isPast);
 
   // Badge "verrouillé" en bottom-right du thumb. cf. `resolveLockReason`
   // pour la précédence des 3 états (purchased > vote-tranché > deadline).
@@ -150,19 +137,13 @@ export function OutingProfileCard({
           <img
             src={outing.heroImageUrl}
             alt=""
-            className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastImageClasses}`}
-            // Filter saturate + contrast aligné sur le hero détail
-            // (`OutingHero`). Donne une cohérence visuelle malgré
-            // les sources hétérogènes (Ticketmaster, Fnac, AllOcc,
-            // uploads users) qui ont chacune leur propre balance
-            // colorimétrique. Pas appliqué aux past (le grayscale
-            // du `pastImageClasses` prend le dessus).
-            style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
+            className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastClasses.image}`}
+            style={isPast ? undefined : { filter: OUTING_IMAGE_FILTER }}
           />
         ) : (
           <OutingPosterFallback
             title={outing.title}
-            className={`size-16 rounded-md ${pastImageClasses}`}
+            className={`size-16 rounded-md ${pastClasses.image}`}
             textClassName="text-2xl opacity-50"
           />
         )}
@@ -182,11 +163,11 @@ export function OutingProfileCard({
           </p>
         )}
         <h3
-          className={`truncate text-[17px] leading-tight font-black tracking-[-0.025em] group-hover:text-acid-600 ${pastTitleClasses}`}
+          className={`truncate text-[17px] leading-tight font-black tracking-[-0.025em] group-hover:text-acid-600 ${pastClasses.title}`}
         >
           {outing.title}
         </h3>
-        {meta && <p className={`truncate text-[13px] ${pastMetaClasses}`}>{meta}</p>}
+        {meta && <p className={`truncate text-[13px] ${pastClasses.meta}`}>{meta}</p>}
         {/* Countdown deadline dans la nav row — utile quand il n'y
             a pas de barre d'actions séparée (mode fixed inline RSVP,
             ou nav-only). Pour le mode vote on le déplace à côté du
@@ -238,7 +219,7 @@ export function OutingProfileCard({
     const hasVoted = votedSlots.length > 0;
     return (
       <article
-        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
+        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastClasses.wrapper}`}
       >
         <Link
           href={href}
@@ -289,7 +270,7 @@ export function OutingProfileCard({
     // still discoverable.
     return (
       <article
-        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastWrapperClasses}`}
+        className={`rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 ${pastClasses.wrapper}`}
       >
         <Link
           href={href}
@@ -318,7 +299,7 @@ export function OutingProfileCard({
   return (
     <Link
       href={href}
-      className={`group flex items-center gap-3 rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 transition-colors hover:ring-hot-500 ${pastWrapperClasses}`}
+      className={`group flex items-center gap-3 rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 transition-colors hover:ring-hot-500 ${pastClasses.wrapper}`}
     >
       {navigationRow}
       <ChevronRight

@@ -9,8 +9,11 @@ import {
 import { OutingPosterFallback } from "@/features/sortie/components/outing-poster-fallback";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { getPastOutingClasses } from "@/features/sortie/lib/past-outing-classes";
+import { plural } from "@/features/sortie/lib/plural";
 import type { ResolvedMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { getAgendaRsvpBucket } from "@/features/sortie/lib/rsvp-response";
 
@@ -58,21 +61,13 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
   const lockReason = resolveLockReason(outing);
   const LockGlyph = lockReason ? LOCK_GLYPH[lockReason] : null;
 
-  const pastWrapperClasses = isPast
-    ? "opacity-80 transition-opacity duration-300 hover:opacity-100"
-    : "";
-  const pastImageClasses = isPast
-    ? "grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
-    : "";
-  const pastTitleClasses = isPast ? "text-ink-500" : "text-ink-700";
+  const pastClasses = getPastOutingClasses(isPast);
 
   const confirmedCount = outing.confirmedCount ?? 0;
   const metaLine = [
     dateLabel,
     venue,
-    isPast && confirmedCount > 0
-      ? `${confirmedCount} confirmé${confirmedCount > 1 ? "s" : ""}`
-      : null,
+    isPast && confirmedCount > 0 ? `${confirmedCount} ${plural(confirmedCount, "confirmé")}` : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -80,7 +75,7 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
   return (
     <Link
       href={href}
-      className={`group flex items-stretch gap-3 rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 transition-colors duration-motion-standard hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 group-data-[flash=true]/flash:bg-acid-500/15 group-data-[flash=true]/flash:ring-acid-500/40 ${pastWrapperClasses}`}
+      className={`group flex items-stretch gap-3 rounded-xl bg-surface-50 p-3 ring-1 ring-ink-700/5 transition-colors duration-motion-standard hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500 group-data-[flash=true]/flash:bg-acid-500/15 group-data-[flash=true]/flash:ring-acid-500/40 ${pastClasses.wrapper}`}
     >
       <div className="relative size-16 shrink-0">
         {outing.heroImageUrl ? (
@@ -91,13 +86,13 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
             width={64}
             height={64}
             loading="lazy"
-            className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastImageClasses}`}
-            style={isPast ? undefined : { filter: "saturate(1.15) contrast(1.05)" }}
+            className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastClasses.image}`}
+            style={isPast ? undefined : { filter: OUTING_IMAGE_FILTER }}
           />
         ) : (
           <OutingPosterFallback
             title={outing.title}
-            className={`size-16 rounded-md ${pastImageClasses}`}
+            className={`size-16 rounded-md ${pastClasses.image}`}
             textClassName="text-2xl opacity-50"
           />
         )}
@@ -120,12 +115,14 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
           </span>
         </div>
         <h3
-          className={`line-clamp-1 font-display text-[17px] leading-tight font-black tracking-[-0.025em] transition-colors group-hover:text-acid-600 ${pastTitleClasses}`}
+          className={`line-clamp-1 font-display text-[17px] leading-tight font-black tracking-[-0.025em] transition-colors group-hover:text-acid-600 ${pastClasses.title}`}
         >
           {outing.title}
         </h3>
         {metaLine && (
-          <p className="line-clamp-1 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-400">
+          <p
+            className={`line-clamp-1 font-mono text-[10.5px] uppercase tracking-[0.12em] ${pastClasses.meta}`}
+          >
             {metaLine}
           </p>
         )}

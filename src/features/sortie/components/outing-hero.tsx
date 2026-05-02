@@ -1,5 +1,6 @@
 import { ArrowUpRight, CalendarPlus } from "lucide-react";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 
 type Props = {
   title: string;
@@ -47,7 +48,7 @@ export function OutingHero({
           alt=""
           data-vt-poster
           className="absolute inset-0 h-full w-full object-cover object-center"
-          style={{ filter: "saturate(1.15) contrast(1.05)" }}
+          style={{ filter: OUTING_IMAGE_FILTER }}
         />
       ) : (
         <GradientFallback title={title} />

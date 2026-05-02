@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate, formatOutingDayMonthTime } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
+import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
@@ -158,7 +159,7 @@ export function LiveStatusHero({
               className={`${
                 compact ? "aspect-[16/9]" : "aspect-[3/2]"
               } w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10`}
-              style={{ filter: "saturate(1.15) contrast(1.05)" }}
+              style={{ filter: OUTING_IMAGE_FILTER }}
             />
           ) : (
             <div

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { Eyebrow, type EyebrowTone } from "./eyebrow";
 import { OutingPosterFallback } from "./outing-poster-fallback";
@@ -124,10 +125,7 @@ export function OutingPosterCard({
             loading={eager ? "eager" : "lazy"}
             decoding="async"
             className="size-full object-cover object-top"
-            // Saturate/contrast aligné sur OutingProfileCard et LiveStatusHero
-            // pour cohérence cross-surface malgré les sources hétérogènes
-            // (Ticketmaster, Fnac, AllOcc, uploads users).
-            style={{ filter: "saturate(1.15) contrast(1.05)" }}
+            style={{ filter: OUTING_IMAGE_FILTER }}
           />
         ) : (
           <OutingPosterFallback title={outing.title} className="size-full" mode="title" varied />

@@ -6,6 +6,7 @@ import {
   type AdminOutingRow,
 } from "@/features/sortie/queries/admin-outing-queries";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { plural } from "@/features/sortie/lib/plural";
 
 export const metadata = {
   title: "Sorties — admin",
@@ -45,8 +46,6 @@ const DATE_SHORT_FMT = new Intl.DateTimeFormat("fr-FR", {
   dateStyle: "medium",
   timeZone: "Europe/Paris",
 });
-
-const plural = (n: number, sing: string, plur = sing + "s") => (n > 1 ? plur : sing);
 
 type SearchParams = Promise<{ page?: string }>;
 

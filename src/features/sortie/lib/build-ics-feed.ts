@@ -15,6 +15,8 @@
  *   - METHOD:PUBLISH (subscription, pas invitation)
  */
 
+import { plural } from "@/features/sortie/lib/plural";
+
 const DEFAULT_DURATION_MS = 3 * 60 * 60 * 1000; // 3h block
 
 // Le bloc VTIMEZONE Europe/Paris (transitions DST 2025-2030).
@@ -226,7 +228,7 @@ function buildDescription(o: FeedOuting, url: string): string {
     if (namesLine) {
       parts.push(namesLine);
     } else {
-      parts.push(`${o.confirmedCount} confirmé${o.confirmedCount > 1 ? "s" : ""}`);
+      parts.push(`${o.confirmedCount} ${plural(o.confirmedCount, "confirmé")}`);
     }
   }
   if (o.ticketUrl) {
@@ -255,8 +257,8 @@ function formatConfirmedNames(o: FeedOuting): string | null {
   // affichés, plancher 0.
   const remaining = Math.max(0, o.confirmedCount - shown.length);
   const list = shown.join(", ");
-  const suffix = remaining > 0 ? ` + ${remaining} autre${remaining > 1 ? "s" : ""}` : "";
-  return `${o.confirmedCount} confirmé${o.confirmedCount > 1 ? "s" : ""} : ${list}${suffix}`;
+  const suffix = remaining > 0 ? ` + ${remaining} ${plural(remaining, "autre")}` : "";
+  return `${o.confirmedCount} ${plural(o.confirmedCount, "confirmé")} : ${list}${suffix}`;
 }
 
 function vibeLabel(vibe: NonNullable<FeedOuting["vibe"]>): string {
