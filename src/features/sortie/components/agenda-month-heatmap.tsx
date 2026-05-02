@@ -48,30 +48,30 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
 
   return (
     <section>
-      <header className="mb-2 flex items-baseline justify-center gap-2">
-        <h3 className="font-display text-[14px] font-bold uppercase leading-none tracking-tight text-ink-700">
-          {month.label}
-        </h3>
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
-          ({String(eventDayCount).padStart(2, "0")})
-        </span>
-      </header>
-
-      <div className="flex items-center gap-2">
+      <header className="mb-2 flex items-center justify-between gap-2">
         <MiniChevron label="mois précédent" onClick={() => onOffsetChange(offset - 1)}>
           <ChevronLeft size={14} strokeWidth={2.4} />
         </MiniChevron>
-        <div
-          className="grid flex-1 items-center gap-px"
-          style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
-        >
-          {days.map((d) => (
-            <DaySquare key={d.dayKey} day={d} onSelect={onDaySelect} />
-          ))}
+        <div className="flex items-baseline gap-2">
+          <h3 className="font-display text-[14px] font-bold uppercase leading-none tracking-tight text-ink-700">
+            {month.label}
+          </h3>
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+            ({String(eventDayCount).padStart(2, "0")})
+          </span>
         </div>
         <MiniChevron label="mois suivant" onClick={() => onOffsetChange(offset + 1)}>
           <ChevronRight size={14} strokeWidth={2.4} />
         </MiniChevron>
+      </header>
+
+      <div
+        className="grid items-center gap-px"
+        style={{ gridTemplateColumns: `repeat(${totalDays}, 1fr)` }}
+      >
+        {days.map((d) => (
+          <DaySquare key={d.dayKey} day={d} onSelect={onDaySelect} />
+        ))}
       </div>
     </section>
   );
