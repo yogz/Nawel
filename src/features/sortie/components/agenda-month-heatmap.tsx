@@ -27,7 +27,8 @@ type DayMark = {
   dayKey: string;
   dayOfMonth: number;
   weekday: number;
-  count: number;
+  hasFixed: boolean;
+  hasVote: boolean;
   isToday: boolean;
 };
 
@@ -46,14 +47,15 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         dayKey,
         dayOfMonth: d,
         weekday: date.getDay(),
-        count: bucket ? bucket.fixed.length + bucket.vote.length : 0,
+        hasFixed: (bucket?.fixed.length ?? 0) > 0,
+        hasVote: (bucket?.vote.length ?? 0) > 0,
         isToday: dayKey === todayKey,
       });
     }
     return out;
   }, [buckets, month.monthKey, todayKey, totalDays]);
 
-  const eventDayCount = days.filter((d) => d.count > 0).length;
+  const eventDayCount = days.filter((d) => d.hasFixed || d.hasVote).length;
 
   const gridStyle = { gridTemplateColumns: `repeat(${totalDays}, 1fr)` };
 
@@ -135,52 +137,41 @@ function MiniChevron({
   );
 }
 
-// Cap min relevé à 45 % pour qu'1 event ne lise pas comme du bruit.
-function barHeightPct(count: number): number {
-  if (count === 0) {
-    return 0;
-  }
-  if (count === 1) {
-    return 45;
-  }
-  if (count === 2) {
-    return 70;
-  }
-  return 100;
-}
-
 function DayBar({ day, onSelect }: { day: DayMark; onSelect: (dayKey: string) => void }) {
   const we = isWeekend(day.weekday);
-  const heightPct = barHeightPct(day.count);
-  const peak = day.count >= 3;
-
-  // Border-l sur tous les jours sauf le 1er du mois — sam+dim ont AUSSI
-  // une border interne, contrairement à la version précédente : la
-  // bande WE renforcée matérialise déjà le bloc, et la border interne
-  // garde la lisibilité jour par jour.
+  const hasEvent = day.hasFixed || day.hasVote;
   const noBorderLeft = day.dayOfMonth === 1;
 
   const wrapperClass = cn(
     "relative flex h-full w-full items-end justify-center transition-colors duration-motion-standard",
-    // Contraste WE renforcé : surface-400 plein au lieu de /85.
     we ? "bg-surface-400" : "bg-transparent",
     !noBorderLeft && "border-l border-surface-50/90",
-    day.count > 0 && "hover:bg-acid-500/25 focus-visible:bg-acid-500/25 focus-visible:outline-none"
+    hasEvent && "hover:brightness-110 focus-visible:outline-none focus-visible:brightness-110"
   );
 
-  const ariaLabel =
-    day.count > 0
-      ? `${day.dayKey} — ${day.count} événement${day.count > 1 ? "s" : ""}`
-      : day.dayKey;
+  const typeLabel =
+    day.hasFixed && day.hasVote ? "datée + sondage" : day.hasFixed ? "datée" : "sondage";
+  const ariaLabel = hasEvent ? `${day.dayKey} — ${typeLabel}` : day.dayKey;
 
-  const content = day.count > 0 && (
-    <span className="block w-full" style={{ height: `${heightPct}%` }}>
-      {peak && <span aria-hidden className="block h-px w-full bg-hot-500" />}
-      <span aria-hidden className="block h-full w-full bg-acid-500" />
+  // Bâton plein hauteur. Datée = lime, sondage = rose. Mixte = moitié-
+  // moitié vertical (sondage en haut, datée en bas).
+  const content = hasEvent && (
+    <span className="block h-full w-full">
+      {day.hasFixed && day.hasVote ? (
+        <>
+          <span aria-hidden className="block h-1/2 w-full bg-hot-500" />
+          <span aria-hidden className="block h-1/2 w-full bg-acid-500" />
+        </>
+      ) : (
+        <span
+          aria-hidden
+          className={cn("block h-full w-full", day.hasFixed ? "bg-acid-500" : "bg-hot-500")}
+        />
+      )}
     </span>
   );
 
-  if (day.count === 0) {
+  if (!hasEvent) {
     return <div className={wrapperClass} aria-label={ariaLabel} />;
   }
 
