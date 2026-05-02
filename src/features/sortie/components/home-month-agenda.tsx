@@ -179,7 +179,7 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
       <section className="mb-10">
         {monthFiltered.length === 0 ? (
           <p className="rounded-xl border border-dashed border-surface-400 bg-surface-100/50 px-4 py-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-            ↳ rien sur ce mois — navigue le calendrier
+            ↳ no signal · change de mois
           </p>
         ) : (
           <ul className="flex flex-col gap-2">

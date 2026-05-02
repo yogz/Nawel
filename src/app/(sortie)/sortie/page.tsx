@@ -131,8 +131,9 @@ export default async function SortieHome() {
               and least personal. Keeping it small + muted so it sets the
               tone without competing with the LiveStatusHero headline. */}
           <Eyebrow tone="muted" className="mb-3 inline-flex items-center gap-2">
-            <span aria-hidden>◉</span>
-            salut {firstName.toLowerCase()}
+            <span aria-hidden>─ ◉ live ·</span>
+            {firstName.toLowerCase()}
+            <span aria-hidden>─</span>
           </Eyebrow>
           <LiveStatusHero
             slug={heroOuting.slug}
@@ -154,7 +155,7 @@ export default async function SortieHome() {
             ─ ta liste ─
           </Eyebrow>
           <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
-            Salut {firstName}.
+            Salut {firstName}
           </h1>
           <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
             {String(upcoming.length).padStart(2, "0")}{" "}
@@ -187,14 +188,14 @@ export default async function SortieHome() {
           and the right edge of list cards never overlaps it. */}
       <Link
         href="/nouvelle"
-        aria-label="Nouvelle sortie"
+        aria-label="Organiser une sortie"
         style={{
           bottom: "max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))",
         }}
         className="fixed right-5 z-50 inline-flex h-14 w-14 items-center justify-center gap-2 rounded-full bg-acid-600 text-surface-50 shadow-[var(--shadow-lg)] transition-transform hover:scale-105 hover:bg-acid-700 motion-safe:active:scale-95 sm:right-8 sm:w-auto sm:justify-start sm:pr-6 sm:pl-5"
       >
         <Plus size={22} strokeWidth={2.5} />
-        <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
+        <span className="hidden text-base font-semibold sm:inline">Organise</span>
       </Link>
     </main>
   );
@@ -208,7 +209,7 @@ function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
           ─ idle. choisis ton ambiance ─
         </Eyebrow>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
-          Salut {firstName}.
+          Salut {firstName}
         </h1>
         <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
           C&rsquo;est quoi le programme&nbsp;?
@@ -310,7 +311,7 @@ function AnonInbox({
 }) {
   const upcomingSorted = sortUpcomingByStartsAt(inbox.upcoming);
   const myRsvpByOuting = inbox.myRsvpByOuting;
-  const greeting = inbox.anonName ? `Salut ${inbox.anonName}.` : "Tes sorties.";
+  const greeting = inbox.anonName ? `Salut ${inbox.anonName}` : "Tes sorties";
   const totalUpcoming = upcomingSorted.length;
 
   return (

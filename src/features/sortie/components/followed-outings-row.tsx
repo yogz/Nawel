@@ -23,7 +23,7 @@ export function FollowedOutingsRow({ outings }: Props) {
   return (
     <OutingPosterRow
       headingId="followed-outings-heading"
-      eyebrowLabel="des suivis suivent"
+      eyebrowLabel="dans ton réseau"
       count={outings.length}
       ariaLabel="Sorties des comptes que tu suis, faites défiler horizontalement"
       tone="muted"

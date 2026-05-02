@@ -37,13 +37,9 @@ type Props = {
 };
 
 /**
- * Card unifiée des sections home (agenda mensuel + passées). Mise en page
- * en 3 lignes texte (badges → titre → date·lieu) héritée du compact agenda,
- * visuel calé sur OutingProfileCard pour rester cohérent avec le reste de
- * la home (image 64px, wrapper surface-50, lock badge, traitement past).
- *
- * Le profil public `/@username` continue d'utiliser `OutingProfileCard` —
- * il a besoin du inline RSVP / vote CTA qui ne tient pas dans ce layout.
+ * Card de la home (agenda mensuel + passées). `OutingProfileCard` reste
+ * utilisé sur `/@username` parce qu'il porte un inline RSVP / vote CTA
+ * qui ne tient pas dans ce layout 3-lignes.
  *
  * `data-flash` est togglé 1 s par le parent quand le user tap une cellule
  * du heatmap pointant cet outing.
@@ -59,14 +55,9 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
     isCreator: outing.creatorUserId === viewerUserId,
   });
 
-  // Badge "verrouillé" en bottom-right du thumb. cf. `resolveLockReason`
-  // pour la précédence des 3 états (purchased > vote-tranché > deadline).
   const lockReason = resolveLockReason(outing);
   const LockGlyph = lockReason ? LOCK_GLYPH[lockReason] : null;
 
-  // Sortie passée : on dégrade visuellement pour qu'elle se lise comme
-  // un souvenir et non comme une action en attente. Aligné sur le
-  // traitement OutingProfileCard pour cohérence cross-card.
   const pastWrapperClasses = isPast
     ? "opacity-80 transition-opacity duration-300 hover:opacity-100"
     : "";
@@ -74,13 +65,13 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
     ? "grayscale opacity-80 transition-[filter,opacity] duration-300 group-hover:grayscale-0 group-hover:opacity-100"
     : "";
   const pastTitleClasses = isPast ? "text-ink-500" : "text-ink-700";
-  const pastMetaClasses = isPast ? "text-ink-400" : "text-ink-400";
 
+  const confirmedCount = outing.confirmedCount ?? 0;
   const metaLine = [
     dateLabel,
     venue,
-    isPast && outing.confirmedCount && outing.confirmedCount > 0
-      ? `${outing.confirmedCount} confirmé${outing.confirmedCount > 1 ? "s" : ""}`
+    isPast && confirmedCount > 0
+      ? `${confirmedCount} confirmé${confirmedCount > 1 ? "s" : ""}`
       : null,
   ]
     .filter(Boolean)
@@ -134,9 +125,7 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
           {outing.title}
         </h3>
         {metaLine && (
-          <p
-            className={`line-clamp-1 font-mono text-[10.5px] uppercase tracking-[0.12em] ${pastMetaClasses}`}
-          >
+          <p className="line-clamp-1 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink-400">
             {metaLine}
           </p>
         )}

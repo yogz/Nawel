@@ -65,7 +65,7 @@ export function LiveStatusHero({
   deadlineAt,
   status,
   mode,
-  eyebrow = "Ta prochaine sortie",
+  eyebrow = "─ on deck ─",
   headingLevel = "h2",
   compact = false,
 }: Props) {

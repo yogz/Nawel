@@ -71,7 +71,7 @@ export function PendingActionsInbox({ actions }: Props) {
               ─ à toi de jouer ─
             </p>
             <SheetTitle className="font-display text-3xl font-black uppercase tracking-tight text-ink-700">
-              Boîte de réception
+              Inbox
             </SheetTitle>
           </SheetHeader>
 
