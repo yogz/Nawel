@@ -6,9 +6,10 @@ import { user } from "@drizzle/schema";
 import { outings } from "@drizzle/sortie-schema";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { AssignForm } from "./assign-form";
+import { ChangeCreatorForm } from "./change-creator-form";
 
 export const metadata = {
-  title: "Assignation manuelle — admin",
+  title: "Assignations sortie — admin",
   robots: { index: false, follow: false },
 };
 
@@ -54,21 +55,52 @@ export default async function AdminAssignPage() {
         </Link>
       </nav>
 
-      <header className="mb-8">
-        <Eyebrow className="mb-3">─ assignation manuelle ─</Eyebrow>
+      <header className="mb-10">
+        <Eyebrow className="mb-3">─ assignations sortie ─</Eyebrow>
         <h1 className="text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
-          Ajouter un user
-          <br />à une sortie.
+          Assignations
+          <br />
+          manuelles.
         </h1>
         <p className="mt-4 text-[14px] leading-relaxed text-ink-500">
-          Crée ou met à jour la row participant pour un compte existant. Pour les cas où on doit
-          forcer une présence sans passer par le flow RSVP normal — l'user ne pourra pas la modifier
-          depuis son device tant qu'il n'a pas RSVP lui-même (le cookie hash placeholder sera
-          réécrit à ce moment-là).
+          Deux opérations admin sur une sortie : ajouter un participant, ou ré-attribuer la sortie à
+          un autre créateur.
         </p>
       </header>
 
-      <AssignForm outings={outingsList} users={usersList} />
+      <section className="mb-12">
+        <header className="mb-5">
+          <Eyebrow tone="acid" className="mb-2">
+            ─ ajouter un participant ─
+          </Eyebrow>
+          <h2 className="font-display text-2xl font-black uppercase tracking-tight text-ink-700">
+            Participant
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-ink-500">
+            Crée ou met à jour la row participant pour un compte existant. Le user ne pourra pas la
+            modifier depuis son device tant qu'il n'a pas RSVP lui-même (le cookie hash placeholder
+            sera réécrit à ce moment-là).
+          </p>
+        </header>
+        <AssignForm outings={outingsList} users={usersList} />
+      </section>
+
+      <section>
+        <header className="mb-5">
+          <Eyebrow tone="acid" className="mb-2">
+            ─ changer le créateur ─
+          </Eyebrow>
+          <h2 className="font-display text-2xl font-black uppercase tracking-tight text-ink-700">
+            Créateur
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-ink-500">
+            Ré-attribue la sortie à un autre user. Les champs anonymes du créateur (nom / email /
+            cookie) sont nettoyés et la sequence iCal est bumpée pour les abonnés au feed. N'altère
+            pas les RSVP existants.
+          </p>
+        </header>
+        <ChangeCreatorForm outings={outingsList} users={usersList} />
+      </section>
     </main>
   );
 }
