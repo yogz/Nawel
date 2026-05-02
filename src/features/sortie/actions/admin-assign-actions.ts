@@ -131,3 +131,77 @@ export async function adminAssignUserToOutingAction(
     ok: `${targetUser.name} ${verb} sur "${outing.title}" (${response}).`,
   };
 }
+
+const changeCreatorSchema = z.object({
+  shortId: shortIdSchema,
+  email: z.string().trim().toLowerCase().email().max(255),
+});
+
+/**
+ * Action admin : ré-attribue une sortie à un autre user (par email).
+ *   - `creatorUserId` ← nouveau user
+ *   - `creatorAnonName/Email/CookieTokenHash` ← null (le nouveau créateur
+ *     est un compte réel, plus aucun fallback anon)
+ *   - `sequence++` pour signaler le changement aux clients iCal
+ *     subscribed (RFC 5545 §3.8.7.4 — sans bump, Apple/Outlook ne
+ *     re-rendent pas leur copie locale)
+ *
+ * N'altère pas la table `participants` — l'ancien créateur conserve
+ * sa row RSVP s'il en avait une (et inversement, le nouveau ne reçoit
+ * pas de RSVP automatique : à faire séparément via l'autre formulaire
+ * de cette page).
+ */
+export async function adminChangeCreatorAction(
+  _prev: AssignActionState,
+  formData: FormData
+): Promise<AssignActionState> {
+  await assertSortieAdmin();
+
+  const parsed = changeCreatorSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    const flat = parsed.error.flatten();
+    const firstFieldError = Object.values(flat.fieldErrors).flat()[0];
+    return { error: firstFieldError ?? "Données invalides." };
+  }
+  const { shortId, email } = parsed.data;
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
+  });
+  if (!outing) {
+    return { error: `Sortie "${shortId}" introuvable.` };
+  }
+
+  const targetUser = await db
+    .select({ id: user.id, name: user.name, email: user.email })
+    .from(user)
+    .where(sql`lower(${user.email}) = ${email}`)
+    .limit(1)
+    .then((rows) => rows[0]);
+  if (!targetUser) {
+    return { error: `Aucun compte avec l'email "${email}".` };
+  }
+
+  if (outing.creatorUserId === targetUser.id) {
+    return { ok: `${targetUser.name} est déjà le créateur de "${outing.title}".` };
+  }
+
+  await db
+    .update(outings)
+    .set({
+      creatorUserId: targetUser.id,
+      creatorAnonName: null,
+      creatorAnonEmail: null,
+      creatorCookieTokenHash: null,
+      sequence: outing.sequence + 1,
+      updatedAt: new Date(),
+    })
+    .where(eq(outings.id, outing.id));
+
+  revalidatePath(`/${outing.shortId}`);
+  revalidatePath("/sortie/agenda");
+
+  return {
+    ok: `${targetUser.name} est maintenant créateur de "${outing.title}".`,
+  };
+}
