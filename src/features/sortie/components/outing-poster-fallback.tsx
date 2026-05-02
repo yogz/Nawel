@@ -70,6 +70,12 @@ export function OutingPosterFallback({
  * large. line-clamp à 4 pour borner les titres très longs (rare, mais
  * "Festival international du film d'animation d'Annecy" arrive). Uppercase
  * pour la cohérence avec le reste de la signature (eyebrows, badges).
+ *
+ * Pas de `mixBlendMode` : le blend overlay supposait des hot-spots
+ * saturés pleins en fond. Depuis qu'on a atténué les halos (alpha 0.55
+ * sur fond #0f0f0f), l'overlay tombait sur du sombre et le texte
+ * disparaissait. Crème opaque + text-shadow noir donne un titre lisible
+ * peu importe la zone (sombre ou colorée) du gradient sous-jacent.
  */
 function TitlePosterText({ title }: { title: string }) {
   const trimmed = title.trim();
@@ -88,7 +94,7 @@ function TitlePosterText({ title }: { title: string }) {
   return (
     <span
       className={`line-clamp-4 px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
-      style={{ mixBlendMode: "overlay", textWrap: "balance" }}
+      style={{ textWrap: "balance", textShadow: "0 1px 2px rgba(0,0,0,0.45)" }}
     >
       {trimmed}
     </span>
