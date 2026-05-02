@@ -1,16 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import {
-  ChevronRight,
-  Film,
-  Image as ImageIcon,
-  Mic2,
-  MoreHorizontal,
-  Music,
-  Plus,
-  Theater,
-} from "lucide-react";
+import { Film, Image as ImageIcon, Mic2, MoreHorizontal, Music, Plus, Theater } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -19,7 +10,6 @@ import {
   listAnonInboxOutings,
   listMyAgendaActivity,
   listMyParticipantsForOutings,
-  type MyParticipantWithSlots,
 } from "@/features/sortie/queries/outing-queries";
 import { listFollowedOutingsForCarousel } from "@/features/sortie/queries/follow-queries";
 import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
@@ -39,8 +29,6 @@ import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { getResetReclaimability } from "@/features/sortie/queries/reset-device-queries";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
-
-type HomeOutingRow = Awaited<ReturnType<typeof listAllMyOutings>>["upcoming"][number];
 
 export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -75,13 +63,13 @@ export default async function SortieHome() {
   //    l'eyebrow "✓ Tu viens / ✓ Tu as voté" sur les cards. (Note :
   //    cette query a besoin des `outingIds` retournés par la 1re —
   //    on l'enchaîne après.)
-  const [{ upcoming: upcomingRaw, past }, agendaItems, followedCarousel] = await Promise.all([
+  const [{ upcoming: upcomingRaw }, agendaItems, followedCarousel] = await Promise.all([
     listAllMyOutings(userId, now),
     listMyAgendaActivity(userId, now),
     listFollowedOutingsForCarousel(userId, now),
   ]);
   const myRsvpByOuting = await listMyParticipantsForOutings({
-    outingIds: [...upcomingRaw, ...past].map((o) => o.id),
+    outingIds: upcomingRaw.map((o) => o.id),
     cookieTokenHash: null,
     userId,
   });
@@ -190,13 +178,6 @@ export default async function SortieHome() {
           nowIso={now.toISOString()}
         />
       )}
-      {past.length > 0 && (
-        <PastSection
-          outings={past}
-          loggedInName={session.user.name ?? null}
-          myRsvpByOuting={myRsvpByOuting}
-        />
-      )}
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
           safe-area inset is what keeps it clear of Safari's bottom URL bar
           on iOS — the inset only accounts for the 34pt home indicator,
@@ -216,68 +197,6 @@ export default async function SortieHome() {
         <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
       </Link>
     </main>
-  );
-}
-
-/**
- * Past outings: mirrors the /@<username> pattern — up to 3 inline, rest
- * hidden behind "Voir les N autres ›". Keeps short histories flat
- * without demoting them, and spares multi-year organisers from a wall
- * of past cards every time they land on /.
- */
-function PastSection({
-  outings,
-  loggedInName,
-  myRsvpByOuting,
-}: {
-  outings: HomeOutingRow[];
-  loggedInName: string | null;
-  myRsvpByOuting: Map<string, MyParticipantWithSlots>;
-}) {
-  const inline = outings.slice(0, 3);
-  const hidden = outings.slice(3);
-
-  const renderCard = (o: HomeOutingRow) => (
-    <OutingProfileCard
-      outing={o}
-      showRsvp={false}
-      myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-      loggedInName={loggedInName}
-      outingBaseUrl={PUBLIC_BASE}
-      isPast
-    />
-  );
-
-  return (
-    <section className="mb-10">
-      <Eyebrow tone="hot" className="mb-3 text-hot-600">
-        ─ passées ─
-      </Eyebrow>
-      <ul className="flex flex-col gap-4">
-        {inline.map((o) => (
-          <li key={o.id}>{renderCard(o)}</li>
-        ))}
-      </ul>
-
-      {hidden.length > 0 && (
-        <details className="group mt-4 border-t border-ink-100 pt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:text-acid-600">
-            <span>+ voir les {String(hidden.length).padStart(2, "0")} autres</span>
-            <ChevronRight
-              size={14}
-              strokeWidth={2.2}
-              aria-hidden="true"
-              className="transition-transform duration-200 group-open:rotate-90"
-            />
-          </summary>
-          <ul className="mt-4 flex flex-col gap-4">
-            {hidden.map((o) => (
-              <li key={o.id}>{renderCard(o)}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </section>
   );
 }
 

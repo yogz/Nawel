@@ -138,9 +138,16 @@ export function buildMonthGrid(
   now: Date,
   buckets: Map<string, DayBucket>,
   monthOffset: number,
-  windowDays = 365
+  windowDays = 365,
+  // Borne basse de la fenêtre data (jours en arrière de `now`). 0 par
+  // défaut — comportement historique "future-only" pour les surfaces
+  // home. Sur /agenda on passe 365 pour permettre de browse les passées.
+  windowDaysBack = 0
 ): MonthGrid {
   const todayKey = parisDayKey(now);
+  const windowStartKey = parisDayKey(
+    new Date(now.getTime() - windowDaysBack * 24 * 60 * 60 * 1000)
+  );
   const windowEndKey = parisDayKey(new Date(now.getTime() + windowDays * 24 * 60 * 60 * 1000));
 
   const { monthKey, label, monthStart } = monthAtOffset(now, monthOffset);
@@ -169,7 +176,7 @@ export function buildMonthGrid(
       dayKey,
       date,
       dayOfMonth: d,
-      outOfWindow: dayKey < todayKey || dayKey > windowEndKey,
+      outOfWindow: dayKey < windowStartKey || dayKey > windowEndKey,
       isToday: dayKey === todayKey,
     };
     week.push(cell);

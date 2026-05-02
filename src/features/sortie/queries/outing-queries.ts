@@ -205,19 +205,22 @@ export type AgendaItem = {
 };
 
 /**
- * Données pour `/sortie/agenda` (heatmap + timeline 3 mois) :
+ * Données pour `/sortie/agenda` (heatmap + timeline navigable) :
  *   1. sorties datées dont l'user est créateur ou participant (yes / no /
  *      handle_own / interested), avec `fixedDatetime` dans la fenêtre
- *      [now, now+90j].
+ *      `[now - 365j, now + 365j]`.
  *   2. sondages dans le même périmètre user, avec au moins un timeslot
- *      candidat dans la fenêtre. Les candidats hors fenêtre sont
- *      ignorés (cas rare — un sondage qui propose dans 4 mois).
+ *      candidat dans la fenêtre.
+ *
+ * Fenêtre symétrique : le user peut browse les mois passés via les
+ * chevrons + swipe pour retrouver l'historique sans section dédiée.
  *
  * On exclut `cancelled` (les annulées disparaissent de l'agenda).
  * `closed` (sondage tranché → daté avec succès) n'apparaît que si
  * `fixedDatetime` est posé, donc traité comme datée via la branche 1.
  */
 export async function listMyAgendaActivity(userId: string, now = new Date()) {
+  const windowStart = new Date(now.getTime() - AGENDA_WINDOW_DAYS * 24 * 60 * 60 * 1000);
   const windowEnd = new Date(now.getTime() + AGENDA_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
   // LEFT JOIN sur la row participant de l'user (s'il y en a une) pour
@@ -260,7 +263,7 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
           and(
             eq(outings.mode, "fixed"),
             isNotNull(outings.fixedDatetime),
-            gte(outings.fixedDatetime, now),
+            gte(outings.fixedDatetime, windowStart),
             lte(outings.fixedDatetime, windowEnd)
           ),
           and(
@@ -272,7 +275,7 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
                 .where(
                   and(
                     eq(outingTimeslots.outingId, outings.id),
-                    gte(outingTimeslots.startsAt, now),
+                    gte(outingTimeslots.startsAt, windowStart),
                     lte(outingTimeslots.startsAt, windowEnd)
                   )
                 )
@@ -298,7 +301,7 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
       .where(
         and(
           inArray(outingTimeslots.outingId, voteOutingIds),
-          gte(outingTimeslots.startsAt, now),
+          gte(outingTimeslots.startsAt, windowStart),
           lte(outingTimeslots.startsAt, windowEnd)
         )
       )
