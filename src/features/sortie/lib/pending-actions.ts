@@ -2,7 +2,7 @@
 // Le hero LiveStatusHero ne parle que d'une seule sortie ; quand le user a
 // 5+ outings actives, la maison ne lui dit nulle part "voilà ce qui est
 // bloqué sur *toi* maintenant". Cette fonction parcourt ses outings et
-// émet une liste d'actions typées pour `PendingActionsStrip`.
+// émet une liste d'actions typées pour `PendingActionsInbox`.
 //
 // Précédence dans une même outing : on retourne au plus 1 action par
 // outing. L'ordre des `if` ci-dessous est l'ordre de priorité — un
