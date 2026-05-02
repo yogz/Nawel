@@ -3,7 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
+import { NavButton, WEEKDAY_LABELS } from "@/features/sortie/components/agenda-month-view";
 import { buildMonthGrid, type DayBucket, type DayCell } from "@/features/sortie/lib/agenda-grid";
+import { cn } from "@/lib/utils";
 
 type Props = {
   now: Date;
@@ -16,8 +18,6 @@ type Props = {
   onDaySelect: (dayKey: string) => void;
 };
 
-const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"] as const;
-
 const SWIPE_THRESHOLD = 60;
 
 const slideVariants = {
@@ -27,15 +27,10 @@ const slideVariants = {
 };
 
 /**
- * Mini-grille mois ultra-compacte (~220 px de haut total) — variante
- * heatmap d'`AgendaMonthView`. Chaque cellule rend un simple dot coloré
- * (datée / sondage / mixte / vide) sans le numéro du jour : la donnée
- * actionnable est dans la liste juste en dessous, le calendrier ne sert
- * qu'à percevoir la densité du mois et à scroll-to-row au tap.
- *
- * Réutilise `buildMonthGrid` à l'identique — aucun re-fetch ni
- * re-bucketing par rapport à `AgendaMonthView`. Coexiste avec lui :
- * `/agenda` garde la grille pleine, `/` adopte cette variante.
+ * Vue mois compacte façon Acid Cabinet — chaque cellule rend un chiffre
+ * mono fantôme + des barres equalizer (datée = lime pleine, sondage =
+ * hot outline, hauteur fonction du count). Coexiste avec `AgendaMonthView`
+ * qui reste utilisée sur `/agenda` ; ici on optimise pour le scan home.
  */
 export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDaySelect }: Props) {
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -74,7 +69,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         </NavButton>
       </header>
 
-      <div className="mb-1.5 grid grid-cols-7 gap-1">
+      <div className="mb-1.5 grid grid-cols-7 gap-px">
         {WEEKDAY_LABELS.map((label, i) => (
           <div
             key={i}
@@ -85,7 +80,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         ))}
       </div>
 
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden rounded-md bg-surface-300/30">
         <AnimatePresence mode="wait" initial={false} custom={direction}>
           <motion.div
             key={month.monthKey}
@@ -105,7 +100,7 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
                 goPrev();
               }
             }}
-            className="grid touch-pan-y grid-cols-7 gap-1"
+            className="grid touch-pan-y grid-cols-7 gap-px"
           >
             {month.weeks
               .flat()
@@ -118,11 +113,22 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
                     onSelect={onDaySelect}
                   />
                 ) : (
-                  <div key={`empty-${i}`} aria-hidden className="h-11" />
+                  <div key={`empty-${i}`} aria-hidden className="h-9 bg-surface-100" />
                 )
               )}
           </motion.div>
         </AnimatePresence>
+
+        {month.itemCount === 0 && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+          >
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-acid-500/40">
+              ─ zone libre ─
+            </p>
+          </div>
+        )}
       </div>
 
       {offset !== 0 && (
@@ -143,25 +149,17 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
   );
 }
 
-function NavButton({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-200/60 text-ink-500 ring-1 ring-white/5 transition-colors duration-motion-standard hover:text-acid-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
-    >
-      {children}
-    </button>
-  );
+// Hauteur des barres equalizer fonction du count (1, 2, 3+) — calibré
+// dans une cellule h-9 (36 px) pour rester sous le chiffre fantôme du
+// haut sans le toucher.
+function barHeight(count: number): string {
+  if (count >= 3) {
+    return "h-3.5";
+  }
+  if (count === 2) {
+    return "h-2.5";
+  }
+  return "h-1.5";
 }
 
 function HeatmapCell({
@@ -177,43 +175,64 @@ function HeatmapCell({
   const voteCount = bucket?.vote.length ?? 0;
   const total = fixedCount + voteCount;
 
-  const hasFixed = fixedCount > 0;
-  const hasVote = voteCount > 0;
-  const interactive = total > 0;
-
-  // Dot central : couleur fonction du mix datée/sondage. Mixte = gradient
-  // 50/50 acid→hot. Cas vide = micro-dot ink discret (réserve la grille
-  // sans la rendre muette).
-  let dotClass = "bg-ink-700/15";
-  if (hasFixed && hasVote) {
-    dotClass = "bg-gradient-to-r from-acid-500 from-50% to-hot-500 to-50%";
-  } else if (hasFixed) {
-    dotClass = "bg-acid-500";
-  } else if (hasVote) {
-    dotClass = "bg-hot-500";
-  }
-
-  const dotSize = total > 0 ? "h-2 w-2" : "h-1 w-1";
-
-  const wrapperClass = `relative flex h-11 w-full items-center justify-center rounded-md transition-colors duration-motion-standard ${
-    cell.isToday ? "ring-1 ring-acid-500/60" : ""
-  } ${cell.outOfWindow ? "opacity-30" : ""} ${
-    interactive
-      ? "hover:bg-surface-200/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
-      : ""
-  }`;
+  const wrapperClass = cn(
+    "group/cell relative flex h-9 w-full flex-col justify-between bg-surface-100 px-1 pt-0.5 pb-1 transition-colors duration-motion-standard",
+    cell.outOfWindow && "opacity-30",
+    total > 0 &&
+      "hover:bg-surface-200/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-acid-500"
+  );
 
   const ariaLabel =
     total > 0
       ? `${cell.dayKey} — ${fixedCount} datée${fixedCount > 1 ? "s" : ""}, ${voteCount} sondage${voteCount > 1 ? "s" : ""}`
       : cell.dayKey;
 
-  const dot = <span className={`rounded-full ${dotSize} ${dotClass}`} />;
+  const content = (
+    <>
+      <div className="flex items-center gap-0.5 leading-none">
+        {cell.isToday && (
+          <span aria-hidden className="font-mono text-[7px] text-acid-500">
+            ▶
+          </span>
+        )}
+        <span
+          className={cn(
+            "font-mono text-[9px] tabular-nums tracking-[0.05em]",
+            cell.isToday
+              ? "font-display text-[11px] font-black text-acid-500"
+              : total > 0
+                ? "text-ink-700/55"
+                : "text-ink-700/25"
+          )}
+        >
+          {cell.dayOfMonth}
+        </span>
+      </div>
 
-  if (!interactive) {
+      {total > 0 && (
+        <div className="flex items-end justify-center gap-px">
+          {fixedCount > 0 && (
+            <span aria-hidden className={cn("w-1 bg-acid-500", barHeight(fixedCount))} />
+          )}
+          {voteCount > 0 && (
+            <span
+              aria-hidden
+              className={cn("w-1 border border-hot-500 bg-transparent", barHeight(voteCount))}
+            />
+          )}
+        </div>
+      )}
+
+      {cell.isToday && (
+        <span aria-hidden className="absolute inset-x-0.5 bottom-0 h-0.5 bg-acid-500" />
+      )}
+    </>
+  );
+
+  if (total === 0) {
     return (
       <div className={wrapperClass} aria-label={ariaLabel}>
-        {dot}
+        {content}
       </div>
     );
   }
@@ -225,7 +244,7 @@ function HeatmapCell({
       className={wrapperClass}
       aria-label={ariaLabel}
     >
-      {dot}
+      {content}
     </button>
   );
 }

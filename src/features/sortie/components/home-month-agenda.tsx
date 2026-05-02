@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
@@ -120,6 +120,18 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
   // la liste compacte juste en dessous, et flash 1 s pour la signaler.
   // Si plusieurs outings tombent ce jour-là, on prend simplement le 1er
   // (datée prioritaire sur sondage — déjà l'ordre dans le bucket).
+  const flashTimerRef = useRef<number | null>(null);
+  const flashElRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (flashTimerRef.current !== null) {
+        window.clearTimeout(flashTimerRef.current);
+        flashElRef.current?.removeAttribute("data-flash");
+      }
+    };
+  }, []);
+
   const handleDaySelect = useCallback(
     (dayKey: string) => {
       const bucket = buckets.get(dayKey);
@@ -131,9 +143,18 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
       if (!el) {
         return;
       }
+      if (flashTimerRef.current !== null) {
+        window.clearTimeout(flashTimerRef.current);
+        flashElRef.current?.removeAttribute("data-flash");
+      }
       el.scrollIntoView({ behavior: "smooth", block: "center" });
       el.setAttribute("data-flash", "true");
-      window.setTimeout(() => el.removeAttribute("data-flash"), 1000);
+      flashElRef.current = el;
+      flashTimerRef.current = window.setTimeout(() => {
+        el.removeAttribute("data-flash");
+        flashTimerRef.current = null;
+        flashElRef.current = null;
+      }, 1000);
     },
     [buckets]
   );

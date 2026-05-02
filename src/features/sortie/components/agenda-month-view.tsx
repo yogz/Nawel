@@ -14,7 +14,7 @@ type Props = {
   onOffsetChange: (offset: number) => void;
 };
 
-const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"] as const;
+export const WEEKDAY_LABELS = ["L", "M", "M", "J", "V", "S", "D"] as const;
 
 // Seuil pixels au-delà duquel un drag horizontal est interprété comme
 // changement de mois. < 60 px ramène à l'élastique sans navigation.
@@ -154,7 +154,7 @@ export function AgendaMonthView({ now, buckets, offset, onOffsetChange }: Props)
   );
 }
 
-function NavButton({
+export function NavButton({
   label,
   onClick,
   children,

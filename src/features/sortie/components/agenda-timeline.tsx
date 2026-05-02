@@ -84,7 +84,7 @@ export function TypeBadge({ isVote }: { isVote: boolean }) {
   );
 }
 
-const RSVP_BADGE_LABEL: Record<AgendaRsvpBucket, string> = {
+export const RSVP_BADGE_LABEL: Record<AgendaRsvpBucket, string> = {
   yes: "tu y vas",
   maybe: "intéressé",
   no: "non",
@@ -92,7 +92,7 @@ const RSVP_BADGE_LABEL: Record<AgendaRsvpBucket, string> = {
   pending: "à répondre",
 };
 
-const RSVP_BADGE_TONE_CLASS: Record<AgendaRsvpBucket, string> = {
+export const RSVP_BADGE_TONE_CLASS: Record<AgendaRsvpBucket, string> = {
   yes: "bg-acid-500/15 text-acid-500",
   maybe: "bg-hot-500/15 text-hot-500",
   no: "bg-surface-300 text-ink-400",
