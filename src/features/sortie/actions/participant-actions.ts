@@ -150,9 +150,12 @@ export async function rsvpAction(
     })
   );
 
-  // Revalidate the bare-shortId form; the public page's canonical redirect
-  // takes care of both the /<shortId> and /<slug-shortId> cache entries.
-  revalidatePath(`/${data.shortId}`);
+  // Routes Next.js sont sous `/sortie/*` (cf. proxy.ts), pas `/*` — ce que
+  // l'utilisateur final voit. Sans le préfixe, `revalidatePath` est un
+  // no-op silencieux et la home garde son cache stale (la sortie reste
+  // affichée comme "tu y vas" après un "no").
+  revalidatePath(`/sortie/${data.shortId}`);
+  revalidatePath("/sortie");
   revalidatePath("/sortie/agenda");
   return {};
 }
@@ -210,7 +213,8 @@ export async function removeRsvpAction(
     };
   }
 
-  revalidatePath(`/${shortId}`);
+  revalidatePath(`/sortie/${shortId}`);
+  revalidatePath("/sortie");
   revalidatePath("/sortie/agenda");
   return {};
 }
@@ -268,7 +272,8 @@ export async function removeParticipantAction(
     };
   }
 
-  revalidatePath(`/${shortId}`);
+  revalidatePath(`/sortie/${shortId}`);
+  revalidatePath("/sortie");
   revalidatePath("/sortie/agenda");
   return {};
 }
@@ -418,7 +423,8 @@ export async function castVoteAction(
     }
   });
 
-  revalidatePath(`/${data.shortId}`);
+  revalidatePath(`/sortie/${data.shortId}`);
+  revalidatePath("/sortie");
   revalidatePath("/sortie/agenda");
   return {};
 }
