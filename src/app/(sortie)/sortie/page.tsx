@@ -18,6 +18,7 @@ import { user } from "@drizzle/schema";
 import {
   listAllMyOutings,
   listAnonInboxOutings,
+  listMyAgendaActivity,
   listMyParticipantsForOutings,
   type MyParticipantWithSlots,
 } from "@/features/sortie/queries/outing-queries";
@@ -26,7 +27,9 @@ import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
+import { MiniMonthCalendar } from "@/features/sortie/components/mini-month-calendar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
+import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { PendingActionsStrip } from "@/features/sortie/components/pending-actions-strip";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { computePendingActions } from "@/features/sortie/lib/pending-actions";
@@ -62,12 +65,20 @@ export default async function SortieHome() {
     return <LandingV2 />;
   }
 
-  const { upcoming: upcomingRaw, past } = await listAllMyOutings(userId);
-  // Charge les participations du user sur ses outings (créations +
-  // celles où il a RSVP). Sans ça, l'eyebrow d'état "✓ Tu viens / ✓
-  // Tu as voté" ne s'affiche pas sur la home logged-in et un user
-  // qui est principalement participant (pas créateur) ne sait pas
-  // qu'il a déjà répondu.
+  const now = new Date();
+  // Trois queries indépendantes en parallèle :
+  //  - `listAllMyOutings` : feed home (upcoming/past, créateur OU
+  //    participant), source des cards et du hero.
+  //  - `listMyAgendaActivity` : fenêtre 365j datée, alimente le
+  //    mini-calendrier en bas. Inclut les candidats de sondages.
+  //  - `listMyParticipantsForOutings` : RSVPs du user, requis pour
+  //    l'eyebrow "✓ Tu viens / ✓ Tu as voté" sur les cards. (Note :
+  //    cette query a besoin des `outingIds` retournés par la 1re —
+  //    on l'enchaîne après.)
+  const [{ upcoming: upcomingRaw, past }, agendaItems] = await Promise.all([
+    listAllMyOutings(userId, now),
+    listMyAgendaActivity(userId, now),
+  ]);
   const myRsvpByOuting = await listMyParticipantsForOutings({
     outingIds: [...upcomingRaw, ...past].map((o) => o.id),
     cookieTokenHash: null,
@@ -139,9 +150,7 @@ export default async function SortieHome() {
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
-
       <PendingActionsStrip actions={pendingActions} />
-
       {heroOuting && heroOuting.startsAt && heroStats ? (
         <>
           {/* Personal anchor: this used to disappear the moment a user had
@@ -183,23 +192,27 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
-
       {restUpcoming.length > 0 && (
         <UpcomingBuckets
           outings={restUpcoming}
           loggedInName={session.user.name ?? null}
           myRsvpByOuting={myRsvpByOuting}
+          viewerUserId={userId}
         />
+      )}{" "}
+      {agendaItems.length > 0 && (
+        <section className="mb-10">
+          <MiniMonthCalendar items={agendaItems} nowIso={now.toISOString()} />
+        </section>
       )}
-
       {past.length > 0 && (
         <PastSection
           outings={past}
           loggedInName={session.user.name ?? null}
           myRsvpByOuting={myRsvpByOuting}
+          viewerUserId={userId}
         />
       )}
-
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
           safe-area inset is what keeps it clear of Safari's bottom URL bar
           on iOS — the inset only accounts for the 34pt home indicator,
@@ -238,10 +251,12 @@ function UpcomingBuckets({
   outings,
   loggedInName,
   myRsvpByOuting,
+  viewerUserId,
 }: {
   outings: HomeOutingRow[];
   loggedInName: string | null;
   myRsvpByOuting: Map<string, MyParticipantWithSlots>;
+  viewerUserId: string;
 }) {
   const buckets = bucketizeUpcoming(outings).filter((b) => b.outings.length > 0);
   // Pré-calcule l'index absolu de la première carte de chaque bucket.
@@ -253,9 +268,20 @@ function UpcomingBuckets({
     baseIndices.push(acc);
     return acc + b.outings.length;
   }, 0);
+  // Hint de découvrabilité du swipe — affiché uniquement si l'user a au
+  // moins une sortie qu'il peut archiver (créateur). Sinon le hint
+  // promet une action que la card ne fournit pas et ajoute du bruit.
+  // Static : pas de dismiss persistant en v1 — la copie est small mono
+  // tracking-wide, peu intrusive même pour les power users.
+  const hasArchivable = outings.some((o) => o.creatorUserId === viewerUserId);
 
   return (
     <div className="mt-4 mb-10 flex flex-col gap-8">
+      {hasArchivable && (
+        <p className="-mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
+          ↳ swipe une carte vers la gauche pour l&rsquo;archiver
+        </p>
+      )}
       {buckets.map((bucket, bIdx) => {
         const baseIndex = baseIndices[bIdx] ?? 0;
         return (
@@ -264,24 +290,32 @@ function UpcomingBuckets({
               <span>─ {bucket.label} ─</span>
               <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
             </Eyebrow>
-            <ul className="flex flex-col gap-4">
-              {bucket.outings.map((o, oIdx) => (
-                <li
-                  key={o.id}
-                  className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
-                  style={{ animationDelay: `${Math.min(baseIndex + oIdx, 9) * 40}ms` }}
-                >
-                  <OutingProfileCard
-                    outing={o}
-                    showRsvp
-                    myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-                    loggedInName={loggedInName}
-                    outingBaseUrl={PUBLIC_BASE}
-                    isPast={false}
-                  />
-                </li>
-              ))}
-            </ul>
+            <ArchivableOutingList
+              isPast={false}
+              listClassName="flex flex-col gap-4"
+              items={bucket.outings.map((o, oIdx) => ({
+                row: o,
+                // Swipe-to-archive réservé au créateur — l'action serveur
+                // rejette les non-owners de toute façon, mais on cache la
+                // gesture pour ne pas suggérer une action impossible.
+                canArchive: o.creatorUserId === viewerUserId,
+                node: (
+                  <div
+                    className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
+                    style={{ animationDelay: `${Math.min(baseIndex + oIdx, 9) * 40}ms` }}
+                  >
+                    <OutingProfileCard
+                      outing={o}
+                      showRsvp
+                      myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+                      loggedInName={loggedInName}
+                      outingBaseUrl={PUBLIC_BASE}
+                      isPast={false}
+                    />
+                  </div>
+                ),
+              }))}
+            />
           </section>
         );
       })}
@@ -299,33 +333,37 @@ function PastSection({
   outings,
   loggedInName,
   myRsvpByOuting,
+  viewerUserId,
 }: {
   outings: HomeOutingRow[];
   loggedInName: string | null;
   myRsvpByOuting: Map<string, MyParticipantWithSlots>;
+  viewerUserId: string;
 }) {
   const inline = outings.slice(0, 3);
   const hidden = outings.slice(3);
+
+  const toItem = (o: HomeOutingRow) => ({
+    row: o,
+    canArchive: o.creatorUserId === viewerUserId,
+    node: (
+      <OutingProfileCard
+        outing={o}
+        showRsvp={false}
+        myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
+        loggedInName={loggedInName}
+        outingBaseUrl={PUBLIC_BASE}
+        isPast
+      />
+    ),
+  });
 
   return (
     <section className="mb-10">
       <Eyebrow tone="hot" className="mb-3 text-hot-600">
         ─ passées ─
       </Eyebrow>
-      <ul className="flex flex-col gap-4">
-        {inline.map((o) => (
-          <li key={o.id}>
-            <OutingProfileCard
-              outing={o}
-              showRsvp={false}
-              myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-              loggedInName={loggedInName}
-              outingBaseUrl={PUBLIC_BASE}
-              isPast
-            />
-          </li>
-        ))}
-      </ul>
+      <ArchivableOutingList isPast listClassName="flex flex-col gap-4" items={inline.map(toItem)} />
 
       {hidden.length > 0 && (
         <details className="group mt-4 border-t border-ink-100 pt-4">
@@ -338,20 +376,13 @@ function PastSection({
               className="transition-transform duration-200 group-open:rotate-90"
             />
           </summary>
-          <ul className="mt-4 flex flex-col gap-4">
-            {hidden.map((o) => (
-              <li key={o.id}>
-                <OutingProfileCard
-                  outing={o}
-                  showRsvp={false}
-                  myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-                  loggedInName={loggedInName}
-                  outingBaseUrl={PUBLIC_BASE}
-                  isPast
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="mt-4">
+            <ArchivableOutingList
+              isPast
+              listClassName="flex flex-col gap-4"
+              items={hidden.map(toItem)}
+            />
+          </div>
         </details>
       )}
     </section>

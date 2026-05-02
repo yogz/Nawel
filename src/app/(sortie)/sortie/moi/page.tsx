@@ -5,16 +5,12 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
-import {
-  listArchivedOutings,
-  listPublicProfileOutings,
-} from "@/features/sortie/queries/outing-queries";
+import { listArchivedOutings } from "@/features/sortie/queries/outing-queries";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { UsernameForm } from "@/features/sortie/components/username-form";
 import { InviteLinkManager } from "@/features/sortie/components/invite-link-manager";
 import { LoginLink } from "@/features/sortie/components/login-link";
-import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { UnarchiveButton } from "@/features/sortie/components/unarchive-button";
 import { ProfileDetailsForm } from "@/features/sortie/components/profile-details-form";
 import { ProfileShareButton } from "@/features/sortie/components/profile-share-button";
@@ -78,7 +74,6 @@ export default async function ProfileSettingsPage() {
     },
   });
 
-  const { upcoming, past } = await listPublicProfileOutings(session.user.id);
   const archived = await listArchivedOutings(session.user.id);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
@@ -144,49 +139,42 @@ export default async function ProfileSettingsPage() {
         </div>
       </section>
 
-      {(upcoming.length > 0 || past.length > 0 || archived.length > 0) && (
-        <>
-          <SectionDivider />
-          <SectionHeading
-            title="Tes sorties"
-            subtitle="Glisse une sortie à gauche pour l’archiver. L’archiver la retire de ton profil, jamais des invités."
-            action={
-              upcoming.length > 0 ? (
-                <Link
-                  href="/agenda"
-                  className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
-                >
-                  agenda
-                  <ArrowUpRight size={12} strokeWidth={2.4} />
-                </Link>
-              ) : undefined
-            }
-          />
-          <section className="mb-14">
-            {upcoming.length > 0 && (
-              <OutingListBlock title="À venir" rows={upcoming} isPast={false} />
-            )}
-            {past.length > 0 && <OutingListBlock title="Passées" rows={past} isPast />}
-            {archived.length > 0 && (
-              <div className="mb-6">
-                <Eyebrow tone="muted" className="mb-2">
-                  ─ archivées ─
-                </Eyebrow>
-                <ul className="flex flex-col gap-2">
-                  {archived.map((o) => (
-                    <li key={o.id} className="flex items-center gap-3">
-                      <div className="min-w-0 flex-1">
-                        <OutingRowCard outing={o} muted />
-                      </div>
-                      <UnarchiveButton shortId={o.shortId} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
-        </>
-      )}
+      <SectionDivider />
+      <SectionHeading
+        title="Sorties archivées"
+        subtitle={
+          archived.length > 0
+            ? "Retirées de ton profil public mais visibles pour tes invités. Tu peux les rétablir."
+            : "Glisse une sortie vers la gauche depuis ta home pour la cacher de ton profil public."
+        }
+        action={
+          <Link
+            href="/agenda"
+            className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
+          >
+            agenda
+            <ArrowUpRight size={12} strokeWidth={2.4} />
+          </Link>
+        }
+      />
+      <section className="mb-14">
+        {archived.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {archived.map((o) => (
+              <li key={o.id} className="flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <OutingRowCard outing={o} muted />
+                </div>
+                <UnarchiveButton shortId={o.shortId} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-xl border border-dashed border-surface-400 bg-surface-100/50 px-4 py-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            ↳ rien d&rsquo;archivé pour l&rsquo;instant
+          </p>
+        )}
+      </section>
 
       {username && (
         <>
@@ -264,29 +252,6 @@ type OutingRow = {
   location: string | null;
   startsAt: Date | null;
 };
-
-function OutingListBlock({
-  title,
-  rows,
-  isPast,
-}: {
-  title: string;
-  rows: OutingRow[];
-  isPast: boolean;
-}) {
-  return (
-    <div className="mb-6">
-      <Eyebrow tone="hot" className="mb-2">
-        ─ {title.toLowerCase()} ─
-      </Eyebrow>
-      <ArchivableOutingList
-        items={rows.map((o) => ({ row: o, node: <OutingRowCard outing={o} /> }))}
-        isPast={isPast}
-        listClassName="flex flex-col gap-2"
-      />
-    </div>
-  );
-}
 
 function OutingRowCard({ outing, muted = false }: { outing: OutingRow; muted?: boolean }) {
   const canonical = outing.slug ? `${outing.slug}-${outing.shortId}` : outing.shortId;
