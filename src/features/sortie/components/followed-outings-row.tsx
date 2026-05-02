@@ -26,7 +26,10 @@ export function FollowedOutingsRow({ outings }: Props) {
       eyebrowLabel="des suivis suivent"
       count={outings.length}
       ariaLabel="Sorties des comptes que tu suis, faites défiler horizontalement"
-      tone="hot"
+      tone="muted"
+      glow={false}
+      showCount={false}
+      aspect="square"
       items={outings.map((o) => ({
         outing: {
           id: o.id,
