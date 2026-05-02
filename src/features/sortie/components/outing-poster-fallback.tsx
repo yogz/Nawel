@@ -2,7 +2,8 @@ type Props = {
   title: string;
   /** Classes du wrapper (taille, rounded, ring, ombre…). */
   className?: string;
-  /** Classes de l'initiale overlay (font-size, opacity…). */
+  /** Classes de l'initiale overlay (font-size, opacity…). Ignoré quand
+   * `mode === "title"` — le sizing est dérivé de la longueur du titre. */
   textClassName?: string;
   /** Quand true, dérive un index 0–3 du hash du titre pour permuter les
    * positions des hot-spots du gradient. Anti "C C C C" quand plusieurs
@@ -12,6 +13,10 @@ type Props = {
    * callsites en liste verticale, où la collision visuelle est moins
    * lisible côte-à-côte). */
   varied?: boolean;
+  /** "initial" (default) = grosse lettre solo, calibré pour thumbnails
+   * 48–64px. "title" = titre entier en typo poster, calibré pour cards
+   * ≥ 140px de large (carousel posters). Adaptive sizing selon longueur. */
+  mode?: "initial" | "title";
 };
 
 /**
@@ -21,8 +26,13 @@ type Props = {
  * `LiveStatusHero` garde sa propre variante avec un transparent stop
  * différent — fallback à pleine taille hero, calibré séparément).
  */
-export function OutingPosterFallback({ title, className, textClassName, varied = false }: Props) {
-  const initial = (title.trim().charAt(0) || "·").toLocaleUpperCase("fr");
+export function OutingPosterFallback({
+  title,
+  className,
+  textClassName,
+  varied = false,
+  mode = "initial",
+}: Props) {
   const variantIndex = varied ? hashTitle(title) % VARIANTS.length : 0;
   const { hotPos, acidPos } = VARIANTS[variantIndex];
 
@@ -34,13 +44,48 @@ export function OutingPosterFallback({ title, className, textClassName, varied =
         background: `radial-gradient(circle at ${hotPos}, #FF3D81 0%, transparent 50%), radial-gradient(circle at ${acidPos}, #C7FF3C 0%, transparent 50%), #1a1a1a`,
       }}
     >
-      <span
-        className={`font-display font-black leading-none tracking-tight text-ink-50 select-none ${textClassName ?? ""}`}
-        style={{ mixBlendMode: "overlay" }}
-      >
-        {initial}
-      </span>
+      {mode === "title" ? (
+        <TitlePosterText title={title} />
+      ) : (
+        <span
+          className={`font-display font-black leading-none tracking-tight text-ink-50 select-none ${textClassName ?? ""}`}
+          style={{ mixBlendMode: "overlay" }}
+        >
+          {(title.trim().charAt(0) || "·").toLocaleUpperCase("fr")}
+        </span>
+      )}
     </div>
+  );
+}
+
+/**
+ * Titre rendu façon affiche brutaliste : sizing en 4 paliers selon le
+ * nombre de caractères pour préserver la lisibilité sur 140-168px de
+ * large. line-clamp à 4 pour borner les titres très longs (rare, mais
+ * "Festival international du film d'animation d'Annecy" arrive). Uppercase
+ * pour la cohérence avec le reste de la signature (eyebrows, badges).
+ */
+function TitlePosterText({ title }: { title: string }) {
+  const trimmed = title.trim();
+  const len = trimmed.length;
+  // Paliers calibrés sur card 144px : titre court → impact maximal,
+  // long → on garde 4 lignes lisibles.
+  const sizeClass =
+    len <= 12
+      ? "text-[36px]"
+      : len <= 24
+        ? "text-[26px]"
+        : len <= 40
+          ? "text-[20px]"
+          : "text-[16px]";
+
+  return (
+    <span
+      className={`line-clamp-4 px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
+      style={{ mixBlendMode: "overlay", textWrap: "balance" }}
+    >
+      {trimmed}
+    </span>
   );
 }
 

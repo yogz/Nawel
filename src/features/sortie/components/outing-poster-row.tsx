@@ -102,12 +102,7 @@ export function OutingPosterCard({
             style={{ filter: "saturate(1.15) contrast(1.05)" }}
           />
         ) : (
-          <OutingPosterFallback
-            title={outing.title}
-            className="size-full"
-            textClassName="text-5xl opacity-50"
-            varied
-          />
+          <OutingPosterFallback title={outing.title} className="size-full" mode="title" varied />
         )}
         <span className="absolute bottom-2 left-2 inline-flex max-w-[calc(100%-1rem)] items-center truncate rounded-sm bg-ink-700/60 px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.18em] text-surface-50 backdrop-blur-sm">
           {badge}
