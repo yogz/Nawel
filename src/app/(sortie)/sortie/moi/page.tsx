@@ -139,36 +139,42 @@ export default async function ProfileSettingsPage() {
         </div>
       </section>
 
-      {archived.length > 0 && (
-        <>
-          <SectionDivider />
-          <SectionHeading
-            title="Sorties archivées"
-            subtitle="Retirées de ton profil public mais visibles pour tes invités. Tu peux les rétablir."
-            action={
-              <Link
-                href="/agenda"
-                className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
-              >
-                agenda
-                <ArrowUpRight size={12} strokeWidth={2.4} />
-              </Link>
-            }
-          />
-          <section className="mb-14">
-            <ul className="flex flex-col gap-2">
-              {archived.map((o) => (
-                <li key={o.id} className="flex items-center gap-3">
-                  <div className="min-w-0 flex-1">
-                    <OutingRowCard outing={o} muted />
-                  </div>
-                  <UnarchiveButton shortId={o.shortId} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        </>
-      )}
+      <SectionDivider />
+      <SectionHeading
+        title="Sorties archivées"
+        subtitle={
+          archived.length > 0
+            ? "Retirées de ton profil public mais visibles pour tes invités. Tu peux les rétablir."
+            : "Glisse une sortie vers la gauche depuis ta home pour la cacher de ton profil public."
+        }
+        action={
+          <Link
+            href="/agenda"
+            className="inline-flex h-9 items-center gap-1 rounded-full px-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
+          >
+            agenda
+            <ArrowUpRight size={12} strokeWidth={2.4} />
+          </Link>
+        }
+      />
+      <section className="mb-14">
+        {archived.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {archived.map((o) => (
+              <li key={o.id} className="flex items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <OutingRowCard outing={o} muted />
+                </div>
+                <UnarchiveButton shortId={o.shortId} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-xl border border-dashed border-surface-400 bg-surface-100/50 px-4 py-6 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            ↳ rien d&rsquo;archivé pour l&rsquo;instant
+          </p>
+        )}
+      </section>
 
       {username && (
         <>

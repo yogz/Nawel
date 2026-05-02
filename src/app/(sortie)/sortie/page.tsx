@@ -150,9 +150,7 @@ export default async function SortieHome() {
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
-
       <PendingActionsStrip actions={pendingActions} />
-
       {heroOuting && heroOuting.startsAt && heroStats ? (
         <>
           {/* Personal anchor: this used to disappear the moment a user had
@@ -194,7 +192,6 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
-
       {restUpcoming.length > 0 && (
         <UpcomingBuckets
           outings={restUpcoming}
@@ -202,14 +199,12 @@ export default async function SortieHome() {
           myRsvpByOuting={myRsvpByOuting}
           viewerUserId={userId}
         />
-      )}
-
+      )}{" "}
       {agendaItems.length > 0 && (
         <section className="mb-10">
           <MiniMonthCalendar items={agendaItems} nowIso={now.toISOString()} />
         </section>
       )}
-
       {past.length > 0 && (
         <PastSection
           outings={past}
@@ -218,7 +213,6 @@ export default async function SortieHome() {
           viewerUserId={userId}
         />
       )}
-
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
           safe-area inset is what keeps it clear of Safari's bottom URL bar
           on iOS — the inset only accounts for the 34pt home indicator,
@@ -274,9 +268,20 @@ function UpcomingBuckets({
     baseIndices.push(acc);
     return acc + b.outings.length;
   }, 0);
+  // Hint de découvrabilité du swipe — affiché uniquement si l'user a au
+  // moins une sortie qu'il peut archiver (créateur). Sinon le hint
+  // promet une action que la card ne fournit pas et ajoute du bruit.
+  // Static : pas de dismiss persistant en v1 — la copie est small mono
+  // tracking-wide, peu intrusive même pour les power users.
+  const hasArchivable = outings.some((o) => o.creatorUserId === viewerUserId);
 
   return (
     <div className="mt-4 mb-10 flex flex-col gap-8">
+      {hasArchivable && (
+        <p className="-mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
+          ↳ swipe une carte vers la gauche pour l&rsquo;archiver
+        </p>
+      )}
       {buckets.map((bucket, bIdx) => {
         const baseIndex = baseIndices[bIdx] ?? 0;
         return (
