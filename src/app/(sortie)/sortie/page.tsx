@@ -174,6 +174,7 @@ export default async function SortieHome() {
             status={heroOuting.status}
             mode={heroOuting.mode}
             headingLevel="h1"
+            compact
           />
         </>
       ) : upcoming.length > 0 ? (
@@ -192,6 +193,11 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
+      {agendaItems.length > 0 && (
+        <section className="mb-10">
+          <MiniMonthCalendar items={agendaItems} nowIso={now.toISOString()} />
+        </section>
+      )}
       {restUpcoming.length > 0 && (
         <UpcomingBuckets
           outings={restUpcoming}
@@ -199,11 +205,6 @@ export default async function SortieHome() {
           myRsvpByOuting={myRsvpByOuting}
           viewerUserId={userId}
         />
-      )}{" "}
-      {agendaItems.length > 0 && (
-        <section className="mb-10">
-          <MiniMonthCalendar items={agendaItems} nowIso={now.toISOString()} />
-        </section>
       )}
       {past.length > 0 && (
         <PastSection
