@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { type DayBucket, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { cn } from "@/lib/utils";
@@ -67,21 +68,25 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
 
   return (
     <section>
-      <header className="mb-2 flex items-center justify-between gap-2">
-        <MiniChevron label="mois précédent" onClick={goPrev}>
-          <ChevronLeft size={14} strokeWidth={2.4} />
-        </MiniChevron>
-        <div className="flex items-baseline gap-2">
-          <h3 className="font-display text-[14px] font-bold uppercase leading-none tracking-tight text-ink-700">
+      <header className="mb-2 flex justify-center">
+        <Link
+          href="/agenda"
+          className="group inline-flex items-baseline gap-2 transition-colors hover:text-acid-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
+          aria-label={`Vue détaillée — ${month.label}`}
+        >
+          <h3 className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-700 group-hover:text-acid-600">
             {month.label}
           </h3>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+          <span className="font-mono text-[10.5px] uppercase tracking-[0.22em] text-ink-400">
             ({String(eventDayCount).padStart(2, "0")})
           </span>
-        </div>
-        <MiniChevron label="mois suivant" onClick={goNext}>
-          <ChevronRight size={14} strokeWidth={2.4} />
-        </MiniChevron>
+          <ArrowUpRight
+            size={11}
+            strokeWidth={2.4}
+            aria-hidden="true"
+            className="text-ink-400 transition-colors group-hover:text-acid-600"
+          />
+        </Link>
       </header>
 
       <div className="overflow-hidden">
@@ -120,27 +125,6 @@ export function AgendaMonthHeatmap({ now, buckets, offset, onOffsetChange, onDay
         ↔ glisse pour changer de mois
       </p>
     </section>
-  );
-}
-
-function MiniChevron({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-ink-500 transition-colors duration-motion-standard hover:bg-surface-200/60 hover:text-acid-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-500"
-    >
-      {children}
-    </button>
   );
 }
 

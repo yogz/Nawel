@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
-import Link from "next/link";
 import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
@@ -172,15 +170,6 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
           onOffsetChange={setMonthOffset}
           onDaySelect={handleDaySelect}
         />
-        <div className="mt-3 flex justify-end">
-          <Link
-            href="/agenda"
-            className="inline-flex items-center gap-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 underline-offset-4 transition-colors hover:text-acid-600 hover:underline"
-          >
-            vue détaillée
-            <ArrowUpRight size={12} strokeWidth={2.4} />
-          </Link>
-        </div>
       </section>
 
       <section className="mb-10">
