@@ -22,12 +22,12 @@ import {
   listMyParticipantsForOutings,
   type MyParticipantWithSlots,
 } from "@/features/sortie/queries/outing-queries";
-import { bucketizeUpcoming, sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
+import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
-import { MiniMonthCalendar } from "@/features/sortie/components/mini-month-calendar";
+import { HomeMonthAgenda } from "@/features/sortie/components/home-month-agenda";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { ArchivableOutingList } from "@/features/sortie/components/archivable-outing-list";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
@@ -193,17 +193,19 @@ export default async function SortieHome() {
       ) : (
         <EmptyHeroWithVibes firstName={firstName} />
       )}
-      {agendaItems.length > 0 && (
-        <section className="mb-10">
-          <MiniMonthCalendar items={agendaItems} nowIso={now.toISOString()} />
-        </section>
-      )}
-      {restUpcoming.length > 0 && (
-        <UpcomingBuckets
-          outings={restUpcoming}
-          loggedInName={session.user.name ?? null}
-          myRsvpByOuting={myRsvpByOuting}
+      {(restUpcoming.length > 0 || agendaItems.length > 0) && (
+        <HomeMonthAgenda
+          outings={restUpcoming.map((o) => ({
+            ...o,
+            // Résolu côté server pour ne pas faire traverser un Map<…, …>
+            // à la frontière RSC vers HomeMonthAgenda (client).
+            resolvedRsvp: resolveMyRsvp(myRsvpByOuting.get(o.id), session.user.name ?? null),
+          }))}
+          agendaItems={agendaItems}
           viewerUserId={userId}
+          loggedInName={session.user.name ?? null}
+          nowIso={now.toISOString()}
+          outingBaseUrl={PUBLIC_BASE}
         />
       )}
       {past.length > 0 && (
@@ -233,94 +235,6 @@ export default async function SortieHome() {
         <span className="hidden text-base font-semibold sm:inline">Nouvelle sortie</span>
       </Link>
     </main>
-  );
-}
-
-/**
- * Upcoming outings groupées par horizon temporel (cette semaine / ce
- * mois-ci / plus tard / date à voter). Garde les buckets vides muets
- * pour ne pas afficher de header sans contenu — un user qui n'a que des
- * sorties dans 3 mois voit un seul header "plus tard", pas trois headers
- * vides au-dessus.
- *
- * Stagger d'animation continu d'un bucket au suivant : on prend l'index
- * absolu dans la liste (et pas l'index local au bucket) pour éviter la
- * cassure rythmique quand la première carte de chaque section repart à
- * `delay: 0` et que tout le bloc surgit en même temps.
- */
-function UpcomingBuckets({
-  outings,
-  loggedInName,
-  myRsvpByOuting,
-  viewerUserId,
-}: {
-  outings: HomeOutingRow[];
-  loggedInName: string | null;
-  myRsvpByOuting: Map<string, MyParticipantWithSlots>;
-  viewerUserId: string;
-}) {
-  const buckets = bucketizeUpcoming(outings).filter((b) => b.outings.length > 0);
-  // Pré-calcule l'index absolu de la première carte de chaque bucket.
-  // On évite ainsi la mutation d'un `let` à l'intérieur du `.map()` JSX,
-  // que le React Compiler refuse (impureté pendant le render). Le delay
-  // de chaque carte se calcule ensuite par `baseIndex + indexLocal`.
-  const baseIndices: number[] = [];
-  buckets.reduce((acc, b) => {
-    baseIndices.push(acc);
-    return acc + b.outings.length;
-  }, 0);
-  // Hint de découvrabilité du swipe — affiché uniquement si l'user a au
-  // moins une sortie qu'il peut archiver (créateur). Sinon le hint
-  // promet une action que la card ne fournit pas et ajoute du bruit.
-  // Static : pas de dismiss persistant en v1 — la copie est small mono
-  // tracking-wide, peu intrusive même pour les power users.
-  const hasArchivable = outings.some((o) => o.creatorUserId === viewerUserId);
-
-  return (
-    <div className="mt-4 mb-10 flex flex-col gap-8">
-      {hasArchivable && (
-        <p className="-mb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
-          ↳ swipe une carte vers la gauche pour l&rsquo;archiver
-        </p>
-      )}
-      {buckets.map((bucket, bIdx) => {
-        const baseIndex = baseIndices[bIdx] ?? 0;
-        return (
-          <section key={bucket.key}>
-            <Eyebrow tone="hot" className="mb-3 flex items-center gap-2 text-hot-600">
-              <span>─ {bucket.label} ─</span>
-              <span className="text-ink-400">{String(bucket.outings.length).padStart(2, "0")}</span>
-            </Eyebrow>
-            <ArchivableOutingList
-              isPast={false}
-              listClassName="flex flex-col gap-4"
-              items={bucket.outings.map((o, oIdx) => ({
-                row: o,
-                // Swipe-to-archive réservé au créateur — l'action serveur
-                // rejette les non-owners de toute façon, mais on cache la
-                // gesture pour ne pas suggérer une action impossible.
-                canArchive: o.creatorUserId === viewerUserId,
-                node: (
-                  <div
-                    className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized"
-                    style={{ animationDelay: `${Math.min(baseIndex + oIdx, 9) * 40}ms` }}
-                  >
-                    <OutingProfileCard
-                      outing={o}
-                      showRsvp
-                      myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
-                      loggedInName={loggedInName}
-                      outingBaseUrl={PUBLIC_BASE}
-                      isPast={false}
-                    />
-                  </div>
-                ),
-              }))}
-            />
-          </section>
-        );
-      })}
-    </div>
   );
 }
 
