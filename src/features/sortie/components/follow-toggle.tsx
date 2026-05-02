@@ -62,7 +62,7 @@ export function FollowToggle({ targetUserId, inviteToken, initialIsFollowing }: 
         <button
           type="submit"
           disabled={unfollowing}
-          className="group inline-flex h-9 items-center gap-1.5 rounded-full bg-acid-600 px-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-ink-700 transition-colors hover:bg-erreur-500 hover:text-surface-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 disabled:opacity-50"
+          className="group inline-flex h-9 items-center gap-1.5 rounded-full bg-acid-600 px-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-surface-50 transition-colors hover:bg-erreur-500 hover:text-ink-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-700 disabled:opacity-50"
           aria-label="Ne plus suivre"
         >
           <span className="group-hover:hidden">✓ Suivi</span>
@@ -83,7 +83,7 @@ export function FollowToggle({ targetUserId, inviteToken, initialIsFollowing }: 
       <button
         type="submit"
         disabled={following}
-        className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink-700 px-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-acid-600 transition-colors hover:bg-ink-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 disabled:opacity-50"
+        className="inline-flex h-9 items-center gap-1.5 rounded-full bg-surface-50 px-3 font-mono text-[10.5px] font-bold uppercase tracking-[0.18em] text-acid-600 transition-colors hover:bg-surface-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-700 disabled:opacity-50"
       >
         {following ? "…" : "+ Suivre"}
       </button>
