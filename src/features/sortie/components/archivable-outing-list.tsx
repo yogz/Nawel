@@ -18,6 +18,10 @@ type MinimalRow = {
 type Item<R extends MinimalRow> = {
   row: R;
   node: ReactNode;
+  /** `false` désactive le swipe-to-archive sur cette ligne (l'utilisateur
+   * n'est pas propriétaire). Default: `true`. La ligne reste dans la
+   * même liste pour préserver l'ordre, mais sans gesture. */
+  canArchive?: boolean;
 };
 
 type Props<R extends MinimalRow> = {
@@ -115,11 +119,15 @@ export function ArchivableOutingList<R extends MinimalRow>({
   return (
     <>
       <ul className={listClassName ?? "flex flex-col gap-3"}>
-        {visible.map(({ row, node }) => (
+        {visible.map(({ row, node, canArchive = true }) => (
           <li key={row.id}>
-            <SwipeableArchivableCard onCommit={() => handleCommit(row)} isPast={isPast}>
-              {node}
-            </SwipeableArchivableCard>
+            {canArchive ? (
+              <SwipeableArchivableCard onCommit={() => handleCommit(row)} isPast={isPast}>
+                {node}
+              </SwipeableArchivableCard>
+            ) : (
+              node
+            )}
           </li>
         ))}
       </ul>
