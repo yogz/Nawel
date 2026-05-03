@@ -2,8 +2,8 @@ import { logger } from "@/lib/logger";
 
 /**
  * Client serveur léger pour l'API Umami Cloud. Utilisé par la page
- * /sortie/stat pour afficher les métriques du wizard sans dupliquer
- * le tracking côté BDD.
+ * /sortie/admin/stat pour afficher les métriques du wizard et de
+ * l'usage produit sans dupliquer le tracking côté BDD.
  *
  * Auth : header `x-umami-api-key` avec une clé personnelle générée
  * via Umami → Settings → API keys (1 par compte). Limite 50 req/15s
@@ -21,10 +21,10 @@ export function isUmamiConfigured(): boolean {
   return Boolean(API_KEY);
 }
 
-type Range = { startAt: number; endAt: number };
+export type Range = { startAt: number; endAt: number };
 
 /**
- * Range par défaut : les 7 derniers jours en ms epoch (ce que
+ * Range par défaut : les N derniers jours en ms epoch (ce que
  * l'API Umami attend pour `startAt`/`endAt`).
  */
 export function lastNDaysRange(n = 7): Range {
@@ -35,7 +35,8 @@ export function lastNDaysRange(n = 7): Range {
 
 async function umamiFetch<T>(
   path: string,
-  params: Record<string, string | number>
+  params: Record<string, string | number>,
+  init?: { revalidate?: number }
 ): Promise<T | null> {
   if (!API_KEY) {
     return null;
@@ -47,9 +48,10 @@ async function umamiFetch<T>(
   try {
     const res = await fetch(url.toString(), {
       headers: { "x-umami-api-key": API_KEY },
-      // Cache Next.js 5 min — 50 req/15s est large mais inutile de
-      // burner la ration à chaque rafraîchissement de /stat.
-      next: { revalidate: 300 },
+      // Revalidate court par défaut (5 min). `/active` overrride à 30 s
+      // pour garder la sensation temps-réel sur le dashboard sans
+      // burner la ration de 50 req/15 s.
+      next: { revalidate: init?.revalidate ?? 300 },
     });
     if (!res.ok) {
       logger.warn("[umami-api] non-ok response", { path, status: res.status });
@@ -65,26 +67,24 @@ async function umamiFetch<T>(
   }
 }
 
-// ─── Funnel counts (1 call par event = 5 calls totaux) ──────────────
+// ─── Funnel counts ──────────────────────────────────────────────────
 //
-// On choisit uniquement des events **non-skippables** + monotones.
-// Avant 2026-04 le funnel incluait `venue_entered` et `name_entered` —
-// or les 2 sont conditionnellement skip côté wizard (`venue` skip si
-// déjà rempli par le paster, `name` skip si user loggé). Résultat : la
-// dashboard affichait 70%+ de "drop" entre date et venue qui était en
-// fait le ratio des users avec venue déjà connu — funnel mensonger.
+// Avant 2026-05 le funnel envoyait 5 requêtes vers `/events/stats` avec
+// un paramètre `event` non-documenté que l'endpoint ignorait — résultat
+// les 5 requêtes retournaient le total global et le funnel affichait
+// 100% partout. Depuis ce refactor on tape une seule fois `/events/series`
+// qui renvoie `[{ x: eventName, t, y: count }]` pour TOUS les events de
+// la période, et on agrège côté code en sommant les y par x.
 //
-// Le nouveau funnel garde 5 steps qui marquent une vraie progression :
+// Bénéfices : 1 call au lieu de 5, l'endpoint est documenté, et on peut
+// découvrir les events oubliés en regardant la réponse brute.
+//
+// Le funnel garde 5 steps qui marquent une vraie progression :
 //   1. paste_entered    — visite la step initiale (toujours)
 //   2. paste_submitted  — a tapé qqch + cliqué next (signe d'engagement)
 //   3. date_entered     — a passé le branching paste/title/confirm
 //   4. commit_entered   — a atteint la step finale (revue avant publish)
 //   5. publish_succeeded — a cliqué publish ET serveur OK
-//
-// Les events `title_entered` (branche manual) et `confirm_entered`
-// (branche fixed) restent émis et exposés via `getConfirmEnteredCount`
-// (split de branche), mais ne sont pas dans le funnel principal pour
-// éviter la double comptabilité d'un user qui ne voit qu'une des 2.
 const WIZARD_STEP_EVENTS = [
   "wizard_step_paste_entered",
   "wizard_paste_submitted",
@@ -98,62 +98,66 @@ export type WizardFunnelStep = {
   count: number;
 };
 
-// Format réel de `/events/stats` (testé en live 2026-04-30) — l'API
-// wrap les compteurs sous `data` et expose des nombres directs (pas
-// de `{ value: N }` à plat). Le code lisait précédemment
-// `data?.events?.value` ce qui restait toujours `undefined` →
-// fallback 0 partout sur le funnel. Le format `{ value }` correspond
-// peut-être à une vieille version de l'API ou à un autre endpoint
-// (cf. `/stats` global), pas à celui-ci.
-type EventsStatsResponse = {
-  data?: {
-    pageviews?: number;
-    visitors?: number;
-    visits?: number;
-    events?: number;
-    uniqueEvents?: number;
-  };
-};
+type EventsSeriesRow = { x: string; t: string; y: number };
 
 /**
- * Counts par event distinct sur la période. Pas de vrai funnel API
- * (pas trouvé d'endpoint « run funnel ad-hoc »), donc on récupère le
- * count de chaque event et le dashboard calcule les % de conversion
- * à partir de ça. Approximation : un user qui revient et fait 2 fois
- * la step paste compte 2× — sur des volumes courts ça reste une
- * indicaiton fiable.
+ * Récupère TOUS les events nommés sur la période en 1 call et indexe
+ * par nom. Sert à la fois au funnel wizard et à n'importe quel autre
+ * compteur d'event ad-hoc qu'on voudra exposer côté dashboard.
  */
-export async function getWizardFunnelCounts(range: Range): Promise<WizardFunnelStep[] | null> {
-  if (!isUmamiConfigured()) {
+export async function getEventCounts(range: Range): Promise<Map<string, number> | null> {
+  // `unit=day` est requis par /events/series pour bucketiser ; on
+  // somme tout ensuite côté code, l'unit ne change pas le total.
+  const rows = await umamiFetch<EventsSeriesRow[]>("/events/series", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    unit: "day",
+    timezone: "Europe/Paris",
+  });
+  if (!rows) {
     return null;
   }
-  const results = await Promise.all(
-    WIZARD_STEP_EVENTS.map(async (event) => {
-      // L'endpoint /events/stats est globale au site ; on filtre par
-      // event via query string `event` (supporté dans la plupart des
-      // versions API Umami). Si Umami ne filtre pas, le count remonté
-      // est trop large — on le détectera à la lecture (count identique
-      // sur tous les events).
-      const data = await umamiFetch<EventsStatsResponse>("/events/stats", {
-        startAt: range.startAt,
-        endAt: range.endAt,
-        event,
-      });
-      return { event, count: data?.data?.events ?? 0 };
-    })
-  );
-  return results;
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    counts.set(row.x, (counts.get(row.x) ?? 0) + row.y);
+  }
+  return counts;
 }
 
-// ─── Distribution paste→publish (groupby property value) ─────────────
+export async function getWizardFunnelCounts(range: Range): Promise<WizardFunnelStep[] | null> {
+  const counts = await getEventCounts(range);
+  if (!counts) {
+    return null;
+  }
+  return WIZARD_STEP_EVENTS.map((event) => ({ event, count: counts.get(event) ?? 0 }));
+}
+
+// ─── Distributions (event-data/values) ───────────────────────────────
 
 type EventDataValuesResponse = Array<{ value: string; total: number }>;
 
 /**
- * Distribution des valeurs `paste_to_publish_ms` (en ms) sur les
- * publish réussis. Umami retourne chaque valeur distincte avec son
- * nombre d'occurrences ; le dashboard reconstruit médiane / p90 à
- * partir de ces buckets.
+ * Distribution des buckets `paste_to_publish_bucket` (string court :
+ * "lt5s", "5-15s", "15-60s", "gt60s") sur les publish réussis. La
+ * propriété `paste_to_publish_ms` reste émise en parallèle pour les
+ * percentiles fins, mais pour l'affichage rapide du dashboard on lit
+ * directement les buckets — 4 valeurs max au lieu de N continues.
+ */
+export async function getPasteToPublishBuckets(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "wizard_publish_succeeded",
+    propertyName: "paste_to_publish_bucket",
+  });
+}
+
+/**
+ * Distribution brute des `paste_to_publish_ms` (1 valeur par publish).
+ * Utilisé pour calculer médiane/p90 fins quand le volume reste raisonnable
+ * (<500 publish). Au-delà, préférer `getPasteToPublishBuckets`.
  */
 export async function getPasteToPublishDistribution(
   range: Range
@@ -190,9 +194,6 @@ export async function getGeminiTriggerBreakdown(
  * Breakdown URL vs texte libre sur la step paste : quelle proportion
  * des users qui submit ont collé un lien (path FIXED, paster OG/TM
  * actif) vs tapé du texte (path MANUAL, fallback Gemini).
- *
- * Output : `[{value: "url", total: N}, {value: "text", total: M}]` —
- * lecture directe sans recompute, le dashboard fait juste le ratio.
  */
 export async function getPasteKindBreakdown(range: Range): Promise<EventDataValuesResponse | null> {
   return umamiFetch<EventDataValuesResponse>("/event-data/values", {
@@ -204,22 +205,169 @@ export async function getPasteKindBreakdown(range: Range): Promise<EventDataValu
 }
 
 /**
- * Count d'`wizard_step_confirm_entered` — la step n'apparaît QUE dans
- * la branche FIXED (paste URL réussi → preview de la card avant
- * date). Comparer ce count à `wizard_paste_submitted (kind=url)` donne
- * le taux de conversion paster→confirm (combien d'URL parsées
- * survivent jusqu'à la card de revue).
+ * Breakdown des canaux de partage outing — buildé à partir de la
+ * propriété `channel` sur l'event `outing_share_clicked` (whatsapp,
+ * native, copy, fallback_prompt). Permet de mesurer la viralité par
+ * canal et de comparer à `outing_viewed { source }`.
  */
-export async function getConfirmEnteredCount(range: Range): Promise<number | null> {
-  const data = await umamiFetch<EventsStatsResponse>("/events/stats", {
+export async function getShareChannelBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
     startAt: range.startAt,
     endAt: range.endAt,
-    event: "wizard_step_confirm_entered",
+    eventName: "outing_share_clicked",
+    propertyName: "channel",
   });
+}
+
+/**
+ * Breakdown des réponses RSVP (yes/no/handle_own). Utile pour mesurer
+ * le ratio de oui sur l'ensemble du trafic — un signal de qualité du
+ * funnel d'invitation (un lien partagé qui ramène 80% de "oui" est
+ * un meilleur produit qu'un lien partagé à 30% de "oui").
+ */
+export async function getRsvpResponseBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "outing_rsvp_set",
+    propertyName: "response",
+  });
+}
+
+// ─── Vue d'ensemble Umami : stats + active + metrics ─────────────────
+
+export type WebsiteStats = {
+  pageviews: number;
+  visitors: number;
+  visits: number;
+  bounces: number;
+  totaltime: number;
+  comparison?: {
+    pageviews: number;
+    visitors: number;
+    visits: number;
+    bounces: number;
+    totaltime: number;
+  };
+};
+
+type ApiStatsValue = number | { value?: number };
+
+/**
+ * Stats globales du site sur la période, avec comparaison automatique
+ * sur la période précédente de même longueur (Umami inclut `comparison`
+ * dans la réponse). Permet d'afficher visiteurs/pageviews + delta % sans
+ * 2ᵉ call.
+ *
+ * Note : selon la version d'Umami Cloud, les KPIs peuvent arriver soit
+ * en nombre direct (`{ visitors: 42 }`), soit sous forme objet
+ * (`{ visitors: { value: 42 } }`). On normalise dans les 2 sens.
+ */
+export async function getWebsiteStats(range: Range): Promise<WebsiteStats | null> {
+  const raw = await umamiFetch<Record<string, ApiStatsValue | unknown>>("/stats", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+  });
+  if (!raw) {
+    return null;
+  }
+  const num = (v: unknown): number => {
+    if (typeof v === "number") {
+      return v;
+    }
+    if (v && typeof v === "object" && "value" in v && typeof v.value === "number") {
+      return v.value;
+    }
+    return 0;
+  };
+  const out: WebsiteStats = {
+    pageviews: num(raw.pageviews),
+    visitors: num(raw.visitors),
+    visits: num(raw.visits),
+    bounces: num(raw.bounces),
+    totaltime: num(raw.totaltime),
+  };
+  const cmp = raw.comparison;
+  if (cmp && typeof cmp === "object") {
+    const c = cmp as Record<string, ApiStatsValue | unknown>;
+    out.comparison = {
+      pageviews: num(c.pageviews),
+      visitors: num(c.visitors),
+      visits: num(c.visits),
+      bounces: num(c.bounces),
+      totaltime: num(c.totaltime),
+    };
+  }
+  return out;
+}
+
+/**
+ * Visiteurs actifs sur les 5 dernières minutes. Cache court (30 s) pour
+ * que la sensation "live" reste sans envoyer une requête à chaque
+ * navigation interne. Renvoie 0 si Umami est down — distinction "vrai 0"
+ * vs "fetch KO" portée par le `null` du wrapper englobant.
+ */
+export async function getActiveVisitors(): Promise<number | null> {
+  const data = await umamiFetch<{ visitors?: number; x?: number }>(
+    "/active",
+    {},
+    { revalidate: 30 }
+  );
   if (!data) {
     return null;
   }
-  return data.data?.events ?? 0;
+  // `visitors` est le format documenté ; on accepte aussi `x` pour les
+  // versions plus anciennes qui le renvoyaient sous ce nom.
+  return typeof data.visitors === "number"
+    ? data.visitors
+    : typeof data.x === "number"
+      ? data.x
+      : 0;
+}
+
+export type MetricRow = { name: string; value: number };
+
+/**
+ * Top-N pour une dimension standard (referrer, url, browser, os, country…).
+ * Utilise `/metrics` en priorité (endpoint historique stable) avec
+ * fallback vers `/metrics/expanded` qui renvoie une forme étendue. Les
+ * 2 endpoints partagent le même schéma de query (type + range).
+ */
+export async function getTopMetric(
+  range: Range,
+  type: "url" | "referrer" | "browser" | "os" | "country" | "device" | "event",
+  limit = 8
+): Promise<MetricRow[] | null> {
+  type RawRow = {
+    name?: string;
+    x?: string;
+    value?: number;
+    y?: number;
+    visitors?: number;
+    pageviews?: number;
+  };
+  const rows = await umamiFetch<RawRow[]>("/metrics", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    type,
+    limit,
+  });
+  if (!rows) {
+    return null;
+  }
+  return rows
+    .map((r) => ({
+      name: r.name ?? r.x ?? "(inconnu)",
+      // `/metrics` renvoie `value` (count d'événements ou de pageviews
+      // selon le type). Fallbacks pour les variantes connues.
+      value: r.value ?? r.y ?? r.visitors ?? r.pageviews ?? 0,
+    }))
+    .filter((r) => r.value > 0)
+    .slice(0, limit);
 }
 
 // ─── Helper de calculs côté Node ─────────────────────────────────────
@@ -229,6 +377,11 @@ export async function getConfirmEnteredCount(range: Range): Promise<number | nul
  * (output direct de `event-data/values`). Renvoie null si vide.
  * Utilisé pour `paste_to_publish_ms` — on veut connaître la médiane
  * sans avoir à exporter en CSV.
+ *
+ * Garde-fou : si la série reconstruite dépasse 10 000 points (peu
+ * probable sur la période 30j d'un site naissant, mais cap quand même
+ * pour éviter un OOM si un jour Umami remonte des dizaines de milliers
+ * de buckets distincts), on tronque en gardant la distribution.
  */
 export function computePercentiles(
   rows: EventDataValuesResponse
@@ -236,16 +389,17 @@ export function computePercentiles(
   if (rows.length === 0) {
     return null;
   }
-  // Reconstruit la série complète à partir des buckets value/total.
-  // Volume max attendu : quelques centaines d'entrées pour un site
-  // en dev, ne vaut pas la peine d'optimiser en streaming.
+  const MAX = 10_000;
+  const total = rows.reduce((sum, r) => sum + r.total, 0);
+  const factor = total > MAX ? MAX / total : 1;
   const values: number[] = [];
   for (const row of rows) {
     const v = Number(row.value);
     if (!Number.isFinite(v)) {
       continue;
     }
-    for (let i = 0; i < row.total; i++) {
+    const repeats = factor === 1 ? row.total : Math.max(1, Math.round(row.total * factor));
+    for (let i = 0; i < repeats; i++) {
       values.push(v);
     }
   }
@@ -255,7 +409,7 @@ export function computePercentiles(
   values.sort((a, b) => a - b);
   const pick = (q: number) => values[Math.min(values.length - 1, Math.floor(q * values.length))]!;
   return {
-    count: values.length,
+    count: total,
     median: pick(0.5),
     p90: pick(0.9),
   };

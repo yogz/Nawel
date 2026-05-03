@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { Check, Copy, MessageCircle, Share2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { buildWhatsAppHref, buildWhatsAppMessage } from "@/features/sortie/lib/whatsapp-share";
+import { trackOutingShareClicked } from "@/features/sortie/lib/outing-telemetry";
 
 // Détection statique de la Web Share API — même pattern que
 // `CreateSuccessBanner`. SSR-safe (snapshot serveur = false), pas de
@@ -40,9 +41,11 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
       await navigator.clipboard.writeText(url);
       setJustCopied(true);
       window.setTimeout(() => setJustCopied(false), 1800);
+      trackOutingShareClicked({ channel: "copy", placement: "actions_row" });
     } catch {
       // navigator.clipboard requires a secure context — fall back to prompt.
       window.prompt("Copie ce lien :", url);
+      trackOutingShareClicked({ channel: "fallback_prompt", placement: "actions_row" });
     }
   }
 
@@ -53,6 +56,10 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         text: buildWhatsAppMessage({ title, url, startsAt, firstName }),
         url,
       });
+      // navigator.share resolves même si l'user annule sur certains
+      // navigateurs — pas de moyen propre de filtrer, on accepte le faux
+      // positif (impact statistique négligeable vs valeur du signal).
+      trackOutingShareClicked({ channel: "native", placement: "actions_row" });
     } catch {
       // L'utilisateur a annulé la sheet — pas de feedback d'erreur.
     }
@@ -70,6 +77,7 @@ export function ShareActions({ url, title, startsAt, firstName }: Props) {
         href={whatsAppHref}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackOutingShareClicked({ channel: "whatsapp", placement: "actions_row" })}
         className="inline-flex h-10 items-center gap-1.5 whitespace-nowrap rounded-full border border-hot-500 bg-transparent px-4 text-sm font-semibold text-hot-500 transition-colors duration-300 hover:border-hot-400 hover:bg-hot-50 hover:text-hot-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500"
       >
         <MessageCircle size={14} strokeWidth={2.4} />

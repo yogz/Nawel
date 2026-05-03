@@ -16,6 +16,7 @@ import { buildOutingShareMeta } from "@/features/sortie/lib/outing-share-meta";
 import { getCreatorFirstName } from "@/features/sortie/lib/creator-display";
 import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
+import { OutingViewTracker } from "@/features/sortie/components/outing-view-tracker";
 import { OutingTicketStub } from "@/features/sortie/components/outing-ticket-stub";
 import { ParticipantList } from "@/features/sortie/components/participant-list";
 import { DeadlineBadge } from "@/features/sortie/components/deadline-badge";
@@ -175,6 +176,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
   return (
     <main className={`relative mx-auto max-w-xl px-6 ${shouldStickRsvp ? "pb-44" : "pb-24"}`}>
+      <OutingViewTracker
+        mode={outing.mode}
+        isCreator={isCreator}
+        isLoggedIn={Boolean(session?.user)}
+        hasResponded={Boolean(me?.response)}
+      />
       {/* Top nav floats over the full-bleed hero. The pill backgrounds
           sit on a backdrop blur so the affordances stay readable on
           any photo, including ones with a busy upper third. */}
@@ -313,6 +320,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             outingTitle={outing.title}
             outingUrl={`${PUBLIC_BASE}/${canonical}`}
             outingDate={outing.fixedDatetime}
+            isLoggedIn={Boolean(session?.user)}
           />
         </div>
       )}
@@ -394,6 +402,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
               outingTitle={outing.title}
               outingUrl={`${PUBLIC_BASE}/${canonical}`}
               outingDate={outing.fixedDatetime}
+              isLoggedIn={Boolean(session?.user)}
             />
           </div>
         </div>

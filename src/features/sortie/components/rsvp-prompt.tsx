@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Pencil, X } from "lucide-react";
 import { rsvpAction } from "@/features/sortie/actions/participant-actions";
 import { celebrateRsvp } from "@/features/sortie/lib/celebrate";
+import { trackOutingRsvpSet } from "@/features/sortie/lib/outing-telemetry";
 import { NoNameSheet, YesDetailSheet, type RsvpResponse } from "./rsvp-sheets";
 import { RsvpStub } from "./rsvp-stub";
 import { RemoveRsvpButton } from "./remove-rsvp-dialog";
@@ -24,6 +25,10 @@ type Props = {
   outingTitle: string;
   outingUrl: string;
   outingDate: Date | null;
+  // Permet de propager la dimension `is_logged_in` à la télémétrie sans
+  // re-deviner depuis le client. Optionnel pour préserver les call-sites
+  // existants qui n'avaient pas la session sous la main.
+  isLoggedIn?: boolean;
 };
 
 type SheetMode = "idle" | "yes" | "no-name-needed";
@@ -56,6 +61,7 @@ export function RsvpPrompt({
   outingTitle,
   outingUrl,
   outingDate,
+  isLoggedIn = false,
 }: Props) {
   const router = useRouter();
   const [sheetMode, setSheetMode] = useState<SheetMode>("idle");
@@ -71,6 +77,14 @@ export function RsvpPrompt({
     fd.set("extraAdults", "0");
     fd.set("extraChildren", "0");
     await rsvpAction({}, fd);
+    // Track après commit — un track avant aurait gonflé les stats des
+    // submits qui plantent côté serveur (validation, doublon…).
+    trackOutingRsvpSet({
+      response: "no",
+      delta: existingResponse ? "switched" : "new",
+      isLoggedIn,
+      hasEmail: false,
+    });
     router.refresh();
   }
 
@@ -164,6 +178,12 @@ export function RsvpPrompt({
                 navigator.vibrate([8, 30, 8]);
               }
             }
+            trackOutingRsvpSet({
+              response,
+              delta: existingResponse ? "switched" : "new",
+              isLoggedIn,
+              hasEmail: Boolean(existingEmail),
+            });
             setSheetMode("idle");
           }}
         />
@@ -223,6 +243,12 @@ export function RsvpPrompt({
           if (response !== "no") {
             setStub({ name: name.split(/\s+/)[0] ?? name });
           }
+          trackOutingRsvpSet({
+            response,
+            delta: "new",
+            isLoggedIn,
+            hasEmail: Boolean(existingEmail),
+          });
           setSheetMode("idle");
         }}
       />

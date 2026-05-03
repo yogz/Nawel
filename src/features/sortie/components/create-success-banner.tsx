@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { Check, MessageCircle, Share2, X } from "lucide-react";
 import { buildWhatsAppHref, buildWhatsAppMessage } from "@/features/sortie/lib/whatsapp-share";
+import { trackOutingShareClicked } from "@/features/sortie/lib/outing-telemetry";
 
 // Détection statique de la Web Share API. `useSyncExternalStore` est le
 // pattern React-officiel pour exposer une valeur d'un "store externe"
@@ -56,6 +57,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
         text: buildWhatsAppMessage({ title, url, startsAt, firstName }),
         url,
       });
+      trackOutingShareClicked({ channel: "native", placement: "hero" });
     } catch {
       // L'utilisateur a annulé la sheet ou le navigateur a refusé
       // (gesture déjà consommé, contexte non-secure…). Pas de feedback
@@ -79,6 +81,7 @@ export function CreateSuccessBanner({ url, title, startsAt, firstName }: Props) 
             href={whatsAppHref}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackOutingShareClicked({ channel: "whatsapp", placement: "hero" })}
             className="inline-flex h-11 flex-1 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-hot-600 px-3 text-sm font-bold text-surface-50 transition-colors duration-300 hover:bg-hot-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-700 focus-visible:ring-offset-2 focus-visible:ring-offset-acid-50"
           >
             <MessageCircle size={16} strokeWidth={2.2} />

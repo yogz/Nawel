@@ -107,6 +107,10 @@ export function OutingHero({
                 href={ticketUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                // Auto-tracking Umami via attribut HTML : pas de client component
+                // requis pour ce simple compteur de clic. L'attribut est ignoré
+                // par les autres outils.
+                data-umami-event="outing_ticket_clicked"
                 className="inline-flex items-center gap-1 font-medium text-acid-600 underline-offset-4 hover:underline"
               >
                 Voir l&rsquo;événement
@@ -121,6 +125,7 @@ export function OutingHero({
                 // l'agenda" peu importe ; le filename rend le
                 // fallback download lisible côté desktop.
                 download={`sortie-${canonicalPath}.ics`}
+                data-umami-event="outing_ics_downloaded"
                 className="inline-flex items-center gap-1 text-ink-600 underline-offset-4 hover:text-acid-600 hover:underline"
               >
                 <CalendarPlus size={14} strokeWidth={2.2} />
