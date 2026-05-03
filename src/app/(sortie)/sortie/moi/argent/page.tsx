@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { auth } from "@/lib/auth-config";
+import { cn } from "@/lib/utils";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import {
   getAllocationPriceCents,
@@ -30,6 +31,16 @@ export const metadata = {
 
 function formatCents(cents: number): string {
   return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+}
+
+// Solde signé : on force le `+` côté positif pour que l'utilisateur voie
+// d'un coup d'œil le sens du flux. La locale FR rend déjà le `-` côté
+// négatif. À 0, on reste neutre (pas de signe) pour ne pas bruiter.
+function formatNetCents(cents: number): string {
+  if (cents > 0) {
+    return `+${formatCents(cents)}`;
+  }
+  return formatCents(cents);
 }
 
 function outingHref(outing: WalletDebtRow["outing"], suffix?: string): string {
@@ -96,6 +107,11 @@ export default async function WalletPage() {
   const totalToReceiveCents = credits
     .filter((d) => d.status !== "confirmed")
     .reduce((acc, d) => acc + d.amountCents, 0);
+  // Solde net : la première chose que l'utilisateur cherche en arrivant
+  // sur la page (« est-ce que je dois rattraper ou est-ce qu'on me doit
+  // encore des sous ? »). Tout ce qui est `confirmed` est déjà clos donc
+  // exclu, comme pour les deux totaux ci-dessus.
+  const netCents = totalToReceiveCents - totalOwedCents;
 
   // Bandeau « renseigne un moyen de paiement » : on ne pousse l'incitation
   // que si le user a au moins un crédit en attente ET aucune méthode
@@ -144,10 +160,16 @@ export default async function WalletPage() {
           </Link>
         </section>
       ) : (
-        <section className="mb-12 grid grid-cols-3 gap-3">
-          <Stat label="Dépensé" amountCents={totalSpentCents} />
-          <Stat label="Tu dois" amountCents={totalOwedCents} tone="hot" />
-          <Stat label="On te doit" amountCents={totalToReceiveCents} tone="acid" />
+        <section className="mb-12 flex flex-col gap-3">
+          <NetStat
+            netCents={netCents}
+            totalSpentCents={totalSpentCents}
+            hasAnyOpenBalance={totalOwedCents > 0 || totalToReceiveCents > 0}
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Tu dois" amountCents={totalOwedCents} tone="hot" />
+            <Stat label="On te doit" amountCents={totalToReceiveCents} tone="acid" />
+          </div>
         </section>
       )}
 
@@ -231,11 +253,11 @@ export default async function WalletPage() {
                 <div className="flex items-baseline justify-between gap-3">
                   <Link
                     href={outingHref(group.outing)}
-                    className="font-serif text-lg text-ink-700 underline-offset-4 hover:text-acid-700 hover:underline"
+                    className="min-w-0 truncate font-serif text-lg text-ink-700 underline-offset-4 hover:text-acid-700 hover:underline"
                   >
                     {group.outing.title}
                   </Link>
-                  <span className="font-serif text-xl text-ink-700">
+                  <span className="shrink-0 font-serif text-xl tabular-nums text-ink-700">
                     {group.totalCents > 0 ? formatCents(group.totalCents) : "—"}
                   </span>
                 </div>
@@ -276,16 +298,78 @@ function Stat({
   amountCents: number;
   tone?: "hot" | "acid";
 }) {
-  const valueColor =
-    tone === "hot" ? "text-hot-600" : tone === "acid" ? "text-acid-700" : "text-ink-700";
+  // Le tone ne s'applique qu'aux montants non nuls : afficher « Tu dois
+  // 0,00 € » en hot pink créerait une fausse alerte (cf. Eyebrow rule
+  // « hot strictement réservé aux nudges actionnables »). À zéro, la
+  // tile retombe en neutre/muted.
+  const isActive = amountCents > 0;
+  const valueColor = !isActive
+    ? "text-ink-500"
+    : tone === "hot"
+      ? "text-hot-600"
+      : tone === "acid"
+        ? "text-acid-700"
+        : "text-ink-700";
   return (
-    <div className="flex flex-col gap-1 rounded-lg border border-surface-400 bg-surface-50 p-3">
+    <div className="flex min-w-0 flex-col gap-1 rounded-lg border border-surface-400 bg-surface-50 p-3">
       <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
         {label}
       </span>
-      <span className={`font-serif text-xl font-black tracking-[-0.02em] ${valueColor}`}>
+      <span
+        className={cn(
+          "truncate font-serif text-lg font-black tabular-nums tracking-[-0.02em] sm:text-xl",
+          valueColor
+        )}
+      >
         {formatCents(amountCents)}
       </span>
+    </div>
+  );
+}
+
+function NetStat({
+  netCents,
+  totalSpentCents,
+  hasAnyOpenBalance,
+}: {
+  netCents: number;
+  totalSpentCents: number;
+  hasAnyOpenBalance: boolean;
+}) {
+  // Hero solde net : positif → acid (on te doit plus que tu ne dois),
+  // négatif → hot (tu dois plus qu'on ne te doit), nul → ink neutre.
+  // Quand il n'y a aucune dette ouverte, on bascule l'eyebrow en muted
+  // pour signaler que c'est un état stable, pas une zone d'action.
+  const tone: "acid" | "hot" | "muted" = !hasAnyOpenBalance
+    ? "muted"
+    : netCents > 0
+      ? "acid"
+      : netCents < 0
+        ? "hot"
+        : "muted";
+  const valueColor =
+    netCents > 0 ? "text-acid-700" : netCents < 0 ? "text-hot-600" : "text-ink-700";
+
+  const caption = !hasAnyOpenBalance
+    ? totalSpentCents > 0
+      ? `Tu es à jour. Dépensé jusqu'ici : ${formatCents(totalSpentCents)}.`
+      : "Tu es à jour."
+    : totalSpentCents > 0
+      ? `Tu as dépensé ${formatCents(totalSpentCents)} au total.`
+      : null;
+
+  return (
+    <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-surface-400 bg-surface-50 p-5">
+      <Eyebrow tone={tone}>─ solde net</Eyebrow>
+      <span
+        className={cn(
+          "truncate font-serif text-[clamp(2rem,9vw,2.75rem)] font-black leading-none tabular-nums tracking-[-0.03em]",
+          valueColor
+        )}
+      >
+        {formatNetCents(netCents)}
+      </span>
+      {caption && <span className="text-[12px] text-ink-500">{caption}</span>}
     </div>
   );
 }
