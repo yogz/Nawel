@@ -10,7 +10,7 @@ import { getMyParticipant, getOutingByShortId } from "@/features/sortie/queries/
 type Outing = NonNullable<Awaited<ReturnType<typeof getOutingByShortId>>>;
 type Participant = typeof participants.$inferSelect;
 
-export type ParticipantSubPath = "dettes" | "achat" | "paiement";
+export type ParticipantSubPath = "dettes" | "achat" | "paiement" | "billets";
 
 /**
  * Discriminated union des états possibles quand on charge une page

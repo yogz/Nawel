@@ -447,3 +447,61 @@ export function outingModifiedEmail(args: {
     }),
   };
 }
+
+/**
+ * Sent right after the organiser uploads a ticket. Two flavours :
+ *   - `participant` : un fichier nominatif pour ce destinataire précis
+ *   - `outing` : un fichier groupé partagé avec toute la sortie
+ *
+ * Le CTA pointe sur la page billets, pas directement sur le download —
+ * comme ça le destinataire passe par la session Better Auth, pas un
+ * lien magique éphémère côté billet (le lien resterait valide après
+ * révocation du billet, mauvais signal). La page redirige vers signin
+ * si l'email n'est pas encore vérifié, et l'auto-claim relie son
+ * userId au participant via `databaseHooks.session.create.after`.
+ */
+export function ticketAvailableEmail(args: {
+  outingTitle: string;
+  outingDate: Date | null;
+  ticketsUrl: string;
+  scope: "participant" | "outing";
+  recipientName: string;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const dateLine = args.outingDate
+    ? ` le ${escapeHtml(formatOutingDateConversational(args.outingDate))}`
+    : "";
+  const headline =
+    args.scope === "participant" ? "Ton billet est prêt" : "Le billet groupé est prêt";
+  const intro =
+    args.scope === "participant"
+      ? `Un billet nominatif vient d&rsquo;être déposé pour toi sur <strong>${title}</strong>${dateLine}.`
+      : `Un billet groupé vient d&rsquo;être déposé sur <strong>${title}</strong>${dateLine}, partagé avec toute la sortie.`;
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(headline)}</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      Salut ${escapeHtml(args.recipientName)} — ${intro}
+    </p>
+    <p style="margin:0 0 18px;${BODY_P}">
+      Connecte-toi à Sortie avec l&rsquo;email auquel tu reçois ce mail pour le récupérer.
+      Le fichier reste chiffré côté serveur tant que tu n&rsquo;as pas cliqué.
+    </p>
+    <p style="margin:28px 0;">
+      ${ctaButton(args.ticketsUrl, "Récupérer mon billet")}
+    </p>
+    <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
+      Pour des raisons de sécurité, on ne joint jamais les billets directement à un email —
+      seul ton compte vérifié y donne accès.
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — billet disponible`,
+    html: renderEmail({
+      preheader:
+        args.scope === "participant"
+          ? `Ton billet pour ${args.outingTitle} est prêt à télécharger.`
+          : `Le billet groupé pour ${args.outingTitle} est prêt.`,
+      body,
+    }),
+  };
+}

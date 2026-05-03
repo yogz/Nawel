@@ -349,6 +349,12 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           >
             Mes moyens de paiement
           </Link>
+          <Link
+            href={`/${canonical}/billets`}
+            className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
+          >
+            {isCreator ? "Gérer les billets" : "Mes billets"}
+          </Link>
         </nav>
       )}
 

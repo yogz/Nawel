@@ -11,6 +11,10 @@ import { sanitizeStrictText } from "@/lib/sanitize";
 import { auditLog, outings, participants, tickets } from "@drizzle/sortie-schema";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { deleteBlobIfOurs } from "@/features/sortie/lib/blob-cleanup";
+import {
+  sendOutingTicketEmails,
+  sendParticipantTicketEmail,
+} from "@/features/sortie/lib/emails/send-ticket-emails";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { TICKET_PATH_PREFIX, uploadTicket } from "@/features/sortie/lib/ticket-upload";
@@ -185,6 +189,23 @@ export async function createTicketAction(
     // mais consomme le quota — on tente un cleanup best-effort.
     await deleteBlobIfOurs(upload.blobUrl, TICKET_PATH_PREFIX, "ticket-actions");
     return { message: "Erreur lors de l'enregistrement du billet. Réessaie." };
+  }
+
+  // Email best-effort, hors transaction : un échec d'envoi ne doit pas
+  // rollback un billet déjà persisté. Les modules safeSend logguent + return.
+  const emailOuting = {
+    title: outing.title,
+    fixedDatetime: outing.fixedDatetime,
+    slug: outing.slug,
+    shortId: outing.shortId,
+  };
+  if (data.scope === "participant" && targetParticipantId) {
+    await sendParticipantTicketEmail({
+      outing: emailOuting,
+      participantId: targetParticipantId,
+    });
+  } else if (data.scope === "outing") {
+    await sendOutingTicketEmails({ outing: emailOuting, outingId: outing.id });
   }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });

@@ -9,6 +9,7 @@ const HEADLINE_BY_SUBPATH: Record<ParticipantSubPath, string> = {
   dettes: "Identifie-toi pour voir tes dettes.",
   achat: "Identifie-toi pour gérer l'achat.",
   paiement: "Identifie-toi pour ton paiement.",
+  billets: "Identifie-toi pour récupérer tes billets.",
 };
 
 type Props = {
