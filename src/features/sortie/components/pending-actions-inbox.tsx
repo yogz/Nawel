@@ -89,12 +89,11 @@ export function PendingActionsInbox({ actions }: Props) {
 }
 
 function ActionRow({ action, onNavigate }: { action: PendingAction; onNavigate: () => void }) {
-  const href = action.slug ? `/${action.slug}-${action.shortId}` : `/${action.shortId}`;
   const isHot = action.tone === "hot";
 
   return (
     <Link
-      href={href}
+      href={action.href}
       onClick={onNavigate}
       aria-label={`${action.label} — ${action.title}`}
       className="group/row flex min-h-[56px] items-center gap-3 rounded-lg px-1 py-3 transition-all duration-300 hover:bg-surface-100 motion-safe:active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"

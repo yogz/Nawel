@@ -8,11 +8,15 @@
 // outing. L'ordre des `if` ci-dessous est l'ordre de priorité — un
 // outing en `stale_purchase` ne peut plus déclencher "rsvp-soon" même si
 // l'invité du créateur n'a pas répondu, parce que l'action côté créateur
-// (confirmer l'achat) est plus saillante et bloque tout le reste.
+// (confirmer l'achat) est plus saillante et bloque tout le reste. Les
+// kinds dette firent après les statuts `purchased`/`settled` — ils ne
+// rentrent donc en pratique pas en collision avec les nudges créateur,
+// mais l'ordre est tout de même respecté pour les cas tordus (e.g. une
+// outing reste `stale_purchase` alors qu'une dette annexe est déjà créée).
 //
 // Tone :
 //   - hot  → l'action est due ou déjà en retard (deadline atteinte,
-//            achat à faire, sondage tranché à valider)
+//            achat à faire, sondage tranché à valider, dette ≥ 7j)
 //   - acid → l'action est attendue dans les 48h mais pas urgente
 
 // Sous-ensemble du schéma `outingStatus` qu'on consomme. On ne typé en
@@ -27,7 +31,13 @@ type OutingStatus =
   | "settled"
   | "cancelled";
 
-export type PendingActionKind = "pick-date" | "buy-tickets" | "confirm-purchase" | "rsvp-soon";
+export type PendingActionKind =
+  | "pick-date"
+  | "buy-tickets"
+  | "confirm-purchase"
+  | "rsvp-soon"
+  | "pay-debt"
+  | "confirm-debt-received";
 
 export type PendingActionTone = "hot" | "acid";
 
@@ -42,6 +52,8 @@ export type PendingAction = {
   label: string;
   /** Trié secondaire : plus la deadline est proche, plus on remonte. */
   deadlineAt: Date;
+  /** URL cible. Page outing par défaut, `/.../dettes` pour les kinds dette. */
+  href: string;
 };
 
 type Outingish = {
@@ -62,7 +74,15 @@ type MyParticipantish = {
   response: "yes" | "no" | "handle_own" | "interested" | null | undefined;
 };
 
+export type DebtSummaryish = {
+  unpaidCount: number;
+  unpaidAmountCents: number;
+  oldestUnpaidAt: Date | null;
+  declaredCount: number;
+};
+
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
 export type ComputePendingActionsArgs<T extends Outingish> = {
   outings: T[];
@@ -73,6 +93,13 @@ export type ComputePendingActionsArgs<T extends Outingish> = {
    * pour les tests et le cas où la query d'enrichissement est skippée.
    */
   myRsvpByOuting?: Map<string, MyParticipantish>;
+  /**
+   * Résumé des dettes du user par outing. Map vide / non fournie → on
+   * ne déclenche jamais "pay-debt" ni "confirm-debt-received". La query
+   * `listMyDebtSummariesForOutings` n'inclut que les outings avec au
+   * moins une dette pertinente, donc une absence ≡ "rien à faire".
+   */
+  myDebtsByOuting?: Map<string, DebtSummaryish>;
   /**
    * Ne pas inclure d'action sur cette outing — typiquement la sortie déjà
    * mise en avant par le hero. Le hero porte sa propre nudge (countdown,
@@ -85,7 +112,14 @@ export type ComputePendingActionsArgs<T extends Outingish> = {
 export function computePendingActions<T extends Outingish>(
   args: ComputePendingActionsArgs<T>
 ): PendingAction[] {
-  const { outings, userId, myRsvpByOuting, excludeOutingId, now = new Date() } = args;
+  const {
+    outings,
+    userId,
+    myRsvpByOuting,
+    myDebtsByOuting,
+    excludeOutingId,
+    now = new Date(),
+  } = args;
   const out: PendingAction[] = [];
 
   for (const o of outings) {
@@ -94,7 +128,13 @@ export function computePendingActions<T extends Outingish>(
     }
 
     const isCreator = o.creatorUserId !== null && o.creatorUserId === userId;
-    const action = pickAction(o, isCreator, myRsvpByOuting?.get(o.id), now);
+    const action = pickAction(
+      o,
+      isCreator,
+      myRsvpByOuting?.get(o.id),
+      myDebtsByOuting?.get(o.id),
+      now
+    );
     if (action) {
       out.push(action);
     }
@@ -115,6 +155,7 @@ function pickAction(
   o: Outingish,
   isCreator: boolean,
   myRsvp: MyParticipantish | undefined,
+  myDebt: DebtSummaryish | undefined,
   now: Date
 ): PendingAction | null {
   // === Côté créateur ===
@@ -168,14 +209,44 @@ function pickAction(
     }
   }
 
+  // === Côté argent (post-achat, indépendant du rôle créateur/participant) ===
+  // Précédence : payer une dette > confirmer un paiement reçu. Payer est
+  // un geste sortant qui débloque l'autre côté ; confirmer est social.
+  if (myDebt) {
+    if (myDebt.unpaidCount > 0) {
+      const overdue =
+        myDebt.oldestUnpaidAt !== null &&
+        now.getTime() - myDebt.oldestUnpaidAt.getTime() > SEVEN_DAYS_MS;
+      const label =
+        myDebt.unpaidCount === 1 ? "payer ta dette" : `${myDebt.unpaidCount} dettes à payer`;
+      return makeAction("pay-debt", overdue ? "hot" : "acid", o, label, debtsHref(o));
+    }
+    if (myDebt.declaredCount > 0) {
+      const label =
+        myDebt.declaredCount === 1
+          ? "confirmer un paiement"
+          : `${myDebt.declaredCount} paiements à confirmer`;
+      return makeAction("confirm-debt-received", "acid", o, label, debtsHref(o));
+    }
+  }
+
   return null;
+}
+
+function outingHref(o: Outingish): string {
+  return o.slug ? `/${o.slug}-${o.shortId}` : `/${o.shortId}`;
+}
+
+function debtsHref(o: Outingish): string {
+  return `${outingHref(o)}/dettes`;
 }
 
 function makeAction(
   kind: PendingActionKind,
   tone: PendingActionTone,
   o: Outingish,
-  label: string
+  label: string,
+  href?: string
 ): PendingAction {
   return {
     kind,
@@ -186,5 +257,6 @@ function makeAction(
     title: o.title,
     label,
     deadlineAt: o.deadlineAt,
+    href: href ?? outingHref(o),
   };
 }

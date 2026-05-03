@@ -166,6 +166,143 @@ describe("computePendingActions — participant", () => {
   });
 });
 
+describe("computePendingActions — argent", () => {
+  it("émet pay-debt en acid quand la dette est récente", () => {
+    const o = outing({ id: "od", status: "purchased", creatorUserId: OTHER });
+    const myDebtsByOuting = new Map([
+      [
+        o.id,
+        {
+          unpaidCount: 1,
+          unpaidAmountCents: 1850,
+          oldestUnpaidAt: D_PLUS(-2),
+          declaredCount: 0,
+        },
+      ],
+    ]);
+    const actions = computePendingActions({
+      outings: [o],
+      userId: ME,
+      myDebtsByOuting,
+      now: FROZEN_NOW,
+    });
+    expect(actions).toHaveLength(1);
+    expect(actions[0].kind).toBe("pay-debt");
+    expect(actions[0].tone).toBe("acid");
+    expect(actions[0].label).toBe("payer ta dette");
+    expect(actions[0].href).toBe("/soiree-od/dettes");
+  });
+
+  it("passe pay-debt en hot quand la plus vieille dette dépasse 7 jours", () => {
+    const o = outing({ id: "old", status: "purchased", creatorUserId: OTHER });
+    const myDebtsByOuting = new Map([
+      [
+        o.id,
+        {
+          unpaidCount: 2,
+          unpaidAmountCents: 4200,
+          oldestUnpaidAt: D_PLUS(-24 * 8), // 8 jours
+          declaredCount: 0,
+        },
+      ],
+    ]);
+    const actions = computePendingActions({
+      outings: [o],
+      userId: ME,
+      myDebtsByOuting,
+      now: FROZEN_NOW,
+    });
+    expect(actions[0].kind).toBe("pay-debt");
+    expect(actions[0].tone).toBe("hot");
+    expect(actions[0].label).toBe("2 dettes à payer");
+  });
+
+  it("émet confirm-debt-received quand un débiteur a déclaré payé", () => {
+    const o = outing({ id: "ok", status: "purchased", creatorUserId: ME });
+    const myDebtsByOuting = new Map([
+      [
+        o.id,
+        {
+          unpaidCount: 0,
+          unpaidAmountCents: 0,
+          oldestUnpaidAt: null,
+          declaredCount: 3,
+        },
+      ],
+    ]);
+    const actions = computePendingActions({
+      outings: [o],
+      userId: ME,
+      myDebtsByOuting,
+      now: FROZEN_NOW,
+    });
+    expect(actions[0].kind).toBe("confirm-debt-received");
+    expect(actions[0].tone).toBe("acid");
+    expect(actions[0].label).toBe("3 paiements à confirmer");
+  });
+
+  it("priorise pay-debt sur confirm-debt-received quand les deux sont présents", () => {
+    const o = outing({ id: "both", status: "purchased", creatorUserId: OTHER });
+    const myDebtsByOuting = new Map([
+      [
+        o.id,
+        {
+          unpaidCount: 1,
+          unpaidAmountCents: 1000,
+          oldestUnpaidAt: D_PLUS(-1),
+          declaredCount: 1,
+        },
+      ],
+    ]);
+    const actions = computePendingActions({
+      outings: [o],
+      userId: ME,
+      myDebtsByOuting,
+      now: FROZEN_NOW,
+    });
+    expect(actions).toHaveLength(1);
+    expect(actions[0].kind).toBe("pay-debt");
+  });
+
+  it("les nudges créateur (buy-tickets, etc.) gagnent sur les kinds dette dans la même outing", () => {
+    // Cas tordu mais possible : outing reste en stale_purchase alors qu'une
+    // dette annexe est déjà créée. Le créateur doit voir confirm-purchase,
+    // pas la dette.
+    const o = outing({ id: "race", status: "stale_purchase", creatorUserId: ME });
+    const myDebtsByOuting = new Map([
+      [
+        o.id,
+        {
+          unpaidCount: 1,
+          unpaidAmountCents: 500,
+          oldestUnpaidAt: D_PLUS(-1),
+          declaredCount: 0,
+        },
+      ],
+    ]);
+    const actions = computePendingActions({
+      outings: [o],
+      userId: ME,
+      myDebtsByOuting,
+      now: FROZEN_NOW,
+    });
+    expect(actions).toHaveLength(1);
+    expect(actions[0].kind).toBe("confirm-purchase");
+  });
+
+  it("ne déclenche rien quand la map de dettes est vide pour cette outing", () => {
+    const o = outing({ id: "clean", status: "purchased", creatorUserId: OTHER });
+    expect(
+      computePendingActions({
+        outings: [o],
+        userId: ME,
+        myDebtsByOuting: new Map(),
+        now: FROZEN_NOW,
+      })
+    ).toEqual([]);
+  });
+});
+
 describe("computePendingActions — tri et filtres", () => {
   it("trie hot avant acid, puis deadline asc à tone égal", () => {
     const ap = outing({
