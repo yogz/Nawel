@@ -19,6 +19,10 @@ const VAGUE_REJECT = "Lien invalide ou expiré.";
 /**
  * Suivre un user. Gate côté action :
  *   - session requise
+ *   - email vérifié (pas de follow depuis un compte non-confirmé : sinon
+ *     `userFollows` se peuple de rows attachées à des users qu'on ne peut
+ *     ni notifier ni vraiment authentifier — defense-in-depth, l'UI
+ *     remplace déjà le toggle par un upsell pour ce cas)
  *   - pas de self-follow
  *   - target existe + a un rsvpInviteToken
  *   - token transmis === target.rsvpInviteToken (équivalent à passer
@@ -35,6 +39,9 @@ export async function followUserAction(
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
     return { message: "Il faut être connecté." };
+  }
+  if (!session.user.emailVerified) {
+    return { message: VAGUE_REJECT };
   }
 
   const targetUserId = String(formData.get("targetUserId") ?? "").trim();
