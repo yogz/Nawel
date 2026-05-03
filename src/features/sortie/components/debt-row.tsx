@@ -37,6 +37,11 @@ type Props = {
    * pointant vers la sortie. Utilisé par la page globale `/moi/argent`
    * où la même row peut concerner n'importe quelle sortie. */
   outingHref?: string;
+  /** Mode sous-ligne : la row vit à l'intérieur d'un wrapper
+   * `PersonDebtGroup` qui affiche déjà le nom et le total. On enlève
+   * donc le chrome de carte (border/bg/p-4) et le bloc nom-de-personne,
+   * et on laisse l'eyebrow de sortie servir de désambiguïsateur. */
+  compact?: boolean;
 };
 
 const TYPE_LABEL: Record<PaymentMethod["type"], string> = {
@@ -80,14 +85,21 @@ export function DebtRow({
   methods = [],
   outingTitle,
   outingHref,
+  compact = false,
 }: Props) {
   const statusLabel = STATUS_LABEL[view][status];
-  // `confirmed` n'est plus actionnable : on désaturait la couleur pour ne
+  // `confirmed` n'est plus actionnable : on désature la couleur pour ne
   // pas concurrencer un statut pending (qui lui appelle à l'action).
   const statusColor = status === "confirmed" ? "text-ink-400" : "text-hot-600";
 
   return (
-    <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
+    <li
+      className={
+        compact
+          ? "flex flex-col gap-2 py-3 first:pt-0 last:pb-0"
+          : "flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4"
+      }
+    >
       {outingHref && outingTitle && (
         <Link
           href={outingHref}
@@ -97,13 +109,25 @@ export function DebtRow({
         </Link>
       )}
       <div className="flex items-baseline justify-between gap-3">
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate font-serif text-lg text-ink-700">{personName(other)}</span>
+        {compact ? (
           <span className={`text-xs uppercase tracking-[0.06em] ${statusColor}`}>
             {statusLabel}
           </span>
-        </div>
-        <span className="shrink-0 font-serif text-2xl tabular-nums text-ink-700">
+        ) : (
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate font-serif text-lg text-ink-700">{personName(other)}</span>
+            <span className={`text-xs uppercase tracking-[0.06em] ${statusColor}`}>
+              {statusLabel}
+            </span>
+          </div>
+        )}
+        <span
+          className={
+            compact
+              ? "shrink-0 font-serif text-xl tabular-nums text-ink-700"
+              : "shrink-0 font-serif text-2xl tabular-nums text-ink-700"
+          }
+        >
           {formatCents(amountCents)}
         </span>
       </div>

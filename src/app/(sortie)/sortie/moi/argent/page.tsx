@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ChevronDown } from "lucide-react";
 import { auth } from "@/lib/auth-config";
 import { cn } from "@/lib/utils";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
@@ -78,31 +78,34 @@ export default async function WalletPage() {
     getWalletAllocations(userId),
   ]);
 
-  // Les dettes confirmed n'entrent pas dans le total « tu dois » mais
-  // restent visibles dans la section dédiée pour rappel ; idem pour les
-  // crédits. On affiche d'abord pending, puis declared_paid, puis confirmed.
-  const debts = sortDebtsForDisplay(allDebts);
-  const credits = sortDebtsForDisplay(allCredits);
+  // Les rows `confirmed` (déjà réglés/reçus) ne pèsent plus sur le bilan.
+  // On les sépare ici pour les pousser derrière un disclosure plus bas —
+  // c'est de l'historique, pas un signal d'action. Le tri à l'intérieur
+  // des unsettled garde pending avant declared_paid pour mettre en avant
+  // ce qui demande une action immédiate.
+  const unsettledDebts = sortDebtsForDisplay(allDebts.filter((d) => d.status !== "confirmed"));
+  const settledDebts = allDebts.filter((d) => d.status === "confirmed");
+  const unsettledCredits = sortDebtsForDisplay(allCredits.filter((d) => d.status !== "confirmed"));
+  const settledCredits = allCredits.filter((d) => d.status === "confirmed");
 
-  const totalOwedCents = debts
-    .filter((d) => d.status !== "confirmed")
-    .reduce((acc, d) => acc + d.amountCents, 0);
-  const totalToReceiveCents = credits
-    .filter((d) => d.status !== "confirmed")
-    .reduce((acc, d) => acc + d.amountCents, 0);
+  const totalOwedCents = unsettledDebts.reduce((acc, d) => acc + d.amountCents, 0);
+  const totalToReceiveCents = unsettledCredits.reduce((acc, d) => acc + d.amountCents, 0);
+
+  const debtsByCreditor = groupByPerson(unsettledDebts, (d) => d.creditor);
+  const creditsByDebtor = groupByPerson(unsettledCredits, (d) => d.debtor);
 
   // Bandeau « renseigne un moyen de paiement » : on ne pousse l'incitation
   // que si le user a au moins un crédit en attente ET aucune méthode
   // déclarée sur les sorties concernées. Évite de spammer un user qui a
   // déjà rempli son IBAN partout.
-  const creditsWithoutMethod = credits.filter(
-    (d) => d.status !== "confirmed" && d.creditorMethods.length === 0
-  );
+  const creditsWithoutMethod = unsettledCredits.filter((d) => d.creditorMethods.length === 0);
   const distinctOutingsForMissingMethod = dedupOutings(creditsWithoutMethod.map((d) => d.outing));
 
   const allocationsByOuting = groupAllocationsByOuting(allocations);
 
-  const hasAnyData = debts.length > 0 || credits.length > 0 || allocations.length > 0;
+  const hasDebts = unsettledDebts.length > 0 || settledDebts.length > 0;
+  const hasCredits = unsettledCredits.length > 0 || settledCredits.length > 0;
+  const hasAnyData = hasDebts || hasCredits || allocations.length > 0;
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -144,31 +147,43 @@ export default async function WalletPage() {
         </section>
       )}
 
-      {debts.length > 0 && (
+      {hasDebts && (
         <section className="mb-10">
           <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
             Ce que tu dois
           </h2>
-          <ul className="flex flex-col gap-3">
-            {debts.map((d) => (
-              <DebtRow
-                key={d.id}
-                shortId={d.outing.shortId}
-                debtId={d.id}
-                amountCents={d.amountCents}
-                status={d.status}
-                other={d.creditor}
-                view="debtor"
-                methods={d.creditorMethods}
-                outingTitle={d.outing.title}
-                outingHref={outingHref(d.outing, "dettes")}
-              />
-            ))}
-          </ul>
+          {debtsByCreditor.length > 0 ? (
+            <ul className="flex flex-col gap-3">
+              {debtsByCreditor.map((g) =>
+                g.rows.length === 1 ? (
+                  <DebtRow key={g.rows[0].id} {...debtRowProps(g.rows[0], "debtor")} />
+                ) : (
+                  <PersonDebtGroup key={g.person.id} person={g.person} totalCents={g.totalCents}>
+                    {g.rows.map((d) => (
+                      <DebtRow key={d.id} {...debtRowProps(d, "debtor")} compact />
+                    ))}
+                  </PersonDebtGroup>
+                )
+              )}
+            </ul>
+          ) : (
+            <p className="text-[15px] text-ink-500">Plus rien à régler.</p>
+          )}
+          {settledDebts.length > 0 && (
+            <SettledDisclosure
+              count={settledDebts.length}
+              singularLabel="dette réglée"
+              pluralLabel="dettes réglées"
+            >
+              {settledDebts.map((d) => (
+                <DebtRow key={d.id} {...debtRowProps(d, "debtor")} />
+              ))}
+            </SettledDisclosure>
+          )}
         </section>
       )}
 
-      {credits.length > 0 && (
+      {hasCredits && (
         <section className="mb-10">
           <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
             Ce qu&rsquo;on te doit
@@ -192,21 +207,34 @@ export default async function WalletPage() {
               </ul>
             </div>
           )}
-          <ul className="flex flex-col gap-3">
-            {credits.map((d) => (
-              <DebtRow
-                key={d.id}
-                shortId={d.outing.shortId}
-                debtId={d.id}
-                amountCents={d.amountCents}
-                status={d.status}
-                other={d.debtor}
-                view="creditor"
-                outingTitle={d.outing.title}
-                outingHref={outingHref(d.outing, "dettes")}
-              />
-            ))}
-          </ul>
+          {creditsByDebtor.length > 0 ? (
+            <ul className="flex flex-col gap-3">
+              {creditsByDebtor.map((g) =>
+                g.rows.length === 1 ? (
+                  <DebtRow key={g.rows[0].id} {...debtRowProps(g.rows[0], "creditor")} />
+                ) : (
+                  <PersonDebtGroup key={g.person.id} person={g.person} totalCents={g.totalCents}>
+                    {g.rows.map((d) => (
+                      <DebtRow key={d.id} {...debtRowProps(d, "creditor")} compact />
+                    ))}
+                  </PersonDebtGroup>
+                )
+              )}
+            </ul>
+          ) : (
+            <p className="text-[15px] text-ink-500">Tout le monde t&rsquo;a remboursé.</p>
+          )}
+          {settledCredits.length > 0 && (
+            <SettledDisclosure
+              count={settledCredits.length}
+              singularLabel="remboursement reçu"
+              pluralLabel="remboursements reçus"
+            >
+              {settledCredits.map((d) => (
+                <DebtRow key={d.id} {...debtRowProps(d, "creditor")} />
+              ))}
+            </SettledDisclosure>
+          )}
         </section>
       )}
 
@@ -260,6 +288,59 @@ export default async function WalletPage() {
   );
 }
 
+function PersonDebtGroup({
+  person,
+  totalCents,
+  children,
+}: {
+  person: PersonRef;
+  totalCents: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="flex flex-col gap-2 rounded-lg border border-surface-400 bg-surface-50 p-4">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="min-w-0 truncate font-serif text-lg text-ink-700">
+          {personName(person)}
+        </span>
+        <span className="shrink-0 font-serif text-2xl tabular-nums text-ink-700">
+          {formatCents(totalCents)}
+        </span>
+      </div>
+      <ul className="flex flex-col divide-y divide-surface-400/40">{children}</ul>
+    </li>
+  );
+}
+
+// Disclosure natif `<details>` : pas besoin de hook ni de client
+// boundary. Le summary masque les rows réglées par défaut, sans bruiter
+// le scan de la page tant que l'utilisateur ne demande pas l'historique.
+function SettledDisclosure({
+  count,
+  singularLabel,
+  pluralLabel,
+  children,
+}: {
+  count: number;
+  singularLabel: string;
+  pluralLabel: string;
+  children: React.ReactNode;
+}) {
+  const label = count === 1 ? singularLabel : pluralLabel;
+  return (
+    <details className="group mt-4">
+      <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 px-1 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:text-acid-600 [&::-webkit-details-marker]:hidden">
+        <ChevronDown size={12} aria-hidden className="transition-transform group-open:rotate-180" />
+        <span className="group-open:hidden">
+          Voir {count} {label}
+        </span>
+        <span className="hidden group-open:inline">Masquer {label}</span>
+      </summary>
+      <ul className="mt-3 flex flex-col gap-3">{children}</ul>
+    </details>
+  );
+}
+
 function Stat({
   label,
   amountCents,
@@ -306,6 +387,57 @@ const STATUS_RANK: Record<WalletDebtRow["status"], number> = {
 
 function sortDebtsForDisplay(rows: WalletDebtRow[]): WalletDebtRow[] {
   return [...rows].sort((a, b) => STATUS_RANK[a.status] - STATUS_RANK[b.status]);
+}
+
+type PersonRef = WalletDebtRow["debtor"];
+
+type PersonGroup = {
+  person: PersonRef;
+  rows: WalletDebtRow[];
+  totalCents: number;
+};
+
+// Regroupe les rows par personne (créditeur pour debts, débiteur pour
+// credits). Tri descendant sur le total : plus gros montant en haut,
+// histoire que l'utilisateur tombe direct sur le contact qui pèse le
+// plus dans son bilan.
+function groupByPerson(
+  rows: WalletDebtRow[],
+  pickPerson: (r: WalletDebtRow) => PersonRef
+): PersonGroup[] {
+  const map = new Map<string, PersonGroup>();
+  for (const r of rows) {
+    const p = pickPerson(r);
+    const existing = map.get(p.id);
+    if (existing) {
+      existing.rows.push(r);
+      existing.totalCents += r.amountCents;
+    } else {
+      map.set(p.id, { person: p, rows: [r], totalCents: r.amountCents });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.totalCents - a.totalCents);
+}
+
+function personName(p: PersonRef): string {
+  return p.userName ?? p.anonName ?? "Quelqu'un";
+}
+
+// Mappe une row vers les props attendues par DebtRow ; centralise le
+// switch debtor/creditor pour ne pas le dupliquer entre rendu autonome
+// et rendu compact à l'intérieur d'un PersonDebtGroup.
+function debtRowProps(d: WalletDebtRow, view: "debtor" | "creditor") {
+  return {
+    shortId: d.outing.shortId,
+    debtId: d.id,
+    amountCents: d.amountCents,
+    status: d.status,
+    other: view === "debtor" ? d.creditor : d.debtor,
+    view,
+    methods: view === "debtor" ? d.creditorMethods : undefined,
+    outingTitle: d.outing.title,
+    outingHref: outingHref(d.outing, "dettes"),
+  };
 }
 
 function dedupOutings(list: WalletDebtRow["outing"][]): WalletDebtRow["outing"][] {
