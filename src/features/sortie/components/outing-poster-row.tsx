@@ -130,13 +130,10 @@ function splitBadge(raw: string): { anchor: string; tail: string | null } {
  * bottom-left. Exporté pour pouvoir être consommé en dehors du shell
  * (rendus ad-hoc, tests).
  *
- * Comportement du titre sous la card :
- *  - Avec image : on garde le titre crème en h3 sous la card. La photo
- *    seule ne porte pas l'info, le label est nécessaire.
- *  - Sans image (mode title fallback) : le titre vit DÉJÀ dans la card
- *    en typo poster, le répéter dessous crée une soupe (deux lectures
- *    pour la même info, ralentit le scan). On garde juste un h3 visuel-
- *    lement masqué pour l'a11y (screen-reader / SEO du titre du lien).
+ * Pas de titre visible sous la card — esthétique poster pur, identique
+ * pour tous les types (photo ou fallback). Garantit une symétrie de
+ * hauteur dans une row mixte, et aligne les pills `@handle · № NN` au
+ * même y entre cards. Le titre reste en h3 sr-only pour a11y/SEO.
  */
 export function OutingPosterCard({
   outing,
@@ -207,16 +204,7 @@ export function OutingPosterCard({
           )}
         </span>
       </div>
-      {hasImage ? (
-        <h3 className="mt-2 line-clamp-2 font-display text-[13px] leading-tight font-black tracking-[-0.025em] text-ink-700 transition-colors [@media(hover:hover)]:group-hover:text-acid-600">
-          {outing.title}
-        </h3>
-      ) : (
-        // Titre déjà rendu en typo poster dans la card par le fallback ;
-        // on préserve juste l'élément pour les screen-readers et le SEO du
-        // lien (sans le visuel doublonné qui polluait le scan).
-        <h3 className="sr-only">{outing.title}</h3>
-      )}
+      <h3 className="sr-only">{outing.title}</h3>
     </Link>
   );
 }
