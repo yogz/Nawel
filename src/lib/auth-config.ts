@@ -504,23 +504,56 @@ export const auth = betterAuth({
         // Best-effort : un échec ne doit pas faire crasher le signin.
         after: async (session) => {
           try {
-            const cookieTokenHash = await readParticipantTokenHash();
-            if (!cookieTokenHash || !session.userId) {
+            if (!session.userId) {
               return;
             }
-            await db
-              .update(sortieParticipants)
-              .set({
-                userId: session.userId,
-                anonEmail: null,
-                updatedAt: new Date(),
-              })
-              .where(
-                and(
-                  eq(sortieParticipants.cookieTokenHash, cookieTokenHash),
-                  isNull(sortieParticipants.userId)
-                )
-              );
+            const cookieTokenHash = await readParticipantTokenHash();
+            if (cookieTokenHash) {
+              await db
+                .update(sortieParticipants)
+                .set({
+                  userId: session.userId,
+                  anonEmail: null,
+                  updatedAt: new Date(),
+                })
+                .where(
+                  and(
+                    eq(sortieParticipants.cookieTokenHash, cookieTokenHash),
+                    isNull(sortieParticipants.userId)
+                  )
+                );
+            }
+
+            // Claim secondaire par email vérifié — couvre le cas du
+            // participant anon qui a fourni `anonEmail` au RSVP puis se
+            // signe depuis un autre device (donc plus le bon cookie). Le
+            // matching se fait sur l'email login, et on n'attache des rows
+            // que si Better Auth garantit que cet email est prouvé : OAuth
+            // trusté (Google), magic-link, ou email-verification réussie
+            // après inscription password. Sans ça, un sign-up password sur
+            // l'email d'autrui suffirait à voler ses RSVP — vecteur
+            // d'usurpation strictement écarté par le check `emailVerified`.
+            //
+            // Idempotent : `userId IS NULL` filtre les rows déjà claim, donc
+            // re-signin = no-op. Un user qui change son email (hors scope
+            // ici) n'aura pas son ancien email "récupéré" — c'est
+            // volontaire : seul l'email courant et vérifié claim.
+            const u = await db.query.user.findFirst({
+              where: (row, { eq }) => eq(row.id, session.userId),
+              columns: { email: true, emailVerified: true },
+            });
+            if (u && u.emailVerified && u.email) {
+              await db
+                .update(sortieParticipants)
+                .set({
+                  userId: session.userId,
+                  anonEmail: null,
+                  updatedAt: new Date(),
+                })
+                .where(
+                  and(eq(sortieParticipants.anonEmail, u.email), isNull(sortieParticipants.userId))
+                );
+            }
           } catch (err) {
             console.error("[auth] sortie cookie→userId merge failed:", err);
           }
