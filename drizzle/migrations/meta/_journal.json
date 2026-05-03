@@ -281,6 +281,13 @@
       "when": 1777758754718,
       "tag": "0039_broken_nighthawk",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1777794133425,
+      "tag": "0040_mushy_lilith",
+      "breakpoints": true
     }
   ]
 }

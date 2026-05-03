@@ -110,6 +110,24 @@ export async function createOutingAction(
       : null;
   const effectiveCreatorUserId = user?.id ?? silentCreatorUserId;
 
+  // Numéro "ticket" affiché en filigrane sur le poster (PR5 signature
+  // identité). Compteur incrémental par créateur, calculé via COUNT
+  // juste avant l'insert. Null pour les anon (sans compte loggé ni
+  // silent user, on n'a pas d'historique persistent à compter).
+  // Pas de transaction : le rate-limit 5 créations/15 min rend la
+  // race condition microscopique, et l'absence d'unique constraint
+  // évite un retry-loop. Une collision en double-clic produirait au
+  // pire deux № identiques pour ce user — affichage cosmétique, ne
+  // casse rien.
+  let creatorOutingNumber: number | null = null;
+  if (effectiveCreatorUserId) {
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(outings)
+      .where(eq(outings.creatorUserId, effectiveCreatorUserId));
+    creatorOutingNumber = count + 1;
+  }
+
   // In vote mode we defer the concrete datetime: the outing is created with
   // fixedDatetime = null until the creator picks a winning timeslot. The
   // deadline is still required (it closes voting) so participants know when
@@ -145,6 +163,7 @@ export async function createOutingAction(
       // au créateur de réouvrir la sortie depuis le même device tant
       // qu'il n'a pas signé le magic link.
       creatorCookieTokenHash: effectiveCreatorUserId && user ? null : cookieTokenHash,
+      creatorOutingNumber,
     })
     .returning({ id: outings.id });
 

@@ -94,6 +94,15 @@ export const outings = sortie.table(
     // compatible with all historical outings + to let the creator skip
     // the picker if they don't want to commit.
     vibe: outingVibe("vibe"),
+    // Numéro "ticket" affiché en filigrane sur le poster ("№ 047 par
+    // @camille"). Compteur incrémental par créateur — la 47ème sortie
+    // organisée par ce user porte le numéro 47, figé pour toujours
+    // même si une sortie antérieure est supprimée. Null pour les
+    // créateurs anon (pas d'historique persistent → pas de compteur,
+    // privilège des comptes loggés). Calculé via COUNT+1 à la création
+    // (pas d'unique constraint : le rate-limit 5 créations/15 min
+    // rend la race condition microscopique).
+    creatorOutingNumber: integer("creator_outing_number"),
     // Bumpé à chaque transition de statut ou édition de contenu (titre,
     // date, lieu…). Sert exclusivement au flux iCal — RFC 5545 §3.8.7.4
     // exige un SEQUENCE incrémenté pour que les clients calendrier
