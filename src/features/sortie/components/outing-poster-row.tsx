@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { Eyebrow, type EyebrowTone } from "./eyebrow";
+import { FocusableEyebrow, useEyebrowFocusSectionRef } from "./eyebrow-focus";
 import { OutingPosterFallback } from "./outing-poster-fallback";
 
 export type PosterOuting = {
@@ -37,6 +40,11 @@ type Props = {
    * utiliser pour les rangées de "discovery" qui doivent se distinguer
    * visuellement du hero et des cards à action. */
   aspect?: "poster" | "square";
+  /** Quand passé, l'eyebrow s'aligne sur le focus actif piloté par
+   * `<EyebrowFocusProvider>`. La `<section>` racine est observée pour
+   * détecter quand cette rangée occupe la bande centrale du viewport.
+   * Sans focusId : rendu standalone, comportement legacy. */
+  focusId?: string;
 };
 
 /**
@@ -62,13 +70,21 @@ export function OutingPosterRow({
   glow = true,
   showCount = true,
   aspect = "poster",
+  focusId,
 }: Props) {
+  const sectionRef = useEyebrowFocusSectionRef<HTMLElement>(focusId);
+  const eyebrowText = `─ ${eyebrowLabel}${showCount ? ` · ${String(count).padStart(2, "0")}` : ""} ─`;
   return (
-    <section className="mb-7 -mx-6" aria-labelledby={headingId}>
-      <Eyebrow id={headingId} tone={tone} glow={glow} className="mb-3 px-6">
-        ─ {eyebrowLabel}
-        {showCount ? ` · ${String(count).padStart(2, "0")}` : ""} ─
-      </Eyebrow>
+    <section ref={sectionRef} className="mb-7 -mx-6" aria-labelledby={headingId}>
+      {focusId ? (
+        <FocusableEyebrow focusId={focusId} id={headingId} className="mb-3 px-6">
+          {eyebrowText}
+        </FocusableEyebrow>
+      ) : (
+        <Eyebrow id={headingId} tone={tone} glow={glow} className="mb-3 px-6">
+          {eyebrowText}
+        </Eyebrow>
+      )}
       <ul
         role="list"
         aria-label={ariaLabel}

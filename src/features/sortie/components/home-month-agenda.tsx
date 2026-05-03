@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AgendaMonthHeatmap } from "@/features/sortie/components/agenda-month-heatmap";
 import { CompactOutingRow } from "@/features/sortie/components/compact-outing-row";
-import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import {
+  FocusableEyebrow,
+  useEyebrowFocusSectionRef,
+} from "@/features/sortie/components/eyebrow-focus";
 import { bucketAgendaByDay, monthAtOffset } from "@/features/sortie/lib/agenda-grid";
 import { parisDayKey } from "@/features/sortie/lib/date-fr";
 import type { ResolvedMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
@@ -62,6 +65,7 @@ type Props = {
 export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: Props) {
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [monthOffset, setMonthOffset] = useState(0);
+  const agendaSectionRef = useEyebrowFocusSectionRef<HTMLElement>("agenda");
 
   const buckets = useMemo(() => bucketAgendaByDay(agendaItems), [agendaItems]);
   const activeMonth = useMemo(() => monthAtOffset(now, monthOffset), [now, monthOffset]);
@@ -159,10 +163,10 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
 
   return (
     <>
-      <section className="mb-10">
-        <Eyebrow tone="muted" className="mb-3">
+      <section ref={agendaSectionRef} className="mb-10">
+        <FocusableEyebrow focusId="agenda" className="mb-3">
           ─ ton agenda
-        </Eyebrow>
+        </FocusableEyebrow>
         <AgendaMonthHeatmap
           now={now}
           buckets={buckets}

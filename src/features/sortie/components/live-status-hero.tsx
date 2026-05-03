@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate, formatOutingDayMonthTime } from "@/features/sortie/lib/date-fr";
@@ -6,6 +8,10 @@ import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import {
+  FocusableEyebrow,
+  useEyebrowFocusSectionRef,
+} from "@/features/sortie/components/eyebrow-focus";
 import { TicketNumber } from "@/features/sortie/components/ticket-number";
 
 type Props = {
@@ -47,6 +53,11 @@ type Props = {
    * (créateur anon, ou sortie pré-PR5 sans backfill). Sur la home
    * identifiée le créateur est implicite — pas de handle préfixé. */
   creatorOutingNumber?: number | null;
+  /** Quand passé, l'eyebrow s'aligne sur le focus actif piloté par
+   * `<EyebrowFocusProvider>`. Le `<section>` racine est observé pour
+   * détecter quand le hero occupe la bande centrale du viewport. Sans
+   * focusId : rendu standalone (acid+glow), comportement legacy. */
+  focusId?: string;
 };
 
 /**
@@ -76,7 +87,9 @@ export function LiveStatusHero({
   headingLevel = "h2",
   compact = false,
   creatorOutingNumber = null,
+  focusId,
 }: Props) {
+  const sectionRef = useEyebrowFocusSectionRef<HTMLElement>(focusId);
   const canonical = slug ? `${slug}-${shortId}` : shortId;
   const Heading = headingLevel;
 
@@ -104,13 +117,20 @@ export function LiveStatusHero({
     // user rather than snapping into place. `motion-safe:` so reduced-
     // motion users get an instant render.
     <section
+      ref={sectionRef}
       className={`${
         compact ? "mb-6" : "mb-10"
       } motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized`}
     >
-      <Eyebrow glow className="mb-3">
-        {eyebrow}
-      </Eyebrow>
+      {focusId ? (
+        <FocusableEyebrow focusId={focusId} className="mb-3">
+          {eyebrow}
+        </FocusableEyebrow>
+      ) : (
+        <Eyebrow glow className="mb-3">
+          {eyebrow}
+        </Eyebrow>
+      )}
       <Link
         href={`/${canonical}`}
         aria-label={`Voir la sortie ${title}`}

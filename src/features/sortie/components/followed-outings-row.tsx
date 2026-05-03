@@ -30,6 +30,7 @@ export function FollowedOutingsRow({ outings }: Props) {
       glow={false}
       showCount={false}
       aspect="square"
+      focusId="network"
       items={outings.map((o) => {
         const handle = o.creatorUsername ? `@${o.creatorUsername}` : o.creatorName;
         // Suffixe "№ 047" sur la pill quand le créateur loggé a un compteur.

@@ -22,6 +22,11 @@ import { FollowedOutingsRow } from "@/features/sortie/components/followed-outing
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import {
+  EyebrowFocusProvider,
+  EyebrowFocusSection,
+  FocusableEyebrow,
+} from "@/features/sortie/components/eyebrow-focus";
 import { computePendingActions } from "@/features/sortie/lib/pending-actions";
 import { LandingV2 } from "@/features/sortie/components/landing/landing-v2";
 import { ResetDeviceTrigger } from "@/features/sortie/components/reset-device-trigger";
@@ -124,51 +129,56 @@ export default async function SortieHome() {
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
       </nav>
-      {heroOuting && heroOuting.startsAt ? (
-        <LiveStatusHero
-          slug={heroOuting.slug}
-          shortId={heroOuting.shortId}
-          title={heroOuting.title}
-          location={heroOuting.location}
-          startsAt={heroOuting.startsAt}
-          heroImageUrl={heroOuting.heroImageUrl}
-          deadlineAt={heroOuting.deadlineAt}
-          status={heroOuting.status}
-          mode={heroOuting.mode}
-          headingLevel="h1"
-          compact
-          creatorOutingNumber={heroOuting.creatorOutingNumber}
-        />
-      ) : upcoming.length > 0 ? (
-        <header className="mb-12">
-          <Eyebrow glow className="mb-3">
-            ─ ta liste ─
-          </Eyebrow>
-          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
-            Salut {firstName}
-          </h1>
-          <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
-            {String(upcoming.length).padStart(2, "0")}{" "}
-            {upcoming.length > 1 ? "sorties on the wire" : "sortie on the wire"}
-          </p>
-        </header>
-      ) : (
-        <EmptyHeroWithVibes firstName={firstName} />
-      )}
-      <FollowedOutingsRow outings={followedCarousel} />
-      {(restUpcoming.length > 0 || agendaItems.length > 0) && (
-        <HomeMonthAgenda
-          outings={restUpcoming.map((o) => ({
-            ...o,
-            // Résolu côté server pour ne pas faire traverser un Map<…, …>
-            // à la frontière RSC vers HomeMonthAgenda (client).
-            resolvedRsvp: resolveMyRsvp(myRsvpByOuting.get(o.id), session.user.name ?? null),
-          }))}
-          agendaItems={agendaItems}
-          viewerUserId={userId}
-          nowIso={now.toISOString()}
-        />
-      )}
+      <EyebrowFocusProvider defaultActiveId="hero">
+        {heroOuting && heroOuting.startsAt ? (
+          <LiveStatusHero
+            slug={heroOuting.slug}
+            shortId={heroOuting.shortId}
+            title={heroOuting.title}
+            location={heroOuting.location}
+            startsAt={heroOuting.startsAt}
+            heroImageUrl={heroOuting.heroImageUrl}
+            deadlineAt={heroOuting.deadlineAt}
+            status={heroOuting.status}
+            mode={heroOuting.mode}
+            headingLevel="h1"
+            compact
+            creatorOutingNumber={heroOuting.creatorOutingNumber}
+            focusId="hero"
+          />
+        ) : upcoming.length > 0 ? (
+          <EyebrowFocusSection focusId="hero">
+            <header className="mb-12">
+              <FocusableEyebrow focusId="hero" className="mb-3">
+                ─ ta liste ─
+              </FocusableEyebrow>
+              <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
+                Salut {firstName}
+              </h1>
+              <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
+                {String(upcoming.length).padStart(2, "0")}{" "}
+                {upcoming.length > 1 ? "sorties on the wire" : "sortie on the wire"}
+              </p>
+            </header>
+          </EyebrowFocusSection>
+        ) : (
+          <EmptyHeroWithVibes firstName={firstName} />
+        )}
+        <FollowedOutingsRow outings={followedCarousel} />
+        {(restUpcoming.length > 0 || agendaItems.length > 0) && (
+          <HomeMonthAgenda
+            outings={restUpcoming.map((o) => ({
+              ...o,
+              // Résolu côté server pour ne pas faire traverser un Map<…, …>
+              // à la frontière RSC vers HomeMonthAgenda (client).
+              resolvedRsvp: resolveMyRsvp(myRsvpByOuting.get(o.id), session.user.name ?? null),
+            }))}
+            agendaItems={agendaItems}
+            viewerUserId={userId}
+            nowIso={now.toISOString()}
+          />
+        )}
+      </EyebrowFocusProvider>
       {/* Floating CTA: sticky bottom-right. The 1rem additive on top of the
           safe-area inset is what keeps it clear of Safari's bottom URL bar
           on iOS — the inset only accounts for the 34pt home indicator,
@@ -194,17 +204,19 @@ export default async function SortieHome() {
 function EmptyHeroWithVibes({ firstName }: { firstName: string }) {
   return (
     <>
-      <header className="mb-10">
-        <Eyebrow glow className="mb-3">
-          ─ idle. choisis ton ambiance ─
-        </Eyebrow>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
-          Salut {firstName}
-        </h1>
-        <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
-          C&rsquo;est quoi le programme&nbsp;?
-        </p>
-      </header>
+      <EyebrowFocusSection focusId="hero">
+        <header className="mb-10">
+          <FocusableEyebrow focusId="hero" className="mb-3">
+            ─ idle. choisis ton ambiance ─
+          </FocusableEyebrow>
+          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
+            Salut {firstName}
+          </h1>
+          <p className="mt-3 font-mono text-[13px] uppercase tracking-[0.18em] text-ink-400">
+            C&rsquo;est quoi le programme&nbsp;?
+          </p>
+        </header>
+      </EyebrowFocusSection>
       <div className="mb-12 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <VibeButton
           href="/nouvelle?vibe=theatre"
