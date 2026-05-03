@@ -12,6 +12,7 @@ import {
   listMyParticipantsForOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { listFollowedOutingsForCarousel } from "@/features/sortie/queries/follow-queries";
+import { listMyDebtSummariesForOutings } from "@/features/sortie/queries/debt-queries";
 import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { LoginLink } from "@/features/sortie/components/login-link";
@@ -73,11 +74,19 @@ export default async function SortieHome() {
     listMyAgendaActivity(userId, now),
     listFollowedOutingsForCarousel(userId, now),
   ]);
-  const myRsvpByOuting = await listMyParticipantsForOutings({
-    outingIds: upcomingRaw.map((o) => o.id),
-    cookieTokenHash: null,
-    userId,
-  });
+  const outingIds = upcomingRaw.map((o) => o.id);
+  // RSVPs et résumés de dettes en parallèle — les deux servent à enrichir
+  // les actions inbox, et la query `listMyDebtSummariesForOutings`
+  // retourne une map vide quand aucune sortie ne contient de dette du
+  // user (cas dominant tant que les flows argent sont peu utilisés).
+  const [myRsvpByOuting, myDebtsByOuting] = await Promise.all([
+    listMyParticipantsForOutings({
+      outingIds,
+      cookieTokenHash: null,
+      userId,
+    }),
+    listMyDebtSummariesForOutings({ outingIds, userId }),
+  ]);
   // La query renvoie en `desc(createdAt)` par défaut — ce qui n'a aucun
   // sens côté UX dès qu'on a > 5 sorties (un événement loin créé hier
   // remonte avant un événement proche créé la semaine dernière). On
@@ -114,6 +123,7 @@ export default async function SortieHome() {
     outings: upcoming,
     userId,
     myRsvpByOuting,
+    myDebtsByOuting,
     excludeOutingId: heroOuting?.id ?? null,
   });
 

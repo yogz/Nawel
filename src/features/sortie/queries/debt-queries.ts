@@ -1,4 +1,4 @@
-import { and, eq, ne, or } from "drizzle-orm";
+import { and, eq, inArray, ne, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   debts,
@@ -152,6 +152,91 @@ export async function getMyAllocations(
       and(eq(purchases.outingId, outingId), eq(purchaseAllocations.participantId, participantId))
     );
   return rows;
+}
+
+export type DebtSummary = {
+  /** Dettes où je suis débiteur, status=pending → à payer. */
+  unpaidCount: number;
+  unpaidAmountCents: number;
+  /** Plus ancienne dette pending — sert à passer en tone "hot" au-delà de 7j. */
+  oldestUnpaidAt: Date | null;
+  /** Dettes où je suis créancier, status=declared_paid → à confirmer. */
+  declaredCount: number;
+};
+
+/**
+ * Aggrège les dettes du user logged-in sur un lot d'outings, dans les
+ * deux rôles (débiteur pending = "à payer" ; créancier declared_paid =
+ * "à confirmer"). Retourne une map keyée par outingId — les outings sans
+ * dette du user n'apparaissent pas.
+ *
+ * Utilisé par `computePendingActions` pour les kinds `pay-debt` et
+ * `confirm-debt-received`. On résout d'abord les `participantId` du user
+ * sur ces outings (nécessaire car `debts` réfère des participants, pas
+ * des users), puis un seul SELECT sur `debts` filtré sur l'union des
+ * participantIds en débiteur OU créancier.
+ */
+export async function listMyDebtSummariesForOutings(args: {
+  outingIds: string[];
+  userId: string;
+}): Promise<Map<string, DebtSummary>> {
+  if (args.outingIds.length === 0) {
+    return new Map();
+  }
+
+  const myParticipants = await db
+    .select({ id: participants.id, outingId: participants.outingId })
+    .from(participants)
+    .where(
+      and(eq(participants.userId, args.userId), inArray(participants.outingId, args.outingIds))
+    );
+
+  if (myParticipants.length === 0) {
+    return new Map();
+  }
+
+  const myParticipantIds = myParticipants.map((p) => p.id);
+  const mineSet = new Set(myParticipantIds);
+
+  const rows = await db
+    .select()
+    .from(debts)
+    .where(
+      and(
+        inArray(debts.outingId, args.outingIds),
+        or(
+          inArray(debts.debtorParticipantId, myParticipantIds),
+          inArray(debts.creditorParticipantId, myParticipantIds)
+        )
+      )
+    );
+
+  const summaries = new Map<string, DebtSummary>();
+  const ensure = (outingId: string): DebtSummary => {
+    let s = summaries.get(outingId);
+    if (!s) {
+      s = { unpaidCount: 0, unpaidAmountCents: 0, oldestUnpaidAt: null, declaredCount: 0 };
+      summaries.set(outingId, s);
+    }
+    return s;
+  };
+
+  for (const d of rows) {
+    if (d.status === "pending" && mineSet.has(d.debtorParticipantId)) {
+      const s = ensure(d.outingId);
+      s.unpaidCount += 1;
+      s.unpaidAmountCents += d.amountCents;
+      if (!s.oldestUnpaidAt || d.createdAt < s.oldestUnpaidAt) {
+        s.oldestUnpaidAt = d.createdAt;
+      }
+    }
+    if (d.status === "declared_paid" && mineSet.has(d.creditorParticipantId)) {
+      const s = ensure(d.outingId);
+      s.declaredCount += 1;
+    }
+  }
+
+  return summaries;
 }
 
 /**
