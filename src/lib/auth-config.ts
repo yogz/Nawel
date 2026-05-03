@@ -251,12 +251,26 @@ export const auth = betterAuth({
           // use default origin
         }
 
+        // Better Auth embarque le `callbackURL` (fourni à `signIn.magicLink`)
+        // dans le `url` qu'il nous passe. On reconstruit notre propre URL
+        // pour pointer sur la page de login Sortie/Colist, mais on doit
+        // re-propager ce callbackURL — sinon la page de login `/login` qui
+        // fait le verify n'a aucun moyen de savoir où renvoyer l'utilisateur
+        // après auth (cas des gates magic link sur les pages privées).
+        let callbackParam: string | null = null;
+        try {
+          callbackParam = new URL(url).searchParams.get("callbackURL");
+        } catch {
+          // url malformé — on continue sans callback
+        }
+        const cbSuffix = callbackParam ? `&callbackURL=${encodeURIComponent(callbackParam)}` : "";
+
         // Sortie utilise sa propre route `/login?token=...` (pas
         // localisée), Colist passe par `/<locale>/login?token=...`.
         const fromSortie = isSortieOrigin(url);
         const magicUrl = fromSortie
-          ? `${origin}/login?token=${token}`
-          : `${origin}/${locale}/login?token=${token}`;
+          ? `${origin}/login?token=${token}${cbSuffix}`
+          : `${origin}/${locale}/login?token=${token}${cbSuffix}`;
 
         // Variante post-claim : l'invité vient de donner son email après
         // ≥2 RSVP via la prompt InboxClaimPrompt. La metadata transporte le

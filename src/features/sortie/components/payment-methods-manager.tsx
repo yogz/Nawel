@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import {
   addPaymentMethodAction,
   removePaymentMethodAction,
@@ -17,6 +17,7 @@ import {
   trackPaymentMethodAdded,
   trackPaymentMethodPrefilled,
 } from "@/features/sortie/lib/payment-method-prefill";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 const TYPE_LABELS: Record<PaymentMethodPreview["type"], string> = {
   iban: "IBAN",
@@ -99,10 +100,19 @@ function AddMethodForm({ shortId }: { shortId: string }) {
   }, [type]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const valueHint = type === "iban" ? "FR76 1234 5678 9012 3456 7890 123" : "+33 6 12 34 56 78";
+  // Placeholders volontairement tronqués (ellipsis "…") pour qu'on ne
+  // les confonde pas avec un IBAN/numéro déjà rempli — sinon un user
+  // pressé peut croire que le champ est pré-saisi et soumettre la valeur
+  // de démo. Les "…" en milieu/fin signalent visuellement le trou.
+  const valueHint = type === "iban" ? "FR76 1234 5678 …………" : "+33 6 34 56 …";
 
   const valueLabel = type === "iban" ? "IBAN" : "Numéro de téléphone";
   const isPrefilled = prefilledValue !== null && value === prefilledValue;
+
+  function clearPrefill() {
+    setValue("");
+    setPrefilledValue(null);
+  }
 
   return (
     <form
@@ -131,9 +141,16 @@ function AddMethodForm({ shortId }: { shortId: string }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
-          {valueLabel}
-        </Label>
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
+            {valueLabel}
+          </Label>
+          {isPrefilled && (
+            <Eyebrow tone="acid" glow>
+              ─ pré-rempli
+            </Eyebrow>
+          )}
+        </div>
         <Input
           id="pm-value"
           name="value"
@@ -143,10 +160,30 @@ function AddMethodForm({ shortId }: { shortId: string }) {
           autoComplete="off"
           spellCheck={false}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+            // Dès que l'utilisateur édite, on lève le flag « pré-rempli »
+            // — ce qu'il tape est désormais sa propre saisie, plus une
+            // valeur restaurée du localStorage.
+            if (prefilledValue !== null && e.target.value !== prefilledValue) {
+              setPrefilledValue(null);
+            }
+          }}
         />
         {isPrefilled && (
-          <p className="text-[11px] text-ink-400">Pré-rempli depuis ta dernière saisie.</p>
+          <div className="flex items-center justify-between gap-2 rounded-md border border-acid-600/30 bg-acid-600/5 px-3 py-2">
+            <p className="text-[12px] text-ink-500">
+              Restauré depuis ta dernière saisie sur ce navigateur.
+            </p>
+            <button
+              type="button"
+              onClick={clearPrefill}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400 transition-colors hover:bg-surface-100 hover:text-hot-600"
+            >
+              <X size={12} strokeWidth={2.4} aria-hidden />
+              effacer
+            </button>
+          </div>
         )}
         {errors.value?.[0] && <p className="text-xs text-erreur-700">{errors.value[0]}</p>}
       </div>

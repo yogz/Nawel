@@ -30,16 +30,35 @@ type Phase = "idle" | "magic-sent" | "password" | "verifying";
  *      un toggle. Pré-checké côté serveur via `checkAccountStatus`
  *      pour éviter de proposer ce path à un compte silent (no pwd).
  */
-export function SortieAuthForm() {
+type SortieAuthFormProps = {
+  /** Pré-remplit l'input email (utile pour les gates qui connaissent
+   * déjà l'utilisateur via cookie ou contexte). */
+  defaultEmail?: string;
+  /** Masque le header par défaut (`sortie · v0.1` / titre `Reviens.`)
+   * quand le composant est embarqué dans une page qui fournit son
+   * propre hero contextuel — typiquement les gates de pages privées. */
+  hideHeader?: boolean;
+  /** Fallback si aucun `?callbackURL=` n'est passé via les query params.
+   * Permet aux gates d'imposer la destination post-verify (ex. la page
+   * privée demandée) sans dépendre des query params. */
+  defaultCallbackURL?: string;
+};
+
+export function SortieAuthForm({
+  defaultEmail,
+  hideHeader,
+  defaultCallbackURL,
+}: SortieAuthFormProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refetch } = useSession();
   const token = searchParams.get("token");
   // Le `callbackURL` détermine où Better Auth renvoie l'utilisateur
   // après auth réussi (magic link, Google, email/pwd). On préserve la
-  // page d'origine si elle est passée en query, sinon on tombe sur la
-  // home Sortie. Sécurité : on rejette tout callback hors origin.
-  const rawCallback = searchParams.get("callbackURL");
+  // page d'origine si elle est passée en query, sinon on retombe sur le
+  // `defaultCallbackURL` du gate, sinon home Sortie. Sécurité : on
+  // rejette tout callback hors origin.
+  const rawCallback = searchParams.get("callbackURL") ?? defaultCallbackURL ?? null;
   const callbackURL = sanitizeCallback(rawCallback);
   // Better Auth tourne avec `baseURL = https://www.colist.fr` côté
   // serveur. Si on lui passe un path relatif comme `/perle-noire`,
@@ -51,7 +70,7 @@ export function SortieAuthForm() {
   const absoluteCallback =
     typeof window !== "undefined" ? `${window.location.origin}${callbackURL}` : callbackURL;
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(defaultEmail ?? "");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -265,18 +284,20 @@ export function SortieAuthForm() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-5">
-        <p className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-hot-500">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_12px_var(--sortie-hot)]"
-          />
-          sortie · v0.1
-        </p>
-        <h1 className="font-display text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
-          Reviens.
-        </h1>
-      </header>
+      {!hideHeader && (
+        <header className="flex flex-col gap-5">
+          <p className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-hot-500">
+            <span
+              aria-hidden
+              className="h-1.5 w-1.5 rounded-full bg-hot-500 shadow-[0_0_12px_var(--sortie-hot)]"
+            />
+            sortie · v0.1
+          </p>
+          <h1 className="font-display text-4xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl">
+            Reviens.
+          </h1>
+        </header>
+      )}
 
       {phase === "password" && canUsePassword ? (
         <PasswordForm

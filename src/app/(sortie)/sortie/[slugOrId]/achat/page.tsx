@@ -1,14 +1,12 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
-import { participants, purchases } from "@drizzle/sortie-schema";
-import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
-import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
-import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
+import { purchases } from "@drizzle/sortie-schema";
+import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
+import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
+import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
@@ -25,36 +23,40 @@ export const metadata = {
 
 export default async function PurchaseDeclarationPage({ params }: Props) {
   const { slugOrId } = await params;
-  const shortId = extractShortId(slugOrId);
-  if (!shortId) {
+  const state = await loadParticipantPage(slugOrId, "achat");
+  if (state.kind === "not-found") {
     notFound();
   }
-
-  const outing = await getOutingByShortId(shortId);
-  if (!outing) {
-    notFound();
+  if (state.kind === "redirect") {
+    redirect(state.to);
+  }
+  if (state.kind === "needs-auth") {
+    return (
+      <ParticipantAuthGate
+        outingTitle={state.outing.title}
+        canonical={state.canonical}
+        prefillEmail={state.prefillEmail}
+        subPath="achat"
+      />
+    );
+  }
+  if (state.kind === "not-participant") {
+    return (
+      <NotParticipantNotice
+        outingTitle={state.outing.title}
+        canonical={state.canonical}
+        userEmail={state.userEmail}
+      />
+    );
   }
 
-  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
-  if (canonical !== slugOrId) {
-    redirect(`/${canonical}/achat`);
-  }
+  const { outing, me, canonical } = state;
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await readParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-  const me = cookieTokenHash
-    ? await db.query.participants.findFirst({
-        where: and(
-          eq(participants.outingId, outing.id),
-          userId
-            ? eq(participants.userId, userId)
-            : eq(participants.cookieTokenHash, cookieTokenHash)
-        ),
-      })
-    : null;
-
-  if (!me || me.response !== "yes") {
+  // Une row participant existe mais l'utilisateur n'a pas confirmé sa
+  // présence — pas le droit de déclarer l'achat. On garde le 404
+  // historique : l'utilisateur arrive sur l'URL en suivant un lien
+  // qu'il n'aurait pas dû avoir.
+  if (me.response !== "yes") {
     notFound();
   }
 

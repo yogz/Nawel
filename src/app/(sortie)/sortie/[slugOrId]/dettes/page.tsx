@@ -1,14 +1,12 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth-config";
-import { participants, purchases } from "@drizzle/sortie-schema";
-import { canonicalPathSegment, extractShortId } from "@/features/sortie/lib/parse-outing-path";
-import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
-import { getOutingByShortId } from "@/features/sortie/queries/outing-queries";
+import { purchases } from "@drizzle/sortie-schema";
+import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
+import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
+import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
 import {
   getMyAllocations,
   getMyCredits,
@@ -31,37 +29,34 @@ export const metadata = {
 
 export default async function DebtsPage({ params }: Props) {
   const { slugOrId } = await params;
-  const shortId = extractShortId(slugOrId);
-  if (!shortId) {
+  const state = await loadParticipantPage(slugOrId, "dettes");
+  if (state.kind === "not-found") {
     notFound();
   }
-
-  const outing = await getOutingByShortId(shortId);
-  if (!outing) {
-    notFound();
+  if (state.kind === "redirect") {
+    redirect(state.to);
+  }
+  if (state.kind === "needs-auth") {
+    return (
+      <ParticipantAuthGate
+        outingTitle={state.outing.title}
+        canonical={state.canonical}
+        prefillEmail={state.prefillEmail}
+        subPath="dettes"
+      />
+    );
+  }
+  if (state.kind === "not-participant") {
+    return (
+      <NotParticipantNotice
+        outingTitle={state.outing.title}
+        canonical={state.canonical}
+        userEmail={state.userEmail}
+      />
+    );
   }
 
-  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
-  if (canonical !== slugOrId) {
-    redirect(`/${canonical}/dettes`);
-  }
-
-  const session = await auth.api.getSession({ headers: await headers() });
-  const cookieTokenHash = await readParticipantTokenHash();
-  const userId = session?.user?.id ?? null;
-  const me = cookieTokenHash
-    ? await db.query.participants.findFirst({
-        where: and(
-          eq(participants.outingId, outing.id),
-          userId
-            ? eq(participants.userId, userId)
-            : eq(participants.cookieTokenHash, cookieTokenHash)
-        ),
-      })
-    : null;
-  if (!me) {
-    notFound();
-  }
+  const { outing, me, canonical } = state;
 
   const [myDebts, myCredits, purchase, myAllocations, cessionTargets] = await Promise.all([
     getMyDebts(outing.id, me.id),

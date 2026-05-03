@@ -16,6 +16,7 @@ import { CopyableHandle } from "@/features/sortie/components/copyable-handle";
 import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
 import { CalendarFeedManager } from "@/features/sortie/components/calendar-feed-manager";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { LogoutButton } from "@/features/sortie/components/logout-button";
 
 export const metadata = {
   title: "Mon profil",
@@ -190,6 +191,11 @@ export default async function ProfileSettingsPage() {
       />
       <section className="mb-14">
         <CalendarFeedManager initialToken={row?.calendarToken ?? null} origin={origin} />
+      </section>
+
+      <SectionDivider />
+      <section className="mb-14">
+        <LogoutButton />
       </section>
     </main>
   );
