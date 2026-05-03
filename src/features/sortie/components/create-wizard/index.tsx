@@ -26,7 +26,6 @@ import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
 import { SortieCalendar } from "../sortie-calendar";
 import { TimeDrum } from "../time-drum";
 import { SwipeToPublish } from "../swipe-to-publish";
-import { VibePicker } from "../vibe-picker";
 import { VIBE_CONFIG, defaultStartTimeFor, isVibe, type Vibe } from "../../lib/vibe-config";
 import { EventSuggestions } from "./event-suggestions";
 import { GeminiSuggestionCard } from "./gemini-suggestion-card";
@@ -56,8 +55,11 @@ type Draft = {
   ticketUrl: string;
   heroImageUrl: string;
   // Cultural category — pre-filled from the `?vibe=` query param when
-  // the user came from a home tile, otherwise chosen on the paste step
-  // via `VibePicker`. Optional, so null stays a valid state.
+  // the user came from a home tile, ou détectée par Gemini lors du parse
+  // de l'URL/texte. Plus de sélection manuelle dans le wizard (le picker
+  // "C'est quoi ?" a été retiré pour alléger l'étape paste). La valeur
+  // reste utilisée en interne pour driver l'heure défaut, le placeholder
+  // du paster et le fallback image. Optional, null stays valid.
   vibe: Vibe | null;
   // Pending picker draft on the when-step. Merged into `slots` at
   // publish time (so a single filled picker = fixed-mode sortie).
@@ -1146,8 +1148,6 @@ function PasteStep({
 
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
-      <VibePicker value={vibe} onChange={onVibeChange} />
-
       <div>
         <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Un lien,
