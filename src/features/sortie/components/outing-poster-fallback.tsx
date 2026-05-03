@@ -26,11 +26,11 @@ type Props = {
  * `LiveStatusHero` garde sa propre variante avec un transparent stop
  * différent — fallback à pleine taille hero, calibré séparément).
  *
- * Hot-spots calibrés "atténués" : alpha 0.55 au centre, transparent à
- * 38% (au lieu de 0% / 50%). Sur les rangées denses (carrousel "dans ton
- * réseau"), les halos pleins-saturés mangeaient le titre et volaient
- * l'attention au hero. La signature couleur reste lisible, l'intensité
- * redescend au niveau d'une texture, pas d'un signal.
+ * Hot-spots calibrés "texture" : alpha 0.35 au centre, transparent à
+ * 30% (rayons resserrés). Sur les rangées denses (carrousel "dans ton
+ * réseau"), 3 cards adjacentes saturées créaient un effet psyché qui
+ * volait l'attention au hero. À ce niveau, la signature couleur reste
+ * lisible mais ne crie plus.
  */
 export function OutingPosterFallback({
   title,
@@ -47,7 +47,7 @@ export function OutingPosterFallback({
       aria-hidden="true"
       className={`relative flex items-center justify-center overflow-hidden ${className ?? ""}`}
       style={{
-        background: `radial-gradient(circle at ${hotPos}, rgba(255,61,129,0.55) 0%, transparent 38%), radial-gradient(circle at ${acidPos}, rgba(199,255,60,0.55) 0%, transparent 38%), #0f0f0f`,
+        background: `radial-gradient(circle at ${hotPos}, rgba(255,61,129,0.35) 0%, transparent 30%), radial-gradient(circle at ${acidPos}, rgba(199,255,60,0.35) 0%, transparent 30%), #0f0f0f`,
       }}
     >
       {mode === "title" ? (
@@ -81,19 +81,21 @@ function TitlePosterText({ title }: { title: string }) {
   const trimmed = title.trim();
   const len = trimmed.length;
   // Paliers calibrés sur card 144px : titre court → impact maximal,
-  // long → on garde 4 lignes lisibles.
+  // long → on garde 4 lignes lisibles. `break-words` force le wrap des
+  // mots monstres ("Phalle", "Brandebourgeois") qui déborderaient sinon
+  // la box au lieu de wrap au mot suivant.
   const sizeClass =
     len <= 12
       ? "text-[36px]"
-      : len <= 24
-        ? "text-[26px]"
-        : len <= 40
-          ? "text-[20px]"
-          : "text-[16px]";
+      : len <= 22
+        ? "text-[24px]"
+        : len <= 36
+          ? "text-[18px]"
+          : "text-[14px]";
 
   return (
     <span
-      className={`line-clamp-4 px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
+      className={`line-clamp-4 break-words px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
       style={{ textWrap: "balance", textShadow: "0 1px 2px rgba(0,0,0,0.45)" }}
     >
       {trimmed}
