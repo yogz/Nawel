@@ -46,6 +46,22 @@ const TYPE_LABEL: Record<PaymentMethod["type"], string> = {
   wero: "Wero",
 };
 
+// `À régler` (POV débiteur) ne se lit pas pareil quand on est créditeur
+// — pour le créditeur c'est l'autre qui doit régler. Ce mapping garde
+// chaque vue cohérente avec la perspective de l'utilisateur connecté.
+const STATUS_LABEL: Record<"debtor" | "creditor", Record<Props["status"], string>> = {
+  debtor: {
+    pending: "À régler",
+    declared_paid: "En attente de confirmation",
+    confirmed: "Réglé",
+  },
+  creditor: {
+    pending: "Pas encore reçu",
+    declared_paid: "Confirmation à valider",
+    confirmed: "Reçu",
+  },
+};
+
 function personName(p: PersonRef): string {
   return p.userName ?? p.anonName ?? "Quelqu'un";
 }
@@ -65,12 +81,10 @@ export function DebtRow({
   outingTitle,
   outingHref,
 }: Props) {
-  const statusLabel =
-    status === "confirmed"
-      ? "Réglé"
-      : status === "declared_paid"
-        ? "En attente de confirmation"
-        : "À régler";
+  const statusLabel = STATUS_LABEL[view][status];
+  // `confirmed` n'est plus actionnable : on désaturait la couleur pour ne
+  // pas concurrencer un statut pending (qui lui appelle à l'action).
+  const statusColor = status === "confirmed" ? "text-ink-400" : "text-hot-600";
 
   return (
     <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
@@ -83,11 +97,15 @@ export function DebtRow({
         </Link>
       )}
       <div className="flex items-baseline justify-between gap-3">
-        <div className="flex flex-col">
-          <span className="font-serif text-lg text-ink-700">{personName(other)}</span>
-          <span className="text-xs uppercase tracking-[0.06em] text-hot-600">{statusLabel}</span>
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate font-serif text-lg text-ink-700">{personName(other)}</span>
+          <span className={`text-xs uppercase tracking-[0.06em] ${statusColor}`}>
+            {statusLabel}
+          </span>
         </div>
-        <span className="font-serif text-2xl text-ink-700">{formatCents(amountCents)}</span>
+        <span className="shrink-0 font-serif text-2xl tabular-nums text-ink-700">
+          {formatCents(amountCents)}
+        </span>
       </div>
 
       {view === "debtor" && status !== "confirmed" && (
@@ -161,9 +179,9 @@ function WhatsAppNudgeLink({
       href={buildWaHref(message)}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink-500 transition-colors hover:text-acid-700"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 py-2 text-[13px] text-ink-500 transition-colors hover:text-acid-700"
     >
-      <MessageCircle size={12} aria-hidden /> WhatsApp
+      <MessageCircle size={14} aria-hidden /> WhatsApp
     </a>
   );
 }
@@ -182,10 +200,10 @@ function EmailNudgeButton({ shortId, debtId }: { shortId: string; debtId: string
         size="sm"
         variant="ghost"
         disabled={pending}
-        className="h-auto px-2 py-1 text-xs text-ink-500 hover:text-acid-700"
+        className="min-h-11 gap-1.5 px-3 py-2 text-[13px] text-ink-500 hover:text-acid-700"
         title={state.message ?? undefined}
       >
-        <Mail size={12} aria-hidden /> {pending ? "…" : "Email"}
+        <Mail size={14} aria-hidden /> {pending ? "…" : "Email"}
       </Button>
     </form>
   );
@@ -205,7 +223,7 @@ function CreditorMarkReceivedButton({ shortId, debtId }: { shortId: string; debt
         size="sm"
         variant="ghost"
         disabled={pending}
-        className="h-auto self-start px-2 py-1 text-xs text-ink-500 hover:text-acid-700"
+        className="min-h-11 self-start px-3 py-2 text-[13px] text-ink-500 hover:text-acid-700"
       >
         {pending ? "…" : "j'ai déjà reçu →"}
       </Button>
