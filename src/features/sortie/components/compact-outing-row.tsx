@@ -133,7 +133,9 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
           )}
         </div>
         <h3
-          className={`line-clamp-1 font-display text-[17px] leading-tight font-black tracking-[-0.025em] transition-colors group-hover:text-acid-600 ${pastClasses.title}`}
+          className={`line-clamp-1 font-display text-[17px] leading-tight font-black tracking-[-0.025em] transition-colors group-hover:text-acid-600 ${pastClasses.title} ${
+            rsvpBucket === "no" ? "line-through decoration-hot-500/70 decoration-1" : ""
+          }`}
         >
           {outing.title}
         </h3>
