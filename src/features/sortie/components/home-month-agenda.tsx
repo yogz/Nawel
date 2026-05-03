@@ -42,6 +42,10 @@ type Props = {
   agendaItems: AgendaItem[];
   viewerUserId: string;
   nowIso: string;
+  /** Id de la sortie affichée par le hero. Quand le user tape sur la
+   * cellule heatmap correspondant à cette sortie, on remonte vers le
+   * hero (qui n'est pas dans la liste compacte) au lieu de no-op. */
+  heroOutingId?: string | null;
 };
 
 /**
@@ -62,7 +66,13 @@ type Props = {
  *  - Mois vide : placeholder pointillé pour signifier "rien ici, le
  *    calendrier marche toujours" plutôt qu'absence muette.
  */
-export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: Props) {
+export function HomeMonthAgenda({
+  outings,
+  agendaItems,
+  viewerUserId,
+  nowIso,
+  heroOutingId = null,
+}: Props) {
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const [monthOffset, setMonthOffset] = useState(0);
   const agendaSectionRef = useEyebrowFocusSectionRef<HTMLElement>("agenda");
@@ -141,7 +151,13 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
       if (!firstOutingId) {
         return;
       }
-      const el = document.getElementById(`outing-row-${firstOutingId}`);
+      // Cas hero : la sortie n'est pas dans la liste compacte (rendue
+      // séparément en haut de page), on cible son ancre dédiée et on
+      // saute le flash — la mise en avant visuelle du hero est déjà
+      // suffisante pour signaler "tu es arrivé".
+      const isHero = heroOutingId !== null && firstOutingId === heroOutingId;
+      const targetId = isHero ? "sortie-hero" : `outing-row-${firstOutingId}`;
+      const el = document.getElementById(targetId);
       if (!el) {
         return;
       }
@@ -149,7 +165,10 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
         window.clearTimeout(flashTimerRef.current);
         flashElRef.current?.removeAttribute("data-flash");
       }
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.scrollIntoView({ behavior: "smooth", block: isHero ? "start" : "center" });
+      if (isHero) {
+        return;
+      }
       el.setAttribute("data-flash", "true");
       flashElRef.current = el;
       flashTimerRef.current = window.setTimeout(() => {
@@ -158,7 +177,7 @@ export function HomeMonthAgenda({ outings, agendaItems, viewerUserId, nowIso }: 
         flashElRef.current = null;
       }, 1000);
     },
-    [buckets]
+    [buckets, heroOutingId]
   );
 
   return (

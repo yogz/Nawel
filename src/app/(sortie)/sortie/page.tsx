@@ -155,6 +155,7 @@ export default async function SortieHome() {
             compact
             creatorOutingNumber={heroOuting.creatorOutingNumber}
             focusId="hero"
+            id="sortie-hero"
           />
         ) : upcoming.length > 0 ? (
           <EyebrowFocusSection focusId="hero">
@@ -186,6 +187,7 @@ export default async function SortieHome() {
             agendaItems={agendaItems}
             viewerUserId={userId}
             nowIso={now.toISOString()}
+            heroOutingId={heroOuting?.id ?? null}
           />
         )}
       </EyebrowFocusProvider>

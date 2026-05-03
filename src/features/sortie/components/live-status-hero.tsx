@@ -58,6 +58,9 @@ type Props = {
    * détecter quand le hero occupe la bande centrale du viewport. Sans
    * focusId : rendu standalone (acid+glow), comportement legacy. */
   focusId?: string;
+  /** Ancre DOM pour cibler la section depuis ailleurs (heatmap home →
+   * scrollIntoView quand le jour cliqué correspond à la sortie héro). */
+  id?: string;
 };
 
 /**
@@ -88,6 +91,7 @@ export function LiveStatusHero({
   compact = false,
   creatorOutingNumber = null,
   focusId,
+  id,
 }: Props) {
   const sectionRef = useEyebrowFocusSectionRef<HTMLElement>(focusId);
   const canonical = slug ? `${slug}-${shortId}` : shortId;
@@ -118,6 +122,7 @@ export function LiveStatusHero({
     // motion users get an instant render.
     <section
       ref={sectionRef}
+      id={id}
       className={`${
         compact ? "mb-6" : "mb-10"
       } motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 motion-safe:fill-mode-both duration-motion-emphasized ease-motion-emphasized`}
