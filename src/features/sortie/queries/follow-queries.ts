@@ -54,6 +54,7 @@ export type FollowedCarouselOuting = {
   deadlineAt: Date;
   creatorName: string;
   creatorUsername: string | null;
+  creatorOutingNumber: number | null;
 };
 
 /**
@@ -85,6 +86,7 @@ export async function listFollowedOutingsForCarousel(
       deadlineAt: outings.deadlineAt,
       creatorName: user.name,
       creatorUsername: user.username,
+      creatorOutingNumber: outings.creatorOutingNumber,
     })
     .from(outings)
     .innerJoin(user, eq(user.id, outings.creatorUserId))

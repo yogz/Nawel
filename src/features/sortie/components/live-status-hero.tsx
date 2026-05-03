@@ -6,6 +6,7 @@ import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
 import { LOCK_GLYPH, resolveLockReason } from "@/features/sortie/lib/lock-reason";
 import { relativeOutingHero } from "@/features/sortie/lib/relative-date";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { TicketNumber } from "@/features/sortie/components/ticket-number";
 
 type Props = {
   slug: string | null;
@@ -41,6 +42,11 @@ type Props = {
    * la version "vitrine" par défaut où le hero est la pièce centrale.
    */
   compact?: boolean;
+  /** Numéro "ticket" du créateur (sa Nème sortie organisée). Affiché en
+   * filigrane top-right du poster. Null pour les sorties sans compteur
+   * (créateur anon, ou sortie pré-PR5 sans backfill). Sur la home
+   * identifiée le créateur est implicite — pas de handle préfixé. */
+  creatorOutingNumber?: number | null;
 };
 
 /**
@@ -69,6 +75,7 @@ export function LiveStatusHero({
   eyebrow = "─ ça approche ─",
   headingLevel = "h2",
   compact = false,
+  creatorOutingNumber = null,
 }: Props) {
   const canonical = slug ? `${slug}-${shortId}` : shortId;
   const Heading = headingLevel;
@@ -199,6 +206,15 @@ export function LiveStatusHero({
               className="absolute -right-2 -bottom-2 inline-flex size-8 items-center justify-center rounded-full bg-ink-700 text-surface-50 ring-2 ring-surface-50 shadow-[var(--shadow-md)]"
             >
               <LockGlyph size={16} strokeWidth={2.4} />
+            </span>
+          )}
+          {/* Filigrane "ticket" top-right du poster — référence éditoriale
+              programme de salle. Pill noire translucide pour rester lisible
+              quel que soit le poster sous-jacent (clair, sombre, busy).
+              `creatorOutingNumber === null` → le composant ne rend rien. */}
+          {creatorOutingNumber !== null && (
+            <span className="absolute top-2 right-2 inline-flex items-center rounded-full bg-ink-700/55 px-2 py-0.5 backdrop-blur-sm">
+              <TicketNumber number={creatorOutingNumber} className="text-ink-50" />
             </span>
           )}
         </div>

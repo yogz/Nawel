@@ -206,6 +206,8 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         ticketUrl={outing.eventLink}
         heroImageUrl={outing.heroImageUrl}
         canonicalPath={canonical}
+        creatorOutingNumber={outing.creatorOutingNumber}
+        creatorHandle={outing.creatorUser?.username ? `@${outing.creatorUser.username}` : null}
       />
 
       {outing.fixedDatetime ? (

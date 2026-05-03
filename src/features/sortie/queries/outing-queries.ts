@@ -147,6 +147,7 @@ export async function listAllMyOutings(userId: string, now = new Date()) {
       creatorName: user.name,
       creatorUsername: user.username,
       creatorAnonName: outings.creatorAnonName,
+      creatorOutingNumber: outings.creatorOutingNumber,
       chosenTimeslotId: outings.chosenTimeslotId,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
     })

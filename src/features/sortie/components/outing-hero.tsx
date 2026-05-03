@@ -1,4 +1,5 @@
 import { ArrowUpRight, CalendarPlus } from "lucide-react";
+import { TicketNumber } from "@/features/sortie/components/ticket-number";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { OUTING_IMAGE_FILTER_FULLBLEED } from "@/features/sortie/lib/image-filter";
 
@@ -13,6 +14,12 @@ type Props = {
    * mode pages (no fixed date) can render the hero without the
    * "Ajouter à mon agenda" affordance. */
   canonicalPath?: string;
+  /** Numéro "ticket" du créateur, affiché juste au-dessus du titre dans
+   * le scrim. Préfixé par le handle du créateur quand le visiteur arrive
+   * par lien froid — l'identité du créateur est portante sur la page
+   * publique, contrairement à la home identifiée. Null → pas de filigrane. */
+  creatorOutingNumber?: number | null;
+  creatorHandle?: string | null;
 };
 
 /**
@@ -34,6 +41,8 @@ export function OutingHero({
   ticketUrl,
   heroImageUrl,
   canonicalPath,
+  creatorOutingNumber = null,
+  creatorHandle = null,
 }: Props) {
   return (
     <header className="relative -mx-6 mb-0 h-[55dvh] max-h-[600px] min-h-[400px] overflow-hidden bg-surface-50">
@@ -68,6 +77,13 @@ export function OutingHero({
       />
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col items-start px-6 pb-10 sm:px-10 sm:pb-14">
+        {creatorOutingNumber !== null && (
+          <TicketNumber
+            number={creatorOutingNumber}
+            creatorHandle={creatorHandle}
+            className="mb-3 text-ink-600"
+          />
+        )}
         <h1
           className="text-[44px] leading-[0.92] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl"
           style={{ textWrap: "balance" }}

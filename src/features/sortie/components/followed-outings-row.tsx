@@ -30,16 +30,26 @@ export function FollowedOutingsRow({ outings }: Props) {
       glow={false}
       showCount={false}
       aspect="square"
-      items={outings.map((o) => ({
-        outing: {
-          id: o.id,
-          shortId: o.shortId,
-          slug: o.slug,
-          title: o.title,
-          heroImageUrl: o.heroImageUrl,
-        },
-        badge: o.creatorUsername ? `@${o.creatorUsername}` : o.creatorName,
-      }))}
+      items={outings.map((o) => {
+        const handle = o.creatorUsername ? `@${o.creatorUsername}` : o.creatorName;
+        // Suffixe "№ 047" sur la pill quand le créateur loggé a un compteur.
+        // Format inline pour rester compact dans la pill 9.5px existante —
+        // le numéro signe la card sans nécessiter un overlay séparé.
+        const badge =
+          o.creatorOutingNumber !== null
+            ? `${handle} · № ${o.creatorOutingNumber < 1000 ? String(o.creatorOutingNumber).padStart(3, "0") : o.creatorOutingNumber}`
+            : handle;
+        return {
+          outing: {
+            id: o.id,
+            shortId: o.shortId,
+            slug: o.slug,
+            title: o.title,
+            heroImageUrl: o.heroImageUrl,
+          },
+          badge,
+        };
+      })}
     />
   );
 }

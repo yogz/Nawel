@@ -137,6 +137,7 @@ export default async function SortieHome() {
           mode={heroOuting.mode}
           headingLevel="h1"
           compact
+          creatorOutingNumber={heroOuting.creatorOutingNumber}
         />
       ) : upcoming.length > 0 ? (
         <header className="mb-12">
