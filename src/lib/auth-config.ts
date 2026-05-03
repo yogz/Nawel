@@ -10,7 +10,12 @@ import { SESSION_EXPIRE_DAYS, SESSION_REFRESH_DAYS } from "./constants";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { Redis } from "@upstash/redis";
-import { buildSortieAuthEmail, buildSortieClaimPromptEmail, isSortieOrigin } from "./auth-emails";
+import {
+  buildSortieAuthEmail,
+  buildSortieClaimPromptEmail,
+  buildSortieFollowGateEmail,
+  isSortieOrigin,
+} from "./auth-emails";
 
 // Lazy init — passing undefined to `new Resend()` throws at module-load time,
 // which breaks Next.js page-data collection on preview builds that don't have
@@ -267,6 +272,15 @@ export const auth = betterAuth({
                   : [],
               }
             : null;
+        // Variante follow-gate : user logué non-vérifié qui tente de follow
+        // un créateur. Pas de liste d'outings — l'action est unitaire (un
+        // follow ciblé), le contexte tient en 1 ligne dans le subject.
+        const followGateMeta =
+          fromSortie && metadata && metadata.source === "follow-gate"
+            ? {
+                creatorName: typeof metadata.creatorName === "string" ? metadata.creatorName : "",
+              }
+            : null;
         const sortieBranded = fromSortie
           ? claimPromptMeta
             ? buildSortieClaimPromptEmail({
@@ -274,7 +288,12 @@ export const auth = betterAuth({
                 creatorName: claimPromptMeta.creatorName,
                 outings: claimPromptMeta.outings,
               })
-            : buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
+            : followGateMeta
+              ? buildSortieFollowGateEmail({
+                  ctaUrl: magicUrl,
+                  creatorName: followGateMeta.creatorName,
+                })
+              : buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
           : null;
 
         const { error } = await resend.emails.send({

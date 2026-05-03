@@ -155,6 +155,32 @@ export function buildSortieClaimPromptEmail(args: {
 }
 
 /**
+ * Email follow-gate : envoyé à un user logué non-vérifié qui tente de
+ * follow un créateur depuis `/@<creator>?k=<token>`. Tient la promesse
+ * "confirme ton email pour entrer dans le réseau" du upsell — le magic-
+ * link générique aurait perdu le contexte de l'action en cours.
+ */
+export function buildSortieFollowGateEmail(args: { ctaUrl: string; creatorName: string }): {
+  subject: string;
+  html: string;
+} {
+  const safeCreator = args.creatorName.trim() || "ce créateur";
+  const subject = `Confirme ton email pour suivre ${safeCreator}`;
+  return {
+    subject,
+    html: renderAuthBody({
+      subject,
+      eyebrow: "suivre",
+      title: `Suis ${safeCreator}.`,
+      body: "Confirme ton email pour activer ton suivi. Tu recevras les nouvelles sorties dès qu'elles se posent dans son agenda, et un rappel la veille de chacune.",
+      cta: "Confirmer mon email",
+      ctaUrl: args.ctaUrl,
+      footer: "Ce lien expire dans quelques minutes. Tu n'as pas demandé ça ? Ignore cet email.",
+    }),
+  };
+}
+
+/**
  * Construit un body Acid Cabinet light puis le passe à `renderEmail()`
  * pour le wrap final (DOCTYPE, head, eyebrow "● Sortie", footer
  * institutionnel). Ce body local porte l'eyebrow secondaire (kind du

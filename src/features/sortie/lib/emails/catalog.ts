@@ -10,7 +10,11 @@
  * Ajout d'un template : ajouter une entrée ici, le reste suit
  * automatiquement (page admin + count).
  */
-import { buildSortieAuthEmail, buildSortieClaimPromptEmail } from "@/lib/auth-emails";
+import {
+  buildSortieAuthEmail,
+  buildSortieClaimPromptEmail,
+  buildSortieFollowGateEmail,
+} from "@/lib/auth-emails";
 import {
   debtReminderEmail,
   j1ReminderEmail,
@@ -243,5 +247,13 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
           { title: "Brunch dimanche", dateStr: "12 janv." },
         ],
       }),
+  },
+  {
+    id: "auth-follow-gate",
+    name: "Confirme email pour suivre",
+    trigger:
+      "Server Action `submitFollowEmailAction` — déclenché quand un user logué non-vérifié tente de follow depuis `/@<creator>?k=<token>`.",
+    sourcePath: "src/lib/auth-emails.ts",
+    render: () => buildSortieFollowGateEmail({ ctaUrl: MOCK_CTA_URL, creatorName: "Léa" }),
   },
 ];
