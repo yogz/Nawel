@@ -84,13 +84,6 @@ export default async function WalletPage() {
   const debts = sortDebtsForDisplay(allDebts);
   const credits = sortDebtsForDisplay(allCredits);
 
-  const totalSpentCents = allocations.reduce<number>((acc, a) => {
-    const price = getAllocationPriceCents(a);
-    // Allocations dont le prix n'est pas (encore) renseigné — typiquement
-    // mode `nominal` sans saisie : on ne compte pas 0, on les exclut et
-    // on les flagge dans la liste détaillée.
-    return acc + (price ?? 0);
-  }, 0);
   const totalOwedCents = debts
     .filter((d) => d.status !== "confirmed")
     .reduce((acc, d) => acc + d.amountCents, 0);
@@ -145,16 +138,9 @@ export default async function WalletPage() {
           </Link>
         </section>
       ) : (
-        <section className="mb-12 flex flex-col gap-3">
-          <BalanceHero
-            totalOwedCents={totalOwedCents}
-            totalToReceiveCents={totalToReceiveCents}
-            totalSpentCents={totalSpentCents}
-          />
-          <div className="grid grid-cols-2 gap-3">
-            <Stat label="Tu dois" amountCents={totalOwedCents} tone="hot" />
-            <Stat label="On te doit" amountCents={totalToReceiveCents} tone="acid" />
-          </div>
+        <section className="mb-12 grid grid-cols-2 gap-3">
+          <Stat label="Tu dois" amountCents={totalOwedCents} tone="hot" />
+          <Stat label="On te doit" amountCents={totalToReceiveCents} tone="acid" />
         </section>
       )}
 
@@ -308,90 +294,6 @@ function Stat({
       >
         {formatCents(amountCents)}
       </span>
-    </div>
-  );
-}
-
-function BalanceHero({
-  totalOwedCents,
-  totalToReceiveCents,
-  totalSpentCents,
-}: {
-  totalOwedCents: number;
-  totalToReceiveCents: number;
-  totalSpentCents: number;
-}) {
-  // On parle directement en intention plutôt qu'en solde signé : un
-  // « solde net positif » est ambigu (compte bancaire vs cash flow
-  // perso), donc on libelle l'écart selon le côté dominant. La valeur
-  // affichée est toujours positive — pas de `+` ni `-` à interpréter.
-  const diffCents = totalToReceiveCents - totalOwedCents;
-  type Direction = "to-collect" | "to-pay" | "balanced" | "settled";
-  const direction: Direction =
-    totalOwedCents === 0 && totalToReceiveCents === 0
-      ? "settled"
-      : diffCents > 0
-        ? "to-collect"
-        : diffCents < 0
-          ? "to-pay"
-          : "balanced";
-
-  const config: Record<
-    Direction,
-    { eyebrow: string; tone: "acid" | "hot" | "muted"; valueColor: string; amount: number }
-  > = {
-    "to-collect": {
-      eyebrow: "─ à récupérer",
-      tone: "acid",
-      valueColor: "text-acid-700",
-      amount: diffCents,
-    },
-    "to-pay": {
-      eyebrow: "─ à régler",
-      tone: "hot",
-      valueColor: "text-hot-600",
-      amount: -diffCents,
-    },
-    balanced: {
-      // Cas rare : tu dois 50, on te doit 50. Mathématiquement à zéro
-      // mais il reste des transferts à faire — on garde la tile visible
-      // et on pousse l'utilisateur vers le détail plus bas.
-      eyebrow: "─ à régler de chaque côté",
-      tone: "hot",
-      valueColor: "text-ink-700",
-      amount: totalOwedCents,
-    },
-    settled: {
-      eyebrow: "─ à jour",
-      tone: "muted",
-      valueColor: "text-ink-700",
-      amount: 0,
-    },
-  };
-
-  const { eyebrow, tone, valueColor, amount } = config[direction];
-
-  const caption =
-    direction === "settled"
-      ? totalSpentCents > 0
-        ? `Plus rien à régler. Tu as dépensé ${formatCents(totalSpentCents)} au total.`
-        : "Tu n'as rien à régler ni à récupérer."
-      : totalSpentCents > 0
-        ? `Tu as dépensé ${formatCents(totalSpentCents)} au total.`
-        : null;
-
-  return (
-    <div className="flex min-w-0 flex-col gap-2 rounded-2xl border border-surface-400 bg-surface-50 p-5">
-      <Eyebrow tone={tone}>{eyebrow}</Eyebrow>
-      <span
-        className={cn(
-          "truncate font-serif text-[clamp(2rem,9vw,2.75rem)] font-black leading-none tabular-nums tracking-[-0.03em]",
-          valueColor
-        )}
-      >
-        {formatCents(amount)}
-      </span>
-      {caption && <span className="text-[12px] text-ink-500">{caption}</span>}
     </div>
   );
 }
