@@ -1,16 +1,23 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { userFollows } from "@drizzle/sortie-schema";
+import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import { sendNewFollowerEmail } from "@/features/sortie/lib/emails/send-follow-emails";
+import { followEmailUpsellSchema } from "./schemas";
 import type { FormActionState } from "./outing-actions";
+
+const SORTIE_BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(
+  /\/$/,
+  ""
+);
 
 // Message volontairement vague — pas de signal sur le statut côté
 // proprio (existence du compte, présence d'un token, validité du token).
@@ -186,4 +193,70 @@ export async function removeFollowerAction(
 
   revalidatePath("/moi");
   return {};
+}
+
+/**
+ * Upsell email pour les users logués non-vérifiés qui tentent de follow
+ * un créateur. Calqué sur `submitEmailClaimAction` (claim-prompt) mais
+ * SANS dépendance au `cookieTokenHash` — un user logué non-vérifié n'a
+ * pas forcément RSVP, on doit pouvoir l'aider à entrer dans le réseau
+ * juste pour follow.
+ *
+ * Sécu : `auth.api.signInMagicLink` crée le user à la verif si absent.
+ * Le merge cookie→userId existant (cf. `databaseHooks.session.create.after`
+ * dans auth-config) reste actif si l'user a un cookie token traînant.
+ *
+ * On ne valide PAS `inviteToken` côté serveur ici : un token foireux ne
+ * fait que pourrir l'URL de retour, le follow lui-même reste gated par
+ * `followUserAction` qui re-vérifie target.rsvpInviteToken.
+ */
+export async function submitFollowEmailAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = followEmailUpsellSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { email, creatorUsername, inviteToken } = parsed.data;
+
+  const gate = await rateLimit({
+    key: `follow-email:${email.toLowerCase()}`,
+    limit: 3,
+    windowSeconds: 900,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  // Display name du créateur pour le copy email — fallback sur l'username
+  // brut si la row n'a pas de name. Pattern reused depuis claim-prompt.
+  const creatorRow = await db.query.user.findFirst({
+    where: sql`lower(${user.username}) = ${creatorUsername.toLowerCase()}`,
+    columns: { name: true, username: true },
+  });
+  const creatorDisplay = creatorRow?.name?.trim() || creatorRow?.username || creatorUsername;
+
+  // callbackURL préserve le `?k=…` pour que post-vérif l'user atterrisse
+  // sur le bouton "+ Suivre" actif (sans token, le toggle disparaîtrait).
+  const callbackURL = `${SORTIE_BASE_URL}/@${creatorUsername}?k=${encodeURIComponent(inviteToken)}`;
+
+  try {
+    await auth.api.signInMagicLink({
+      headers: await headers(),
+      body: {
+        email,
+        callbackURL,
+        metadata: {
+          source: "follow-gate",
+          creatorName: creatorDisplay,
+        },
+      },
+    });
+  } catch (err) {
+    console.error("[follow-gate] magic-link send failed:", err);
+    return { message: "Lien introuvable — réessaie dans un instant." };
+  }
+
+  return { message: "Lien envoyé. Vérifie ta boîte." };
 }

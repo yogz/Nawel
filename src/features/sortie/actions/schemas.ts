@@ -304,6 +304,21 @@ export const claimPromptEmailSchema = z.object({
     .regex(/^[a-z0-9_-]{1,50}$/i),
 });
 
+// Mêmes contraintes que claimPromptEmailSchema + un inviteToken pour
+// que le callbackURL post-vérif préserve `?k=…` et que l'user atterrisse
+// directement sur le bouton "+ Suivre" actif. Le token est validé côté
+// server contre target.rsvpInviteToken via auth.api.signInMagicLink (pas
+// nécessaire ici de re-vérifier — un token foireux ne fait que
+// pourrir l'URL de retour, le follow lui-même reste gated).
+export const followEmailUpsellSchema = z.object({
+  email: z.string().trim().email().max(255),
+  creatorUsername: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9_-]{1,50}$/i),
+  inviteToken: z.string().trim().min(8).max(128),
+});
+
 export const cancelOutingSchema = z.object({
   shortId: shortIdSchema,
 });
