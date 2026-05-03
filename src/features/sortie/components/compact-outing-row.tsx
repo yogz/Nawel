@@ -78,13 +78,20 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
   const pastClasses = getPastOutingClasses(isPast);
 
   const confirmedCount = outing.confirmedCount ?? 0;
-  const metaLine = [
-    dateLabel,
-    venue,
-    isPast && confirmedCount > 0 ? `${confirmedCount} ${plural(confirmedCount, "confirmé")}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  // 2 lignes au lieu de 1 : la date + (compteur si passé) sur la
+  // première ligne, le lieu sur sa propre ligne. Avant on concaténait
+  // tout en `date · lieu · 23 confirmés` puis `line-clamp-1` mangeait
+  // le lieu (qui est l'info la plus longue) sur les sortie à titre
+  // moyen+ — le lieu est pourtant celui qui aide à décider d'y aller.
+  const dateLine =
+    [
+      dateLabel,
+      isPast && confirmedCount > 0
+        ? `${confirmedCount} ${plural(confirmedCount, "confirmé")}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" · ") || null;
 
   return (
     <Link
@@ -140,11 +147,21 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
         >
           {outing.title}
         </h3>
-        {metaLine && (
+        {dateLine && (
           <p
             className={`line-clamp-1 font-mono text-[10.5px] uppercase tracking-[0.12em] ${pastClasses.meta}`}
           >
-            {metaLine}
+            {dateLine}
+          </p>
+        )}
+        {venue && (
+          // Ligne lieu dédiée — line-clamp-1 sur SA ligne (pas sur
+          // l'ensemble), donc un nom de salle long se tronque sans
+          // jamais être effacé par la date qui le précédait avant.
+          <p
+            className={`line-clamp-1 font-mono text-[10.5px] tracking-[0.04em] text-ink-400 ${pastClasses.meta}`}
+          >
+            {venue}
           </p>
         )}
       </div>

@@ -150,15 +150,29 @@ export function OutingPosterCard({
         className={`relative ${aspectClass} overflow-hidden rounded-xl bg-surface-100 ring-1 ring-ink-700/5 transition-transform duration-300 motion-safe:group-active:scale-[0.98] [@media(hover:hover)]:motion-safe:group-hover:-translate-y-0.5`}
       >
         {hasImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={outing.heroImageUrl ?? ""}
-            alt=""
-            loading={eager ? "eager" : "lazy"}
-            decoding="async"
-            className="size-full object-cover object-top"
-            style={{ filter: OUTING_IMAGE_FILTER }}
-          />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={outing.heroImageUrl ?? ""}
+              alt=""
+              loading={eager ? "eager" : "lazy"}
+              decoding="async"
+              className="size-full object-cover object-top"
+              style={{ filter: OUTING_IMAGE_FILTER }}
+            />
+            {/* Scrim de protection bas de card : amortit la pill auteur
+                qui sinon paraît "patchée" sur les affiches claires. Le
+                gradient démarre transparent à 50% pour ne toucher que
+                le tiers inférieur (où vit la pill), garde l'affiche
+                propre dans ses 2/3 supérieurs. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2"
+              style={{
+                background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 100%)",
+              }}
+            />
+          </>
         ) : (
           <OutingPosterFallback title={outing.title} className="size-full" mode="title" varied />
         )}
