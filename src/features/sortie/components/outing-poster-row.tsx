@@ -90,10 +90,37 @@ export function OutingPosterRow({
 }
 
 /**
+ * Découpe un badge composite "<part1> · <part2>" pour pouvoir tronquer
+ * UNIQUEMENT la partie "anchor" (le handle, longue) tout en gardant la
+ * partie "tail" (le numéro `№ 047`, courte mais signifiante) intacte.
+ *
+ * Avant : `truncate` sur tout le badge → "@CAMILLE-TEST · M…" coupait
+ * le numéro qui est pourtant l'objet collectionnable de l'app. Le
+ * numéro doit rester entier coûte que coûte.
+ */
+function splitBadge(raw: string): { anchor: string; tail: string | null } {
+  // Bullet milieu utilisé dans `followed-outings-row.tsx` : "@h · № 47".
+  // Pas de regex — séparateur exact, on n'attend qu'une occurrence.
+  const idx = raw.indexOf(" · ");
+  if (idx <= 0 || idx >= raw.length - 3) {
+    return { anchor: raw, tail: null };
+  }
+  return { anchor: raw.slice(0, idx), tail: raw.slice(idx + 3) };
+}
+
+/**
  * Card individuelle 144-168px de large, aspect 8/9 (poster) ou 1/1
- * (square, discovery) + titre 2 lignes max + badge texte (date, handle,
- * etc.) en overlay bottom-left. Exporté pour pouvoir être consommé en
- * dehors du shell (rendus ad-hoc, tests).
+ * (square, discovery) + badge texte (date, handle, etc.) en overlay
+ * bottom-left. Exporté pour pouvoir être consommé en dehors du shell
+ * (rendus ad-hoc, tests).
+ *
+ * Comportement du titre sous la card :
+ *  - Avec image : on garde le titre crème en h3 sous la card. La photo
+ *    seule ne porte pas l'info, le label est nécessaire.
+ *  - Sans image (mode title fallback) : le titre vit DÉJÀ dans la card
+ *    en typo poster, le répéter dessous crée une soupe (deux lectures
+ *    pour la même info, ralentit le scan). On garde juste un h3 visuel-
+ *    lement masqué pour l'a11y (screen-reader / SEO du titre du lien).
  */
 export function OutingPosterCard({
   outing,
@@ -108,19 +135,24 @@ export function OutingPosterCard({
 }) {
   const href = `/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`;
   const aspectClass = aspect === "square" ? "aspect-square" : "aspect-[8/9]";
+  const hasImage = Boolean(outing.heroImageUrl);
+  const { anchor, tail } = splitBadge(badge);
 
   return (
     <Link
       href={href}
-      className="group block w-36 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 sm:w-[168px]"
+      // `[@media(hover:hover)]:` cible uniquement les pointers fins (souris).
+      // Sur tactile le `:hover` reste sticky après tap (iOS/Android), ce qui
+      // figeait le titre en acide vif comme un état "actif" trompeur.
+      className="group block w-36 rounded-xl touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50 sm:w-[168px]"
     >
       <div
-        className={`relative ${aspectClass} overflow-hidden rounded-xl bg-surface-100 ring-1 ring-ink-700/5 transition-transform duration-300 motion-safe:group-hover:-translate-y-0.5`}
+        className={`relative ${aspectClass} overflow-hidden rounded-xl bg-surface-100 ring-1 ring-ink-700/5 transition-transform duration-300 motion-safe:group-active:scale-[0.98] [@media(hover:hover)]:motion-safe:group-hover:-translate-y-0.5`}
       >
-        {outing.heroImageUrl ? (
+        {hasImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={outing.heroImageUrl}
+            src={outing.heroImageUrl ?? ""}
             alt=""
             loading={eager ? "eager" : "lazy"}
             decoding="async"
@@ -130,13 +162,29 @@ export function OutingPosterCard({
         ) : (
           <OutingPosterFallback title={outing.title} className="size-full" mode="title" varied />
         )}
-        <span className="absolute bottom-2 left-2 inline-flex max-w-[calc(100%-1rem)] items-center truncate rounded-sm bg-ink-700/60 px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.18em] text-surface-50 backdrop-blur-sm">
-          {badge}
+        <span className="absolute bottom-2 left-2 inline-flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-sm bg-ink-700/85 px-1.5 py-0.5 font-mono text-[10.5px] tracking-[0.06em] text-surface-50">
+          {/* Anchor (handle) tronqué si trop long. La fonte mono lower-
+              case garde l'identité @handle reconnaissable (uppercase
+              cassait la reconnaissance des pseudos). */}
+          <span className="truncate">{anchor}</span>
+          {tail && (
+            // Tail (№ 047) jamais tronqué : il porte la valeur signifiante
+            // de la pill (objet collectionnable identifiant la sortie chez
+            // ce créateur). Couleur acid pour signaler son statut "asset".
+            <span className="shrink-0 text-acid-600">· {tail}</span>
+          )}
         </span>
       </div>
-      <h3 className="mt-2 line-clamp-2 font-display text-[13px] leading-tight font-black tracking-[-0.025em] text-ink-700 transition-colors group-hover:text-acid-600">
-        {outing.title}
-      </h3>
+      {hasImage ? (
+        <h3 className="mt-2 line-clamp-2 font-display text-[13px] leading-tight font-black tracking-[-0.025em] text-ink-700 transition-colors [@media(hover:hover)]:group-hover:text-acid-600">
+          {outing.title}
+        </h3>
+      ) : (
+        // Titre déjà rendu en typo poster dans la card par le fallback ;
+        // on préserve juste l'élément pour les screen-readers et le SEO du
+        // lien (sans le visuel doublonné qui polluait le scan).
+        <h3 className="sr-only">{outing.title}</h3>
+      )}
     </Link>
   );
 }

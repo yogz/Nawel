@@ -65,50 +65,102 @@ export function OutingPosterFallback({
 }
 
 /**
- * Titre rendu façon affiche brutaliste : sizing en 4 paliers selon le
- * nombre de caractères pour préserver la lisibilité sur 140-168px de
- * large. line-clamp à 4 pour borner les titres très longs (rare, mais
- * "Festival international du film d'animation d'Annecy" arrive). Uppercase
- * pour la cohérence avec le reste de la signature (eyebrows, badges).
+ * Découpe un titre éditorial en {héros, signature} sur le pattern
+ * "Œuvre — Lieu/Format" très fréquent en théâtre/expo/concert/ciné.
  *
- * Texte sombre (`text-ink-50` qui dans la palette inversée Sortie est
- * la teinte la plus dark) façon sérigraphie sur poster — lisible et
- * "imprimé" sur les zones colorées du gradient. Pour rester lisible
- * aussi sur les zones noires du fond #0f0f0f entre les hot-spots, on
- * pose un text-shadow clair flou qui crée un halo lumineux derrière
- * le texte. Pas de mixBlendMode (testé "overlay" → faisait disparaître
- * le texte sur les zones non-glow).
+ * Sépare sur em-dash `—`, en-dash `–`, deux-points `:` ou hyphen entouré
+ * d'espaces ` - `. On NE coupe PAS sur un hyphen collé (ex.
+ * "Avant-première") — c'est un mot composé, pas une signature de lieu.
+ *
+ * Le découpage permet d'afficher le héros en typo poster massive et la
+ * signature en mono discret dessous (cartel d'expo) au lieu de mettre
+ * tout le titre en énorme, le tronquer avec ellipsis et avoir à le
+ * répéter en propre sous la card.
+ */
+function splitTitle(raw: string): { hero: string; tail: string | null } {
+  const trimmed = raw.trim();
+  // Ordre testé : em-dash > en-dash > " - " (hyphen entouré) > " : ".
+  // Le ` : ` est conservatif (espace avant et après) pour ne pas couper
+  // un titre type "Avant-première : Le dernier".
+  const separators = [" — ", " – ", " - ", " : "];
+  for (const sep of separators) {
+    const idx = trimmed.indexOf(sep);
+    if (idx > 0 && idx < trimmed.length - sep.length) {
+      const hero = trimmed.slice(0, idx).trim();
+      const tail = trimmed.slice(idx + sep.length).trim();
+      if (hero.length > 0 && tail.length > 0) {
+        return { hero, tail };
+      }
+    }
+  }
+  return { hero: trimmed, tail: null };
+}
+
+/**
+ * Titre rendu façon affiche brutaliste, version cartel d'expo : un
+ * "héros" en Unbounded Black énorme + une "signature" en mono discret
+ * dessous (séparation au tiret/deux-points). Pattern poster :
+ *
+ *     HAMLET
+ *     théâtre de la ville
+ *
+ * Sizing 3 paliers calibré sur le HÉROS (pas le titre complet) — un
+ * héros court doit rester énorme même si la signature derrière est
+ * longue. Pas d'ellipsis : si ça déborde on accepte 3 lignes max et le
+ * sizing descend, mais on ne coupe jamais mid-word, c'est l'esthétique
+ * sérigraphie. Pour rester lisible sur les zones noires entre les
+ * hot-spots, halo crème léger derrière le texte (testé "overlay" →
+ * faisait disparaître le texte sur les zones non-glow).
  */
 function TitlePosterText({ title }: { title: string }) {
-  const trimmed = title.trim();
-  const len = trimmed.length;
-  // Paliers calibrés sur card 144px : titre court → impact maximal,
-  // long → on garde 4 lignes lisibles. `break-words` force le wrap des
-  // mots monstres ("Phalle", "Brandebourgeois") qui déborderaient sinon
-  // la box au lieu de wrap au mot suivant.
-  const sizeClass =
-    len <= 12
-      ? "text-[36px]"
-      : len <= 22
-        ? "text-[24px]"
-        : len <= 36
-          ? "text-[18px]"
-          : "text-[14px]";
+  const { hero, tail } = splitTitle(title);
+  const heroLen = hero.length;
+  // 3 paliers (vs 4 avant) : éviter la cacophonie de rythmes sur un
+  // scroll horizontal. Borné à 22px en bas — sous ce seuil Unbounded
+  // Black devient une tache illisible.
+  const heroSizeClass =
+    heroLen <= 6
+      ? "text-[44px] leading-[0.85]"
+      : heroLen <= 12
+        ? "text-[30px] leading-[0.9]"
+        : "text-[22px] leading-[0.95]";
+  // Quand pas de signature (titre simple sans tiret), on autorise 3
+  // lignes au héros pour qu'un titre type "Festival d'Annecy" tienne
+  // sans devoir descendre au palier 22px.
+  const heroLineClamp = tail ? "line-clamp-2" : "line-clamp-3";
 
   return (
-    <span
-      className={`line-clamp-4 break-words px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
-      style={{
-        textWrap: "balance",
-        // Halo clair flou : compense le texte sombre sur les zones
-        // noires du fond, sans masquer la sérigraphie sur les zones
-        // colorées. Triple stop pour bien envelopper les letterforms.
-        textShadow:
-          "0 0 6px rgba(245,242,235,0.55), 0 0 12px rgba(245,242,235,0.35), 0 1px 1px rgba(245,242,235,0.45)",
-      }}
-    >
-      {trimmed}
-    </span>
+    <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-3 text-center">
+      <span
+        className={`break-words font-display font-black uppercase tracking-[-0.025em] text-ink-50 select-none ${heroSizeClass} ${heroLineClamp}`}
+        style={{
+          textWrap: "balance",
+          // Halo clair flou : compense le texte sombre sur les zones
+          // noires du fond, sans masquer la sérigraphie sur les zones
+          // colorées. Triple stop pour bien envelopper les letterforms.
+          textShadow:
+            "0 0 6px rgba(245,242,235,0.55), 0 0 12px rgba(245,242,235,0.35), 0 1px 1px rgba(245,242,235,0.45)",
+          overflowWrap: "anywhere",
+        }}
+      >
+        {hero}
+      </span>
+      {tail && (
+        // Signature cartel : mono lowercase à 70% d'opacité, max 2
+        // lignes. Le break-word "anywhere" autorise la coupe en cours
+        // de mot pour les noms de salles longs ("Théâtre des Champs-
+        // Élysées") plutôt que de les tronquer avec ellipsis.
+        <span
+          className="line-clamp-2 font-mono text-[10.5px] leading-tight tracking-[0.04em] text-ink-50/70 select-none"
+          style={{
+            textShadow: "0 0 4px rgba(245,242,235,0.5)",
+            overflowWrap: "anywhere",
+          }}
+        >
+          {tail.toLocaleLowerCase("fr")}
+        </span>
+      )}
+    </div>
   );
 }
 
