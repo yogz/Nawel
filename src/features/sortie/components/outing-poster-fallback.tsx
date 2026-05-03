@@ -97,64 +97,75 @@ function splitTitle(raw: string): { hero: string; tail: string | null } {
 }
 
 /**
- * Titre rendu façon affiche brutaliste, version cartel d'expo : un
- * "héros" en Unbounded Black énorme + une "signature" en mono discret
- * dessous (séparation au tiret/deux-points). Pattern poster :
+ * Titre rendu façon cartel d'expo : un "héros" en Unbounded Black +
+ * une "signature" en mono discret (séparation au tiret/deux-points).
+ * Pattern poster :
  *
  *     HAMLET
  *     théâtre de la ville
  *
- * Sizing 3 paliers calibré sur le HÉROS (pas le titre complet) — un
- * héros court doit rester énorme même si la signature derrière est
- * longue. Pas d'ellipsis : si ça déborde on accepte 3 lignes max et le
- * sizing descend, mais on ne coupe jamais mid-word, c'est l'esthétique
- * sérigraphie. Pour rester lisible sur les zones noires entre les
- * hot-spots, halo crème léger derrière le texte (testé "overlay" →
- * faisait disparaître le texte sur les zones non-glow).
+ * Texte crème (`text-ink-700`) avec ombre noire fine pour lisibilité
+ * sur les blobs acid+hot ET sur les zones noires entre les hot-spots.
+ * On a essayé l'inverse (texte sombre + halo crème) — résultat : effet
+ * boueux sur le texte, halo trop fort qui parasitait le scan.
+ *
+ * Pas d'ellipsis : on calibre le sizing pour que le héros tienne dans
+ * la card. La pill auteur est en-dessous (zone réservée pb-9), donc le
+ * contenu est centré dans la zone disponible au-dessus.
  */
 function TitlePosterText({ title }: { title: string }) {
   const { hero, tail } = splitTitle(title);
   const heroLen = hero.length;
-  // 3 paliers (vs 4 avant) : éviter la cacophonie de rythmes sur un
-  // scroll horizontal. Borné à 22px en bas — sous ce seuil Unbounded
-  // Black devient une tache illisible.
+  // 3 paliers calibrés pour qu'un mot court tienne sans ellipsis dans
+  // une card 144px. Unbounded Black est très large : à 32px, ~6 char
+  // = ~140px, donc "HAMLET" tient pile. Au-delà on descend agressivement.
+  // 14px en bas — sous ce seuil Unbounded Black devient peu lisible mais
+  // c'est mieux que tronquer un titre que le user vient découvrir.
   const heroSizeClass =
     heroLen <= 6
-      ? "text-[44px] leading-[0.85]"
-      : heroLen <= 12
-        ? "text-[30px] leading-[0.9]"
-        : "text-[22px] leading-[0.95]";
-  // Quand pas de signature (titre simple sans tiret), on autorise 3
-  // lignes au héros pour qu'un titre type "Festival d'Annecy" tienne
-  // sans devoir descendre au palier 22px.
-  const heroLineClamp = tail ? "line-clamp-2" : "line-clamp-3";
+      ? "text-[28px] leading-[0.9]"
+      : heroLen <= 14
+        ? "text-[20px] leading-[0.95]"
+        : "text-[15px] leading-[1]";
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-3 text-center">
+    // pb-9 réserve la zone basse pour la pill auteur (bottom-2 + h~24px).
+    // justify-center centre le bloc texte dans la zone haute restante,
+    // ce qui place le héros au centre optique de la card et la signature
+    // collée juste en dessous (pas centrée seule).
+    <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 px-3 pt-2 pb-9 text-center">
       <span
-        className={`break-words font-display font-black uppercase tracking-[-0.025em] text-ink-50 select-none ${heroSizeClass} ${heroLineClamp}`}
+        className={`font-display font-black uppercase tracking-[-0.025em] text-ink-700 select-none ${heroSizeClass}`}
         style={{
           textWrap: "balance",
-          // Halo clair flou : compense le texte sombre sur les zones
-          // noires du fond, sans masquer la sérigraphie sur les zones
-          // colorées. Triple stop pour bien envelopper les letterforms.
-          textShadow:
-            "0 0 6px rgba(245,242,235,0.55), 0 0 12px rgba(245,242,235,0.35), 0 1px 1px rgba(245,242,235,0.45)",
+          // Ombre noire portée fine : renforce le contraste sur les
+          // blobs acid+hot (le crème pur s'aplatit sinon sur acide).
+          // Stops courts, pas de glow : on veut un trait, pas un halo.
+          textShadow: "0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.55)",
           overflowWrap: "anywhere",
+          // `clip` au lieu d'`ellipsis` : si le sizing déborde quand
+          // même (cas extrême), on coupe net au bord de la card façon
+          // sérigraphie, pas avec "…" qui ralentit la lecture.
+          textOverflow: "clip",
         }}
       >
         {hero}
       </span>
       {tail && (
-        // Signature cartel : mono lowercase à 70% d'opacité, max 2
-        // lignes. Le break-word "anywhere" autorise la coupe en cours
-        // de mot pour les noms de salles longs ("Théâtre des Champs-
-        // Élysées") plutôt que de les tronquer avec ellipsis.
+        // Signature cartel : mono lowercase à 75% d'opacité, ancrée
+        // juste sous le héros (pas centrée seule). overflow-hidden +
+        // textOverflow clip pour qu'on coupe net si la signature
+        // déborde, plutôt que d'ajouter une ellipsis.
         <span
-          className="line-clamp-2 font-mono text-[10.5px] leading-tight tracking-[0.04em] text-ink-50/70 select-none"
+          className="font-mono text-[10px] leading-[1.15] tracking-[0.04em] text-ink-700/75 select-none"
           style={{
-            textShadow: "0 0 4px rgba(245,242,235,0.5)",
+            textShadow: "0 1px 2px rgba(0,0,0,0.85)",
             overflowWrap: "anywhere",
+            textOverflow: "clip",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
           }}
         >
           {tail.toLocaleLowerCase("fr")}
