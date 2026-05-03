@@ -71,11 +71,13 @@ export function OutingPosterFallback({
  * "Festival international du film d'animation d'Annecy" arrive). Uppercase
  * pour la cohérence avec le reste de la signature (eyebrows, badges).
  *
- * Pas de `mixBlendMode` : le blend overlay supposait des hot-spots
- * saturés pleins en fond. Depuis qu'on a atténué les halos (alpha 0.55
- * sur fond #0f0f0f), l'overlay tombait sur du sombre et le texte
- * disparaissait. Crème opaque + text-shadow noir donne un titre lisible
- * peu importe la zone (sombre ou colorée) du gradient sous-jacent.
+ * Texte sombre (`text-ink-50` qui dans la palette inversée Sortie est
+ * la teinte la plus dark) façon sérigraphie sur poster — lisible et
+ * "imprimé" sur les zones colorées du gradient. Pour rester lisible
+ * aussi sur les zones noires du fond #0f0f0f entre les hot-spots, on
+ * pose un text-shadow clair flou qui crée un halo lumineux derrière
+ * le texte. Pas de mixBlendMode (testé "overlay" → faisait disparaître
+ * le texte sur les zones non-glow).
  */
 function TitlePosterText({ title }: { title: string }) {
   const trimmed = title.trim();
@@ -96,7 +98,14 @@ function TitlePosterText({ title }: { title: string }) {
   return (
     <span
       className={`line-clamp-4 break-words px-3 text-center font-display font-black uppercase leading-[0.88] tracking-[-0.03em] text-ink-50 select-none ${sizeClass}`}
-      style={{ textWrap: "balance", textShadow: "0 1px 2px rgba(0,0,0,0.45)" }}
+      style={{
+        textWrap: "balance",
+        // Halo clair flou : compense le texte sombre sur les zones
+        // noires du fond, sans masquer la sérigraphie sur les zones
+        // colorées. Triple stop pour bien envelopper les letterforms.
+        textShadow:
+          "0 0 6px rgba(245,242,235,0.55), 0 0 12px rgba(245,242,235,0.35), 0 1px 1px rgba(245,242,235,0.45)",
+      }}
     >
       {trimmed}
     </span>
