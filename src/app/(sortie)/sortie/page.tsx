@@ -98,7 +98,16 @@ export default async function SortieHome() {
   // un sondage en cours (startsAt null) volait la place du hero, n'était
   // pas rendu (le hero refuse les undated), et disparaissait aussi du
   // bucket "date à voter" parce qu'on faisait `upcoming.slice(1)`.
-  const heroOuting = upcoming.find((o) => o.startsAt !== null) ?? null;
+  //
+  // On exclut aussi les sorties que l'user a explicitement déclinées
+  // (response='no') : elles restent listées plus bas dans l'agenda
+  // (le user peut changer d'avis), mais ne doivent pas être promues
+  // en hero "ça approche" — ce serait raconter qu'il y va alors qu'il
+  // a dit non.
+  const heroOuting =
+    upcoming.find(
+      (o) => o.startsAt !== null && myRsvpByOuting.get(o.id)?.response !== "no"
+    ) ?? null;
 
   // Read the avatar from the DB rather than the session: Better Auth caches
   // `session.user.image` in the cookie at sign-in time, so a fresh upload
