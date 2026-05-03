@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   RSVP_BADGE_LABEL,
@@ -147,6 +148,12 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
           </p>
         )}
       </div>
+      <ChevronRight
+        size={16}
+        strokeWidth={2}
+        aria-hidden="true"
+        className="shrink-0 self-center text-ink-300 transition-colors group-hover:text-acid-600"
+      />
     </Link>
   );
 }
