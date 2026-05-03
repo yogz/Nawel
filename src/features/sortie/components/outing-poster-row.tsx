@@ -162,16 +162,18 @@ export function OutingPosterCard({
         ) : (
           <OutingPosterFallback title={outing.title} className="size-full" mode="title" varied />
         )}
-        <span className="absolute bottom-2 left-2 inline-flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-sm bg-ink-700/85 px-1.5 py-0.5 font-mono text-[10.5px] tracking-[0.06em] text-surface-50">
-          {/* Anchor (handle) tronqué si trop long. La fonte mono lower-
-              case garde l'identité @handle reconnaissable (uppercase
-              cassait la reconnaissance des pseudos). */}
+        {/* Tampon discret bas-gauche : pas un "objet posé sur l'image"
+            (ancien fond crème-clair faisait corps étranger sur la
+            palette sombre), mais un overprint mono qui s'inscrit dans
+            le fond. Pas de pill arrondie, juste un cadre sérigraphié
+            avec border crème 30% et fond noir semi-transparent. */}
+        <span className="absolute bottom-2 left-2 inline-flex max-w-[calc(100%-1rem)] items-center gap-1 border border-ink-700/25 bg-black/55 px-1.5 py-0.5 font-mono text-[10px] tracking-[0.04em] text-ink-700/85 backdrop-blur-[2px]">
           <span className="truncate">{anchor}</span>
           {tail && (
             // Tail (№ 047) jamais tronqué : il porte la valeur signifiante
             // de la pill (objet collectionnable identifiant la sortie chez
             // ce créateur). Couleur acid pour signaler son statut "asset".
-            <span className="shrink-0 text-acid-600">· {tail}</span>
+            <span className="shrink-0 font-bold text-acid-600">· {tail}</span>
           )}
         </span>
       </div>
