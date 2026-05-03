@@ -100,10 +100,39 @@ export function trackWizardPublishStarted(mode: "fixed" | "vote", isLoggedIn: bo
 }
 
 /**
+ * Buckets discrets pour `paste_to_publish_ms`. Émis EN PLUS de la
+ * valeur brute, pour éviter d'exploser la cardinalité côté
+ * `event-data/values` (1 ligne par publish si on lit la propriété
+ * continue) et permettre une lecture instantanée sur le dashboard.
+ *
+ * Bornes choisies pour matcher l'expérience utilisateur :
+ *   - <5s  → wizard "snap" (gemini auto-rempli, user en flow)
+ *   - 5-15s → tempo normal (un user attentif qui lit ce qui est rempli)
+ *   - 15-60s → corrections / hésitations
+ *   - >60s → soit user multitâche, soit wizard galère.
+ */
+export function pasteToPublishBucket(ms: number): "lt5s" | "5-15s" | "15-60s" | "gt60s" {
+  if (ms < 5_000) {
+    return "lt5s";
+  }
+  if (ms < 15_000) {
+    return "5-15s";
+  }
+  if (ms < 60_000) {
+    return "15-60s";
+  }
+  return "gt60s";
+}
+
+/**
  * Métrique nord : `paste_to_publish_ms` = temps entre la 1ʳᵉ submission
  * du paste step et le succès du publish. Mesuré via une ref dans le
  * hook. `null` si le user a publié sans passer par paste (impossible
  * en pratique, mais on garde le champ optionnel pour robustesse).
+ *
+ * Émet aussi `paste_to_publish_bucket` (discret) à côté du `_ms`
+ * (continu) — les 2 sont nécessaires : le bucket pour les ratios
+ * "% snap / % long" sans perdre le ms pour le calcul de médiane fine.
  */
 export function trackWizardPublishSucceeded(params: {
   mode: "fixed" | "vote";
@@ -114,6 +143,7 @@ export function trackWizardPublishSucceeded(params: {
   hasHeroImage: boolean;
   pasteToPublishMs: number | null;
 }) {
+  const ms = params.pasteToPublishMs;
   track("wizard_publish_succeeded", {
     mode: params.mode,
     is_logged_in: params.isLoggedIn,
@@ -121,8 +151,8 @@ export function trackWizardPublishSucceeded(params: {
     has_venue: params.hasVenue,
     has_ticket_url: params.hasTicketUrl,
     has_hero_image: params.hasHeroImage,
-    paste_to_publish_ms:
-      params.pasteToPublishMs !== null ? Math.round(params.pasteToPublishMs) : undefined,
+    paste_to_publish_ms: ms !== null ? Math.round(ms) : undefined,
+    paste_to_publish_bucket: ms !== null ? pasteToPublishBucket(ms) : undefined,
   });
 }
 

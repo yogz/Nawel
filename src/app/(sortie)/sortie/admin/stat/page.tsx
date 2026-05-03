@@ -8,6 +8,7 @@ import {
 } from "@/features/sortie/queries/stat-queries";
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
+import { StatRangePicker } from "@/features/sortie/components/stat-range-picker";
 import { logger } from "@/lib/logger";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
@@ -30,8 +31,23 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function StatPage() {
+const ALLOWED_RANGES = new Set([1, 7, 30]);
+
+function parseRange(raw: string | string[] | undefined): number {
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const n = Number(value);
+  return ALLOWED_RANGES.has(n) ? n : 7;
+}
+
+type Props = {
+  searchParams: Promise<{ range?: string }>;
+};
+
+export default async function StatPage({ searchParams }: Props) {
   // Auth gate délégué au layout `/sortie/admin/layout.tsx` (un seul endroit).
+  const { range: rawRange } = await searchParams;
+  const rangeDays = parseRange(rawRange);
+
   const [parseAgg, services, hosts, outingsPerDay, wizardUmami] = await Promise.all([
     safe("getParseAggregate", getParseAggregate, {
       totalAttempts: 0,
@@ -44,14 +60,22 @@ export default async function StatPage() {
     safe("getServiceCallStats", getServiceCallStats, []),
     safe("getHostBreakdown", () => getHostBreakdown(), []),
     safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
-    safe("getWizardUmamiStats", () => getWizardUmamiStats(), {
+    safe("getWizardUmamiStats", () => getWizardUmamiStats(rangeDays), {
       configured: false,
-      rangeDays: 7,
+      rangeDays,
+      siteStats: null,
+      activeVisitors: null,
       funnel: null,
       pasteToPublish: null,
+      pasteToPublishBuckets: null,
       geminiTriggers: null,
       pasteKind: null,
       confirmEntered: null,
+      outingFunnel: null,
+      shareChannels: null,
+      rsvpBreakdown: null,
+      topReferrers: null,
+      topPaths: null,
     }),
   ]);
 
@@ -67,17 +91,26 @@ export default async function StatPage() {
         </Link>
       </nav>
 
-      <header className="mb-12">
-        <Eyebrow glow className="mb-3">
-          ─ supervision ─
-        </Eyebrow>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
-          Stats
-        </h1>
-        <p className="mt-4 text-[15px] text-ink-500">
-          Compteurs vie du scraper d&apos;URL et des services externes (Gemini, Discovery API
-          Ticketmaster).
-        </p>
+      <header className="mb-12 flex flex-col gap-6">
+        <div>
+          <Eyebrow glow className="mb-3">
+            ─ supervision ─
+          </Eyebrow>
+          <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-6xl">
+            Stats
+          </h1>
+          <p className="mt-4 text-[15px] text-ink-500">
+            Audience Umami, funnel wizard, page sortie publique, scraper d&apos;URL et services
+            externes (Gemini, Discovery API). Toutes les sections Umami suivent la fenêtre
+            sélectionnée et comparent à la période précédente.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <StatRangePicker current={rangeDays} />
+          <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
+            fenêtre Umami
+          </span>
+        </div>
       </header>
 
       <StatDashboard

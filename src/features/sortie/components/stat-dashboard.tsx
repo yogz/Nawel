@@ -110,13 +110,95 @@ function failureKindLabel(kind: string | null): string {
   }
 }
 
-function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }) {
+/**
+ * Calcule la variation relative entre une période courante et la
+ * période précédente. Renvoie un texte court signé prêt à coller
+ * sous un KPI ("+12 % vs préc.", "-3 %", "—" si dénominateur 0).
+ */
+function deltaLabel(current: number, previous: number): { text: string; tone: Tone } {
+  if (previous <= 0) {
+    return { text: current > 0 ? "nouveau" : "—", tone: "muted" };
+  }
+  const diff = (current - previous) / previous;
+  const pct = Math.round(diff * 100);
+  if (pct === 0) {
+    return { text: "= préc.", tone: "muted" };
+  }
+  const tone: Tone = pct > 0 ? "good" : "bad";
+  const sign = pct > 0 ? "+" : "";
+  return { text: `${sign}${pct} % vs préc.`, tone };
+}
+
+type Tone = "good" | "bad" | "muted" | "warn";
+
+function toneClass(tone: Tone): string {
+  switch (tone) {
+    case "good":
+      return "text-emerald-700";
+    case "bad":
+      return "text-rose-700";
+    case "warn":
+      return "text-amber-700";
+    default:
+      return "text-ink-500";
+  }
+}
+
+function Kpi({
+  label,
+  value,
+  sub,
+  tone,
+}: {
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: Tone;
+}) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4">
       <Eyebrow tone="muted">{label}</Eyebrow>
       <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">{value}</p>
-      {sub && <p className="font-mono text-[11px] tracking-[0.04em] text-ink-500">{sub}</p>}
+      {sub && (
+        <p className={`font-mono text-[11px] tracking-[0.04em] ${toneClass(tone ?? "muted")}`}>
+          {sub}
+        </p>
+      )}
     </div>
+  );
+}
+
+function MetricList({ rows }: { rows: { name: string; value: number }[] | null }) {
+  if (!rows || rows.length === 0) {
+    return (
+      <p className="rounded-xl border border-dashed border-surface-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+        Aucune donnée pour la période.
+      </p>
+    );
+  }
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  return (
+    <ul className="flex flex-col gap-1.5">
+      {rows.map((r) => {
+        const ratio = r.value / max;
+        return (
+          <li key={r.name} className="flex items-center gap-3">
+            <span className="w-44 truncate font-mono text-[11.5px] text-ink-700" title={r.name}>
+              {r.name}
+            </span>
+            <div className="relative h-5 flex-1 overflow-hidden rounded-md bg-surface-200">
+              <div
+                className="h-full bg-acid-600/80"
+                style={{ width: `${Math.max(2, ratio * 100)}%` }}
+              />
+            </div>
+            <span className="w-10 text-right font-mono text-[11.5px] tabular-nums font-bold text-ink-700">
+              {r.value.toLocaleString("fr-FR")}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -136,6 +218,23 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
   // dénominateur naturel des % de conversion ; en cas de 0 paste on
   // évite une division par zéro qui afficherait NaN.
   const funnelTopCount = wizardUmami.funnel?.[0]?.count ?? 0;
+  const funnelLastCount = wizardUmami.funnel?.[wizardUmami.funnel.length - 1]?.count ?? 0;
+
+  // Alerte funnel cassé : si on a >5 entrées paste mais 0 publish dans
+  // la fenêtre, c'est un signal fort qu'un blocage technique a cassé
+  // la conversion (validation serveur, formulaire en erreur, etc.).
+  const funnelBroken = wizardUmami.funnel !== null && funnelTopCount >= 5 && funnelLastCount === 0;
+
+  const stats = wizardUmami.siteStats;
+  const visitorsDelta = stats?.comparison
+    ? deltaLabel(stats.visitors, stats.comparison.visitors)
+    : null;
+  const pageviewsDelta = stats?.comparison
+    ? deltaLabel(stats.pageviews, stats.comparison.pageviews)
+    : null;
+  const visitsDelta = stats?.comparison ? deltaLabel(stats.visits, stats.comparison.visits) : null;
+
+  const outing = wizardUmami.outingFunnel;
 
   return (
     <div className="flex flex-col gap-12">
@@ -193,7 +292,82 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
         </div>
       </section>
 
-      {/* === Section 0bis : funnel wizard via API Umami === */}
+      {/* === Section : audience site (Umami /stats + /active) === */}
+      {wizardUmami.configured && (
+        <section>
+          <header className="mb-4 flex items-baseline justify-between gap-3">
+            <div>
+              <Eyebrow className="mb-2">─ audience ({wizardUmami.rangeDays}j) ─</Eyebrow>
+              <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
+                Trafic du site
+              </h2>
+            </div>
+            {wizardUmami.activeVisitors !== null && (
+              <span
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] ${
+                  wizardUmami.activeVisitors > 0
+                    ? "border-emerald-300 bg-emerald-50/40 text-emerald-700"
+                    : "border-surface-400 bg-surface-100 text-ink-400"
+                }`}
+                title="Visiteurs uniques sur les 5 dernières minutes"
+              >
+                <span
+                  aria-hidden
+                  className={`size-2 rounded-full ${
+                    wizardUmami.activeVisitors > 0 ? "bg-emerald-500" : "bg-ink-300"
+                  }`}
+                />
+                {wizardUmami.activeVisitors} actif
+                {wizardUmami.activeVisitors > 1 ? "s" : ""}
+              </span>
+            )}
+          </header>
+          {stats ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Kpi
+                label="Visiteurs"
+                value={stats.visitors.toLocaleString("fr-FR")}
+                sub={visitorsDelta?.text}
+                tone={visitorsDelta?.tone}
+              />
+              <Kpi
+                label="Pages vues"
+                value={stats.pageviews.toLocaleString("fr-FR")}
+                sub={pageviewsDelta?.text}
+                tone={pageviewsDelta?.tone}
+              />
+              <Kpi
+                label="Visites"
+                value={stats.visits.toLocaleString("fr-FR")}
+                sub={visitsDelta?.text}
+                tone={visitsDelta?.tone}
+              />
+              <Kpi
+                label="Bounce"
+                value={pct(stats.bounces, stats.visits)}
+                sub={`${stats.bounces.toLocaleString("fr-FR")} visites courtes`}
+              />
+            </div>
+          ) : (
+            <p className="rounded-xl border border-dashed border-surface-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+              /stats indisponible (Umami down ou aucune donnée).
+            </p>
+          )}
+
+          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
+              <Eyebrow tone="muted">Top referrers</Eyebrow>
+              <MetricList rows={wizardUmami.topReferrers} />
+            </div>
+            <div className="flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
+              <Eyebrow tone="muted">Top pages</Eyebrow>
+              <MetricList rows={wizardUmami.topPaths} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* === Section : funnel wizard === */}
       <section>
         <header className="mb-4">
           <Eyebrow className="mb-2">─ funnel wizard (umami) ─</Eyebrow>
@@ -207,14 +381,36 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
           </p>
         ) : (
           <div className="flex flex-col gap-4">
-            {/* Funnel : barres horizontales empilées avec count + % */}
+            {funnelBroken && (
+              <div className="rounded-xl border border-rose-300 bg-rose-50/60 p-4">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-rose-700">
+                  ⚠ funnel cassé
+                </p>
+                <p className="mt-1 text-sm text-rose-700">
+                  {funnelTopCount} entrées paste mais 0 publish — vérifier prod (server action,
+                  validation, fetch wizard).
+                </p>
+              </div>
+            )}
             {wizardUmami.funnel ? (
               <div className="flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
-                <Eyebrow tone="muted">Steps</Eyebrow>
+                <Eyebrow tone="muted">Steps & drop-off</Eyebrow>
                 <ul className="flex flex-col gap-1.5">
-                  {wizardUmami.funnel.map((step) => {
+                  {wizardUmami.funnel.map((step, i) => {
                     const ratio = funnelTopCount > 0 ? step.count / funnelTopCount : 0;
                     const label = STEP_SHORT_LABEL[step.event] ?? step.event;
+                    // Drop-off vs step précédent — colore en rouge >50% pour
+                    // lever rapidement les "fuites" au sein du funnel.
+                    const prev = i > 0 ? wizardUmami.funnel![i - 1].count : null;
+                    const stepDrop = prev !== null && prev > 0 ? 1 - step.count / prev : null;
+                    const dropTone: Tone =
+                      stepDrop === null
+                        ? "muted"
+                        : stepDrop > 0.5
+                          ? "bad"
+                          : stepDrop > 0.25
+                            ? "warn"
+                            : "good";
                     return (
                       <li key={step.event} className="flex items-center gap-3">
                         <span className="w-16 font-mono text-[11.5px] text-ink-500">{label}</span>
@@ -230,10 +426,34 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                         <span className="w-12 text-right font-mono text-[11px] tabular-nums text-ink-500">
                           {funnelTopCount > 0 ? `${Math.round(ratio * 100)}%` : "—"}
                         </span>
+                        <span
+                          className={`w-16 text-right font-mono text-[11px] tabular-nums ${toneClass(dropTone)}`}
+                          title="Perte vs step précédent"
+                        >
+                          {stepDrop === null ? "—" : `-${Math.round(stepDrop * 100)}%`}
+                        </span>
                       </li>
                     );
                   })}
                 </ul>
+                <p className="mt-2 font-mono text-[10.5px] tracking-[0.04em] text-ink-400">
+                  Conversion globale paste → publish :{" "}
+                  <span
+                    className={`font-bold ${toneClass(
+                      funnelTopCount === 0
+                        ? "muted"
+                        : funnelLastCount / funnelTopCount > 0.4
+                          ? "good"
+                          : funnelLastCount / funnelTopCount > 0.15
+                            ? "warn"
+                            : "bad"
+                    )}`}
+                  >
+                    {funnelTopCount > 0
+                      ? `${Math.round((funnelLastCount / funnelTopCount) * 100)} %`
+                      : "—"}
+                  </span>
+                </p>
               </div>
             ) : (
               <p className="rounded-xl border border-dashed border-surface-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
@@ -241,7 +461,6 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
               </p>
             )}
 
-            {/* KPIs paste→publish + branche entrée (URL vs texte, confirm reached) */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Kpi
                 label="Paste → publish"
@@ -256,6 +475,58 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                     : "pas encore de publish"
                 }
               />
+              <Kpi
+                label="< 5 s (snap)"
+                value={(wizardUmami.pasteToPublishBuckets?.lt5s ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.pasteToPublishBuckets
+                    ? pct(
+                        wizardUmami.pasteToPublishBuckets.lt5s,
+                        wizardUmami.pasteToPublishBuckets.total
+                      )
+                    : "—"
+                }
+                tone="good"
+              />
+              <Kpi
+                label="5-60 s"
+                value={(
+                  (wizardUmami.pasteToPublishBuckets?.s5to15 ?? 0) +
+                  (wizardUmami.pasteToPublishBuckets?.s15to60 ?? 0)
+                ).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.pasteToPublishBuckets
+                    ? pct(
+                        wizardUmami.pasteToPublishBuckets.s5to15 +
+                          wizardUmami.pasteToPublishBuckets.s15to60,
+                        wizardUmami.pasteToPublishBuckets.total
+                      )
+                    : "—"
+                }
+              />
+              <Kpi
+                label="> 60 s"
+                value={(wizardUmami.pasteToPublishBuckets?.gt60s ?? 0).toLocaleString("fr-FR")}
+                sub={
+                  wizardUmami.pasteToPublishBuckets
+                    ? pct(
+                        wizardUmami.pasteToPublishBuckets.gt60s,
+                        wizardUmami.pasteToPublishBuckets.total
+                      )
+                    : "—"
+                }
+                tone={
+                  wizardUmami.pasteToPublishBuckets &&
+                  wizardUmami.pasteToPublishBuckets.gt60s /
+                    Math.max(1, wizardUmami.pasteToPublishBuckets.total) >
+                    0.2
+                    ? "warn"
+                    : undefined
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Kpi
                 label="Submit URL"
                 value={
@@ -313,13 +584,103 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
                     ? "⚠ régression : ne devrait plus exister"
                     : "✓ retiré (PR2a/2c)"
                 }
+                tone={(wizardUmami.geminiTriggers?.auto ?? 0) > 0 ? "bad" : "good"}
               />
             </div>
           </div>
         )}
       </section>
 
-      {/* === Section 1 : KPIs scraper OG === */}
+      {/* === Section : page sortie publique (post-création) === */}
+      {wizardUmami.configured && (
+        <section>
+          <header className="mb-4">
+            <Eyebrow className="mb-2">─ page sortie publique ─</Eyebrow>
+            <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
+              Vies des liens partagés
+            </h2>
+            <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-ink-500">
+              Funnel post-création : qui consulte, qui répond, qui re-partage.
+            </p>
+          </header>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Kpi
+              label="Vues"
+              value={(outing?.views ?? 0).toLocaleString("fr-FR")}
+              sub={
+                outing && outing.views > 0
+                  ? `${(outing.views / wizardUmami.rangeDays).toFixed(1)} / jour`
+                  : "—"
+              }
+            />
+            <Kpi
+              label="RSVP set"
+              value={(outing?.rsvps ?? 0).toLocaleString("fr-FR")}
+              sub={outing && outing.views > 0 ? `${pct(outing.rsvps, outing.views)} des vues` : "—"}
+              tone={
+                outing && outing.views > 5 && outing.rsvps / outing.views < 0.1 ? "warn" : undefined
+              }
+            />
+            <Kpi
+              label="Re-partages"
+              value={(outing?.shares ?? 0).toLocaleString("fr-FR")}
+              sub={
+                outing && outing.views > 0 ? `${pct(outing.shares, outing.views)} des vues` : "—"
+              }
+            />
+            <Kpi
+              label="Yes / No / Owner"
+              value={
+                wizardUmami.rsvpBreakdown
+                  ? `${wizardUmami.rsvpBreakdown.yes}/${wizardUmami.rsvpBreakdown.no}/${wizardUmami.rsvpBreakdown.handleOwn}`
+                  : "—"
+              }
+              sub={
+                wizardUmami.rsvpBreakdown && wizardUmami.rsvpBreakdown.total > 0
+                  ? `${pct(wizardUmami.rsvpBreakdown.yes, wizardUmami.rsvpBreakdown.total)} de oui`
+                  : "—"
+              }
+            />
+          </div>
+
+          {wizardUmami.shareChannels && wizardUmami.shareChannels.total > 0 && (
+            <div className="mt-4 flex flex-col gap-2 rounded-xl border border-surface-400 bg-surface-100 p-4">
+              <Eyebrow tone="muted">Canaux de partage</Eyebrow>
+              <ul className="flex flex-col gap-1.5">
+                {(
+                  [
+                    ["whatsapp", "WhatsApp", wizardUmami.shareChannels.whatsapp],
+                    ["native", "Web Share natif", wizardUmami.shareChannels.native],
+                    ["copy", "Copie de lien", wizardUmami.shareChannels.copy],
+                    ["other", "Autres", wizardUmami.shareChannels.other],
+                  ] as const
+                ).map(([key, label, value]) => {
+                  const ratio = value / wizardUmami.shareChannels!.total;
+                  return (
+                    <li key={key} className="flex items-center gap-3">
+                      <span className="w-32 font-mono text-[11.5px] text-ink-500">{label}</span>
+                      <div className="relative h-5 flex-1 overflow-hidden rounded-md bg-surface-200">
+                        <div
+                          className="h-full bg-hot-500/70"
+                          style={{ width: `${Math.max(2, ratio * 100)}%` }}
+                        />
+                      </div>
+                      <span className="w-10 text-right font-mono text-[11.5px] tabular-nums font-bold text-ink-700">
+                        {value.toLocaleString("fr-FR")}
+                      </span>
+                      <span className="w-12 text-right font-mono text-[11px] tabular-nums text-ink-500">
+                        {Math.round(ratio * 100)}%
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* === Section : KPIs scraper OG === */}
       <section>
         <header className="mb-4">
           <Eyebrow className="mb-2">─ scraper og ─</Eyebrow>
@@ -351,7 +712,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
         </div>
       </section>
 
-      {/* === Section 2 : services externes === */}
+      {/* === Section : services externes === */}
       <section>
         <header className="mb-4">
           <Eyebrow className="mb-2">─ services externes ─</Eyebrow>
@@ -425,7 +786,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
         )}
       </section>
 
-      {/* === Section 3 : tableau des hosts === */}
+      {/* === Section : tableau des hosts === */}
       <section>
         <header className="mb-4">
           <Eyebrow className="mb-2">─ sites qui répondent ─</Eyebrow>
@@ -490,7 +851,7 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
         )}
       </section>
 
-      {/* === Section 4 : hosts à problèmes === */}
+      {/* === Section : hosts à problèmes === */}
       {problemHosts.length > 0 && (
         <section>
           <header className="mb-4">
