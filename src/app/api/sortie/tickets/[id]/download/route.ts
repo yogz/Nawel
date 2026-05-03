@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { createHash } from "node:crypto";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { auditLog } from "@drizzle/sortie-schema";
+import { hashIp, TICKET_AUDIT_ACTION } from "@/features/sortie/lib/audit";
 import { authorizeTicketAccess } from "@/features/sortie/lib/ticket-auth";
 import { downloadAndDecryptTicket } from "@/features/sortie/lib/ticket-download";
 import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -11,30 +11,12 @@ import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const AUDIT_ACTION = {
-  TICKET_DOWNLOADED: "TICKET_DOWNLOADED",
-  TICKET_DOWNLOAD_DENIED: "TICKET_DOWNLOAD_DENIED",
-} as const;
-
-async function hashIp(): Promise<string | null> {
-  const ip = await getClientIp();
-  if (!ip || ip === "unknown") {
-    return null;
-  }
-  const pepper = process.env.BETTER_AUTH_SECRET ?? "";
-  return createHash("sha256")
-    .update(ip + pepper)
-    .digest("hex");
-}
-
 function buildContentDisposition(filename: string | null, mimeType: string): string {
-  // Filename par défaut neutre pour ne pas leak de PII si l'original est null.
   const ext = mimeType === "application/pdf" ? "pdf" : (mimeType.split("/")[1] ?? "bin");
   const fallback = `billet.${ext}`;
   const safe = filename && /^[\w\-. ()]+$/.test(filename) ? filename : fallback;
-  // Toujours `attachment` — on ne veut JAMAIS qu'un billet s'ouvre inline
-  // dans le navigateur (un PDF malveillant aux JS/iframes pourrait abuser
-  // du contexte same-origin de notre domaine pour exfiltrer des cookies).
+  // Inline pourrait laisser un PDF malveillant exécuter du JS dans notre
+  // origin et exfiltrer la session — toujours forcer le download.
   return `attachment; filename="${safe}"`;
 }
 
@@ -82,7 +64,8 @@ export async function GET(
   });
 
   if (!decision.ok) {
-    // Audit denied (sauf cas trivial 401/404 pour ne pas inonder le log)
+    // Limiter l'audit aux denies "informatifs" — un 401/404 anonyme n'a
+    // aucune valeur d'enquête et inonderait la table.
     if (
       ticket &&
       sessionUserId &&
@@ -93,7 +76,7 @@ export async function GET(
         .values({
           outingId: ticket.outingId,
           actorUserId: sessionUserId,
-          action: AUDIT_ACTION.TICKET_DOWNLOAD_DENIED,
+          action: TICKET_AUDIT_ACTION.TICKET_DOWNLOAD_DENIED,
           ipHash: await hashIp(),
           payload: JSON.stringify({ ticketId, reason: decision.reason }),
         })
@@ -117,7 +100,6 @@ export async function GET(
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  // decision.ok === true : ticket est garanti non-null par authorizeTicketAccess.
   if (!ticket) {
     return NextResponse.json({ error: "internal_error" }, { status: 500 });
   }
@@ -137,13 +119,14 @@ export async function GET(
     return NextResponse.json({ error: "internal_error", reason: result.reason }, { status: 500 });
   }
 
-  // Audit success — non-bloquant, on log même si l'insert échoue.
-  await db
+  // Fire-and-forget : pas besoin d'attendre l'audit pour servir le binaire.
+  // La latence économisée par requête est ~5-20ms et l'erreur est loggée.
+  void db
     .insert(auditLog)
     .values({
       outingId: ticket.outingId,
       actorUserId: sessionUserId,
-      action: AUDIT_ACTION.TICKET_DOWNLOADED,
+      action: TICKET_AUDIT_ACTION.TICKET_DOWNLOADED,
       ipHash: await hashIp(),
       payload: JSON.stringify({
         ticketId,

@@ -50,9 +50,8 @@ export default async function TicketsPage({ params }: Props) {
   ]);
   const sessionUserId = session?.user?.id ?? null;
 
-  // L'accès aux billets exige un compte avec email vérifié — c'est la règle
-  // métier centrale du Lot 1 (cf. ticket-actions, ticket-auth). On gate
-  // ici directement, plus de fallback cookie-only même pour la lecture.
+  // Les billets exigent un compte avec email vérifié — règle enforcée aussi
+  // côté ticket-actions et ticket-auth. Pas de fallback cookie même en lecture.
   if (!sessionUserId) {
     return (
       <ParticipantAuthGate
@@ -117,7 +116,6 @@ export default async function TicketsPage({ params }: Props) {
     );
   }
 
-  // Mode participant — on cherche la row participants pour cet utilisateur.
   const me = await getMyParticipant({
     outingId: outing.id,
     cookieTokenHash: cookieTokenHash ?? "",

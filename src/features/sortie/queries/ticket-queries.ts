@@ -1,6 +1,7 @@
-import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { participants, tickets } from "@drizzle/sortie-schema";
+import { displayNameOf } from "@/features/sortie/lib/participant-name";
 
 /**
  * Vue dénormalisée d'un billet pour l'UI : on n'expose JAMAIS `blobUrl`,
@@ -18,19 +19,6 @@ export type TicketView = {
   createdAt: Date;
   revokedAt: Date | null;
 };
-
-type ParticipantNamingRow = {
-  id: string;
-  anonName: string | null;
-  user: { name: string | null } | null;
-};
-
-function pickParticipantName(row: ParticipantNamingRow | null | undefined): string | null {
-  if (!row) {
-    return null;
-  }
-  return row.anonName ?? row.user?.name ?? null;
-}
 
 /**
  * Liste tous les billets d'une sortie, vue organisateur. Inclut les billets
@@ -52,7 +40,7 @@ export async function listTicketsForOrganizer(outingId: string): Promise<TicketV
     id: t.id,
     scope: t.scope,
     participantId: t.participantId,
-    participantDisplayName: pickParticipantName(t.participant),
+    participantDisplayName: t.participant ? displayNameOf(t.participant) : null,
     mimeType: t.mimeType,
     sizeBytes: t.sizeBytes,
     originalFilename: t.originalFilename,
@@ -62,11 +50,6 @@ export async function listTicketsForOrganizer(outingId: string): Promise<TicketV
 }
 
 /**
- * Liste les billets accessibles à un participant donné — billet nominatif
- * dont il est détenteur OU billets groupés (si la réponse RSVP est
- * `yes` / `handle_own`). Les billets révoqués sont filtrés ici (le
- * destinataire n'a aucune raison de les voir).
- *
  * Le filtre métier est dupliqué avec `ticket-auth.ts` à dessein : la requête
  * SQL doit pouvoir scope direct, et `authorizeTicketAccess` reste l'unique
  * source de vérité au moment du download.
@@ -78,28 +61,20 @@ export async function listTicketsForParticipant(args: {
 }): Promise<TicketView[]> {
   const isActive = args.participantResponse === "yes" || args.participantResponse === "handle_own";
 
-  const personalRows = await db.query.tickets.findMany({
-    where: and(
-      eq(tickets.outingId, args.outingId),
-      eq(tickets.scope, "participant"),
-      eq(tickets.participantId, args.participantId),
-      isNull(tickets.revokedAt)
-    ),
-    orderBy: [asc(tickets.createdAt)],
+  const personalCondition = and(
+    eq(tickets.scope, "participant"),
+    eq(tickets.participantId, args.participantId)
+  );
+  const scopeCondition = isActive
+    ? or(personalCondition, eq(tickets.scope, "outing"))
+    : personalCondition;
+
+  const rows = await db.query.tickets.findMany({
+    where: and(eq(tickets.outingId, args.outingId), isNull(tickets.revokedAt), scopeCondition),
+    orderBy: [asc(tickets.scope), asc(tickets.createdAt)],
   });
 
-  const groupRows = isActive
-    ? await db.query.tickets.findMany({
-        where: and(
-          eq(tickets.outingId, args.outingId),
-          eq(tickets.scope, "outing"),
-          isNull(tickets.revokedAt)
-        ),
-        orderBy: [asc(tickets.createdAt)],
-      })
-    : [];
-
-  return [...groupRows, ...personalRows].map((t) => ({
+  return rows.map((t) => ({
     id: t.id,
     scope: t.scope,
     participantId: t.participantId,
@@ -112,11 +87,6 @@ export async function listTicketsForParticipant(args: {
   }));
 }
 
-/**
- * Vue allégée des participants pour le sélecteur d'upload côté organisateur.
- * Filtré sur les RSVP actifs — un participant qui a dit `no` n'a pas besoin
- * d'un billet, l'inclure dans la liste serait piégeux.
- */
 export type TicketRecipientCandidate = {
   participantId: string;
   displayName: string;
@@ -137,7 +107,7 @@ export async function listTicketRecipientCandidates(
   });
   return rows.map((p) => ({
     participantId: p.id,
-    displayName: p.anonName ?? p.user?.name ?? "Anonyme",
+    displayName: displayNameOf(p) ?? "Anonyme",
     hasAccount: Boolean(p.userId),
     hasEmail: Boolean(p.user?.email ?? p.anonEmail),
   }));

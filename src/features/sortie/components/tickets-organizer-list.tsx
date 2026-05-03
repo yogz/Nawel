@@ -5,6 +5,7 @@ import { Trash2, Download, FileText, Users } from "lucide-react";
 import { revokeTicketAction } from "@/features/sortie/actions/ticket-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import type { TicketView } from "@/features/sortie/queries/ticket-queries";
+import { formatBytes } from "@/features/sortie/lib/format-bytes";
 
 type Props = {
   shortId: string;
@@ -15,16 +16,6 @@ const SCOPE_LABEL: Record<TicketView["scope"], string> = {
   participant: "Nominatif",
   outing: "Groupé",
 };
-
-function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} o`;
-  }
-  if (n < 1024 * 1024) {
-    return `${(n / 1024).toFixed(0)} Ko`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1)} Mo`;
-}
 
 export function TicketsOrganizerList({ shortId, tickets }: Props) {
   if (tickets.length === 0) {

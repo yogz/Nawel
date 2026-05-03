@@ -3,7 +3,6 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { createHash } from "node:crypto";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
@@ -16,22 +15,12 @@ import {
   sendParticipantTicketEmail,
 } from "@/features/sortie/lib/emails/send-ticket-emails";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
-import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
+import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { hashIp, TICKET_AUDIT_ACTION } from "@/features/sortie/lib/audit";
 import { TICKET_PATH_PREFIX, uploadTicket } from "@/features/sortie/lib/ticket-upload";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
-// Source unique pour les valeurs auditLog.action écrites par ticket-actions.
-// `varchar(64)` libre côté Drizzle — un objet const évite les typos
-// silencieuses qui briseraient la requêtabilité par `action`.
-const AUDIT_ACTION = {
-  TICKET_UPLOADED: "TICKET_UPLOADED",
-  TICKET_REVOKED: "TICKET_REVOKED",
-} as const;
-
-// Création : `participant` exige un participantId, `outing` l'interdit. Zod
-// discriminé reflète l'invariant DB (CHECK constraint en migration manuelle)
-// au niveau de l'action, retour utilisateur clair en cas de mauvais combo.
 const createTicketSchema = z.discriminatedUnion("scope", [
   z.object({
     shortId: shortIdSchema,
@@ -49,25 +38,13 @@ const revokeTicketSchema = z.object({
   ticketId: z.string().uuid(),
 });
 
-async function hashIp(): Promise<string | null> {
-  const ip = await getClientIp();
-  if (!ip || ip === "unknown") {
-    return null;
-  }
-  const pepper = process.env.BETTER_AUTH_SECRET ?? "";
-  return createHash("sha256")
-    .update(ip + pepper)
-    .digest("hex");
-}
-
 async function getOrganizerSession(outingShortId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
     return { error: "Connecte-toi pour gérer les billets." as const };
   }
-  // Stocker des billets implique une identité durable et vérifiée — sans
-  // ça l'audit log et l'accès participant deviennent ambigus. On refuse
-  // l'organisateur dont l'email n'a jamais été confirmé.
+  // Sans email vérifié, l'audit log et l'accès participant deviennent
+  // ambigus — on refuse même l'organisateur tant qu'il n'a pas confirmé.
   if (!session.user.emailVerified) {
     return { error: "Vérifie d'abord ton email avant de gérer des billets." as const };
   }
@@ -104,14 +81,12 @@ export async function createTicketAction(
     return { message: "Sélectionne un fichier." };
   }
 
-  const auth = await getOrganizerSession(data.shortId);
-  if ("error" in auth) {
-    return { message: auth.error };
+  const authResult = await getOrganizerSession(data.shortId);
+  if ("error" in authResult) {
+    return { message: authResult.error };
   }
-  const { session, outing } = auth;
+  const { session, outing } = authResult;
 
-  // Rate limit per-organizer pour éviter qu'un compte compromis spamme
-  // d'uploads (chaque ticket = 5 MB max sur Vercel Blob, quota partagé).
   const gate = await rateLimit({
     key: `ticket-upload:${session.user.id}`,
     limit: 30,
@@ -121,10 +96,8 @@ export async function createTicketAction(
     return { message: gate.message };
   }
 
-  // Pour scope='participant', valider que le participant existe ET qu'il
-  // peut potentiellement réclamer son billet (compte ou anonEmail). Sans
-  // ça, l'organisateur uploaderait pour rien — le destinataire n'aurait
-  // aucun moyen de se rattacher à la row.
+  // Refuser un participant sans compte ni email — son billet serait orphelin
+  // (aucun chemin de réclamation côté destinataire).
   let targetParticipantId: string | null = null;
   if (data.scope === "participant") {
     const target = await db.query.participants.findFirst({
@@ -172,7 +145,7 @@ export async function createTicketAction(
       await tx.insert(auditLog).values({
         outingId: outing.id,
         actorUserId: session.user.id,
-        action: AUDIT_ACTION.TICKET_UPLOADED,
+        action: TICKET_AUDIT_ACTION.TICKET_UPLOADED,
         ipHash: await hashIp(),
         payload: JSON.stringify({
           ticketId: inserted?.id,
@@ -185,14 +158,12 @@ export async function createTicketAction(
     });
   } catch (err) {
     console.error("[ticket-actions] insert failed, cleaning up blob", err);
-    // Si l'INSERT échoue, le ciphertext orphelin sur Blob est inutile
-    // mais consomme le quota — on tente un cleanup best-effort.
     await deleteBlobIfOurs(upload.blobUrl, TICKET_PATH_PREFIX, "ticket-actions");
     return { message: "Erreur lors de l'enregistrement du billet. Réessaie." };
   }
 
-  // Email best-effort, hors transaction : un échec d'envoi ne doit pas
-  // rollback un billet déjà persisté. Les modules safeSend logguent + return.
+  // Hors transaction : un échec d'envoi ne doit pas rollback un billet déjà
+  // persisté. safeSend log + return en interne.
   const emailOuting = {
     title: outing.title,
     fixedDatetime: outing.fixedDatetime,
@@ -230,9 +201,8 @@ export async function revokeTicketAction(
   }
   const { session, outing } = authResult;
 
-  // Conditionner l'UPDATE sur outingId protège contre une révocation
-  // cross-outing : si un id de ticket d'une autre sortie est passé, le
-  // WHERE ne matche rien et l'audit log ne s'exécute pas.
+  // Le filtre outingId empêche une révocation cross-outing même si un
+  // ticketId externe est passé.
   const ticket = await db.query.tickets.findFirst({
     where: and(eq(tickets.id, data.ticketId), eq(tickets.outingId, outing.id)),
   });
@@ -240,7 +210,6 @@ export async function revokeTicketAction(
     return { message: "Billet introuvable." };
   }
   if (ticket.revokedAt) {
-    // Idempotent : déjà révoqué = no-op silencieux côté UI.
     return {};
   }
 
@@ -256,7 +225,7 @@ export async function revokeTicketAction(
     await tx.insert(auditLog).values({
       outingId: outing.id,
       actorUserId: session.user.id,
-      action: AUDIT_ACTION.TICKET_REVOKED,
+      action: TICKET_AUDIT_ACTION.TICKET_REVOKED,
       ipHash: await hashIp(),
       payload: JSON.stringify({
         ticketId: ticket.id,
@@ -266,10 +235,8 @@ export async function revokeTicketAction(
     });
   });
 
-  // On ne supprime PAS le blob ici : le ticket reste consultable côté DB
-  // (audit, debug) et le revokedAt suffit à bloquer l'accès (voir
-  // ticket-auth.ts). Un cleanup retardé pourra purger les blobs des
-  // tickets revoked depuis > N jours.
+  // Le blob reste tant que la row existe : revokedAt suffit à bloquer
+  // l'accès, et garder le binaire permet un éventuel rollback côté admin.
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);

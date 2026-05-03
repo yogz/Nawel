@@ -1,5 +1,6 @@
 import { Download, FileText, Users } from "lucide-react";
 import type { TicketView } from "@/features/sortie/queries/ticket-queries";
+import { formatBytes } from "@/features/sortie/lib/format-bytes";
 
 type Props = {
   tickets: TicketView[];
@@ -9,16 +10,6 @@ const SCOPE_LABEL: Record<TicketView["scope"], string> = {
   participant: "Mon billet",
   outing: "Billet groupé",
 };
-
-function formatBytes(n: number): string {
-  if (n < 1024) {
-    return `${n} o`;
-  }
-  if (n < 1024 * 1024) {
-    return `${(n / 1024).toFixed(0)} Ko`;
-  }
-  return `${(n / (1024 * 1024)).toFixed(1)} Mo`;
-}
 
 export function TicketsParticipantList({ tickets }: Props) {
   if (tickets.length === 0) {

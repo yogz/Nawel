@@ -1,27 +1,9 @@
 import { and, eq, inArray, isNotNull, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { sendSortieEmail } from "@/lib/resend-sortie";
 import { participants } from "@drizzle/sortie-schema";
+import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { ticketAvailableEmail } from "./templates";
-
-const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
-
-function outingPath(slug: string | null, shortId: string): string {
-  return slug ? `/${slug}-${shortId}` : `/${shortId}`;
-}
-
-async function safeSend(args: {
-  to: string;
-  subject: string;
-  html: string;
-  trigger: string;
-}): Promise<void> {
-  try {
-    await sendSortieEmail({ to: args.to, subject: args.subject, html: args.html });
-  } catch (err) {
-    console.error(`[sortie/email] ${args.trigger} send failed`, err);
-  }
-}
+import { BASE_URL, outingPath, safeSend } from "./shared";
 
 type OutingForEmail = {
   title: string;
@@ -54,7 +36,7 @@ export async function sendParticipantTicketEmail(args: {
     });
     return;
   }
-  const name = row.anonName ?? row.user?.name ?? "toi";
+  const name = displayNameOf(row) ?? "toi";
   const ticketsUrl = `${BASE_URL}${outingPath(args.outing.slug, args.outing.shortId)}/billets`;
 
   const { subject, html } = ticketAvailableEmail({
@@ -100,7 +82,7 @@ export async function sendOutingTicketEmails(args: {
       if (!email) {
         return Promise.resolve();
       }
-      const name = p.anonName ?? p.user?.name ?? "toi";
+      const name = displayNameOf(p) ?? "toi";
       const { subject, html } = ticketAvailableEmail({
         outingTitle: args.outing.title,
         outingDate: args.outing.fixedDatetime,

@@ -63,9 +63,29 @@ export async function authorizeTicketAccess(input: TicketAuthInput): Promise<{
     return { decision: { ok: false, reason: "revoked" }, ticket, outingId: ticket.outingId };
   }
 
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.id, ticket.outingId),
-  });
+  // Outing + participant lookups dépendent uniquement du ticket déjà
+  // chargé : on les fire en parallèle. Le participantPromise dispatch sur
+  // le scope — owner pour 'participant', membership active pour 'outing'.
+  const participantPromise =
+    ticket.scope === "participant"
+      ? ticket.participantId
+        ? db.query.participants.findFirst({
+            where: eq(participants.id, ticket.participantId),
+          })
+        : Promise.resolve(undefined)
+      : db.query.participants.findFirst({
+          where: and(
+            eq(participants.outingId, ticket.outingId),
+            eq(participants.userId, input.sessionUserId),
+            inArray(participants.response, ["yes", "handle_own"])
+          ),
+        });
+
+  const [outing, participantRow] = await Promise.all([
+    db.query.outings.findFirst({ where: eq(outings.id, ticket.outingId) }),
+    participantPromise,
+  ]);
+
   if (!outing) {
     return { decision: { ok: false, reason: "not_found" }, ticket, outingId: ticket.outingId };
   }
@@ -84,24 +104,21 @@ export async function authorizeTicketAccess(input: TicketAuthInput): Promise<{
     };
   }
 
-  // Règle 6.a — l'organisateur a toujours accès à ses propres billets.
   if (outing.creatorUserId === input.sessionUserId) {
     return { decision: { ok: true, reason: "organizer" }, ticket, outingId: ticket.outingId };
   }
 
   if (ticket.scope === "participant") {
+    // CHECK constraint exclut participantId NULL ici, mais on garde la
+    // branche defense-in-depth si la contrainte saute (migration manquée).
     if (!ticket.participantId) {
-      // Inattendu : la CHECK constraint DB l'exclut. Defense-in-depth.
       return {
         decision: { ok: false, reason: "not_authorized" },
         ticket,
         outingId: ticket.outingId,
       };
     }
-    const owner = await db.query.participants.findFirst({
-      where: eq(participants.id, ticket.participantId),
-    });
-    if (owner && owner.userId === input.sessionUserId) {
+    if (participantRow && participantRow.userId === input.sessionUserId) {
       return { decision: { ok: true, reason: "owner" }, ticket, outingId: ticket.outingId };
     }
     return {
@@ -111,18 +128,9 @@ export async function authorizeTicketAccess(input: TicketAuthInput): Promise<{
     };
   }
 
-  // scope === 'outing' : tout participant ACTIF de la sortie peut accéder.
-  // Filtre sur `response IN ('yes','handle_own')` — un participant qui a dit
-  // 'no' ou 'interested' n'a pas réservé sa place et ne devrait pas pouvoir
-  // récupérer le billet groupé.
-  const activeMembership = await db.query.participants.findFirst({
-    where: and(
-      eq(participants.outingId, ticket.outingId),
-      eq(participants.userId, input.sessionUserId),
-      inArray(participants.response, ["yes", "handle_own"])
-    ),
-  });
-  if (activeMembership) {
+  // scope === 'outing' : participantRow contient une membership active
+  // si elle existe, sinon undefined → refus.
+  if (participantRow) {
     return {
       decision: { ok: true, reason: "outing_participant" },
       ticket,

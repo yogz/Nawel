@@ -25,7 +25,10 @@ const STRANGER_ID = "user_stranger";
 const OUTING_ID = "outing-uuid";
 const PARTICIPANT_ID = "participant-uuid";
 
-function makeTicket(overrides: Record<string, unknown> = {}) {
+// Drizzle infers very rich row types ; au runtime ticket-auth ne lit qu'un
+// sous-ensemble de colonnes. Cast `as never` pour le mock — sans ça il faut
+// reconstruire 30+ champs par test.
+function makeTicket(overrides: Record<string, unknown> = {}): never {
   return {
     id: "ticket-uuid",
     outingId: OUTING_ID,
@@ -44,17 +47,17 @@ function makeTicket(overrides: Record<string, unknown> = {}) {
     revokedByUserId: null,
     createdAt: new Date(),
     ...overrides,
-  };
+  } as never;
 }
 
-function makeOuting(overrides: Record<string, unknown> = {}) {
+function makeOuting(overrides: Record<string, unknown> = {}): never {
   return {
     id: OUTING_ID,
     creatorUserId: ORGANIZER_ID,
     status: "open",
     cancelledAt: null,
     ...overrides,
-  };
+  } as never;
 }
 
 describe("authorizeTicketAccess", () => {
@@ -154,6 +157,9 @@ describe("authorizeTicketAccess", () => {
       makeTicket({ scope: "outing", participantId: null })
     );
     vi.mocked(db.query.outings.findFirst).mockResolvedValueOnce(makeOuting());
+    // Membership lookup runs in parallel with outing lookup, so the
+    // participant fetch is fired even when the organizer branch will win.
+    vi.mocked(db.query.participants.findFirst).mockResolvedValueOnce(undefined);
     const result = await authorizeTicketAccess({
       ticketId: "ticket-uuid",
       sessionUserId: ORGANIZER_ID,
@@ -162,9 +168,6 @@ describe("authorizeTicketAccess", () => {
     if (result.decision.ok) {
       expect(result.decision.reason).toBe("organizer");
     }
-    // L'organizer court-circuite avant le lookup participants — économie de
-    // requête DB sur la branche la plus fréquente.
-    expect(db.query.participants.findFirst).not.toHaveBeenCalled();
   });
 
   it("allows the owner of a participant-scoped ticket", async () => {
