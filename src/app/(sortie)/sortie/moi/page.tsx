@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Wallet } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
@@ -125,6 +125,22 @@ export default async function ProfileSettingsPage() {
           )}
         </div>
       </header>
+
+      <Link
+        href="/moi/argent"
+        className="mb-14 flex items-center justify-between gap-4 rounded-lg border border-surface-400 bg-surface-50 p-4 transition-colors hover:border-hot-500 hover:bg-hot-500/5"
+      >
+        <div className="flex items-center gap-3">
+          <Wallet size={20} strokeWidth={2} className="text-hot-600" aria-hidden />
+          <div className="flex flex-col">
+            <span className="font-serif text-lg text-ink-700">Mon argent</span>
+            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+              ↳ dépenses, dettes et crédits, toutes sorties confondues
+            </span>
+          </div>
+        </div>
+        <ArrowUpRight size={16} strokeWidth={2.2} className="text-ink-400" aria-hidden />
+      </Link>
 
       <SectionHeading
         title="Ton profil"

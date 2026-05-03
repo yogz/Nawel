@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
 import { Copy, Eye, Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,10 @@ type Props = {
    * personnaliser le message de relance. Optionnel : seule la branche
    * `view === "creditor" && status === "pending"` le consomme. */
   outingTitle?: string;
+  /** Quand fourni, affiche un eyebrow cliquable au-dessus du nom
+   * pointant vers la sortie. Utilisé par la page globale `/moi/argent`
+   * où la même row peut concerner n'importe quelle sortie. */
+  outingHref?: string;
 };
 
 const TYPE_LABEL: Record<PaymentMethod["type"], string> = {
@@ -58,6 +63,7 @@ export function DebtRow({
   view,
   methods = [],
   outingTitle,
+  outingHref,
 }: Props) {
   const statusLabel =
     status === "confirmed"
@@ -68,6 +74,14 @@ export function DebtRow({
 
   return (
     <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
+      {outingHref && outingTitle && (
+        <Link
+          href={outingHref}
+          className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400 underline-offset-4 hover:text-acid-600 hover:underline"
+        >
+          ↳ {outingTitle}
+        </Link>
+      )}
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex flex-col">
           <span className="font-serif text-lg text-ink-700">{personName(other)}</span>

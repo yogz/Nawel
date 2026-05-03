@@ -10,26 +10,35 @@ function formatCents(cents: number): string {
   return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 }
 
-export function formatAllocationLabel(args: {
+export type AllocationPriceArgs = {
   isChild: boolean;
   pricingMode: "unique" | "category" | "nominal";
   uniquePriceCents: number | null;
   adultPriceCents: number | null;
   childPriceCents: number | null;
   nominalPriceCents: number | null;
-}): string {
-  const kind = args.isChild ? "place enfant" : "place adulte";
-  let cents = 0;
+};
+
+/**
+ * Résout le prix effectif d'une allocation selon le mode de pricing
+ * de son achat parent. Renvoie `null` quand le prix n'est pas défini
+ * (ex: mode `nominal` sans `nominalPriceCents` saisi) — le caller
+ * décide alors d'afficher « prix non renseigné » et d'exclure du total
+ * plutôt que de compter 0.
+ */
+export function getAllocationPriceCents(args: AllocationPriceArgs): number | null {
   switch (args.pricingMode) {
     case "unique":
-      cents = args.uniquePriceCents ?? 0;
-      break;
+      return args.uniquePriceCents;
     case "category":
-      cents = (args.isChild ? args.childPriceCents : args.adultPriceCents) ?? 0;
-      break;
+      return args.isChild ? args.childPriceCents : args.adultPriceCents;
     case "nominal":
-      cents = args.nominalPriceCents ?? 0;
-      break;
+      return args.nominalPriceCents;
   }
+}
+
+export function formatAllocationLabel(args: AllocationPriceArgs): string {
+  const kind = args.isChild ? "place enfant" : "place adulte";
+  const cents = getAllocationPriceCents(args) ?? 0;
   return cents > 0 ? `${kind} · ${formatCents(cents)}` : kind;
 }
