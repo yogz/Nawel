@@ -354,9 +354,17 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   month: "short",
 });
 
-function formatStartsAt(value: Date | null): string {
+// La valeur arrive sérialisée en string via JSON.parse — `Date` n'existe
+// pas en JSON, donc même si la query Drizzle expose `Date | null`, ce
+// que l'on reçoit côté client est `string | null`. Sans normalisation,
+// `Intl.DateTimeFormat.format(string)` throw un RangeError.
+function formatStartsAt(value: Date | string | null): string {
   if (!value) {
     return "à voter";
   }
-  return dateFormatter.format(value);
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "à voter";
+  }
+  return dateFormatter.format(date);
 }
