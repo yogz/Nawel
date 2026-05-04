@@ -143,10 +143,7 @@ export default async function ProfileSettingsPage() {
         <ArrowUpRight size={16} strokeWidth={2.2} className="text-ink-400" aria-hidden />
       </Link>
 
-      <SectionHeading
-        title="Ton profil"
-        subtitle="Ce que les autres voient quand ils tapent sur ton @handle."
-      />
+      <SectionHeading title="Ton profil" subtitle="Ta vitrine. Visible dès qu'on tape ton @." />
       <section className="mb-14">
         <div className="flex flex-col gap-4">
           <UsernameForm currentUsername={username} />
@@ -158,8 +155,21 @@ export default async function ProfileSettingsPage() {
         <>
           <SectionDivider />
           <SectionHeading
+            title="Tes suiveurs"
+            subtitle={
+              followers.length > 0
+                ? "Ils voient tes prochaines sorties dans leur fil. Retire-en un en deux taps."
+                : "Personne ne te suit encore. Le lien privé en-dessous, c'est pour ça."
+            }
+          />
+          <section className="mb-14">
+            <FollowerList followers={followers} />
+          </section>
+
+          <SectionDivider />
+          <SectionHeading
             title="Ton lien privé"
-            subtitle="Tes amis RSVP direct à toutes tes sorties depuis une seule URL secrète."
+            subtitle="Un lien. Ton cercle. Zéro compte à créer."
           />
           <section className="mb-14">
             <InviteLinkManager
@@ -167,19 +177,6 @@ export default async function ProfileSettingsPage() {
               token={row?.rsvpInviteToken ?? null}
               origin={origin}
             />
-          </section>
-
-          <SectionDivider />
-          <SectionHeading
-            title="Tes suiveurs"
-            subtitle={
-              followers.length > 0
-                ? "Ils voient tes prochaines sorties dans leur fil. Tu peux retirer un suiveur en deux taps."
-                : "Personne ne te suit encore. Partage ton lien privé pour qu'on puisse s'abonner."
-            }
-          />
-          <section className="mb-14">
-            <FollowerList followers={followers} />
           </section>
         </>
       )}
