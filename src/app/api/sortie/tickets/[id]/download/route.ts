@@ -15,6 +15,9 @@ function extFromMime(mimeType: string): string {
   if (mimeType === "application/pdf") {
     return "pdf";
   }
+  if (mimeType === "application/vnd.apple.pkpass") {
+    return "pkpass";
+  }
   return mimeType.split("/")[1] ?? "bin";
 }
 

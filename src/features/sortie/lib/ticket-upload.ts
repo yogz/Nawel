@@ -11,7 +11,20 @@ export const TICKET_PATH_PREFIX = "/sortie/tickets/";
 // Les billets sont quasi-exclusivement des PDF ; les rares billets sous
 // forme image arrivent en JPEG/PNG. Refuser HEIC évite la dépendance à
 // sharp pour le transcodage et garde le pipeline "upload chiffré" simple.
-const ALLOWED_MIME = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+//
+// `.pkpass` (Apple Wallet) est un ZIP signé contenant pass.json + assets.
+// `file-type` le détecte juste comme `application/zip` (pas de magic-byte
+// dédié) ; on autorise le combo (sniff zip ∧ MIME déclaré pkpass) et on
+// stocke le MIME pkpass pour que le download serve avec le bon Content-Type
+// — Safari/Mail iOS proposent alors l'ouverture dans Wallet directement.
+const PKPASS_MIME = "application/vnd.apple.pkpass";
+const ALLOWED_MIME = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  PKPASS_MIME,
+]);
 
 export type TicketUploadResult =
   | {
@@ -68,7 +81,14 @@ export async function uploadTicket(file: File): Promise<TicketUploadResult> {
     console.error("[ticket-upload] file-type sniff failed", err);
     return undefined;
   });
-  if (!sniff || !ALLOWED_MIME.has(sniff.mime)) {
+
+  // pkpass = ZIP magic-byte. file-type retourne "application/zip" — on
+  // upgrade vers le MIME pkpass uniquement si le client l'a déclaré
+  // explicitement (file.type côté browser).
+  const isPkpass = sniff?.mime === "application/zip" && file.type === PKPASS_MIME;
+  const storedMime = isPkpass ? PKPASS_MIME : sniff?.mime;
+
+  if (!sniff || !storedMime || !ALLOWED_MIME.has(storedMime)) {
     return { ok: false, message: "Le contenu du fichier ne correspond pas à son type déclaré." };
   }
 
@@ -107,7 +127,7 @@ export async function uploadTicket(file: File): Promise<TicketUploadResult> {
     return {
       ok: true,
       blobUrl: blob.url,
-      mimeType: sniff.mime,
+      mimeType: storedMime,
       sizeBytes,
       checksum,
       envelope,

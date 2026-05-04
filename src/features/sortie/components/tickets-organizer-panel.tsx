@@ -137,7 +137,7 @@ export function TicketsOrganizerPanel({ shortId, candidates }: Props) {
           id="ticket-file"
           name="file"
           type="file"
-          accept="application/pdf,image/jpeg,image/png,image/webp"
+          accept="application/pdf,image/jpeg,image/png,image/webp,.pkpass,application/vnd.apple.pkpass"
           required
           className="text-sm text-ink-600 file:mr-3 file:rounded-md file:border file:border-surface-400 file:bg-surface-50 file:px-3 file:py-2 file:text-sm file:text-ink-600 hover:file:border-hot-500"
         />
