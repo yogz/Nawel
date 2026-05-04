@@ -81,7 +81,7 @@ function TicketRow({ shortId, ticket }: { shortId: string; ticket: TicketView })
             )}
           </span>
           <span className="truncate text-sm text-ink-700">
-            {ticket.originalFilename ?? `billet-${ticket.id.slice(0, 8)}`}
+            {ticket.customLabel ?? ticket.originalFilename ?? `billet-${ticket.id.slice(0, 8)}`}
           </span>
           <span className="text-xs text-ink-400">
             {formatBytes(ticket.sizeBytes)} ·{" "}

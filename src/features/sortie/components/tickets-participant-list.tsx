@@ -34,7 +34,7 @@ export function TicketsParticipantList({ tickets }: Props) {
                   {SCOPE_LABEL[t.scope]}
                 </span>
                 <span className="truncate text-sm text-ink-700">
-                  {t.originalFilename ?? `billet-${t.id.slice(0, 8)}`}
+                  {t.customLabel ?? t.originalFilename ?? `billet-${t.id.slice(0, 8)}`}
                 </span>
                 <span className="text-xs text-ink-400">{formatBytes(t.sizeBytes)}</span>
               </div>

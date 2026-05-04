@@ -21,15 +21,24 @@ import { TICKET_PATH_PREFIX, uploadTicket } from "@/features/sortie/lib/ticket-u
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
+const customLabelSchema = z
+  .string()
+  .trim()
+  .max(100)
+  .optional()
+  .transform((v) => (v && v.length > 0 ? v : undefined));
+
 const createTicketSchema = z.discriminatedUnion("scope", [
   z.object({
     shortId: shortIdSchema,
     scope: z.literal("participant"),
     participantId: z.string().uuid(),
+    customLabel: customLabelSchema,
   }),
   z.object({
     shortId: shortIdSchema,
     scope: z.literal("outing"),
+    customLabel: customLabelSchema,
   }),
 ]);
 
@@ -121,6 +130,7 @@ export async function createTicketAction(
   }
 
   const originalFilename = file.name ? sanitizeStrictText(file.name, 255) || null : null;
+  const customLabel = data.customLabel ? sanitizeStrictText(data.customLabel, 100) || null : null;
 
   try {
     await db.transaction(async (tx) => {
@@ -132,6 +142,7 @@ export async function createTicketAction(
           participantId: targetParticipantId,
           blobUrl: upload.blobUrl,
           originalFilename,
+          customLabel,
           mimeType: upload.mimeType,
           sizeBytes: upload.sizeBytes,
           checksum: upload.checksum,

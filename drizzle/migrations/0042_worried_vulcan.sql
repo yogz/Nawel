@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."tickets" ADD COLUMN "custom_label" varchar(100);

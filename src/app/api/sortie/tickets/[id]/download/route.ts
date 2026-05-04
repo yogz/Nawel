@@ -11,13 +11,57 @@ import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function buildContentDisposition(filename: string | null, mimeType: string): string {
-  const ext = mimeType === "application/pdf" ? "pdf" : (mimeType.split("/")[1] ?? "bin");
+function extFromMime(mimeType: string): string {
+  if (mimeType === "application/pdf") {
+    return "pdf";
+  }
+  return mimeType.split("/")[1] ?? "bin";
+}
+
+/**
+ * Strip seulement ce qui peut casser le header HTTP : guillemets doubles,
+ * backslash, CR, LF, slash (path injection). Conserve lettres Unicode,
+ * chiffres, espaces, ponctuation usuelle. Le non-ASCII restant est porté
+ * par `filename*=UTF-8'…` côté header (RFC 5987).
+ */
+function sanitizeFilenameStem(input: string): string | null {
+  let out = "";
+  for (const ch of input) {
+    const code = ch.charCodeAt(0);
+    if (ch === '"' || ch === "\\" || ch === "/" || ch === "\r" || ch === "\n" || code < 32) {
+      continue;
+    }
+    out += ch;
+  }
+  out = out.trim();
+  return out.length > 0 ? out.slice(0, 100) : null;
+}
+
+function buildContentDisposition(
+  candidates: { customLabel: string | null; originalFilename: string | null },
+  mimeType: string
+): string {
+  const ext = extFromMime(mimeType);
   const fallback = `billet.${ext}`;
-  const safe = filename && /^[\w\-. ()]+$/.test(filename) ? filename : fallback;
-  // Inline pourrait laisser un PDF malveillant exécuter du JS dans notre
-  // origin et exfiltrer la session — toujours forcer le download.
-  return `attachment; filename="${safe}"`;
+
+  const stem = candidates.customLabel
+    ? sanitizeFilenameStem(candidates.customLabel)
+    : candidates.originalFilename
+      ? sanitizeFilenameStem(candidates.originalFilename)
+      : null;
+
+  const filename = stem ? (/\.[a-z0-9]{1,5}$/i.test(stem) ? stem : `${stem}.${ext}`) : fallback;
+
+  // RFC 5987 : filename* porte le nom natif (accents), filename= ASCII-only
+  // sert de fallback (les non-ASCII deviennent '_'). Inline pourrait laisser
+  // un PDF malveillant exécuter du JS dans notre origin — toujours attachment.
+  let asciiSafe = "";
+  for (const ch of filename) {
+    const code = ch.charCodeAt(0);
+    asciiSafe += code >= 32 && code <= 126 ? ch : "_";
+  }
+  const utf8 = encodeURIComponent(filename);
+  return `attachment; filename="${asciiSafe}"; filename*=UTF-8''${utf8}`;
 }
 
 /**
@@ -96,7 +140,6 @@ export async function GET(
     if (decision.reason === "outing_cancelled") {
       return NextResponse.json({ error: "outing_cancelled" }, { status: 410 });
     }
-    // not_authorized + anonymous_outing : 403 sans détail pour ne pas leak.
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -120,7 +163,6 @@ export async function GET(
   }
 
   // Fire-and-forget : pas besoin d'attendre l'audit pour servir le binaire.
-  // La latence économisée par requête est ~5-20ms et l'erreur est loggée.
   void db
     .insert(auditLog)
     .values({
@@ -143,7 +185,10 @@ export async function GET(
     headers: {
       "Content-Type": ticket.mimeType,
       "Content-Length": String(result.plaintext.length),
-      "Content-Disposition": buildContentDisposition(ticket.originalFilename, ticket.mimeType),
+      "Content-Disposition": buildContentDisposition(
+        { customLabel: ticket.customLabel, originalFilename: ticket.originalFilename },
+        ticket.mimeType
+      ),
       "Cache-Control": "private, no-store, max-age=0",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "no-referrer",
