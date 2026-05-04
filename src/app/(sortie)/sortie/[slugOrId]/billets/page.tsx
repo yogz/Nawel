@@ -106,6 +106,9 @@ export default async function TicketsPage({ params }: Props) {
             Uploade un PDF nominatif par participant, ou un seul fichier groupé pour tout le monde.
             Chiffré au repos, accessible uniquement aux comptes avec email vérifié.
           </p>
+          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            ↳ effacés 30 jours après la sortie · préviens tes invités d&rsquo;archiver
+          </p>
         </header>
 
         <div className="flex flex-col gap-8">
@@ -153,6 +156,9 @@ export default async function TicketsPage({ params }: Props) {
         <p className="mt-4 text-[15px] leading-[1.5] text-ink-500">
           Cliquer sur télécharger ouvre directement le fichier — il est servi déchiffré uniquement à
           toi, et ne s&rsquo;ouvre pas dans le navigateur.
+        </p>
+        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+          ↳ disponibles 30 jours après la sortie · sauvegarde-les avant
         </p>
       </header>
 
