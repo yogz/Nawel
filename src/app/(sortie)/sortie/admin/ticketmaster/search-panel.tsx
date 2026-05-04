@@ -80,9 +80,13 @@ export function TicketmasterAdminSearchPanel() {
       )}
 
       {results && results.length > 0 && (
-        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+        <div className="grid gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
           <ResultsList results={results} selectedId={selectedId} onSelect={setSelectedId} />
-          {selected && <EventDetail event={selected} />}
+          {selected && (
+            <div className="min-w-0">
+              <EventDetail event={selected} />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -108,12 +112,14 @@ function ResultsList({
             <button
               type="button"
               onClick={() => onSelect(r.id)}
-              className={`flex w-full flex-col gap-1 p-3 text-left transition-colors ${
+              className={`flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors ${
                 isActive ? "bg-acid-600/10" : "hover:bg-surface-100"
               }`}
             >
-              <span className="truncate font-serif text-base text-ink-700">{r.title}</span>
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
+              <span className="truncate text-[13px] font-medium leading-snug text-ink-700">
+                {r.title}
+              </span>
+              <span className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-ink-400">
                 {fmtDate(r.startsAt)}
                 {venue?.city ? ` · ${venue.city}` : ""}
               </span>
@@ -141,7 +147,10 @@ function EventDetail({ event }: { event: TicketmasterAdminEvent }) {
 function Header({ event }: { event: TicketmasterAdminEvent }) {
   return (
     <header className="flex flex-col gap-2">
-      <h2 className="text-2xl leading-tight font-black tracking-[-0.02em] text-ink-700">
+      <h2
+        className="text-xl leading-tight font-black tracking-[-0.02em] text-ink-700 sm:text-2xl"
+        style={{ textWrap: "balance" }}
+      >
         {event.title}
       </h2>
       <div className="flex flex-wrap items-center gap-3 text-[12px]">
@@ -170,28 +179,48 @@ function ImagesGrid({ images }: { images: TicketmasterAdminEvent["images"] }) {
   if (images.length === 0) {
     return <Section title={`Images (0)`}>Aucune image dans le payload.</Section>;
   }
+  // Tri : non-fallback d'abord, puis ratio (16_9 > 4_3 > 3_2 > autres),
+  // puis largeur descendante. Met les visuels les plus exploitables en
+  // tête (la prod cherche d'abord du 16:9 large pour les hero).
+  const RATIO_RANK: Record<string, number> = { "16_9": 0, "4_3": 1, "3_2": 2 };
+  const sorted = [...images].sort((a, b) => {
+    if (a.fallback !== b.fallback) return a.fallback ? 1 : -1;
+    const ra = RATIO_RANK[a.ratio ?? ""] ?? 99;
+    const rb = RATIO_RANK[b.ratio ?? ""] ?? 99;
+    if (ra !== rb) return ra - rb;
+    return (b.width ?? 0) - (a.width ?? 0);
+  });
   return (
     <Section title={`Images (${images.length})`}>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {images.map((img, i) => (
-          <li
-            key={`${img.url}-${i}`}
-            className="flex flex-col gap-1 overflow-hidden rounded-md border border-surface-400 bg-surface-50"
-          >
+      <ul className="flex flex-col divide-y divide-surface-400 rounded-md border border-surface-400 bg-surface-50">
+        {sorted.map((img, i) => (
+          <li key={`${img.url}-${i}`} className="flex items-center gap-3 p-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={img.url}
-              alt={`TM image ${img.ratio ?? "?"} ${img.width ?? "?"}×${img.height ?? "?"}`}
+              alt=""
               loading="lazy"
-              className="aspect-video w-full object-cover"
+              className="h-14 w-24 shrink-0 rounded object-cover"
             />
-            <div className="flex flex-col gap-1 p-2">
-              <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-ink-400">
-                {img.ratio ?? "?"} · {img.width ?? "?"}×{img.height ?? "?"}
-                {img.fallback && " · fallback"}
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-700">
+                {img.ratio ?? "?"}
+                <span className="ml-2 text-ink-400">
+                  {img.width ?? "?"}×{img.height ?? "?"}
+                </span>
+                {img.fallback && <span className="ml-2 text-hot-600">fallback</span>}
               </span>
-              <CopyButton value={img.url} label="copier URL" />
+              <a
+                href={img.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate font-mono text-[10.5px] text-ink-400 underline-offset-4 hover:text-acid-700 hover:underline"
+                title={img.url}
+              >
+                {img.url}
+              </a>
             </div>
+            <CopyButton value={img.url} label="copier" />
           </li>
         ))}
       </ul>
@@ -383,7 +412,7 @@ function CopyButton({ value, label }: { value: string; label: string }) {
     <button
       type="button"
       onClick={copy}
-      className="inline-flex w-fit items-center gap-1 rounded-full border border-surface-400 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-700"
+      className="inline-flex w-fit shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-surface-400 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-700"
     >
       <Copy size={11} strokeWidth={2.2} />
       {copied ? "copié" : label}
