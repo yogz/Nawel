@@ -5,6 +5,7 @@ import {
   BarChart3,
   CalendarRange,
   Mail,
+  Ticket,
   UserPlus,
   Users,
   type LucideIcon,
@@ -48,6 +49,12 @@ const TILES: Tile[] = [
     label: "Assignations",
     blurb: "Ajouter manuellement un user (par email) à une sortie.",
     Icon: UserPlus,
+  },
+  {
+    href: "/admin/ticketmaster",
+    label: "Ticketmaster",
+    blurb: "Inspecteur Discovery API — toutes images, venues, presales.",
+    Icon: Ticket,
   },
 ];
 
