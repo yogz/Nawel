@@ -22,7 +22,7 @@ import { HomeMonthAgenda } from "@/features/sortie/components/home-month-agenda"
 import { FollowedOutingsRow } from "@/features/sortie/components/followed-outings-row";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
-import { HomeSearchTrigger } from "@/features/sortie/components/home-search-trigger";
+import { HomeSearch } from "@/features/sortie/components/home-search";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import {
   EyebrowFocusProvider,
@@ -140,7 +140,7 @@ export default async function SortieHome() {
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
       <nav className="mb-8 flex items-center gap-3">
         <PendingActionsInbox actions={pendingActions} />
-        <HomeSearchTrigger />
+        <HomeSearch />
         <Link
           href="/moi"
           aria-label="Mon profil"

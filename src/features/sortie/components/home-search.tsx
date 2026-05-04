@@ -3,8 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
+import { Drawer as DrawerPrimitive } from "vaul";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import type { SearchedOuting } from "@/features/sortie/queries/search-my-outings";
 
@@ -19,35 +18,32 @@ type FetchState =
   | { status: "ready"; outings: SearchedOuting[]; query: string }
   | { status: "error" };
 
-export function HomeSearchSheet({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (next: boolean) => void;
-}) {
+// Composant unique trigger + drawer fusionnés. La fusion est nécessaire
+// pour partager `inputRef` entre le bouton (focus synchrone iOS) et
+// l'input de la sheet, sans prop drilling absurde.
+//
+// On utilise Vaul (`vaul` lib) plutôt que Radix Dialog (notre Sheet)
+// pour deux raisons iOS-critiques :
+//   - `repositionInputs={true}` : le drawer se repositionne au-dessus
+//     du clavier iOS quand l'input prend le focus (vs Radix qui laisse
+//     le clavier mâcher la moitié inférieure).
+//   - Scroll lock iOS-aware : Vaul n'utilise pas le hack
+//     `position: fixed; top: -scrollY` de `react-remove-scroll` (utilisé
+//     par Radix Dialog) qui faisait sauter la page sous-jacente.
+//   - `autoFocus={true}` : Vaul focus le 1er input dans la fenêtre
+//     user-gesture iOS, là où un `setTimeout` casse le geste.
+export function HomeSearch() {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   const [query, setQuery] = React.useState("");
   const [state, setState] = React.useState<FetchState>({ status: "idle" });
   const [recents, setRecents] = React.useState<string[]>([]);
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const { inset: keyboardInset } = useKeyboardInset();
 
-  // iOS Safari ignore régulièrement `autoFocus` HTML — il faut focus
-  // après mount via un user-gesture path. Le trigger qui ouvre la sheet
-  // est déjà un click, donc autorisé : on force le focus au tick suivant
-  // pour que le clavier monte dès l'ouverture.
-  React.useEffect(() => {
-    if (!open) {
-      return;
-    }
-    const t = window.setTimeout(() => inputRef.current?.focus(), 50);
-    return () => window.clearTimeout(t);
-  }, [open]);
-
-  // Charge les recents au mount, et au ré-ouvert (sinon on garde une
-  // copie stale si une autre instance de la sheet en a écrit). Cheap.
+  // Charge les recents à chaque ouverture (sinon copie stale si une autre
+  // instance a écrit). Cheap.
   React.useEffect(() => {
     if (!open) {
       return;
@@ -67,8 +63,7 @@ export function HomeSearchSheet({
     }
   }, [open]);
 
-  // Reset à chaque fermeture pour ne pas afficher un vieux résultat au
-  // ré-ouvrir.
+  // Reset à la fermeture pour ne pas réafficher un vieux résultat.
   React.useEffect(() => {
     if (!open) {
       setQuery("");
@@ -77,9 +72,20 @@ export function HomeSearchSheet({
     }
   }, [open]);
 
-  // Debounce + AbortController : si l'user tape vite, on cancel les
-  // requêtes en vol pour éviter la race où une vieille réponse écrase
-  // une plus récente sur réseau lent.
+  // Cmd+K / Ctrl+K — desktop. Inerte sur mobile (pas de combo clavier).
+  React.useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setOpen(true);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Debounce + AbortController : cancel les requêtes en vol pour éviter
+  // qu'une vieille réponse écrase une plus récente sur réseau lent.
   React.useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length < MIN_QUERY_LENGTH) {
@@ -123,18 +129,15 @@ export function HomeSearchSheet({
     try {
       window.localStorage.setItem(RECENTS_KEY, JSON.stringify(next));
     } catch {
-      // localStorage plein ou désactivé : silencieux, la feature recents
-      // est confort, pas critique.
+      // localStorage indispo : feature confort, pas critique.
     }
   }
 
   function handlePick(outing: SearchedOuting) {
     pushRecent(query);
-    onOpenChange(false);
-    // Pas de préfixe `/sortie/` côté client : `proxy.ts` rewrite
-    // `sortie.colist.fr/X` → `/sortie/X` en interne. Le segment URL
-    // attendu est `<slug>-<shortId>` (ou shortId nu) — un slug seul
-    // renvoie notFound() côté `extractShortId`.
+    setOpen(false);
+    // Pas de préfixe `/sortie/` : `proxy.ts` rewrite `sortie.colist.fr/X`
+    // → `/sortie/X`. La route détail attend `<slug>-<shortId>`.
     router.push(`/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`);
   }
 
@@ -163,81 +166,116 @@ export function HomeSearchSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="top"
-        className="flex max-h-[100dvh] flex-col gap-0 border-b border-surface-300 bg-surface-50 p-0"
-        aria-describedby={undefined}
-      >
-        <SheetTitle className="sr-only">Recherche de sorties</SheetTitle>
-        <SheetDescription className="sr-only">
-          Tape un titre ou un lieu pour retrouver une sortie.
-        </SheetDescription>
-
-        <div className="mx-auto w-full max-w-2xl px-6 pt-6">
-          <label htmlFor="sortie-search-input" className="sr-only">
-            Rechercher une sortie
-          </label>
-          <div className="flex items-baseline gap-3 border-b border-acid-600 pb-2">
-            <span
-              aria-hidden="true"
-              className="font-mono text-[10px] uppercase tracking-[0.22em] text-acid-600"
-            >
-              ─ trouve
-            </span>
-            <input
-              ref={inputRef}
-              id="sortie-search-input"
-              type="search"
-              inputMode="search"
-              enterKeyHint="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="titre, lieu…"
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              // text-base évite le zoom auto iOS qui se déclenche dès
-              // que le font-size de l'input descend sous 16px.
-              className="flex-1 bg-transparent text-base text-ink-700 placeholder:text-ink-400 focus:outline-none sm:text-lg"
-              aria-controls="sortie-search-results"
-              aria-autocomplete="list"
-            />
-          </div>
-        </div>
-
-        <div
-          id="sortie-search-results"
-          className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto overscroll-contain px-6 py-6"
-          // Réserve la place du clavier iOS sous la liste : sans ça le
-          // dernier résultat est masqué par le clavier et inatteignable.
-          // `overscroll-contain` empêche le scroll de remonter à la page
-          // sous-jacente quand on dépasse le bas de la liste.
-          style={{ paddingBottom: `calc(1.5rem + ${keyboardInset}px)` }}
-          aria-live="polite"
+    <DrawerPrimitive.Root
+      open={open}
+      onOpenChange={setOpen}
+      direction="top"
+      // Vaul focus le 1er focusable au mount de l'animation, dans la
+      // fenêtre où iOS Safari accepte de monter le clavier.
+      autoFocus
+      // Repositionne le drawer pour rester au-dessus du clavier iOS.
+      // Defaut true depuis vaul 0.9, on l'explicite pour la clarté.
+      repositionInputs
+      // Pattern éditorial — pas le zoom-out iOS-natif sur le background.
+      shouldScaleBackground={false}
+      // Restore le focus sur le trigger à la fermeture (Radix-like).
+      onClose={() => triggerRef.current?.focus()}
+    >
+      <DrawerPrimitive.Trigger asChild>
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label="Rechercher une sortie"
+          className="group flex h-11 min-w-0 flex-1 touch-manipulation items-center gap-2 border-b border-surface-400 px-2 text-left transition-colors duration-300 hover:border-acid-600 focus-visible:border-acid-600 focus-visible:outline-none active:border-acid-600"
         >
-          {state.status === "idle" && query.trim().length < MIN_QUERY_LENGTH ? (
-            <RecentsBlock recents={recents} onPick={handleRecentClick} />
-          ) : state.status === "loading" ? (
-            <LoadingBlock />
-          ) : state.status === "error" ? (
-            <ErrorBlock />
-          ) : state.status === "ready" && state.outings.length === 0 ? (
-            <NoResultsBlock query={state.query} onClose={() => onOpenChange(false)} />
-          ) : state.status === "ready" ? (
-            <ResultsList
-              outings={state.outings}
-              query={state.query}
-              activeIndex={activeIndex}
-              onPick={handlePick}
-              onHover={setActiveIndex}
-            />
-          ) : null}
-        </div>
-      </SheetContent>
-    </Sheet>
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400 transition-colors duration-300 group-hover:text-acid-600 group-focus-visible:text-acid-600">
+            ─ trouve
+          </span>
+          <span
+            aria-hidden="true"
+            className="ml-auto hidden font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400 md:inline"
+          >
+            ⌘K
+          </span>
+        </button>
+      </DrawerPrimitive.Trigger>
+      <DrawerPrimitive.Portal>
+        <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" />
+        <DrawerPrimitive.Content
+          // direction=top : le drawer descend depuis le haut, max 92dvh
+          // pour laisser un peu de fond visible (signal de modalité).
+          // Vaul applique automatiquement les transforms via
+          // data-vaul-drawer-direction="top".
+          className="fixed inset-x-0 top-0 z-[200] flex max-h-[92dvh] flex-col rounded-b-3xl border-b border-surface-300 bg-surface-50 outline-none"
+        >
+          <DrawerPrimitive.Title className="sr-only">Recherche de sorties</DrawerPrimitive.Title>
+          <DrawerPrimitive.Description className="sr-only">
+            Tape un titre ou un lieu pour retrouver une sortie.
+          </DrawerPrimitive.Description>
+
+          <div className="mx-auto w-full max-w-2xl px-6 pt-6">
+            <label htmlFor="sortie-search-input" className="sr-only">
+              Rechercher une sortie
+            </label>
+            <div className="flex items-baseline gap-3 border-b border-acid-600 pb-2">
+              <span
+                aria-hidden="true"
+                className="font-mono text-[10px] uppercase tracking-[0.22em] text-acid-600"
+              >
+                ─ trouve
+              </span>
+              <input
+                ref={inputRef}
+                id="sortie-search-input"
+                type="search"
+                inputMode="search"
+                enterKeyHint="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="titre, lieu…"
+                spellCheck={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                // text-base (16px+) évite le zoom auto iOS sur focus.
+                className="flex-1 bg-transparent text-base text-ink-700 placeholder:text-ink-400 focus:outline-none sm:text-lg"
+                aria-controls="sortie-search-results"
+                aria-autocomplete="list"
+              />
+            </div>
+          </div>
+
+          <div
+            id="sortie-search-results"
+            // overflow-y-auto + overscroll-contain : la liste scrolle en
+            // interne sans déclencher de scroll de la page sous-jacente.
+            // Vaul gère le scroll lock du body, pas besoin du hook
+            // useKeyboardInset (repositionInputs s'occupe du clavier).
+            className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto overscroll-contain px-6 pb-6 pt-6"
+            aria-live="polite"
+          >
+            {state.status === "idle" && query.trim().length < MIN_QUERY_LENGTH ? (
+              <RecentsBlock recents={recents} onPick={handleRecentClick} />
+            ) : state.status === "loading" ? (
+              <LoadingBlock />
+            ) : state.status === "error" ? (
+              <ErrorBlock />
+            ) : state.status === "ready" && state.outings.length === 0 ? (
+              <NoResultsBlock query={state.query} onClose={() => setOpen(false)} />
+            ) : state.status === "ready" ? (
+              <ResultsList
+                outings={state.outings}
+                query={state.query}
+                activeIndex={activeIndex}
+                onPick={handlePick}
+                onHover={setActiveIndex}
+              />
+            ) : null}
+          </div>
+        </DrawerPrimitive.Content>
+      </DrawerPrimitive.Portal>
+    </DrawerPrimitive.Root>
   );
 }
 
@@ -380,9 +418,8 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
 });
 
 // La valeur arrive sérialisée en string via JSON.parse — `Date` n'existe
-// pas en JSON, donc même si la query Drizzle expose `Date | null`, ce
-// que l'on reçoit côté client est `string | null`. Sans normalisation,
-// `Intl.DateTimeFormat.format(string)` throw un RangeError.
+// pas en JSON, donc côté client on reçoit `string | null`. Sans
+// normalisation, `Intl.DateTimeFormat.format(string)` throw RangeError.
 function formatStartsAt(value: Date | string | null): string {
   if (!value) {
     return "à voter";
