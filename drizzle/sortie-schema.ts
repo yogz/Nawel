@@ -374,6 +374,11 @@ export const tickets = sortie.table(
     // construire le Content-Disposition au download. Optionnel : si absent,
     // on tombe sur "ticket-<shortId>.<ext>" généré côté serveur.
     originalFilename: varchar("original_filename", { length: 255 }),
+    // Label custom saisi par l'organisateur ("Billet de Léa", "Voucher resto").
+    // Quand renseigné, prend la priorité sur originalFilename pour l'affichage
+    // UI ET pour le filename du Content-Disposition. Sanitisé via
+    // sanitizeStrictText pour rester compatible avec un header HTTP.
+    customLabel: varchar("custom_label", { length: 100 }),
     // MIME stocké (post-validation magic-byte). Pas le MIME déclaré par le
     // navigateur — celui-ci peut mentir. file-type sniffing fait foi.
     mimeType: varchar("mime_type", { length: 100 }).notNull(),

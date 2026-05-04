@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull, or } from "drizzle-orm";
+import { and, asc, count, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { participants, tickets } from "@drizzle/sortie-schema";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
@@ -16,6 +16,7 @@ export type TicketView = {
   mimeType: string;
   sizeBytes: number;
   originalFilename: string | null;
+  customLabel: string | null;
   createdAt: Date;
   revokedAt: Date | null;
 };
@@ -44,6 +45,7 @@ export async function listTicketsForOrganizer(outingId: string): Promise<TicketV
     mimeType: t.mimeType,
     sizeBytes: t.sizeBytes,
     originalFilename: t.originalFilename,
+    customLabel: t.customLabel,
     createdAt: t.createdAt,
     revokedAt: t.revokedAt,
   }));
@@ -82,6 +84,7 @@ export async function listTicketsForParticipant(args: {
     mimeType: t.mimeType,
     sizeBytes: t.sizeBytes,
     originalFilename: t.originalFilename,
+    customLabel: t.customLabel,
     createdAt: t.createdAt,
     revokedAt: t.revokedAt,
   }));
@@ -92,23 +95,52 @@ export type TicketRecipientCandidate = {
   displayName: string;
   hasAccount: boolean;
   hasEmail: boolean;
+  /** Compte de billets nominatifs actifs (non révoqués) déjà attribués. */
+  activeTicketCount: number;
 };
 
 export async function listTicketRecipientCandidates(
   outingId: string
 ): Promise<TicketRecipientCandidate[]> {
-  const rows = await db.query.participants.findMany({
-    where: and(
-      eq(participants.outingId, outingId),
-      inArray(participants.response, ["yes", "handle_own"])
-    ),
-    orderBy: [asc(participants.respondedAt)],
-    with: { user: { columns: { name: true, email: true } } },
-  });
+  // Une seule passe SQL : LEFT JOIN tickets actifs scope='participant' agrégé
+  // par participant_id. Évite un N+1 si la sortie a beaucoup de participants.
+  const rows = await db
+    .select({
+      id: participants.id,
+      userId: participants.userId,
+      anonName: participants.anonName,
+      anonEmail: participants.anonEmail,
+      respondedAt: participants.respondedAt,
+      userName: sql<string | null>`u.name`,
+      userEmail: sql<string | null>`u.email`,
+      activeTicketCount: count(tickets.id).as("active_ticket_count"),
+    })
+    .from(participants)
+    .leftJoin(sql`"public"."user" u`, sql`u.id = ${participants.userId}`)
+    .leftJoin(
+      tickets,
+      and(
+        eq(tickets.participantId, participants.id),
+        eq(tickets.scope, "participant"),
+        isNull(tickets.revokedAt)
+      )
+    )
+    .where(
+      and(
+        eq(participants.outingId, outingId),
+        inArray(participants.response, ["yes", "handle_own"])
+      )
+    )
+    .groupBy(participants.id, sql`u.name`, sql`u.email`)
+    .orderBy(asc(participants.respondedAt));
+
   return rows.map((p) => ({
     participantId: p.id,
-    displayName: displayNameOf(p) ?? "Anonyme",
+    displayName:
+      displayNameOf({ anonName: p.anonName, user: p.userName ? { name: p.userName } : null }) ??
+      "Anonyme",
     hasAccount: Boolean(p.userId),
-    hasEmail: Boolean(p.user?.email ?? p.anonEmail),
+    hasEmail: Boolean(p.userEmail ?? p.anonEmail),
+    activeTicketCount: Number(p.activeTicketCount),
   }));
 }

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createTicketAction } from "@/features/sortie/actions/ticket-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
@@ -14,6 +15,17 @@ type Props = {
 };
 
 type Scope = "participant" | "outing";
+
+function recipientLabel(c: TicketRecipientCandidate): string {
+  const parts: string[] = [c.displayName];
+  if (!c.hasAccount && c.hasEmail) {
+    parts.push("pas encore connecté");
+  }
+  if (c.activeTicketCount > 0) {
+    parts.push(`${c.activeTicketCount} billet${c.activeTicketCount > 1 ? "s" : ""} déjà`);
+  }
+  return parts.length > 1 ? `${parts[0]} — ${parts.slice(1).join(" · ")}` : parts[0]!;
+}
 
 export function TicketsOrganizerPanel({ shortId, candidates }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
@@ -92,8 +104,7 @@ export function TicketsOrganizerPanel({ shortId, candidates }: Props) {
             >
               {selectableCandidates.map((c) => (
                 <option key={c.participantId} value={c.participantId}>
-                  {c.displayName}
-                  {!c.hasAccount && c.hasEmail ? " — pas encore connecté" : ""}
+                  {recipientLabel(c)}
                 </option>
               ))}
             </select>
@@ -130,6 +141,27 @@ export function TicketsOrganizerPanel({ shortId, candidates }: Props) {
           required
           className="text-sm text-ink-600 file:mr-3 file:rounded-md file:border file:border-surface-400 file:bg-surface-50 file:px-3 file:py-2 file:text-sm file:text-ink-600 hover:file:border-hot-500"
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="ticket-label" className="text-[13px] font-medium text-ink-500">
+          Nom du billet <span className="text-ink-300">(facultatif)</span>
+        </Label>
+        <Input
+          id="ticket-label"
+          name="customLabel"
+          type="text"
+          maxLength={100}
+          placeholder="Ex : Billet d'entrée, Voucher resto…"
+          autoComplete="off"
+        />
+        <p className="text-xs text-ink-400">
+          Affiché dans la liste et utilisé comme nom de fichier au téléchargement. Si vide, le nom
+          original est conservé.
+        </p>
+        {errors.customLabel?.[0] && (
+          <p className="text-xs text-erreur-700">{errors.customLabel[0]}</p>
+        )}
       </div>
 
       {state.message && (
