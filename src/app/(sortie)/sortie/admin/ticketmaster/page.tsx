@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function AdminTicketmasterPage() {
   return (
-    <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
+    <main className="mx-auto max-w-5xl px-6 pb-24 pt-10">
       <nav className="mb-8">
         <Link
           href="/admin"

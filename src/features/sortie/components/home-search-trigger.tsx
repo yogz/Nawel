@@ -55,7 +55,7 @@ export function HomeSearchTrigger() {
         aria-label="Rechercher une sortie"
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="group flex h-11 min-w-0 flex-1 items-center gap-2 border-b border-surface-400 px-2 text-left transition-colors duration-300 hover:border-acid-600 focus-visible:border-acid-600 focus-visible:outline-none"
+        className="group flex h-11 min-w-0 flex-1 touch-manipulation items-center gap-2 border-b border-surface-400 px-2 text-left transition-colors duration-300 hover:border-acid-600 focus-visible:border-acid-600 focus-visible:outline-none active:border-acid-600"
       >
         <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400 transition-colors duration-300 group-hover:text-acid-600 group-focus-visible:text-acid-600">
           ─ trouve

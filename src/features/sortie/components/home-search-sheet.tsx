@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
 import type { SearchedOuting } from "@/features/sortie/queries/search-my-outings";
 
 const RECENTS_KEY = "sortie:recent-searches";
@@ -30,6 +31,19 @@ export function HomeSearchSheet({
   const [state, setState] = React.useState<FetchState>({ status: "idle" });
   const [recents, setRecents] = React.useState<string[]>([]);
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const { inset: keyboardInset } = useKeyboardInset();
+
+  // iOS Safari ignore régulièrement `autoFocus` HTML — il faut focus
+  // après mount via un user-gesture path. Le trigger qui ouvre la sheet
+  // est déjà un click, donc autorisé : on force le focus au tick suivant
+  // pour que le clavier monte dès l'ouverture.
+  React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const t = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(t);
+  }, [open]);
 
   // Charge les recents au mount, et au ré-ouvert (sinon on garde une
   // copie stale si une autre instance de la sheet en a écrit). Cheap.
@@ -170,7 +184,8 @@ export function HomeSearchSheet({
               ref={inputRef}
               id="sortie-search-input"
               type="search"
-              autoFocus
+              inputMode="search"
+              enterKeyHint="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -179,7 +194,9 @@ export function HomeSearchSheet({
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
-              className="flex-1 bg-transparent text-lg text-ink-700 placeholder:text-ink-400 focus:outline-none"
+              // text-base évite le zoom auto iOS qui se déclenche dès
+              // que le font-size de l'input descend sous 16px.
+              className="flex-1 bg-transparent text-base text-ink-700 placeholder:text-ink-400 focus:outline-none sm:text-lg"
               aria-controls="sortie-search-results"
               aria-autocomplete="list"
             />
@@ -188,7 +205,12 @@ export function HomeSearchSheet({
 
         <div
           id="sortie-search-results"
-          className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto px-6 py-6"
+          className="mx-auto w-full max-w-2xl flex-1 overflow-y-auto overscroll-contain px-6 py-6"
+          // Réserve la place du clavier iOS sous la liste : sans ça le
+          // dernier résultat est masqué par le clavier et inatteignable.
+          // `overscroll-contain` empêche le scroll de remonter à la page
+          // sous-jacente quand on dépasse le bas de la liste.
+          style={{ paddingBottom: `calc(1.5rem + ${keyboardInset}px)` }}
           aria-live="polite"
         >
           {state.status === "idle" && query.trim().length < MIN_QUERY_LENGTH ? (
@@ -231,7 +253,7 @@ function RecentsBlock({ recents, onPick }: { recents: string[]; onPick: (value: 
             <button
               type="button"
               onClick={() => onPick(value)}
-              className="rounded-full border border-surface-300 px-3 py-1 text-sm text-ink-700 transition-colors duration-300 hover:border-acid-600 hover:text-acid-600"
+              className="touch-manipulation rounded-full border border-surface-300 px-4 py-2 text-sm text-ink-700 transition-colors duration-150 hover:border-acid-600 hover:text-acid-600 active:border-acid-600 active:text-acid-600"
             >
               {value}
             </button>
@@ -271,7 +293,7 @@ function NoResultsBlock({ query, onClose }: { query: string; onClose: () => void
       <Link
         href={href}
         onClick={onClose}
-        className="self-start rounded-full border border-acid-600 px-4 py-2 text-sm font-medium text-acid-600 transition-colors duration-300 hover:bg-acid-600 hover:text-surface-50"
+        className="touch-manipulation inline-flex min-h-[44px] items-center self-start rounded-full border border-acid-600 px-5 py-2.5 text-sm font-medium text-acid-600 transition-colors duration-150 hover:bg-acid-600 hover:text-surface-50 active:bg-acid-600 active:text-surface-50"
       >
         {trimmed ? `crée « ${trimmed} »` : "organise une sortie"}
       </Link>
@@ -304,7 +326,7 @@ function ResultsList({
               aria-selected={active}
               onMouseEnter={() => onHover(index)}
               onClick={() => onPick(outing)}
-              className={`flex w-full items-baseline gap-3 rounded-md px-3 py-3 text-left transition-colors duration-150 ${
+              className={`flex min-h-[56px] w-full touch-manipulation items-baseline gap-3 rounded-md px-3 py-4 text-left transition-colors duration-150 active:bg-surface-100 ${
                 active ? "bg-surface-100" : "hover:bg-surface-100"
               }`}
             >
