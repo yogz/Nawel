@@ -22,6 +22,7 @@ import { HomeMonthAgenda } from "@/features/sortie/components/home-month-agenda"
 import { FollowedOutingsRow } from "@/features/sortie/components/followed-outings-row";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { PendingActionsInbox } from "@/features/sortie/components/pending-actions-inbox";
+import { HomeSearchTrigger } from "@/features/sortie/components/home-search-trigger";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import {
   EyebrowFocusProvider,
@@ -105,9 +106,8 @@ export default async function SortieHome() {
   // en hero "ça approche" — ce serait raconter qu'il y va alors qu'il
   // a dit non.
   const heroOuting =
-    upcoming.find(
-      (o) => o.startsAt !== null && myRsvpByOuting.get(o.id)?.response !== "no"
-    ) ?? null;
+    upcoming.find((o) => o.startsAt !== null && myRsvpByOuting.get(o.id)?.response !== "no") ??
+    null;
 
   // Read the avatar from the DB rather than the session: Better Auth caches
   // `session.user.image` in the cookie at sign-in time, so a fresh upload
@@ -138,12 +138,13 @@ export default async function SortieHome() {
 
   return (
     <main className="mx-auto min-h-[100dvh] max-w-2xl px-6 pb-32 pt-6">
-      <nav className="mb-8 flex items-center justify-between gap-3">
+      <nav className="mb-8 flex items-center gap-3">
         <PendingActionsInbox actions={pendingActions} />
+        <HomeSearchTrigger />
         <Link
           href="/moi"
           aria-label="Mon profil"
-          className="ml-auto rounded-full ring-1 ring-surface-400 transition-all duration-300 hover:ring-acid-600 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
+          className="rounded-full ring-1 ring-surface-400 transition-all duration-300 hover:ring-acid-600 motion-safe:active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hot-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-50"
         >
           <UserAvatar name={session.user.name} image={avatarImage} size={44} />
         </Link>
