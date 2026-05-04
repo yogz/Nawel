@@ -323,11 +323,19 @@ export function rsvpClosedEmail(args: {
     ? ` · <span style="color:${INK_BODY};">${escapeHtml(args.location)}</span>`
     : "";
 
-  const closingLine = args.awaitingPick
-    ? `Les votes sont figés, plus de changement possible. L&rsquo;orga va choisir un créneau parmi ceux qui ont remporté le plus d&rsquo;avis — tu recevras un mail dès que la date est tranchée.`
-    : args.fixedDatetime
-      ? `La deadline est passée, plus personne ne peut répondre. Rendez-vous <strong>${escapeHtml(formatOutingDateConversational(args.fixedDatetime))}</strong>${locationLine}.`
-      : `La deadline est passée, plus personne ne peut répondre. Rendez-vous à la date prévue${locationLine}.`;
+  let closingLine: string;
+  let preheader: string;
+  if (args.awaitingPick) {
+    closingLine = `Les votes sont figés, plus de changement possible. L&rsquo;orga va choisir un créneau parmi ceux qui ont remporté le plus d&rsquo;avis — tu recevras un mail dès que la date est tranchée.`;
+    preheader = `Votes figés. L'orga choisit le créneau bientôt.`;
+  } else if (args.fixedDatetime) {
+    const when = formatOutingDateConversational(args.fixedDatetime);
+    closingLine = `La deadline est passée, plus personne ne peut répondre. Rendez-vous <strong>${escapeHtml(when)}</strong>${locationLine}.`;
+    preheader = `La liste est close. ${when}.`;
+  } else {
+    closingLine = `La deadline est passée, plus personne ne peut répondre. Rendez-vous à la date prévue${locationLine}.`;
+    preheader = `La liste est close. À bientôt.`;
+  }
 
   const body = `
     <h1 style="margin:0 0 14px;${H1}">${title} — la liste est close</h1>
@@ -338,12 +346,6 @@ export function rsvpClosedEmail(args: {
       ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
   `;
-
-  const preheader = args.awaitingPick
-    ? `Votes figés. L'orga choisit le créneau bientôt.`
-    : args.fixedDatetime
-      ? `La liste est close. ${formatOutingDateConversational(args.fixedDatetime)}.`
-      : `La liste est close. À bientôt.`;
 
   return {
     subject: `${args.outingTitle} — la liste est close`,

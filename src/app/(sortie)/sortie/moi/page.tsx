@@ -60,20 +60,21 @@ export default async function ProfileSettingsPage() {
     );
   }
 
-  const row = await db.query.user.findFirst({
-    where: eq(user.id, session.user.id),
-    columns: {
-      id: true,
-      name: true,
-      image: true,
-      username: true,
-      rsvpInviteToken: true,
-      calendarToken: true,
-      bio: true,
-    },
-  });
-
-  const followers = await listFollowers(session.user.id);
+  const [row, followers] = await Promise.all([
+    db.query.user.findFirst({
+      where: eq(user.id, session.user.id),
+      columns: {
+        id: true,
+        name: true,
+        image: true,
+        username: true,
+        rsvpInviteToken: true,
+        calendarToken: true,
+        bio: true,
+      },
+    }),
+    listFollowers(session.user.id),
+  ]);
 
   // Build the absolute origin from request headers so dev (sortie.localhost)
   // and prod (sortie.colist.fr) both produce a correct shareable URL without

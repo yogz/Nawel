@@ -8,6 +8,24 @@ import { del } from "@vercel/blob";
 const BLOB_HOST_SUFFIX = ".public.blob.vercel-storage.com";
 
 /**
+ * Predicate version de la garde — utile pour les batch cleaners qui
+ * appellent `del(string[])` directement et veulent filtrer la liste
+ * avant l'envoi (gain de round-trips HTTP vs un `deleteBlobIfOurs`
+ * par url).
+ */
+export function isOurBlobUrl(url: string | null | undefined, pathPrefix: string): boolean {
+  if (!url) {
+    return false;
+  }
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.endsWith(BLOB_HOST_SUFFIX) && parsed.pathname.startsWith(pathPrefix);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Best-effort delete d'un blob Vercel sous un chemin attendu (`/sortie/events/`,
  * `/sortie/avatars/`, etc.). Validations :
  *   - URL parseable
@@ -27,16 +45,7 @@ export async function deleteBlobIfOurs(
   if (!url) {
     return;
   }
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    console.warn(`[${scope}] previous URL is not valid, skipping delete`, { url });
-    return;
-  }
-  const isOurs =
-    parsed.hostname.endsWith(BLOB_HOST_SUFFIX) && parsed.pathname.startsWith(pathPrefix);
-  if (!isOurs) {
+  if (!isOurBlobUrl(url, pathPrefix)) {
     return;
   }
   try {
