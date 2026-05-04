@@ -16,9 +16,10 @@
  * response reports them.
  */
 
-import { and, eq, isNull, lte, notExists, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, lte, notExists, sql } from "drizzle-orm";
+import { del } from "@vercel/blob";
 import { db } from "@/lib/db";
-import { outings, purchases } from "@drizzle/sortie-schema";
+import { outings, outingTimeslots, purchases, tickets } from "@drizzle/sortie-schema";
 import {
   sendJ1ReminderEmails,
   sendRsvpClosedEmails,
@@ -34,8 +35,11 @@ export type SweeperReport = {
   closedRsvps: number;
   j1Reminders: number;
   markedPast: number;
+  ticketsCleanedUp: number;
   errors: string[];
 };
+
+const TICKET_RETENTION_DAYS = 30;
 
 /**
  * Runs the full sweep. Accepts a clock-override for tests — prod calls it
@@ -46,6 +50,7 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     closedRsvps: 0,
     j1Reminders: 0,
     markedPast: 0,
+    ticketsCleanedUp: 0,
     errors: [],
   };
 
@@ -195,6 +200,104 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     if (flipped.length > 0) {
       report.markedPast += 1;
     }
+  }
+
+  // --- 4. Cleanup tickets des sorties passées >30j + revoked orphelins -----
+  // Hard-delete row + blob. Le blob est illisible sans `SORTIE_TICKET_KEY_*`,
+  // garder une row sans son blob n'a aucune valeur audit. Quatre catégories :
+  //   A. Sortie 'fixed' : fixedDatetime + 30j passé
+  //   B. Sortie 'vote' : chosenTimeslot.startsAt + 30j passé
+  //   C. Sortie cancelled depuis + 30j (cas remboursement clos)
+  //   D. Ticket revokedAt + 30j (orphelin abandonné par revokeTicketAction
+  //      qui laisse intentionnellement le blob "pour rollback admin")
+  //
+  // Idempotence : Vercel peut delivery un cron event 2× (doc officielle
+  // "occasionally deliver the same cron event more than once"). On pose
+  // un advisory lock Postgres pour qu'une seconde invocation concurrente
+  // skip ce job sans collision sur les mêmes IDs.
+  // postgres-js retourne un RowList qui est un array — pas d'enveloppe
+  // `.rows`. On type le row attendu pour récupérer `locked` proprement.
+  const lockResult = await db.execute<{ locked: boolean }>(
+    sql`SELECT pg_try_advisory_lock(hashtext('sortie:ticket-cleanup')) AS locked`
+  );
+  const acquired = lockResult[0]?.locked === true;
+  if (acquired) {
+    try {
+      const ticketCutoff = new Date(now.getTime() - TICKET_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+
+      const ticketsToDelete = await db
+        .select({
+          id: tickets.id,
+          blobUrl: tickets.blobUrl,
+          outingShortId: outings.shortId,
+        })
+        .from(tickets)
+        .leftJoin(outings, eq(outings.id, tickets.outingId))
+        .leftJoin(outingTimeslots, eq(outingTimeslots.id, outings.chosenTimeslotId))
+        .where(
+          sql`(
+            ${outings.fixedDatetime} <= ${ticketCutoff.toISOString()}
+            OR ${outingTimeslots.startsAt} <= ${ticketCutoff.toISOString()}
+            OR (${outings.cancelledAt} is not null AND ${outings.cancelledAt} <= ${ticketCutoff.toISOString()})
+            OR ${tickets.revokedAt} <= ${ticketCutoff.toISOString()}
+          )`
+        )
+        .limit(SWEEPER_BATCH_LIMIT);
+
+      if (ticketsToDelete.length > 0) {
+        // 1) Batch delete des blobs en multi-URL — signature officielle
+        //    `del(string[])` du package @vercel/blob, 1 round-trip HTTP au
+        //    lieu de N. On filtre via le préfixe `/sortie/tickets/` AVANT
+        //    d'appeler del() — garde-fou paranoïaque pour ne pas toucher
+        //    de blobs hors de notre scope.
+        const blobUrls = ticketsToDelete
+          .map((t) => t.blobUrl)
+          .filter((u): u is string => typeof u === "string" && u.length > 0)
+          .filter((u) => {
+            try {
+              const parsed = new URL(u);
+              return (
+                parsed.hostname.endsWith(".public.blob.vercel-storage.com") &&
+                parsed.pathname.startsWith("/sortie/tickets/")
+              );
+            } catch {
+              return false;
+            }
+          });
+        try {
+          if (blobUrls.length > 0) {
+            await del(blobUrls);
+          }
+        } catch (err) {
+          // Best-effort : on log et on continue avec le delete DB. Les
+          // blobs non supprimés deviennent orphelins (illisibles) et
+          // pourront être ramassés par un audit ultérieur. Sans ça, un
+          // glitch Vercel Blob bloquerait tout le cleanup.
+          report.errors.push(`ticket-cleanup:blob-batch:${(err as Error).message}`);
+        }
+
+        // 2) Batch DELETE des rows en une query DB. Si ça throw, le tick
+        //    suivant reprendra les mêmes IDs (les blobs étant déjà
+        //    supprimés, le del() retentera 404-safe — Vercel Blob ignore
+        //    les URLs qui n'existent plus).
+        try {
+          const ids = ticketsToDelete.map((t) => t.id);
+          const deleted = await db
+            .delete(tickets)
+            .where(inArray(tickets.id, ids))
+            .returning({ id: tickets.id });
+          report.ticketsCleanedUp += deleted.length;
+        } catch (err) {
+          report.errors.push(`ticket-cleanup:db-batch:${(err as Error).message}`);
+        }
+      }
+    } finally {
+      await db.execute(sql`SELECT pg_advisory_unlock(hashtext('sortie:ticket-cleanup'))`);
+    }
+  } else {
+    // Une autre invocation tient déjà le lock — on skip silencieusement.
+    // Comportement voulu pour l'idempotence concurrente.
+    report.errors.push("ticket-cleanup:skipped:lock-held");
   }
 
   return report;
