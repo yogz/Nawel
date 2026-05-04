@@ -21,6 +21,7 @@ import { del } from "@vercel/blob";
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, purchases, tickets } from "@drizzle/sortie-schema";
 import { isOurBlobUrl } from "@/features/sortie/lib/blob-cleanup";
+import { TICKET_PATH_PREFIX } from "@/features/sortie/lib/ticket-upload";
 import {
   sendJ1ReminderEmails,
   sendRsvpClosedEmails,
@@ -32,7 +33,10 @@ import {
 // status-guardées et donc idempotentes par lot).
 const SWEEPER_BATCH_LIMIT = 500;
 
-const TICKETS_BLOB_PREFIX = "/sortie/tickets/";
+// Scope du `pg_try_advisory_lock` posé par la phase 4. Une constante
+// pour garantir que lock et unlock parlent du même hash — un drift
+// silencieux ferait fuiter le lock jusqu'à la fin de session.
+const TICKET_CLEANUP_LOCK_SCOPE = "sortie:ticket-cleanup";
 
 export type SweeperReport = {
   closedRsvps: number;
@@ -210,89 +214,104 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
     }
   }
 
-  // --- 4. Cleanup tickets des sorties passées >30j + revoked orphelins -----
-  // Hard-delete row + blob. Le blob est illisible sans `SORTIE_TICKET_KEY_*`,
-  // garder une row sans son blob n'a aucune valeur audit. Quatre catégories :
-  //   A. Sortie 'fixed' : fixedDatetime + 30j passé
-  //   B. Sortie 'vote' : chosenTimeslot.startsAt + 30j passé
-  //   C. Sortie cancelled depuis + 30j (cas remboursement clos)
-  //   D. Ticket revokedAt + 30j (orphelin abandonné par revokeTicketAction
-  //      qui laisse intentionnellement le blob "pour rollback admin")
-  //
-  // Idempotence : Vercel peut delivery un cron event 2× (doc officielle
-  // "occasionally deliver the same cron event more than once"). On pose
-  // un advisory lock Postgres pour qu'une seconde invocation concurrente
-  // skip ce job sans collision sur les mêmes IDs.
+  await cleanupExpiredTickets(now, report);
+
+  return report;
+}
+
+/**
+ * Phase 4 du sweeper — hard-delete tickets row + blob pour les sorties
+ * passées >30j et les orphelins déjà revoked. Le blob est illisible sans
+ * `SORTIE_TICKET_KEY_*`, garder une row sans son blob n'a aucune valeur
+ * audit. Quatre catégories ciblées :
+ *   A. Sortie 'fixed' : fixedDatetime + 30j passé
+ *   B. Sortie 'vote'  : chosenTimeslot.startsAt + 30j passé
+ *   C. Sortie cancelled depuis + 30j (cas remboursement clos)
+ *   D. Ticket revokedAt + 30j (orphelin laissé par revokeTicketAction
+ *      qui garde intentionnellement le blob "pour rollback admin")
+ *
+ * Idempotence : Vercel peut delivery un cron event 2× (doc officielle
+ * "occasionally deliver the same cron event more than once"). On pose
+ * un advisory lock Postgres pour qu'une seconde invocation concurrente
+ * skip ce job sans collision sur les mêmes IDs.
+ */
+async function cleanupExpiredTickets(now: Date, report: SweeperReport): Promise<void> {
   // postgres-js retourne un RowList qui est un array — pas d'enveloppe
   // `.rows`. On type le row attendu pour récupérer `locked` proprement.
   const lockResult = await db.execute<{ locked: boolean }>(
-    sql`SELECT pg_try_advisory_lock(hashtext('sortie:ticket-cleanup')) AS locked`
+    sql`SELECT pg_try_advisory_lock(hashtext(${TICKET_CLEANUP_LOCK_SCOPE})) AS locked`
   );
   const acquired = lockResult[0]?.locked === true;
   if (!acquired) {
     report.ticketCleanupSkipped = true;
-    return report;
+    return;
   }
 
   try {
     const ticketCutoff = new Date(now.getTime() - TICKET_RETENTION_DAYS * 24 * 60 * 60 * 1000);
 
-    const ticketsToDelete = await db
-      .select({ id: tickets.id, blobUrl: tickets.blobUrl })
-      .from(tickets)
-      // tickets.outingId est NOT NULL + FK : innerJoin permet au planner
-      // de prendre une route hash/merge sans réserver le cas "ticket
-      // sans outing" (impossible).
-      .innerJoin(outings, eq(outings.id, tickets.outingId))
-      // chosenTimeslotId est nullable → leftJoin obligatoire (sortie en
-      // mode fixed n'a pas de timeslot).
-      .leftJoin(outingTimeslots, eq(outingTimeslots.id, outings.chosenTimeslotId))
-      .where(
-        or(
-          lte(outings.fixedDatetime, ticketCutoff),
-          lte(outingTimeslots.startsAt, ticketCutoff),
-          and(isNotNull(outings.cancelledAt), lte(outings.cancelledAt, ticketCutoff)),
-          lte(tickets.revokedAt, ticketCutoff)
+    let ticketsToDelete: { id: string; blobUrl: string | null }[] = [];
+    try {
+      ticketsToDelete = await db
+        .select({ id: tickets.id, blobUrl: tickets.blobUrl })
+        .from(tickets)
+        // tickets.outingId est NOT NULL + FK : innerJoin permet au planner
+        // de prendre une route hash/merge sans réserver le cas "ticket
+        // sans outing" (impossible).
+        .innerJoin(outings, eq(outings.id, tickets.outingId))
+        // chosenTimeslotId est nullable → leftJoin obligatoire (sortie en
+        // mode fixed n'a pas de timeslot).
+        .leftJoin(outingTimeslots, eq(outingTimeslots.id, outings.chosenTimeslotId))
+        .where(
+          or(
+            lte(outings.fixedDatetime, ticketCutoff),
+            lte(outingTimeslots.startsAt, ticketCutoff),
+            and(isNotNull(outings.cancelledAt), lte(outings.cancelledAt, ticketCutoff)),
+            lte(tickets.revokedAt, ticketCutoff)
+          )
         )
-      )
-      .limit(SWEEPER_BATCH_LIMIT);
+        .limit(SWEEPER_BATCH_LIMIT);
+    } catch (err) {
+      report.errors.push(`ticket-cleanup:select:${(err as Error).message}`);
+      return;
+    }
 
-    if (ticketsToDelete.length > 0) {
-      // del(string[]) en 1 round-trip HTTP. Filtre paranoïaque sur le
-      // host + path préfixe via `isOurBlobUrl` — pour ne pas toucher
-      // un blob d'un autre service si une row a été corrompue.
-      const blobUrls = ticketsToDelete
-        .map((t) => t.blobUrl)
-        .filter((u): u is string => isOurBlobUrl(u, TICKETS_BLOB_PREFIX));
-      try {
-        if (blobUrls.length > 0) {
-          await del(blobUrls);
-        }
-      } catch (err) {
-        // Best-effort : on log et on continue avec le delete DB. Les
-        // blobs non supprimés deviennent orphelins (illisibles) et
-        // pourront être ramassés par un audit ultérieur. Sans ça, un
-        // glitch Vercel Blob bloquerait tout le cleanup.
-        report.errors.push(`ticket-cleanup:blob-batch:${(err as Error).message}`);
-      }
+    if (ticketsToDelete.length === 0) {
+      return;
+    }
 
-      // Si le DELETE throw, le tick suivant reprendra les mêmes IDs
-      // (les blobs étant déjà supprimés, del() retentera 404-safe —
-      // Vercel Blob ignore les URLs qui n'existent plus).
-      try {
-        const ids = ticketsToDelete.map((t) => t.id);
-        const deleted = await db
-          .delete(tickets)
-          .where(inArray(tickets.id, ids))
-          .returning({ id: tickets.id });
-        report.ticketsCleanedUp += deleted.length;
-      } catch (err) {
-        report.errors.push(`ticket-cleanup:db-batch:${(err as Error).message}`);
+    // del(string[]) en 1 round-trip HTTP. Filtre paranoïaque sur le
+    // host + path préfixe via `isOurBlobUrl` — pour ne pas toucher
+    // un blob d'un autre service si une row a été corrompue.
+    const blobUrls = ticketsToDelete
+      .map((t) => t.blobUrl)
+      .filter((u): u is string => isOurBlobUrl(u, TICKET_PATH_PREFIX));
+    try {
+      if (blobUrls.length > 0) {
+        await del(blobUrls);
       }
+    } catch (err) {
+      // Best-effort : on log et on continue avec le delete DB. Les
+      // blobs non supprimés deviennent orphelins (illisibles) et
+      // pourront être ramassés par un audit ultérieur. Sans ça, un
+      // glitch Vercel Blob bloquerait tout le cleanup.
+      report.errors.push(`ticket-cleanup:blob-batch:${(err as Error).message}`);
+    }
+
+    // Si le DELETE throw, le tick suivant reprendra les mêmes IDs
+    // (les blobs étant déjà supprimés, del() retentera 404-safe —
+    // Vercel Blob ignore les URLs qui n'existent plus).
+    try {
+      const ids = ticketsToDelete.map((t) => t.id);
+      const deleted = await db
+        .delete(tickets)
+        .where(inArray(tickets.id, ids))
+        .returning({ id: tickets.id });
+      report.ticketsCleanedUp += deleted.length;
+    } catch (err) {
+      report.errors.push(`ticket-cleanup:db-batch:${(err as Error).message}`);
     }
   } finally {
-    await db.execute(sql`SELECT pg_advisory_unlock(hashtext('sortie:ticket-cleanup'))`);
+    await db.execute(sql`SELECT pg_advisory_unlock(hashtext(${TICKET_CLEANUP_LOCK_SCOPE}))`);
   }
-
-  return report;
 }
