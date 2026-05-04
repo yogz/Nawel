@@ -51,6 +51,8 @@ export const paymentMethodType = sortie.enum("payment_method_type", [
 
 export const debtStatus = sortie.enum("debt_status", ["pending", "declared_paid", "confirmed"]);
 
+export const ticketScope = sortie.enum("ticket_scope", ["participant", "outing"]);
+
 // === outings ===
 
 export const outings = sortie.table(
@@ -329,6 +331,79 @@ export const debts = sortie.table(
   })
 );
 
+// === tickets ===
+
+// Fichiers de billet uploadés par l'organisateur. Le ciphertext AES-256-GCM
+// vit sur Vercel Blob ; iv/authTag/keyId sont stockés ici, séparés. Une
+// fuite de DB seule = ciphertext inaccessible (pas la clé). Une fuite de
+// Blob seule = ciphertext sans metadata pour le déchiffrer. Les deux clés
+// (env-side TICKET key + DB metadata) doivent fuiter pour exposer un
+// billet.
+//
+// Deux scopes :
+//   - 'participant' : billet nominatif (participantId NOT NULL)
+//   - 'outing'      : billet groupé partagé par tous les participants
+//                     "actifs" (response IN ('yes','handle_own')) — à enforcer
+//                     côté ticket-auth, le schema seul ne le contraint pas
+//
+// L'invariant (scope, participantId) est validé côté action (zod
+// discriminated union) ET côté DB (CHECK ajouté en migration manuelle —
+// drizzle-kit ne génère pas les CHECK pour le moment).
+//
+// Authorization : l'organisateur de l'outing PEUT toujours accéder ;
+// les participants accèdent selon leur scope match. Cf. ticket-auth.ts.
+export const tickets = sortie.table(
+  "tickets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    outingId: uuid("outing_id")
+      .notNull()
+      .references(() => outings.id, { onDelete: "cascade" }),
+    scope: ticketScope("scope").notNull(),
+    // NULL ssi scope = 'outing'. CHECK constraint en DB enforce l'invariant.
+    // Cascade delete : si le participant détenteur est supprimé, son billet
+    // nominatif disparaît avec lui (cohérent — il n'y a plus de destinataire).
+    participantId: uuid("participant_id").references(() => participants.id, {
+      onDelete: "cascade",
+    }),
+    // Vercel Blob URL — ne JAMAIS exposer côté client. L'accès se fait
+    // exclusivement via la route serveur /api/tickets/[id]/download qui
+    // vérifie l'auth, déchiffre et stream avec Content-Disposition: attachment.
+    blobUrl: text("blob_url").notNull(),
+    // Nom de fichier original sanitisé (sanitizeStrictText). Réutilisé pour
+    // construire le Content-Disposition au download. Optionnel : si absent,
+    // on tombe sur "ticket-<shortId>.<ext>" généré côté serveur.
+    originalFilename: varchar("original_filename", { length: 255 }),
+    // MIME stocké (post-validation magic-byte). Pas le MIME déclaré par le
+    // navigateur — celui-ci peut mentir. file-type sniffing fait foi.
+    mimeType: varchar("mime_type", { length: 100 }).notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    // SHA-256 du PLAINTEXT (avant chiffrement). Détecte une corruption ou
+    // une altération du blob pendant le déchiffrement (le tag GCM détecte
+    // déjà la falsification, mais le checksum couvre aussi le cas où on
+    // ré-encrypte/migre les fichiers et qu'on veut vérifier l'identité).
+    checksum: varchar("checksum", { length: 64 }).notNull(),
+    // AES-256-GCM envelope (ciphertext sur Blob, ces 3 champs sur DB).
+    encryptionKeyId: varchar("encryption_key_id", { length: 50 }).notNull(),
+    iv: varchar("iv", { length: 32 }).notNull(), // base64url, 12 bytes décodés
+    authTag: varchar("auth_tag", { length: 32 }).notNull(), // base64url, 16 bytes décodés
+    uploadedByUserId: text("uploaded_by_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokedByUserId: text("revoked_by_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    // Couvre les deux gros use cases : "billets de cette sortie" (page
+    // organisateur) et filtre par scope ("uniquement les billets groupés").
+    outingScopeIdx: index("sortie_tickets_outing_scope_idx").on(t.outingId, t.scope),
+    participantIdx: index("sortie_tickets_participant_idx").on(t.participantId),
+  })
+);
+
 // === parse_stats (telemetry per-host pour le parser d'URL) ===
 
 // Compteurs agrégés par hostname pour le scraper OG/JSON-LD de
@@ -465,6 +540,7 @@ export const outingsRelations = relations(outings, ({ many, one }) => ({
   magicLinks: many(magicLinks),
   purchases: many(purchases),
   debts: many(debts),
+  tickets: many(tickets),
   creatorUser: one(user, {
     fields: [outings.creatorUserId],
     references: [user.id],
@@ -530,6 +606,18 @@ export const participantsRelations = relations(participants, ({ one, many }) => 
     references: [user.id],
   }),
   votes: many(timeslotVotes),
+  tickets: many(tickets),
+}));
+
+export const ticketsRelations = relations(tickets, ({ one }) => ({
+  outing: one(outings, {
+    fields: [tickets.outingId],
+    references: [outings.id],
+  }),
+  participant: one(participants, {
+    fields: [tickets.participantId],
+    references: [participants.id],
+  }),
 }));
 
 export const timeslotVotesRelations = relations(timeslotVotes, ({ one }) => ({

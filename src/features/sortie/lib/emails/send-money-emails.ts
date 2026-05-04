@@ -1,6 +1,5 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { sendSortieEmail } from "@/lib/resend-sortie";
 import { debts, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import {
   debtReminderEmail,
@@ -9,23 +8,7 @@ import {
   purchaseConfirmedEmail,
   type PaymentMethodPreview,
 } from "./templates";
-
-/**
- * Money-layer emails share a lot of setup — resolving a participant's
- * contact email, their display name, and the buyer's payment methods.
- * Centralised here so three server actions can drop-in and not think
- * about Drizzle joins.
- *
- * Every sender catches its own Resend errors and logs them; the parent
- * server action treats an email failure as non-fatal so the money state
- * transition never gets rolled back by a transient mail hiccup.
- */
-
-const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(/\/$/, "");
-
-function outingPath(slug: string | null, shortId: string): string {
-  return slug ? `/${slug}-${shortId}` : `/${shortId}`;
-}
+import { BASE_URL, outingPath, safeSend } from "./shared";
 
 type ContactInfo = {
   participantId: string;
@@ -58,19 +41,6 @@ async function fetchMethodsFor(participantId: string): Promise<PaymentMethodPrev
     .from(purchaserPaymentMethods)
     .where(eq(purchaserPaymentMethods.participantId, participantId));
   return rows;
-}
-
-async function safeSend(args: {
-  to: string;
-  subject: string;
-  html: string;
-  trigger: string;
-}): Promise<void> {
-  try {
-    await sendSortieEmail({ to: args.to, subject: args.subject, html: args.html });
-  } catch (err) {
-    console.error(`[sortie/email] ${args.trigger} send failed`, err);
-  }
 }
 
 /**

@@ -504,23 +504,57 @@ export const auth = betterAuth({
         // Best-effort : un échec ne doit pas faire crasher le signin.
         after: async (session) => {
           try {
-            const cookieTokenHash = await readParticipantTokenHash();
-            if (!cookieTokenHash || !session.userId) {
+            if (!session.userId) {
               return;
             }
-            await db
-              .update(sortieParticipants)
-              .set({
-                userId: session.userId,
-                anonEmail: null,
-                updatedAt: new Date(),
-              })
-              .where(
-                and(
-                  eq(sortieParticipants.cookieTokenHash, cookieTokenHash),
-                  isNull(sortieParticipants.userId)
-                )
-              );
+            // Cookie hash + user lookup sont indépendants — fire en parallèle
+            // pour ne pas séquentialiser sur le hot path post-signin.
+            const [cookieTokenHash, u] = await Promise.all([
+              readParticipantTokenHash(),
+              db.query.user.findFirst({
+                where: (row, { eq }) => eq(row.id, session.userId),
+                columns: { email: true, emailVerified: true },
+              }),
+            ]);
+
+            const cookieClaim = cookieTokenHash
+              ? db
+                  .update(sortieParticipants)
+                  .set({
+                    userId: session.userId,
+                    anonEmail: null,
+                    updatedAt: new Date(),
+                  })
+                  .where(
+                    and(
+                      eq(sortieParticipants.cookieTokenHash, cookieTokenHash),
+                      isNull(sortieParticipants.userId)
+                    )
+                  )
+              : Promise.resolve();
+
+            // L'email-claim ne s'exécute que si Better Auth a prouvé l'email :
+            // OAuth trusté (Google), magic-link, ou email-verification après
+            // inscription password. Sans ce gate, un sign-up password sur
+            // l'email d'autrui volerait les RSVP attachés à cet email.
+            const emailClaim =
+              u?.emailVerified && u.email
+                ? db
+                    .update(sortieParticipants)
+                    .set({
+                      userId: session.userId,
+                      anonEmail: null,
+                      updatedAt: new Date(),
+                    })
+                    .where(
+                      and(
+                        eq(sortieParticipants.anonEmail, u.email),
+                        isNull(sortieParticipants.userId)
+                      )
+                    )
+                : Promise.resolve();
+
+            await Promise.all([cookieClaim, emailClaim]);
           } catch (err) {
             console.error("[auth] sortie cookie→userId merge failed:", err);
           }

@@ -288,6 +288,13 @@
       "when": 1777794133425,
       "tag": "0040_mushy_lilith",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1777844384237,
+      "tag": "0041_naive_johnny_blaze",
+      "breakpoints": true
     }
   ]
 }

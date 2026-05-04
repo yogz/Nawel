@@ -26,6 +26,7 @@ import {
   purchaseConfirmedEmail,
   rsvpClosedEmail,
   rsvpReceivedEmail,
+  ticketAvailableEmail,
   timeslotPickedEmail,
 } from "./templates";
 
@@ -192,6 +193,38 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
         creditorName: "Léa",
         amountCents: 2400,
         outingUrl: MOCK_OUTING_URL,
+      }),
+  },
+
+  // --- Tickets ---
+  {
+    id: "ticket-available-participant",
+    name: "Billet nominatif disponible",
+    trigger:
+      "Server Action `createTicketAction` (scope=participant) — l'orga uploade un billet nominatif.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:463",
+    render: () =>
+      ticketAvailableEmail({
+        outingTitle: MOCK_OUTING_TITLE,
+        outingDate: MOCK_OUTING_DATE,
+        ticketsUrl: `${MOCK_OUTING_URL}/billets`,
+        scope: "participant",
+        recipientName: "Bob",
+      }),
+  },
+  {
+    id: "ticket-available-outing",
+    name: "Billet groupé disponible",
+    trigger:
+      "Server Action `createTicketAction` (scope=outing) — diffusé à tous les participants actifs (yes / handle_own).",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:463",
+    render: () =>
+      ticketAvailableEmail({
+        outingTitle: MOCK_OUTING_TITLE,
+        outingDate: MOCK_OUTING_DATE,
+        ticketsUrl: `${MOCK_OUTING_URL}/billets`,
+        scope: "outing",
+        recipientName: "Bob",
       }),
   },
 
