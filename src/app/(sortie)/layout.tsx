@@ -63,6 +63,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Désactive le pinch-zoom pour aligner Sortie sur le pattern app
+  // mobile-first : le contenu est déjà 16px+ (pas de zoom auto iOS sur
+  // les inputs), et le pinch créait un décalage visuel sur les éléments
+  // `position: fixed` (FAB ScrollToAction) qui restaient ancrés au
+  // layout viewport pendant que le contenu rétrécissait. Les utilisateurs
+  // qui ont besoin d'agrandir passent par le zoom système iOS/Android
+  // (triple-tap accessibilité), qui zoom le rendu sans décaler le DOM.
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: "cover",
   themeColor: "#0A0A0A",
 };
