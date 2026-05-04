@@ -159,7 +159,7 @@ export function DebtRow({
           {status === "pending" && (
             <>
               <p className="text-xs text-ink-400">En attente que {personName(other)} règle.</p>
-              <div className="flex flex-wrap items-center gap-1">
+              <div className="flex flex-nowrap items-center justify-between gap-0.5 sm:flex-wrap sm:justify-start sm:gap-1">
                 {outingTitle && (
                   <WhatsAppNudgeLink
                     shortId={shortId}
@@ -203,7 +203,7 @@ function WhatsAppNudgeLink({
       href={buildWaHref(message)}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 py-2 text-[13px] text-ink-500 transition-colors hover:text-acid-700"
+      className="inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-[13px] text-ink-500 transition-colors hover:text-acid-700 sm:px-3"
     >
       <MessageCircle size={14} aria-hidden /> WhatsApp
     </a>
@@ -224,7 +224,7 @@ function EmailNudgeButton({ shortId, debtId }: { shortId: string; debtId: string
         size="sm"
         variant="ghost"
         disabled={pending}
-        className="min-h-11 gap-1.5 px-3 py-2 text-[13px] text-ink-500 hover:text-acid-700"
+        className="min-h-11 shrink-0 gap-1.5 whitespace-nowrap px-2 py-2 text-[13px] text-ink-500 hover:text-acid-700 sm:px-3"
         title={state.message ?? undefined}
       >
         <Mail size={14} aria-hidden /> {pending ? "…" : "Email"}
@@ -247,7 +247,7 @@ function CreditorMarkReceivedButton({ shortId, debtId }: { shortId: string; debt
         size="sm"
         variant="ghost"
         disabled={pending}
-        className="min-h-11 self-start px-3 py-2 text-[13px] text-ink-500 hover:text-acid-700"
+        className="min-h-11 shrink-0 whitespace-nowrap px-2 py-2 text-[13px] text-ink-500 hover:text-acid-700 sm:self-start sm:px-3"
       >
         {pending ? "…" : "j'ai déjà reçu →"}
       </Button>
