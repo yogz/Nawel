@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
 import { sanitizeStrictText } from "@/lib/sanitize";
-import { escapeLikePattern } from "@/lib/escape-like";
 import { searchMyOutings } from "@/features/sortie/queries/search-my-outings";
 
 export const runtime = "nodejs";
@@ -31,8 +30,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const pattern = escapeLikePattern(cleaned);
-  const outings = await searchMyOutings({ userId, q: pattern, limit: RESULT_LIMIT });
+  const outings = await searchMyOutings({ userId, q: cleaned, limit: RESULT_LIMIT });
 
   return NextResponse.json(
     { outings },
