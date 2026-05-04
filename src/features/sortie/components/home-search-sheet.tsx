@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useKeyboardInset } from "@/hooks/use-keyboard-inset";
+import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import type { SearchedOuting } from "@/features/sortie/queries/search-my-outings";
 
 const RECENTS_KEY = "sortie:recent-searches";
@@ -130,7 +131,11 @@ export function HomeSearchSheet({
   function handlePick(outing: SearchedOuting) {
     pushRecent(query);
     onOpenChange(false);
-    router.push(`/sortie/${outing.slug}`);
+    // Pas de préfixe `/sortie/` côté client : `proxy.ts` rewrite
+    // `sortie.colist.fr/X` → `/sortie/X` en interne. Le segment URL
+    // attendu est `<slug>-<shortId>` (ou shortId nu) — un slug seul
+    // renvoie notFound() côté `extractShortId`.
+    router.push(`/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`);
   }
 
   function handleRecentClick(value: string) {
@@ -282,9 +287,7 @@ function ErrorBlock() {
 
 function NoResultsBlock({ query, onClose }: { query: string; onClose: () => void }) {
   const trimmed = query.trim();
-  const href = trimmed
-    ? `/sortie/nouvelle?title=${encodeURIComponent(trimmed)}`
-    : "/sortie/nouvelle";
+  const href = trimmed ? `/nouvelle?title=${encodeURIComponent(trimmed)}` : "/nouvelle";
   return (
     <div className="flex flex-col gap-4">
       <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-400">
