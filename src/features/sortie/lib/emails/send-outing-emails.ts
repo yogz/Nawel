@@ -226,6 +226,8 @@ export async function sendRsvpClosedEmails(args: {
     shortId: string;
     fixedDatetime: Date | null;
     location: string | null;
+    mode: "fixed" | "vote";
+    chosenTimeslotId: string | null;
   };
 }): Promise<void> {
   const recipients = await db.query.participants.findMany({
@@ -238,11 +240,16 @@ export async function sendRsvpClosedEmails(args: {
   });
 
   const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  // Sondage non tranché à la cloture → le template doit dire « l'orga
+  // pickera le créneau » au lieu de « rdv à la date prévue » (faux et
+  // mauvais signal pour le user qui ne sait toujours pas quand).
+  const awaitingPick = args.outing.mode === "vote" && args.outing.chosenTimeslotId === null;
   const { subject, html } = rsvpClosedEmail({
     outingTitle: args.outing.title,
     outingUrl: `${BASE_URL}${canonical}`,
     fixedDatetime: args.outing.fixedDatetime,
     location: args.outing.location,
+    awaitingPick,
   });
 
   await Promise.all(

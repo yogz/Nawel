@@ -59,6 +59,11 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
       shortId: true,
       fixedDatetime: true,
       location: true,
+      // Lus pour différencier le mail rsvp-closed entre une sortie datée
+      // (mode=fixed ou vote-déjà-tranché) et un sondage non tranché — le
+      // template adapte la ligne « rendez-vous… ».
+      mode: true,
+      chosenTimeslotId: true,
     },
     limit: SWEEPER_BATCH_LIMIT,
   });

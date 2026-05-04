@@ -121,6 +121,21 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
       }),
   },
   {
+    id: "rsvp-closed-vote-pending",
+    name: "Liste close — sondage non tranché",
+    trigger:
+      "Cron sweeper quotidien (07:00) — variante quand mode=vote ET chosenTimeslotId=null à la cloture.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:277",
+    render: () =>
+      rsvpClosedEmail({
+        outingTitle: MOCK_OUTING_TITLE,
+        outingUrl: MOCK_OUTING_URL,
+        fixedDatetime: null,
+        location: "Chez Léa, 12 rue Oberkampf",
+        awaitingPick: true,
+      }),
+  },
+  {
     id: "j1-reminder",
     name: "Rappel J-1",
     trigger: "Cron sweeper quotidien (07:00) — sortie dans [now, now+48h].",

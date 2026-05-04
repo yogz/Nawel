@@ -311,29 +311,43 @@ export function rsvpClosedEmail(args: {
   outingUrl: string;
   fixedDatetime: Date | null;
   location: string | null;
+  /** Sondage non tranché à la cloture (mode=vote, chosenTimeslotId=null).
+   * Quand true, on remplace la phrase « rdv à la date prévue » (faux —
+   * il n'y a pas encore de date) par un message qui dit clairement
+   * que l'orga doit choisir un créneau parmi les votes. Le user reçoit
+   * le mail de date définitive (`pollResolvedEmail`) plus tard. */
+  awaitingPick?: boolean;
 }): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
-  const dateLine = args.fixedDatetime
-    ? `<strong>${escapeHtml(formatOutingDateConversational(args.fixedDatetime))}</strong>`
-    : "à la date prévue";
   const locationLine = args.location
     ? ` · <span style="color:${INK_BODY};">${escapeHtml(args.location)}</span>`
     : "";
+
+  const closingLine = args.awaitingPick
+    ? `Les votes sont figés, plus de changement possible. L&rsquo;orga va choisir un créneau parmi ceux qui ont remporté le plus d&rsquo;avis — tu recevras un mail dès que la date est tranchée.`
+    : args.fixedDatetime
+      ? `La deadline est passée, plus personne ne peut répondre. Rendez-vous <strong>${escapeHtml(formatOutingDateConversational(args.fixedDatetime))}</strong>${locationLine}.`
+      : `La deadline est passée, plus personne ne peut répondre. Rendez-vous à la date prévue${locationLine}.`;
+
   const body = `
     <h1 style="margin:0 0 14px;${H1}">${title} — la liste est close</h1>
     <p style="margin:0 0 18px;${BODY_P}">
-      La deadline est passée, plus personne ne peut répondre. Rendez-vous ${dateLine}${locationLine}.
+      ${closingLine}
     </p>
     <p style="margin:28px 0 0;">
       ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
   `;
+
+  const preheader = args.awaitingPick
+    ? `Votes figés. L'orga choisit le créneau bientôt.`
+    : args.fixedDatetime
+      ? `La liste est close. ${formatOutingDateConversational(args.fixedDatetime)}.`
+      : `La liste est close. À bientôt.`;
+
   return {
     subject: `${args.outingTitle} — la liste est close`,
-    html: renderEmail({
-      preheader: `La liste est close. ${args.fixedDatetime ? formatOutingDateConversational(args.fixedDatetime) : "À bientôt"}.`,
-      body,
-    }),
+    html: renderEmail({ preheader, body }),
   };
 }
 
