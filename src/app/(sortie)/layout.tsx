@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Unbounded, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SortieAnalyticsSessionSync } from "@/features/sortie/components/sortie-analytics-session-sync";
 import "../sortie.css";
 
@@ -94,6 +96,12 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
           {children}
         </div>
         <SortieAnalyticsSessionSync />
+        {/* Vercel Speed Insights (Core Web Vitals par route) + Analytics
+         * (pageviews/visitors Vercel). Les SDK étaient déjà installés
+         * mais montés uniquement côté CoList ; aucun signal Sortie n'était
+         * remonté avant cette PR. Cf. ANALYTICS_AUDIT.md §10.3 P0 #1. */}
+        <SpeedInsights />
+        <Analytics />
       </body>
       <Script
         src="https://cloud.umami.is/script.js"
