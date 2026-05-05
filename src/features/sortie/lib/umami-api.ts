@@ -326,6 +326,43 @@ export async function getOutingViewedDeviceBreakdown(
   });
 }
 
+/**
+ * Méthode utilisée pour le signin (`magic_link` / `email_password` /
+ * `google`). Émis depuis `auth-telemetry.ts` à la fois sur
+ * `auth_signin_started` et `auth_signin_succeeded`. On lit la propriété
+ * sur `_succeeded` pour mesurer la part qui aboutit par méthode (le
+ * `_started` est lisible via `getEventCounts` côté funnel).
+ */
+export async function getAuthMethodBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "auth_signin_succeeded",
+    propertyName: "method",
+  });
+}
+
+/**
+ * Distribution `is_new_account` (true = signup / false = signin) sur
+ * les `auth_signin_succeeded`. Permet de reconstituer un funnel signup
+ * sans event distinct (`auth_signup_completed` aurait été un doublon
+ * cf. décision §9.1 de l'audit). Limite : Better Auth ne retourne pas
+ * fiablement le flag sur magic-link verify ouvert dans un autre onglet
+ * (cf. `auth-telemetry.ts`) — sous-estimation acceptée.
+ */
+export async function getAuthIsNewAccountBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "auth_signin_succeeded",
+    propertyName: "is_new_account",
+  });
+}
+
 // ─── Vue d'ensemble Umami : stats + active + metrics ─────────────────
 
 export type WebsiteStats = {

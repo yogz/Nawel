@@ -1,6 +1,8 @@
 import {
   computePercentiles,
   getActiveVisitors,
+  getAuthIsNewAccountBreakdown,
+  getAuthMethodBreakdown,
   getEventCounts,
   getGeminiTriggerBreakdown,
   getOutingViewedDeviceBreakdown,
@@ -111,6 +113,41 @@ export type DeviceBreakdown = {
   total: number;
 };
 
+/**
+ * Funnel auth signin : entrées (`started`) vs sorties (`succeeded`)
+ * sur la fenêtre. Le ratio donne un proxy du taux de complétion
+ * (échec d'envoi magic-link, lien expiré, mauvais mot de passe…).
+ */
+export type AuthFunnelCounts = {
+  started: number;
+  succeeded: number;
+};
+
+/**
+ * Distribution signup vs signin sur les `auth_signin_succeeded`.
+ * `is_new_account === true` correspond à la création d'un compte
+ * (typiquement via magic-link sur un email inconnu). Voir limite
+ * de détection cross-onglet dans `auth-telemetry.ts`.
+ */
+export type AuthIsNewAccountBreakdown = {
+  signup: number;
+  signin: number;
+  total: number;
+};
+
+/**
+ * Distribution méthode utilisée (`magic_link` / `email_password` /
+ * `google`). Mesure la pression sur le canal magic-link (qui est
+ * promu par `SortieAuthForm`) vs les autres.
+ */
+export type AuthMethodBreakdown = {
+  magicLink: number;
+  emailPassword: number;
+  google: number;
+  unknown: number;
+  total: number;
+};
+
 export type OutingPageFunnel = {
   // Vues totales sur les pages /sortie/[slug]. Mesure la portée des
   // liens partagés (un share qui ne ramène personne = lien mort).
@@ -155,6 +192,12 @@ export type WizardUmamiStats = {
   // ratio se stabilise à mesure que l'historique se renouvelle.
   wizardDevice: DeviceBreakdown | null;
   outingViewedDevice: DeviceBreakdown | null;
+  // Funnel auth Sortie — signaux émis depuis 2026-05 par
+  // `auth-telemetry.ts`. Le `started` est dérivé du même `getEventCounts`
+  // que les funnels wizard/outing pour ne pas payer un call séparé.
+  authFunnel: AuthFunnelCounts | null;
+  authNewAccount: AuthIsNewAccountBreakdown | null;
+  authMethod: AuthMethodBreakdown | null;
   topReferrers: MetricRow[] | null;
   topPaths: MetricRow[] | null;
 };
@@ -187,6 +230,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
       outingViewedSources: null,
       wizardDevice: null,
       outingViewedDevice: null,
+      authFunnel: null,
+      authNewAccount: null,
+      authMethod: null,
       topReferrers: null,
       topPaths: null,
     };
@@ -207,6 +253,8 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     outingSourceRows,
     wizardDeviceRows,
     outingDeviceRows,
+    authNewAccountRows,
+    authMethodRows,
     topReferrers,
     topPaths,
   ] = await Promise.all([
@@ -227,6 +275,8 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     getOutingViewedSources(range),
     getWizardDeviceBreakdown(range),
     getOutingViewedDeviceBreakdown(range),
+    getAuthIsNewAccountBreakdown(range),
+    getAuthMethodBreakdown(range),
     getTopMetric(range, "referrer"),
     getTopMetric(range, "url"),
   ]);
@@ -385,6 +435,57 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
   const wizardDevice = normalizeDeviceBreakdown(wizardDeviceRows);
   const outingViewedDevice = normalizeDeviceBreakdown(outingDeviceRows);
 
+  // Funnel auth dérivé des counts globaux d'events. Si la fenêtre n'a
+  // ni `_started` ni `_succeeded`, on retourne null pour que l'UI
+  // affiche un empty state propre plutôt que `0 / 0`.
+  let authFunnel: AuthFunnelCounts | null = null;
+  if (eventCounts) {
+    const started = eventCounts.get("auth_signin_started") ?? 0;
+    const succeeded = eventCounts.get("auth_signin_succeeded") ?? 0;
+    if (started > 0 || succeeded > 0) {
+      authFunnel = { started, succeeded };
+    }
+  }
+
+  let authNewAccount: AuthIsNewAccountBreakdown | null = null;
+  if (authNewAccountRows) {
+    const out: AuthIsNewAccountBreakdown = { signup: 0, signin: 0, total: 0 };
+    for (const row of authNewAccountRows) {
+      // Umami stocke les booleans comme strings "true"/"false".
+      if (row.value === "true") {
+        out.signup += row.total;
+      } else if (row.value === "false") {
+        out.signin += row.total;
+      }
+      out.total += row.total;
+    }
+    authNewAccount = out;
+  }
+
+  let authMethod: AuthMethodBreakdown | null = null;
+  if (authMethodRows) {
+    const out: AuthMethodBreakdown = {
+      magicLink: 0,
+      emailPassword: 0,
+      google: 0,
+      unknown: 0,
+      total: 0,
+    };
+    for (const row of authMethodRows) {
+      if (row.value === "magic_link") {
+        out.magicLink += row.total;
+      } else if (row.value === "email_password") {
+        out.emailPassword += row.total;
+      } else if (row.value === "google") {
+        out.google += row.total;
+      } else {
+        out.unknown += row.total;
+      }
+      out.total += row.total;
+    }
+    authMethod = out;
+  }
+
   return {
     configured,
     rangeDays,
@@ -404,6 +505,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     outingViewedSources,
     wizardDevice,
     outingViewedDevice,
+    authFunnel,
+    authNewAccount,
+    authMethod,
     topReferrers,
     topPaths,
   };
