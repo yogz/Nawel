@@ -16,6 +16,8 @@ import {
   sendOutingModifiedEmails,
   sendTimeslotPickedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
+import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
+import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import {
   deletePreviousEventImage,
@@ -192,6 +194,21 @@ export async function createOutingAction(
       cookieTokenHash,
       response: "yes",
     });
+  }
+
+  // Broadcast aux followers du créateur (uniquement si user logué — les
+  // anon créators n'ont pas de relation `userFollows`). Capture les
+  // headers maintenant car `runAfterResponse` peut perdre le contexte
+  // request — Better Auth a besoin de l'origin pour résoudre baseURL +
+  // déclencher la branche Sortie du callback `sendMagicLink`.
+  if (effectiveCreatorUserId) {
+    const reqHeaders = await headers();
+    runAfterResponse(() =>
+      sendNewOutingBroadcast({
+        outingId: insertedOuting.id,
+        headersForAuth: reqHeaders,
+      })
+    );
   }
 
   // User-facing URLs on sortie.colist.fr are / -prefixed — the /sortie internal

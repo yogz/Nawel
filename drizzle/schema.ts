@@ -54,6 +54,11 @@ export const user = pgTable(
     // platform's actual limit + room for dots / underscores).
     instagramHandle: varchar("instagram_handle", { length: 30 }),
     tiktokHandle: varchar("tiktok_handle", { length: 30 }),
+    // Opt-out global pour les emails « nouvelle sortie d'un user que tu suis ».
+    // Default true : on opte-out, pas opte-in (le follow exprime déjà l'intérêt).
+    // Le toggle vit dans /moi ; le lien one-click List-Unsubscribe des emails
+    // bascule cette colonne via /sortie/unsubscribe?t=<HMAC token>.
+    notifyOnFollowedOuting: boolean("notify_on_followed_outing").notNull().default(true),
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),

@@ -81,6 +81,11 @@ export const outings = sortie.table(
     // Stamped by the hourly sweeper once the J-1 reminder email has been sent,
     // so the cron can't double-send if it overlaps its own 1-hour window.
     reminderJ1SentAt: timestamp("reminder_j1_sent_at", { withTimezone: true }),
+    // Stamped after the broadcast "nouvelle sortie" emails are dispatched to
+    // the creator's followers. The atomic UPDATE … WHERE IS NULL ensures
+    // idempotence : si Next.js re-déclenche after() ou si la création est
+    // ré-exécutée, on n'envoie qu'une seule fois.
+    followersBroadcastSentAt: timestamp("followers_broadcast_sent_at", { withTimezone: true }),
     // Poster / banner image for the event. Populated by the ticket-link
     // paster from the target page's `og:image`, or left null when the
     // creator types everything by hand. Stored as a URL (we don't rehost

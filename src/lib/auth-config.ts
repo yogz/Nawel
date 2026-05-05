@@ -16,6 +16,7 @@ import {
   buildSortieFollowGateEmail,
   isSortieOrigin,
 } from "./auth-emails";
+import { buildOutingBroadcastEmail } from "@/features/sortie/lib/emails/follower-broadcast/template";
 
 // Lazy init — passing undefined to `new Resend()` throws at module-load time,
 // which breaks Next.js page-data collection on preview builds that don't have
@@ -221,6 +222,11 @@ export const auth = betterAuth({
       adminRoles: ["admin"],
     }),
     magicLink({
+      // 24h pour couvrir les emails de broadcast "nouvelle sortie" (les
+      // followers ne lisent pas leur inbox dans les 5 min qui suivent).
+      // Norme commune (Slack ≈ 24h). Garde-fou : `allowedAttempts: 1`
+      // (default) reste — un lien consommé est mort.
+      expiresIn: 60 * 60 * 24,
       sendMagicLink: async ({
         email,
         url,
@@ -295,25 +301,71 @@ export const auth = betterAuth({
                 creatorName: typeof metadata.creatorName === "string" ? metadata.creatorName : "",
               }
             : null;
+        // Variante outing-broadcast : à la création d'une sortie, un email
+        // est envoyé à chaque follower du créateur. Le metadata transporte
+        // tout le contexte (titre, créneau, lieu, deadline + l'unsubscribe
+        // URL HMAC pré-signée par le caller). Dates sérialisées en ISO car
+        // Better Auth stringifie metadata pour le persister en verification.
+        const broadcastMeta =
+          fromSortie && metadata && metadata.source === "outing-broadcast"
+            ? {
+                outingTitle: typeof metadata.outingTitle === "string" ? metadata.outingTitle : "",
+                creatorName: typeof metadata.creatorName === "string" ? metadata.creatorName : "",
+                startsAt:
+                  typeof metadata.startsAt === "string" ? new Date(metadata.startsAt) : null,
+                location:
+                  typeof metadata.location === "string" && metadata.location.length > 0
+                    ? metadata.location
+                    : null,
+                deadlineAt:
+                  typeof metadata.deadlineAt === "string"
+                    ? new Date(metadata.deadlineAt)
+                    : new Date(),
+                unsubscribeUrl:
+                  typeof metadata.unsubscribeUrl === "string" ? metadata.unsubscribeUrl : "",
+              }
+            : null;
         const sortieBranded = fromSortie
-          ? claimPromptMeta
-            ? buildSortieClaimPromptEmail({
-                ctaUrl: magicUrl,
-                creatorName: claimPromptMeta.creatorName,
-                outings: claimPromptMeta.outings,
+          ? broadcastMeta
+            ? buildOutingBroadcastEmail({
+                outingTitle: broadcastMeta.outingTitle,
+                creatorName: broadcastMeta.creatorName,
+                startsAt: broadcastMeta.startsAt,
+                location: broadcastMeta.location,
+                deadlineAt: broadcastMeta.deadlineAt,
+                magicUrl,
+                unsubscribeUrl: broadcastMeta.unsubscribeUrl,
               })
-            : followGateMeta
-              ? buildSortieFollowGateEmail({
+            : claimPromptMeta
+              ? buildSortieClaimPromptEmail({
                   ctaUrl: magicUrl,
-                  creatorName: followGateMeta.creatorName,
+                  creatorName: claimPromptMeta.creatorName,
+                  outings: claimPromptMeta.outings,
                 })
-              : buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
+              : followGateMeta
+                ? buildSortieFollowGateEmail({
+                    ctaUrl: magicUrl,
+                    creatorName: followGateMeta.creatorName,
+                  })
+                : buildSortieAuthEmail({ kind: "magic-link", ctaUrl: magicUrl })
           : null;
+
+        // RFC 8058 / Gmail bulk-sender compliance : le broadcast est le
+        // seul flow auth qui n'est pas demandé par le destinataire ;
+        // sans ces headers Gmail/Yahoo le marquent en spam et il n'y a
+        // pas d'opt-out one-click "natif" (bouton Désabonner inbox).
+        const broadcastHeaders = broadcastMeta?.unsubscribeUrl
+          ? {
+              "List-Unsubscribe": `<${broadcastMeta.unsubscribeUrl}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            }
+          : undefined;
 
         const { error } = await resend.emails.send({
           from: "CoList <hello@colist.fr>",
           to: email,
           subject: sortieBranded?.subject ?? t("subject"),
+          ...(broadcastHeaders ? { headers: broadcastHeaders } : {}),
           html:
             sortieBranded?.html ??
             `

@@ -27,12 +27,13 @@ import { ShareActions } from "@/features/sortie/components/share-actions";
 import { VoteRsvpSheet } from "@/features/sortie/components/vote-rsvp-sheet";
 import { PollSection } from "@/features/sortie/components/poll-section";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { ScrollToRsvp } from "@/features/sortie/components/scroll-to-rsvp";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
-  searchParams: Promise<{ from?: string }>;
+  searchParams: Promise<{ from?: string; rsvp?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -79,8 +80,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function OutingPublicPage({ params, searchParams }: Props) {
   const { slugOrId } = await params;
-  const { from } = await searchParams;
+  const { from, rsvp } = await searchParams;
   const justCreated = from === "create";
+  // `?rsvp=auto` est posé sur le callback URL des emails broadcast envoyés
+  // aux followers à la création d'une sortie. Better Auth a déjà consommé
+  // le magic link et posé la session quand on arrive ici — il reste à
+  // scroller le follower vers le bloc RSVP pour qu'il voie le bouton.
+  const autoOpenRsvp = rsvp === "auto";
   const shortId = extractShortId(slugOrId);
   if (!shortId) {
     notFound();
@@ -304,7 +310,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       )}
 
       {!deadlinePassed && !(outing.mode === "vote" && !outing.chosenTimeslotId) && me?.response && (
-        <div className="mt-8">
+        <div id="rsvp-action" className="mt-8">
           <RsvpPrompt
             shortId={outing.shortId}
             existingResponse={
@@ -387,8 +393,11 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
       {showVoteFab && <ScrollToActionFab targetId="vote-action" label="Je vote" />}
 
+      {autoOpenRsvp && <ScrollToRsvp targetIds={["rsvp-action", "vote-action"]} />}
+
       {shouldStickRsvp && (
         <div
+          id="rsvp-action"
           className="fixed inset-x-0 z-40 mx-auto max-w-[520px] border-t border-surface-400 bg-[var(--sortie-bg)]/92 backdrop-blur-md"
           style={{
             bottom: 0,

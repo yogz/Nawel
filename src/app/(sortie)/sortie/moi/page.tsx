@@ -17,6 +17,7 @@ import { AvatarPicker } from "@/features/sortie/components/avatar-picker";
 import { CalendarFeedManager } from "@/features/sortie/components/calendar-feed-manager";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LogoutButton } from "@/features/sortie/components/logout-button";
+import { NotificationPrefsForm } from "@/features/sortie/components/notification-prefs-form";
 
 export const metadata = {
   title: "Mon profil",
@@ -71,6 +72,7 @@ export default async function ProfileSettingsPage() {
         rsvpInviteToken: true,
         calendarToken: true,
         bio: true,
+        notifyOnFollowedOuting: true,
       },
     }),
     listFollowers(session.user.id),
@@ -189,6 +191,15 @@ export default async function ProfileSettingsPage() {
       />
       <section className="mb-14">
         <CalendarFeedManager initialToken={row?.calendarToken ?? null} origin={origin} />
+      </section>
+
+      <SectionDivider />
+      <SectionHeading
+        title="Notifications"
+        subtitle="Choisis ce qui atterrit dans ta boîte mail."
+      />
+      <section className="mb-14">
+        <NotificationPrefsForm initialNotify={row?.notifyOnFollowedOuting ?? true} />
       </section>
 
       <SectionDivider />

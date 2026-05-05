@@ -1,0 +1,2 @@
+ALTER TABLE "user" ADD COLUMN "notify_on_followed_outing" boolean DEFAULT true NOT NULL;--> statement-breakpoint
+ALTER TABLE "sortie"."outings" ADD COLUMN "followers_broadcast_sent_at" timestamp with time zone;
