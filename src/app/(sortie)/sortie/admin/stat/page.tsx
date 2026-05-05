@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import {
   getCreatorActivation28d,
-  getHostBreakdown,
   getOutingsCreatedPerDay,
-  getParseAggregate,
   getServiceCallStats,
 } from "@/features/sortie/queries/stat-queries";
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
@@ -52,46 +50,40 @@ export default async function StatPage({ searchParams }: Props) {
   const { range: rawRange } = await searchParams;
   const rangeDays = parseRange(rawRange);
 
-  const [parseAgg, services, hosts, outingsPerDay, wizardUmami, creatorActivation] =
-    await Promise.all([
-      safe("getParseAggregate", getParseAggregate, {
-        totalAttempts: 0,
-        totalSuccess: 0,
-        totalImageFound: 0,
-        totalZeroData: 0,
-        totalFetchError: 0,
-        hostCount: 0,
-      }),
-      safe("getServiceCallStats", getServiceCallStats, []),
-      safe("getHostBreakdown", () => getHostBreakdown(), []),
-      safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
-      safe("getWizardUmamiStats", () => getWizardUmamiStats(rangeDays), {
-        configured: false,
-        rangeDays,
-        siteStats: null,
-        activeVisitors: null,
-        funnel: null,
-        pasteToPublish: null,
-        pasteToPublishBuckets: null,
-        geminiTriggers: null,
-        pasteKind: null,
-        confirmEntered: null,
-        outingFunnel: null,
-        shareChannels: null,
-        rsvpBreakdown: null,
-        publishFailed: null,
-        abandonedSteps: null,
-        outingViewedSources: null,
-        wizardDevice: null,
-        outingViewedDevice: null,
-        topReferrers: null,
-        topPaths: null,
-      }),
-      safe("getCreatorActivation28d", getCreatorActivation28d, {
-        totalCreators: 0,
-        activatedCreators: 0,
-      }),
-    ]);
+  // Les queries tech (parseAggregate, hostBreakdown, sweeperHealth, dbSizes…)
+  // ne sont plus chargées ici depuis PR8 — la page produit ne les affiche plus.
+  // Elles vivent côté `/admin/stat/tech`. `getServiceCallStats` reste consommé
+  // par `<DashboardAlerts>` qui surveille les erreurs récentes côté tiers.
+  const [services, outingsPerDay, wizardUmami, creatorActivation] = await Promise.all([
+    safe("getServiceCallStats", getServiceCallStats, []),
+    safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
+    safe("getWizardUmamiStats", () => getWizardUmamiStats(rangeDays), {
+      configured: false,
+      rangeDays,
+      siteStats: null,
+      activeVisitors: null,
+      funnel: null,
+      pasteToPublish: null,
+      pasteToPublishBuckets: null,
+      geminiTriggers: null,
+      pasteKind: null,
+      confirmEntered: null,
+      outingFunnel: null,
+      shareChannels: null,
+      rsvpBreakdown: null,
+      publishFailed: null,
+      abandonedSteps: null,
+      outingViewedSources: null,
+      wizardDevice: null,
+      outingViewedDevice: null,
+      topReferrers: null,
+      topPaths: null,
+    }),
+    safe("getCreatorActivation28d", getCreatorActivation28d, {
+      totalCreators: 0,
+      activatedCreators: 0,
+    }),
+  ]);
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
@@ -114,23 +106,34 @@ export default async function StatPage({ searchParams }: Props) {
             Stats
           </h1>
           <p className="mt-4 text-[15px] text-ink-500">
-            Audience Umami, funnel wizard, page sortie publique, scraper d&apos;URL et services
-            externes (Gemini, Discovery API). Toutes les sections Umami suivent la fenêtre
-            sélectionnée et comparent à la période précédente.
+            Audience, funnel wizard et page sortie publique. La supervision technique (scraper,
+            services externes, sweeper, base de données) vit sur{" "}
+            <Link
+              href="/admin/stat/tech"
+              className="text-acid-600 underline-offset-2 hover:underline"
+            >
+              /admin/stat/tech
+            </Link>
+            .
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <StatRangePicker current={rangeDays} />
           <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">
             fenêtre Umami
           </span>
+          <Link
+            href="/admin/stat/tech"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-surface-400 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-500 transition-colors hover:border-acid-600 hover:text-acid-600"
+          >
+            supervision tech
+            <ArrowRight size={12} strokeWidth={2.2} />
+          </Link>
         </div>
       </header>
 
       <StatDashboard
-        parseAgg={parseAgg}
         services={services}
-        hosts={hosts}
         outingsPerDay={outingsPerDay}
         wizardUmami={wizardUmami}
         creatorActivation={creatorActivation}
