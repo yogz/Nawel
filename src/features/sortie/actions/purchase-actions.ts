@@ -264,7 +264,7 @@ export async function declarePurchaseAction(
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);
   revalidatePath(`/${canonical}/dettes`);
-  redirect(`/${canonical}/dettes`);
+  redirect(`/${canonical}/dettes?from=achat`);
 }
 
 const cessionSchema = z.object({

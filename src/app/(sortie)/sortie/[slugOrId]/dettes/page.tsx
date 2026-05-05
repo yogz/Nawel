@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { db } from "@/lib/db";
 import { purchases } from "@drizzle/sortie-schema";
 import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
@@ -20,6 +20,7 @@ import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
 type Props = {
   params: Promise<{ slugOrId: string }>;
+  searchParams: Promise<{ from?: string }>;
 };
 
 export const metadata = {
@@ -27,8 +28,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function DebtsPage({ params }: Props) {
+export default async function DebtsPage({ params, searchParams }: Props) {
   const { slugOrId } = await params;
+  const { from } = await searchParams;
   const state = await loadParticipantPage(slugOrId, "dettes");
   if (state.kind === "not-found") {
     notFound();
@@ -86,6 +88,24 @@ export default async function DebtsPage({ params }: Props) {
           {outing.title}
         </Link>
       </nav>
+
+      {from === "achat" && (
+        <div className="mb-8 flex flex-col gap-3 rounded-lg border border-acid-600 bg-acid-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2 text-sm text-acid-700">
+            <CheckCircle2 size={18} strokeWidth={2.4} className="mt-0.5 shrink-0" />
+            <span>
+              <strong className="font-semibold">Achat enregistré.</strong> Tu peux maintenant
+              ajouter les billets.
+            </span>
+          </p>
+          <Link
+            href={`/${canonical}/billets`}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-acid-600 px-5 text-sm font-bold text-surface-50 transition-colors hover:bg-acid-700 motion-safe:active:scale-95"
+          >
+            Ajouter les billets →
+          </Link>
+        </div>
+      )}
 
       <header className="mb-10">
         <Eyebrow tone="hot" glow className="mb-3">
