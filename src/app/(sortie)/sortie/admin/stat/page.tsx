@@ -8,6 +8,7 @@ import {
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
 import { StatRangePicker } from "@/features/sortie/components/stat-range-picker";
+import { parseTabKey } from "@/features/sortie/components/dashboard/dashboard-tabs";
 import { logger } from "@/lib/logger";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
@@ -42,13 +43,14 @@ function parseRange(raw: string | string[] | undefined): number {
 }
 
 type Props = {
-  searchParams: Promise<{ range?: string }>;
+  searchParams: Promise<{ range?: string; tab?: string }>;
 };
 
 export default async function StatPage({ searchParams }: Props) {
   // Auth gate délégué au layout `/sortie/admin/layout.tsx` (un seul endroit).
-  const { range: rawRange } = await searchParams;
+  const { range: rawRange, tab: rawTab } = await searchParams;
   const rangeDays = parseRange(rawRange);
+  const currentTab = parseTabKey(rawTab);
 
   // Les queries tech (parseAggregate, hostBreakdown, sweeperHealth, dbSizes…)
   // ne sont plus chargées ici depuis PR8 — la page produit ne les affiche plus.
@@ -140,6 +142,7 @@ export default async function StatPage({ searchParams }: Props) {
         outingsPerDay={outingsPerDay}
         wizardUmami={wizardUmami}
         creatorActivation={creatorActivation}
+        currentTab={currentTab}
       />
     </main>
   );
