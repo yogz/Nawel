@@ -1,6 +1,7 @@
 "use client";
 
 import { sendGAEvent } from "@/lib/umami";
+import { getDeviceLabel } from "./device-label";
 
 /**
  * Télémétrie du wizard de création de sortie. Tous les events partagent
@@ -153,6 +154,9 @@ export function trackWizardPublishSucceeded(params: {
     has_hero_image: params.hasHeroImage,
     paste_to_publish_ms: ms !== null ? Math.round(ms) : undefined,
     paste_to_publish_bucket: ms !== null ? pasteToPublishBucket(ms) : undefined,
+    // Comble l'angle mort mobile vs desktop §9.1 du rapport audit. Lu
+    // par `getWizardDeviceBreakdown` côté dashboard.
+    device: getDeviceLabel(),
   });
 }
 

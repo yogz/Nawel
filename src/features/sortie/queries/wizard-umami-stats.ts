@@ -3,6 +3,7 @@ import {
   getActiveVisitors,
   getEventCounts,
   getGeminiTriggerBreakdown,
+  getOutingViewedDeviceBreakdown,
   getOutingViewedSources,
   getPasteKindBreakdown,
   getPasteToPublishBuckets,
@@ -13,6 +14,7 @@ import {
   getTopMetric,
   getWebsiteStats,
   getWizardAbandonedSteps,
+  getWizardDeviceBreakdown,
   isUmamiConfigured,
   lastNDaysRange,
   type MetricRow,
@@ -96,6 +98,19 @@ export type OutingViewedSources = {
   total: number;
 };
 
+/**
+ * Distribution device-class sur un event. La somme `mobile + tablet +
+ * desktop + unknown` égale `total` (les events historiques émis avant
+ * l'ajout de la propriété `device` tombent dans `unknown`).
+ */
+export type DeviceBreakdown = {
+  mobile: number;
+  tablet: number;
+  desktop: number;
+  unknown: number;
+  total: number;
+};
+
 export type OutingPageFunnel = {
   // Vues totales sur les pages /sortie/[slug]. Mesure la portée des
   // liens partagés (un share qui ne ramène personne = lien mort).
@@ -134,6 +149,12 @@ export type WizardUmamiStats = {
   publishFailed: PublishFailedBreakdown | null;
   abandonedSteps: AbandonedStepRow[] | null;
   outingViewedSources: OutingViewedSources | null;
+  // Segmentation device pour mobile vs desktop (comble §9.1 angle mort).
+  // Émis depuis 2026-05-05 : les events antérieurs n'ont pas de propriété
+  // `device` et tombent en `unknown` côté breakdown — c'est attendu, le
+  // ratio se stabilise à mesure que l'historique se renouvelle.
+  wizardDevice: DeviceBreakdown | null;
+  outingViewedDevice: DeviceBreakdown | null;
   topReferrers: MetricRow[] | null;
   topPaths: MetricRow[] | null;
 };
@@ -164,6 +185,8 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
       publishFailed: null,
       abandonedSteps: null,
       outingViewedSources: null,
+      wizardDevice: null,
+      outingViewedDevice: null,
       topReferrers: null,
       topPaths: null,
     };
@@ -182,6 +205,8 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     publishFailedRows,
     abandonedRows,
     outingSourceRows,
+    wizardDeviceRows,
+    outingDeviceRows,
     topReferrers,
     topPaths,
   ] = await Promise.all([
@@ -200,6 +225,8 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     getPublishFailedReasons(range),
     getWizardAbandonedSteps(range),
     getOutingViewedSources(range),
+    getWizardDeviceBreakdown(range),
+    getOutingViewedDeviceBreakdown(range),
     getTopMetric(range, "referrer"),
     getTopMetric(range, "url"),
   ]);
@@ -355,6 +382,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     outingViewedSources = out;
   }
 
+  const wizardDevice = normalizeDeviceBreakdown(wizardDeviceRows);
+  const outingViewedDevice = normalizeDeviceBreakdown(outingDeviceRows);
+
   return {
     configured,
     rangeDays,
@@ -372,7 +402,33 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     publishFailed,
     abandonedSteps,
     outingViewedSources,
+    wizardDevice,
+    outingViewedDevice,
     topReferrers,
     topPaths,
   };
+}
+
+/**
+ * Normalise une réponse `event-data/values` (rows valeur+total) vers
+ * le shape `DeviceBreakdown`. Les valeurs hors mobile/tablet/desktop
+ * tombent dans `unknown` (events historiques antérieurs à l'ajout de
+ * la propriété, ou device détecté en string libre).
+ */
+function normalizeDeviceBreakdown(
+  rows: { value: string; total: number }[] | null
+): DeviceBreakdown | null {
+  if (!rows) {
+    return null;
+  }
+  const out: DeviceBreakdown = { mobile: 0, tablet: 0, desktop: 0, unknown: 0, total: 0 };
+  for (const row of rows) {
+    if (row.value === "mobile" || row.value === "tablet" || row.value === "desktop") {
+      out[row.value] += row.total;
+    } else {
+      out.unknown += row.total;
+    }
+    out.total += row.total;
+  }
+  return out;
 }

@@ -292,6 +292,40 @@ export async function getOutingViewedSources(
   });
 }
 
+/**
+ * Distribution mobile/tablet/desktop des publish réussis. Émis depuis
+ * `wizard-telemetry.ts` via `getDeviceLabel()` côté browser. Couplé à
+ * `getOutingViewedDeviceBreakdown` permet de calculer la conversion
+ * paste→publish séparément par device — angle mort §9.1 du rapport.
+ */
+export async function getWizardDeviceBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "wizard_publish_succeeded",
+    propertyName: "device",
+  });
+}
+
+/**
+ * Distribution mobile/tablet/desktop des vues sur les pages sortie.
+ * Émis depuis `outing-telemetry.ts`. Couplé à `getWizardDeviceBreakdown`
+ * pour profiler le mix device entre lecture (visiteur invité) et
+ * écriture (créateur qui publie).
+ */
+export async function getOutingViewedDeviceBreakdown(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "outing_viewed",
+    propertyName: "device",
+  });
+}
+
 // ─── Vue d'ensemble Umami : stats + active + metrics ─────────────────
 
 export type WebsiteStats = {

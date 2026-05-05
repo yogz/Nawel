@@ -1,6 +1,7 @@
 "use client";
 
 import { sendGAEvent } from "@/lib/umami";
+import { getDeviceLabel } from "./device-label";
 
 /**
  * Télémétrie de la page sortie publique. Couvre le funnel post-création :
@@ -41,6 +42,9 @@ export function trackOutingViewed(params: {
     is_logged_in: params.isLoggedIn,
     has_responded: params.hasResponded,
     source: params.source,
+    // Comble l'angle mort mobile vs desktop §9.1 du rapport audit. Lu
+    // par `getOutingViewedDeviceBreakdown` côté dashboard.
+    device: getDeviceLabel(),
   });
 }
 

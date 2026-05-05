@@ -82,6 +82,8 @@ export default async function StatPage({ searchParams }: Props) {
         publishFailed: null,
         abandonedSteps: null,
         outingViewedSources: null,
+        wizardDevice: null,
+        outingViewedDevice: null,
         topReferrers: null,
         topPaths: null,
       }),
