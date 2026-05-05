@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Unbounded, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
+import { SortieAnalyticsSessionSync } from "@/features/sortie/components/sortie-analytics-session-sync";
 import "../sortie.css";
 
 // Site Umami dédié à Sortie (créé 2026-05-05). Avant cette date, Sortie
@@ -92,6 +93,7 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
         <div className="relative mx-auto min-h-dvh w-full max-w-[520px] overflow-x-clip bg-[var(--sortie-bg)] md:my-6 md:min-h-[calc(100dvh-3rem)] md:overflow-clip md:rounded-[2.25rem] md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_0_1px_rgba(199,255,60,0.12)] md:ring-1 md:ring-white/5">
           {children}
         </div>
+        <SortieAnalyticsSessionSync />
       </body>
       <Script
         src="https://cloud.umami.is/script.js"
