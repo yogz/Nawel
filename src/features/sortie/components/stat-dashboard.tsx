@@ -18,6 +18,8 @@ import {
   toneClass,
 } from "@/features/sortie/components/dashboard/dashboard-primitives";
 import { DashboardKpis } from "@/features/sortie/components/dashboard/dashboard-kpis";
+import { DashboardAlerts } from "@/features/sortie/components/dashboard/dashboard-alerts";
+import { DashboardOpportunities } from "@/features/sortie/components/dashboard/dashboard-opportunities";
 
 type Props = {
   parseAgg: ParseAggregate;
@@ -141,6 +143,12 @@ export function StatDashboard({
         wizardUmami={wizardUmami}
         creatorActivation={creatorActivation}
       />
+
+      {/* === Alertes auto-détectées (PR2 refonte) — n'apparaît que si règle déclenche === */}
+      <DashboardAlerts wizardUmami={wizardUmami} services={services} />
+
+      {/* === Opportunités : segments sous-performants (PR2 refonte) === */}
+      <DashboardOpportunities wizardUmami={wizardUmami} />
 
       {/* === Section 0 : sorties créées (vue produit) === */}
       <section>
