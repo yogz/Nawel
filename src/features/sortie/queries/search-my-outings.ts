@@ -42,6 +42,12 @@ const TRIGRAM_THRESHOLD = 0.22;
 //
 // Exclut les sorties annulées : un user qui cherche une sortie
 // annulée n'attend pas la trouver dans la barre de recherche home.
+//
+// Perf : pas de transaction (évite 3 round-trips Neon serverless).
+// Le filtrage par userId limite déjà les candidats à <50 rows en
+// pratique, donc le `similarity() > seuil` en seq scan reste rapide
+// même sans utiliser l'index trigram. L'index GIN reste utilisé
+// pour les ILIKE (gin_trgm_ops supporte LIKE avec wildcards).
 export async function searchMyOutings({
   userId,
   q,
@@ -74,54 +80,45 @@ export async function searchMyOutings({
     (CASE WHEN ${locationExact} THEN 1.0 ELSE COALESCE(${locationSim}, 0) END) * 0.85
   )`;
 
-  // Condition de match :
-  //  - q court → ILIKE seul (pas de trigram)
-  //  - q ≥ 3 chars → ILIKE OR trigram %
+  // Condition de match : pour q ≥ 3 chars, on accepte exact substring
+  // OU similarity > seuil. Pas d'opérateur `%` pg_trgm (qui forcerait
+  // une transaction `SET LOCAL`) — on filtre directement sur similarity().
   const matchCondition = useTrigram
     ? or(
         titleExact,
         locationExact,
-        sql`sortie.immutable_unaccent(${outings.title}) % sortie.immutable_unaccent(${trimmed})`,
-        sql`sortie.immutable_unaccent(${outings.location}) % sortie.immutable_unaccent(${trimmed})`
+        sql`${titleSim} > ${TRIGRAM_THRESHOLD}`,
+        sql`${locationSim} > ${TRIGRAM_THRESHOLD}`
       )
     : or(titleExact, locationExact);
 
-  return await db.transaction(async (tx) => {
-    if (useTrigram) {
-      // Scope la query courante uniquement, pas de pollution pool Neon.
-      await tx.execute(
-        sql`SET LOCAL pg_trgm.similarity_threshold = ${sql.raw(TRIGRAM_THRESHOLD.toString())}`
-      );
-    }
-
-    return await tx
-      .select({
-        id: outings.id,
-        slug: outings.slug,
-        shortId: outings.shortId,
-        title: outings.title,
-        location: outings.location,
-        fixedDatetime: outings.fixedDatetime,
-        status: outings.status,
-        heroImageUrl: outings.heroImageUrl,
-      })
-      .from(outings)
-      .where(
-        and(
-          ne(outings.status, "cancelled"),
-          or(
-            eq(outings.creatorUserId, userId),
-            sql`${outings.id} IN (
-              SELECT ${participants.outingId}
-              FROM ${participants}
-              WHERE ${participants.userId} = ${userId}
-                AND ${participants.response} IN ('yes', 'no', 'handle_own', 'interested')
-            )`
-          ),
-          matchCondition
-        )
+  return await db
+    .select({
+      id: outings.id,
+      slug: outings.slug,
+      shortId: outings.shortId,
+      title: outings.title,
+      location: outings.location,
+      fixedDatetime: outings.fixedDatetime,
+      status: outings.status,
+      heroImageUrl: outings.heroImageUrl,
+    })
+    .from(outings)
+    .where(
+      and(
+        ne(outings.status, "cancelled"),
+        or(
+          eq(outings.creatorUserId, userId),
+          sql`${outings.id} IN (
+            SELECT ${participants.outingId}
+            FROM ${participants}
+            WHERE ${participants.userId} = ${userId}
+              AND ${participants.response} IN ('yes', 'no', 'handle_own', 'interested')
+          )`
+        ),
+        matchCondition
       )
-      .orderBy(desc(score), desc(outings.fixedDatetime), desc(outings.createdAt))
-      .limit(limit);
-  });
+    )
+    .orderBy(desc(score), desc(outings.fixedDatetime), desc(outings.createdAt))
+    .limit(limit);
 }
