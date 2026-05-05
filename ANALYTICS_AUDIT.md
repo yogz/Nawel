@@ -476,4 +476,183 @@ Effort : ~1.5 j. Périmètre :
 
 ---
 
-_Fin du rapport — Phase 3 PR1 en implémentation. Phase 4 et au-delà conditionnées au signal de volume produit._
+## 10. Audit tech — observabilité et santé du site (`/admin/stat/tech`)
+
+_Section ajoutée 2026-05-05 après lancement de 4 experts en parallèle (Vercel performance, Node.js runtime, Neon Postgres, UX/UI dashboards techniques) sur la demande owner : « avoir un audit complet des events techniques, capturer tout ce qu'il faut pour améliorer le site et prévenir les pb »._
+
+### 10.1 Synthèse des 4 audits
+
+**Convergences majeures (les 4 d'accord ou complémentaires)** :
+
+1. **Sortie a `@vercel/speed-insights` et `@vercel/analytics` installés mais NON montés** dans `src/app/(sortie)/layout.tsx` — uniquement câblés côté CoList. Aucun Core Web Vital n'est capturé pour les pages Sortie aujourd'hui.
+2. **Aucune persistance des erreurs serveur** : 108 `console.*` directs hors logger, `createSafeAction` (`src/lib/action-utils.ts:22`) ne logge ni ne persiste les exceptions. Pas de Sentry, pas d'OTel.
+3. **Sweeper opaque** : `runSortieSweeper` (`src/features/sortie/lib/sweeper.ts:59`) retourne un `SweeperReport` complet **mais ne le persiste jamais**. Visible uniquement dans les logs Vercel. Aucune alerte si le cron ne tourne pas pendant 24h.
+4. **Aucun signal de croissance DB** ni de tailles de tables. Mémoire projet (`project_sortie_anon_db_growth.md`) flagge silent users + participants orphelins jamais purgés — invisible côté dashboard.
+5. **L'IA cible doit rester binaire** (UX agent) : tech = ça marche / ça marche pas. **Pas de section « Opportunités »** (vs le dashboard produit) — le owner non-tech ne fera rien d'une suggestion d'optimisation.
+
+**Divergence significative** :
+
+- Vercel agent recommande d'instrumenter cold starts via `instrumentation.ts` + sampling. Node agent dit : pas la priorité, on commence par persister erreurs et sweeper.
+- → **Trancher pour Node** : volume actuel ne justifie pas le coût d'instrumentation perf fine. Cold starts mesurables une fois Speed Insights monté.
+
+### 10.2 Inventaire — santé tech aujourd'hui
+
+| Domaine  | Signal                                                                   | Statut                                                              |
+| -------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| Vercel   | Speed Insights (LCP/INP/CLS/TTFB) par route                              | **manquant** (SDK installé, non monté)                              |
+| Vercel   | Web Analytics (pageviews/visitors Vercel)                                | **manquant**                                                        |
+| Vercel   | Function execution time, cold start ratio                                | **manquant**                                                        |
+| Vercel   | Build / deploy timeline                                                  | **manquant**                                                        |
+| Vercel   | Cache hit ratio (fetch cache, ISR, Cache Components)                     | **manquant**                                                        |
+| Runtime  | Logger structuré (JSON, requestId)                                       | **manquant** (`src/lib/logger.ts` = wrapper console.\* à 20 lignes) |
+| Runtime  | Erreurs Server Action (createSafeAction catch + persist)                 | **manquant**                                                        |
+| Runtime  | Timing Server Actions (publish, RSVP, signin)                            | **manquant** côté serveur                                           |
+| Runtime  | Unhandled rejections                                                     | **manquant**                                                        |
+| Runtime  | Rate-limit hits (`src/features/sortie/lib/rate-limit.ts:26`)             | **manquant** (return ok:false sans log)                             |
+| Auth     | Sessions actives / churn                                                 | **partiel** (countable mais non exposé)                             |
+| Auth     | Magic-link envoyés / échec Resend                                        | **manquant** (`auth-config.ts:25`)                                  |
+| Auth     | Auth telemetry serveur                                                   | **manquant** (auth-telemetry.ts est client-only)                    |
+| Externes | Gemini, Ticketmaster                                                     | **OK** via `serviceCallStats`                                       |
+| Externes | OpenAgenda, Resend, Blob Vercel                                          | **manquant**                                                        |
+| Externes | Latence p95 par service externe                                          | **manquant**                                                        |
+| Sweeper  | Last run, durée, items purgés, erreurs                                   | **manquant** (rapport non persisté)                                 |
+| Sweeper  | Compteurs orphelins (silent users, participants past, sessions expirées) | **manquant**                                                        |
+| DB       | Tailles tables (rows + bytes) top 10                                     | **manquant**                                                        |
+| DB       | Croissance 24h sur hot tables                                            | **manquant**                                                        |
+| DB       | Slow queries (`pg_stat_statements`)                                      | **manquant** (peut-être indispo sur Neon Free)                      |
+| DB       | Migration drift drizzle                                                  | **manquant**                                                        |
+| DB       | Connection pool état                                                     | **non pertinent** (postgres-js TCP, Fluid Compute, signal gadget)   |
+| Scraper  | parseStats + hosts                                                       | **OK** (`stat-queries.ts`)                                          |
+
+### 10.3 Top signaux à ajouter — priorisés
+
+#### P0 — bloquants (à faire en premier, effort S)
+
+1. **Mount `<SpeedInsights />` et `<Analytics />` dans `(sortie)/layout.tsx`** — 2 imports + 2 balises. Active LCP/INP/CLS/TTFB par route + pageviews Vercel. Le SDK est déjà installé. Coût zéro côté code.
+2. **Table `sortie.sweeper_runs`** : `(id, started_at, ended_at, duration_ms, closed_rsvps, j1_reminders, marked_past, tickets_cleaned_up, lock_skipped, errors_json)`. INSERT en fin de `runSortieSweeper` avant le `return report`. Migration Drizzle 1 fichier.
+3. **Top KPIs tech** dans `/admin/stat/tech` : deploy status + sweeper last run + scraper success ratio + publishFailed.server. Lecture pure de signaux déjà disponibles + sweeper_runs.
+
+#### P1 — haute valeur (effort M, après P0)
+
+4. **Table `sortie.server_errors`** : `(id, occurred_at, kind, route, action_name, message, stack_hash, stack_sample, user_id, count)`. Dedupe par sha1 du stack normalisé, upsert avec `count++`. Intercepteur dans `createSafeAction` + wrapper `withRouteErrors` pour les `route.ts` + `process.on("unhandledRejection")` au boot. Affichage : top 10 errors (count desc, lastSeen) + sparkline 7j.
+5. **Étendre `serviceCallStats`** avec `latency_ms_last`, `latency_ms_p95` (reservoir simple ou running max), `http_status_last`. Ajouter sources `openagenda`, `resend`, `blob_vercel`. Wrapper `recordServiceCall` modifié pour mesurer le timing.
+6. **Compteurs orphelins** : participants sans userId ET outing past > 90j, magic_links expirés, sessions expirées. 3 `SELECT COUNT(*)` simples. Affichage : 3 KPIs + bouton « purger » qui appelle un cron protégé.
+7. **Top 10 tailles tables** via `pg_total_relation_size('schema.table')` joint à `pg_class.reltuples`. Cache 5 min côté Server Component.
+
+#### P2 — différé (à reconsidérer au volume)
+
+8. **Vercel REST API** (deployments timeline, runtime logs, Speed Insights aggregates) — nécessite `VERCEL_ACCESS_TOKEN` read-only scoped projet Sortie. À câbler quand le volume justifie une vue cross-deployment des perfs.
+9. **Table `sortie.action_timings`** sample 10% pour p50/p95/p99 par Server Action. Volume actuel < 50 publish/sem = bruit.
+10. **Better Stack ou Sentry** pour alerting cross-canal (Slack, email). À 200 sessions/sem ou au 1er incident silencieux.
+11. **`instrumentation.ts` cold start ratio** — pertinent quand Vercel Speed Insights révèle des p99 > 2s.
+
+### 10.4 IA finale `/admin/stat/tech`
+
+Suit la même hiérarchie que `/admin/stat` mais SANS section « Opportunités » (tech = binaire). Mockup ASCII validé par UX agent :
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ ← Stats produit          ─ supervision tech (24h) ─       │
+│ Supervision tech                          [● Système OK]  │
+│ Range : [ 1h ][ 24h▪][ 7j ]                              │
+└──────────────────────────────────────────────────────────┘
+
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│ DEPLOY      │ │ SWEEPER     │ │ SCRAPER OG  │ │ PUBLISH ERR │
+│ succeeded   │ │ ran 2h ago  │ │ 87 %        │ │ 0           │
+│ il y a 12m  │ │ ▁▂▁▂▁▃▁▂   │ │ 142 tries   │ │ 24h glissant│
+└─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘
+
+[ alertes conditionnelles si une règle déclenche ]
+
+─────────────────────── pli ───────────────────────────────
+[ Build & Deploy ▪][ Scraper & Hosts ][ Services externes ]
+```
+
+**Badge global** (top-right) — seul élément que le owner regarde à 5s :
+
+- `Système OK` (acid-600) si aucune alerte critique
+- `Attention` (hot-500) si ≥1 warn
+- `Incident` (erreur-500 + dot pulsant) si ≥1 critique
+
+**4 tuiles KPIs** :
+
+| KPI                | Source                                                                                              | Verdict                                            |
+| ------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Deploy             | Vercel API ou fallback `process.env.VERCEL_GIT_COMMIT_SHA` + `VERCEL_DEPLOYMENT_ID` (P0 sans token) | crit si build failed ; warn si > 10 min building   |
+| Sweeper            | `sortie.sweeper_runs` last row                                                                      | warn > 12h, crit > 26h                             |
+| Scraper OG 24h     | `parseStats` agrégé sur 24h                                                                         | warn < 70 % avec n ≥ 10 ; crit < 50 %              |
+| Publish errors 24h | `wizardUmami.publishFailed.server + .network`                                                       | crit ≥ 1 (un seul publish raté serveur = bug prod) |
+
+**Règles d'alerte** (`<TechAlerts>`) :
+
+- `lastSweeperRun.duration > 26h` → critique
+- `parseStats.successRate24h < 50 %` AND attempts ≥ 10 → critique
+- `publishFailed.server > 0` → critique
+- Vercel `lastDeploy.state === "error"` AND age < 1h → critique
+- `serviceCallStats.errorRate24h > 0.2` (par service) → warn
+- `rateLimit.hits24h > 100` → warn
+- (P1) `serverErrors.count24h > 10` ou `serverErrors.uniqueStacks24h > 3` → warn
+
+**3 tabs détails** :
+
+1. **Build & Deploy** : 10 derniers déploiements, statut + durée + commit court (P2 si Vercel API)
+2. **Scraper & Hosts** : agrégat parse + tableau top 10 hosts à problèmes (déjà existant — déplacé depuis `stat-dashboard.tsx`)
+3. **Services externes** : Gemini / Ticketmaster / OpenAgenda / Resend / Blob — 1 ligne par service avec success ratio + p95 latency + last error
+
+### 10.5 Pattern visuel — Acid Cabinet
+
+- **Couleur restreinte** : OK = neutre (`text-ink-700`, `border-surface-400`). Warn = `text-hot-500` + bordure faible. Crit = `text-erreur-500` + dot pulsant `animate-pulse`. Pas de fond plein coloré sur les KPIs.
+- **Sparklines SVG inline 80×24 px**, polyline `stroke-acid-600` épaisseur 1.5. **Pas de Recharts/ChartJS** (~150 KB pour afficher 7 barres = non).
+- **Tableaux denses** : `font-mono text-[11.5px]`, séparateur `border-b border-surface-300/50`, padding `py-2`, statut en 1ʳᵉ colonne avec puce 6px, max 10 lignes + bouton « Voir tout (n) ».
+- **Empty states** : pattern existant (`MetricList` lines 172-178 de `stat-dashboard.tsx`), bordure dashed, message contextuel (« Aucun déploiement sur 7j » et non « Aucune donnée »).
+- **Loading** : skeleton `bg-surface-200 animate-pulse`. Helper `safe()` (page.tsx:22-31) déjà en place pour fallback empty state par section.
+
+### 10.6 Anti-patterns à éviter
+
+1. **Sapin de Noël** — si 3 KPIs sont crit, on n'affiche que le verdict global, on n'empile pas 3 bordures rouges.
+2. **Alerte critique cachée dans un tab** — toute alerte critique remonte forcément dans `<TechAlerts>` au-dessus du pli, jamais uniquement dans un tab.
+3. **Sparkline sans verdict** — chaque sparkline accompagnée d'un sub-label `+12 % vs préc.` avec tone (réutiliser `deltaLabel` + `toneClass`).
+4. **Sentry / Bugsnag prématurés** — coût € rapidement, fragmente la lecture entre l'outil tiers et `/admin/stat`. La table `server_errors` interne suffit jusqu'à ~200 sessions/sem.
+5. **Token Vercel team-wide** — toujours scoper read-only au projet Sortie pour limiter le blast radius en cas de leak.
+
+### 10.7 Plan d'implémentation — extension du plan original
+
+Le plan approuvé `~/.claude/plans/ba-oui-je-veux-hazy-parasol.md` couvre la refonte produit en 5 PRs (PR1-5). On ajoute **3 PRs tech** parallélisables avec PR4 (route séparée `/admin/stat/tech`) :
+
+**PR6 — Mount Vercel SDK + sweeper persistence**
+
+- `src/app/(sortie)/layout.tsx` : monter `<SpeedInsights />` + `<Analytics />` à côté de `<SortieAnalyticsSessionSync />`
+- Migration Drizzle : `sortie.sweeper_runs` + index sur `started_at`
+- `src/features/sortie/lib/sweeper.ts` : INSERT du `SweeperReport` à la fin (try/catch silencieux pour ne pas faire échouer le tick fonctionnel)
+- `src/features/sortie/queries/stat-queries.ts` : `getSweeperHealth()` (last run + age + 30 dernières exécutions)
+- **Critère review** : Speed Insights remontent dans Vercel dashboard ; sweeper_runs se peuple à chaque cron daily
+
+**PR7 — Server errors + service latency**
+
+- Migration Drizzle : `sortie.server_errors` (avec `count` et `stack_hash` UNIQUE)
+- Étendre `service_call_stats` : `latency_ms_last`, `latency_ms_p95_window`, `http_status_last`
+- `src/lib/action-utils.ts` (createSafeAction) : intercepteur erreurs → upsert dans `server_errors` via `runAfterResponse`
+- Helper `withRouteErrors(handler)` pour les `route.ts` (api routes admin et publiques)
+- `src/features/sortie/lib/service-call-stats.ts` : étendre `recordServiceCall` avec `latencyMs` et `httpStatus` paramètres
+- **Critère review** : top 10 errors lisible côté `/admin/stat/tech` ; un Server Action qui throw apparaît dans la table
+
+**PR8 — DB sizes + orphelins + KPIs tech**
+
+- `stat-queries.ts` : `getDbSizes()` (top 10 tables via `pg_total_relation_size`), `getOrphans()` (3 counts : participants past 90j, magic_links expirés, sessions expirées), `getTablesGrowth24h()`
+- Composants dashboard : `<DashboardTechKpis>` (4 tuiles), `<DashboardTechAlerts>` (règles 10.4), `<DashboardTechTabs>` (3 tabs)
+- `src/app/(sortie)/sortie/admin/stat/tech/page.tsx` : orchestrateur (≈ 80 lignes)
+- **Critère review** : navigation `/admin/stat` → `/admin/stat/tech` fluide, tous les KPIs s'affichent (verdict OK ou warn selon état réel), section alertes vide si tout va bien
+
+### 10.8 Risques
+
+1. **Coût Vercel Speed Insights** : sur Pro plan, datapoints au-delà du seuil mensuel = $0.65/10k events. À monitorer après mount, sampling 10 % côté SDK si dépassement.
+2. **Croissance `server_errors` / `sweeper_runs`** : sans purge, croissance linéaire. Ajouter phase au sweeper : `DELETE FROM server_errors WHERE last_seen < now() - interval '30 days'` ; `DELETE FROM sweeper_runs WHERE started_at < now() - interval '90 days'`.
+3. **Insert telemetry qui crash le request handler** : toujours wrap dans try/catch silencieux + utiliser `runAfterResponse` (`after-response.ts`) pour ne pas bloquer la réponse.
+4. **`pg_stat_statements` indisponible sur Neon Free** : si l'extension n'est pas activée, skip le slow query log, ne pas afficher de section vide.
+5. **Cardinality Web Vitals** : laisser Vercel grouper par pattern Next.js automatique. **Ne JAMAIS** ajouter `outing_id` ou `username` comme dimension custom.
+6. **Migration drift drizzle** : silencieux mais détectable. Option : ajouter un check au boot qui hash les migrations appliquées vs `meta/_journal.json` et alerte si mismatch.
+
+---
+
+_Fin du rapport — Phase 3 PR1 livrée. Phase 4 (refonte produit `/admin/stat`) + Phase 4-tech (refonte `/admin/stat/tech`) en attente d'implémentation. 8 PRs au total dont 5 produit (PR1-5) et 3 tech (PR6-8) parallélisables avec PR4._
