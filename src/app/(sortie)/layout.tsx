@@ -65,6 +65,19 @@ export const metadata: Metadata = {
     title: "Sortie",
     description: "Entre amis, ça s'organise.",
   },
+  icons: {
+    icon: [
+      { url: "/sortie/icon.svg", type: "image/svg+xml" },
+      { url: "/sortie/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/sortie/apple-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/sortie/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Sortie",
+  },
 };
 
 export const viewport: Viewport = {
