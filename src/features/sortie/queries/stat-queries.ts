@@ -1,12 +1,14 @@
-import { desc, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
+  magicLinks,
   outings,
   parseStats,
   participants,
   serviceCallStats,
   sweeperRuns,
 } from "@drizzle/sortie-schema";
+import { session } from "@drizzle/schema";
 
 export type ParseAggregate = {
   totalAttempts: number;
@@ -277,6 +279,107 @@ export async function getSweeperHealth(): Promise<SweeperHealth> {
   const lastRunAgeMs = lastRun ? Date.now() - lastRun.startedAt.getTime() : null;
 
   return { lastRun, lastRunAgeMs, recentRuns: rows };
+}
+
+// === DB sizes & orphans (PR8 — `/admin/stat/tech`) ===
+
+export type DbTableSize = {
+  /** schema.table — pour Better Auth `public.session`, pour Sortie `sortie.outings`. */
+  qualifiedName: string;
+  /** Nombre approximatif de rows (selon `pg_class.reltuples` mis à jour par autovacuum). */
+  approxRows: number;
+  /** Taille totale en bytes (data + index + toast). */
+  totalBytes: number;
+};
+
+/**
+ * Top 10 tables par taille (data + index + toast). Utilise
+ * `pg_total_relation_size` qui inclut tout le storage associé. Limité
+ * aux schémas `sortie` et `public` (Better Auth) pour ne pas exposer
+ * les tables internes Postgres (pg_*, drizzle.__migrations…).
+ *
+ * `reltuples` est une **approximation** : il n'est rafraîchi que par
+ * autovacuum, donc peut être off par 5-10 % sur des tables très chaudes.
+ * Suffisant pour repérer une croissance exponentielle, pas un nombre
+ * absolu fiable.
+ */
+export async function getDbSizes(): Promise<DbTableSize[]> {
+  const rows = await db.execute<{
+    qualified_name: string;
+    approx_rows: string;
+    total_bytes: string;
+  }>(sql`
+    SELECT
+      n.nspname || '.' || c.relname AS qualified_name,
+      c.reltuples::bigint AS approx_rows,
+      pg_total_relation_size(c.oid) AS total_bytes
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relkind = 'r'
+      AND n.nspname IN ('sortie', 'public')
+    ORDER BY pg_total_relation_size(c.oid) DESC
+    LIMIT 10
+  `);
+
+  // node-postgres renvoie les bigints en string pour préserver la
+  // précision — on convertit ici pour les afficher proprement.
+  return rows.map((r) => ({
+    qualifiedName: r.qualified_name,
+    approxRows: Number(r.approx_rows),
+    totalBytes: Number(r.total_bytes),
+  }));
+}
+
+export type OrphansCounts = {
+  /**
+   * Participants anonymes (`user_id IS NULL`) sur des sorties terminées
+   * ou cancelled depuis > 90j. Candidats au purge — la mémoire projet
+   * `project_sortie_anon_db_growth.md` flagge ce gap.
+   */
+  staleAnonymousParticipants: number;
+  /** Magic links expirés (sortie schema). Candidats au DELETE WHERE expires_at < now(). */
+  expiredMagicLinks: number;
+  /** Sessions Better Auth expirées. Idem. */
+  expiredSessions: number;
+};
+
+/**
+ * 3 compteurs d'orphelins purgeables. Utilisé par `/admin/stat/tech` pour
+ * afficher les candidats au prochain run du sweeper. Volontairement
+ * léger : 3 `COUNT(*)` ciblés sur des index existants, ne stream rien.
+ */
+export async function getOrphansCounts(): Promise<OrphansCounts> {
+  const ninetyDaysAgo = sql`now() - interval '90 days'`;
+
+  const [staleAnonymous] = await db
+    .select({ count: sql<number>`COUNT(*)::int` })
+    .from(participants)
+    .innerJoin(outings, eq(outings.id, participants.outingId))
+    .where(
+      and(
+        isNull(participants.userId),
+        // outing terminée OU annulée — les sorties open avec deadline
+        // future ne doivent pas être comptées comme "stale".
+        sql`${outings.status} IN ('past', 'cancelled', 'settled')`,
+        sql`${participants.respondedAt} < ${ninetyDaysAgo}`
+      )
+    );
+
+  const [expiredMagic] = await db
+    .select({ count: sql<number>`COUNT(*)::int` })
+    .from(magicLinks)
+    .where(lt(magicLinks.expiresAt, sql`now()`));
+
+  const [expiredSession] = await db
+    .select({ count: sql<number>`COUNT(*)::int` })
+    .from(session)
+    .where(lt(session.expiresAt, sql`now()`));
+
+  return {
+    staleAnonymousParticipants: staleAnonymous?.count ?? 0,
+    expiredMagicLinks: expiredMagic?.count ?? 0,
+    expiredSessions: expiredSession?.count ?? 0,
+  };
 }
 
 /**
