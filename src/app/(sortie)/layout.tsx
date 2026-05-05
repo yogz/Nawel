@@ -3,7 +3,11 @@ import { Unbounded, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "../sortie.css";
 
-const UMAMI_WEBSITE_ID = "383d4d2b-6e94-4215-b02e-39ddc800134b";
+// Site Umami dédié à Sortie (créé 2026-05-05). Avant cette date, Sortie
+// et CoList partageaient l'id `383d4d2b-…`, ce qui polluait les KPIs
+// site (visiteurs/pageviews/top paths) du dashboard `/sortie/admin/stat`.
+// CoList garde l'ancien id côté `(colist)/[locale]/layout.tsx`.
+const UMAMI_WEBSITE_ID = "76add338-a076-4a94-98ba-d78dc7bc212d";
 
 // GenZ design system: Unbounded for display, Space Grotesk for body,
 // JetBrains Mono for data/labels. We re-use the historical CSS var names

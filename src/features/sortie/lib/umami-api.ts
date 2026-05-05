@@ -15,7 +15,10 @@ import { logger } from "@/lib/logger";
 
 const API_BASE = process.env.UMAMI_API_BASE ?? "https://api.umami.is/v1";
 const API_KEY = process.env.UMAMI_API_KEY;
-const WEBSITE_ID = process.env.UMAMI_WEBSITE_ID ?? "383d4d2b-6e94-4215-b02e-39ddc800134b";
+// Site Umami dédié à Sortie (cf. `(sortie)/layout.tsx`). En env on
+// préfère lire `UMAMI_WEBSITE_ID` pour pouvoir override en dev/preview ;
+// fallback hardcodé si la var n'est pas set (cas local courant).
+const WEBSITE_ID = process.env.UMAMI_WEBSITE_ID ?? "76add338-a076-4a94-98ba-d78dc7bc212d";
 
 export function isUmamiConfigured(): boolean {
   return Boolean(API_KEY);
