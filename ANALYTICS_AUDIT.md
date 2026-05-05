@@ -404,4 +404,76 @@ Classement par valeur produit × coût d'implémentation :
 
 ---
 
-_Fin du rapport — Phase 2 livrée ; Phase 3 démarrera après validation owner des questions §8.7 et après reviews croisées (Plan agent + expert produit/analytics + devil's advocate) demandées par le plan original._
+## 9. Reviews croisées + cadre révisé + plan Phase 3 PR1
+
+_Section ajoutée 2026-05-05 après lancement des 3 reviews croisées (Plan agent + expert produit/analytics + devil's advocate) sur la base du §8. Les 4 questions du §8.7 sont **tranchées par les experts**, pas renvoyées à l'owner. Section §8 reste en l'état historique ; §9 est la version qui guide l'implémentation._
+
+### 9.1 Synthèse des 3 reviews
+
+**Convergences** (les 3 d'accord) :
+
+- Câbler `setUmamiUserId` via Client Component dédié calqué sur le pattern CoList existant.
+- Instrumenter `SortieAuthForm` (gap auth majeur).
+- Exposer `wizard_publish_failed.reason` (alerte bug serveur, valeur immédiate indép. du volume) et `wizard_abandoned.last_step` (drop-off lisible même à n=5).
+- Investiguer les dead triggers `outing_ticket_clicked` / `_ics_downloaded` avant de les câbler.
+
+**Divergences arbitrées** :
+
+| Sujet                                          | Position retenue                                                                                                                                                       | Source de l'arbitrage |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| K-factor par sortie + `outing_id` hashé        | **Reporté** tant que < 50 sorties/sem (statistiquement non lisible)                                                                                                    | Devil's advocate      |
+| Seuils chiffrés (K<2, conv<35%, retention<20%) | **Remplacés par règles d'absolu** sur 28j glissants ("0 publish 14j = alerte", "Δ vs sem précédente") tant que n<200 sessions/sem                                      | Devil's advocate      |
+| Endpoint JSON Phase 5 (cron IA)                | **Tué** — slop d'IA sur faible volume                                                                                                                                  | Devil's advocate      |
+| Activation = publish OU rsvp                   | **Redéfinie : publish ≥1 sortie ET recevoir ≥1 rsvp** (créateur qui voit le produit fonctionner)                                                                       | Expert produit        |
+| Définition churned/dormant absente             | **Ajoutée** : 0 `outing_viewed` ni `wizard_*` sur 14j = dormant ; 30j = churned                                                                                        | Expert produit        |
+| Segmentation device (mobile vs desktop)        | **Ajoutée** sur les KPIs critiques — Umami capture nativement, coût 0                                                                                                  | Expert produit        |
+| Vanity properties à exposer                    | **Coupées** : `landing_section_visible.section`, `wizard_publish_succeeded.has_*`, `outing_share_clicked.placement`. **Gardées** : `outing_viewed.source`, auth events | Expert + Devil        |
+| `auth_signup_completed` en event séparé        | **Remplacé** par `auth_signin_succeeded { is_new_account: boolean }` lu côté Better Auth response — plus simple, plus fiable que l'heuristique 2 events                | Expert + Plan         |
+
+### 9.2 Cadre AAARRR révisé (résumé pour implémentation)
+
+**Activation** = créateur publie ≥1 sortie ET reçoit ≥1 rsvp (signal que le produit fonctionne pour lui). Métrique = % users qui atteignent les 2.
+
+**Définitions cohorte** : actif = ≥1 `outing_viewed` ou `wizard_*` sur 14j. Dormant = 14-30j sans activité. Churned = > 30j sans activité.
+
+**Seuils** : tant que sessions/sem < 200, le dashboard affiche **valeurs absolues + Δ vs semaine précédente**. Les ratios chiffrés (% conversion, K-factor) reviennent au-delà de ce seuil de volume. Une « alerte » au sens dashboard = un événement absolu observé (`publish_failed.reason=server > 0`), pas un ratio sous un seuil.
+
+**Segmentation device** : mobile vs desktop affiché sur le funnel wizard et sur outing_viewed (source du build du dashboard, à exposer via `getTopMetric(range, "device")`).
+
+### 9.3 Découverte (investigation §9 en cours)
+
+`outing_ticket_clicked` et `outing_ics_downloaded` **ne sont pas dead côté Umami** : `outing-hero.tsx:113,128` utilise les attributs HTML natifs Umami (`data-umami-event="…"`) qui émettent côté client sans passer par les helpers JS. Ce sont **les 2 helpers JS** dans `outing-telemetry.ts` qui sont morts (jamais appelés). **Décision : supprimer les helpers** (Devil avait raison sur l'option « peut-être qu'il faut supprimer »).
+
+### 9.4 Plan Phase 3 — PR1 « MVP analytics utile »
+
+Effort : ~1.5 j. Périmètre :
+
+1. **`SortieAnalyticsSessionSync`** : Client Component calqué sur `analytics-session-sync.tsx` (mais importe `setUmamiUserId` direct depuis `@/lib/umami`, pas via le namespace CoList). Mounté dans `(sortie)/layout.tsx` après `{children}`.
+2. **2 events auth Sortie** dans un nouveau `src/features/sortie/lib/auth-telemetry.ts` :
+   - `auth_signin_started { method: "magic_link" | "email_password" | "google" }`
+   - `auth_signin_succeeded { method, is_new_account: boolean }`
+     Instrumentation sur les handlers de `SortieAuthForm`. Détection `is_new_account` via la réponse Better Auth (`signIn.email`, `signIn.magicLink`, `signIn.social` retournent un flag d'identification — sinon fallback heuristique via `checkAccountStatus` pré-signin).
+3. **Suppression des helpers dead** `trackOutingTicketClicked` / `trackOutingIcsDownloaded` dans `outing-telemetry.ts` (les `data-umami-event=` HTML continuent à émettre).
+4. **Lecture dashboard** (modifs `umami-api.ts` + `wizard-umami-stats.ts` + `stat-dashboard.tsx`) :
+   - `wizard_publish_failed.reason` — affiché comme alerte si `server > 0` ou `network > 0`
+   - `wizard_abandoned.last_step` — distribution simple
+   - `outing_viewed.source` — distribution share / internal / direct
+
+**Hors scope PR1 (reporté)** :
+
+- `outing_id` hashé + K-factor par sortie individuelle
+- Cohortes rétention J+7 / J+30 (Umami self-hosted n'a pas de retention curves natives — besoin SQL custom)
+- Endpoint JSON Phase 5
+- Refonte massive du dashboard Phase 4 (limitée au strict nécessaire pour les nouveaux signaux)
+- Rename `lib/analytics.ts` → `analytics-colist.ts` (cosmétique, non priorisé)
+- Activation/segmentation device mesurées : la métrique entre sera affichable une fois les events identifiés ajoutés ; pas besoin de nouveau code de tracking, juste lecture via `getTopMetric(range, "device")` côté dashboard. À inclure dans la lecture dashboard de PR1 si la complexité reste contenue, sinon PR2.
+
+### 9.5 Risques d'implémentation à surveiller
+
+1. **Race `<Script afterInteractive>` vs 1ᵉʳ `setUmamiUserId`** : `window.umami` peut être undefined au mount initial. Le `setUmamiUserId` existant dans `umami.ts:37` a déjà un `try/catch` silent — il faut vérifier qu'un retry/queue n'est pas nécessaire (le 2ᵉ render React après `useSession` async devrait suffire).
+2. **Détection `is_new_account`** : si Better Auth ne retourne pas ce flag, fallback via `checkAccountStatus({ email })` pré-signin et stocker `wasNewAccount` dans une ref. Limite : magic-link cliqué dans un autre onglet → ref perdue, on émet alors `is_new_account: false` (acceptable comme noise).
+3. **Cohérence avec CoList** : le composant `SortieAnalyticsSessionSync` ne doit PAS partager d'état avec `AnalyticsSessionSync` CoList. Importer `setUmamiUserId` direct, pas via `@/lib/analytics`.
+
+---
+
+_Fin du rapport — Phase 3 PR1 en implémentation. Phase 4 et au-delà conditionnées au signal de volume produit._
