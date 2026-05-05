@@ -17,12 +17,7 @@ import { sendGAEvent } from "@/lib/umami";
 
 type Payload = Record<string, string | number | boolean | undefined>;
 
-type OutingEventName =
-  | "outing_viewed"
-  | "outing_share_clicked"
-  | "outing_rsvp_set"
-  | "outing_ticket_clicked"
-  | "outing_ics_downloaded";
+type OutingEventName = "outing_viewed" | "outing_share_clicked" | "outing_rsvp_set";
 
 function track(name: OutingEventName, payload?: Payload) {
   sendGAEvent("event", name, payload);
@@ -91,19 +86,8 @@ export function trackOutingRsvpSet(params: {
   });
 }
 
-/**
- * Clic sur le lien billetterie / "Voir l'événement". Sortir de la page
- * vers le site externe est un signal positif pour les sorties à billet
- * mais aussi un risque de churn si le user ne RSVP pas avant.
- */
-export function trackOutingTicketClicked() {
-  track("outing_ticket_clicked");
-}
-
-/**
- * Clic sur "Ajouter à mon agenda" (.ics). Important pour mesurer
- * combien de visiteurs sauvegardent réellement la sortie.
- */
-export function trackOutingIcsDownloaded() {
-  track("outing_ics_downloaded");
-}
+// Note : `outing_ticket_clicked` et `outing_ics_downloaded` sont émis
+// directement via les attributs HTML natifs Umami `data-umami-event="…"`
+// dans `outing-hero.tsx` (lignes 113 et 128). Inutile de dupliquer en
+// helpers JS — les helpers précédents étaient morts (jamais appelés
+// alors que les events partaient quand même côté browser via Umami).
