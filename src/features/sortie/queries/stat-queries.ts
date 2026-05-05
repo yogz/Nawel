@@ -1,6 +1,12 @@
 import { desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { outings, parseStats, participants, serviceCallStats } from "@drizzle/sortie-schema";
+import {
+  outings,
+  parseStats,
+  participants,
+  serviceCallStats,
+  sweeperRuns,
+} from "@drizzle/sortie-schema";
 
 export type ParseAggregate = {
   totalAttempts: number;
@@ -213,6 +219,64 @@ export async function getCreatorActivation28d(): Promise<CreatorActivation28d> {
     );
 
   return row ?? { totalCreators: 0, activatedCreators: 0 };
+}
+
+// === sweeper health ===
+
+export type SweeperRunRow = {
+  id: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  durationMs: number | null;
+  closedRsvps: number;
+  j1Reminders: number;
+  markedPast: number;
+  ticketsCleanedUp: number;
+  lockSkipped: boolean;
+  errorsCount: number;
+};
+
+export type SweeperHealth = {
+  /** Dernière exécution observée (la plus récente toutes raisons confondues — y compris les `lock_skipped`). */
+  lastRun: SweeperRunRow | null;
+  /** Âge de la dernière run en millisecondes, pour calcul d'alerte (>26h = critique côté §10.4). */
+  lastRunAgeMs: number | null;
+  /** Liste des 30 dernières runs, ordre desc. Sert au tableau de l'onglet « Build & Deploy » de `/admin/stat/tech`. */
+  recentRuns: SweeperRunRow[];
+};
+
+/**
+ * Santé du sweeper Sortie. Lit la table `sortie.sweeper_runs` peuplée
+ * par `runSortieSweeper`. Retourne un fallback vide si aucune run n'a
+ * encore été enregistrée (cas après le déploiement initial de la PR6
+ * tant que le cron daily n'a pas tourné). Une failure SQL est gérée
+ * par le wrapper `safe()` côté page.
+ */
+export async function getSweeperHealth(): Promise<SweeperHealth> {
+  const rows = await db
+    .select({
+      id: sweeperRuns.id,
+      startedAt: sweeperRuns.startedAt,
+      endedAt: sweeperRuns.endedAt,
+      durationMs: sweeperRuns.durationMs,
+      closedRsvps: sweeperRuns.closedRsvps,
+      j1Reminders: sweeperRuns.j1Reminders,
+      markedPast: sweeperRuns.markedPast,
+      ticketsCleanedUp: sweeperRuns.ticketsCleanedUp,
+      lockSkipped: sweeperRuns.lockSkipped,
+      // `errors` est `jsonb` — sur la santé du sweeper on n'a besoin
+      // que du count pour la décision (rouge si > 0). Le détail est
+      // affiché à la demande dans un drawer.
+      errorsCount: sql<number>`COALESCE(jsonb_array_length(${sweeperRuns.errors}), 0)::int`,
+    })
+    .from(sweeperRuns)
+    .orderBy(desc(sweeperRuns.startedAt))
+    .limit(30);
+
+  const lastRun = rows[0] ?? null;
+  const lastRunAgeMs = lastRun ? Date.now() - lastRun.startedAt.getTime() : null;
+
+  return { lastRun, lastRunAgeMs, recentRuns: rows };
 }
 
 /**
