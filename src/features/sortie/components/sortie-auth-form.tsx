@@ -10,6 +10,10 @@ import {
   checkAccountStatus,
   type AccountStatus,
 } from "@/features/sortie/actions/account-status-action";
+import {
+  trackSortieAuthSigninStarted,
+  trackSortieAuthSigninSucceeded,
+} from "@/features/sortie/lib/auth-telemetry";
 
 const RESEND_COOLDOWN_S = 30;
 
@@ -101,6 +105,16 @@ export function SortieAuthForm({
           setPhase("idle");
           return;
         }
+        // `is_new_account` : si l'utilisateur a fait le `handleEmailSubmit`
+        // dans CE même onglet, `accountStatus.exists === false` indique
+        // qu'on vient de créer un compte au verify. Sur un verify lancé
+        // depuis un autre onglet (state perdu) on retombe sur `false`
+        // par défaut — sous-estimation acceptée plutôt qu'inventer un
+        // signup non vérifiable. Cf. `auth-telemetry.ts`.
+        trackSortieAuthSigninSucceeded({
+          method: "magic_link",
+          isNewAccount: accountStatus?.exists === false,
+        });
         await refetch();
         router.push(callbackURL);
         router.refresh();
@@ -115,7 +129,7 @@ export function SortieAuthForm({
     return () => {
       cancelled = true;
     };
-  }, [token, callbackURL, router, refetch]);
+  }, [token, callbackURL, router, refetch, accountStatus?.exists]);
 
   // Décompte du cooldown "renvoyer le lien" en magic-sent. Évite que
   // l'utilisateur spamme le bouton et déclenche un rate limit Better Auth.
@@ -161,6 +175,7 @@ export function SortieAuthForm({
   async function sendMagicLink() {
     setError(null);
     setPending(true);
+    trackSortieAuthSigninStarted("magic_link");
     try {
       const { error } = await signIn.magicLink({ email, callbackURL: absoluteCallback });
       if (error) {
@@ -179,6 +194,12 @@ export function SortieAuthForm({
   async function handleGoogle() {
     setError(null);
     setPending(true);
+    // Pas de `_succeeded` ici : `signIn.social` redirige le browser et
+    // l'utilisateur ne revient JAMAIS dans cette instance React. Le
+    // `_succeeded` Google sera dérivé plus tard (PR2) côté
+    // `SortieAnalyticsSessionSync` via détection 1ʳᵉ session après
+    // un retour `/api/auth/callback/google`.
+    trackSortieAuthSigninStarted("google");
     try {
       // signIn.social redirige le browser vers Google ; pas de retour
       // côté client. Le `callbackURL` est embarqué dans la state OAuth
@@ -200,12 +221,16 @@ export function SortieAuthForm({
       return;
     }
     setPending(true);
+    trackSortieAuthSigninStarted("email_password");
     try {
       const { error } = await signIn.email({ email, password, callbackURL: absoluteCallback });
       if (error) {
         setError(error.message || "Identifiants invalides.");
         return;
       }
+      // Email/password ne crée jamais de compte ici (signup pwd absent
+      // du flow Sortie — comptes créés silent au RSVP ou via magic-link).
+      trackSortieAuthSigninSucceeded({ method: "email_password", isNewAccount: false });
       await refetch();
       router.push(callbackURL);
       router.refresh();
