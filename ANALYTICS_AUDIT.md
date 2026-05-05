@@ -321,4 +321,87 @@ Hypothèses validables avant Phase 2 si l'owner valide ce rapport :
 
 ---
 
-_Fin du rapport — attendre validation owner avant de démarrer la Phase 2 (cadre AAARRR)._
+## 8. Phase 2 — Cadre AAARRR Sortie
+
+_Section ajoutée 2026-05-05 après validation owner. Décisions §6 résolues : split Umami fait (commit `63377a6`), CoList reste active (le tag `app:` est abandonné — redondant maintenant que les sites sont distincts), §5 réduit à un éventuel rename cosmétique de `lib/analytics.ts` qui peut être skippé._
+
+### 8.1 Logique du framework
+
+Sortie n'a pas de revenu direct → 4 étapes : **Acquisition, Activation, Rétention, Référence**. La **Référence (K-factor)** est le levier #1 du produit puisque chaque sortie publiée est intrinsèquement virale (les invitations sont envoyées par le créateur à son cercle, qui peuvent à leur tour publier).
+
+Pour chaque étape, on dérive 2-3 questions actionnables, on liste l'event qui répond (existant ou à ajouter) et on fixe un seuil d'alerte. Les seuils sont des **valeurs initiales à recalibrer après 4 semaines de mesure** ; ils servent à amorcer la lecture du dashboard, pas à juger en absolu.
+
+### 8.2 Acquisition — qui arrive sur Sortie, par quel canal ?
+
+| #   | Question actionnable                               | Event qui répond                                                     | Métrique                                | Seuil d'alerte                                                                                                       | État Phase 1                                                    |
+| --- | -------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| A1  | Le trafic croît-il semaine sur semaine ?           | `getWebsiteStats` (visitors + comparison built-in)                   | Δ visiteurs uniques 7j vs 7j précédents | `< -20%` = critique ; `< 0%` 2 semaines de suite = warning                                                           | **OK** — exposé dans dashboard                                  |
+| A2  | D'où viennent les visiteurs ?                      | `getTopMetric(range, "referrer")`                                    | Top 5 referrers + part du `direct`      | `direct > 80%` ET zéro referrer organique = produit sans canal d'acquisition (dépend du bouche-à-oreille hors-ligne) | **OK** — exposé                                                 |
+| A3  | Le partage actif génère-t-il des vues ?            | `outing_share_clicked` (count) + `outing_viewed { source: "share" }` | ratio = vues_share / shares_clicked     | `< 0.5` = liens partagés peu cliqués (faux clic, message qui passe mal)                                              | **🔴 GAP** — `outing_viewed.source` non lue ; à exposer Phase 3 |
+| A4  | Quelle landing convertit ? (préparation A/B futur) | `landing_v2_view` + `landing_section_visible` + `landing_cta_click`  | scroll depth + CTR landing              | `landing_cta_click / landing_v2_view < 5%` = landing inactive                                                        | **🟡 PARTIEL** — events émis non lus ; à exposer Phase 3        |
+
+### 8.3 Activation — % visiteurs qui font une 1ʳᵉ action utile
+
+Définition : un visiteur est **activé** s'il (a) publie une sortie OU (b) répond à un RSVP. Les deux sont des actions « productrices » qui font vivre le réseau.
+
+| #   | Question actionnable                                            | Event qui répond                                                                     | Métrique                                | Seuil d'alerte                                                                                                                                   | État Phase 1                                                         |
+| --- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| Ac1 | Quelle proportion des arrivées landing entre dans le wizard ?   | `landing_v2_view` → `wizard_step_paste_entered`                                      | ratio paste_entered / landing_view      | `< 15%` = la landing ne vend pas le wizard                                                                                                       | **🔴 GAP** — `landing_v2_view` non lue ; à exposer Phase 3           |
+| Ac2 | Quelle proportion qui démarre le wizard publie ?                | `wizard_step_paste_entered` → `wizard_publish_succeeded`                             | conversion funnel global wizard         | `< 35%` = friction wizard ; `< 50%` = warning                                                                                                    | **OK** — funnel exposé                                               |
+| Ac3 | À quelle étape du wizard on perd le plus ?                      | `wizard_step_*_entered` chaînés + `wizard_abandoned.last_step`                       | step où le drop > 25% du step précédent | step `paste→date` drop > 30% = le branching paste/title bug ; step `commit→publish` drop > 15% = un bug d'auth ou de validation à la publication | **🟡 PARTIEL** — funnel exposé, `wizard_abandoned.last_step` non lue |
+| Ac4 | Pourquoi le wizard échoue-t-il ?                                | `wizard_publish_failed.reason`                                                       | distribution validation/server/network  | `server > 5%` = bug backend ; `network > 10%` = problème CDN/proxy                                                                               | **🔴 GAP** — event émis non lu ; **urgent** Phase 3                  |
+| Ac5 | Combien de visiteurs sortie partagée font une action (RSVP) ?   | `outing_viewed` → `outing_rsvp_set`                                                  | conversion vue → RSVP                   | `< 25%` = page sortie ne convainc pas                                                                                                            | **OK** — exposé                                                      |
+| Ac6 | Quelle proportion des nouveaux signups passe à une 1ʳᵉ action ? | `auth_signup_completed` (à ajouter) → `wizard_publish_succeeded` ∪ `outing_rsvp_set` | activation post-signup à J+1            | `< 60%` = onboarding cassé                                                                                                                       | **🔴 GAP** — `SortieAuthForm` n'émet rien ; **bloquant** Phase 3     |
+
+### 8.4 Rétention — % users qui reviennent à J+7 / J+30
+
+> ⚠️ **Bloqueur structurel** : `setUmamiUserId` n'est pas câblé sur Sortie (cf. §2.5). Sans ça, Umami ne peut pas reconstruire de cohorte. **Priorité absolue Phase 3.** En attendant, les métriques ci-dessous sont approximables via `visits / visitors` global mais pas mesurables par cohorte.
+
+| #   | Question actionnable                                       | Event qui répond                                               | Métrique                                      | Seuil d'alerte                                               | État Phase 1                                 |
+| --- | ---------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------- |
+| R1  | % users actifs J0 qui reviennent à J+7                     | session-cohorte Umami (nécessite `setUmamiUserId`)             | retention curve J+7                           | `< 20%` = produit one-shot                                   | **🔴 BLOQUÉ** par auth/identification        |
+| R2  | Combien de visites moyennes par user actif sur 30j ?       | `getWebsiteStats(30j)` ratio `visits / visitors`               | ≥ 3 = bon engagement, < 2 = engagement faible | `< 1.5` = users qui ne reviennent jamais                     | **🟡 APPROXIMATIF** sans userId mais lisible |
+| R3  | Les users récurrents publient-ils plus de 1 sortie ?       | `wizard_publish_succeeded` count + cohorte user                | médiane outings_per_user                      | médiane = 1 = app one-shot ; médiane ≥ 2 = produit récurrent | **🔴 BLOQUÉ** par identification             |
+| R4  | Les agendas perso (`/moi`, `/agenda`) sont-ils consultés ? | pageview Umami sur `/moi`, `/agenda` (déjà capturé par script) | visites / user actif                          | `< 1` par semaine = surfaces mortes                          | **OK** via topPaths existant                 |
+
+**Recommandation** : câbler `setUmamiUserId` Phase 3 (5 lignes : créer un composant `SortieAnalyticsSessionSync` calqué sur celui de CoList et le mounter dans `(sortie)/layout.tsx`). Sans ça, R1 / R3 restent inmesurables et la Phase 4 du dashboard manquera son top-row de KPIs.
+
+### 8.5 Référence — viralité (K-factor)
+
+K-factor = `(RSVPs reçus + nouvelles créations déclenchées) / sortie publiée`. Levier #1 Sortie.
+
+> ⚠️ Limite RGPD-friendly : aujourd'hui aucun event ne porte d'`outing_id` (PII concern). On ne peut donc pas calculer un vrai K-factor par sortie individuelle. **Approximation grossière acceptable** : ratios agrégés sur la fenêtre. Pour un K par sortie, on aurait besoin d'un id anonymisé/hashé — décision à prendre Phase 3 (cf. §8.7).
+
+| #   | Question actionnable                                          | Event qui répond                                                                       | Métrique               | Seuil d'alerte                                                      | État Phase 1                                                                                      |
+| --- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| K1  | K-factor agrégé : combien de RSVPs par sortie publiée ?       | `outing_rsvp_set` count / `wizard_publish_succeeded` count                             | ratio sur fenêtre      | `K < 2` = peu viral ; `K ≥ 5` = excellent                           | **OK** dérivable des counts existants ; à calculer Phase 4                                        |
+| K2  | Quel canal de partage convertit le mieux en RSVP ?            | `outing_share_clicked.channel` croisé avec `outing_rsvp_set` (corrélation par session) | rsvp_rate par channel  | différentiel > 3× entre channels = focaliser sur le best            | **🟡 PARTIEL** — channels lus mais pas de corrélation ; faisable côté client (session id) Phase 3 |
+| K3  | Combien de RSVPs donnent un email (input pour signup futur) ? | `outing_rsvp_set.has_email`                                                            | taux capture email     | `< 30%` = pipeline signup post-RSVP cassé                           | **🔴 GAP** — propriété émise non lue ; à exposer Phase 3                                          |
+| K4  | Combien d'invitations RSVP convertissent en signup créateur ? | `outing_rsvp_set` → `auth_signup_completed` (même session)                             | conversion RSVP→signup | `< 5%` = la page RSVP ne pousse pas vers signup                     | **🔴 GAP** — `auth_signup_completed` à ajouter                                                    |
+| K5  | Les `delta=switched` (yes/no/yes) sont-ils nombreux ?         | `outing_rsvp_set.delta`                                                                | part de switched       | `> 15%` = friction RSVP (sheet confuse, deadline floue)             | **🔴 GAP** — propriété émise non lue                                                              |
+| K6  | Les billets externes / .ics sont-ils utilisés ?               | `outing_ticket_clicked`, `outing_ics_downloaded`                                       | clics par vue sortie   | `outing_ics / outing_viewed < 5%` = save-to-calendar pas découverte | **🔴 BUG** — events définis mais **0 call-site** ; Phase 3 = câbler les onClick avant tout        |
+
+### 8.6 Synthèse — priorités Phase 3 dérivées du cadre
+
+Classement par valeur produit × coût d'implémentation :
+
+**🔴 P0 — bloquants AAARRR (à faire d'abord)** :
+
+1. **Câbler `setUmamiUserId` sur Sortie** (5 lignes) → débloque R1, R3, K2, K4. Sans ça la moitié du dashboard reste vide.
+2. **Instrumenter `SortieAuthForm`** (events `auth_signin_started`, `auth_signin_succeeded`, `auth_signin_failed`, `auth_signup_completed`, `magic_link_request`) → débloque Ac6, K4.
+3. **Câbler `outing_ticket_clicked` et `outing_ics_downloaded`** dans les composants concernés (probablement `outing-hero` ou un bouton dédié) → débloque K6, et désamorce un bug latent.
+
+**🟡 P1 — exposer dans dashboard, sans nouveau tracking** (lecture pure dans `wizard-umami-stats.ts`) : 4. `outing_viewed.source` → A3. 5. `wizard_publish_failed.reason` → Ac4 (urgent : alerte bug serveur). 6. `wizard_abandoned.last_step` → Ac3. 7. `outing_rsvp_set.has_email` + `.delta` → K3, K5. 8. `landing_v2_view` + `landing_section_visible` + `landing_cta_click` → A4, Ac1. 9. `wizard_publish_succeeded` propriétés (mode, has_venue, has_ticket_url, etc.) → segmentation des sorties créées (utile pour Phase 4 « opportunités »).
+
+**🟢 P2 — affinements** : 10. Décider d'un `outing_id` anonymisé (hash) sur les events `outing_*` → permet K1 par sortie au lieu d'agrégé. Coût : ajouter un hash côté serveur dans le slug → propriété stable mais non-PII. 11. Investiguer doublons de fichiers `demo-interactive` × 2 et `faq` × 2 (CoList) — si Sortie est seul scope priority → reporter à un cleanup CoList ultérieur.
+
+### 8.7 Questions ouvertes pour validation owner avant Phase 3
+
+1. **`auth_signup_completed`** : on l'émet uniquement après vérif email (compte `emailVerified=true`) ou dès création ? Recommandation : **après vérif email** pour ne pas gonfler de comptes morts.
+2. **`outing_id` anonymisé** : OK pour ajouter un hash stable (sha256 du slug + salt env) sur les events `outing_*` ? Sinon K-factor reste agrégé seulement (acceptable au début).
+3. **Seuils d'alerte** : les valeurs proposées sont des points de départ. Recalibrage prévu après 4 semaines de mesure ?
+4. **Périmètre P0/P1** : OK pour traiter les 3 P0 d'abord en un PR, puis P1 en un 2ᵉ PR (lecture-seule du dashboard) ? Ça séparerait clairement « ajout de tracking » et « affichage ».
+
+---
+
+_Fin du rapport — Phase 2 livrée ; Phase 3 démarrera après validation owner des questions §8.7 et après reviews croisées (Plan agent + expert produit/analytics + devil's advocate) demandées par le plan original._
