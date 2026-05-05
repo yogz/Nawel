@@ -54,6 +54,19 @@ const config: Config = {
           800: "#8A2049",
           900: "#5C1531",
         },
+        erreur: {
+          50: "#FFF1F1",
+          100: "#FFE0E0",
+          200: "#FFC2C2",
+          300: "#FF9999",
+          400: "#FF6B6B",
+          500: "#FF4D4D",
+          600: "#E63232",
+          700: "#BF2020",
+          800: "#8C1414",
+          900: "#5C0808",
+          950: "#2D0303",
+        },
         surface: {
           // `bg-surface` sans shade reste la CSS var CoList (var(--surface)),
           // les shades chiffrés sont les fonds dark de Sortie (Acid Cabinet).
