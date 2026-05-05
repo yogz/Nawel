@@ -241,6 +241,57 @@ export async function getRsvpResponseBreakdown(
   });
 }
 
+/**
+ * Causes d'échec du publish wizard : `validation` (input invalide),
+ * `server` (erreur 5xx ou exception backend), `network` (fetch KO).
+ * Lecture critique : `server > 0` ou `network > 0` indique un bug
+ * en prod silencieux pour l'utilisateur (toast d'erreur générique)
+ * mais visible côté dashboard.
+ */
+export async function getPublishFailedReasons(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "wizard_publish_failed",
+    propertyName: "reason",
+  });
+}
+
+/**
+ * Distribution des `last_step` sur `wizard_abandoned`. Répond directement
+ * à « où on perd les users dans le wizard ». Lisible même à faible
+ * volume (n=5 abandons par semaine donne déjà une indication directionnelle).
+ */
+export async function getWizardAbandonedSteps(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "wizard_abandoned",
+    propertyName: "last_step",
+  });
+}
+
+/**
+ * Source d'arrivée sur une page sortie : `share` (lien externe partagé,
+ * referrer hors-site), `internal` (navigation interne dans Sortie),
+ * `direct` (URL tapée / bookmark / sans referrer). Mesure la part du
+ * partage actif dans l'acquisition de vues.
+ */
+export async function getOutingViewedSources(
+  range: Range
+): Promise<EventDataValuesResponse | null> {
+  return umamiFetch<EventDataValuesResponse>("/event-data/values", {
+    startAt: range.startAt,
+    endAt: range.endAt,
+    eventName: "outing_viewed",
+    propertyName: "source",
+  });
+}
+
 // ─── Vue d'ensemble Umami : stats + active + metrics ─────────────────
 
 export type WebsiteStats = {

@@ -3,13 +3,16 @@ import {
   getActiveVisitors,
   getEventCounts,
   getGeminiTriggerBreakdown,
+  getOutingViewedSources,
   getPasteKindBreakdown,
   getPasteToPublishBuckets,
   getPasteToPublishDistribution,
+  getPublishFailedReasons,
   getRsvpResponseBreakdown,
   getShareChannelBreakdown,
   getTopMetric,
   getWebsiteStats,
+  getWizardAbandonedSteps,
   isUmamiConfigured,
   lastNDaysRange,
   type MetricRow,
@@ -60,6 +63,39 @@ export type RsvpBreakdown = {
   total: number;
 };
 
+/**
+ * Causes d'échec du publish wizard. `total` permet d'afficher la
+ * sévérité globale (un nombre absolu — pas un ratio) ; les buckets
+ * détaillés permettent d'agir : `server` ou `network` > 0 = alerte
+ * bug prod, `validation` > 0 sur un volume normal = friction UX.
+ */
+export type PublishFailedBreakdown = {
+  validation: number;
+  server: number;
+  network: number;
+  unknown: number;
+  total: number;
+};
+
+/**
+ * Distribution des dernières steps avant abandon du wizard. Lisible
+ * même à faible volume (chaque ligne = 1 user qui a quitté à ce step).
+ */
+export type AbandonedStepRow = { step: string; count: number };
+
+/**
+ * Origines des vues sur les pages sortie publiques. La part `share`
+ * mesure directement l'efficacité du partage actif (lien WhatsApp /
+ * native / copy → vues effectives). `internal` = visiteur déjà sur
+ * Sortie. `direct` = URL tapée / bookmark / referrer null.
+ */
+export type OutingViewedSources = {
+  share: number;
+  internal: number;
+  direct: number;
+  total: number;
+};
+
 export type OutingPageFunnel = {
   // Vues totales sur les pages /sortie/[slug]. Mesure la portée des
   // liens partagés (un share qui ne ramène personne = lien mort).
@@ -93,6 +129,11 @@ export type WizardUmamiStats = {
   outingFunnel: OutingPageFunnel | null;
   shareChannels: ShareChannelBreakdown | null;
   rsvpBreakdown: RsvpBreakdown | null;
+  // Lecture pure d'events déjà émis (PR « MVP analytics utile »).
+  // Voir §9.4 du rapport `ANALYTICS_AUDIT.md`.
+  publishFailed: PublishFailedBreakdown | null;
+  abandonedSteps: AbandonedStepRow[] | null;
+  outingViewedSources: OutingViewedSources | null;
   topReferrers: MetricRow[] | null;
   topPaths: MetricRow[] | null;
 };
@@ -120,6 +161,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
       outingFunnel: null,
       shareChannels: null,
       rsvpBreakdown: null,
+      publishFailed: null,
+      abandonedSteps: null,
+      outingViewedSources: null,
       topReferrers: null,
       topPaths: null,
     };
@@ -135,6 +179,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     pasteKindRows,
     shareChannelRows,
     rsvpRows,
+    publishFailedRows,
+    abandonedRows,
+    outingSourceRows,
     topReferrers,
     topPaths,
   ] = await Promise.all([
@@ -150,6 +197,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     getPasteKindBreakdown(range),
     getShareChannelBreakdown(range),
     getRsvpResponseBreakdown(range),
+    getPublishFailedReasons(range),
+    getWizardAbandonedSteps(range),
+    getOutingViewedSources(range),
     getTopMetric(range, "referrer"),
     getTopMetric(range, "url"),
   ]);
@@ -264,6 +314,47 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     rsvpBreakdown = out;
   }
 
+  let publishFailed: PublishFailedBreakdown | null = null;
+  if (publishFailedRows) {
+    const out: PublishFailedBreakdown = {
+      validation: 0,
+      server: 0,
+      network: 0,
+      unknown: 0,
+      total: 0,
+    };
+    for (const row of publishFailedRows) {
+      if (row.value === "validation" || row.value === "server" || row.value === "network") {
+        out[row.value] += row.total;
+      } else {
+        out.unknown += row.total;
+      }
+      out.total += row.total;
+    }
+    publishFailed = out;
+  }
+
+  // On garde la liste brute trier par count desc, tronquée au top 8 —
+  // au-delà la queue est du bruit (steps inattendus, fallback `_other`).
+  const abandonedSteps: AbandonedStepRow[] | null = abandonedRows
+    ? abandonedRows
+        .map((row) => ({ step: row.value, count: row.total }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8)
+    : null;
+
+  let outingViewedSources: OutingViewedSources | null = null;
+  if (outingSourceRows) {
+    const out: OutingViewedSources = { share: 0, internal: 0, direct: 0, total: 0 };
+    for (const row of outingSourceRows) {
+      if (row.value === "share" || row.value === "internal" || row.value === "direct") {
+        out[row.value] += row.total;
+      }
+      out.total += row.total;
+    }
+    outingViewedSources = out;
+  }
+
   return {
     configured,
     rangeDays,
@@ -278,6 +369,9 @@ export async function getWizardUmamiStats(rangeDays = 7): Promise<WizardUmamiSta
     outingFunnel,
     shareChannels,
     rsvpBreakdown,
+    publishFailed,
+    abandonedSteps,
+    outingViewedSources,
     topReferrers,
     topPaths,
   };

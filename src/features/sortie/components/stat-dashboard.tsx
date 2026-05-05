@@ -878,6 +878,143 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
           </ul>
         </section>
       )}
+
+      {/* === Section : santé wizard & acquisition (PR « MVP analytics ») === */}
+      {/* Lecture pure d'events déjà émis. À ré-organiser dans la refonte */}
+      {/* Phase 4 du dashboard ; placée en fin de page pour simplifier le diff. */}
+      {(wizardUmami.publishFailed ||
+        wizardUmami.abandonedSteps ||
+        wizardUmami.outingViewedSources) && (
+        <section>
+          <header className="mb-4">
+            <Eyebrow className="mb-2">─ santé & acquisition ─</Eyebrow>
+            <h2 className="text-[24px] leading-tight font-black tracking-[-0.025em] text-ink-700">
+              Wizard & vues sortie
+            </h2>
+            <p className="mt-1 font-mono text-[11px] tracking-[0.04em] text-ink-500">
+              Causes d&rsquo;échec publish, dernière step avant abandon, source des vues sortie.
+            </p>
+          </header>
+          <div className="grid gap-4 md:grid-cols-3">
+            {wizardUmami.publishFailed && (
+              <div className="rounded-xl border border-surface-300 p-4">
+                <Eyebrow tone="muted">Publish échecs</Eyebrow>
+                {wizardUmami.publishFailed.total === 0 ? (
+                  <p className="mt-2 font-mono text-[12px] text-ink-500">
+                    Aucun échec sur la fenêtre.
+                  </p>
+                ) : (
+                  <ul className="mt-2 flex flex-col gap-1.5">
+                    <PublishFailedRow
+                      label="Serveur"
+                      count={wizardUmami.publishFailed.server}
+                      tone="critical"
+                    />
+                    <PublishFailedRow
+                      label="Réseau"
+                      count={wizardUmami.publishFailed.network}
+                      tone="critical"
+                    />
+                    <PublishFailedRow
+                      label="Validation"
+                      count={wizardUmami.publishFailed.validation}
+                      tone="warn"
+                    />
+                    {wizardUmami.publishFailed.unknown > 0 && (
+                      <PublishFailedRow
+                        label="Inconnu"
+                        count={wizardUmami.publishFailed.unknown}
+                        tone="muted"
+                      />
+                    )}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {wizardUmami.abandonedSteps && (
+              <div className="rounded-xl border border-surface-300 p-4">
+                <Eyebrow tone="muted">Abandons par step</Eyebrow>
+                {wizardUmami.abandonedSteps.length === 0 ? (
+                  <p className="mt-2 font-mono text-[12px] text-ink-500">
+                    Aucun abandon enregistré.
+                  </p>
+                ) : (
+                  <ul className="mt-2 flex flex-col gap-1.5">
+                    {wizardUmami.abandonedSteps.map((row) => (
+                      <li
+                        key={row.step}
+                        className="flex items-baseline justify-between gap-3 font-mono text-[12px]"
+                      >
+                        <span className="text-ink-700">{row.step}</span>
+                        <span className="tabular-nums text-ink-500">{row.count}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {wizardUmami.outingViewedSources && (
+              <div className="rounded-xl border border-surface-300 p-4">
+                <Eyebrow tone="muted">Vues sortie · source</Eyebrow>
+                {wizardUmami.outingViewedSources.total === 0 ? (
+                  <p className="mt-2 font-mono text-[12px] text-ink-500">Aucune vue enregistrée.</p>
+                ) : (
+                  <ul className="mt-2 flex flex-col gap-1.5 font-mono text-[12px]">
+                    <li className="flex items-baseline justify-between gap-3">
+                      <span className="text-ink-700">Partage</span>
+                      <span className="tabular-nums text-ink-500">
+                        {wizardUmami.outingViewedSources.share}
+                      </span>
+                    </li>
+                    <li className="flex items-baseline justify-between gap-3">
+                      <span className="text-ink-700">Interne</span>
+                      <span className="tabular-nums text-ink-500">
+                        {wizardUmami.outingViewedSources.internal}
+                      </span>
+                    </li>
+                    <li className="flex items-baseline justify-between gap-3">
+                      <span className="text-ink-700">Direct</span>
+                      <span className="tabular-nums text-ink-500">
+                        {wizardUmami.outingViewedSources.direct}
+                      </span>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
+  );
+}
+
+function PublishFailedRow({
+  label,
+  count,
+  tone,
+}: {
+  label: string;
+  count: number;
+  tone: "critical" | "warn" | "muted";
+}) {
+  // Tons alignés sur la sémantique du §9.4 du rapport audit :
+  // `server`/`network` > 0 = alerte bug prod (critical), `validation` > 0
+  // = friction UX à fenêtre normale (warn), reste = muted.
+  const valueClass =
+    count === 0
+      ? "text-ink-400"
+      : tone === "critical"
+        ? "text-rose-700"
+        : tone === "warn"
+          ? "text-amber-700"
+          : "text-ink-500";
+  return (
+    <li className="flex items-baseline justify-between gap-3 font-mono text-[12px]">
+      <span className="text-ink-700">{label}</span>
+      <span className={`tabular-nums ${valueClass}`}>{count}</span>
+    </li>
   );
 }
