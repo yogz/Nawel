@@ -19,7 +19,8 @@
 import { and, eq, inArray, isNotNull, isNull, lte, notExists, or, sql } from "drizzle-orm";
 import { del } from "@vercel/blob";
 import { db } from "@/lib/db";
-import { outings, outingTimeslots, purchases, tickets } from "@drizzle/sortie-schema";
+import { outings, outingTimeslots, purchases, sweeperRuns, tickets } from "@drizzle/sortie-schema";
+import { logger } from "@/lib/logger";
 import { isOurBlobUrl } from "@/features/sortie/lib/blob-cleanup";
 import { TICKET_PATH_PREFIX } from "@/features/sortie/lib/ticket-upload";
 import {
@@ -57,6 +58,11 @@ const TICKET_RETENTION_DAYS = 30;
  * with `new Date()`.
  */
 export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperReport> {
+  // Wall-clock timing pour la durée totale du tick. On capture
+  // `Date.now()` plutôt que de réutiliser `now` qui peut être un override
+  // de test arbitraire (et fausserait la durée).
+  const startedAtMs = Date.now();
+  const startedAtDate = new Date(startedAtMs);
   const report: SweeperReport = {
     closedRsvps: 0,
     j1Reminders: 0,
@@ -215,6 +221,30 @@ export async function runSortieSweeper(now: Date = new Date()): Promise<SweeperR
   }
 
   await cleanupExpiredTickets(now, report);
+
+  // Persistance best-effort de la run pour `/admin/stat/tech` (cf.
+  // ANALYTICS_AUDIT.md §10.3 P0 #2). Un échec ici ne doit JAMAIS faire
+  // échouer le tick fonctionnel — on log et on continue. Les colonnes
+  // suivent la structure de `SweeperReport` ; `ticketCleanupSkipped`
+  // devient `lock_skipped` pour matcher la convention DB-side.
+  try {
+    const endedAtMs = Date.now();
+    await db.insert(sweeperRuns).values({
+      startedAt: startedAtDate,
+      endedAt: new Date(endedAtMs),
+      durationMs: endedAtMs - startedAtMs,
+      closedRsvps: report.closedRsvps,
+      j1Reminders: report.j1Reminders,
+      markedPast: report.markedPast,
+      ticketsCleanedUp: report.ticketsCleanedUp,
+      lockSkipped: report.ticketCleanupSkipped,
+      errors: report.errors,
+    });
+  } catch (err) {
+    logger.warn("[sweeper] failed to persist run row", {
+      message: err instanceof Error ? err.message : "unknown",
+    });
+  }
 
   return report;
 }

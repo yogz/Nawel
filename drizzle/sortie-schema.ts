@@ -9,6 +9,7 @@ import {
   primaryKey,
   index,
   uniqueIndex,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { user } from "./schema";
@@ -511,6 +512,45 @@ export const auditLog = sortie.table(
   (t) => ({
     outingIdx: index("sortie_audit_outing_idx").on(t.outingId),
     actionIdx: index("sortie_audit_action_idx").on(t.action),
+  })
+);
+
+// === sweeper_runs ===
+
+/**
+ * Historique des exécutions du sweeper Sortie. Une row par tick de cron
+ * (cf. `src/features/sortie/lib/sweeper.ts`). Persistance ajoutée pour
+ * que `/admin/stat/tech` puisse afficher « dernière exécution OK il y a
+ * Xh » et alerter si > 26h sans run (cf. `ANALYTICS_AUDIT.md` §10.4).
+ *
+ * Insertion best-effort en fin de `runSortieSweeper` — un échec d'INSERT
+ * ne doit jamais faire échouer le tick fonctionnel. Purge prévue en
+ * follow-up : `DELETE WHERE started_at < now() - interval '90 days'`.
+ *
+ * `lock_skipped = true` quand le tick a sauté à cause de l'advisory
+ * lock (`pg_try_advisory_lock` dans le sweeper). Dans ce cas les autres
+ * compteurs restent à 0 et ne pollute pas la métrique de durée.
+ */
+export const sweeperRuns = sortie.table(
+  "sweeper_runs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    endedAt: timestamp("ended_at", { withTimezone: true }),
+    durationMs: integer("duration_ms"),
+    closedRsvps: integer("closed_rsvps").notNull().default(0),
+    j1Reminders: integer("j1_reminders").notNull().default(0),
+    markedPast: integer("marked_past").notNull().default(0),
+    ticketsCleanedUp: integer("tickets_cleaned_up").notNull().default(0),
+    lockSkipped: boolean("lock_skipped").notNull().default(false),
+    errors: jsonb("errors_json")
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+  },
+  (t) => ({
+    // Lecture dominante = ORDER BY started_at DESC LIMIT 30 → index DESC
+    // pour servir le tableau « 30 dernières runs » sans tri en mémoire.
+    startedAtIdx: index("sortie_sweeper_runs_started_at_idx").on(t.startedAt.desc()),
   })
 );
 
