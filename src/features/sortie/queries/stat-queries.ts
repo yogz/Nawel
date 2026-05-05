@@ -1,6 +1,6 @@
 import { desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { outings, parseStats, serviceCallStats } from "@drizzle/sortie-schema";
+import { outings, parseStats, participants, serviceCallStats } from "@drizzle/sortie-schema";
 
 export type ParseAggregate = {
   totalAttempts: number;
@@ -163,6 +163,56 @@ export async function getOutingsCreatedPerDay(): Promise<OutingsPerDay[]> {
     .orderBy(dayExpr);
 
   return rows;
+}
+
+export type CreatorActivation28d = {
+  /** Créateurs uniques authentifiés ayant publié ≥1 sortie sur 28j. */
+  totalCreators: number;
+  /**
+   * Créateurs uniques ayant reçu ≥1 RSVP de quelqu'un d'autre
+   * (participant avec userId différent OU participant anonyme — un
+   * anonyme avec le même cookie device que le créateur ne peut pas
+   * RSVPer son propre outing : la contrainte unique
+   * `sortie_participants_outing_cookie_unique` garantit qu'un cookie
+   * n'apparaît qu'une fois par outing, et le créateur ne stocke pas
+   * de row participant pour son propre outing). C'est le seuil d'activation
+   * §9.2 du rapport audit : « le créateur voit le produit fonctionner ».
+   */
+  activatedCreators: number;
+};
+
+/**
+ * KPI activation créateur défini dans `ANALYTICS_AUDIT.md` §9.2 :
+ * un créateur est *activé* quand il a publié ≥1 sortie ET reçu ≥1 RSVP
+ * d'une autre identité. Mesure long-terme : fenêtre fixe 28j (pas
+ * couplée au range UI), parce qu'à 5 publish/sem le ratio sur 7j n'a
+ * pas de stabilité statistique.
+ *
+ * Limitations volontaires :
+ *   - Créateurs anonymes (`creator_user_id IS NULL`) exclus du
+ *     dénominateur — les compter ferait baisser artificiellement le
+ *     ratio (pas de cohorte, pas d'identification stable).
+ *   - Outings cancelled inclus : un cancel après 1 RSVP reste un signal
+ *     d'activation pour le créateur (le produit a fonctionné une fois).
+ */
+export async function getCreatorActivation28d(): Promise<CreatorActivation28d> {
+  const [row] = await db
+    .select({
+      totalCreators: sql<number>`COUNT(DISTINCT ${outings.creatorUserId})::int`,
+      activatedCreators: sql<number>`COUNT(DISTINCT ${outings.creatorUserId}) FILTER (
+        WHERE EXISTS (
+          SELECT 1 FROM ${participants} p
+          WHERE p.outing_id = ${outings.id}
+          AND (p.user_id IS NULL OR p.user_id IS DISTINCT FROM ${outings.creatorUserId})
+        )
+      )::int`,
+    })
+    .from(outings)
+    .where(
+      sql`${outings.createdAt} >= now() - interval '28 days' AND ${outings.creatorUserId} IS NOT NULL`
+    );
+
+  return row ?? { totalCreators: 0, activatedCreators: 0 };
 }
 
 /**

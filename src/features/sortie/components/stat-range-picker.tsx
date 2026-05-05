@@ -6,7 +6,8 @@ import { useTransition } from "react";
 const RANGES = [
   { days: 1, label: "24h" },
   { days: 7, label: "7j" },
-  { days: 30, label: "30j" },
+  { days: 28, label: "28j" },
+  { days: 90, label: "90j" },
 ] as const;
 
 type Props = {

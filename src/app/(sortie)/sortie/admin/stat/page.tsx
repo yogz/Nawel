@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import {
+  getCreatorActivation28d,
   getHostBreakdown,
   getOutingsCreatedPerDay,
   getParseAggregate,
@@ -31,7 +32,10 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-const ALLOWED_RANGES = new Set([1, 7, 30]);
+// Élargi à 28j et 90j (2026-05-05) pour le KPI activation créateur §9.2
+// du rapport audit, qui demande une fenêtre stable long-terme. 30j retiré
+// pour éviter une 5ᵉ option qui dilue le picker (UX agent : <5 ranges).
+const ALLOWED_RANGES = new Set([1, 7, 28, 90]);
 
 function parseRange(raw: string | string[] | undefined): number {
   const value = Array.isArray(raw) ? raw[0] : raw;
@@ -48,39 +52,44 @@ export default async function StatPage({ searchParams }: Props) {
   const { range: rawRange } = await searchParams;
   const rangeDays = parseRange(rawRange);
 
-  const [parseAgg, services, hosts, outingsPerDay, wizardUmami] = await Promise.all([
-    safe("getParseAggregate", getParseAggregate, {
-      totalAttempts: 0,
-      totalSuccess: 0,
-      totalImageFound: 0,
-      totalZeroData: 0,
-      totalFetchError: 0,
-      hostCount: 0,
-    }),
-    safe("getServiceCallStats", getServiceCallStats, []),
-    safe("getHostBreakdown", () => getHostBreakdown(), []),
-    safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
-    safe("getWizardUmamiStats", () => getWizardUmamiStats(rangeDays), {
-      configured: false,
-      rangeDays,
-      siteStats: null,
-      activeVisitors: null,
-      funnel: null,
-      pasteToPublish: null,
-      pasteToPublishBuckets: null,
-      geminiTriggers: null,
-      pasteKind: null,
-      confirmEntered: null,
-      outingFunnel: null,
-      shareChannels: null,
-      rsvpBreakdown: null,
-      publishFailed: null,
-      abandonedSteps: null,
-      outingViewedSources: null,
-      topReferrers: null,
-      topPaths: null,
-    }),
-  ]);
+  const [parseAgg, services, hosts, outingsPerDay, wizardUmami, creatorActivation] =
+    await Promise.all([
+      safe("getParseAggregate", getParseAggregate, {
+        totalAttempts: 0,
+        totalSuccess: 0,
+        totalImageFound: 0,
+        totalZeroData: 0,
+        totalFetchError: 0,
+        hostCount: 0,
+      }),
+      safe("getServiceCallStats", getServiceCallStats, []),
+      safe("getHostBreakdown", () => getHostBreakdown(), []),
+      safe("getOutingsCreatedPerDay", getOutingsCreatedPerDay, []),
+      safe("getWizardUmamiStats", () => getWizardUmamiStats(rangeDays), {
+        configured: false,
+        rangeDays,
+        siteStats: null,
+        activeVisitors: null,
+        funnel: null,
+        pasteToPublish: null,
+        pasteToPublishBuckets: null,
+        geminiTriggers: null,
+        pasteKind: null,
+        confirmEntered: null,
+        outingFunnel: null,
+        shareChannels: null,
+        rsvpBreakdown: null,
+        publishFailed: null,
+        abandonedSteps: null,
+        outingViewedSources: null,
+        topReferrers: null,
+        topPaths: null,
+      }),
+      safe("getCreatorActivation28d", getCreatorActivation28d, {
+        totalCreators: 0,
+        activatedCreators: 0,
+      }),
+    ]);
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-24 pt-10">
@@ -122,6 +131,7 @@ export default async function StatPage({ searchParams }: Props) {
         hosts={hosts}
         outingsPerDay={outingsPerDay}
         wizardUmami={wizardUmami}
+        creatorActivation={creatorActivation}
       />
     </main>
   );
