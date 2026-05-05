@@ -139,7 +139,7 @@ messages/                     # 12 locales (CoList uniquement)
 
 ## Sortie — points d'attention persistants
 
-- **Croissance DB anonymes** : silent users (Better Auth row sans `account`, `emailVerified=false`) jamais purgés. Avant trafic public sortie.colist.fr → ajouter une phase cleanup au sweeper (`src/features/sortie/lib/sweeper.ts`) + rate-limit RSVP/create.
+- **Silent users mesurés 2026-05-05** : 5 rows total, 0 > 90j, inflow 0.17/jour. Non actionnable au volume actuel. Surveiller via `npx tsx scripts/db/count-silent-users.ts`. Plan de cleanup en standby (cf. memory) jusqu'à seuil 1k stock OU 50/jour inflow OU 100 RSVP/jour Umami.
 - **PWA/native abandonnés** (2026-05-04) — ne pas re-proposer sans signal explicite.
 - **Wizard `/sortie/nouvelle`** — refactor multi-PRs en checkpoint ; `index.tsx` ~2200 lignes, plan PR4-5 conditionné aux métriques Umami.
 - **Analytics** — Phase 3 PR1 en cours ; voir `ANALYTICS_AUDIT.md` §9 pour le cadre révisé (AAARRR, seuils absolus < 200 sessions/sem, segmentation device).
