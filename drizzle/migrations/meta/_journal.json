@@ -330,6 +330,13 @@
       "when": 1777970561223,
       "tag": "0046_damp_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1778019918767,
+      "tag": "0047_curious_lake",
+      "breakpoints": true
     }
   ]
 }

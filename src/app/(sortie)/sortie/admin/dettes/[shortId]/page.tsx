@@ -22,6 +22,24 @@ function fmtEuros(cents: number): string {
   return (cents / 100).toFixed(2);
 }
 
+function formatPurchasePricing(purchase: {
+  pricingMode: "unique" | "category" | "nominal";
+  uniquePriceCents: number | null;
+  adultPriceCents: number | null;
+  childPriceCents: number | null;
+}): string {
+  switch (purchase.pricingMode) {
+    case "unique":
+      return purchase.uniquePriceCents !== null
+        ? ` · ${fmtEuros(purchase.uniquePriceCents)}€/place`
+        : "";
+    case "category":
+      return ` · adulte ${fmtEuros(purchase.adultPriceCents ?? 0)}€ / enfant ${fmtEuros(purchase.childPriceCents ?? 0)}€`;
+    case "nominal":
+      return " · prix par allocation (voir ci-dessous)";
+  }
+}
+
 type Props = { params: Promise<{ shortId: string }> };
 
 export default async function AdminDebtDetailPage({ params }: Props) {
@@ -74,12 +92,7 @@ export default async function AdminDebtDetailPage({ params }: Props) {
         <p className="mt-1 text-[12px] text-ink-500">
           {purchase.totalPlaces} place{purchase.totalPlaces > 1 ? "s" : ""} · mode{" "}
           <strong>{purchase.pricingMode}</strong>
-          {purchase.pricingMode === "unique" && purchase.uniquePriceCents !== null
-            ? ` · ${fmtEuros(purchase.uniquePriceCents)}€/place`
-            : null}
-          {purchase.pricingMode === "category"
-            ? ` · adulte ${fmtEuros(purchase.adultPriceCents ?? 0)}€ / enfant ${fmtEuros(purchase.childPriceCents ?? 0)}€`
-            : null}
+          {formatPurchasePricing(purchase)}
         </p>
         {purchase.proofFileUrl ? (
           <p className="mt-2 text-[12px]">
@@ -107,11 +120,6 @@ export default async function AdminDebtDetailPage({ params }: Props) {
                 isBuyer: p.isBuyer,
               }))}
             locked={swapLocked}
-            lockReason={
-              swapLocked
-                ? "Au moins une dette n'est plus en 'pending'. Repasse-les en 'en attente' avant de basculer."
-                : undefined
-            }
           />
         </div>
       </section>

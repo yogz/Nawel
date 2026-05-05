@@ -12,10 +12,14 @@ import {
   type pricingMode,
 } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
+import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
+import { displayNameOf } from "@/features/sortie/lib/participant-name";
 
 export type DebtStatus = (typeof debtStatus.enumValues)[number];
 export type OutingStatus = (typeof outingStatus.enumValues)[number];
 export type PricingMode = (typeof pricingMode.enumValues)[number];
+
+const ADMIN_AUDIT_VALUES = Object.values(ADMIN_AUDIT) as string[];
 
 export type AdminDebtOutingRow = {
   outingId: string;
@@ -33,8 +37,8 @@ export type AdminDebtOutingRow = {
   debtsCount: number;
 };
 
-function displayName(p: { anonName: string | null; userName: string | null }): string {
-  return p.userName ?? p.anonName ?? "—";
+function nameOrFallback(p: { anonName: string | null; userName: string | null }): string {
+  return displayNameOf({ anonName: p.anonName, user: { name: p.userName } }) ?? "—";
 }
 
 /**
@@ -118,7 +122,7 @@ export async function listAdminDebtOutings(): Promise<AdminDebtOutingRow[]> {
       fixedDatetime: r.fixedDatetime,
       buyer: {
         participantId: r.buyerParticipantId,
-        name: displayName({ anonName: r.buyerAnonName, userName: r.buyerUserName }),
+        name: nameOrFallback({ anonName: r.buyerAnonName, userName: r.buyerUserName }),
       },
       totalPlaces: r.totalPlaces,
       totalCents: agg.pending + agg.declared + agg.confirmed,
@@ -219,48 +223,47 @@ export async function getAdminDebtView(shortId: string): Promise<AdminDebtView |
     return null;
   }
 
-  const partRows = await db
-    .select({
-      id: participants.id,
-      anonName: participants.anonName,
-      anonEmail: participants.anonEmail,
-      userId: participants.userId,
-      userName: user.name,
-      userEmail: user.email,
-    })
-    .from(participants)
-    .leftJoin(user, eq(participants.userId, user.id))
-    .where(eq(participants.outingId, outing.id));
-
-  const allocRows = await db.query.purchaseAllocations.findMany({
-    where: eq(purchaseAllocations.purchaseId, purchase.id),
-  });
-
-  const debtRows = await db.query.debts.findMany({
-    where: eq(debts.outingId, outing.id),
-  });
-
-  const auditRows = await db
-    .select({
-      id: auditLog.id,
-      action: auditLog.action,
-      createdAt: auditLog.createdAt,
-      actorUserId: auditLog.actorUserId,
-      actorParticipantId: auditLog.actorParticipantId,
-      payload: auditLog.payload,
-      actorUserName: user.name,
-    })
-    .from(auditLog)
-    .leftJoin(user, eq(auditLog.actorUserId, user.id))
-    .where(and(eq(auditLog.outingId, outing.id), sql`${auditLog.action} ~ 'DEBT|PURCHASE'`))
-    .orderBy(desc(auditLog.createdAt))
-    .limit(20);
+  const [partRows, allocRows, debtRows, auditRows] = await Promise.all([
+    db
+      .select({
+        id: participants.id,
+        anonName: participants.anonName,
+        anonEmail: participants.anonEmail,
+        userId: participants.userId,
+        userName: user.name,
+        userEmail: user.email,
+      })
+      .from(participants)
+      .leftJoin(user, eq(participants.userId, user.id))
+      .where(eq(participants.outingId, outing.id)),
+    db.query.purchaseAllocations.findMany({
+      where: eq(purchaseAllocations.purchaseId, purchase.id),
+    }),
+    db.query.debts.findMany({
+      where: eq(debts.outingId, outing.id),
+    }),
+    db
+      .select({
+        id: auditLog.id,
+        action: auditLog.action,
+        createdAt: auditLog.createdAt,
+        actorUserId: auditLog.actorUserId,
+        actorParticipantId: auditLog.actorParticipantId,
+        payload: auditLog.payload,
+        actorUserName: user.name,
+      })
+      .from(auditLog)
+      .leftJoin(user, eq(auditLog.actorUserId, user.id))
+      .where(and(eq(auditLog.outingId, outing.id), inArray(auditLog.action, ADMIN_AUDIT_VALUES)))
+      .orderBy(desc(auditLog.createdAt))
+      .limit(20),
+  ]);
 
   const allocsByParticipant = new Set(allocRows.map((a) => a.participantId));
 
   const participantsView: AdminParticipantRef[] = partRows.map((p) => ({
     id: p.id,
-    name: displayName({ anonName: p.anonName, userName: p.userName }),
+    name: nameOrFallback({ anonName: p.anonName, userName: p.userName }),
     email: p.userEmail ?? p.anonEmail ?? null,
     isAnon: !p.userId,
     isBuyer: p.id === purchase.purchaserParticipantId,

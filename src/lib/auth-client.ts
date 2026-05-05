@@ -1,12 +1,12 @@
 import { createAuthClient } from "better-auth/react";
-import { adminClient, magicLinkClient } from "better-auth/client/plugins";
+import { adminClient, magicLinkClient, twoFactorClient } from "better-auth/client/plugins";
 import { toast } from "sonner";
 
 export const authClient = createAuthClient({
   baseURL:
     process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
     (typeof window !== "undefined" ? window.location.origin : undefined),
-  plugins: [adminClient(), magicLinkClient()],
+  plugins: [adminClient(), magicLinkClient(), twoFactorClient()],
   fetchOptions: {
     onError: async (context) => {
       const { response } = context;

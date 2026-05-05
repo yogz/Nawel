@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, magicLink } from "better-auth/plugins";
+import { admin, magicLink, twoFactor } from "better-auth/plugins";
 import { and, eq, isNull } from "drizzle-orm";
 import { db } from "./db";
 import * as schema from "@drizzle/schema";
@@ -121,6 +121,7 @@ export const auth = betterAuth({
       session: schema.session,
       account: schema.account,
       verification: schema.verification,
+      twoFactor: schema.twoFactor,
     },
   }),
   emailAndPassword: {
@@ -220,6 +221,15 @@ export const auth = betterAuth({
     // les cookies posés une seule fois sur `.colist.fr`.
     admin({
       adminRoles: ["admin"],
+    }),
+    // 2FA TOTP — activable par n'importe quel user mais utilisée
+    // exclusivement comme gate de step-up sur `/admin` (cf. PR-C).
+    // `issuer` apparaît dans l'app authenticator à l'enrollment.
+    // `skipVerificationOnEnable` reste à son défaut (false) : Better Auth
+    // exige un code TOTP valide pour confirmer l'activation, pas de
+    // fenêtre où l'utilisateur croit avoir 2FA sans avoir validé son seed.
+    twoFactor({
+      issuer: "CoList",
     }),
     magicLink({
       // 24h pour couvrir les emails de broadcast "nouvelle sortie" (les

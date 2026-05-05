@@ -62,6 +62,9 @@ export const user = pgTable(
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),
+    // Better Auth `twoFactor` plugin — flippé true à `enable`, false à `disable`.
+    // Le secret + backup codes vivent dans la table `two_factor` dédiée.
+    twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -136,6 +139,32 @@ export const sessionRelations = relations(session, ({ one }) => ({
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
     fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+// Plugin Better Auth `twoFactor` — secret TOTP + backup codes par user.
+// `verified` est flippé à true au moment où Better Auth confirme un premier
+// code TOTP côté enrollment (skipVerificationOnEnable=false par défaut).
+export const twoFactor = pgTable(
+  "two_factor",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    secret: text("secret").notNull(),
+    backupCodes: text("backup_codes").notNull(),
+  },
+  (t) => ({
+    userIdIdx: index("two_factor_user_id_idx").on(t.userId),
+    secretIdx: index("two_factor_secret_idx").on(t.secret),
+  })
+);
+
+export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
+  user: one(user, {
+    fields: [twoFactor.userId],
     references: [user.id],
   }),
 }));

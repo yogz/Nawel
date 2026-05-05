@@ -15,16 +15,9 @@ type Props = {
   currentBuyerName: string;
   candidates: Candidate[];
   locked: boolean;
-  lockReason?: string;
 };
 
-export function SwapPurchaserForm({
-  shortId,
-  currentBuyerName,
-  candidates,
-  locked,
-  lockReason,
-}: Props) {
+export function SwapPurchaserForm({ shortId, currentBuyerName, candidates, locked }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     swapPurchaserAction,
     {} as FormActionState
@@ -50,7 +43,8 @@ export function SwapPurchaserForm({
   if (locked) {
     return (
       <p className="text-xs text-amber-700">
-        {lockReason ?? "Bascule du payeur bloquée — réinitialise d'abord les statuts de dette."}
+        Au moins une dette n&rsquo;est plus en &laquo;&nbsp;pending&nbsp;&raquo;. Repasse-les en
+        &laquo;&nbsp;en attente&nbsp;&raquo; avant de basculer le payeur.
       </p>
     );
   }

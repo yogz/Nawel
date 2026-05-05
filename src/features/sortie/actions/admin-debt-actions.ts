@@ -13,21 +13,12 @@ import {
   purchases,
   type debtStatus as debtStatusEnum,
 } from "@drizzle/sortie-schema";
+import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 import { assertSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { priceFor } from "@/features/sortie/lib/price-for";
 import type { FormActionState } from "./outing-actions";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
-
-// AuditLog action labels for admin overrides. Garder en string union pour
-// que les recherches `WHERE action = '…'` restent stables si un constant
-// est renommé côté code.
-const ADMIN_AUDIT = {
-  PURCHASE_ADMIN_PURCHASER_SWAPPED: "PURCHASE_ADMIN_PURCHASER_SWAPPED",
-  DEBT_ADMIN_STATUS_OVERRIDE: "DEBT_ADMIN_STATUS_OVERRIDE",
-  DEBT_ADMIN_AMOUNT_UPDATED: "DEBT_ADMIN_AMOUNT_UPDATED",
-  DEBT_ADMIN_DELETED: "DEBT_ADMIN_DELETED",
-} as const;
 
 const MAX_DEBT_CENTS = 100_000_00;
 
@@ -42,9 +33,15 @@ const setDebtStatusSchema = z.object({
 });
 type DebtStatusValue = (typeof debtStatusEnum.enumValues)[number];
 
+// Le formulaire poste un montant en euros (UX) ; on convertit en centimes
+// avant insertion (DB). `.transform` centralise la règle d'arrondi.
 const updateDebtAmountSchema = z.object({
   debtId: z.string().uuid(),
-  amountCents: z.coerce.number().int().min(1).max(MAX_DEBT_CENTS),
+  amountEuros: z.coerce
+    .number()
+    .positive()
+    .max(MAX_DEBT_CENTS / 100)
+    .transform((v) => Math.round(v * 100)),
 });
 
 const deleteDebtSchema = z.object({
@@ -56,6 +53,22 @@ async function revalidateForOuting(outing: { slug: string | null; shortId: strin
   revalidatePath("/admin/dettes");
   revalidatePath(`/admin/dettes/${outing.shortId}`);
   revalidatePath(`/${canonical}/dettes`);
+}
+
+// Charge en un round-trip la dette + l'outing parente (slug/shortId pour
+// la revalidation). Évite les 2 SELECTs séquentiels que faisaient toutes
+// les actions par-debt.
+async function loadDebtAndOuting(debtId: string) {
+  const [row] = await db
+    .select({
+      debt: debts,
+      outing: { id: outings.id, shortId: outings.shortId, slug: outings.slug },
+    })
+    .from(debts)
+    .innerJoin(outings, eq(debts.outingId, outings.id))
+    .where(eq(debts.id, debtId))
+    .limit(1);
+  return row ?? null;
 }
 
 /**
@@ -93,27 +106,28 @@ export async function swapPurchaserAction(
     return { message: "Cette personne est déjà le payeur." };
   }
 
-  const newBuyer = await db.query.participants.findFirst({
-    where: eq(participants.id, newPurchaserParticipantId),
-    columns: { id: true, outingId: true },
-  });
+  const [newBuyer, allocs, allDebts] = await Promise.all([
+    db.query.participants.findFirst({
+      where: eq(participants.id, newPurchaserParticipantId),
+      columns: { id: true, outingId: true },
+    }),
+    db.query.purchaseAllocations.findMany({
+      where: eq(purchaseAllocations.purchaseId, purchase.id),
+    }),
+    db.query.debts.findMany({
+      where: eq(debts.outingId, outing.id),
+    }),
+  ]);
+
   if (!newBuyer || newBuyer.outingId !== outing.id) {
     return { message: "Participant invalide." };
   }
-
-  const allocs = await db.query.purchaseAllocations.findMany({
-    where: eq(purchaseAllocations.purchaseId, purchase.id),
-  });
   if (!allocs.some((a) => a.participantId === newPurchaserParticipantId)) {
     return {
       message:
         "Le nouveau payeur n'a pas d'allocation sur cet achat. Réinitialise les allocations d'abord.",
     };
   }
-
-  const allDebts = await db.query.debts.findMany({
-    where: eq(debts.outingId, outing.id),
-  });
   if (allDebts.some((d) => d.status !== "pending")) {
     return {
       message:
@@ -192,23 +206,13 @@ export async function setDebtStatusAction(
   }
   const { debtId, status } = parsed.data;
 
-  const debt = await db.query.debts.findFirst({
-    where: eq(debts.id, debtId),
-  });
-  if (!debt) {
+  const loaded = await loadDebtAndOuting(debtId);
+  if (!loaded) {
     return { message: "Dette introuvable." };
   }
-
+  const { debt, outing } = loaded;
   if (debt.status === status) {
     return {};
-  }
-
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.id, debt.outingId),
-    columns: { id: true, shortId: true, slug: true },
-  });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
   }
 
   const now = new Date();
@@ -276,25 +280,16 @@ export async function updateDebtAmountAction(
   if (!parsed.success) {
     return { errors: parsed.error.flatten().fieldErrors };
   }
-  const { debtId, amountCents } = parsed.data;
+  // amountEuros est transformé en centimes par le schéma (cf. .transform).
+  const { debtId, amountEuros: amountCents } = parsed.data;
 
-  const debt = await db.query.debts.findFirst({
-    where: eq(debts.id, debtId),
-  });
-  if (!debt) {
+  const loaded = await loadDebtAndOuting(debtId);
+  if (!loaded) {
     return { message: "Dette introuvable." };
   }
-
+  const { debt, outing } = loaded;
   if (debt.amountCents === amountCents) {
     return {};
-  }
-
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.id, debt.outingId),
-    columns: { id: true, shortId: true, slug: true },
-  });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
   }
 
   await db.transaction(async (tx) => {
@@ -330,20 +325,11 @@ export async function deleteDebtAction(
   }
   const { debtId } = parsed.data;
 
-  const debt = await db.query.debts.findFirst({
-    where: eq(debts.id, debtId),
-  });
-  if (!debt) {
+  const loaded = await loadDebtAndOuting(debtId);
+  if (!loaded) {
     return { message: "Dette introuvable." };
   }
-
-  const outing = await db.query.outings.findFirst({
-    where: eq(outings.id, debt.outingId),
-    columns: { id: true, shortId: true, slug: true },
-  });
-  if (!outing) {
-    return { message: "Sortie introuvable." };
-  }
+  const { debt, outing } = loaded;
 
   await db.transaction(async (tx) => {
     await tx.delete(debts).where(eq(debts.id, debtId));

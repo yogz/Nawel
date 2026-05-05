@@ -117,20 +117,12 @@ function AmountForm({ debtId, amountCents }: { debtId: string; amountCents: numb
     {} as FormActionState
   );
   const [euros, setEuros] = useState((amountCents / 100).toString());
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    const cents = Math.round(parseFloat(euros) * 100);
-    if (!Number.isFinite(cents) || cents <= 0) {
-      e.preventDefault();
-      return;
-    }
-    if (cents === amountCents) {
-      e.preventDefault();
-    }
-  }
+  const parsedCents = Math.round(parseFloat(euros) * 100);
+  const unchanged = parsedCents === amountCents;
+  const invalid = !Number.isFinite(parsedCents) || parsedCents <= 0;
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="flex items-center gap-1.5">
+    <form action={formAction} className="flex items-center gap-1.5">
       <input type="hidden" name="debtId" value={debtId} />
       <input
         type="number"
@@ -141,15 +133,10 @@ function AmountForm({ debtId, amountCents }: { debtId: string; amountCents: numb
         onChange={(e) => setEuros(e.target.value)}
         className="h-8 w-20 rounded-md border border-surface-400 bg-surface-50 px-2 text-xs text-ink-700"
       />
-      <input
-        type="hidden"
-        name="amountCents"
-        value={Math.round(parseFloat(euros || "0") * 100) || 0}
-      />
       <span className="text-xs text-ink-400">€</span>
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || invalid || unchanged}
         className="text-xs text-acid-700 underline-offset-4 hover:underline disabled:opacity-40"
       >
         {pending ? "…" : "ajuster"}
