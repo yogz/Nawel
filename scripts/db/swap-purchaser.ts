@@ -10,6 +10,7 @@ import {
   debts,
 } from "../../drizzle/sortie-schema";
 import { user } from "../../drizzle/schema";
+import { priceFor } from "../../src/features/sortie/lib/price-for";
 
 async function main() {
   const shortId = process.argv[2];
@@ -80,21 +81,15 @@ async function main() {
     return p?.userName ?? p?.anonName ?? id;
   };
 
-  const priceFor = (alloc: (typeof allocs)[number]): number => {
-    switch (purchase.pricingMode) {
-      case "unique":
-        return purchase.uniquePriceCents!;
-      case "category":
-        return alloc.isChild ? purchase.childPriceCents! : purchase.adultPriceCents!;
-      case "nominal":
-        return alloc.nominalPriceCents ?? 0;
-    }
-  };
-
   const debtsByDebtor = new Map<string, number>();
   for (const a of allocs) {
-    if (a.participantId === newBuyerParticipantId) continue;
-    debtsByDebtor.set(a.participantId, (debtsByDebtor.get(a.participantId) ?? 0) + priceFor(a));
+    if (a.participantId === newBuyerParticipantId) {
+      continue;
+    }
+    debtsByDebtor.set(
+      a.participantId,
+      (debtsByDebtor.get(a.participantId) ?? 0) + priceFor(purchase, a)
+    );
   }
   const newDebtRows = Array.from(debtsByDebtor.entries())
     .filter(([, amount]) => amount > 0)

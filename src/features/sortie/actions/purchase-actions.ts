@@ -13,6 +13,7 @@ import {
   purchases,
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
+import { priceFor } from "@/features/sortie/lib/price-for";
 import { sendPurchaseConfirmedEmails } from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
@@ -165,17 +166,14 @@ export async function declarePurchaseAction(
     proofFileUrl = upload.url;
   }
 
-  // Per-seat price resolver: everything downstream (debt rows, allocation
-  // rows) reads from here, so mode-specific logic stays in one place.
-  const priceFor = (index: number, isChild: boolean): number => {
-    switch (data.pricingMode) {
-      case "unique":
-        return data.uniquePriceCents;
-      case "category":
-        return isChild ? data.childPriceCents : data.adultPriceCents;
-      case "nominal":
-        return data.allocationPriceCents[index]!;
-    }
+  // priceFor() is the single source of truth (cf. lib/price-for.ts) — it lit
+  // les colonnes purchase + allocation, donc on construit ici une vue
+  // « purchase-like » à partir des données validées du form pour l'appeler.
+  const purchaseShape = {
+    pricingMode: data.pricingMode,
+    uniquePriceCents: data.pricingMode === "unique" ? data.uniquePriceCents : null,
+    adultPriceCents: data.pricingMode === "category" ? data.adultPriceCents : null,
+    childPriceCents: data.pricingMode === "category" ? data.childPriceCents : null,
   };
 
   const allocationRows: (typeof purchaseAllocations.$inferInsert)[] = plan.map((entry, i) => ({
@@ -191,7 +189,11 @@ export async function declarePurchaseAction(
     if (entry.participantId === me.id) {
       return;
     }
-    const amount = priceFor(i, entry.isChild);
+    const amount = priceFor(purchaseShape, {
+      isChild: entry.isChild,
+      nominalPriceCents:
+        data.pricingMode === "nominal" ? (data.allocationPriceCents[i] ?? null) : null,
+    });
     debtsByParticipant.set(
       entry.participantId,
       (debtsByParticipant.get(entry.participantId) ?? 0) + amount

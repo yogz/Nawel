@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   BarChart3,
   CalendarRange,
+  Coins,
   Mail,
   Ticket,
   UserPlus,
@@ -31,6 +32,12 @@ const TILES: Tile[] = [
     label: "Sorties",
     blurb: "Liste, statuts, créateurs, lien direct.",
     Icon: CalendarRange,
+  },
+  {
+    href: "/admin/dettes",
+    label: "Dettes",
+    blurb: "Payeurs, montants, status — overrides admin tracés.",
+    Icon: Coins,
   },
   {
     href: "/admin/users",
