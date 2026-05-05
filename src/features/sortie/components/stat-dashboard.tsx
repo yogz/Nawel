@@ -1,4 +1,5 @@
 import type {
+  CreatorActivation28d,
   HostStat,
   OutingsPerDay,
   ParseAggregate,
@@ -6,6 +7,17 @@ import type {
 } from "@/features/sortie/queries/stat-queries";
 import type { WizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import {
+  DATE_FMT,
+  Kpi,
+  MetricList,
+  type Tone,
+  deltaLabel,
+  formatRelative,
+  pct,
+  toneClass,
+} from "@/features/sortie/components/dashboard/dashboard-primitives";
+import { DashboardKpis } from "@/features/sortie/components/dashboard/dashboard-kpis";
 
 type Props = {
   parseAgg: ParseAggregate;
@@ -13,6 +25,7 @@ type Props = {
   hosts: HostStat[];
   outingsPerDay: OutingsPerDay[];
   wizardUmami: WizardUmamiStats;
+  creatorActivation: CreatorActivation28d;
 };
 
 const STEP_SHORT_LABEL: Record<string, string> = {
@@ -54,37 +67,6 @@ function fill7Days(rows: OutingsPerDay[]): OutingsPerDay[] {
   return out;
 }
 
-const RELATIVE_FMT = new Intl.RelativeTimeFormat("fr", { numeric: "auto" });
-const DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
-  dateStyle: "short",
-  timeStyle: "short",
-});
-
-function formatRelative(date: Date | null): string {
-  if (!date) {
-    return "—";
-  }
-  const diffSec = Math.round((date.getTime() - Date.now()) / 1000);
-  const abs = Math.abs(diffSec);
-  if (abs < 60) {
-    return RELATIVE_FMT.format(diffSec, "second");
-  }
-  if (abs < 3600) {
-    return RELATIVE_FMT.format(Math.round(diffSec / 60), "minute");
-  }
-  if (abs < 86_400) {
-    return RELATIVE_FMT.format(Math.round(diffSec / 3600), "hour");
-  }
-  return RELATIVE_FMT.format(Math.round(diffSec / 86_400), "day");
-}
-
-function pct(num: number, denom: number): string {
-  if (denom <= 0) {
-    return "—";
-  }
-  return `${Math.round((num / denom) * 100)} %`;
-}
-
 function rateColor(rate: number): string {
   if (rate >= 0.8) {
     return "text-emerald-700";
@@ -110,99 +92,14 @@ function failureKindLabel(kind: string | null): string {
   }
 }
 
-/**
- * Calcule la variation relative entre une période courante et la
- * période précédente. Renvoie un texte court signé prêt à coller
- * sous un KPI ("+12 % vs préc.", "-3 %", "—" si dénominateur 0).
- */
-function deltaLabel(current: number, previous: number): { text: string; tone: Tone } {
-  if (previous <= 0) {
-    return { text: current > 0 ? "nouveau" : "—", tone: "muted" };
-  }
-  const diff = (current - previous) / previous;
-  const pct = Math.round(diff * 100);
-  if (pct === 0) {
-    return { text: "= préc.", tone: "muted" };
-  }
-  const tone: Tone = pct > 0 ? "good" : "bad";
-  const sign = pct > 0 ? "+" : "";
-  return { text: `${sign}${pct} % vs préc.`, tone };
-}
-
-type Tone = "good" | "bad" | "muted" | "warn";
-
-function toneClass(tone: Tone): string {
-  switch (tone) {
-    case "good":
-      return "text-emerald-700";
-    case "bad":
-      return "text-rose-700";
-    case "warn":
-      return "text-amber-700";
-    default:
-      return "text-ink-500";
-  }
-}
-
-function Kpi({
-  label,
-  value,
-  sub,
-  tone,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  tone?: Tone;
-}) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl border border-surface-400 bg-surface-100 p-4">
-      <Eyebrow tone="muted">{label}</Eyebrow>
-      <p className="text-[28px] leading-none font-black tracking-[-0.02em] text-ink-700">{value}</p>
-      {sub && (
-        <p className={`font-mono text-[11px] tracking-[0.04em] ${toneClass(tone ?? "muted")}`}>
-          {sub}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function MetricList({ rows }: { rows: { name: string; value: number }[] | null }) {
-  if (!rows || rows.length === 0) {
-    return (
-      <p className="rounded-xl border border-dashed border-surface-400 p-4 text-center font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-        Aucune donnée pour la période.
-      </p>
-    );
-  }
-  const max = Math.max(1, ...rows.map((r) => r.value));
-  return (
-    <ul className="flex flex-col gap-1.5">
-      {rows.map((r) => {
-        const ratio = r.value / max;
-        return (
-          <li key={r.name} className="flex items-center gap-3">
-            <span className="w-44 truncate font-mono text-[11.5px] text-ink-700" title={r.name}>
-              {r.name}
-            </span>
-            <div className="relative h-5 flex-1 overflow-hidden rounded-md bg-surface-200">
-              <div
-                className="h-full bg-acid-600/80"
-                style={{ width: `${Math.max(2, ratio * 100)}%` }}
-              />
-            </div>
-            <span className="w-10 text-right font-mono text-[11.5px] tabular-nums font-bold text-ink-700">
-              {r.value.toLocaleString("fr-FR")}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizardUmami }: Props) {
+export function StatDashboard({
+  parseAgg,
+  services,
+  hosts,
+  outingsPerDay,
+  wizardUmami,
+  creatorActivation,
+}: Props) {
   const problemHosts = hosts
     .filter((h) => h.attempts >= 5 && h.successCount / h.attempts < 0.5)
     .slice(0, 10);
@@ -238,6 +135,13 @@ export function StatDashboard({ parseAgg, services, hosts, outingsPerDay, wizard
 
   return (
     <div className="flex flex-col gap-12">
+      {/* === Top-row : 4 KPIs nord (PR1 refonte) === */}
+      <DashboardKpis
+        outingsPerDay={outingsPerDay}
+        wizardUmami={wizardUmami}
+        creatorActivation={creatorActivation}
+      />
+
       {/* === Section 0 : sorties créées (vue produit) === */}
       <section>
         <header className="mb-4">
