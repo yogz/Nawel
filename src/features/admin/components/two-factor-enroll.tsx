@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import QRCode from "qrcode";
-import { authClient } from "@/lib/auth-client";
+import { authClient, requestPasswordReset } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,16 +20,32 @@ type EnrollState =
 export function TwoFactorEnroll({
   redirectAfter = "/",
   hasPassword,
+  userEmail,
 }: {
   redirectAfter?: string;
   hasPassword: boolean;
+  userEmail: string;
 }) {
   const [state, setState] = useState<EnrollState>({ kind: "idle" });
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [savedAck, setSavedAck] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  async function handleForgotPassword() {
+    setError(null);
+    setResetSent(false);
+    startTransition(async () => {
+      const { error: resetErr } = await requestPasswordReset({ email: userEmail });
+      if (resetErr) {
+        setError(resetErr.message ?? "Envoi du mail impossible. Réessaie.");
+        return;
+      }
+      setResetSent(true);
+    });
+  }
 
   async function handleEnable() {
     setError(null);
@@ -103,6 +119,19 @@ export function TwoFactorEnroll({
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={isPending}
+              className="text-muted-foreground hover:text-foreground text-xs underline-offset-4 hover:underline disabled:opacity-50"
+            >
+              J&apos;ai oublié mon mot de passe
+            </button>
+            {resetSent && (
+              <p className="text-xs text-emerald-700">
+                Email de reset envoyé à {userEmail}. Vérifie ta boîte (et le dossier spam).
+              </p>
+            )}
           </div>
         )}
         {error && <p className="text-destructive text-sm">{error}</p>}

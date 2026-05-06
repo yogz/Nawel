@@ -20,7 +20,11 @@ export default async function SortieAdminTwoFactorEnrollPage({
   const { next } = await searchParams;
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <TwoFactorEnroll redirectAfter={safeAdminNext(next, "/admin")} hasPassword={hasPassword} />
+      <TwoFactorEnroll
+        redirectAfter={safeAdminNext(next, "/admin")}
+        hasPassword={hasPassword}
+        userEmail={session.user.email}
+      />
     </div>
   );
 }

@@ -31,6 +31,7 @@ export default async function ColistAdminTwoFactorEnrollPage({
       <TwoFactorEnroll
         redirectAfter={safeAdminNext(next, `/${locale}/admin`)}
         hasPassword={hasPassword}
+        userEmail={session.user.email}
       />
     </div>
   );
