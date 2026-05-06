@@ -15,6 +15,7 @@ import { resolveBackLink } from "@/features/sortie/lib/back-link";
 import { buildOutingShareMeta } from "@/features/sortie/lib/outing-share-meta";
 import { getCreatorFirstName } from "@/features/sortie/lib/creator-display";
 import { CreateSuccessBanner } from "@/features/sortie/components/create-success-banner";
+import { GuestOrganizeNudge } from "@/features/sortie/components/guest-organize-nudge";
 import { OutingHero } from "@/features/sortie/components/outing-hero";
 import { OutingViewTracker } from "@/features/sortie/components/outing-view-tracker";
 import { OutingTicketStub } from "@/features/sortie/components/outing-ticket-stub";
@@ -159,6 +160,13 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   // action becomes secondary.
   const shouldStickRsvp =
     !deadlinePassed && !me?.response && !(outing.mode === "vote" && !outing.chosenTimeslotId);
+
+  // Nudge "tu organises ton tour ?" : visible uniquement à un invité
+  // anonyme (no session, not creator) qui vient de RSVP positivement.
+  // C'est le micro-moment où l'idée d'organiser sa propre sortie est
+  // active dans son cerveau — meilleur ROI qu'une landing à froid.
+  const showOrganizeNudge =
+    !session?.user && !isCreator && (me?.response === "yes" || me?.response === "handle_own");
 
   // FAB "Je vote ↓" affiché en mode sondage actif tant que le
   // visiteur n'a pas voté. Il flotte tant que la zone d'action n'est
@@ -363,6 +371,8 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
           </Link>
         </nav>
       )}
+
+      {showOrganizeNudge && <GuestOrganizeNudge mode={outing.mode} />}
 
       {(outing.creatorAnonName || outing.creatorUserId) && (
         <Eyebrow tone="muted" className="mt-8 text-center">

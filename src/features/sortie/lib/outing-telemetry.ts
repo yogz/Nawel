@@ -18,7 +18,11 @@ import { getDeviceLabel } from "./device-label";
 
 type Payload = Record<string, string | number | boolean | undefined>;
 
-type OutingEventName = "outing_viewed" | "outing_share_clicked" | "outing_rsvp_set";
+type OutingEventName =
+  | "outing_viewed"
+  | "outing_share_clicked"
+  | "outing_rsvp_set"
+  | "outing_org_cta_click";
 
 function track(name: OutingEventName, payload?: Payload) {
   sendGAEvent("event", name, payload);
@@ -87,6 +91,22 @@ export function trackOutingRsvpSet(params: {
     delta: params.delta,
     is_logged_in: params.isLoggedIn,
     has_email: params.hasEmail,
+  });
+}
+
+/**
+ * Clic sur la bannière "tu organises ton tour ?" affichée à un invité
+ * anonyme après son RSVP. Mesure la conversion virale invité → créateur :
+ * un visiteur qui vient de vivre le RSVP 1-tap décide-t-il d'organiser
+ * sa propre sortie ? C'est le micro-moment d'or du loop d'acquisition.
+ *
+ * `mode` reflète le type de sortie depuis laquelle on convertit (utile
+ * pour voir si les sondages convertissent moins bien que les sorties
+ * fixes). Pas de slug/title (pas de PII, agrégeable).
+ */
+export function trackOutingOrgCtaClick(params: { mode: "fixed" | "vote" }) {
+  track("outing_org_cta_click", {
+    mode: params.mode,
   });
 }
 
