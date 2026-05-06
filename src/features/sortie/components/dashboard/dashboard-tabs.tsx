@@ -3,14 +3,13 @@
 import type { ReactNode } from "react";
 import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { TabKey } from "./dashboard-tabs-shared";
 
 const TABS = [
   { key: "wizard", label: "Wizard" },
   { key: "outing", label: "Outing" },
   { key: "auth", label: "Auth" },
 ] as const;
-
-type TabKey = (typeof TABS)[number]["key"];
 
 type Props = {
   /**
@@ -89,12 +88,3 @@ export function DashboardTabs({ current, wizard, outing, auth }: Props) {
   );
 }
 
-export const DASHBOARD_TAB_KEYS: readonly TabKey[] = TABS.map((t) => t.key);
-
-export function parseTabKey(raw: string | string[] | undefined): TabKey {
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  if (value === "wizard" || value === "outing" || value === "auth") {
-    return value;
-  }
-  return "wizard";
-}
