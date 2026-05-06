@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -36,6 +37,21 @@ import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { getResetReclaimability } from "@/features/sortie/queries/reset-device-queries";
 
 const PUBLIC_BASE = process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr";
+
+// Override le `robots: noindex` du layout : la racine est la seule page
+// indexable de Sortie. Les crawlers (Googlebot, GPTBot, PerplexityBot, …)
+// n'ont ni session ni cookie token, donc ils voient toujours `LandingV2`
+// — pas de risque qu'ils indexent un dashboard utilisateur ou une
+// inbox d'invité (qui contiennent des données privées).
+export const metadata: Metadata = {
+  title: "Sortie — organise une sortie entre amis, sans compte",
+  description:
+    "Lance une sortie en 30 secondes. Tes amis répondent en 1 tap, sans compte. Suivi des billets et des dettes inclus. Théâtre, opéra, concert, ciné, expo.",
+  robots: { index: true, follow: true },
+  alternates: {
+    canonical: "https://sortie.colist.fr/",
+  },
+};
 
 export default async function SortieHome() {
   const session = await auth.api.getSession({ headers: await headers() });

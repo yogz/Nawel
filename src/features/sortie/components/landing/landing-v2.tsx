@@ -5,6 +5,7 @@ import { sendGAEvent } from "@/lib/umami";
 import { LoginLink } from "@/features/sortie/components/login-link";
 import { LandingCtaButton } from "./landing-cta-button";
 import { LANDING_EVENTS } from "./landing-events";
+import { LandingJsonLd } from "./landing-json-ld";
 import { PublicHero } from "./public-hero";
 import { SectionCardShowcase } from "./section-card-showcase";
 import { SectionHowItWorks } from "./section-how-it-works";
@@ -21,6 +22,7 @@ export function LandingV2() {
 
   return (
     <main className="relative mx-auto flex min-h-[100dvh] max-w-2xl flex-col pb-16">
+      <LandingJsonLd />
       <PublicHero />
       <SectionHowItWorks />
       <SectionCardShowcase />

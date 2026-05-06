@@ -1,7 +1,25 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
 import { routing } from "@/i18n/routing";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+// Les deux apps (CoList et Sortie) cohabitent dans le même Next : le
+// fichier `sitemap.ts` est unique au niveau `app/`, mais doit servir
+// deux contenus distincts selon le host de la requête. Le proxy ne
+// rewrite pas les paths avec `.` (matcher), donc `/sitemap.xml` arrive
+// brut ici et on doit dispatcher sur le hostname.
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const host = (await headers()).get("host") ?? "";
+  if (host.startsWith("sortie.")) {
+    return [
+      {
+        url: "https://sortie.colist.fr/",
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 1,
+      },
+    ];
+  }
+
   const baseUrl = "https://www.colist.fr";
   const locales = routing.locales;
 
