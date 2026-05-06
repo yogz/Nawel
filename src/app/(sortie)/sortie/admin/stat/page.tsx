@@ -8,7 +8,7 @@ import {
 import { getWizardUmamiStats } from "@/features/sortie/queries/wizard-umami-stats";
 import { StatDashboard } from "@/features/sortie/components/stat-dashboard";
 import { StatRangePicker } from "@/features/sortie/components/stat-range-picker";
-import { parseTabKey } from "@/features/sortie/components/dashboard/dashboard-tabs";
+import { parseTabKey } from "@/features/sortie/components/dashboard/dashboard-tabs-shared";
 import { logger } from "@/lib/logger";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
