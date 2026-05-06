@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { trackOutingOrgCtaClick } from "@/features/sortie/lib/outing-telemetry";
 
 type Props = {
@@ -25,9 +26,7 @@ export function GuestOrganizeNudge({ mode }: Props) {
       className="mt-12 border-t border-surface-400 pt-6 text-center"
       aria-label="Toi aussi, tu organises une sortie ?"
     >
-      <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
-        ─ tu organises ton tour ? ─
-      </p>
+      <Eyebrow className="mb-2">─ tu organises ton tour ? ─</Eyebrow>
       <p className="mx-auto mb-3 max-w-md text-[15px] leading-[1.5] text-ink-500">
         Lance ta sortie en 30 secondes. Sans compte.
       </p>

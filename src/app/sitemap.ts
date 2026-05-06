@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
+import { isSortieHost } from "@/lib/sortie-host";
 import { routing } from "@/i18n/routing";
 
 // Les deux apps (CoList et Sortie) cohabitent dans le même Next : le
@@ -8,8 +9,8 @@ import { routing } from "@/i18n/routing";
 // rewrite pas les paths avec `.` (matcher), donc `/sitemap.xml` arrive
 // brut ici et on doit dispatcher sur le hostname.
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const host = (await headers()).get("host") ?? "";
-  if (host.startsWith("sortie.")) {
+  const host = (await headers()).get("host");
+  if (isSortieHost(host)) {
     return [
       {
         url: "https://sortie.colist.fr/",

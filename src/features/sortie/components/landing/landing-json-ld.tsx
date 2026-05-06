@@ -64,17 +64,14 @@ const FAQ_LD = {
   })),
 };
 
+const SOFTWARE_APP_JSON = JSON.stringify(SOFTWARE_APP_LD);
+const FAQ_JSON = JSON.stringify(FAQ_LD);
+
 export function LandingJsonLd() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APP_LD) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_LD) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: SOFTWARE_APP_JSON }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: FAQ_JSON }} />
     </>
   );
 }

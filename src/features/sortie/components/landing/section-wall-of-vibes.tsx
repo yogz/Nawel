@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { sendGAEvent } from "@/lib/umami";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
 import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
@@ -74,11 +75,9 @@ const MOCKS: ReadonlyArray<Mock> = [
  * vers des 404, et un user kbd ne doit pas pouvoir Tab/Enter dessus.
  */
 export function SectionWallOfVibes() {
-  // Snapshot une seule fois au mount pour que les deadlines/dates ne
-  // dérivent pas pendant la vie du composant (cf. card-showcase pour le
-  // même rationale — Vercel garde le module chaud, dater au module
-  // load créerait un faux signal "deadline expirée" sur des SSR
-  // espacés).
+  // Snapshot au mount pour stabiliser les dates : Vercel garde le module
+  // chaud, dater au module load créerait un faux signal "deadline
+  // expirée" sur des SSR espacés.
   const [outings] = useState(() => {
     const now = Date.now();
     return MOCKS.map((m) => ({
@@ -104,13 +103,9 @@ export function SectionWallOfVibes() {
       className="mt-20 sm:mt-24"
     >
       <section className="px-6">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ ce que tu pourrais avoir ─
-        </p>
+        </Eyebrow>
         <h2
           className="mb-8 font-display text-[34px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
           style={{ textWrap: "balance" }}

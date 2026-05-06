@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { sendGAEvent } from "@/lib/umami";
+import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
@@ -33,13 +34,9 @@ export function SectionVsGalere() {
       className="mt-20 sm:mt-24"
     >
       <section className="px-6">
-        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-acid-600 shadow-[0_0_12px_var(--sortie-acid)]"
-          />
+        <Eyebrow glow className="mb-3">
           ─ la différence ─
-        </p>
+        </Eyebrow>
         <h2
           className="mb-10 font-display text-[34px] leading-[0.95] font-black tracking-[-0.04em] text-ink-700 sm:text-5xl"
           style={{ textWrap: "balance" }}
@@ -50,11 +47,10 @@ export function SectionVsGalere() {
         </h2>
 
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_1.4fr] sm:items-center sm:gap-8">
-          {/* Doodle mock — petit, gris, désaturé. Non interactif. */}
           <div aria-hidden className="opacity-60">
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-ink-400">
+            <Eyebrow tone="muted" className="mb-3">
               ─ doodle ─
-            </p>
+            </Eyebrow>
             <div className="rounded-md border border-surface-400 bg-surface-100 p-3">
               <div
                 className="grid gap-[2px]"
@@ -88,11 +84,8 @@ export function SectionVsGalere() {
             </p>
           </div>
 
-          {/* Sortie mock — gros, acid, vivant. */}
           <div>
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
-              ─ sortie ─
-            </p>
+            <Eyebrow className="mb-3">─ sortie ─</Eyebrow>
             <div className="rounded-[20px] border border-acid-600/40 bg-surface-50 p-5 shadow-[0_0_30px_rgba(199,255,60,0.12)]">
               <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
                 jeu. 12 déc. · 20h30
