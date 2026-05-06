@@ -145,6 +145,9 @@ export const accountRelations = relations(account, ({ one }) => ({
 // Plugin Better Auth `twoFactor` — secret TOTP + backup codes par user.
 // `verified` est flippé à true au moment où Better Auth confirme un premier
 // code TOTP côté enrollment (skipVerificationOnEnable=false par défaut).
+// Default `true` matche le contrat Better Auth 1.6.2+ : les rows pré-existantes
+// (avant l'ajout de la colonne) sont considérées vérifiées, et les nouvelles
+// rows créées par `enableTwoFactor` reçoivent explicitement `false`.
 export const twoFactor = pgTable(
   "two_factor",
   {
@@ -154,6 +157,7 @@ export const twoFactor = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     secret: text("secret").notNull(),
     backupCodes: text("backup_codes").notNull(),
+    verified: boolean("verified").default(true),
   },
   (t) => ({
     userIdIdx: index("two_factor_user_id_idx").on(t.userId),
