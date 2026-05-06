@@ -8,10 +8,9 @@ import { eq } from "drizzle-orm";
 import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 
 // Reset manuel de la 2FA d'un admin (téléphone perdu / seed compromis).
-// Convention sécu (cf. devil's advocate review) : pas de canal email
-// auto-recovery (vector social engineering). Reset = action manuelle
-// effectuée par un autre admin via ce script, tracée dans l'audit log
-// `sortie.audit_log` avec action="ADMIN_2FA_RESET".
+// Convention sécu : pas de canal email auto-recovery (vecteur social
+// engineering). Reset = action manuelle effectuée par un autre admin
+// via ce script, tracée dans `sortie.audit_log` (ADMIN_2FA_RESET).
 //
 // Usage: npx tsx scripts/admin/reset-2fa.ts <email> <actor-email>
 //

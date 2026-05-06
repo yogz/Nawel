@@ -62,7 +62,6 @@ export const user = pgTable(
     banned: boolean("banned").default(false),
     banReason: text("ban_reason"),
     banExpires: timestamp("ban_expires"),
-    // Better Auth `twoFactor` plugin — flippé true à `enable`, false à `disable`.
     // Le secret + backup codes vivent dans la table `two_factor` dédiée.
     twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),

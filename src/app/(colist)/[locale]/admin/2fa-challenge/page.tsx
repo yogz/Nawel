@@ -1,7 +1,7 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { auth } from "@/lib/auth-config";
+import { requireColistAdmin } from "@/features/admin/lib/require-colist-admin";
+import { safeAdminNext } from "@/features/admin/lib/admin-step-up";
 import { TwoFactorChallenge } from "@/features/admin/components/two-factor-challenge";
 
 export const metadata = {
@@ -21,20 +21,14 @@ export default async function ColistAdminTwoFactorChallengePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user || session.user.role !== "admin") {
-    redirect(`/${locale}`);
-  }
+  const session = await requireColistAdmin(locale);
   if (!session.user.twoFactorEnabled) {
     redirect(`/${locale}/admin/2fa-enroll`);
   }
-
   const { next } = await searchParams;
-  const safeNext = next && next.startsWith(`/${locale}/admin`) ? next : `/${locale}/admin`;
-
   return (
     <div className="mx-auto max-w-md px-4 py-10">
-      <TwoFactorChallenge next={safeNext} />
+      <TwoFactorChallenge next={safeAdminNext(next, `/${locale}/admin`)} />
     </div>
   );
 }

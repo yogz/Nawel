@@ -2,16 +2,13 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-// Cookie de step-up admin : prouve qu'une vérif TOTP/backup-code valide
-// a été passée < TTL minutes pour cette session. **Host-only** (pas de
-// Domain=.colist.fr) pour éviter qu'un step-up posé sur sortie.colist.fr
-// élève automatiquement www.colist.fr (et vice-versa) — point bloquant
-// du sécu agent. Path=/ pour rester accessible au niveau /admin (Sortie
-// utilise /sortie/admin via proxy rewrite, CoList utilise /[locale]/admin).
+// Cookie de step-up admin. Host-only (Domain non défini) pour éviter
+// qu'un step-up posé sur sortie.colist.fr élève www.colist.fr — les
+// deux sont des hosts admin distincts qui doivent re-prouver leur 2FA
+// indépendamment.
 //
-// Format de la valeur : `${sessionId}.${expiresAtSeconds}.${hmacBase64Url}`.
-// HMAC-SHA256 sur `${sessionId}.${expiresAtSeconds}` avec BETTER_AUTH_SECRET.
-// Validation : recompute HMAC + timingSafeEqual + check expiresAt.
+// Format : `${sessionId}.${expiresAtSeconds}.${hmacBase64Url}`. HMAC-SHA256
+// sur `${sessionId}.${expiresAtSeconds}`, secret = BETTER_AUTH_SECRET.
 
 const COOKIE_NAME = "admin_stepup";
 export const ADMIN_STEP_UP_TTL_SECONDS = 30 * 60; // 30 min
@@ -71,21 +68,45 @@ export async function markAdminStepUp(sessionId: string): Promise<void> {
   const expiresAt = Math.floor(Date.now() / 1000) + ADMIN_STEP_UP_TTL_SECONDS;
   const payload = `${sessionId}.${expiresAt}`;
   const value = `${payload}.${sign(payload)}`;
+  // domain volontairement omis : cookie host-only, jamais partagé entre
+  // www.colist.fr et sortie.colist.fr.
   (await cookies()).set(COOKIE_NAME, value, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: ADMIN_STEP_UP_TTL_SECONDS,
-    // domain volontairement omis : cookie host-only, jamais partagé entre
-    // www.colist.fr et sortie.colist.fr.
   });
 }
 
-/**
- * Efface le cookie de step-up (à appeler au sign-out, ou quand un admin
- * veut explicitement révoquer la fenêtre de step-up sans logout complet).
- */
 export async function clearAdminStepUp(): Promise<void> {
   (await cookies()).delete(COOKIE_NAME);
+}
+
+// Path next sécurisé pour les redirects post-2FA. Doit être un path local
+// qui appartient strictement à la zone admin (préfixe `${prefix}/` ou égal
+// `${prefix}`). Rejette les open-redirects classiques : protocol-relative
+// `//evil.com`, paths qui matchent le préfixe sans slash (`/admin@evil`,
+// `/adminx`), backslashes (parsing edge), schemes (`javascript:`, `data:`).
+export function safeAdminNext(next: string | undefined, prefix: string): string {
+  if (!next) {
+    return prefix;
+  }
+  if (next.startsWith("//") || next.includes("\\") || next.includes(":")) {
+    return prefix;
+  }
+  if (next === prefix) {
+    return next;
+  }
+  if (next.startsWith(`${prefix}/`)) {
+    return next;
+  }
+  return prefix;
+}
+
+export function isStepUpExemptPath(pathname: string | null): boolean {
+  if (!pathname) {
+    return false;
+  }
+  return pathname.includes("/admin/2fa-challenge") || pathname.includes("/admin/2fa-enroll");
 }

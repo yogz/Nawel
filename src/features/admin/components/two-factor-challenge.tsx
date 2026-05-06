@@ -9,10 +9,9 @@ import {
   verifyBackupCodeAction,
 } from "@/features/admin/actions/two-factor-actions";
 
-// Composant client du challenge step-up admin. Un mode TOTP (par défaut)
-// et un mode backup code (lien "Utiliser un code de secours"). Au succès,
-// la server action pose le cookie `admin_stepup` puis on full-reload sur
-// `next` pour que le layout admin re-passe le gate avec le cookie en place.
+// Au succès, la server action pose le cookie `admin_stepup` puis on
+// full-reload sur `next` — `router.replace()` réutiliserait le RSC cache
+// qui ne lit pas le nouveau cookie posé pendant la même navigation.
 
 export function TwoFactorChallenge({ next }: { next: string }) {
   const [mode, setMode] = useState<"totp" | "backup">("totp");
@@ -30,8 +29,6 @@ export function TwoFactorChallenge({ next }: { next: string }) {
         setError(result.error);
         return;
       }
-      // Full reload : la cible peut être server-rendered et lit le cookie
-      // au prochain request. router.replace() re-utiliserait le RSC cache.
       window.location.href = next;
     });
   }

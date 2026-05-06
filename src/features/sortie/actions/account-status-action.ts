@@ -1,8 +1,9 @@
 "use server";
 
-import { and, eq, isNotNull, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { account, user } from "@drizzle/schema";
+import { user } from "@drizzle/schema";
+import { hasPasswordCredential } from "@/features/admin/lib/has-password-credential";
 
 export type AccountStatus = {
   /** Compte existe pour cet email (silent ou explicite). */
@@ -46,22 +47,9 @@ export async function checkAccountStatus(rawEmail: string): Promise<AccountStatu
     return { exists: false, hasPassword: false, banned: false };
   }
 
-  // Better Auth stocke les credentials email/password dans `account`
-  // avec `providerId = "credential"`. Le password est hashé dans le
-  // champ `password` ; un row sans password = compte silent ou compte
-  // OAuth-only. On considère "hasPassword" uniquement si le hash existe.
-  const credentialAccount = await db.query.account.findFirst({
-    where: and(
-      eq(account.userId, u.id),
-      eq(account.providerId, "credential"),
-      isNotNull(account.password)
-    ),
-    columns: { id: true },
-  });
-
   return {
     exists: true,
-    hasPassword: Boolean(credentialAccount),
+    hasPassword: await hasPasswordCredential(u.id),
     banned: u.banned ?? false,
   };
 }

@@ -10,9 +10,6 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
 
-// Page de lecture du `sortie.audit_log`. Le gate step-up TOTP est posé
-// au layout admin parent — pas de check supplémentaire ici. Page FR-only.
-
 export default async function SortieAdminAuditLogPage({
   searchParams,
 }: {

@@ -146,7 +146,9 @@ export const auth = betterAuth({
       let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
       try {
         const extracted = new URL(url).origin;
-        if (extracted && extracted.includes(".")) origin = extracted;
+        if (extracted && extracted.includes(".")) {
+          origin = extracted;
+        }
       } catch (e) {
         // use default origin
       }
@@ -222,16 +224,11 @@ export const auth = betterAuth({
     admin({
       adminRoles: ["admin"],
     }),
-    // 2FA TOTP — activable par n'importe quel user mais utilisée
-    // exclusivement comme gate de step-up sur `/admin` (cf. PR-C).
-    // `issuer` apparaît dans l'app authenticator à l'enrollment.
-    //
-    // `allowPasswordless: true` — autorise `enable()` sans password
-    // pour les comptes qui n'en ont pas (Google OAuth-only). Better Auth
-    // détecte la présence d'un compte `credential` avec password ; si le
-    // user en a un → password required ; sinon → optional. Pas de
-    // régression sécu : les comptes Google-only n'avaient déjà pas de
-    // password à exiger, le seul facteur étant la session Google active.
+    // `allowPasswordless: true` — Better Auth détecte si le user a un
+    // compte `credential` avec password ; si oui, `enable()` exige le
+    // password ; sinon (Google OAuth-only) il accepte sans. Le facteur
+    // d'auth pour les comptes OAuth-only reste la session Google active,
+    // identique au statu-quo pré-2FA.
     twoFactor({
       issuer: "CoList",
       allowPasswordless: true,
@@ -267,7 +264,9 @@ export const auth = betterAuth({
         let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
         try {
           const extracted = new URL(url).origin;
-          if (extracted && extracted.includes(".")) origin = extracted;
+          if (extracted && extracted.includes(".")) {
+            origin = extracted;
+          }
         } catch (e) {
           // use default origin
         }
@@ -425,7 +424,9 @@ export const auth = betterAuth({
       let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
       try {
         const extracted = new URL(url).origin;
-        if (extracted && extracted.includes(".")) origin = extracted;
+        if (extracted && extracted.includes(".")) {
+          origin = extracted;
+        }
       } catch (e) {
         // use default origin
       }

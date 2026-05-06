@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth-config";
-import { hasAdminStepUp } from "@/features/admin/lib/admin-step-up";
+import { hasAdminStepUp, isStepUpExemptPath } from "@/features/admin/lib/admin-step-up";
 
 // `role` vit sur la table `user` (default "user"), promu via le plugin
 // admin de Better Auth (`adminRoles: ["admin"]` dans auth-config). Un
@@ -18,30 +18,14 @@ export async function getSortieAdminSession() {
   return session;
 }
 
-// Pages exemptées du gate step-up : enrollment + challenge doivent être
-// joignables sans avoir déjà passé le step-up (sinon redirect-loop).
-// Path interne après rewrite proxy : `/sortie/admin/...`. On vérifie
-// aussi le path externe (sans `/sortie`) au cas où `x-pathname` serait
-// absent (request directe sans proxy en dev).
-function isStepUpExemptPath(pathname: string | null): boolean {
-  if (!pathname) {
-    return false;
-  }
-  return pathname.includes("/admin/2fa-challenge") || pathname.includes("/admin/2fa-enroll");
-}
-
 /**
- * À utiliser dans les Server Components / layouts admin. Redirect
- * vers la home si non authentifié OU non-admin. Pas de message
- * d'erreur — on ne donne aucune info à un attaquant.
+ * Gate Server Component. Redirect vers `/` si non admin (pas de message,
+ * pas d'info pour l'attaquant). Si admin sans 2FA → /admin/2fa-enroll
+ * (bloquant). Si admin avec 2FA mais sans step-up frais → /admin/2fa-challenge.
  *
- * Step-up TOTP : si l'admin a activé la 2FA, redirect vers le challenge
- * tant qu'aucun cookie `admin_stepup` valide n'est présent. Si pas
- * encore enrôlé, redirect vers `/admin/2fa-enroll` (forcé bloquant).
- *
- * NB : path public (`/`), pas le path interne `/sortie`. Sur
- * sortie.colist.fr le proxy ré-écrit `/` → `/sortie`. Rediriger
- * vers `/sortie` causerait un double-rewrite `/sortie/sortie` et 404.
+ * NB : redirect vers `/` (path public Sortie), pas vers `/sortie`. Le
+ * proxy rewrite `/` → `/sortie` ; rediriger sur `/sortie` causerait un
+ * double-rewrite `/sortie/sortie` et 404.
  */
 export async function requireSortieAdmin() {
   const h = await headers();
@@ -54,21 +38,20 @@ export async function requireSortieAdmin() {
   }
 
   const pathname = h.get("x-pathname");
-  // Les pages 2fa-* assurent leur propre logique (enrôler / vérifier),
-  // donc on ne re-déclenche pas un redirect step-up depuis le layout
-  // qui les contient — sinon boucle infinie.
+  // Les pages 2fa-* font leur propre logique d'enrôlement / vérif :
+  // les exempter ici évite la boucle "layout redirect → page redirect".
   if (isStepUpExemptPath(pathname)) {
     return session;
   }
 
-  // L'admin doit d'abord enrôler une 2FA (forcé bloquant — pas de
-  // grâce, pas de skip, cf. devil's advocate review).
+  // Enrollment forcé bloquant : pas de grâce ni de skip — sans 2FA,
+  // l'admin ne peut accéder à aucune page admin sauf l'enrôlement
+  // lui-même (exempté plus haut via `isStepUpExemptPath`).
   if (!session.user.twoFactorEnabled) {
     const next = pathname ? `?next=${encodeURIComponent(pathname)}` : "";
     redirect(`/admin/2fa-enroll${next}`);
   }
 
-  // 2FA enrôlée : exiger un step-up frais (TTL 30 min).
   const stepUpOk = await hasAdminStepUp(session.session.id);
   if (!stepUpOk) {
     const next = pathname ? `?next=${encodeURIComponent(pathname)}` : "";
@@ -79,12 +62,11 @@ export async function requireSortieAdmin() {
 }
 
 /**
- * À utiliser dans les Server Actions admin (mutations). Throw si
- * non-admin OU si pas de step-up valide. Le layout admin protège la
- * vue ; chaque action doit re-vérifier — défense en profondeur.
+ * Gate server action (mutation). Throw si non-admin OU step-up absent.
  *
- * Magic-link / OAuth ne passent JAMAIS le step-up — seuls
- * `verifyTotp` ou `verifyBackupCode` posent le cookie `admin_stepup`.
+ * Magic-link et OAuth ne posent JAMAIS le cookie step-up : seules
+ * `verifyTotp` / `verifyBackupCode` peuvent le poser. Conséquence : un
+ * attaquant qui détourne un magic-link n'obtient pas l'élévation admin.
  */
 export async function assertSortieAdmin() {
   const session = await getSortieAdminSession();

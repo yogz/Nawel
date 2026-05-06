@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { authenticator } from "otplib";
 
-// E2E du flow 2FA admin (PR-A → C). Préconditions, à automatiser dans
-// un fichier setup séparé si on veut faire tourner ça en CI :
+// E2E du flow 2FA admin. Préconditions, à automatiser dans un fichier
+// setup séparé si on veut faire tourner ça en CI :
 //
 //   1. Un user admin a été créé (rôle = "admin", email + password connus).
 //   2. La 2FA n'est PAS encore enrôlée (`twoFactorEnabled = false`).
@@ -25,7 +25,7 @@ test.describe.skip("admin 2FA flow", () => {
   // le `.skip` quand tu as setup les fixtures (ou ajoute la route /api/test
   // mentionnée plus haut).
 
-  async function login(page: import("@playwright/test").Page) {
+  async function login(page: Page) {
     await page.goto("/login?host=sortie");
     await page.getByLabel(/email/i).fill(ADMIN_EMAIL);
     await page.getByLabel(/mot de passe/i).fill(ADMIN_PASSWORD);
@@ -61,26 +61,23 @@ test.describe.skip("admin 2FA flow", () => {
     test.skip(true, "TOTP secret extraction not implemented — voir helper /api/test");
   });
 
-  test("step-up TOTP après expiration → re-challenge", async ({ page, context }) => {
+  test("step-up TOTP après expiration → re-challenge", async () => {
     test.skip(true, "Nécessite manipulation cookie admin_stepup côté test");
     // Plan : poser un cookie admin_stepup expiré (TTL passé) via
-    // `context.addCookies(...)`, vérifier que /admin redirige sur
-    // /admin/2fa-challenge.
+    // context.addCookies, vérifier que /admin redirige sur /admin/2fa-challenge.
   });
 
-  test("magic-link login admin → bloqué sur step-up avant /admin", async ({ page }) => {
+  test("magic-link login admin → bloqué sur step-up avant /admin", async () => {
     test.skip(true, "Nécessite extraction du token magic-link depuis Resend mock");
-    // Plan : trigger magic-link, intercept l'email (Resend ne tape pas le
-    // réseau en dev mais log côté server), follow le lien, puis goto
-    // /admin → expect redirect /admin/2fa-challenge (la consommation du
-    // magic-link ne pose pas le step-up).
+    // Plan : trigger magic-link, intercept l'email, follow le lien, puis
+    // goto /admin → expect redirect /admin/2fa-challenge (magic-link ne
+    // pose pas le step-up).
   });
 
-  test("backup code path", async ({ page }) => {
+  test("backup code path", async () => {
     test.skip(true, "Nécessite fixture avec backup code connu");
-    // Plan : enroller via API (pas via UI), récupérer un backup code,
-    // logout, login, /admin → /admin/2fa-challenge → switch sur "Utiliser
-    // un code de secours" → saisir → expect redirect /admin avec session.
+    // Plan : enroller via API, récupérer un backup code, logout, login,
+    // /admin → /admin/2fa-challenge → switch backup → saisir → expect /admin OK.
   });
 
   // Garde-fou de doc : authenticator est importé pour les tests futurs

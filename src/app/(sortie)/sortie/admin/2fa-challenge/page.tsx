@@ -1,6 +1,6 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth-config";
+import { requireSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
+import { safeAdminNext } from "@/features/admin/lib/admin-step-up";
 import { TwoFactorChallenge } from "@/features/admin/components/two-factor-challenge";
 
 export const metadata = {
@@ -15,29 +15,16 @@ export default async function SortieAdminTwoFactorChallengePage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
-  // Gate light : on exige juste un user admin loggué — le step-up est
-  // précisément ce que cette page sert à obtenir, donc ne pas l'exiger
-  // ici (sinon redirect-loop). `requireSortieAdmin()` exempte d'ailleurs
-  // ce path via `isStepUpExemptPath`, mais on a besoin d'une garde
-  // explicite ici pour les non-admins qui tomberaient sur l'URL.
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user || session.user.role !== "admin") {
-    redirect("/");
-  }
+  // Le gate exempte les paths 2fa-* du step-up check (sinon boucle), mais
+  // valide quand même session + role admin et nous renvoie la session.
+  const session = await requireSortieAdmin();
   if (!session.user.twoFactorEnabled) {
-    // Pas encore enrôlé : on ne peut pas faire de challenge.
     redirect("/admin/2fa-enroll");
   }
-
   const { next } = await searchParams;
-  // Whitelist : seulement les paths internes admin Sortie (proxy rewrite
-  // `/admin/...` → `/sortie/admin/...`). Path externe = ce qu'on lit dans
-  // x-pathname côté Sortie host.
-  const safeNext = next && next.startsWith("/admin") ? next : "/admin";
-
   return (
     <div className="mx-auto max-w-md px-4 py-10">
-      <TwoFactorChallenge next={safeNext} />
+      <TwoFactorChallenge next={safeAdminNext(next, "/admin")} />
     </div>
   );
 }

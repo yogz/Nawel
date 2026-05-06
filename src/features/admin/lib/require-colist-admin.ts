@@ -1,18 +1,11 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth-config";
-import { hasAdminStepUp } from "@/features/admin/lib/admin-step-up";
+import { hasAdminStepUp, isStepUpExemptPath } from "@/features/admin/lib/admin-step-up";
 
 // Pendant CoList du `requireSortieAdmin` Sortie. Différence : URL
 // localisée `/[locale]/admin/...`, donc redirects retournent vers
 // `/<locale>` (root localisé) plutôt que `/`.
-
-function isStepUpExemptPath(pathname: string | null): boolean {
-  if (!pathname) {
-    return false;
-  }
-  return pathname.includes("/admin/2fa-challenge") || pathname.includes("/admin/2fa-enroll");
-}
 
 export async function requireColistAdmin(locale: string) {
   const h = await headers();

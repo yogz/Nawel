@@ -1,5 +1,13 @@
 import { isDatabaseError, ServiceUnavailableError } from "./errors";
-import { type z } from "zod";
+import type { z } from "zod";
+
+// Premier message d'erreur disponible dans un ZodError flat — utile pour
+// les form actions qui veulent rendre un message simple `error: string`
+// plutôt qu'une map de fieldErrors complète.
+export function pickFirstZodError(err: z.ZodError): string {
+  const flat = err.flatten();
+  return Object.values(flat.fieldErrors).flat()[0] ?? "Données invalides.";
+}
 
 /**
  * A wrapper that catches database errors and re-throws them with a translatable code.

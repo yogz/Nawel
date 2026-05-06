@@ -7,18 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Composant d'enrôlement TOTP partagé Sortie + CoList. Texte FR hardcodé :
-// les pages admin sont déjà FR-only des deux côtés (cf. existing pages).
-//
-// Flow en 3 temps :
-//   1. (optionnel) password → authClient.twoFactor.enable({ password }) → { totpURI, backupCodes }
-//   2. QR + backup codes affichés une fois (copy unique)
-//   3. premier code TOTP → authClient.twoFactor.verifyTotp({ code }) → twoFactorEnabled flip à true
-//
-// Comptes Google-only (`hasPassword=false`) : le plugin Better Auth est
-// configuré avec `allowPasswordless: true`, donc `enable()` accepte un
-// appel sans password. On skip l'étape 1 et on call directement enable()
-// — la session OAuth active fait office d'auth (statu-quo pré-2FA).
+// Comptes Google-only (`hasPassword=false`) : Better Auth est configuré
+// avec `allowPasswordless: true`, donc `enable()` accepte un appel sans
+// password. On skip l'étape 1 et on call directement `enable()` — la
+// session OAuth active fait office d'auth (statu-quo pré-2FA).
 
 type EnrollState =
   | { kind: "idle" }
@@ -42,8 +34,10 @@ export function TwoFactorEnroll({
   async function handleEnable() {
     setError(null);
     startTransition(async () => {
-      // Comptes credential (email+password) → password obligatoire.
-      // Comptes OAuth-only → enable() sans password (allowPasswordless).
+      // string vide quand hasPassword=false : Better Auth schema accepte
+      // `password: z.string().optional()` mais le client SDK n'autorise
+      // pas l'omission complète de la clé — un "" passe le typecheck et
+      // est ignoré côté serveur via `allowPasswordless`.
       const body = hasPassword ? { password } : { password: "" };
       const { data, error: enableErr } = await authClient.twoFactor.enable(body);
       if (enableErr || !data) {

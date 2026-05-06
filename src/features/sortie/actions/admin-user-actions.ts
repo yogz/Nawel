@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
 import { auditLog } from "@drizzle/sortie-schema";
 import { sanitizeStrictText } from "@/lib/sanitize";
+import { pickFirstZodError } from "@/lib/action-utils";
 import { assertSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
 import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
@@ -73,7 +74,7 @@ export async function adminCreateUserAction(
 
   const parsed = createSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
-    return { error: pickFirstError(parsed.error) };
+    return { error: pickFirstZodError(parsed.error) };
   }
   const { name, email, username, role, emailVerified } = parsed.data;
 
@@ -149,7 +150,7 @@ export async function adminUpdateUserAction(
 
   const parsed = updateSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
-    return { error: pickFirstError(parsed.error) };
+    return { error: pickFirstZodError(parsed.error) };
   }
   const { id, name, email, username, role, emailVerified } = parsed.data;
 
@@ -200,10 +201,6 @@ export async function adminUpdateUserAction(
       })
       .where(eq(user.id, id));
 
-    // Audit log "update" : on snapshot le diff utile (name/email/role)
-    // pour que la lecture montre quoi a changé sans avoir à recouper
-    // un autre log. Skip l'insert si rien d'audit-able n'a bougé (ex :
-    // l'admin a juste re-saved sans change).
     if (roleChanged || emailChanged || nameChanged) {
       await tx.insert(auditLog).values({
         actorUserId: session.user.id,
@@ -234,9 +231,4 @@ export async function adminUpdateUserAction(
 
   revalidatePath("/admin/users");
   return { ok: `User "${safeName}" mis à jour.` };
-}
-
-function pickFirstError(err: z.ZodError): string {
-  const flat = err.flatten();
-  return Object.values(flat.fieldErrors).flat()[0] ?? "Données invalides.";
 }
