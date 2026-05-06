@@ -9,6 +9,8 @@ import { LandingJsonLd } from "./landing-json-ld";
 import { PublicHero } from "./public-hero";
 import { SectionCardShowcase } from "./section-card-showcase";
 import { SectionHowItWorks } from "./section-how-it-works";
+import { SectionVsGalere } from "./section-vs-galere";
+import { SectionWallOfVibes } from "./section-wall-of-vibes";
 
 /**
  * Landing publique pour visiteur unauth fresh. Le branching `AnonInbox`
@@ -24,8 +26,10 @@ export function LandingV2() {
     <main className="relative mx-auto flex min-h-[100dvh] max-w-2xl flex-col pb-16">
       <LandingJsonLd />
       <PublicHero />
+      <SectionWallOfVibes />
       <SectionHowItWorks />
       <SectionCardShowcase />
+      <SectionVsGalere />
 
       <section className="mt-16 px-6 text-center sm:mt-24">
         <LandingCtaButton position="bottom" fullWidthOnMobile />

@@ -12,5 +12,5 @@ export const LANDING_EVENTS = {
   loginClick: "landing_login_click",
 } as const;
 
-export type LandingSection = "how-it-works" | "card-showcase";
+export type LandingSection = "how-it-works" | "card-showcase" | "wall-of-vibes" | "vs-galere";
 export type LandingPosition = "hero" | "bottom";
