@@ -225,11 +225,16 @@ export const auth = betterAuth({
     // 2FA TOTP — activable par n'importe quel user mais utilisée
     // exclusivement comme gate de step-up sur `/admin` (cf. PR-C).
     // `issuer` apparaît dans l'app authenticator à l'enrollment.
-    // `skipVerificationOnEnable` reste à son défaut (false) : Better Auth
-    // exige un code TOTP valide pour confirmer l'activation, pas de
-    // fenêtre où l'utilisateur croit avoir 2FA sans avoir validé son seed.
+    //
+    // `allowPasswordless: true` — autorise `enable()` sans password
+    // pour les comptes qui n'en ont pas (Google OAuth-only). Better Auth
+    // détecte la présence d'un compte `credential` avec password ; si le
+    // user en a un → password required ; sinon → optional. Pas de
+    // régression sécu : les comptes Google-only n'avaient déjà pas de
+    // password à exiger, le seul facteur étant la session Google active.
     twoFactor({
       issuer: "CoList",
+      allowPasswordless: true,
     }),
     magicLink({
       // 24h pour couvrir les emails de broadcast "nouvelle sortie" (les

@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { TwoFactorEnroll } from "@/features/admin/components/two-factor-enroll";
+import { hasPasswordCredential } from "@/features/admin/lib/has-password-credential";
 
 export const metadata = {
   title: "Activer la 2FA",
@@ -26,6 +27,7 @@ export default async function ColistAdminTwoFactorEnrollPage({
     redirect(`/${locale}`);
   }
 
+  const hasPassword = await hasPasswordCredential(session.user.id);
   const { next } = await searchParams;
   const safeNext = next && next.startsWith(`/${locale}/admin`) ? next : `/${locale}/admin`;
 
@@ -33,7 +35,7 @@ export default async function ColistAdminTwoFactorEnrollPage({
   // useTranslations (cf. les autres pages admin existantes hardcodées FR).
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <TwoFactorEnroll redirectAfter={safeNext} />
+      <TwoFactorEnroll redirectAfter={safeNext} hasPassword={hasPassword} />
     </div>
   );
 }

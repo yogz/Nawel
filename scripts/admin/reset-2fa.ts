@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { user, twoFactor } from "@drizzle/schema";
 import { auditLog } from "@drizzle/sortie-schema";
 import { eq } from "drizzle-orm";
+import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 
 // Reset manuel de la 2FA d'un admin (téléphone perdu / seed compromis).
 // Convention sécu (cf. devil's advocate review) : pas de canal email
@@ -59,7 +60,7 @@ async function resetTwoFactor() {
       .where(eq(user.id, target.id));
     await tx.insert(auditLog).values({
       actorUserId: actor.id,
-      action: "ADMIN_2FA_RESET",
+      action: ADMIN_AUDIT.ADMIN_2FA_RESET,
       payload: JSON.stringify({ targetUserId: target.id, targetEmail: target.email }),
     });
   });

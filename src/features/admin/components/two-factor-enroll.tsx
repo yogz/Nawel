@@ -11,20 +11,27 @@ import { Label } from "@/components/ui/label";
 // les pages admin sont déjà FR-only des deux côtés (cf. existing pages).
 //
 // Flow en 3 temps :
-//   1. password → authClient.twoFactor.enable({ password }) → { totpURI, backupCodes }
+//   1. (optionnel) password → authClient.twoFactor.enable({ password }) → { totpURI, backupCodes }
 //   2. QR + backup codes affichés une fois (copy unique)
 //   3. premier code TOTP → authClient.twoFactor.verifyTotp({ code }) → twoFactorEnabled flip à true
 //
-// `enable()` exige un password Better Auth. Pour les comptes Google-only,
-// il faudra d'abord poser un password via /forgot-password — message
-// affiché dans le toast d'erreur si Better Auth retourne `INVALID_PASSWORD`.
+// Comptes Google-only (`hasPassword=false`) : le plugin Better Auth est
+// configuré avec `allowPasswordless: true`, donc `enable()` accepte un
+// appel sans password. On skip l'étape 1 et on call directement enable()
+// — la session OAuth active fait office d'auth (statu-quo pré-2FA).
 
 type EnrollState =
   | { kind: "idle" }
   | { kind: "ready"; qrDataUrl: string; backupCodes: string[] }
   | { kind: "done" };
 
-export function TwoFactorEnroll({ redirectAfter = "/" }: { redirectAfter?: string }) {
+export function TwoFactorEnroll({
+  redirectAfter = "/",
+  hasPassword,
+}: {
+  redirectAfter?: string;
+  hasPassword: boolean;
+}) {
   const [state, setState] = useState<EnrollState>({ kind: "idle" });
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -35,11 +42,16 @@ export function TwoFactorEnroll({ redirectAfter = "/" }: { redirectAfter?: strin
   async function handleEnable() {
     setError(null);
     startTransition(async () => {
-      const { data, error: enableErr } = await authClient.twoFactor.enable({ password });
+      // Comptes credential (email+password) → password obligatoire.
+      // Comptes OAuth-only → enable() sans password (allowPasswordless).
+      const body = hasPassword ? { password } : { password: "" };
+      const { data, error: enableErr } = await authClient.twoFactor.enable(body);
       if (enableErr || !data) {
         setError(
           enableErr?.message ??
-            "Activation impossible. Vérifie le mot de passe (les comptes Google doivent en poser un via /forgot-password)."
+            (hasPassword
+              ? "Activation impossible. Vérifie le mot de passe."
+              : "Activation impossible. Réessaie ou contacte un autre admin.")
         );
         return;
       }
@@ -75,24 +87,33 @@ export function TwoFactorEnroll({ redirectAfter = "/" }: { redirectAfter?: strin
       >
         <div className="space-y-2">
           <h1 className="text-xl font-semibold">Activer la 2FA</h1>
-          <p className="text-muted-foreground text-sm">
-            Étape 1/3 — confirme ton mot de passe pour générer le secret TOTP.
-          </p>
+          {hasPassword ? (
+            <p className="text-muted-foreground text-sm">
+              Étape 1/3 — confirme ton mot de passe pour générer le secret TOTP.
+            </p>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              Compte connecté via Google — pas de mot de passe à confirmer. Clique sur
+              «&nbsp;Générer&nbsp;» pour créer ton secret TOTP.
+            </p>
+          )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Mot de passe</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        {hasPassword && (
+          <div className="space-y-2">
+            <Label htmlFor="password">Mot de passe</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+        )}
         {error && <p className="text-destructive text-sm">{error}</p>}
-        <Button type="submit" disabled={isPending || password.length === 0}>
-          {isPending ? "Génération…" : "Continuer"}
+        <Button type="submit" disabled={isPending || (hasPassword && password.length === 0)}>
+          {isPending ? "Génération…" : hasPassword ? "Continuer" : "Générer"}
         </Button>
       </form>
     );

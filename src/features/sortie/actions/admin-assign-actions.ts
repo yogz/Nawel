@@ -6,8 +6,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
-import { outings, participants, rsvpResponse } from "@drizzle/sortie-schema";
+import { auditLog, outings, participants, rsvpResponse } from "@drizzle/sortie-schema";
 import { assertSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
+import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { shortIdSchema } from "./schemas";
 
@@ -55,7 +56,7 @@ export async function adminAssignUserToOutingAction(
   _prev: AssignActionState,
   formData: FormData
 ): Promise<AssignActionState> {
-  await assertSortieAdmin();
+  const session = await assertSortieAdmin();
 
   const parsed = assignSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
@@ -97,28 +98,43 @@ export async function adminAssignUserToOutingAction(
 
   const yesExtras = response === "yes";
 
-  if (existing) {
-    await db
-      .update(participants)
-      .set({
+  await db.transaction(async (tx) => {
+    if (existing) {
+      await tx
+        .update(participants)
+        .set({
+          response,
+          extraAdults: yesExtras ? extraAdults : 0,
+          extraChildren: yesExtras ? extraChildren : 0,
+          anonName: null,
+          anonEmail: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(participants.id, existing.id));
+    } else {
+      await tx.insert(participants).values({
+        outingId: outing.id,
+        userId: targetUser.id,
+        cookieTokenHash: generatePlaceholderCookieHash(),
         response,
         extraAdults: yesExtras ? extraAdults : 0,
         extraChildren: yesExtras ? extraChildren : 0,
-        anonName: null,
-        anonEmail: null,
-        updatedAt: new Date(),
-      })
-      .where(eq(participants.id, existing.id));
-  } else {
-    await db.insert(participants).values({
+      });
+    }
+    await tx.insert(auditLog).values({
+      actorUserId: session.user.id,
       outingId: outing.id,
-      userId: targetUser.id,
-      cookieTokenHash: generatePlaceholderCookieHash(),
-      response,
-      extraAdults: yesExtras ? extraAdults : 0,
-      extraChildren: yesExtras ? extraChildren : 0,
+      action: ADMIN_AUDIT.OUTING_ADMIN_PARTICIPANT_ASSIGNED,
+      payload: JSON.stringify({
+        targetUserId: targetUser.id,
+        targetEmail: targetUser.email,
+        response,
+        extraAdults: yesExtras ? extraAdults : 0,
+        extraChildren: yesExtras ? extraChildren : 0,
+        upsert: existing ? "update" : "insert",
+      }),
     });
-  }
+  });
 
   // Le rendu de la sortie + l'agenda du user doivent refléter l'ajout
   // immédiatement (le user verra "tu y vas" sur ton agenda dès qu'il se
@@ -155,7 +171,7 @@ export async function adminChangeCreatorAction(
   _prev: AssignActionState,
   formData: FormData
 ): Promise<AssignActionState> {
-  await assertSortieAdmin();
+  const session = await assertSortieAdmin();
 
   const parsed = changeCreatorSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) {
@@ -186,17 +202,31 @@ export async function adminChangeCreatorAction(
     return { ok: `${targetUser.name} est déjà le créateur de "${outing.title}".` };
   }
 
-  await db
-    .update(outings)
-    .set({
-      creatorUserId: targetUser.id,
-      creatorAnonName: null,
-      creatorAnonEmail: null,
-      creatorCookieTokenHash: null,
-      sequence: outing.sequence + 1,
-      updatedAt: new Date(),
-    })
-    .where(eq(outings.id, outing.id));
+  await db.transaction(async (tx) => {
+    await tx
+      .update(outings)
+      .set({
+        creatorUserId: targetUser.id,
+        creatorAnonName: null,
+        creatorAnonEmail: null,
+        creatorCookieTokenHash: null,
+        sequence: outing.sequence + 1,
+        updatedAt: new Date(),
+      })
+      .where(eq(outings.id, outing.id));
+
+    await tx.insert(auditLog).values({
+      actorUserId: session.user.id,
+      outingId: outing.id,
+      action: ADMIN_AUDIT.OUTING_ADMIN_CREATOR_CHANGED,
+      payload: JSON.stringify({
+        previousCreatorUserId: outing.creatorUserId,
+        previousCreatorAnonName: outing.creatorAnonName,
+        newCreatorUserId: targetUser.id,
+        newCreatorEmail: targetUser.email,
+      }),
+    });
+  });
 
   revalidatePath(`/${outing.shortId}`);
   revalidatePath("/sortie/agenda");
