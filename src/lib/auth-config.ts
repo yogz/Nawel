@@ -143,17 +143,18 @@ export const auth = betterAuth({
         namespace: "Login.EmailReset",
       });
 
-      let origin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(/\/$/, "");
-      try {
-        const extracted = new URL(url).origin;
-        if (extracted && extracted.includes(".")) {
-          origin = extracted;
-        }
-      } catch (e) {
-        // use default origin
-      }
-
-      const resetUrl = `${origin}/${locale}/reset-password?token=${token}`;
+      // La page /<locale>/reset-password n'existe **que côté CoList**.
+      // Si le reset a été initié depuis sortie.colist.fr, le resetUrl
+      // doit quand même pointer vers www.colist.fr — sinon le proxy
+      // Sortie rewrite `/fr/reset-password` → `/sortie/fr/reset-password`
+      // qui n'existe pas. La session post-reset est valide cross-subdomain
+      // (cookies sur `.colist.fr`), donc l'utilisateur retombe loggué
+      // partout sans round-trip supplémentaire.
+      const colistOrigin = (process.env.BETTER_AUTH_URL || "https://www.colist.fr").replace(
+        /\/$/,
+        ""
+      );
+      const resetUrl = `${colistOrigin}/${locale}/reset-password?token=${token}`;
 
       // Brand selon l'origin : si l'utilisateur a démarré le reset
       // depuis sortie.colist.fr, on lui sert un email Sortie (palette
