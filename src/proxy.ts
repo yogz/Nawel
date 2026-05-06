@@ -1,5 +1,5 @@
 import createIntlMiddleware from "next-intl/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 
 const intlProxy = createIntlMiddleware(routing);
@@ -28,6 +28,16 @@ function isSortieHost(request: NextRequest): boolean {
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
+  // Headers de request enrichis avec `x-pathname` pour que les server
+  // components puissent lire le path via `headers()` (utilisé par le gate
+  // admin pour exempter les pages 2fa-enroll/2fa-challenge du step-up
+  // check — sinon redirect-loop). Les options `request: { headers }`
+  // passées à NextResponse.{next,rewrite} sont l'API documentée pour
+  // forwarder des request headers vers le RSC tree (vs response.headers
+  // qui partent au navigateur).
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+
   if (isSortieHost(request)) {
     // Next.js metadata convention generates OG/Twitter image URLs that
     // already include the `/sortie/` segment (because the asset files live
@@ -38,7 +48,7 @@ export default function proxy(request: NextRequest) {
     // — which is what WhatsApp/iMessage/Signal silently swallow. Pass them
     // through so Vercel routes them straight to the file convention.
     if (pathname.includes("/opengraph-image") || pathname.includes("/twitter-image")) {
-      const response = NextResponse.next();
+      const response = NextResponse.next({ request: { headers: requestHeaders } });
       response.headers.set("x-app", "sortie");
       return response;
     }
@@ -49,7 +59,9 @@ export default function proxy(request: NextRequest) {
     if (pathname.startsWith("/@") && pathname.length > 2) {
       const username = pathname.slice(2).split("/")[0]!;
       const target = `/sortie/profile/${encodeURIComponent(username)}`;
-      const response = NextResponse.rewrite(new URL(`${target}${search}`, request.url));
+      const response = NextResponse.rewrite(new URL(`${target}${search}`, request.url), {
+        request: { headers: requestHeaders },
+      });
       response.headers.set("x-app", "sortie");
       return response;
     }
@@ -57,7 +69,9 @@ export default function proxy(request: NextRequest) {
     // Route group (sortie)/sortie/* handles these requests. The user sees
     // sortie.colist.fr/<path>, internally Next.js resolves (sortie)/sortie/<path>.
     const target = pathname === "/" ? "/sortie" : `/sortie${pathname}`;
-    const response = NextResponse.rewrite(new URL(`${target}${search}`, request.url));
+    const response = NextResponse.rewrite(new URL(`${target}${search}`, request.url), {
+      request: { headers: requestHeaders },
+    });
     response.headers.set("x-app", "sortie");
     return response;
   }
@@ -69,7 +83,12 @@ export default function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`${forwardPath}${search}`, "https://sortie.colist.fr"));
   }
 
-  return intlProxy(request);
+  // CoList host : intlProxy crée son propre rewrite vers `/<locale>/...`.
+  // Pour propager `x-pathname` au RSC tree on wrappe `request` avec les
+  // headers enrichis avant l'appel — `next-intl` se contente de lire
+  // request.url (pas les headers custom), donc cette wrap est safe.
+  const enrichedRequest = new NextRequest(request, { headers: requestHeaders });
+  return intlProxy(enrichedRequest);
 }
 
 export const config = {
