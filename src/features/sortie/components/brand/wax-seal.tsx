@@ -3,8 +3,11 @@ import type { ReactElement } from "react";
 // Brand mark partagé entre l'OG (Satori dans `opengraph-image.tsx`) et
 // les assets emails (route `/sortie/email-assets/wax-seal`). Le seal
 // reste typographiquement identique partout — seules les couleurs du
-// disque et de la lettre varient selon le fond cible (hot=fond noir OG,
-// ink=fond crème email). Toute évolution du dessin se fait ici.
+// disque et de la lettre varient selon le fond cible. Naming = couleur
+// du disque : `hot` (disque rose, contexte fond noir OG) et `acid`
+// (disque vert, contexte fond crème email — cohérent avec l'icon app
+// qui est aussi un disque acid plein). Toute évolution du dessin se
+// fait ici.
 //
 // Le composant n'est pas un Server/Client Component React — c'est une
 // fabrique de noeuds JSX consommée par `next/og` ImageResponse, qui ne
@@ -13,7 +16,7 @@ import type { ReactElement } from "react";
 
 export const WAX_SEAL_COLORS = {
   hot: { disc: "#FF3D81", letter: "#C7FF3C", ring: "#161616" },
-  ink: { disc: "#0A0A0A", letter: "#C7FF3C", ring: "#F5F2EB" },
+  acid: { disc: "#C7FF3C", letter: "#0A0A0A", ring: "#0A0A0A" },
 } as const;
 
 export type WaxSealVariant = keyof typeof WAX_SEAL_COLORS;
