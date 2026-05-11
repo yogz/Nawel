@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { WaxSeal } from "@/features/sortie/components/brand/wax-seal";
 
 // Brand-statement OG used by the home and any route that doesn't override
 // (`/sortie/nouvelle`, `/sortie/moi`). Pages of an outing or a public
@@ -20,7 +21,6 @@ export const contentType = "image/png";
 export const revalidate = 86400;
 
 const INK = "#0A0A0A";
-const INK_DEEP = "#161616";
 const OFF_WHITE = "#F5F2EB";
 const OFF_WHITE_MUTED = "rgba(245,242,235,0.6)";
 const ACID = "#C7FF3C";
@@ -63,25 +63,13 @@ export default function Image() {
             family but bolder. */}
       <div
         style={{
-          position: "absolute",
-          top: 80,
-          right: 88,
-          width: 92,
-          height: 92,
-          borderRadius: "50%",
-          backgroundColor: HOT,
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transform: "rotate(-6deg)",
-          boxShadow: `0 0 0 2px ${INK_DEEP}, 0 0 0 3px rgba(255,61,129,0.4)`,
-          color: ACID,
-          fontSize: 46,
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
+          position: "absolute",
+          top: 56,
+          right: 64,
         }}
       >
-        S
+        <WaxSeal size={120} variant="hot" />
       </div>
 
       <div
