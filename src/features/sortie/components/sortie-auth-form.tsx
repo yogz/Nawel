@@ -158,14 +158,9 @@ export function SortieAuthForm({
       const status = await checkAccountStatus(email);
       setAccountStatus(status);
 
-      if (status.banned) {
-        setError("Connexion impossible. Contacte le support si tu penses que c'est une erreur.");
-        return;
-      }
-
-      // Tous les autres cas → magic link. Better Auth gère l'auto-create
-      // si l'email est inconnu. Le compte silent reçoit aussi un magic
-      // link et s'active au verify.
+      // Tous les cas → magic link. Better Auth gère l'auto-create
+      // si l'email est inconnu, et refuse les comptes bannis au verify
+      // avec un message neutre.
       await sendMagicLink();
     } finally {
       setPending(false);
