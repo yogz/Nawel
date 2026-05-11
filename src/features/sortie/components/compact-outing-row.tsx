@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   RSVP_BADGE_LABEL,
@@ -100,12 +101,13 @@ export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = 
     >
       <div className="relative size-16 shrink-0">
         {outing.heroImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={outing.heroImageUrl}
             alt=""
             width={64}
             height={64}
+            unoptimized
+            sizes="64px"
             loading="lazy"
             className={`size-16 rounded-md bg-surface-100 object-cover object-top ${pastClasses.image}`}
             style={isPast ? undefined : { filter: OUTING_IMAGE_FILTER }}

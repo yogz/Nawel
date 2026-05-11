@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { formatOutingDate, formatOutingDayMonthTime } from "@/features/sortie/lib/date-fr";
@@ -195,16 +196,22 @@ export function LiveStatusHero({
         <div className={compact ? "relative mt-4" : "relative mt-5"}>
           {heroImageUrl ? (
             // `data-vt-poster` opts this image into the cross-document
-            // View Transitions morph (see sortie.css).
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            // View Transitions morph (see sortie.css). `unoptimized`
+            // because heroImageUrl can come from any external CDN —
+            // see comment in outing-hero.tsx for the rationale.
+            <Image
               src={heroImageUrl}
               alt=""
+              width={520}
+              height={compact ? 293 : 347}
+              priority
+              unoptimized
+              sizes="(max-width: 520px) 100vw, 520px"
               data-vt-poster
               className={`${
                 compact ? "aspect-[16/9]" : "aspect-[3/2]"
               } w-full rounded-2xl bg-surface-100 object-cover object-top shadow-[var(--shadow-md)] ring-1 ring-ink-700/10`}
-              style={{ filter: OUTING_IMAGE_FILTER }}
+              style={{ filter: OUTING_IMAGE_FILTER, height: "auto" }}
             />
           ) : (
             <div

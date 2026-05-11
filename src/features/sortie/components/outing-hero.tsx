@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowUpRight, CalendarPlus } from "lucide-react";
 import { TicketNumber } from "@/features/sortie/components/ticket-number";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
@@ -47,16 +48,21 @@ export function OutingHero({
   return (
     <header className="relative -mx-6 mb-0 h-[55dvh] max-h-[600px] min-h-[400px] overflow-hidden bg-surface-50">
       {heroImageUrl ? (
-        // Remote ticket-CDN image. Whitelister chaque domaine pour
-        // next/image serait une charge de maintenance ; ces images
-        // sont déjà cachées sur leur CDN d'origine. `data-vt-poster`
-        // opte pour la View Transitions morph (cf. sortie.css).
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        // Hero = LCP element. `priority` pose fetchpriority="high" et
+        // skip lazy. `unoptimized` parce que les heroImageUrl viennent
+        // d'une combinaison de CDN tiers (Ticketmaster, OpenAgenda,
+        // OG scraping) — whitelister chaque domaine deviendrait une
+        // charge de maintenance. `data-vt-poster` opte pour la View
+        // Transitions morph (cf. sortie.css).
+        <Image
           src={heroImageUrl}
           alt=""
+          fill
+          priority
+          unoptimized
+          sizes="(max-width: 520px) 100vw, 520px"
           data-vt-poster
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="object-cover object-center"
           style={{ filter: OUTING_IMAGE_FILTER_FULLBLEED }}
         />
       ) : (
