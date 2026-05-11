@@ -511,6 +511,9 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
 
   return (
     <div className="absolute inset-0 z-40 flex flex-col bg-surface-100">
+      {/* h1 unique de la page : chaque step rend son propre <h2>, pour
+       * que la heading navigation des screen readers reste cohérente. */}
+      <h1 className="sr-only">Nouvelle sortie</h1>
       <WizardHeader progress={progress} onBack={back} />
 
       {showRestorePrompt && storedDraft && (
@@ -1149,11 +1152,11 @@ function PasteStep({
   return (
     <section className="flex flex-col gap-6 px-6 py-10">
       <div>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Un lien,
           <br />
           ou juste un titre.
-        </h1>
+        </h2>
         <p className="mt-4 text-base text-ink-500">
           {hint ?? "On remplit le reste si on peut, sinon on continue."}
         </p>
@@ -1412,9 +1415,9 @@ function ConfirmPasteStep({
         <p className="text-xs font-black uppercase tracking-[0.18em] text-acid-600">
           Voilà ce qu&rsquo;on a trouvé
         </p>
-        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Ça colle&nbsp;?
-        </h1>
+        </h2>
         <p className="mt-3 text-sm text-ink-400">Tape directement dans la carte pour corriger.</p>
       </div>
 
@@ -1541,9 +1544,9 @@ function TitleStep({
   return (
     <section className="flex min-h-full flex-col gap-8 px-6 py-10">
       <div>
-        <h1 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Comment ça s&rsquo;appelle ?
-        </h1>
+        </h2>
       </div>
 
       <Input
@@ -1677,9 +1680,9 @@ function WhenStep({
           Quand
         </p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           C&rsquo;est quand ?
-        </h1>
+        </h2>
       </div>
 
       {slots.length > 0 && (
@@ -2011,9 +2014,9 @@ function VenueStep({
           Le lieu
         </p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           Où ça se passe ?
-        </h1>
+        </h2>
         <p className="mt-3 text-base text-ink-500">Facultatif.</p>
       </div>
 
@@ -2077,9 +2080,9 @@ function NameStep({
       <div className="flex flex-col items-start">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-acid-600">Toi</p>
         <WizardContextChip title={title} />
-        <h1 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="mt-2 text-5xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           On signe comment&nbsp;?
-        </h1>
+        </h2>
       </div>
 
       <Input
@@ -2176,9 +2179,9 @@ function CommitStep({
           <PartyPopper size={12} />
           Prêt
         </p>
-        <h1 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
+        <h2 className="mt-2 text-4xl leading-[0.95] font-black tracking-[-0.03em] text-ink-700">
           On est prêts. Tu confirmes&nbsp;?
-        </h1>
+        </h2>
       </div>
 
       <article
