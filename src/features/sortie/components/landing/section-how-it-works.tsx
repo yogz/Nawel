@@ -1,7 +1,3 @@
-"use client";
-
-import { sendGAEvent } from "@/lib/umami";
-import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
 const STEPS = [
@@ -12,12 +8,7 @@ const STEPS = [
 
 export function SectionHowItWorks() {
   return (
-    <RevealOnScroll
-      onReveal={() =>
-        sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "how-it-works" })
-      }
-      className="mt-16 sm:mt-24"
-    >
+    <RevealOnScroll eventName="how-it-works" className="mt-16 sm:mt-24">
       <section className="px-6">
         <p className="mb-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
           <span

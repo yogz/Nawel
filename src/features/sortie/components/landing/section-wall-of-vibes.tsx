@@ -1,10 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import { sendGAEvent } from "@/lib/umami";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
 const DAY = 86_400_000;
@@ -75,33 +70,25 @@ const MOCKS: ReadonlyArray<Mock> = [
  * vers des 404, et un user kbd ne doit pas pouvoir Tab/Enter dessus.
  */
 export function SectionWallOfVibes() {
-  // Snapshot au mount pour stabiliser les dates : Vercel garde le module
-  // chaud, dater au module load créerait un faux signal "deadline
-  // expirée" sur des SSR espacés.
-  const [outings] = useState(() => {
-    const now = Date.now();
-    return MOCKS.map((m) => ({
-      id: m.id,
-      shortId: m.shortId,
-      slug: m.slug,
-      title: m.title,
-      location: m.location,
-      startsAt: new Date(now + m.daysFromNow * DAY),
-      deadlineAt: new Date(now + m.deadlineDaysFromNow * DAY),
-      status: "open",
-      mode: "fixed" as const,
-      heroImageUrl: null,
-      confirmedCount: m.confirmedCount,
-    }));
-  });
+  // RSC : Date.now() est frais à chaque render server-side, donc
+  // pas de risque de dater comme on l'aurait eu en module client chaud.
+  const now = Date.now();
+  const outings = MOCKS.map((m) => ({
+    id: m.id,
+    shortId: m.shortId,
+    slug: m.slug,
+    title: m.title,
+    location: m.location,
+    startsAt: new Date(now + m.daysFromNow * DAY),
+    deadlineAt: new Date(now + m.deadlineDaysFromNow * DAY),
+    status: "open",
+    mode: "fixed" as const,
+    heroImageUrl: null,
+    confirmedCount: m.confirmedCount,
+  }));
 
   return (
-    <RevealOnScroll
-      onReveal={() =>
-        sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "wall-of-vibes" })
-      }
-      className="mt-20 sm:mt-24"
-    >
+    <RevealOnScroll eventName="wall-of-vibes" className="mt-20 sm:mt-24">
       <section className="px-6">
         <Eyebrow glow className="mb-3">
           ─ ce que tu pourrais avoir ─

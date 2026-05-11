@@ -1,9 +1,5 @@
-"use client";
-
 import { Check } from "lucide-react";
-import { sendGAEvent } from "@/lib/umami";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
-import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
 // Grille Doodle mock : 6 personnes × 8 dates, taux de "oui" volontairement
@@ -29,10 +25,7 @@ const DOODLE_GRID: ReadonlyArray<ReadonlyArray<0 | 1>> = [
  */
 export function SectionVsGalere() {
   return (
-    <RevealOnScroll
-      onReveal={() => sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "vs-galere" })}
-      className="mt-20 sm:mt-24"
-    >
+    <RevealOnScroll eventName="vs-galere" className="mt-20 sm:mt-24">
       <section className="px-6">
         <Eyebrow glow className="mb-3">
           ─ la différence ─

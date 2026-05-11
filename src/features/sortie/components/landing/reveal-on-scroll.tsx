@@ -1,26 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { sendGAEvent } from "@/lib/umami";
+import { LANDING_EVENTS } from "./landing-events";
 
 type Props = {
   children: React.ReactNode;
-  /** Fired once when the element enters the viewport. */
-  onReveal?: () => void;
+  /**
+   * Si défini, fire `LANDING_EVENTS.sectionVisible` avec ce nom de
+   * section quand l'élément entre dans le viewport. Passer une string
+   * (au lieu d'une callback) garde le parent serializable côté RSC.
+   */
+  eventName?: string;
   className?: string;
 };
 
 const THRESHOLD = 0.4;
 
-export function RevealOnScroll({ children, onReveal, className = "" }: Props) {
+export function RevealOnScroll({ children, eventName, className = "" }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
-  // Stable ref pour onReveal : sans ça un nouveau callback à chaque render
-  // parent recrée l'observer (deps churn). Pattern standard pour les
-  // callbacks-in-effect.
-  const onRevealRef = useRef(onReveal);
-  useEffect(() => {
-    onRevealRef.current = onReveal;
-  });
 
   useEffect(() => {
     if (revealed || !ref.current) {
@@ -31,7 +30,9 @@ export function RevealOnScroll({ children, onReveal, className = "" }: Props) {
       ([entry]) => {
         if (entry?.isIntersecting) {
           setRevealed(true);
-          onRevealRef.current?.();
+          if (eventName) {
+            sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: eventName });
+          }
           observer.disconnect();
         }
       },
@@ -39,7 +40,7 @@ export function RevealOnScroll({ children, onReveal, className = "" }: Props) {
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [revealed]);
+  }, [revealed, eventName]);
 
   return (
     <div

@@ -1,9 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { sendGAEvent } from "@/lib/umami";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import { LANDING_EVENTS } from "./landing-events";
 import { RevealOnScroll } from "./reveal-on-scroll";
 
 const BULLETS = [
@@ -19,32 +14,26 @@ const BULLETS = [
  * un user kbd qui Tab dessus ne doit pas pouvoir Enter.
  */
 export function SectionCardShowcase() {
-  // useState lazy init : `new Date(Date.now() + …)` au module load
-  // finirait par dater (Vercel garde le module chaud entre requêtes).
-  // Au mount du composant on prend une fresh snapshot, stable pour la
-  // vie de l'instance. Si la deadline expirait, OutingProfileCard
-  // afficherait un lock badge — faux signal "déjà fermée".
-  const [mockOuting] = useState(() => ({
+  // RSC : chaque render est server-side, donc Date.now() est frais à
+  // chaque request — pas de risque de dater comme on l'aurait eu en
+  // top-level const dans un module client chaud.
+  const now = Date.now();
+  const mockOuting = {
     id: "demo-mock",
     shortId: "demoshow",
     slug: "phedre-comedie-francaise",
     title: "Phèdre — Comédie-Française",
     location: "Comédie-Française · Salle Richelieu",
-    startsAt: new Date(Date.now() + 30 * 86_400_000),
-    deadlineAt: new Date(Date.now() + 7 * 86_400_000),
+    startsAt: new Date(now + 30 * 86_400_000),
+    deadlineAt: new Date(now + 7 * 86_400_000),
     status: "open",
     mode: "fixed" as const,
     heroImageUrl: null,
     confirmedCount: 4,
-  }));
+  };
 
   return (
-    <RevealOnScroll
-      onReveal={() =>
-        sendGAEvent("event", LANDING_EVENTS.sectionVisible, { section: "card-showcase" })
-      }
-      className="mt-20 sm:mt-28"
-    >
+    <RevealOnScroll eventName="card-showcase" className="mt-20 sm:mt-28">
       <section className="px-6">
         <p className="mb-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-acid-600">
           <span
