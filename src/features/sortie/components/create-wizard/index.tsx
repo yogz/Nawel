@@ -510,7 +510,7 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
     tryRestoreDraft(storedDraft.payload) !== null;
 
   return (
-    <div className="absolute inset-0 z-40 flex flex-col bg-surface-100">
+    <div className="absolute inset-0 z-40 flex flex-col bg-[var(--sortie-bg)]">
       {/* h1 unique de la page : chaque step rend son propre <h2>, pour
        * que la heading navigation des screen readers reste cohérente. */}
       <h1 className="sr-only">Nouvelle sortie</h1>
