@@ -7,9 +7,10 @@ import { WaxSeal } from "@/features/sortie/components/brand/wax-seal";
 // `renderEmail()` dans `src/features/sortie/lib/emails/layout.ts`.
 //
 // 128×128 = retina @2x pour un rendu visuel à 64×64 dans le header
-// email (l'`<img width="64" height="64">` resample). Variante "acid"
-// (disque vert + S noir) — cohérent avec l'icon app qui est aussi un
-// disque acid plein. La variante "hot" du OG ne marche que sur fond noir.
+// email (l'`<img width="64" height="64">` resample). Variante "ink"
+// (disque noir + S vert acid) — lecture sceau de cire, lisible sur le
+// fond crème de l'email. La variante "hot" du OG ne marche que sur
+// fond noir.
 //
 // `route.ts` (pas .tsx) par convention Next pour les route handlers :
 // `createElement` évite JSX ici tout en réutilisant le composant
@@ -19,7 +20,7 @@ import { WaxSeal } from "@/features/sortie/components/brand/wax-seal";
 export const runtime = "nodejs";
 
 export async function GET() {
-  return new ImageResponse(createElement(WaxSeal, { size: 128, variant: "acid" }), {
+  return new ImageResponse(createElement(WaxSeal, { size: 128, variant: "ink" }), {
     width: 128,
     height: 128,
     headers: {

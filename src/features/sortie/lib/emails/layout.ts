@@ -24,7 +24,10 @@ const SORTIE_ORIGIN = (process.env.NEXT_PUBLIC_SORTIE_URL ?? "https://sortie.col
 // URL publique sans le segment `/sortie/` : le proxy (src/proxy.ts) re-
 // préfixe en interne pour atteindre la route group (sortie)/sortie/*.
 // Vue côté inbox/email-client, l'asset vit à la racine du sous-domaine.
-const WAX_SEAL_URL = `${SORTIE_ORIGIN}/email-assets/wax-seal`;
+// Cache-buster suffix : Gmail image proxy + Cache-Control immutable
+// cachent par URL complète, donc une révision visuelle du wax seal
+// nécessite de bumper la version pour casser le cache côté inbox.
+const WAX_SEAL_URL = `${SORTIE_ORIGIN}/email-assets/wax-seal?v=3`;
 
 const DEFAULT_REASON = "Pas de pub, promis.";
 
