@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { followUserAction, unfollowUserAction } from "@/features/sortie/actions/follow-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import { ActionStatus } from "./action-status";
 
 type Props = {
   targetUserId: string;
@@ -68,6 +69,7 @@ export function FollowToggle({ targetUserId, inviteToken, initialIsFollowing }: 
           <span className="group-hover:hidden">✓ Suivi</span>
           <span className="hidden group-hover:inline">Retirer ↩</span>
         </button>
+        <ActionStatus message={unfollowState.message} />
       </form>
     );
   }
@@ -92,6 +94,7 @@ export function FollowToggle({ targetUserId, inviteToken, initialIsFollowing }: 
           {followState.message}
         </p>
       )}
+      <ActionStatus message={followState.message} />
     </form>
   );
 }

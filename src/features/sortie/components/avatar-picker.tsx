@@ -7,6 +7,7 @@ import {
   updateAvatarAction,
   type AvatarActionState,
 } from "@/features/sortie/actions/profile-actions";
+import { ActionStatus } from "./action-status";
 import { AvatarCropSheet } from "./avatar-crop-sheet";
 import { UserAvatar } from "./user-avatar";
 
@@ -148,6 +149,7 @@ export function AvatarPicker({ name, image, size = 80 }: Props) {
       {state.message && state.message !== "Photo mise à jour." && (
         <p className="mt-2 text-xs text-destructive">{state.message}</p>
       )}
+      <ActionStatus message={state.message} />
       <AvatarCropSheet
         file={pickedFile}
         onCancel={() => setPickedFile(null)}

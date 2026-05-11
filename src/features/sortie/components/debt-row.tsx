@@ -12,6 +12,7 @@ import {
   revealIbanAction,
 } from "@/features/sortie/actions/debt-actions";
 import { buildWaHref } from "@/features/sortie/lib/whatsapp-share";
+import { ActionStatus } from "./action-status";
 
 type PersonRef = { id: string; anonName: string | null; userName: string | null };
 type PaymentMethod = {
@@ -229,12 +230,13 @@ function EmailNudgeButton({ shortId, debtId }: { shortId: string; debtId: string
       >
         <Mail size={14} aria-hidden /> {pending ? "…" : "Email"}
       </Button>
+      <ActionStatus message={state.message} />
     </form>
   );
 }
 
 function CreditorMarkReceivedButton({ shortId, debtId }: { shortId: string; debtId: string }) {
-  const [, formAction, pending] = useActionState<FormActionState, FormData>(
+  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     confirmDebtPaidAction,
     {} as FormActionState
   );
@@ -251,12 +253,13 @@ function CreditorMarkReceivedButton({ shortId, debtId }: { shortId: string; debt
       >
         {pending ? "…" : "j'ai déjà reçu →"}
       </Button>
+      <ActionStatus message={state.message} />
     </form>
   );
 }
 
 function MarkPaidButton({ shortId, debtId }: { shortId: string; debtId: string }) {
-  const [, formAction, pending] = useActionState<FormActionState, FormData>(
+  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     markDebtPaidAction,
     {} as FormActionState
   );
@@ -267,12 +270,13 @@ function MarkPaidButton({ shortId, debtId }: { shortId: string; debtId: string }
       <Button type="submit" size="sm" disabled={pending} className="w-full">
         {pending ? "…" : "J'ai payé"}
       </Button>
+      <ActionStatus message={state.message} />
     </form>
   );
 }
 
 function ConfirmPaidButton({ shortId, debtId }: { shortId: string; debtId: string }) {
-  const [, formAction, pending] = useActionState<FormActionState, FormData>(
+  const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     confirmDebtPaidAction,
     {} as FormActionState
   );
@@ -283,6 +287,7 @@ function ConfirmPaidButton({ shortId, debtId }: { shortId: string; debtId: strin
       <Button type="submit" size="sm" disabled={pending} className="w-full">
         {pending ? "…" : "OK, j'ai bien reçu"}
       </Button>
+      <ActionStatus message={state.message} />
     </form>
   );
 }

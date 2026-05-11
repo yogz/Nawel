@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { updateOutingAction, type FormActionState } from "@/features/sortie/actions/outing-actions";
 import { toDateTimeLocalValue } from "@/features/sortie/lib/date-fr";
 import type { Vibe } from "@/features/sortie/lib/vibe-config";
+import { ActionStatus } from "./action-status";
 import { DateTimePicker } from "./date-time-picker";
 import { FormField } from "./form-field";
 import { MissingImagePicker } from "./create-wizard/missing-image-picker";
@@ -123,6 +124,7 @@ export function EditOutingForm({
           {state.message}
         </p>
       )}
+      <ActionStatus message={state.message} />
 
       <div className="flex items-center justify-end gap-3">
         <Button type="submit" size="lg" disabled={pending}>
