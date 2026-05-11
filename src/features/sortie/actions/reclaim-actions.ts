@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { sendSortieEmail } from "@/lib/resend-sortie";
 import { magicLinks, outings } from "@drizzle/sortie-schema";
 import { hashToken } from "@/features/sortie/lib/cookie-token";
-import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { renderEmail } from "@/features/sortie/lib/emails/layout";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { z } from "zod";
@@ -40,9 +40,18 @@ export async function sendReclaimMagicLinkAction(
   }
   const { shortId, email } = parsed.data;
 
-  // Rate-limit by email AND by shortId to blunt bombing. Silent success on
-  // every other failure so the response shape is identical whether the email
-  // matches or not — prevents address enumeration.
+  // Rate-limit IP + email pour bloquer le bombing (un attaquant qui
+  // randomise l'email bypassait le cap email). Silent success sur tout
+  // autre échec pour ne pas leaker l'existence du compte (anti-enum).
+  const ip = await getClientIp();
+  const ipGate = await rateLimit({
+    key: `reclaim-ip:${ip}`,
+    limit: 5,
+    windowSeconds: 300,
+  });
+  if (!ipGate.ok) {
+    return { message: "Trop de demandes — réessaie dans quelques minutes." };
+  }
   const gate = await rateLimit({
     key: `reclaim:${email.toLowerCase()}`,
     limit: 3,

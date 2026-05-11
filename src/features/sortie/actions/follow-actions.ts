@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import { userFollows } from "@drizzle/sortie-schema";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
-import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import { sendNewFollowerEmail } from "@/features/sortie/lib/emails/send-follow-emails";
 import { followEmailUpsellSchema } from "./schemas";
@@ -220,6 +220,17 @@ export async function submitFollowEmailAction(
   }
   const { email, creatorUsername, inviteToken } = parsed.data;
 
+  // Bombing guard (cf. claim-prompt-actions) — cap par IP avant
+  // l'email-cap.
+  const ip = await getClientIp();
+  const ipGate = await rateLimit({
+    key: `follow-email-ip:${ip}`,
+    limit: 5,
+    windowSeconds: 300,
+  });
+  if (!ipGate.ok) {
+    return { message: ipGate.message };
+  }
   const gate = await rateLimit({
     key: `follow-email:${email.toLowerCase()}`,
     limit: 3,

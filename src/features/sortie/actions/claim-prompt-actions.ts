@@ -9,7 +9,7 @@ import { outings, participants } from "@drizzle/sortie-schema";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
-import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
 import {
   CLAIM_PROMPT_DISMISS_COOKIE,
   CLAIM_PROMPT_DISMISS_TTL_SECONDS,
@@ -48,6 +48,18 @@ export async function submitEmailClaimAction(
     return { message: "Réponse RSVP introuvable depuis ce navigateur." };
   }
 
+  // Bombing guard : sans cap par IP, un attaquant peut itérer sur 10 000
+  // emails et déclencher 3 envois par victime avant que le rate-limit
+  // per-email coupe (= 30 000 mails Resend = blacklist sender).
+  const ip = await getClientIp();
+  const ipGate = await rateLimit({
+    key: `claim-email-ip:${ip}`,
+    limit: 5,
+    windowSeconds: 300,
+  });
+  if (!ipGate.ok) {
+    return { message: ipGate.message };
+  }
   const gate = await rateLimit({
     key: `claim-email:${email.toLowerCase()}`,
     limit: 3,
