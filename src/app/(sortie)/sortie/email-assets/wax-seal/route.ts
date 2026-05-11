@@ -17,7 +17,6 @@ import { WaxSeal } from "@/features/sortie/components/brand/wax-seal";
 // au prochain build.
 
 export const runtime = "nodejs";
-export const revalidate = 60 * 60 * 24 * 90;
 
 export async function GET() {
   return new ImageResponse(createElement(WaxSeal, { size: 128, variant: "ink" }), {
