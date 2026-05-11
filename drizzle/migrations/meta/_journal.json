@@ -344,6 +344,13 @@
       "when": 1778198400000,
       "tag": "0048_perfect_silver_centurion",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1778522084219,
+      "tag": "0049_broken_warbound",
+      "breakpoints": true
     }
   ]
 }

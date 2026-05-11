@@ -435,10 +435,19 @@ export async function cedeAllocationAction(
       perParticipant.set(a.participantId, (perParticipant.get(a.participantId) ?? 0) + cents);
     }
 
-    // Wipe and re-insert debts tied to this outing. Scoped to outingId
-    // because multiple purchases per outing would share the table —
-    // currently we only have one, but this keeps the logic defensive.
-    await tx.delete(debts).where(eq(debts.outingId, outing.id));
+    // Wipe and re-insert debts tied to *this* purchase (= this
+    // creditor). The DB constraint UNIQUE(purchases.outing_id) keeps
+    // the invariant "one purchase per outing" honest; scoping the
+    // delete by creditor makes the action correct even if that
+    // constraint is ever relaxed.
+    await tx
+      .delete(debts)
+      .where(
+        and(
+          eq(debts.outingId, outing.id),
+          eq(debts.creditorParticipantId, allocation.purchase.purchaserParticipantId)
+        )
+      );
 
     const rows = Array.from(perParticipant.entries())
       .filter(([, amount]) => amount > 0)

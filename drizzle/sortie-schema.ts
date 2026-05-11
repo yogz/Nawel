@@ -278,7 +278,12 @@ export const purchases = sortie.table(
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => ({
-    outingIdx: index("sortie_purchases_outing_idx").on(t.outingId),
+    // Invariant produit : un achat par sortie. cedeAllocationAction
+    // re-dérive les dettes pour la sortie entière en supposant
+    // implicitement cette unicité — on la matérialise en SQL pour que
+    // toute évolution future qui voudrait du multi-achat doive
+    // explicitement la lever et migrer le ledger en conséquence.
+    outingUnique: uniqueIndex("sortie_purchases_outing_unique").on(t.outingId),
     purchaserIdx: index("sortie_purchases_purchaser_idx").on(t.purchaserParticipantId),
   })
 );
