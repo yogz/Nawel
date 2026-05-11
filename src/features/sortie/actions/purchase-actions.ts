@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import {
+  auditLog,
   debts,
   outings,
   participants,
@@ -18,9 +19,18 @@ import { sendPurchaseConfirmedEmails } from "@/features/sortie/lib/emails/send-m
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { hashIp } from "@/features/sortie/lib/audit";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
+
+// Valeurs auditLog.action écrites par purchase-actions. Cohérent avec
+// debt-actions:AUDIT_ACTION — varchar(64) libre côté Drizzle, donc une
+// faute de frappe n'échoue pas au build mais brise la requêtabilité.
+const AUDIT_ACTION = {
+  PURCHASE_DECLARED: "PURCHASE_DECLARED",
+  ALLOCATION_CEDED: "ALLOCATION_CEDED",
+} as const;
 
 const MAX_CENTS = 10_000_00;
 // Tous les prix acceptent 0 — usage : prévente / abo / cadeau, l'orga
@@ -106,7 +116,7 @@ export async function declarePurchaseAction(
     return { message: "Cette sortie est annulée." };
   }
 
-  const { participant: me } = await getCurrentParticipant(outing.id);
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me || me.response !== "yes") {
     return { message: "Seul un confirmé peut déclarer l'achat." };
   }
@@ -200,6 +210,7 @@ export async function declarePurchaseAction(
     );
   });
 
+  const ipHash = await hashIp();
   await db.transaction(async (tx) => {
     const [purchase] = await tx
       .insert(purchases)
@@ -220,6 +231,20 @@ export async function declarePurchaseAction(
         .insert(purchaseAllocations)
         .values(allocationRows.map((a) => ({ ...a, purchaseId: purchase.id })));
     }
+
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorParticipantId: me.id,
+      actorUserId: userId,
+      action: AUDIT_ACTION.PURCHASE_DECLARED,
+      ipHash,
+      payload: JSON.stringify({
+        purchaseId: purchase.id,
+        totalPlaces,
+        pricingMode: data.pricingMode,
+        ghostBuyer: data.ghostBuyer,
+      }),
+    });
 
     // Filtre sur amount > 0 AVANT le check size : un achat à prix 0
     // (cadeau / prévente / abo) accumule des entrées à 0 dans la map
@@ -324,7 +349,7 @@ export async function cedeAllocationAction(
     return { message: "Sortie introuvable." };
   }
 
-  const { participant: me } = await getCurrentParticipant(outing.id);
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Tu dois être inscrit·e pour céder ta place." };
   }
@@ -374,6 +399,7 @@ export async function cedeAllocationAction(
     return { message: gate.message };
   }
 
+  const ipHash = await hashIp();
   await db.transaction(async (tx) => {
     // Flip the allocation.
     await tx
@@ -425,6 +451,19 @@ export async function cedeAllocationAction(
     if (rows.length > 0) {
       await tx.insert(debts).values(rows);
     }
+
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorParticipantId: me.id,
+      actorUserId: userId,
+      action: AUDIT_ACTION.ALLOCATION_CEDED,
+      ipHash,
+      payload: JSON.stringify({
+        allocationId,
+        targetParticipantId,
+        purchaseId: allocation.purchaseId,
+      }),
+    });
   });
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });

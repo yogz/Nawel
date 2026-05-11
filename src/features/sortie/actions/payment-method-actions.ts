@@ -5,15 +5,23 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { encryptSecret } from "@/lib/crypto";
-import { outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
+import { auditLog, outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { ibanPreview, isValidIban, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { hashIp } from "@/features/sortie/lib/audit";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
+
+// Valeurs auditLog.action — typo silencieuse possible côté varchar(64),
+// donc on les fige ici.
+const AUDIT_ACTION = {
+  PAYMENT_METHOD_ADDED: "PAYMENT_METHOD_ADDED",
+  PAYMENT_METHOD_REMOVED: "PAYMENT_METHOD_REMOVED",
+} as const;
 
 const addMethodSchema = z.discriminatedUnion("type", [
   z.object({
@@ -57,7 +65,7 @@ export async function addPaymentMethodAction(
     return { message: "Sortie introuvable." };
   }
 
-  const { participant: me } = await getCurrentParticipant(outing.id);
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Tu dois répondre à la sortie avant d'ajouter un moyen de paiement." };
   }
@@ -77,12 +85,34 @@ export async function addPaymentMethodAction(
     data.type === "iban" ? ibanPreview(canonicalValue) : phonePreview(canonicalValue);
   const displayLabel = data.displayLabel ? sanitizeStrictText(data.displayLabel, 100) : null;
 
-  await db.insert(purchaserPaymentMethods).values({
-    participantId: me.id,
-    type: data.type,
-    valueEncrypted,
-    valuePreview,
-    displayLabel,
+  const ipHash = await hashIp();
+  await db.transaction(async (tx) => {
+    const [inserted] = await tx
+      .insert(purchaserPaymentMethods)
+      .values({
+        participantId: me.id,
+        type: data.type,
+        valueEncrypted,
+        valuePreview,
+        displayLabel,
+      })
+      .returning({ id: purchaserPaymentMethods.id });
+
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorParticipantId: me.id,
+      actorUserId: userId,
+      action: AUDIT_ACTION.PAYMENT_METHOD_ADDED,
+      ipHash,
+      // Pas de valeur claire dans le payload — uniquement le type et le
+      // preview (4 derniers chars). L'audit doit retracer "qui a ajouté
+      // quoi quand", pas conserver le secret.
+      payload: JSON.stringify({
+        methodId: inserted.id,
+        type: data.type,
+        valuePreview,
+      }),
+    });
   });
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
@@ -106,21 +136,37 @@ export async function removePaymentMethodAction(
     return { message: "Sortie introuvable." };
   }
 
-  const { participant: me } = await getCurrentParticipant(outing.id);
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Non autorisé." };
   }
 
-  // The participant ownership check is a WHERE clause — deleting a row the
-  // caller doesn't own is a no-op, no leakage of whether the id exists.
-  await db
-    .delete(purchaserPaymentMethods)
-    .where(
-      and(
-        eq(purchaserPaymentMethods.id, parsed.data.methodId),
-        eq(purchaserPaymentMethods.participantId, me.id)
+  const ipHash = await hashIp();
+  await db.transaction(async (tx) => {
+    // The participant ownership check is a WHERE clause — deleting a row
+    // the caller doesn't own is a no-op, no leakage of whether the id
+    // exists. `.returning()` lets us audit-log only on an actual delete.
+    const removed = await tx
+      .delete(purchaserPaymentMethods)
+      .where(
+        and(
+          eq(purchaserPaymentMethods.id, parsed.data.methodId),
+          eq(purchaserPaymentMethods.participantId, me.id)
+        )
       )
-    );
+      .returning({ id: purchaserPaymentMethods.id });
+
+    if (removed.length > 0) {
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorParticipantId: me.id,
+        actorUserId: userId,
+        action: AUDIT_ACTION.PAYMENT_METHOD_REMOVED,
+        ipHash,
+        payload: JSON.stringify({ methodId: parsed.data.methodId }),
+      });
+    }
+  });
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}/paiement`);
