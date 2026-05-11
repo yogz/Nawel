@@ -21,7 +21,10 @@ const SORTIE_ORIGIN = (process.env.NEXT_PUBLIC_SORTIE_URL ?? "https://sortie.col
   /\/$/,
   ""
 );
-const WAX_SEAL_URL = `${SORTIE_ORIGIN}/sortie/email-assets/wax-seal`;
+// URL publique sans le segment `/sortie/` : le proxy (src/proxy.ts) re-
+// préfixe en interne pour atteindre la route group (sortie)/sortie/*.
+// Vue côté inbox/email-client, l'asset vit à la racine du sous-domaine.
+const WAX_SEAL_URL = `${SORTIE_ORIGIN}/email-assets/wax-seal`;
 
 const DEFAULT_REASON = "Pas de pub, promis.";
 
