@@ -96,7 +96,17 @@ export default function SortieRootLayout({ children }: { children: React.ReactNo
       style={{ colorScheme: "dark" }}
     >
       <body className="theme-sortie font-sans antialiased md:bg-[radial-gradient(ellipse_at_top_left,rgba(199,255,60,0.08),transparent_60%),radial-gradient(ellipse_at_bottom_right,rgba(255,61,129,0.06),transparent_55%),#000]">
-        <div className="relative mx-auto min-h-dvh w-full max-w-[520px] overflow-x-clip bg-[var(--sortie-bg)] md:my-6 md:min-h-[calc(100dvh-3rem)] md:overflow-clip md:rounded-[2.25rem] md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_0_1px_rgba(199,255,60,0.12)] md:ring-1 md:ring-white/5">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-acid-600 focus:px-3 focus:py-2 focus:font-medium focus:text-ink-900 focus:outline-none focus:ring-2 focus:ring-acid-400"
+        >
+          Aller au contenu
+        </a>
+        <div
+          id="main"
+          tabIndex={-1}
+          className="relative mx-auto min-h-dvh w-full max-w-[520px] overflow-x-clip bg-[var(--sortie-bg)] focus:outline-none md:my-6 md:min-h-[calc(100dvh-3rem)] md:overflow-clip md:rounded-[2.25rem] md:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_0_1px_rgba(199,255,60,0.12)] md:ring-1 md:ring-white/5"
+        >
           {children}
         </div>
         <SortieAnalyticsSessionSync />
