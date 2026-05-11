@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
-import { CreateWizard } from "@/features/sortie/components/create-wizard";
+import { CreateWizardLazyWrapper } from "@/features/sortie/components/create-wizard/lazy-wrapper";
 import { VIBE_CONFIG, isVibe } from "@/features/sortie/lib/vibe-config";
 
 export const metadata = {
@@ -25,7 +25,7 @@ export default async function NouvelleSortiePage({ searchParams }: Props) {
   const defaultTitle = sanitizedTitle || config?.title;
 
   return (
-    <CreateWizard
+    <CreateWizardLazyWrapper
       isLoggedIn={Boolean(user)}
       defaultCreatorName={user?.name ?? undefined}
       vibeKey={vibeKey}
