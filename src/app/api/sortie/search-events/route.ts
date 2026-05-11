@@ -3,6 +3,7 @@ import { z } from "zod";
 import { sanitizeText } from "@/lib/sanitize";
 import { searchEventsWithSpellcheck } from "@/features/sortie/lib/search-events";
 import type { EventProviderName, UnifiedEventResult } from "@/features/sortie/lib/event-providers";
+import { rateLimit } from "@/features/sortie/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +64,20 @@ function writeCache(key: string, value: Omit<CachedSearch, "ts">): void {
 }
 
 export async function POST(request: NextRequest) {
+  // Amplification: chaque hit déclenche un fan-out Ticketmaster + OpenAgenda
+  // (+ retry spellcheck). Sans gate, un attaquant qui randomise la query
+  // bypass le cache et brûle le quota des APIs payantes.
+  const xff = request.headers.get("x-forwarded-for");
+  const ip = xff ? xff.split(",")[0]!.trim() : (request.headers.get("x-real-ip") ?? "unknown");
+  const gate = await rateLimit({
+    key: `search-events:${ip}`,
+    limit: 20,
+    windowSeconds: 60,
+  });
+  if (!gate.ok) {
+    return NextResponse.json({ error: "rate_limited", message: gate.message }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = inputSchema.safeParse(body);
   if (!parsed.success) {
