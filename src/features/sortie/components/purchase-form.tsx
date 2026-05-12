@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { declarePurchaseAction } from "@/features/sortie/actions/purchase-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
+import { formatCents } from "@/features/sortie/lib/format";
 
 type Mode = "unique" | "category" | "nominal";
 
@@ -41,10 +42,6 @@ function parseEuros(raw: string): number {
     return 0;
   }
   return Math.round(n * 100);
-}
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 }
 
 export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props) {

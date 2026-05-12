@@ -12,9 +12,9 @@ import {
   revealIbanAction,
 } from "@/features/sortie/actions/debt-actions";
 import { buildWaHref } from "@/features/sortie/lib/whatsapp-share";
+import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
 import { ActionStatus } from "./action-status";
 
-type PersonRef = { id: string; anonName: string | null; userName: string | null };
 type PaymentMethod = {
   id: string;
   type: "iban" | "lydia" | "revolut" | "wero";
@@ -72,14 +72,6 @@ const STATUS_LABEL: Record<"debtor" | "creditor", Record<Props["status"], string
     confirmed: "Reçu",
   },
 };
-
-function personName(p: PersonRef): string {
-  return p.userName ?? p.anonName ?? "Quelqu'un";
-}
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
-}
 
 export function DebtRow({
   shortId,

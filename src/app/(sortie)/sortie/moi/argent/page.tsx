@@ -18,6 +18,7 @@ import {
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
 
 // La page agrège des données financières privées de l'utilisateur
 // connecté ; on désactive tout pré-rendu et toute mise en cache pour
@@ -28,10 +29,6 @@ export const metadata = {
   title: "Mon argent",
   robots: { index: false, follow: false },
 };
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
-}
 
 function outingHref(outing: WalletDebtRow["outing"], suffix?: string): string {
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
@@ -388,8 +385,6 @@ function sortDebtsForDisplay(rows: WalletDebtRow[]): WalletDebtRow[] {
   return [...rows].sort((a, b) => STATUS_RANK[a.status] - STATUS_RANK[b.status]);
 }
 
-type PersonRef = WalletDebtRow["debtor"];
-
 type AccountEntry = {
   row: WalletDebtRow;
   view: "debtor" | "creditor";
@@ -430,10 +425,6 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
     acc.netCents += r.amountCents;
   }
   return Array.from(map.values()).sort((a, b) => Math.abs(b.netCents) - Math.abs(a.netCents));
-}
-
-function personName(p: PersonRef): string {
-  return p.userName ?? p.anonName ?? "Quelqu'un";
 }
 
 // Mappe une row vers les props attendues par DebtRow ; centralise le

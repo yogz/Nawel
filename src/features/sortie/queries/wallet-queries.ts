@@ -8,6 +8,7 @@ import {
   purchases,
   purchaserPaymentMethods,
 } from "@drizzle/sortie-schema";
+import type { PersonRef } from "@/features/sortie/lib/format";
 
 // Le wallet ne montre rien sur les sorties annulées : la dette n'a plus
 // à être réglée et l'allocation n'a plus de sens budgétaire. On les
@@ -31,12 +32,6 @@ export type OutingRef = {
   slug: string | null;
   shortId: string;
   status: OutingStatus;
-};
-
-type PersonRef = {
-  id: string;
-  anonName: string | null;
-  userName: string | null;
 };
 
 export type PaymentMethodRef = {

@@ -6,9 +6,7 @@
  * export from a server component, even when the export is a pure fn.
  */
 
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
-}
+import { formatCents } from "@/features/sortie/lib/format";
 
 export type AllocationPriceArgs = {
   isChild: boolean;

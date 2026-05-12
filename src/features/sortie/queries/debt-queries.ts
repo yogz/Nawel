@@ -7,12 +7,7 @@ import {
   purchases,
   purchaserPaymentMethods,
 } from "@drizzle/sortie-schema";
-
-type PersonRef = {
-  id: string;
-  anonName: string | null;
-  userName: string | null;
-};
+import type { PersonRef } from "@/features/sortie/lib/format";
 
 type PaymentMethodRef = {
   id: string;

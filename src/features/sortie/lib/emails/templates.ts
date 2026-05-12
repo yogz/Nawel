@@ -1,5 +1,6 @@
 import { escapeHtml } from "@/lib/html-escape";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import { formatCents } from "@/features/sortie/lib/format";
 import { renderEmail } from "./layout";
 
 export type PaymentMethodPreview = {
@@ -20,10 +21,6 @@ const HAIRLINE = "rgba(10,10,10,0.08)";
 const H1 = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:30px;line-height:1.1;letter-spacing:-0.03em;font-weight:800;color:${INK};`;
 const BODY_P = `color:${INK_BODY};line-height:1.6;font-size:15px;`;
 const MICRO_TAG = `font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:${HOT};`;
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
-}
 
 function ctaButton(href: string, label: string): string {
   // Noir solide + acid green : ratio ~14:1, lit comme un tampon. Seul
