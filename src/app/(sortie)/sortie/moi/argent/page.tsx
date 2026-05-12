@@ -398,20 +398,30 @@ type PersonAccount = {
   netCents: number;
 };
 
-// Fusionne dettes et crédits par contrepartie, peu importe le sens.
-// Tri par valeur absolue du net desc : les contreparties qui pèsent
-// le plus dans le bilan (qu'on doive OU qu'on attende) remontent en
-// haut. Les comptes à net=0 (qui se compensent exactement) tombent
-// naturellement en queue.
+// Fusionne dettes et crédits par humain plutôt que par participant : un
+// même user peut avoir N participants distincts (un par sortie), donc on
+// regroupe sur `userId` quand il est connu et on retombe sur le
+// participant.id pour les anonymes. Tri par |net| desc.
 function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[]): PersonAccount[] {
   const map = new Map<string, PersonAccount>();
+  function keyFor(p: PersonRef): string {
+    return p.userId ?? `participant:${p.id}`;
+  }
   function ensure(p: PersonRef): PersonAccount {
-    const existing = map.get(p.id);
+    const k = keyFor(p);
+    const existing = map.get(k);
     if (existing) {
+      // Plusieurs participants d'un même user peuvent porter des
+      // anonName différents (renommage entre sorties). On préfère le
+      // PersonRef qui expose un userName : c'est l'identité forte la
+      // plus parlante pour l'utilisateur connecté.
+      if (!existing.person.userName && p.userName) {
+        existing.person = p;
+      }
       return existing;
     }
     const created: PersonAccount = { person: p, entries: [], netCents: 0 };
-    map.set(p.id, created);
+    map.set(k, created);
     return created;
   }
   for (const r of debts) {

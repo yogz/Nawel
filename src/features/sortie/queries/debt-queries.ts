@@ -38,10 +38,14 @@ async function attachNames(rows: (typeof debts.$inferSelect)[]): Promise<DebtRow
   }
   const people = await db.query.participants.findMany({
     where: (p, { inArray }) => inArray(p.id, Array.from(ids)),
+    columns: { id: true, anonName: true, userId: true },
     with: { user: { columns: { name: true } } },
   });
-  const byId = new Map(
-    people.map((p) => [p.id, { id: p.id, anonName: p.anonName, userName: p.user?.name ?? null }])
+  const byId = new Map<string, PersonRef>(
+    people.map((p) => [
+      p.id,
+      { id: p.id, anonName: p.anonName, userName: p.user?.name ?? null, userId: p.userId },
+    ])
   );
 
   const creditorIds = Array.from(new Set(rows.map((r) => r.creditorParticipantId)));
@@ -81,11 +85,13 @@ async function attachNames(rows: (typeof debts.$inferSelect)[]): Promise<DebtRow
       id: r.debtorParticipantId,
       anonName: null,
       userName: null,
+      userId: null,
     },
     creditor: byId.get(r.creditorParticipantId) ?? {
       id: r.creditorParticipantId,
       anonName: null,
       userName: null,
+      userId: null,
     },
     creditorMethods: methodsByCreditor.get(r.creditorParticipantId) ?? [],
   }));

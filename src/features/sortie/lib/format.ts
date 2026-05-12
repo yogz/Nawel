@@ -5,9 +5,14 @@
  */
 
 export type PersonRef = {
+  /** Identifiant participant (un par sortie). */
   id: string;
   anonName: string | null;
   userName: string | null;
+  /** Identité forte cross-sorties quand la personne est authentifiée.
+   * `null` pour les participants anonymes. Utilisé pour regrouper plusieurs
+   * participants distincts (un par sortie) sous le même humain. */
+  userId: string | null;
 };
 
 export function formatCents(cents: number): string {

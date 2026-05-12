@@ -79,9 +79,15 @@ async function getParticipantIdsForUser(userId: string): Promise<string[]> {
 function personFromRow(p: {
   id: string;
   anonName: string | null;
+  userId: string | null;
   user: { name: string | null } | null;
 }): PersonRef {
-  return { id: p.id, anonName: p.anonName, userName: p.user?.name ?? null };
+  return {
+    id: p.id,
+    anonName: p.anonName,
+    userName: p.user?.name ?? null,
+    userId: p.userId,
+  };
 }
 
 async function attachPeopleAndMethods(
@@ -107,7 +113,7 @@ async function attachPeopleAndMethods(
   const [people, methods] = await Promise.all([
     db.query.participants.findMany({
       where: inArray(participants.id, Array.from(peopleIds)),
-      columns: { id: true, anonName: true },
+      columns: { id: true, anonName: true, userId: true },
       with: { user: { columns: { name: true } } },
     }),
     creditorIds.size > 0
@@ -146,11 +152,13 @@ async function attachPeopleAndMethods(
       id: r.debtorParticipantId,
       anonName: null,
       userName: null,
+      userId: null,
     },
     creditor: byId.get(r.creditorParticipantId) ?? {
       id: r.creditorParticipantId,
       anonName: null,
       userName: null,
+      userId: null,
     },
     creditorMethods: methodsByCreditor.get(r.creditorParticipantId) ?? [],
   }));
