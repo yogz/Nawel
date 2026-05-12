@@ -300,7 +300,7 @@ function PersonAccountGroup({
           </span>
         </div>
         <span className={`shrink-0 font-serif text-2xl tabular-nums ${valueColor}`}>
-          {netCents === 0 ? "—" : formatCents(absCents)}
+          {formatCents(absCents)}
         </span>
       </div>
       <ul className="flex flex-col divide-y divide-surface-400/40">{children}</ul>
