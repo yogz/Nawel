@@ -91,14 +91,9 @@ export default async function WalletPage() {
   const totalOwedCents = unsettledDebts.reduce((acc, d) => acc + d.amountCents, 0);
   const totalToReceiveCents = unsettledCredits.reduce((acc, d) => acc + d.amountCents, 0);
 
-  // Fusion debts + credits par contrepartie : pour chaque personne, on
-  // calcule un solde net signé (positif = on te doit, négatif = tu
-  // dois) et on rend une seule carte mixant les deux directions. Cf.
-  // décision produit 2026-05-12 (Q « grouper par utilisateur sur écran
-  // argent »). Les rows individuelles gardent leur `view` pour que les
-  // boutons d'action (j'ai payé / j'ai reçu) restent corrects — on ne
-  // compense pas légalement les dettes, on les affiche seulement
-  // ensemble.
+  // On ne compense pas légalement deux dettes croisées : chaque row
+  // garde sa `view` propre pour que les boutons d'action restent
+  // corrects. Le net affiché n'est qu'un signal de lecture.
   const accountsByPerson = groupAccountsByPerson(unsettledDebts, unsettledCredits);
   const settledRows = [
     ...settledDebts.map((d) => ({ row: d, view: "debtor" as const })),
