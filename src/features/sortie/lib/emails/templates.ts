@@ -519,7 +519,7 @@ export function ticketAvailableEmail(args: {
   };
 }
 
-type BulkDebtItem = {
+export type BulkDebtItem = {
   outingTitle: string;
   amountCents: number;
 };
@@ -623,8 +623,6 @@ export function bulkSettledEmail(args: {
   itemsRecipientCredited: BulkDebtItem[];
   walletUrl: string;
 }): { subject: string; html: string } {
-  const totalOwed = args.itemsRecipientOwed.reduce((s, it) => s + it.amountCents, 0);
-  const totalCredited = args.itemsRecipientCredited.reduce((s, it) => s + it.amountCents, 0);
   const net = args.netCentsForRecipient;
 
   let headline: string;

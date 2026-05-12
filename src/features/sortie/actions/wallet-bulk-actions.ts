@@ -2,40 +2,24 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { createHash } from "node:crypto";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { auditLog, debts } from "@drizzle/sortie-schema";
 import { getDebtsBetweenUsers } from "@/features/sortie/queries/wallet-bulk-queries";
-import { getClientIp, rateLimit } from "@/features/sortie/lib/rate-limit";
+import { rateLimit } from "@/features/sortie/lib/rate-limit";
+import { DEBT_AUDIT_ACTION, hashIp } from "@/features/sortie/lib/audit";
 import {
   sendBulkPaymentDeclaredEmail,
   sendBulkSettledEmail,
   sendDebtBulkReminderEmail,
 } from "@/features/sortie/lib/emails/send-money-emails";
 
-/**
- * Source unique pour les valeurs `auditLog.action` écrites par les
- * actions bulk wallet. Les actions par-dette continuent d'utiliser les
- * constantes de `debt-actions.ts` ; les noms `BULK_*` permettent
- * d'enforcer un cooldown séparé du flux per-debt.
- */
-const AUDIT_ACTION = {
-  BULK_DEBTS_REMINDED: "BULK_DEBTS_REMINDED",
-  BULK_DEBTS_DECLARED_PAID: "BULK_DEBTS_DECLARED_PAID",
-  BULK_DEBTS_SETTLED: "BULK_DEBTS_SETTLED",
-  DEBT_DECLARED_PAID: "DEBT_DECLARED_PAID",
-  DEBT_CONFIRMED: "DEBT_CONFIRMED",
-  BULK_EMAIL_SEND_FAILED: "BULK_EMAIL_SEND_FAILED",
-} as const;
-
 const REMINDER_COOLDOWN_HOURS = 48;
 
-// Better Auth utilise des IDs string (pas UUID strict) — on accepte
-// n'importe quelle chaîne courte. Le double-bind authz au niveau query
-// empêche d'exploiter un userId mal-formé.
+// Better Auth utilise des IDs string (pas UUID strict). Le double-bind
+// authz au niveau query empêche d'exploiter un userId mal-formé.
 const userIdSchema = z.string().min(1).max(64);
 
 const bulkInputSchema = z.object({
@@ -48,23 +32,6 @@ export type BulkActionResult =
       ok: false;
       code: "unauthorized" | "rate_limited" | "cooldown" | "invalid" | "nothing_todo" | "error";
     };
-
-/**
- * Réponses uniformes : la valeur de retour ne révèle jamais quel cas
- * spécifique a échoué côté serveur (cf. revue sécu §5 anti-énumération
- * email). Les variations possibles : success vs. cooldown vs. rate_limited
- * vs. unauthorized ; pas de différentiation entre "0 dette" et "envoyé".
- */
-async function hashIp(): Promise<string | null> {
-  const ip = await getClientIp();
-  if (!ip || ip === "unknown") {
-    return null;
-  }
-  const pepper = process.env.BETTER_AUTH_SECRET ?? "";
-  return createHash("sha256")
-    .update(ip + pepper)
-    .digest("hex");
-}
 
 async function requireSession(): Promise<{ userId: string } | null> {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -117,7 +84,7 @@ export async function remindAllDebtsAction(input: unknown): Promise<BulkActionRe
 
   const recent = await db.query.auditLog.findFirst({
     where: and(
-      eq(auditLog.action, AUDIT_ACTION.BULK_DEBTS_REMINDED),
+      eq(auditLog.action, DEBT_AUDIT_ACTION.BULK_DEBTS_REMINDED),
       sql`${auditLog.payload}::jsonb ->> 'creditorUserId' = ${callerUserId}`,
       sql`${auditLog.payload}::jsonb ->> 'debtorUserId' = ${debtorUserId}`,
       sql`${auditLog.createdAt} > NOW() - (${REMINDER_COOLDOWN_HOURS} || ' hours')::interval`
@@ -153,7 +120,7 @@ export async function remindAllDebtsAction(input: unknown): Promise<BulkActionRe
       outingId: null,
       actorParticipantId,
       actorUserId: callerUserId,
-      action: AUDIT_ACTION.BULK_DEBTS_REMINDED,
+      action: DEBT_AUDIT_ACTION.BULK_DEBTS_REMINDED,
       ipHash,
       payload: JSON.stringify({
         creditorUserId: callerUserId,
@@ -176,7 +143,7 @@ export async function remindAllDebtsAction(input: unknown): Promise<BulkActionRe
       outingId: null,
       actorParticipantId,
       actorUserId: callerUserId,
-      action: AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
+      action: DEBT_AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
       ipHash,
       payload: JSON.stringify({
         bulkAuditId: audit?.id ?? null,
@@ -250,7 +217,7 @@ export async function markAllDebtsPaidAction(input: unknown): Promise<BulkAction
         outingId: null,
         actorParticipantId,
         actorUserId: callerUserId,
-        action: AUDIT_ACTION.DEBT_DECLARED_PAID,
+        action: DEBT_AUDIT_ACTION.DEBT_DECLARED_PAID,
         ipHash,
         payload: JSON.stringify({ debtId: r.id, via: "bulk_wallet" }),
       }))
@@ -261,7 +228,7 @@ export async function markAllDebtsPaidAction(input: unknown): Promise<BulkAction
       outingId: null,
       actorParticipantId,
       actorUserId: callerUserId,
-      action: AUDIT_ACTION.BULK_DEBTS_DECLARED_PAID,
+      action: DEBT_AUDIT_ACTION.BULK_DEBTS_DECLARED_PAID,
       ipHash,
       payload: JSON.stringify({
         debtorUserId: callerUserId,
@@ -300,10 +267,10 @@ export async function markAllDebtsPaidAction(input: unknown): Promise<BulkAction
       outingId: null,
       actorParticipantId,
       actorUserId: callerUserId,
-      action: AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
+      action: DEBT_AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
       ipHash,
       payload: JSON.stringify({
-        bulkAction: AUDIT_ACTION.BULK_DEBTS_DECLARED_PAID,
+        bulkAction: DEBT_AUDIT_ACTION.BULK_DEBTS_DECLARED_PAID,
         reason: err instanceof Error ? err.message : String(err),
       }),
     });
@@ -321,8 +288,9 @@ export async function markAllDebtsPaidAction(input: unknown): Promise<BulkAction
  *     par compensation, audit payload `via: 'settlement'`)
  *
  * Net recalculé côté serveur à partir du résultat returning() — la
- * valeur client n'est jamais utilisée. SELECT FOR UPDATE sérialise les
- * éditions concurrentes du peer.
+ * valeur client n'est jamais utilisée. Les `.update()...returning()`
+ * prennent eux-mêmes les row locks (READ COMMITTED), donc inutile
+ * d'ajouter un `SELECT ... FOR UPDATE` explicite avant.
  */
 export async function settleNetAction(input: unknown): Promise<BulkActionResult> {
   const parsed = bulkInputSchema.safeParse(input);
@@ -375,14 +343,6 @@ export async function settleNetAction(input: unknown): Promise<BulkActionResult>
     .map((d) => d.id);
 
   const result = await db.transaction(async (tx) => {
-    // FOR UPDATE serialise les mutations concurrentes côté peer.
-    await tx.execute(
-      sql`SELECT id FROM ${debts} WHERE ${debts.id} IN (${sql.join(
-        [...debtTargetIds, ...creditTargetIds].map((id) => sql`${id}`),
-        sql`, `
-      )}) FOR UPDATE`
-    );
-
     const updatedDebtRows = await tx
       .update(debts)
       .set({ status: "declared_paid", declaredAt: new Date(), updatedAt: new Date() })
@@ -412,7 +372,7 @@ export async function settleNetAction(input: unknown): Promise<BulkActionResult>
         outingId: null,
         actorParticipantId,
         actorUserId: callerUserId,
-        action: AUDIT_ACTION.BULK_DEBTS_SETTLED,
+        action: DEBT_AUDIT_ACTION.BULK_DEBTS_SETTLED,
         ipHash,
         payload: JSON.stringify({
           callerUserId,
@@ -432,7 +392,7 @@ export async function settleNetAction(input: unknown): Promise<BulkActionResult>
           outingId: null,
           actorParticipantId,
           actorUserId: callerUserId,
-          action: AUDIT_ACTION.DEBT_DECLARED_PAID,
+          action: DEBT_AUDIT_ACTION.DEBT_DECLARED_PAID,
           ipHash,
           payload: JSON.stringify({
             debtId: r.id,
@@ -448,7 +408,7 @@ export async function settleNetAction(input: unknown): Promise<BulkActionResult>
           outingId: null,
           actorParticipantId,
           actorUserId: callerUserId,
-          action: AUDIT_ACTION.DEBT_CONFIRMED,
+          action: DEBT_AUDIT_ACTION.DEBT_CONFIRMED,
           ipHash,
           payload: JSON.stringify({
             debtId: r.id,
@@ -494,11 +454,11 @@ export async function settleNetAction(input: unknown): Promise<BulkActionResult>
       outingId: null,
       actorParticipantId,
       actorUserId: callerUserId,
-      action: AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
+      action: DEBT_AUDIT_ACTION.BULK_EMAIL_SEND_FAILED,
       ipHash,
       payload: JSON.stringify({
         bulkAuditId: result.bulkAuditId,
-        bulkAction: AUDIT_ACTION.BULK_DEBTS_SETTLED,
+        bulkAction: DEBT_AUDIT_ACTION.BULK_DEBTS_SETTLED,
         reason: err instanceof Error ? err.message : String(err),
       }),
     });

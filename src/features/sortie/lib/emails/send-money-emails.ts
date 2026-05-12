@@ -10,6 +10,7 @@ import {
   paymentConfirmedEmail,
   paymentDeclaredEmail,
   purchaseConfirmedEmail,
+  type BulkDebtItem,
   type PaymentMethodPreview,
 } from "./templates";
 import { BASE_URL, outingPath, safeSend } from "./shared";
@@ -189,8 +190,6 @@ async function fetchUserContact(userId: string): Promise<UserContact | null> {
   return { email: row.email ?? null, name: row.name ?? "Quelqu'un" };
 }
 
-type BulkEmailItem = { outingTitle: string; amountCents: number };
-
 /**
  * Bulk reminder : un seul email récap envoyé au débiteur (identifié par
  * son `userId`) listant toutes les dettes ouvertes que le créancier a
@@ -199,7 +198,7 @@ type BulkEmailItem = { outingTitle: string; amountCents: number };
 export async function sendDebtBulkReminderEmail(args: {
   debtorUserId: string;
   creditorUserId: string;
-  items: BulkEmailItem[];
+  items: BulkDebtItem[];
   totalCents: number;
 }): Promise<void> {
   const [debtor, creditor] = await Promise.all([
@@ -225,7 +224,7 @@ export async function sendDebtBulkReminderEmail(args: {
 export async function sendBulkPaymentDeclaredEmail(args: {
   debtorUserId: string;
   creditorUserId: string;
-  items: BulkEmailItem[];
+  items: BulkDebtItem[];
   totalCents: number;
 }): Promise<void> {
   const [debtor, creditor] = await Promise.all([
@@ -254,8 +253,8 @@ export async function sendBulkSettledEmail(args: {
   recipientUserId: string;
   /** Net signé du POV du destinataire (positif = il a "reçu" via compensation). */
   netCentsForRecipient: number;
-  itemsRecipientOwed: BulkEmailItem[];
-  itemsRecipientCredited: BulkEmailItem[];
+  itemsRecipientOwed: BulkDebtItem[];
+  itemsRecipientCredited: BulkDebtItem[];
 }): Promise<void> {
   const [initiator, recipient] = await Promise.all([
     fetchUserContact(args.initiatorUserId),
