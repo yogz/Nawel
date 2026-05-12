@@ -18,7 +18,10 @@ import {
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
-import { PersonAccountToolbar } from "@/features/sortie/components/wallet/person-account-toolbar";
+import {
+  PersonAccountPayment,
+  PersonAccountReminder,
+} from "@/features/sortie/components/wallet/person-account-toolbar";
 import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
 
 // La page agrège des données financières privées de l'utilisateur
@@ -318,34 +321,42 @@ function PersonAccountGroup({
   return (
     <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
       <div className="flex items-baseline justify-between gap-3">
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-col gap-1">
           <span className="truncate font-serif text-lg text-ink-700">{personName(person)}</span>
-          {hasBothDirections ? (
-            <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-ink-500">
-              <span>
-                <span className="text-ink-400">tu dois </span>
-                <span className="text-hot-600">{formatCents(youOweCents)}</span>
+          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            {hasBothDirections ? (
+              <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-ink-500">
+                <span>
+                  <span className="text-ink-400">tu dois </span>
+                  <span className="text-hot-600">{formatCents(youOweCents)}</span>
+                </span>
+                <span aria-hidden className="text-ink-300">
+                  ·
+                </span>
+                <span>
+                  <span className="text-ink-400">te doit </span>
+                  <span className="text-acid-700">{formatCents(owedToYouCents)}</span>
+                </span>
               </span>
-              <span aria-hidden className="text-ink-300">
-                ·
+            ) : (
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+                {label}
               </span>
-              <span>
-                <span className="text-ink-400">te doit </span>
-                <span className="text-acid-700">{formatCents(owedToYouCents)}</span>
-              </span>
-            </span>
-          ) : (
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-              {label}
-            </span>
-          )}
+            )}
+            <PersonAccountReminder
+              person={person}
+              youOweCents={youOwePendingCents}
+              owedToYouCents={owedToYouPendingCents}
+              netCents={owedToYouPendingCents - youOwePendingCents}
+            />
+          </span>
         </div>
         <span className={`shrink-0 font-serif text-2xl tabular-nums ${valueColor}`}>
           {formatCents(absCents)}
         </span>
       </div>
       <ul className="flex flex-col divide-y divide-surface-400/40">{children}</ul>
-      <PersonAccountToolbar
+      <PersonAccountPayment
         person={person}
         youOweCents={youOwePendingCents}
         owedToYouCents={owedToYouPendingCents}

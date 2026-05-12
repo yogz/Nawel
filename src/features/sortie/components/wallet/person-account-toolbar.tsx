@@ -11,7 +11,7 @@ import {
 } from "@/features/sortie/actions/wallet-bulk-actions";
 import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
 
-type Props = {
+type BaseProps = {
   /** PersonRef du contact, doit avoir `userId` non-null (sinon le toolbar
    * n'est pas affiché — fallback per-debt côté page). */
   person: PersonRef;
@@ -32,24 +32,13 @@ const RESULT_MESSAGES: Record<Exclude<BulkActionResult, { ok: true }>["code"], s
   error: "Une erreur est survenue.",
 };
 
-export function PersonAccountToolbar({ person, youOweCents, owedToYouCents, netCents }: Props) {
+function useBulkRunner() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
-
-  if (!person.userId) {
-    return null;
-  }
-  const otherUserId = person.userId;
-
-  // Aucun pending dans aucun sens → toolbar sans boutons (les rows
-  // declared_paid gardent leur bouton « OK reçu » individuel).
-  if (youOweCents === 0 && owedToYouCents === 0) {
-    return null;
-  }
-
   function run(
     action: (input: { otherUserId: string }) => Promise<BulkActionResult>,
+    otherUserId: string,
     successMessage: string,
     confirmText?: string
   ) {
@@ -67,107 +56,124 @@ export function PersonAccountToolbar({ person, youOweCents, owedToYouCents, netC
       }
     });
   }
+  return { pending, message, run };
+}
 
-  const hasBothSides = youOweCents > 0 && owedToYouCents > 0;
-  const youOweOnly = youOweCents > 0 && owedToYouCents === 0;
-  const owedToYouOnly = youOweCents === 0 && owedToYouCents > 0;
-
-  const buttons: React.ReactNode[] = [];
-
-  if (owedToYouOnly) {
-    buttons.push(
+/**
+ * Bouton « Relancer » placé inline près du nom de la contrepartie.
+ * S'affiche dès qu'au moins un crédit pending existe (peu importe le net).
+ */
+export function PersonAccountReminder({ person, owedToYouCents }: BaseProps) {
+  const { pending, message, run } = useBulkRunner();
+  if (!person.userId || owedToYouCents === 0) {
+    return null;
+  }
+  const otherUserId = person.userId;
+  return (
+    <span className="inline-flex items-center gap-2">
       <Button
-        key="remind"
         type="button"
         variant="outline"
         size="sm"
         disabled={pending}
-        onClick={() => run(remindAllDebtsAction, `Mail récap envoyé à ${personName(person)}.`)}
+        className="h-7 px-2 py-0 text-[12px]"
+        onClick={() =>
+          run(remindAllDebtsAction, otherUserId, `Mail récap envoyé à ${personName(person)}.`)
+        }
       >
-        Relancer ({formatCents(owedToYouCents)})
+        Relancer
       </Button>
-    );
-  }
+      {message && (
+        <span className="text-[11px] text-ink-500" role="status" aria-live="polite">
+          {message}
+        </span>
+      )}
+    </span>
+  );
+}
 
-  if (youOweOnly) {
-    buttons.push(
+/**
+ * Bouton(s) de paiement placés sous la liste des dettes :
+ * - flux mono-dir débiteur → « J'ai tout payé »
+ * - flux croisés → « Solder » (compensation bilatérale)
+ */
+export function PersonAccountPayment({ person, youOweCents, owedToYouCents, netCents }: BaseProps) {
+  const { pending, message, run } = useBulkRunner();
+  if (!person.userId || youOweCents === 0) {
+    return null;
+  }
+  const otherUserId = person.userId;
+  const hasBothSides = owedToYouCents > 0;
+  const absNet = Math.abs(netCents);
+
+  let button: React.ReactNode;
+  if (!hasBothSides) {
+    button = (
       <Button
-        key="paid"
         type="button"
         size="sm"
         disabled={pending}
         onClick={() =>
-          run(markAllDebtsPaidAction, `${personName(person)} sera notifié·e du règlement.`)
+          run(
+            markAllDebtsPaidAction,
+            otherUserId,
+            `${personName(person)} sera notifié·e du règlement.`
+          )
         }
       >
         J&rsquo;ai tout payé ({formatCents(youOweCents)})
       </Button>
     );
-  }
-
-  if (hasBothSides) {
-    if (netCents === 0) {
-      buttons.push(
-        <Button
-          key="settle-zero"
-          type="button"
-          size="sm"
-          disabled={pending}
-          onClick={() =>
-            run(
-              settleNetAction,
-              `Compte soldé avec ${personName(person)}.`,
-              `Marquer tout le compte avec ${personName(person)} comme réglé ? ` +
-                `Tu déclares avoir payé ${formatCents(youOweCents)} et confirmes avoir reçu ${formatCents(owedToYouCents)}. ` +
-                `Cette action est tracée et un mail récap est envoyé.`
-            )
-          }
-        >
-          Solder à zéro
-        </Button>
-      );
-    } else if (netCents < 0) {
-      // Je dois le net.
-      const absNet = Math.abs(netCents);
-      buttons.push(
-        <Button
-          key="settle-pay"
-          type="button"
-          size="sm"
-          disabled={pending}
-          onClick={() =>
-            run(
-              settleNetAction,
-              `Compte soldé. ${personName(person)} a été prévenu·e.`,
-              `Solder le compte en versant le net de ${formatCents(absNet)} à ${personName(person)} ? ` +
-                `Tu déclares avoir payé ${formatCents(youOweCents)} et confirmes avoir reçu ${formatCents(owedToYouCents)} via compensation. ` +
-                `Cette action est tracée et un mail récap est envoyé.`
-            )
-          }
-        >
-          Solder (verser {formatCents(absNet)})
-        </Button>
-      );
-    } else {
-      // Il/elle doit le net : on relance pour qu'il/elle verse.
-      buttons.push(
-        <Button
-          key="remind-net"
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={pending}
-          onClick={() => run(remindAllDebtsAction, `Mail récap envoyé à ${personName(person)}.`)}
-        >
-          Relancer (solde {formatCents(netCents)})
-        </Button>
-      );
-    }
+  } else if (netCents === 0) {
+    button = (
+      <Button
+        type="button"
+        size="sm"
+        disabled={pending}
+        onClick={() =>
+          run(
+            settleNetAction,
+            otherUserId,
+            `Compte soldé avec ${personName(person)}.`,
+            `Marquer tout le compte avec ${personName(person)} comme réglé ? ` +
+              `Tu déclares avoir payé ${formatCents(youOweCents)} et confirmes avoir reçu ${formatCents(owedToYouCents)}. ` +
+              `Cette action est tracée et un mail récap est envoyé.`
+          )
+        }
+      >
+        Solder à zéro
+      </Button>
+    );
+  } else if (netCents < 0) {
+    button = (
+      <Button
+        type="button"
+        size="sm"
+        disabled={pending}
+        onClick={() =>
+          run(
+            settleNetAction,
+            otherUserId,
+            `Compte soldé. ${personName(person)} a été prévenu·e.`,
+            `Solder le compte en versant le net de ${formatCents(absNet)} à ${personName(person)} ? ` +
+              `Tu déclares avoir payé ${formatCents(youOweCents)} et confirmes avoir reçu ${formatCents(owedToYouCents)} via compensation. ` +
+              `Cette action est tracée et un mail récap est envoyé.`
+          )
+        }
+      >
+        Solder (verser {formatCents(absNet)})
+      </Button>
+    );
+  } else {
+    // Net en ma faveur : il/elle doit plus. C'est à elle/lui de payer,
+    // donc pas de bouton de paiement côté caller. Le « Relancer » dans le
+    // header header couvre l'action utile.
+    return null;
   }
 
   return (
     <div className="flex flex-col gap-2 border-t border-surface-400/40 pt-3">
-      <div className="flex flex-wrap items-center gap-2">{buttons}</div>
+      <div className="flex flex-wrap items-center gap-2">{button}</div>
       {message && (
         <p className="text-[12px] text-ink-500" role="status" aria-live="polite">
           {message}
