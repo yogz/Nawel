@@ -1,7 +1,11 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
+import { user } from "@drizzle/schema";
 import { debts, participants, purchaserPaymentMethods } from "@drizzle/sortie-schema";
 import {
+  bulkPaymentDeclaredEmail,
+  bulkSettledEmail,
+  debtBulkReminderEmail,
   debtReminderEmail,
   paymentConfirmedEmail,
   paymentDeclaredEmail,
@@ -169,4 +173,103 @@ export async function sendPaymentConfirmedEmail(args: {
     outingUrl: `${BASE_URL}${canonical}`,
   });
   await safeSend({ to: debtor.email, subject, html, trigger: "payment-confirmed" });
+}
+
+type UserContact = { email: string | null; name: string };
+
+async function fetchUserContact(userId: string): Promise<UserContact | null> {
+  const [row] = await db
+    .select({ name: user.name, email: user.email })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+  if (!row) {
+    return null;
+  }
+  return { email: row.email ?? null, name: row.name ?? "Quelqu'un" };
+}
+
+type BulkEmailItem = { outingTitle: string; amountCents: number };
+
+/**
+ * Bulk reminder : un seul email récap envoyé au débiteur (identifié par
+ * son `userId`) listant toutes les dettes ouvertes que le créancier a
+ * envers lui. Rate-limit appliqué côté action.
+ */
+export async function sendDebtBulkReminderEmail(args: {
+  debtorUserId: string;
+  creditorUserId: string;
+  items: BulkEmailItem[];
+  totalCents: number;
+}): Promise<void> {
+  const [debtor, creditor] = await Promise.all([
+    fetchUserContact(args.debtorUserId),
+    fetchUserContact(args.creditorUserId),
+  ]);
+  if (!debtor?.email) {
+    return;
+  }
+  const { subject, html } = debtBulkReminderEmail({
+    creditorName: creditor?.name ?? "Quelqu'un",
+    totalCents: args.totalCents,
+    items: args.items,
+    walletUrl: `${BASE_URL}/moi/argent`,
+  });
+  await safeSend({ to: debtor.email, subject, html, trigger: "bulk-debt-reminder" });
+}
+
+/**
+ * Bulk paid : un seul email envoyé au créancier listant toutes les dettes
+ * que le débiteur a déclarées payées en un coup.
+ */
+export async function sendBulkPaymentDeclaredEmail(args: {
+  debtorUserId: string;
+  creditorUserId: string;
+  items: BulkEmailItem[];
+  totalCents: number;
+}): Promise<void> {
+  const [debtor, creditor] = await Promise.all([
+    fetchUserContact(args.debtorUserId),
+    fetchUserContact(args.creditorUserId),
+  ]);
+  if (!creditor?.email) {
+    return;
+  }
+  const { subject, html } = bulkPaymentDeclaredEmail({
+    debtorName: debtor?.name ?? "Quelqu'un",
+    totalCents: args.totalCents,
+    items: args.items,
+    walletUrl: `${BASE_URL}/moi/argent`,
+  });
+  await safeSend({ to: creditor.email, subject, html, trigger: "bulk-payment-declared" });
+}
+
+/**
+ * Bulk settlement : un email envoyé à l'autre partie après une
+ * compensation bilatérale (`settleNetAction`). Le contenu varie selon le
+ * net du POV du destinataire.
+ */
+export async function sendBulkSettledEmail(args: {
+  initiatorUserId: string;
+  recipientUserId: string;
+  /** Net signé du POV du destinataire (positif = il a "reçu" via compensation). */
+  netCentsForRecipient: number;
+  itemsRecipientOwed: BulkEmailItem[];
+  itemsRecipientCredited: BulkEmailItem[];
+}): Promise<void> {
+  const [initiator, recipient] = await Promise.all([
+    fetchUserContact(args.initiatorUserId),
+    fetchUserContact(args.recipientUserId),
+  ]);
+  if (!recipient?.email) {
+    return;
+  }
+  const { subject, html } = bulkSettledEmail({
+    initiatorName: initiator?.name ?? "Quelqu'un",
+    netCentsForRecipient: args.netCentsForRecipient,
+    itemsRecipientOwed: args.itemsRecipientOwed,
+    itemsRecipientCredited: args.itemsRecipientCredited,
+    walletUrl: `${BASE_URL}/moi/argent`,
+  });
+  await safeSend({ to: recipient.email, subject, html, trigger: "bulk-settled" });
 }
