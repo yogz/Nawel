@@ -18,6 +18,7 @@ import {
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
+import { PersonAccountToolbar } from "@/features/sortie/components/wallet/person-account-toolbar";
 import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
 
 // La page agrège des données financières privées de l'utilisateur
@@ -191,6 +192,8 @@ export default async function WalletPage() {
                     netCents={g.netCents}
                     youOweCents={g.youOweCents}
                     owedToYouCents={g.owedToYouCents}
+                    youOwePendingCents={g.youOwePendingCents}
+                    owedToYouPendingCents={g.owedToYouPendingCents}
                   >
                     {g.entries.map((e) => (
                       <DebtRow
@@ -276,6 +279,8 @@ function PersonAccountGroup({
   netCents,
   youOweCents,
   owedToYouCents,
+  youOwePendingCents,
+  owedToYouPendingCents,
   children,
 }: {
   person: PersonRef;
@@ -287,6 +292,9 @@ function PersonAccountGroup({
   youOweCents: number;
   /** Somme brute des crédits qu'elle te doit (≥ 0). */
   owedToYouCents: number;
+  /** Sous-totaux pending — alimentent le toolbar bulk. */
+  youOwePendingCents: number;
+  owedToYouPendingCents: number;
   children: React.ReactNode;
 }) {
   const absCents = Math.abs(netCents);
@@ -337,6 +345,12 @@ function PersonAccountGroup({
         </span>
       </div>
       <ul className="flex flex-col divide-y divide-surface-400/40">{children}</ul>
+      <PersonAccountToolbar
+        person={person}
+        youOweCents={youOwePendingCents}
+        owedToYouCents={owedToYouPendingCents}
+        netCents={owedToYouPendingCents - youOwePendingCents}
+      />
     </li>
   );
 }
@@ -433,6 +447,11 @@ type PersonAccount = {
   youOweCents: number;
   /** Somme brute des crédits qu'elle te doit (≥ 0). */
   owedToYouCents: number;
+  /** Sous-total des dettes status='pending' uniquement (actionnable en
+   * bulk). Les dettes declared_paid sont en attente de confirmation par
+   * l'autre côté et ne sont pas re-traitables par le bulk. */
+  youOwePendingCents: number;
+  owedToYouPendingCents: number;
 };
 
 // Fusionne dettes et crédits par humain plutôt que par participant : un
@@ -463,6 +482,8 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
       netCents: 0,
       youOweCents: 0,
       owedToYouCents: 0,
+      youOwePendingCents: 0,
+      owedToYouPendingCents: 0,
     };
     map.set(k, created);
     return created;
@@ -472,12 +493,18 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
     acc.entries.push({ row: r, view: "debtor" });
     acc.netCents -= r.amountCents;
     acc.youOweCents += r.amountCents;
+    if (r.status === "pending") {
+      acc.youOwePendingCents += r.amountCents;
+    }
   }
   for (const r of credits) {
     const acc = ensure(r.debtor);
     acc.entries.push({ row: r, view: "creditor" });
     acc.netCents += r.amountCents;
     acc.owedToYouCents += r.amountCents;
+    if (r.status === "pending") {
+      acc.owedToYouPendingCents += r.amountCents;
+    }
   }
   return Array.from(map.values()).sort((a, b) => Math.abs(b.netCents) - Math.abs(a.netCents));
 }
