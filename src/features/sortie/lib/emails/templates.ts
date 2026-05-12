@@ -518,3 +518,164 @@ export function ticketAvailableEmail(args: {
     }),
   };
 }
+
+type BulkDebtItem = {
+  outingTitle: string;
+  amountCents: number;
+};
+
+function renderItemsList(items: BulkDebtItem[]): string {
+  const rows = items
+    .map(
+      (it) =>
+        `<li style="margin:0 0 6px;${BODY_P}">
+          <strong>${escapeHtml(it.outingTitle)}</strong>
+          — <strong>${escapeHtml(formatCents(it.amountCents))}</strong>
+        </li>`
+    )
+    .join("");
+  return `<ul style="margin:0 0 20px;padding-left:20px;">${rows}</ul>`;
+}
+
+/**
+ * Bulk reminder envoyé par le créancier en un seul email récap quand il
+ * relance toutes les dettes ouvertes d'un même débiteur (cf. wallet-bulk
+ * actions). Rate-limit 1×/48h par couple (créditeur, débiteur) appliqué
+ * côté action via audit_log.
+ */
+export function debtBulkReminderEmail(args: {
+  creditorName: string;
+  totalCents: number;
+  items: BulkDebtItem[];
+  walletUrl: string;
+}): { subject: string; html: string } {
+  const n = args.items.length;
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">Petit récap</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${escapeHtml(args.creditorName)} attend toujours ta part sur ${n} sortie${n > 1 ? "s" : ""} —
+      total <strong>${escapeHtml(formatCents(args.totalCents))}</strong>.
+    </p>
+    ${renderItemsList(args.items)}
+    <p style="margin:0 0 28px;${BODY_P}">
+      Tu peux régler en quelques taps depuis ton récap argent.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.walletUrl, "Régler ma part")}
+    </p>
+  `;
+  return {
+    subject: `Rappel — ${formatCents(args.totalCents)} pour ${n} sortie${n > 1 ? "s" : ""}`,
+    html: renderEmail({
+      preheader: `${args.creditorName} te rappelle ${formatCents(args.totalCents)} au total.`,
+      body,
+    }),
+  };
+}
+
+/**
+ * Bulk équivalent de `paymentDeclaredEmail` : le débiteur a marqué
+ * plusieurs dettes comme payées en un coup. Envoyé au créancier pour
+ * confirmation. Tonalité neutre — il doit vérifier puis confirmer.
+ */
+export function bulkPaymentDeclaredEmail(args: {
+  debtorName: string;
+  totalCents: number;
+  items: BulkDebtItem[];
+  walletUrl: string;
+}): { subject: string; html: string } {
+  const n = args.items.length;
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(args.debtorName)} dit avoir tout payé</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${n} dette${n > 1 ? "s" : ""} déclarée${n > 1 ? "s" : ""} comme payée${n > 1 ? "s" : ""} —
+      total <strong>${escapeHtml(formatCents(args.totalCents))}</strong>.
+    </p>
+    ${renderItemsList(args.items)}
+    <p style="margin:0 0 28px;${BODY_P}">
+      Vérifie que les virements sont bien arrivés, puis confirme la réception sur chaque dette.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.walletUrl, "Confirmer la réception")}
+    </p>
+  `;
+  return {
+    subject: `${args.debtorName} a déclaré ${formatCents(args.totalCents)} payé`,
+    html: renderEmail({
+      preheader: `${args.debtorName} dit avoir réglé ${formatCents(args.totalCents)} (${n} sortie${n > 1 ? "s" : ""}).`,
+      body,
+    }),
+  };
+}
+
+/**
+ * Bulk settlement (compensation bilatérale). L'initiateur déclare
+ * l'ensemble des dettes croisées soldées en un seul geste. Le destinataire
+ * voit le détail des deux sens dans le mail pour traçabilité.
+ */
+export function bulkSettledEmail(args: {
+  initiatorName: string;
+  /** Net signé du POV du destinataire : positif = il/elle a reçu, négatif = il/elle a payé, zéro = quittes. */
+  netCentsForRecipient: number;
+  /** Dettes que le destinataire devait à l'initiateur (réglées). */
+  itemsRecipientOwed: BulkDebtItem[];
+  /** Dettes que l'initiateur devait au destinataire (réglées). */
+  itemsRecipientCredited: BulkDebtItem[];
+  walletUrl: string;
+}): { subject: string; html: string } {
+  const totalOwed = args.itemsRecipientOwed.reduce((s, it) => s + it.amountCents, 0);
+  const totalCredited = args.itemsRecipientCredited.reduce((s, it) => s + it.amountCents, 0);
+  const net = args.netCentsForRecipient;
+
+  let headline: string;
+  let intro: string;
+  if (net === 0) {
+    headline = "On est quittes";
+    intro = `${escapeHtml(args.initiatorName)} a soldé ton compte en compensant les dettes des deux côtés. Tout est marqué réglé.`;
+  } else if (net > 0) {
+    headline = "Compte soldé";
+    intro = `${escapeHtml(args.initiatorName)} t'a transféré le solde net de <strong>${escapeHtml(formatCents(net))}</strong> et a marqué tout ce qui était dû comme réglé.`;
+  } else {
+    headline = "Compte soldé";
+    intro = `${escapeHtml(args.initiatorName)} a réglé le solde net (<strong>${escapeHtml(formatCents(Math.abs(net)))}</strong>) et a marqué les dettes des deux côtés comme bouclées.`;
+  }
+
+  const sectionRecipientCredited =
+    args.itemsRecipientCredited.length > 0
+      ? `
+    <p style="margin:18px 0 6px;${MICRO_TAG}">Ce que tu lui dois (soldé)</p>
+    ${renderItemsList(args.itemsRecipientCredited)}
+  `
+      : "";
+  const sectionRecipientOwed =
+    args.itemsRecipientOwed.length > 0
+      ? `
+    <p style="margin:18px 0 6px;${MICRO_TAG}">Ce qu'il/elle te devait (reçu via compensation)</p>
+    ${renderItemsList(args.itemsRecipientOwed)}
+  `
+      : "";
+
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${headline}</h1>
+    <p style="margin:0 0 18px;${BODY_P}">${intro}</p>
+    ${sectionRecipientCredited}
+    ${sectionRecipientOwed}
+    <p style="margin:28px 0 0;">
+      ${ctaButton(args.walletUrl, "Voir le récap")}
+    </p>
+  `;
+
+  return {
+    subject:
+      net === 0
+        ? `On est quittes — ${args.initiatorName}`
+        : `Compte soldé avec ${args.initiatorName} (${formatCents(Math.abs(net))})`,
+    html: renderEmail({
+      preheader:
+        net === 0
+          ? `${args.initiatorName} a compensé les dettes croisées.`
+          : `${args.initiatorName} a soldé le compte, net ${formatCents(Math.abs(net))}.`,
+      body,
+    }),
+  };
+}
