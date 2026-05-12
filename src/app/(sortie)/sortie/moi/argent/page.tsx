@@ -91,8 +91,19 @@ export default async function WalletPage() {
   const totalOwedCents = unsettledDebts.reduce((acc, d) => acc + d.amountCents, 0);
   const totalToReceiveCents = unsettledCredits.reduce((acc, d) => acc + d.amountCents, 0);
 
-  const debtsByCreditor = groupByPerson(unsettledDebts, (d) => d.creditor);
-  const creditsByDebtor = groupByPerson(unsettledCredits, (d) => d.debtor);
+  // Fusion debts + credits par contrepartie : pour chaque personne, on
+  // calcule un solde net signé (positif = on te doit, négatif = tu
+  // dois) et on rend une seule carte mixant les deux directions. Cf.
+  // décision produit 2026-05-12 (Q « grouper par utilisateur sur écran
+  // argent »). Les rows individuelles gardent leur `view` pour que les
+  // boutons d'action (j'ai payé / j'ai reçu) restent corrects — on ne
+  // compense pas légalement les dettes, on les affiche seulement
+  // ensemble.
+  const accountsByPerson = groupAccountsByPerson(unsettledDebts, unsettledCredits);
+  const settledRows = [
+    ...settledDebts.map((d) => ({ row: d, view: "debtor" as const })),
+    ...settledCredits.map((d) => ({ row: d, view: "creditor" as const })),
+  ];
 
   // Bandeau « renseigne un moyen de paiement » : on ne pousse l'incitation
   // que si le user a au moins un crédit en attente ET aucune méthode
@@ -103,9 +114,9 @@ export default async function WalletPage() {
 
   const allocationsByOuting = groupAllocationsByOuting(allocations);
 
-  const hasDebts = unsettledDebts.length > 0 || settledDebts.length > 0;
-  const hasCredits = unsettledCredits.length > 0 || settledCredits.length > 0;
-  const hasAnyData = hasDebts || hasCredits || allocations.length > 0;
+  const hasAccounts = accountsByPerson.length > 0;
+  const hasSettled = settledRows.length > 0;
+  const hasAnyData = hasAccounts || hasSettled || allocations.length > 0;
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -147,46 +158,10 @@ export default async function WalletPage() {
         </section>
       )}
 
-      {hasDebts && (
+      {(hasAccounts || hasSettled) && (
         <section className="mb-10">
           <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
-            Ce que tu dois
-          </h2>
-          {debtsByCreditor.length > 0 ? (
-            <ul className="flex flex-col gap-3">
-              {debtsByCreditor.map((g) =>
-                g.rows.length === 1 ? (
-                  <DebtRow key={g.rows[0].id} {...debtRowProps(g.rows[0], "debtor")} />
-                ) : (
-                  <PersonDebtGroup key={g.person.id} person={g.person} totalCents={g.totalCents}>
-                    {g.rows.map((d) => (
-                      <DebtRow key={d.id} {...debtRowProps(d, "debtor")} compact />
-                    ))}
-                  </PersonDebtGroup>
-                )
-              )}
-            </ul>
-          ) : (
-            <p className="text-[15px] text-ink-500">Plus rien à régler.</p>
-          )}
-          {settledDebts.length > 0 && (
-            <SettledDisclosure
-              count={settledDebts.length}
-              singularLabel="dette réglée"
-              pluralLabel="dettes réglées"
-            >
-              {settledDebts.map((d) => (
-                <DebtRow key={d.id} {...debtRowProps(d, "debtor")} />
-              ))}
-            </SettledDisclosure>
-          )}
-        </section>
-      )}
-
-      {hasCredits && (
-        <section className="mb-10">
-          <h2 className="mb-4 text-[24px] font-black tracking-[-0.025em] text-ink-700">
-            Ce qu&rsquo;on te doit
+            Tes comptes
           </h2>
           {distinctOutingsForMissingMethod.length > 0 && (
             <div className="mb-4 rounded-lg border border-hot-500/40 bg-hot-500/5 p-3 text-[13px] text-ink-700">
@@ -207,31 +182,41 @@ export default async function WalletPage() {
               </ul>
             </div>
           )}
-          {creditsByDebtor.length > 0 ? (
+          {hasAccounts ? (
             <ul className="flex flex-col gap-3">
-              {creditsByDebtor.map((g) =>
-                g.rows.length === 1 ? (
-                  <DebtRow key={g.rows[0].id} {...debtRowProps(g.rows[0], "creditor")} />
-                ) : (
-                  <PersonDebtGroup key={g.person.id} person={g.person} totalCents={g.totalCents}>
-                    {g.rows.map((d) => (
-                      <DebtRow key={d.id} {...debtRowProps(d, "creditor")} compact />
+              {accountsByPerson.map((g) => {
+                // Une seule entrée avec la personne et pas de croisement
+                // → on rend le DebtRow autonome (chrome de carte direct),
+                // ça économise une couche visuelle inutile.
+                if (g.entries.length === 1) {
+                  const e = g.entries[0];
+                  return <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view)} />;
+                }
+                return (
+                  <PersonAccountGroup key={g.person.id} person={g.person} netCents={g.netCents}>
+                    {g.entries.map((e) => (
+                      <DebtRow
+                        key={e.row.id}
+                        {...debtRowProps(e.row, e.view)}
+                        compact
+                        colorAmount
+                      />
                     ))}
-                  </PersonDebtGroup>
-                )
-              )}
+                  </PersonAccountGroup>
+                );
+              })}
             </ul>
           ) : (
-            <p className="text-[15px] text-ink-500">Tout le monde t&rsquo;a remboursé.</p>
+            <p className="text-[15px] text-ink-500">Plus rien à régler.</p>
           )}
-          {settledCredits.length > 0 && (
+          {hasSettled && (
             <SettledDisclosure
-              count={settledCredits.length}
-              singularLabel="remboursement reçu"
-              pluralLabel="remboursements reçus"
+              count={settledRows.length}
+              singularLabel="transaction réglée"
+              pluralLabel="transactions réglées"
             >
-              {settledCredits.map((d) => (
-                <DebtRow key={d.id} {...debtRowProps(d, "creditor")} />
+              {settledRows.map((e) => (
+                <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view)} />
               ))}
             </SettledDisclosure>
           )}
@@ -288,23 +273,42 @@ export default async function WalletPage() {
   );
 }
 
-function PersonDebtGroup({
+function PersonAccountGroup({
   person,
-  totalCents,
+  netCents,
   children,
 }: {
   person: PersonRef;
-  totalCents: number;
+  /** Solde net signé : positif = on te doit, négatif = tu dois,
+   * zéro = les flux se compensent exactement (cas rare mais on
+   * l'affiche quand même pour que l'utilisateur voie le détail). */
+  netCents: number;
   children: React.ReactNode;
 }) {
+  const absCents = Math.abs(netCents);
+  let label: string;
+  let valueColor: string;
+  if (netCents > 0) {
+    label = "Il/elle te doit";
+    valueColor = "text-acid-700";
+  } else if (netCents < 0) {
+    label = "Tu dois";
+    valueColor = "text-hot-600";
+  } else {
+    label = "À zéro net";
+    valueColor = "text-ink-500";
+  }
   return (
-    <li className="flex flex-col gap-2 rounded-lg border border-surface-400 bg-surface-50 p-4">
+    <li className="flex flex-col gap-3 rounded-lg border border-surface-400 bg-surface-50 p-4">
       <div className="flex items-baseline justify-between gap-3">
-        <span className="min-w-0 truncate font-serif text-lg text-ink-700">
-          {personName(person)}
-        </span>
-        <span className="shrink-0 font-serif text-2xl tabular-nums text-ink-700">
-          {formatCents(totalCents)}
+        <div className="flex min-w-0 flex-col">
+          <span className="truncate font-serif text-lg text-ink-700">{personName(person)}</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+            {label}
+          </span>
+        </div>
+        <span className={`shrink-0 font-serif text-2xl tabular-nums ${valueColor}`}>
+          {netCents === 0 ? "—" : formatCents(absCents)}
         </span>
       </div>
       <ul className="flex flex-col divide-y divide-surface-400/40">{children}</ul>
@@ -391,32 +395,46 @@ function sortDebtsForDisplay(rows: WalletDebtRow[]): WalletDebtRow[] {
 
 type PersonRef = WalletDebtRow["debtor"];
 
-type PersonGroup = {
-  person: PersonRef;
-  rows: WalletDebtRow[];
-  totalCents: number;
+type AccountEntry = {
+  row: WalletDebtRow;
+  view: "debtor" | "creditor";
 };
 
-// Regroupe les rows par personne (créditeur pour debts, débiteur pour
-// credits). Tri descendant sur le total : plus gros montant en haut,
-// histoire que l'utilisateur tombe direct sur le contact qui pèse le
-// plus dans son bilan.
-function groupByPerson(
-  rows: WalletDebtRow[],
-  pickPerson: (r: WalletDebtRow) => PersonRef
-): PersonGroup[] {
-  const map = new Map<string, PersonGroup>();
-  for (const r of rows) {
-    const p = pickPerson(r);
+type PersonAccount = {
+  person: PersonRef;
+  entries: AccountEntry[];
+  /** Net signé : (somme des credits) - (somme des debts). Positif =
+   * la personne te doit globalement, négatif = tu lui dois. */
+  netCents: number;
+};
+
+// Fusionne dettes et crédits par contrepartie, peu importe le sens.
+// Tri par valeur absolue du net desc : les contreparties qui pèsent
+// le plus dans le bilan (qu'on doive OU qu'on attende) remontent en
+// haut. Les comptes à net=0 (qui se compensent exactement) tombent
+// naturellement en queue.
+function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[]): PersonAccount[] {
+  const map = new Map<string, PersonAccount>();
+  function ensure(p: PersonRef): PersonAccount {
     const existing = map.get(p.id);
     if (existing) {
-      existing.rows.push(r);
-      existing.totalCents += r.amountCents;
-    } else {
-      map.set(p.id, { person: p, rows: [r], totalCents: r.amountCents });
+      return existing;
     }
+    const created: PersonAccount = { person: p, entries: [], netCents: 0 };
+    map.set(p.id, created);
+    return created;
   }
-  return Array.from(map.values()).sort((a, b) => b.totalCents - a.totalCents);
+  for (const r of debts) {
+    const acc = ensure(r.creditor);
+    acc.entries.push({ row: r, view: "debtor" });
+    acc.netCents -= r.amountCents;
+  }
+  for (const r of credits) {
+    const acc = ensure(r.debtor);
+    acc.entries.push({ row: r, view: "creditor" });
+    acc.netCents += r.amountCents;
+  }
+  return Array.from(map.values()).sort((a, b) => Math.abs(b.netCents) - Math.abs(a.netCents));
 }
 
 function personName(p: PersonRef): string {

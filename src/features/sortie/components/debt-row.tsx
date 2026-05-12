@@ -43,6 +43,11 @@ type Props = {
    * donc le chrome de carte (border/bg/p-4) et le bloc nom-de-personne,
    * et on laisse l'eyebrow de sortie servir de désambiguïsateur. */
   compact?: boolean;
+  /** En compact dans un groupe mixte (dette + crédit avec la même
+   * personne), on colore le montant selon `view` pour que le scan
+   * visuel distingue immédiatement les deux directions sans avoir à
+   * relire le label de statut. */
+  colorAmount?: boolean;
 };
 
 const TYPE_LABEL: Record<PaymentMethod["type"], string> = {
@@ -87,11 +92,18 @@ export function DebtRow({
   outingTitle,
   outingHref,
   compact = false,
+  colorAmount = false,
 }: Props) {
   const statusLabel = STATUS_LABEL[view][status];
   // `confirmed` n'est plus actionnable : on désature la couleur pour ne
   // pas concurrencer un statut pending (qui lui appelle à l'action).
   const statusColor = status === "confirmed" ? "text-ink-400" : "text-hot-600";
+  const amountColor =
+    colorAmount && status !== "confirmed"
+      ? view === "debtor"
+        ? "text-hot-600"
+        : "text-acid-700"
+      : "text-ink-700";
 
   return (
     <li
@@ -125,8 +137,8 @@ export function DebtRow({
         <span
           className={
             compact
-              ? "shrink-0 font-serif text-xl tabular-nums text-ink-700"
-              : "shrink-0 font-serif text-2xl tabular-nums text-ink-700"
+              ? `shrink-0 font-serif text-xl tabular-nums ${amountColor}`
+              : `shrink-0 font-serif text-2xl tabular-nums ${amountColor}`
           }
         >
           {formatCents(amountCents)}
