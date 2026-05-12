@@ -185,7 +185,13 @@ export default async function WalletPage() {
                   return <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view)} />;
                 }
                 return (
-                  <PersonAccountGroup key={g.person.id} person={g.person} netCents={g.netCents}>
+                  <PersonAccountGroup
+                    key={g.person.id}
+                    person={g.person}
+                    netCents={g.netCents}
+                    youOweCents={g.youOweCents}
+                    owedToYouCents={g.owedToYouCents}
+                  >
                     {g.entries.map((e) => (
                       <DebtRow
                         key={e.row.id}
@@ -268,6 +274,8 @@ export default async function WalletPage() {
 function PersonAccountGroup({
   person,
   netCents,
+  youOweCents,
+  owedToYouCents,
   children,
 }: {
   person: PersonRef;
@@ -275,9 +283,18 @@ function PersonAccountGroup({
    * zéro = les flux se compensent exactement (cas rare mais on
    * l'affiche quand même pour que l'utilisateur voie le détail). */
   netCents: number;
+  /** Somme brute des dettes que tu dois à cette personne (≥ 0). */
+  youOweCents: number;
+  /** Somme brute des crédits qu'elle te doit (≥ 0). */
+  owedToYouCents: number;
   children: React.ReactNode;
 }) {
   const absCents = Math.abs(netCents);
+  // Quand les deux sens coexistent on remplace le label « Tu dois /
+  // Il te doit » par le détail des deux flux, plus parlant que la
+  // direction du net seule (qui devient redondante avec le montant
+  // coloré à droite).
+  const hasBothDirections = youOweCents > 0 && owedToYouCents > 0;
   let label: string;
   let valueColor: string;
   if (netCents > 0) {
@@ -295,9 +312,25 @@ function PersonAccountGroup({
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex min-w-0 flex-col">
           <span className="truncate font-serif text-lg text-ink-700">{personName(person)}</span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
-            {label}
-          </span>
+          {hasBothDirections ? (
+            <span className="flex items-baseline gap-2 text-[12px] tabular-nums text-ink-500">
+              <span>
+                <span className="text-ink-400">tu dois </span>
+                <span className="text-hot-600">{formatCents(youOweCents)}</span>
+              </span>
+              <span aria-hidden className="text-ink-300">
+                ·
+              </span>
+              <span>
+                <span className="text-ink-400">te doit </span>
+                <span className="text-acid-700">{formatCents(owedToYouCents)}</span>
+              </span>
+            </span>
+          ) : (
+            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
+              {label}
+            </span>
+          )}
         </div>
         <span className={`shrink-0 font-serif text-2xl tabular-nums ${valueColor}`}>
           {formatCents(absCents)}
@@ -396,6 +429,10 @@ type PersonAccount = {
   /** Net signé : (somme des credits) - (somme des debts). Positif =
    * la personne te doit globalement, négatif = tu lui dois. */
   netCents: number;
+  /** Somme brute des dettes que tu dois à cette personne (≥ 0). */
+  youOweCents: number;
+  /** Somme brute des crédits qu'elle te doit (≥ 0). */
+  owedToYouCents: number;
 };
 
 // Fusionne dettes et crédits par humain plutôt que par participant : un
@@ -420,7 +457,13 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
       }
       return existing;
     }
-    const created: PersonAccount = { person: p, entries: [], netCents: 0 };
+    const created: PersonAccount = {
+      person: p,
+      entries: [],
+      netCents: 0,
+      youOweCents: 0,
+      owedToYouCents: 0,
+    };
     map.set(k, created);
     return created;
   }
@@ -428,11 +471,13 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
     const acc = ensure(r.creditor);
     acc.entries.push({ row: r, view: "debtor" });
     acc.netCents -= r.amountCents;
+    acc.youOweCents += r.amountCents;
   }
   for (const r of credits) {
     const acc = ensure(r.debtor);
     acc.entries.push({ row: r, view: "creditor" });
     acc.netCents += r.amountCents;
+    acc.owedToYouCents += r.amountCents;
   }
   return Array.from(map.values()).sort((a, b) => Math.abs(b.netCents) - Math.abs(a.netCents));
 }
