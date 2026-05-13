@@ -2,6 +2,7 @@ import { escapeHtml } from "@/lib/html-escape";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { formatCents } from "@/features/sortie/lib/format";
 import { renderEmail } from "./layout";
+import { BASE_URL } from "./shared";
 
 export type PaymentMethodPreview = {
   type: "iban" | "lydia" | "revolut" | "wero";
@@ -23,8 +24,7 @@ const BODY_P = `color:${INK_BODY};line-height:1.6;font-size:15px;`;
 const MICRO_TAG = `font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:${HOT};`;
 
 const FOOTER_P = `font-size:13px;color:${INK_MUTED};line-height:1.6;`;
-const CALENDAR_FEED_URL =
-  `${process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr"}/sortie/moi`.replace(/\/$/, "");
+const CALENDAR_FEED_URL = `${BASE_URL}/sortie/moi`;
 
 /**
  * Pitch discret pour les destinataires anonymes (pas de compte) : un lien

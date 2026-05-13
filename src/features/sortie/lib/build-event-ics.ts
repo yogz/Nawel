@@ -1,3 +1,4 @@
+import { canonicalPathSegment } from "./parse-outing-path";
 import {
   PARIS_VTIMEZONE_LINES,
   escapeIcsText,
@@ -13,17 +14,19 @@ const DEFAULT_DURATION_MS = 3 * 60 * 60 * 1000;
 
 export type IcsMethod = "PUBLISH" | "CANCEL";
 
+export type OutingIcsContext = {
+  shortId: string;
+  slug: string | null;
+  title: string;
+  location: string | null;
+  fixedDatetime: Date;
+  sequence: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type BuildOutingEventIcsInput = {
-  outing: {
-    shortId: string;
-    slug: string | null;
-    title: string;
-    location: string | null;
-    fixedDatetime: Date;
-    sequence: number;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  outing: OutingIcsContext;
   method: IcsMethod;
   publicBase: string;
 };
@@ -47,8 +50,7 @@ export function buildOutingEventIcs(input: BuildOutingEventIcsInput): IcsAttachm
   const { outing, method, publicBase } = input;
   const now = new Date();
   const endsAt = new Date(outing.fixedDatetime.getTime() + DEFAULT_DURATION_MS);
-  const canonical = outing.slug ? `${outing.slug}-${outing.shortId}` : outing.shortId;
-  const url = `${publicBase}/${canonical}`;
+  const url = `${publicBase}/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`;
 
   const lines: string[] = [
     "BEGIN:VCALENDAR",

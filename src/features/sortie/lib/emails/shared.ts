@@ -1,4 +1,4 @@
-import { sendSortieEmail } from "@/lib/resend-sortie";
+import { sendSortieEmail, type SortieEmailAttachment } from "@/lib/resend-sortie";
 
 export const BASE_URL = (process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr").replace(
   /\/$/,
@@ -20,9 +20,15 @@ export async function safeSend(args: {
   subject: string;
   html: string;
   trigger: string;
+  attachments?: SortieEmailAttachment[];
 }): Promise<void> {
   try {
-    await sendSortieEmail({ to: args.to, subject: args.subject, html: args.html });
+    await sendSortieEmail({
+      to: args.to,
+      subject: args.subject,
+      html: args.html,
+      attachments: args.attachments,
+    });
   } catch (err) {
     console.error(`[sortie/email] ${args.trigger} send failed`, err);
   }
