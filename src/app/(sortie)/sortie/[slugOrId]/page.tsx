@@ -148,6 +148,9 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   const isOpenPoll = outing.mode === "vote" && !outing.chosenTimeslotId;
   const viewerIsConfirmed = me?.response === "yes";
   const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
+  const viewerIsPurchaser = Boolean(
+    me && existingPurchase && existingPurchase.purchaserParticipantId === me.id
+  );
   // Creator's first name for the WhatsApp share opening — "Léa t'invite : …".
   // Shared between the post-creation banner and the regular share row.
   const creatorFirstName = getCreatorFirstName(outing);
@@ -357,12 +360,14 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
               Voir les dettes
             </Link>
           )}
-          <Link
-            href={`/${canonical}/paiement`}
-            className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
-          >
-            Mes moyens de paiement
-          </Link>
+          {viewerIsPurchaser && (
+            <Link
+              href={`/${canonical}/paiement`}
+              className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
+            >
+              Mes moyens de paiement
+            </Link>
+          )}
           <Link
             href={`/${canonical}/billets`}
             className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
