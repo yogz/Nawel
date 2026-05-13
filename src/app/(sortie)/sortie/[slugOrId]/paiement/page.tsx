@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
+import { db } from "@/lib/db";
+import { purchases } from "@drizzle/sortie-schema";
 import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
 import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
 import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
@@ -47,6 +50,14 @@ export default async function PaymentMethodsPage({ params }: Props) {
   }
 
   const { outing, me, canonical } = state;
+
+  const purchase = await db.query.purchases.findFirst({
+    where: eq(purchases.outingId, outing.id),
+    columns: { purchaserParticipantId: true },
+  });
+  if (!purchase || purchase.purchaserParticipantId !== me.id) {
+    redirect(`/${canonical}`);
+  }
 
   const methods = await listPaymentMethodsForParticipant(me.id);
 

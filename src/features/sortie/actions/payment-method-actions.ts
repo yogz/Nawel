@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { encryptSecret } from "@/lib/crypto";
-import { auditLog, outings, purchaserPaymentMethods } from "@drizzle/sortie-schema";
+import { auditLog, outings, purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
 import { sanitizeStrictText } from "@/lib/sanitize";
 import { ibanPreview, isValidIban, normalizeIban, phonePreview } from "@/features/sortie/lib/iban";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
@@ -68,6 +68,14 @@ export async function addPaymentMethodAction(
   const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me) {
     return { message: "Tu dois répondre à la sortie avant d'ajouter un moyen de paiement." };
+  }
+
+  const purchase = await db.query.purchases.findFirst({
+    where: eq(purchases.outingId, outing.id),
+    columns: { purchaserParticipantId: true },
+  });
+  if (!purchase || purchase.purchaserParticipantId !== me.id) {
+    return { message: "Seul l'acheteur de la sortie peut renseigner un moyen de paiement." };
   }
 
   const gate = await rateLimit({
