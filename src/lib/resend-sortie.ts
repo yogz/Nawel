@@ -30,10 +30,17 @@ function getClient(): Resend {
  * A centralised render helper will land alongside the first real email
  * template in Phase 2.
  */
+export type SortieEmailAttachment = {
+  filename: string;
+  content: string;
+  contentType?: string;
+};
+
 export async function sendSortieEmail(args: {
   to: string;
   subject: string;
   html: string;
+  attachments?: SortieEmailAttachment[];
 }): Promise<void> {
   const safeSubject = args.subject.replace(/[\r\n]+/g, " ").slice(0, 200);
 
@@ -43,6 +50,7 @@ export async function sendSortieEmail(args: {
     to: args.to,
     subject: safeSubject,
     html: args.html,
+    attachments: args.attachments,
   });
 
   if (error) {

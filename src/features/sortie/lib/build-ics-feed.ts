@@ -30,7 +30,7 @@ const DEFAULT_DURATION_MS = 3 * 60 * 60 * 1000; // 3h block
 // entier était vu comme une seule ligne ~400 chars, replié à 73 par
 // foldLine, mélangeant CRLF de fold avec LF internes — résultat
 // invalide refusé par iCal/Calendar.app et tous les parsers stricts.
-const PARIS_VTIMEZONE_LINES = [
+export const PARIS_VTIMEZONE_LINES = [
   "BEGIN:VTIMEZONE",
   "TZID:Europe/Paris",
   "BEGIN:STANDARD",
@@ -278,7 +278,7 @@ function vibeLabel(vibe: NonNullable<FeedOuting["vibe"]>): string {
   }
 }
 
-function formatIcsUtc(date: Date): string {
+export function formatIcsUtc(date: Date): string {
   // `YYYYMMDDTHHMMSSZ` — utilisé pour DTSTAMP (toujours UTC) et
   // pour DTSTART/DTEND quand on ne pose pas TZID.
   return date
@@ -287,7 +287,7 @@ function formatIcsUtc(date: Date): string {
     .replace(/\.\d+Z$/, "Z");
 }
 
-function formatIcsLocal(date: Date): string {
+export function formatIcsLocal(date: Date): string {
   // `YYYYMMDDTHHMMSS` — sans Z, utilisé avec un préfixe TZID. On
   // formate l'heure dans la zone Europe/Paris pour matcher la TZID
   // déclarée. Intl renvoie l'heure-Paris, on parse en composants.
@@ -311,7 +311,7 @@ function formatIcsLocal(date: Date): string {
   return `${get("year")}${get("month")}${get("day")}T${hour}${get("minute")}${get("second")}`;
 }
 
-function escapeIcsText(value: string): string {
+export function escapeIcsText(value: string): string {
   // RFC 5545 : backslash, semicolon, comma, newlines.
   return value
     .replace(/\\/g, "\\\\")
@@ -320,7 +320,7 @@ function escapeIcsText(value: string): string {
     .replace(/\r?\n/g, "\\n");
 }
 
-function foldLine(line: string): string {
+export function foldLine(line: string): string {
   // RFC 5545 §3.1 : les lignes > 75 octets doivent être pliées avec
   // CRLF + space (continuation). Sans ça, certains clients tronquent.
   // On fold à 73 char (laisse 2 chars de marge pour le CRLF + space).

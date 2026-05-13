@@ -512,6 +512,7 @@ export async function pickTimeslotAction(
       .set({
         fixedDatetime: timeslot.startsAt,
         chosenTimeslotId: timeslot.id,
+        sequence: sql`${outings.sequence} + 1`,
         updatedAt: new Date(),
       })
       .where(eq(outings.id, outing.id));

@@ -22,6 +22,32 @@ const H1 = `font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sa
 const BODY_P = `color:${INK_BODY};line-height:1.6;font-size:15px;`;
 const MICRO_TAG = `font-size:11px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:${HOT};`;
 
+const FOOTER_P = `font-size:13px;color:${INK_MUTED};line-height:1.6;`;
+const CALENDAR_FEED_URL =
+  `${process.env.SORTIE_BASE_URL ?? "https://sortie.colist.fr"}/sortie/moi`.replace(/\/$/, "");
+
+/**
+ * Pitch discret pour les destinataires anonymes (pas de compte) : un lien
+ * gris sous le CTA principal, posé après un hairline. Suggère l'abonnement
+ * webcal:// sans concurrencer le CTA "Voir la sortie" ni le bandeau natif
+ * Gmail "Ajouter à l'agenda" généré par la pièce jointe .ics.
+ *
+ * Retourne string vide quand `show === false` — composable directement
+ * dans le body des templates.
+ */
+function calendarFeedPitchBlock(show: boolean): string {
+  if (!show) {
+    return "";
+  }
+  return `
+    <hr style="margin:32px 0 18px;border:0;border-top:1px solid ${HAIRLINE};" />
+    <p style="margin:0;${FOOTER_P}">
+      Marre de cliquer sur un .ics à chaque mail ?
+      <a href="${escapeHtml(CALENDAR_FEED_URL)}" style="color:${INK_MUTED};text-decoration:underline;">Sortie peut alimenter ton agenda tout seul.</a>
+    </p>
+  `;
+}
+
 function ctaButton(href: string, label: string): string {
   // Noir solide + acid green : ratio ~14:1, lit comme un tampon. Seul
   // type de CTA dans tous les emails Sortie — cohérence visuelle prime
@@ -233,7 +259,11 @@ export function rsvpReceivedEmail(args: {
  * Sent to every non-"no" RSVP when the creator cancels the outing. Tone
  * stays neutral but not robotic — "on se rattrape au prochain".
  */
-export function outingCancelledEmail(args: { outingTitle: string; homeUrl: string }): {
+export function outingCancelledEmail(args: {
+  outingTitle: string;
+  homeUrl: string;
+  showCalendarFeedPitch?: boolean;
+}): {
   subject: string;
   html: string;
 } {
@@ -246,6 +276,7 @@ export function outingCancelledEmail(args: { outingTitle: string; homeUrl: strin
     <p style="margin:28px 0 0;">
       ${ctaButton(args.homeUrl, "Accueil Sortie")}
     </p>
+    ${calendarFeedPitchBlock(args.showCalendarFeedPitch ?? false)}
   `;
   return {
     subject: `${args.outingTitle} — annulée`,
@@ -268,6 +299,7 @@ export function timeslotPickedEmail(args: {
   outingUrl: string;
   fixedDatetime: Date;
   location: string | null;
+  showCalendarFeedPitch?: boolean;
 }): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
   const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
@@ -288,6 +320,7 @@ export function timeslotPickedEmail(args: {
     <p style="margin:0;">
       ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
+    ${calendarFeedPitchBlock(args.showCalendarFeedPitch ?? false)}
   `;
   return {
     subject: `${args.outingTitle} — ${when}`,
@@ -429,6 +462,7 @@ export function outingModifiedEmail(args: {
   outingTitle: string;
   outingUrl: string;
   changes: Array<{ label: string; before: string | null; after: string | null }>;
+  showCalendarFeedPitch?: boolean;
 }): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
   const rows = args.changes
@@ -451,6 +485,7 @@ export function outingModifiedEmail(args: {
     <p style="margin:0;">
       ${ctaButton(args.outingUrl, "Revoir la sortie")}
     </p>
+    ${calendarFeedPitchBlock(args.showCalendarFeedPitch ?? false)}
   `;
   return {
     subject: `${args.outingTitle} — mise à jour`,

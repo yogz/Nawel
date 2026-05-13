@@ -1,9 +1,10 @@
 import { and, eq, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { sendSortieEmail } from "@/lib/resend-sortie";
-import { participants } from "@drizzle/sortie-schema";
+import { sendSortieEmail, type SortieEmailAttachment } from "@/lib/resend-sortie";
+import { outings, participants } from "@drizzle/sortie-schema";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { isOutingOwner } from "@/features/sortie/lib/owner";
+import { buildOutingEventIcs, type IcsMethod } from "@/features/sortie/lib/build-event-ics";
 import {
   j1ReminderEmail,
   outingCancelledEmail,
@@ -24,12 +25,65 @@ async function safeSend(args: {
   subject: string;
   html: string;
   trigger: string;
+  attachments?: SortieEmailAttachment[];
 }): Promise<void> {
   try {
-    await sendSortieEmail({ to: args.to, subject: args.subject, html: args.html });
+    await sendSortieEmail({
+      to: args.to,
+      subject: args.subject,
+      html: args.html,
+      attachments: args.attachments,
+    });
   } catch (err) {
     console.error(`[sortie/email] ${args.trigger} send failed`, err);
   }
+}
+
+/**
+ * Charge le shape minimum requis pour générer un .ics single-event.
+ * Retourne null quand l'outing n'a pas (encore) de date — cas mode vote
+ * non figé : pas d'event à proposer au calendrier, on skip l'attachment
+ * mais on garde le mail texte.
+ */
+async function loadIcsContextForOuting(outingId: string): Promise<{
+  shortId: string;
+  slug: string | null;
+  title: string;
+  location: string | null;
+  fixedDatetime: Date;
+  sequence: number;
+  createdAt: Date;
+  updatedAt: Date;
+} | null> {
+  const row = await db.query.outings.findFirst({
+    where: eq(outings.id, outingId),
+    columns: {
+      shortId: true,
+      slug: true,
+      title: true,
+      location: true,
+      fixedDatetime: true,
+      sequence: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!row || !row.fixedDatetime) {
+    return null;
+  }
+  return { ...row, fixedDatetime: row.fixedDatetime };
+}
+
+function buildIcsAttachmentForOuting(
+  ctx: NonNullable<Awaited<ReturnType<typeof loadIcsContextForOuting>>>,
+  method: IcsMethod
+): SortieEmailAttachment {
+  const ics = buildOutingEventIcs({ outing: ctx, method, publicBase: BASE_URL });
+  return {
+    filename: ics.filename,
+    content: ics.content,
+    contentType: ics.contentType,
+  };
 }
 
 /**
@@ -174,17 +228,25 @@ export async function sendOutingModifiedEmails(args: {
   });
 
   const canonical = outingPath(args.outing.slug, args.outing.shortId);
-  const { subject, html } = outingModifiedEmail({
-    outingTitle: args.outing.title,
-    outingUrl: `${BASE_URL}${canonical}`,
-    changes: args.diff,
-  });
+  const icsCtx = await loadIcsContextForOuting(args.outing.id);
+  const attachments = icsCtx ? [buildIcsAttachmentForOuting(icsCtx, "PUBLISH")] : undefined;
 
   await Promise.all(
     recipients
-      .map((p) => p.anonEmail ?? p.user?.email ?? null)
-      .filter((e): e is string => !!e)
-      .map((email) => safeSend({ to: email, subject, html, trigger: "outing-modified" }))
+      .map((p) => ({
+        email: p.anonEmail ?? p.user?.email ?? null,
+        showPitch: p.userId === null,
+      }))
+      .filter((r): r is { email: string; showPitch: boolean } => !!r.email)
+      .map(({ email, showPitch }) => {
+        const { subject, html } = outingModifiedEmail({
+          outingTitle: args.outing.title,
+          outingUrl: `${BASE_URL}${canonical}`,
+          changes: args.diff,
+          showCalendarFeedPitch: showPitch,
+        });
+        return safeSend({ to: email, subject, html, trigger: "outing-modified", attachments });
+      })
   );
 }
 
@@ -200,16 +262,24 @@ export async function sendOutingCancelledEmails(args: {
     with: { user: { columns: { email: true } } },
   });
 
-  const { subject, html } = outingCancelledEmail({
-    outingTitle: args.outing.title,
-    homeUrl: BASE_URL,
-  });
+  const icsCtx = await loadIcsContextForOuting(args.outing.id);
+  const attachments = icsCtx ? [buildIcsAttachmentForOuting(icsCtx, "CANCEL")] : undefined;
 
   await Promise.all(
     recipients
-      .map((p) => p.anonEmail ?? p.user?.email ?? null)
-      .filter((e): e is string => !!e)
-      .map((email) => safeSend({ to: email, subject, html, trigger: "outing-cancelled" }))
+      .map((p) => ({
+        email: p.anonEmail ?? p.user?.email ?? null,
+        showPitch: p.userId === null,
+      }))
+      .filter((r): r is { email: string; showPitch: boolean } => !!r.email)
+      .map(({ email, showPitch }) => {
+        const { subject, html } = outingCancelledEmail({
+          outingTitle: args.outing.title,
+          homeUrl: BASE_URL,
+          showCalendarFeedPitch: showPitch,
+        });
+        return safeSend({ to: email, subject, html, trigger: "outing-cancelled", attachments });
+      })
   );
 }
 
@@ -322,17 +392,25 @@ export async function sendTimeslotPickedEmails(args: {
   });
 
   const canonical = outingPath(args.outing.slug, args.outing.shortId);
-  const { subject, html } = timeslotPickedEmail({
-    outingTitle: args.outing.title,
-    outingUrl: `${BASE_URL}${canonical}`,
-    fixedDatetime: args.outing.fixedDatetime,
-    location: args.outing.location,
-  });
+  const icsCtx = await loadIcsContextForOuting(args.outing.id);
+  const attachments = icsCtx ? [buildIcsAttachmentForOuting(icsCtx, "PUBLISH")] : undefined;
 
   await Promise.all(
     recipients
-      .map((p) => p.anonEmail ?? p.user?.email ?? null)
-      .filter((e): e is string => !!e)
-      .map((email) => safeSend({ to: email, subject, html, trigger: "timeslot-picked" }))
+      .map((p) => ({
+        email: p.anonEmail ?? p.user?.email ?? null,
+        showPitch: p.userId === null,
+      }))
+      .filter((r): r is { email: string; showPitch: boolean } => !!r.email)
+      .map(({ email, showPitch }) => {
+        const { subject, html } = timeslotPickedEmail({
+          outingTitle: args.outing.title,
+          outingUrl: `${BASE_URL}${canonical}`,
+          fixedDatetime: args.outing.fixedDatetime,
+          location: args.outing.location,
+          showCalendarFeedPitch: showPitch,
+        });
+        return safeSend({ to: email, subject, html, trigger: "timeslot-picked", attachments });
+      })
   );
 }
