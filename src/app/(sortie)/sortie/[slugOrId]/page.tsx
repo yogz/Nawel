@@ -3,7 +3,7 @@ import Link from "next/link";
 import { and, eq } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { debts, purchases } from "@drizzle/sortie-schema";
@@ -127,19 +127,24 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
 
   // Money-layer context : 3 queries indépendantes (purchase + debts debtor +
   // debts creditor) parallélisées — économise 2 RTT DB sur le hot path.
-  const [existingPurchase, myMoneyRow, myCreditRow] = await Promise.all([
+  const [existingPurchase, myDebtRows, myCreditRows] = await Promise.all([
     db.query.purchases.findFirst({ where: eq(purchases.outingId, outing.id) }),
     me
-      ? db.query.debts.findFirst({
+      ? db.query.debts.findMany({
           where: and(eq(debts.outingId, outing.id), eq(debts.debtorParticipantId, me.id)),
+          columns: { status: true },
         })
-      : Promise.resolve(null),
+      : Promise.resolve([]),
     me
-      ? db.query.debts.findFirst({
+      ? db.query.debts.findMany({
           where: and(eq(debts.outingId, outing.id), eq(debts.creditorParticipantId, me.id)),
+          columns: { status: true },
         })
-      : Promise.resolve(null),
+      : Promise.resolve([]),
   ]);
+  const myDebtStatuses = [...myDebtRows, ...myCreditRows].map((r) => r.status);
+  const allDebtsSettled =
+    myDebtStatuses.length > 0 && myDebtStatuses.every((s) => s === "confirmed");
   const {
     timeslots: enrichedTimeslots,
     totalVoters,
@@ -147,7 +152,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
   } = enrichTimeslots(outing);
   const isOpenPoll = outing.mode === "vote" && !outing.chosenTimeslotId;
   const viewerIsConfirmed = me?.response === "yes";
-  const viewerHasMoneyRow = Boolean(myMoneyRow || myCreditRow);
+  const viewerHasMoneyRow = myDebtStatuses.length > 0;
   const viewerIsPurchaser = Boolean(
     me && existingPurchase && existingPurchase.purchaserParticipantId === me.id
   );
@@ -352,14 +357,23 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
               Déclarer l&rsquo;achat
             </Link>
           )}
-          {viewerHasMoneyRow && (
-            <Link
-              href={`/${canonical}/dettes`}
-              className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
-            >
-              Voir les dettes
-            </Link>
-          )}
+          {viewerHasMoneyRow &&
+            (allDebtsSettled ? (
+              <Link
+                href={`/${canonical}/dettes`}
+                className="inline-flex h-11 items-center gap-2 rounded-full border border-acid-300/50 bg-acid-50/40 px-4 text-acid-300 transition-colors hover:border-acid-300 hover:text-acid-600"
+              >
+                <Check size={16} strokeWidth={2.4} />
+                Dettes réglées
+              </Link>
+            ) : (
+              <Link
+                href={`/${canonical}/dettes`}
+                className="inline-flex h-11 items-center rounded-full border border-surface-400 bg-surface-100 px-4 text-ink-600 transition-colors hover:border-acid-600 hover:text-acid-600"
+              >
+                Voir les dettes
+              </Link>
+            ))}
           {viewerIsPurchaser && (
             <Link
               href={`/${canonical}/paiement`}
