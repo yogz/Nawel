@@ -2,11 +2,12 @@ import { and, eq, inArray, ne } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { db } from "@/lib/db";
 import { debts, outings, participants } from "@drizzle/sortie-schema";
+import type { DebtStatusValue } from "./debt-queries";
 
 export type BulkDebtRow = {
   id: string;
   amountCents: number;
-  status: "pending" | "declared_paid" | "confirmed";
+  status: DebtStatusValue;
   outingId: string;
   outingTitle: string;
   outingShortId: string;

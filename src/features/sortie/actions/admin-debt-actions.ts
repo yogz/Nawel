@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -17,6 +17,12 @@ import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
 import { assertSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { priceFor } from "@/features/sortie/lib/price-for";
+import {
+  computeDebtRows,
+  DebtLockError,
+  isLedgerLockingStatus,
+  recomputeDebtsForPurchase,
+} from "@/features/sortie/lib/compute-debt-rows";
 import type { FormActionState } from "./outing-actions";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 
@@ -128,30 +134,27 @@ export async function swapPurchaserAction(
         "Le nouveau payeur n'a pas d'allocation sur cet achat. Réinitialise les allocations d'abord.",
     };
   }
-  if (allDebts.some((d) => d.status !== "pending")) {
+  // `gifted` est toléré : c'est un état terminal sans paiement, le recalcul
+  // le re-dérive proprement. Seuls `declared_paid`/`confirmed` bloquent.
+  if (allDebts.some((d) => isLedgerLockingStatus(d.status))) {
     return {
       message:
-        "Une ou plusieurs dettes ne sont plus en 'pending'. Réinitialise les statuts avant de basculer le payeur.",
+        "Une ou plusieurs dettes sont en cours de règlement. Réinitialise les statuts avant de basculer le payeur.",
     };
   }
 
-  // Recompute des dettes pour le nouveau payeur via le helper partagé.
-  const debtsByDebtor = new Map<string, number>();
-  for (const a of allocs) {
-    if (a.participantId === newPurchaserParticipantId) {
-      continue;
-    }
-    const amount = priceFor(purchase, a);
-    debtsByDebtor.set(a.participantId, (debtsByDebtor.get(a.participantId) ?? 0) + amount);
-  }
-  const newDebtRows = Array.from(debtsByDebtor.entries())
-    .filter(([, amount]) => amount > 0)
-    .map(([participantId, amount]) => ({
-      outingId: outing.id,
-      debtorParticipantId: participantId,
-      creditorParticipantId: newPurchaserParticipantId,
-      amountCents: amount,
-    }));
+  // Recompute des dettes pour le nouveau payeur via le helper pur partagé —
+  // gift-aware (une allocation `giftedAt` compte 0 €, dette `gifted` dérivée).
+  const newDebtRows = computeDebtRows(allocs, {
+    ...purchase,
+    purchaserParticipantId: newPurchaserParticipantId,
+  }).map((r) => ({
+    outingId: outing.id,
+    debtorParticipantId: r.debtorParticipantId,
+    creditorParticipantId: newPurchaserParticipantId,
+    amountCents: r.amountCents,
+    status: r.status,
+  }));
 
   const before = {
     purchaseId: purchase.id,
@@ -161,6 +164,14 @@ export async function swapPurchaserAction(
       debtorParticipantId: d.debtorParticipantId,
       creditorParticipantId: d.creditorParticipantId,
       amountCents: d.amountCents,
+      status: d.status,
+    })),
+    // État des places offertes : le nouveau payeur « hérite » des cadeaux de
+    // l'ancien — on garde la trace pour pouvoir auditer/reconstituer.
+    allocations: allocs.map((a) => ({
+      id: a.id,
+      participantId: a.participantId,
+      giftedAt: a.giftedAt,
     })),
   };
 
@@ -354,4 +365,111 @@ export async function deleteDebtAction(
 
   await revalidateForOuting(outing);
   return {};
+}
+
+const allocationGiftSchema = z.object({
+  allocationId: z.string().uuid(),
+});
+
+// Allocation + achat + sortie parente en un seul round-trip (relations nested).
+async function loadAllocationContext(allocationId: string) {
+  const allocation = await db.query.purchaseAllocations.findFirst({
+    where: eq(purchaseAllocations.id, allocationId),
+    with: {
+      purchase: {
+        with: { outing: { columns: { id: true, shortId: true, slug: true } } },
+      },
+    },
+  });
+  if (!allocation) {
+    return null;
+  }
+  return { allocation, purchase: allocation.purchase, outing: allocation.purchase.outing };
+}
+
+/**
+ * Cœur partagé de l'offre/annulation admin d'une place. C'est la voie par
+ * laquelle l'admin « édite » le statut `gifted` : passer par le recalcul garde
+ * l'invariant `gifted ⇒ 0 €` et la cohérence allocation↔dette (un override brut
+ * du `debts.status` ne le ferait pas).
+ */
+async function applyAdminAllocationGift(
+  formData: FormData,
+  gifting: boolean
+): Promise<FormActionState> {
+  const session = await assertSortieAdmin();
+  const parsed = allocationGiftSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  const ctx = await loadAllocationContext(parsed.data.allocationId);
+  if (!ctx) {
+    return { message: "Place introuvable." };
+  }
+  const { allocation, purchase, outing } = ctx;
+  if (gifting && allocation.participantId === purchase.purchaserParticipantId) {
+    return { message: "L'acheteur n'a pas de dette — rien à offrir." };
+  }
+
+  // Montant concerné capturé avant l'update — pour l'audit.
+  const amountCents = priceFor(purchase, allocation);
+  // Guard d'idempotence dans le `WHERE` : un double-clic ne bascule qu'une fois.
+  const idempotencyGuard = gifting
+    ? isNull(purchaseAllocations.giftedAt)
+    : isNotNull(purchaseAllocations.giftedAt);
+
+  try {
+    await db.transaction(async (tx) => {
+      const [row] = await tx
+        .update(purchaseAllocations)
+        .set({ giftedAt: gifting ? new Date() : null })
+        .where(and(eq(purchaseAllocations.id, allocation.id), idempotencyGuard))
+        .returning({ id: purchaseAllocations.id });
+      if (!row) {
+        return;
+      }
+      await recomputeDebtsForPurchase(tx, purchase);
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorUserId: session.user.id,
+        action: gifting
+          ? ADMIN_AUDIT.ALLOCATION_ADMIN_GIFTED
+          : ADMIN_AUDIT.ALLOCATION_ADMIN_GIFT_REVERSED,
+        payload: JSON.stringify({
+          allocationId: allocation.id,
+          beneficiaryParticipantId: allocation.participantId,
+          purchaseId: purchase.id,
+          amountCents,
+        }),
+      });
+    });
+  } catch (e) {
+    if (e instanceof DebtLockError) {
+      return { message: e.message };
+    }
+    throw e;
+  }
+
+  await revalidateForOuting(outing);
+  return {};
+}
+
+/** Offre admin d'une place — pendant de `giftAllocationAction` côté acheteur. */
+export async function adminGiftAllocationAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  return applyAdminAllocationGift(formData, true);
+}
+
+/**
+ * Annule l'offre d'une place — seule voie de retour arrière (le créancier ne
+ * peut pas « dé-offrir » lui-même, décision produit).
+ */
+export async function adminUngiftAllocationAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  return applyAdminAllocationGift(formData, false);
 }

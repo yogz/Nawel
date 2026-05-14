@@ -212,6 +212,36 @@ export function paymentConfirmedEmail(args: {
 }
 
 /**
+ * Sent to the beneficiary when the buyer offers them their seat — i.e. their
+ * whole debt for the outing has been gifted. Closes the loop : the debt that
+ * was on their /dettes page just vanished, this explains why.
+ */
+export function debtGiftedEmail(args: {
+  outingTitle: string;
+  buyerName: string;
+  beneficiaryName: string;
+  outingUrl: string;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(args.buyerName)} t&rsquo;offre ta place</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      ${escapeHtml(args.buyerName)} t&rsquo;offre ta place pour <strong>${title}</strong> — tu n&rsquo;as plus rien à régler. Profite&nbsp;!
+    </p>
+    <p style="margin:28px 0 0;">
+      ${ctaButton(args.outingUrl, "Voir la sortie")}
+    </p>
+  `;
+  return {
+    subject: `${args.outingTitle} — ta place t'est offerte`,
+    html: renderEmail({
+      preheader: `${args.buyerName} t'offre ta place — rien à régler.`,
+      body,
+    }),
+  };
+}
+
+/**
  * Sent to the outing creator when someone RSVPs. Includes the response type
  * and any +1 counts so the organizer can eyeball the headcount from their
  * inbox without reloading the page.

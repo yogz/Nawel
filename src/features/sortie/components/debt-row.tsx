@@ -13,7 +13,9 @@ import {
 } from "@/features/sortie/actions/debt-actions";
 import { buildWaHref } from "@/features/sortie/lib/whatsapp-share";
 import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
+import type { CreditorSeat, DebtStatusValue } from "@/features/sortie/queries/debt-queries";
 import { ActionStatus } from "./action-status";
+import { GiftSeatList } from "./gift-seat-list";
 
 type PaymentMethod = {
   id: string;
@@ -26,10 +28,15 @@ type Props = {
   shortId: string;
   debtId: string;
   amountCents: number;
-  status: "pending" | "declared_paid" | "confirmed";
+  status: DebtStatusValue;
   other: PersonRef;
   view: "debtor" | "creditor";
   methods?: PaymentMethod[];
+  /** Places du débiteur — alimente le panneau « Offrir » (vue créancier
+   * uniquement). Omis ailleurs (ex. `/moi/argent`) → pas de panneau. */
+  giftableSeats?: CreditorSeat[];
+  /** Verrou sortie-wide : un paiement déclaré gèle les offres. */
+  giftLocked?: boolean;
   /** Titre de la sortie — utilisé par le bouton WhatsApp pour
    * personnaliser le message de relance. Optionnel : seule la branche
    * `view === "creditor" && status === "pending"` le consomme. */
@@ -65,11 +72,13 @@ const STATUS_LABEL: Record<"debtor" | "creditor", Record<Props["status"], string
     pending: "À régler",
     declared_paid: "En attente de confirmation",
     confirmed: "Réglé",
+    gifted: "Offerte",
   },
   creditor: {
     pending: "Pas encore reçu",
     declared_paid: "Confirmation à valider",
     confirmed: "Reçu",
+    gifted: "Offerte",
   },
 };
 
@@ -81,17 +90,21 @@ export function DebtRow({
   other,
   view,
   methods = [],
+  giftableSeats,
+  giftLocked = false,
   outingTitle,
   outingHref,
   compact = false,
   colorAmount = false,
 }: Props) {
   const statusLabel = STATUS_LABEL[view][status];
-  // `confirmed` n'est plus actionnable : on désature la couleur pour ne
-  // pas concurrencer un statut pending (qui lui appelle à l'action).
-  const statusColor = status === "confirmed" ? "text-ink-400" : "text-hot-600";
+  // `confirmed` et `gifted` sont des états terminaux, plus actionnables : on
+  // désature la couleur pour ne pas concurrencer un `pending` (qui appelle à
+  // l'action).
+  const isClosed = status === "confirmed" || status === "gifted";
+  const statusColor = isClosed ? "text-ink-400" : "text-hot-600";
   const amountColor =
-    colorAmount && status !== "confirmed"
+    colorAmount && !isClosed
       ? view === "debtor"
         ? "text-hot-600"
         : "text-acid-700"
@@ -137,7 +150,7 @@ export function DebtRow({
         </span>
       </div>
 
-      {view === "debtor" && status !== "confirmed" && (
+      {view === "debtor" && !isClosed && (
         <>
           {methods.length > 0 ? (
             <ul className="flex flex-col gap-1.5">
@@ -159,7 +172,13 @@ export function DebtRow({
         </>
       )}
 
-      {view === "creditor" && status !== "confirmed" && (
+      {view === "debtor" && status === "gifted" && (
+        <p className="text-xs text-ink-400">
+          {personName(other)} t&rsquo;offre cette place — rien à régler.
+        </p>
+      )}
+
+      {view === "creditor" && (
         <>
           {status === "pending" && (
             <>
@@ -179,6 +198,12 @@ export function DebtRow({
             </>
           )}
           {status === "declared_paid" && <ConfirmPaidButton shortId={shortId} debtId={debtId} />}
+          {/* Panneau « Offrir » : visible dans toutes les vues créancier (même
+              `gifted`/`confirmed`, où il sert de récap), les boutons étant
+              verrouillés par `giftLocked` côté serveur ET ici. */}
+          {giftableSeats && (
+            <GiftSeatList shortId={shortId} seats={giftableSeats} locked={giftLocked} />
+          )}
         </>
       )}
     </li>

@@ -143,8 +143,10 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
       : Promise.resolve([]),
   ]);
   const myDebtStatuses = [...myDebtRows, ...myCreditRows].map((r) => r.status);
+  // `confirmed` ET `gifted` sont des états terminaux : une dette offerte
+  // compte comme réglée pour le badge « dettes réglées ».
   const allDebtsSettled =
-    myDebtStatuses.length > 0 && myDebtStatuses.every((s) => s === "confirmed");
+    myDebtStatuses.length > 0 && myDebtStatuses.every((s) => s === "confirmed" || s === "gifted");
   const {
     timeslots: enrichedTimeslots,
     totalVoters,

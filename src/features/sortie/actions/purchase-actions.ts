@@ -1,6 +1,6 @@
 "use server";
 
-import { and, asc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -15,7 +15,11 @@ import {
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { priceFor } from "@/features/sortie/lib/price-for";
-import { sendPurchaseConfirmedEmails } from "@/features/sortie/lib/emails/send-money-emails";
+import { DebtLockError, recomputeDebtsForPurchase } from "@/features/sortie/lib/compute-debt-rows";
+import {
+  sendDebtGiftedEmail,
+  sendPurchaseConfirmedEmails,
+} from "@/features/sortie/lib/emails/send-money-emails";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
@@ -30,6 +34,7 @@ import { shortIdSchema } from "./schemas";
 const AUDIT_ACTION = {
   PURCHASE_DECLARED: "PURCHASE_DECLARED",
   ALLOCATION_CEDED: "ALLOCATION_CEDED",
+  ALLOCATION_GIFTED: "ALLOCATION_GIFTED",
 } as const;
 
 const MAX_CENTS = 10_000_00;
@@ -194,6 +199,13 @@ export async function declarePurchaseAction(
   }));
 
   // Aggregate each non-buyer's total into a single debt row.
+  //
+  // Volontairement PAS via `computeDebtRows` : à la déclaration d'achat il n'y
+  // a pas encore de rows `purchase_allocations` (donc pas de `giftedAt`) — on
+  // travaille sur le `plan` en mémoire + les prix du form. `computeDebtRows`
+  // reste la source de vérité pour les *recalculs* (cession/offre/swap), où
+  // les allocations existent en base. La Map ci-dessous alimente aussi
+  // `sendPurchaseConfirmedEmails`.
   const debtsByParticipant = new Map<string, number>();
   plan.forEach((entry, i) => {
     if (entry.participantId === me.id) {
@@ -300,37 +312,23 @@ const cessionSchema = z.object({
   targetParticipantId: z.string().uuid(),
 });
 
-function priceOfAllocation(args: {
-  pricingMode: "unique" | "category" | "nominal";
-  isChild: boolean;
-  uniquePriceCents: number | null;
-  adultPriceCents: number | null;
-  childPriceCents: number | null;
-  nominalPriceCents: number | null;
-}): number {
-  switch (args.pricingMode) {
-    case "unique":
-      return args.uniquePriceCents ?? 0;
-    case "category":
-      return (args.isChild ? args.childPriceCents : args.adultPriceCents) ?? 0;
-    case "nominal":
-      return args.nominalPriceCents ?? 0;
-  }
-}
-
 /**
  * Transfers a single allocation from the current holder to another confirmed
- * participant. Recomputes the debt ledger for the whole purchase from the
- * post-swap allocations so the arithmetic stays consistent — delta patches
- * would be fragile (especially around zero crossings and changed holders).
+ * participant. Recomputes the debt ledger for the whole purchase via the
+ * shared `recomputeDebtsForPurchase` helper so the arithmetic stays consistent
+ * — delta patches would be fragile (especially around zero crossings and
+ * changed holders).
  *
  * Guardrails:
  *   - Only the current holder can cede.
+ *   - A gifted allocation cannot be ceded — the gift is the buyer's call to
+ *     make and to reverse (admin only), not something the beneficiary can pass
+ *     along.
  *   - Target must be a confirmed (`response="yes"`) participant of the
  *     same outing, and not the buyer (the buyer already paid).
- *   - Blocked once any debt on this purchase has moved past `pending` —
- *     reshuffling money that's already been declared paid creates
- *     reconciliation headaches nobody asked for.
+ *   - Blocked once any debt on this purchase has moved past `pending`
+ *     (≠ `gifted`) — enforced inside `recomputeDebtsForPurchase` via
+ *     `DebtLockError`.
  */
 export async function cedeAllocationAction(
   _prev: FormActionState,
@@ -364,6 +362,9 @@ export async function cedeAllocationAction(
   if (allocation.participantId !== me.id) {
     return { message: "Cette place n'est pas la tienne." };
   }
+  if (allocation.giftedAt) {
+    return { message: "Cette place t'a été offerte — tu ne peux pas la céder." };
+  }
   if (allocation.purchase.purchaserParticipantId === targetParticipantId) {
     return { message: "L'acheteur a déjà payé sa part." };
   }
@@ -379,17 +380,6 @@ export async function cedeAllocationAction(
     return { message: "Destinataire introuvable parmi les confirmés." };
   }
 
-  // Hard stop: once someone has declared or confirmed payment, we refuse
-  // to renumber the ledger.
-  const nonPendingDebts = await db
-    .select({ id: debts.id })
-    .from(debts)
-    .where(and(eq(debts.outingId, outing.id), ne(debts.status, "pending")))
-    .limit(1);
-  if (nonPendingDebts.length > 0) {
-    return { message: "Des paiements ont déjà été déclarés — la cession est bloquée." };
-  }
-
   const gate = await rateLimit({
     key: `cede:${me.id}`,
     limit: 10,
@@ -400,80 +390,178 @@ export async function cedeAllocationAction(
   }
 
   const ipHash = await hashIp();
-  await db.transaction(async (tx) => {
-    // Flip the allocation.
-    await tx
-      .update(purchaseAllocations)
-      .set({ participantId: targetParticipantId })
-      .where(eq(purchaseAllocations.id, allocationId));
+  try {
+    await db.transaction(async (tx) => {
+      // Flip the allocation, then re-derive the whole ledger from the
+      // post-swap allocations. The helper holds the `FOR UPDATE` lock and
+      // throws `DebtLockError` if any debt has moved past `pending`.
+      await tx
+        .update(purchaseAllocations)
+        .set({ participantId: targetParticipantId })
+        .where(eq(purchaseAllocations.id, allocationId));
 
-    // Re-derive debts for this purchase from scratch. Delete + insert is
-    // cheaper to reason about than delta patches — and there are at most
-    // N allocations where N is small (≤100).
-    const currentAllocs = await tx
-      .select({
-        participantId: purchaseAllocations.participantId,
-        isChild: purchaseAllocations.isChild,
-        nominalPriceCents: purchaseAllocations.nominalPriceCents,
-      })
-      .from(purchaseAllocations)
-      .where(eq(purchaseAllocations.purchaseId, allocation.purchaseId));
+      await recomputeDebtsForPurchase(tx, allocation.purchase);
 
-    const perParticipant = new Map<string, number>();
-    for (const a of currentAllocs) {
-      if (a.participantId === allocation.purchase.purchaserParticipantId) {
-        continue;
-      }
-      const cents = priceOfAllocation({
-        pricingMode: allocation.purchase.pricingMode,
-        isChild: a.isChild,
-        uniquePriceCents: allocation.purchase.uniquePriceCents,
-        adultPriceCents: allocation.purchase.adultPriceCents,
-        childPriceCents: allocation.purchase.childPriceCents,
-        nominalPriceCents: a.nominalPriceCents,
-      });
-      perParticipant.set(a.participantId, (perParticipant.get(a.participantId) ?? 0) + cents);
-    }
-
-    // Wipe and re-insert debts tied to *this* purchase (= this
-    // creditor). The DB constraint UNIQUE(purchases.outing_id) keeps
-    // the invariant "one purchase per outing" honest; scoping the
-    // delete by creditor makes the action correct even if that
-    // constraint is ever relaxed.
-    await tx
-      .delete(debts)
-      .where(
-        and(
-          eq(debts.outingId, outing.id),
-          eq(debts.creditorParticipantId, allocation.purchase.purchaserParticipantId)
-        )
-      );
-
-    const rows = Array.from(perParticipant.entries())
-      .filter(([, amount]) => amount > 0)
-      .map(([participantId, amount]) => ({
+      await tx.insert(auditLog).values({
         outingId: outing.id,
-        debtorParticipantId: participantId,
-        creditorParticipantId: allocation.purchase.purchaserParticipantId,
-        amountCents: amount,
-      }));
-    if (rows.length > 0) {
-      await tx.insert(debts).values(rows);
-    }
-
-    await tx.insert(auditLog).values({
-      outingId: outing.id,
-      actorParticipantId: me.id,
-      actorUserId: userId,
-      action: AUDIT_ACTION.ALLOCATION_CEDED,
-      ipHash,
-      payload: JSON.stringify({
-        allocationId,
-        targetParticipantId,
-        purchaseId: allocation.purchaseId,
-      }),
+        actorParticipantId: me.id,
+        actorUserId: userId,
+        action: AUDIT_ACTION.ALLOCATION_CEDED,
+        ipHash,
+        payload: JSON.stringify({
+          allocationId,
+          targetParticipantId,
+          purchaseId: allocation.purchaseId,
+        }),
+      });
     });
+  } catch (e) {
+    if (e instanceof DebtLockError) {
+      return { message: "Des paiements ont déjà été déclarés — la cession est bloquée." };
+    }
+    throw e;
+  }
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}`);
+  revalidatePath(`/${canonical}/dettes`);
+  return {};
+}
+
+const giftSchema = z.object({
+  shortId: shortIdSchema,
+  allocationId: z.string().uuid(),
+});
+
+/**
+ * « Offrir la place » — l'acheteur renonce à ce qu'un débiteur lui doit pour
+ * une allocation précise. La place reste attribuée au débiteur ; seul son coût
+ * sort du calcul de la dette (`gifted_at` posé sur l'allocation).
+ *
+ * Garde-fous :
+ *   - Seul l'acheteur du purchase peut offrir (`purchaserParticipantId`).
+ *   - On ne s'offre pas sa propre place d'acheteur (poserait un `gifted_at`
+ *     orphelin — l'acheteur n'a jamais de dette).
+ *   - `gifted_at IS NULL` dans le `WHERE` de l'UPDATE = idempotence : un
+ *     double-clic concurrent ne pose la marque qu'une fois.
+ *   - Bloqué si une dette de la sortie a dépassé `pending` (≠ `gifted`),
+ *     via `DebtLockError`.
+ *   - Non réversible côté acheteur : seul l'admin peut annuler l'offre.
+ */
+export async function giftAllocationAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = giftSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const { shortId, allocationId } = parsed.data;
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, shortId),
   });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+  if (outing.status === "cancelled") {
+    return { message: "Cette sortie est annulée." };
+  }
+  if (outing.status === "settled") {
+    return { message: "Cette sortie est soldée — le bilan est clos." };
+  }
+
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
+  if (!me) {
+    return { message: "Non autorisé." };
+  }
+
+  const allocation = await db.query.purchaseAllocations.findFirst({
+    where: eq(purchaseAllocations.id, allocationId),
+    with: { purchase: true },
+  });
+  if (!allocation || allocation.purchase.outingId !== outing.id) {
+    return { message: "Place introuvable." };
+  }
+  // Autorisation : seul l'acheteur peut offrir une place.
+  if (allocation.purchase.purchaserParticipantId !== me.id) {
+    return { message: "Seul l'acheteur peut offrir une place." };
+  }
+  // Offrir sa propre place d'acheteur n'a pas de sens (aucune dette) et
+  // laisserait un `gifted_at` orphelin sans row `debts` correspondante.
+  if (allocation.participantId === allocation.purchase.purchaserParticipantId) {
+    return { message: "Cette place est la tienne — tu l'as déjà réglée." };
+  }
+  if (allocation.giftedAt) {
+    return { message: "Cette place est déjà offerte." };
+  }
+
+  const gate = await rateLimit({
+    key: `gift:${me.id}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  // Montant offert capturé avant l'update — l'audit doit pouvoir dire
+  // « combien » sans rejouer le pricing historique.
+  const amountForgoneCents = priceFor(allocation.purchase, allocation);
+  const beneficiaryParticipantId = allocation.participantId;
+
+  const ipHash = await hashIp();
+  let beneficiaryFullyGifted = false;
+  try {
+    beneficiaryFullyGifted = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .update(purchaseAllocations)
+        .set({ giftedAt: new Date() })
+        .where(and(eq(purchaseAllocations.id, allocationId), isNull(purchaseAllocations.giftedAt)))
+        .returning({ id: purchaseAllocations.id });
+      // Déjà offerte par une requête concurrente — rien à recalculer ni logger.
+      if (!row) {
+        return false;
+      }
+
+      const computed = await recomputeDebtsForPurchase(tx, allocation.purchase);
+
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorParticipantId: me.id,
+        actorUserId: userId,
+        action: AUDIT_ACTION.ALLOCATION_GIFTED,
+        ipHash,
+        payload: JSON.stringify({
+          allocationId,
+          beneficiaryParticipantId,
+          purchaseId: allocation.purchaseId,
+          amountForgoneCents,
+        }),
+      });
+
+      // Toutes les places du bénéficiaire offertes → on le prévient (sa dette
+      // a disparu de /dettes). Offre partielle = pas d'email, le montant baisse
+      // seulement.
+      return computed.some(
+        (r) => r.debtorParticipantId === beneficiaryParticipantId && r.status === "gifted"
+      );
+    });
+  } catch (e) {
+    if (e instanceof DebtLockError) {
+      return { message: "Des paiements ont déjà été déclarés — l'offre est bloquée." };
+    }
+    throw e;
+  }
+
+  if (beneficiaryFullyGifted) {
+    // Fire-and-forget — un Resend down ne doit pas annuler l'offre déjà écrite.
+    await sendDebtGiftedEmail({
+      outing: { title: outing.title, slug: outing.slug, shortId: outing.shortId },
+      buyerParticipantId: me.id,
+      beneficiaryParticipantId,
+    });
+  }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);

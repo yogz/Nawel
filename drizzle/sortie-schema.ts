@@ -50,7 +50,15 @@ export const paymentMethodType = sortie.enum("payment_method_type", [
   "iban",
 ]);
 
-export const debtStatus = sortie.enum("debt_status", ["pending", "declared_paid", "confirmed"]);
+export const debtStatus = sortie.enum("debt_status", [
+  "pending",
+  "declared_paid",
+  "confirmed",
+  // `gifted` : l'acheteur a offert la/les place(s) du débiteur — dette à 0 €,
+  // état terminal sans paiement. Dérivé : une dette passe `gifted` quand toutes
+  // les allocations du débiteur ont `gifted_at` non-null (cf. compute-debt-rows).
+  "gifted",
+]);
 
 export const ticketScope = sortie.enum("ticket_scope", ["participant", "outing"]);
 
@@ -303,6 +311,11 @@ export const purchaseAllocations = sortie.table(
     isChild: boolean("is_child").notNull().default(false),
     // Populated iff the parent purchase uses pricingMode == "nominal".
     nominalPriceCents: integer("nominal_price_cents"),
+    // Non-null ⇒ l'acheteur a offert cette place : elle compte 0 € dans le
+    // calcul des dettes (cf. compute-debt-rows). Posé par giftAllocationAction
+    // (acheteur) ou adminGiftAllocationAction ; remis à null par
+    // adminUngiftAllocationAction uniquement (non-réversible côté créancier).
+    giftedAt: timestamp("gifted_at", { withTimezone: true }),
   },
   (t) => ({
     purchaseIdx: index("sortie_allocations_purchase_idx").on(t.purchaseId),

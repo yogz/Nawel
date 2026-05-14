@@ -6,6 +6,7 @@ import {
   bulkPaymentDeclaredEmail,
   bulkSettledEmail,
   debtBulkReminderEmail,
+  debtGiftedEmail,
   debtReminderEmail,
   paymentConfirmedEmail,
   paymentDeclaredEmail,
@@ -174,6 +175,33 @@ export async function sendPaymentConfirmedEmail(args: {
     outingUrl: `${BASE_URL}${canonical}`,
   });
   await safeSend({ to: debtor.email, subject, html, trigger: "payment-confirmed" });
+}
+
+/**
+ * Called after `giftAllocationAction` when the beneficiary's debt has become
+ * fully `gifted` (toutes ses places offertes). Notifies the beneficiary — sans
+ * ça, leur dette disparaît de /dettes sans explication. Pas d'email sur une
+ * offre partielle : le montant baisse seulement, visible à la prochaine visite.
+ */
+export async function sendDebtGiftedEmail(args: {
+  outing: { title: string; slug: string | null; shortId: string };
+  buyerParticipantId: string;
+  beneficiaryParticipantId: string;
+}): Promise<void> {
+  const contacts = await fetchContacts([args.buyerParticipantId, args.beneficiaryParticipantId]);
+  const buyer = contacts.find((c) => c.participantId === args.buyerParticipantId);
+  const beneficiary = contacts.find((c) => c.participantId === args.beneficiaryParticipantId);
+  if (!beneficiary?.email) {
+    return;
+  }
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const { subject, html } = debtGiftedEmail({
+    outingTitle: args.outing.title,
+    buyerName: buyer?.name ?? "Quelqu'un",
+    beneficiaryName: beneficiary.name,
+    outingUrl: `${BASE_URL}${canonical}`,
+  });
+  await safeSend({ to: beneficiary.email, subject, html, trigger: "debt-gifted" });
 }
 
 type UserContact = { email: string | null; name: string };

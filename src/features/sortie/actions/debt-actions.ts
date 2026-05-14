@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -146,10 +146,20 @@ export async function confirmDebtPaidAction(
   // Transaction : update debt + audit log atomiques (idem markDebtPaid).
   const ipHash = await hashIp();
   const updated = await db.transaction(async (tx) => {
+    // Le guard de statut empêche de « confirmer » une dette `gifted` (offerte,
+    // terminale) — non atteignable depuis l'UI mais le call serveur doit
+    // refuser. Couvre aussi l'idempotence d'un re-clic sur une dette déjà
+    // confirmée.
     const [row] = await tx
       .update(debts)
       .set({ status: "confirmed", confirmedAt: new Date(), updatedAt: new Date() })
-      .where(and(eq(debts.id, parsed.data.debtId), eq(debts.creditorParticipantId, participant.id)))
+      .where(
+        and(
+          eq(debts.id, parsed.data.debtId),
+          eq(debts.creditorParticipantId, participant.id),
+          inArray(debts.status, ["pending", "declared_paid"])
+        )
+      )
       .returning({ id: debts.id });
 
     if (row) {
@@ -232,7 +242,9 @@ export async function remindDebtAction(
     }),
   ]);
 
-  if (!debt || debt.status === "confirmed") {
+  // `confirmed` (réglée) comme `gifted` (offerte) sont terminales : relancer
+  // n'a pas de sens et serait gênant pour le débiteur.
+  if (!debt || debt.status === "confirmed" || debt.status === "gifted") {
     return { message: "Cette dette ne peut pas être relancée." };
   }
   if (recent) {
@@ -306,7 +318,8 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
   }
 
   // The debt must exist, be owed by the caller, point at the method's owner,
-  // and not be confirmed yet (no point revealing after the loop is closed).
+  // and still be open : ni `confirmed` (boucle close) ni `gifted` (place
+  // offerte, 0 € à payer — aucune raison de révéler l'IBAN du créancier).
   const debt = await db.query.debts.findFirst({
     where: and(
       eq(debts.id, debtId),
@@ -314,7 +327,7 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
       eq(debts.debtorParticipantId, participant.id)
     ),
   });
-  if (!debt || debt.status === "confirmed") {
+  if (!debt || debt.status === "confirmed" || debt.status === "gifted") {
     return { ok: false, message: "Accès refusé." };
   }
 
