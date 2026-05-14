@@ -10,7 +10,10 @@ import {
   debts,
 } from "../../drizzle/sortie-schema";
 import { user } from "../../drizzle/schema";
-import { priceFor } from "../../src/features/sortie/lib/price-for";
+import {
+  computeDebtRows,
+  isLedgerLockingStatus,
+} from "../../src/features/sortie/lib/compute-debt-rows";
 
 async function main() {
   const shortId = process.argv[2];
@@ -59,10 +62,12 @@ async function main() {
   const allDebts = await db.query.debts.findMany({
     where: eq(debts.outingId, outing.id),
   });
-  const nonPending = allDebts.filter((d) => d.status !== "pending");
-  if (nonPending.length > 0) {
+  // `gifted` est toléré (état terminal sans paiement, re-dérivé par
+  // computeDebtRows) — seuls declared_paid/confirmed bloquent.
+  const locked = allDebts.filter((d) => isLedgerLockingStatus(d.status));
+  if (locked.length > 0) {
     console.error(
-      `Refus : ${nonPending.length} dette(s) ont dépassé le status 'pending' (declared_paid/confirmed). Ne pas réécrire l'historique.`
+      `Refus : ${locked.length} dette(s) sont en cours de règlement (declared_paid/confirmed). Ne pas réécrire l'historique.`
     );
     process.exit(1);
   }
@@ -81,24 +86,18 @@ async function main() {
     return p?.userName ?? p?.anonName ?? id;
   };
 
-  const debtsByDebtor = new Map<string, number>();
-  for (const a of allocs) {
-    if (a.participantId === newBuyerParticipantId) {
-      continue;
-    }
-    debtsByDebtor.set(
-      a.participantId,
-      (debtsByDebtor.get(a.participantId) ?? 0) + priceFor(purchase, a)
-    );
-  }
-  const newDebtRows = Array.from(debtsByDebtor.entries())
-    .filter(([, amount]) => amount > 0)
-    .map(([participantId, amount]) => ({
-      outingId: outing.id,
-      debtorParticipantId: participantId,
-      creditorParticipantId: newBuyerParticipantId,
-      amountCents: amount,
-    }));
+  // Recalcul via le helper partagé — gift-aware (une allocation `giftedAt`
+  // compte 0 €, dette `gifted` dérivée). Même logique que swapPurchaserAction.
+  const newDebtRows = computeDebtRows(allocs, {
+    ...purchase,
+    purchaserParticipantId: newBuyerParticipantId,
+  }).map((r) => ({
+    outingId: outing.id,
+    debtorParticipantId: r.debtorParticipantId,
+    creditorParticipantId: newBuyerParticipantId,
+    amountCents: r.amountCents,
+    status: r.status,
+  }));
 
   console.log(`\nSortie : ${outing.title} (${outing.shortId})`);
   console.log(

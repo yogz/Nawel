@@ -149,6 +149,8 @@ export type AdminAllocationRow = {
   participantName: string;
   isChild: boolean;
   nominalPriceCents: number | null;
+  /** Non-null ⇒ place offerte par l'acheteur (dette dérivée à 0 €). */
+  giftedAt: Date | null;
 };
 
 export type AdminDebtDetailRow = {
@@ -278,6 +280,7 @@ export async function getAdminDebtView(shortId: string): Promise<AdminDebtView |
     participantName: nameOf(a.participantId),
     isChild: a.isChild,
     nominalPriceCents: a.nominalPriceCents ?? null,
+    giftedAt: a.giftedAt,
   }));
 
   const debtsView: AdminDebtDetailRow[] = debtRows.map((d) => ({

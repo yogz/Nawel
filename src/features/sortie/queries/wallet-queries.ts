@@ -9,6 +9,7 @@ import {
   purchaserPaymentMethods,
 } from "@drizzle/sortie-schema";
 import type { PersonRef } from "@/features/sortie/lib/format";
+import type { DebtStatusValue } from "./debt-queries";
 
 // Le wallet ne montre rien sur les sorties annulées : la dette n'a plus
 // à être réglée et l'allocation n'a plus de sens budgétaire. On les
@@ -44,7 +45,7 @@ export type PaymentMethodRef = {
 export type WalletDebtRow = {
   id: string;
   amountCents: number;
-  status: "pending" | "declared_paid" | "confirmed";
+  status: DebtStatusValue;
   outing: OutingRef;
   debtor: PersonRef;
   creditor: PersonRef;

@@ -6,6 +6,8 @@ import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { SwapPurchaserForm } from "@/features/sortie/components/admin/swap-purchaser-form";
 import { AdminDebtRow } from "@/features/sortie/components/admin/admin-debt-row";
+import { AdminAllocationGiftForm } from "@/features/sortie/components/admin/admin-allocation-gift-form";
+import { isLedgerLockingStatus } from "@/features/sortie/lib/compute-debt-rows";
 
 export const metadata = {
   title: "Dettes — admin",
@@ -51,7 +53,9 @@ export default async function AdminDebtDetailPage({ params }: Props) {
 
   const { outing, purchase, participants, allocations, debts: debtRows, audit } = view;
 
-  const swapLocked = debtRows.some((d) => d.status !== "pending");
+  // `gifted` est un état terminal sans paiement — toléré. Seuls
+  // `declared_paid`/`confirmed` bloquent le swap (et le recalcul serveur).
+  const swapLocked = debtRows.some((d) => isLedgerLockingStatus(d.status));
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   const buyerName = participants.find((p) => p.id === purchase.purchaserParticipantId)?.name ?? "—";
 
@@ -132,15 +136,22 @@ export default async function AdminDebtDetailPage({ params }: Props) {
           {allocations.map((a) => (
             <li
               key={a.id}
-              className="flex items-center justify-between rounded-md border border-surface-300 bg-surface-50 px-3 py-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-surface-300 bg-surface-50 px-3 py-2 text-sm"
             >
               <span className="text-ink-700">
                 {a.participantName}
                 {a.isChild ? <span className="ml-2 text-ink-400">(enfant)</span> : null}
+                {a.giftedAt ? <span className="ml-2 text-acid-700">· offerte</span> : null}
               </span>
-              {a.nominalPriceCents !== null ? (
-                <span className="text-xs text-ink-500">{fmtEuros(a.nominalPriceCents)}€</span>
-              ) : null}
+              <span className="flex items-center gap-3">
+                {a.nominalPriceCents !== null ? (
+                  <span className="text-xs text-ink-500">{fmtEuros(a.nominalPriceCents)}€</span>
+                ) : null}
+                {/* L'acheteur n'a pas de dette → rien à offrir sur sa place. */}
+                {a.participantId !== purchase.purchaserParticipantId ? (
+                  <AdminAllocationGiftForm allocationId={a.id} gifted={a.giftedAt !== null} />
+                ) : null}
+              </span>
             </li>
           ))}
         </ul>

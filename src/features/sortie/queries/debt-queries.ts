@@ -6,8 +6,14 @@ import {
   purchaseAllocations,
   purchases,
   purchaserPaymentMethods,
+  type debtStatus,
 } from "@drizzle/sortie-schema";
 import type { PersonRef } from "@/features/sortie/lib/format";
+import { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
+
+// Dérivé de l'enum Drizzle = source de vérité unique : impossible de désync si
+// l'enum bouge. Ré-exporté pour debt-row.tsx, wallet-bulk-queries, etc.
+export type DebtStatusValue = (typeof debtStatus.enumValues)[number];
 
 type PaymentMethodRef = {
   id: string;
@@ -19,7 +25,7 @@ type PaymentMethodRef = {
 export type DebtRow = {
   id: string;
   amountCents: number;
-  status: "pending" | "declared_paid" | "confirmed";
+  status: DebtStatusValue;
   declaredAt: Date | null;
   confirmedAt: Date | null;
   debtor: PersonRef;
@@ -123,6 +129,8 @@ export type MyAllocationRow = {
   uniquePriceCents: number | null;
   adultPriceCents: number | null;
   childPriceCents: number | null;
+  /** Non-null ⇒ l'acheteur a offert cette place : non cédable, badge « Offerte ». */
+  giftedAt: Date | null;
 };
 
 /**
@@ -141,6 +149,7 @@ export async function getMyAllocations(
       purchaseId: purchaseAllocations.purchaseId,
       isChild: purchaseAllocations.isChild,
       nominalPriceCents: purchaseAllocations.nominalPriceCents,
+      giftedAt: purchaseAllocations.giftedAt,
       buyerParticipantId: purchases.purchaserParticipantId,
       pricingMode: purchases.pricingMode,
       uniquePriceCents: purchases.uniquePriceCents,
@@ -153,6 +162,54 @@ export async function getMyAllocations(
       and(eq(purchases.outingId, outingId), eq(purchaseAllocations.participantId, participantId))
     );
   return rows;
+}
+
+export type CreditorSeat = {
+  allocationId: string;
+  /** Détenteur de la place = débiteur de la dette correspondante. */
+  debtorParticipantId: string;
+  /** Libellé prêt à afficher, ex. « place adulte · 15,00 € ». */
+  label: string;
+  /** Non-null ⇒ déjà offerte. */
+  giftedAt: Date | null;
+};
+
+/**
+ * Toutes les places de l'achat de ce créancier, hors les siennes — alimente le
+ * panneau « Offrir » sous chaque ligne « Ce qu'on te doit ». Le créancier étant
+ * l'acheteur (un achat par sortie), on scope sur son `purchaserParticipantId`.
+ */
+export async function getCreditorSeats(
+  outingId: string,
+  creditorParticipantId: string
+): Promise<CreditorSeat[]> {
+  const rows = await db
+    .select({
+      allocationId: purchaseAllocations.id,
+      debtorParticipantId: purchaseAllocations.participantId,
+      isChild: purchaseAllocations.isChild,
+      nominalPriceCents: purchaseAllocations.nominalPriceCents,
+      giftedAt: purchaseAllocations.giftedAt,
+      pricingMode: purchases.pricingMode,
+      uniquePriceCents: purchases.uniquePriceCents,
+      adultPriceCents: purchases.adultPriceCents,
+      childPriceCents: purchases.childPriceCents,
+    })
+    .from(purchaseAllocations)
+    .innerJoin(purchases, eq(purchases.id, purchaseAllocations.purchaseId))
+    .where(
+      and(
+        eq(purchases.outingId, outingId),
+        eq(purchases.purchaserParticipantId, creditorParticipantId),
+        ne(purchaseAllocations.participantId, creditorParticipantId)
+      )
+    );
+  return rows.map((r) => ({
+    allocationId: r.allocationId,
+    debtorParticipantId: r.debtorParticipantId,
+    label: formatAllocationLabel(r),
+    giftedAt: r.giftedAt,
+  }));
 }
 
 export type DebtSummary = {

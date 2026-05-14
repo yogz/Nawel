@@ -79,15 +79,16 @@ export default async function WalletPage() {
     getWalletAllocations(userId),
   ]);
 
-  // Les rows `confirmed` (déjà réglés/reçus) ne pèsent plus sur le bilan.
-  // On les sépare ici pour les pousser derrière un disclosure plus bas —
-  // c'est de l'historique, pas un signal d'action. Le tri à l'intérieur
-  // des unsettled garde pending avant declared_paid pour mettre en avant
-  // ce qui demande une action immédiate.
-  const unsettledDebts = sortDebtsForDisplay(allDebts.filter((d) => d.status !== "confirmed"));
-  const settledDebts = allDebts.filter((d) => d.status === "confirmed");
-  const unsettledCredits = sortDebtsForDisplay(allCredits.filter((d) => d.status !== "confirmed"));
-  const settledCredits = allCredits.filter((d) => d.status === "confirmed");
+  // Les rows `confirmed` (réglés/reçus) et `gifted` (offertes) ne pèsent plus
+  // sur le bilan : états terminaux. On les sépare ici pour les pousser derrière
+  // un disclosure plus bas — c'est de l'historique, pas un signal d'action. Le
+  // tri à l'intérieur des unsettled garde pending avant declared_paid pour
+  // mettre en avant ce qui demande une action immédiate.
+  const isSettled = (d: WalletDebtRow) => d.status === "confirmed" || d.status === "gifted";
+  const unsettledDebts = sortDebtsForDisplay(allDebts.filter((d) => !isSettled(d)));
+  const settledDebts = allDebts.filter(isSettled);
+  const unsettledCredits = sortDebtsForDisplay(allCredits.filter((d) => !isSettled(d)));
+  const settledCredits = allCredits.filter(isSettled);
 
   const totalOwedCents = unsettledDebts.reduce((acc, d) => acc + d.amountCents, 0);
   const totalToReceiveCents = unsettledCredits.reduce((acc, d) => acc + d.amountCents, 0);
@@ -437,6 +438,9 @@ const STATUS_RANK: Record<WalletDebtRow["status"], number> = {
   pending: 0,
   declared_paid: 1,
   confirmed: 2,
+  // `gifted` est terminal comme `confirmed` — rang identique (de toute façon
+  // filtré hors des unsettled avant le tri).
+  gifted: 2,
 };
 
 function sortDebtsForDisplay(rows: WalletDebtRow[]): WalletDebtRow[] {

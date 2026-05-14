@@ -24,12 +24,16 @@ const STATUS_LABEL: Record<DebtStatus, string> = {
   pending: "en attente",
   declared_paid: "déclarée payée",
   confirmed: "confirmée",
+  gifted: "offerte",
 };
 
 const STATUS_TONE: Record<DebtStatus, string> = {
   pending: "bg-amber-100 text-amber-800",
   declared_paid: "bg-blue-100 text-blue-800",
   confirmed: "bg-acid-100 text-acid-700",
+  // `gifted` n'est pas réglable depuis le `<select>` (dérivé des allocations) —
+  // ton neutre pour le distinguer des statuts paiement.
+  gifted: "bg-surface-200 text-ink-500",
 };
 
 const DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
@@ -70,8 +74,19 @@ export function AdminDebtRow({
 
       <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="flex flex-wrap items-center gap-2">
-          <StatusForm debtId={debtId} currentStatus={status} />
-          <AmountForm debtId={debtId} amountCents={amountCents} />
+          {status === "gifted" ? (
+            // `gifted` est dérivé des `gifted_at` sur les allocations — pas un
+            // statut paiement réglable à la main. L'admin l'édite via les
+            // boutons « Offrir / Annuler l'offre » de la liste des places.
+            <span className="text-xs text-ink-400">
+              Dette offerte — gérer via les places ci-dessus.
+            </span>
+          ) : (
+            <>
+              <StatusForm debtId={debtId} currentStatus={status} />
+              <AmountForm debtId={debtId} amountCents={amountCents} />
+            </>
+          )}
         </div>
         <DeleteForm debtId={debtId} />
       </div>

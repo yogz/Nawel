@@ -8,11 +8,13 @@ import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page
 import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
 import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
 import {
+  getCreditorSeats,
   getMyAllocations,
   getMyCredits,
   getMyDebts,
   listCessionTargets,
 } from "@/features/sortie/queries/debt-queries";
+import { isLedgerLockingStatus } from "@/features/sortie/lib/compute-debt-rows";
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { CessionForm } from "@/features/sortie/components/cession-form";
 import { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
@@ -60,22 +62,24 @@ export default async function DebtsPage({ params, searchParams }: Props) {
 
   const { outing, me, canonical } = state;
 
-  const [myDebts, myCredits, purchase, myAllocations, cessionTargets] = await Promise.all([
-    getMyDebts(outing.id, me.id),
-    getMyCredits(outing.id, me.id),
-    db.query.purchases.findFirst({
-      where: eq(purchases.outingId, outing.id),
-      columns: { proofFileUrl: true },
-    }),
-    getMyAllocations(outing.id, me.id),
-    listCessionTargets(outing.id, me.id),
-  ]);
+  const [myDebts, myCredits, purchase, myAllocations, cessionTargets, creditorSeats] =
+    await Promise.all([
+      getMyDebts(outing.id, me.id),
+      getMyCredits(outing.id, me.id),
+      db.query.purchases.findFirst({
+        where: eq(purchases.outingId, outing.id),
+        columns: { proofFileUrl: true },
+      }),
+      getMyAllocations(outing.id, me.id),
+      listCessionTargets(outing.id, me.id),
+      getCreditorSeats(outing.id, me.id),
+    ]);
 
-  // Cession is blocked if any debt on this outing has advanced past
-  // pending — reshuffling money that's already been declared creates
-  // reconciliation trouble. Same rule the server enforces.
-  const cessionLocked =
-    myDebts.some((d) => d.status !== "pending") || myCredits.some((d) => d.status !== "pending");
+  // Cession ET offre sont bloquées dès qu'une dette de la sortie est en cours
+  // de règlement — même prédicat que le serveur (`DebtLockError`).
+  const ledgerLocked =
+    myDebts.some((d) => isLedgerLockingStatus(d.status)) ||
+    myCredits.some((d) => isLedgerLockingStatus(d.status));
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -166,6 +170,8 @@ export default async function DebtsPage({ params, searchParams }: Props) {
                 other={d.debtor}
                 view="creditor"
                 outingTitle={outing.title}
+                giftableSeats={creditorSeats.filter((s) => s.debtorParticipantId === d.debtor.id)}
+                giftLocked={ledgerLocked}
               />
             ))}
           </ul>
@@ -191,13 +197,20 @@ export default async function DebtsPage({ params, searchParams }: Props) {
                 className="flex flex-col gap-2 rounded-lg border border-surface-400 bg-surface-50 p-3"
               >
                 <span className="text-sm text-ink-700">{formatAllocationLabel(a)}</span>
-                <CessionForm
-                  shortId={outing.shortId}
-                  allocationId={a.id}
-                  label={formatAllocationLabel(a)}
-                  targets={cessionTargets}
-                  locked={cessionLocked}
-                />
+                {a.giftedAt ? (
+                  <p className="text-xs text-ink-400">
+                    Cette place t&rsquo;a été offerte — rien à régler, et elle n&rsquo;est pas
+                    cessible.
+                  </p>
+                ) : (
+                  <CessionForm
+                    shortId={outing.shortId}
+                    allocationId={a.id}
+                    label={formatAllocationLabel(a)}
+                    targets={cessionTargets}
+                    locked={ledgerLocked}
+                  />
+                )}
               </li>
             ))}
           </ul>
