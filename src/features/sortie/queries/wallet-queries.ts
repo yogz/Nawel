@@ -9,7 +9,8 @@ import {
   purchaserPaymentMethods,
 } from "@drizzle/sortie-schema";
 import type { PersonRef } from "@/features/sortie/lib/format";
-import type { DebtStatusValue } from "./debt-queries";
+import { formatAllocationLabel } from "@/features/sortie/lib/format-allocation";
+import type { CreditorSeat, DebtStatusValue } from "./debt-queries";
 
 // Le wallet ne montre rien sur les sorties annulées : la dette n'a plus
 // à être réglée et l'allocation n'a plus de sens budgétaire. On les
@@ -315,4 +316,49 @@ export async function getWalletAllocations(userId: string): Promise<WalletAlloca
       status: r.outingStatus,
     },
   }));
+}
+
+export type WalletCreditorSeat = CreditorSeat & { outingId: string };
+
+/**
+ * Toutes les places offrables par l'utilisateur, tous achats confondus —
+ * alimente le panneau « Offrir » des lignes créancier du wallet global.
+ * Pendant cross-outing de `getCreditorSeats`. Un achat par sortie ⇒ si
+ * l'utilisateur est créancier d'une sortie, il en est l'unique acheteur.
+ */
+export async function getWalletCreditorSeats(userId: string): Promise<WalletCreditorSeat[]> {
+  const participantIds = await getParticipantIdsForUser(userId);
+  if (participantIds.length === 0) {
+    return [];
+  }
+  const rows = await db
+    .select({
+      allocationId: purchaseAllocations.id,
+      debtorParticipantId: purchaseAllocations.participantId,
+      isChild: purchaseAllocations.isChild,
+      nominalPriceCents: purchaseAllocations.nominalPriceCents,
+      giftedAt: purchaseAllocations.giftedAt,
+      pricingMode: purchases.pricingMode,
+      uniquePriceCents: purchases.uniquePriceCents,
+      adultPriceCents: purchases.adultPriceCents,
+      childPriceCents: purchases.childPriceCents,
+      outingId: purchases.outingId,
+      purchaserParticipantId: purchases.purchaserParticipantId,
+    })
+    .from(purchaseAllocations)
+    .innerJoin(purchases, eq(purchases.id, purchaseAllocations.purchaseId))
+    .where(inArray(purchases.purchaserParticipantId, participantIds));
+
+  return (
+    rows
+      // L'acheteur n'a pas de dette envers lui-même → sa place n'est pas offrable.
+      .filter((r) => r.debtorParticipantId !== r.purchaserParticipantId)
+      .map((r) => ({
+        allocationId: r.allocationId,
+        debtorParticipantId: r.debtorParticipantId,
+        label: formatAllocationLabel(r),
+        giftedAt: r.giftedAt,
+        outingId: r.outingId,
+      }))
+  );
 }
