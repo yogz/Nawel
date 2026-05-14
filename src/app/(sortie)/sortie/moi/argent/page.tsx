@@ -11,10 +11,13 @@ import {
 import {
   getWalletAllocations,
   getWalletCredits,
+  getWalletCreditorSeats,
   getWalletDebts,
   type WalletAllocationRow,
+  type WalletCreditorSeat,
   type WalletDebtRow,
 } from "@/features/sortie/queries/wallet-queries";
+import { isLedgerLockingStatus } from "@/features/sortie/lib/compute-debt-rows";
 import { DebtRow } from "@/features/sortie/components/debt-row";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { LoginLink } from "@/features/sortie/components/login-link";
@@ -73,11 +76,34 @@ export default async function WalletPage() {
   }
 
   const userId = session.user.id;
-  const [allDebts, allCredits, allocations] = await Promise.all([
+  const [allDebts, allCredits, allocations, creditorSeats] = await Promise.all([
     getWalletDebts(userId),
     getWalletCredits(userId),
     getWalletAllocations(userId),
+    getWalletCreditorSeats(userId),
   ]);
+
+  // Panneau « Offrir » des lignes créancier : places groupées par
+  // (sortie, débiteur), et verrou par sortie. Un achat par sortie ⇒ tous les
+  // crédits de l'utilisateur sur une sortie = toutes ses dettes : le verrou se
+  // dérive donc entièrement de `allCredits`, sans requête supplémentaire.
+  const creditorSeatsByKey = new Map<string, WalletCreditorSeat[]>();
+  for (const s of creditorSeats) {
+    const key = `${s.outingId}:${s.debtorParticipantId}`;
+    const list = creditorSeatsByKey.get(key) ?? [];
+    list.push(s);
+    creditorSeatsByKey.set(key, list);
+  }
+  const giftLockedOutings = new Set(
+    allCredits.filter((c) => isLedgerLockingStatus(c.status)).map((c) => c.outing.id)
+  );
+  const giftFor = (d: WalletDebtRow, view: "debtor" | "creditor") =>
+    view === "creditor"
+      ? {
+          seats: creditorSeatsByKey.get(`${d.outing.id}:${d.debtor.id}`) ?? [],
+          locked: giftLockedOutings.has(d.outing.id),
+        }
+      : undefined;
 
   // Les rows `confirmed` (réglés/reçus) et `gifted` (offertes) ne pèsent plus
   // sur le bilan : états terminaux. On les sépare ici pour les pousser derrière
@@ -187,7 +213,12 @@ export default async function WalletPage() {
                 // ça économise une couche visuelle inutile.
                 if (g.entries.length === 1) {
                   const e = g.entries[0];
-                  return <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view)} />;
+                  return (
+                    <DebtRow
+                      key={e.row.id}
+                      {...debtRowProps(e.row, e.view, giftFor(e.row, e.view))}
+                    />
+                  );
                 }
                 return (
                   <PersonAccountGroup
@@ -202,7 +233,7 @@ export default async function WalletPage() {
                     {g.entries.map((e) => (
                       <DebtRow
                         key={e.row.id}
-                        {...debtRowProps(e.row, e.view)}
+                        {...debtRowProps(e.row, e.view, giftFor(e.row, e.view))}
                         compact
                         colorAmount
                       />
@@ -221,7 +252,7 @@ export default async function WalletPage() {
               pluralLabel="transactions réglées"
             >
               {settledRows.map((e) => (
-                <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view)} />
+                <DebtRow key={e.row.id} {...debtRowProps(e.row, e.view, giftFor(e.row, e.view))} />
               ))}
             </SettledDisclosure>
           )}
@@ -527,7 +558,11 @@ function groupAccountsByPerson(debts: WalletDebtRow[], credits: WalletDebtRow[])
 // Mappe une row vers les props attendues par DebtRow ; centralise le
 // switch debtor/creditor pour ne pas le dupliquer entre rendu autonome
 // et rendu compact à l'intérieur d'un PersonDebtGroup.
-function debtRowProps(d: WalletDebtRow, view: "debtor" | "creditor") {
+function debtRowProps(
+  d: WalletDebtRow,
+  view: "debtor" | "creditor",
+  gift?: { seats: WalletCreditorSeat[]; locked: boolean }
+) {
   return {
     shortId: d.outing.shortId,
     debtId: d.id,
@@ -536,6 +571,8 @@ function debtRowProps(d: WalletDebtRow, view: "debtor" | "creditor") {
     other: view === "debtor" ? d.creditor : d.debtor,
     view,
     methods: view === "debtor" ? d.creditorMethods : undefined,
+    giftableSeats: gift?.seats,
+    giftLocked: gift?.locked,
     outingTitle: d.outing.title,
     outingHref: outingHref(d.outing, "dettes"),
   };
