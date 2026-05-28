@@ -212,10 +212,20 @@ const config: Config = {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
+        // Reflet acid qui balaie un bouton une fois — transform-only (GPU,
+        // pas de repaint sur un élément sticky). Voir session-status-cta.tsx.
+        "acid-sheen": {
+          "0%": { transform: "translateX(-150%)" },
+          "100%": { transform: "translateX(150%)" },
+        },
       },
       animation: {
         blink: "blink 1s step-end infinite",
         "gradient-slow": "gradient 6s ease infinite",
+        // One-shot : 550ms, easing emphasized, delay 250ms (laisse passer le
+        // slide-in du bandeau), 1 itération, état final figé. Toujours via
+        // `motion-safe:animate-acid-sheen`.
+        "acid-sheen": "acid-sheen 550ms cubic-bezier(0.05, 0.7, 0.1, 1) 250ms 1 both",
       },
     },
   },
