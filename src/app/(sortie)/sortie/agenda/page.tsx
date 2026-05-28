@@ -32,8 +32,10 @@ export default async function AgendaPage() {
             requise.
           </h1>
         </header>
-        <p className="mb-6 text-[15px] text-ink-500">Connecte-toi pour voir tes sorties à venir.</p>
-        <LoginLink variant="primary" label="Se connecter" />
+        <p className="mb-6 text-[15px] text-ink-500">
+          Identifie-toi pour voir tes sorties à venir.
+        </p>
+        <LoginLink variant="primary" label="S'identifier" />
       </main>
     );
   }
