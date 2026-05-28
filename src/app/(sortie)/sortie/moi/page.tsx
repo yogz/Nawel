@@ -51,9 +51,9 @@ export default async function ProfileSettingsPage() {
           </h1>
         </header>
         <p className="mb-6 text-[15px] text-ink-500">
-          Connecte-toi pour prendre un @nom et afficher tes sorties.
+          Identifie-toi pour gérer ton profil — prends un @nom et retrouve tes sorties.
         </p>
-        <LoginLink variant="primary" label="Se connecter" />
+        <LoginLink variant="primary" label="S'identifier" />
         <Eyebrow tone="muted" className="mt-4">
           ↳ un email sans mot de passe arrive
         </Eyebrow>

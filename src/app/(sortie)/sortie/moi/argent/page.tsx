@@ -68,9 +68,9 @@ export default async function WalletPage() {
           </h1>
         </header>
         <p className="mb-6 text-[15px] text-ink-500">
-          Connecte-toi pour voir tes dépenses, tes dettes et tes crédits sur toutes tes sorties.
+          Identifie-toi pour suivre tes dépenses, tes dettes et tes crédits sur toutes tes sorties.
         </p>
-        <LoginLink variant="primary" label="Se connecter" />
+        <LoginLink variant="primary" label="S'identifier" />
       </main>
     );
   }
