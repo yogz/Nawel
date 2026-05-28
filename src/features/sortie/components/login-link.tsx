@@ -3,7 +3,7 @@
 type Props = {
   className?: string;
   label?: string;
-  variant?: "primary" | "inline" | "outline";
+  variant?: "primary" | "inline";
   /** Hook optionnel appelé avant la redirection — utile pour tracker
    * un clic via Umami sans bypass le redirect natif (le handler pose
    * `window.location.href` derrière, donc l'event a quand même le
@@ -33,14 +33,9 @@ export function LoginLink({
     window.location.href = `/login?callbackURL=${callback}`;
   }
 
-  // `outline` : CTA discret cerclé acid (pas de nappe acid pleine) pour les
-  // surfaces où l'acid plein saturerait l'accent — ex. le bandeau de statut
-  // de session, qui cohabite avec le FAB acid de la page event.
   const VARIANTS: Record<NonNullable<Props["variant"]>, string> = {
     primary:
       "inline-flex h-11 items-center rounded-md bg-acid-600 px-6 text-sm font-medium text-surface-100 transition-colors hover:bg-acid-700",
-    outline:
-      "inline-flex items-center rounded-lg border border-acid-600 px-3 text-[13px] font-medium text-acid-600 transition-colors hover:bg-acid-600/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-400/50",
     inline:
       "text-sm text-ink-400 underline-offset-4 transition-colors hover:text-acid-700 hover:underline",
   };
