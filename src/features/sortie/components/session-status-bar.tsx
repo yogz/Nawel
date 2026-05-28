@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth-config";
-import { LoginLink } from "@/features/sortie/components/login-link";
+import { SessionStatusCta } from "@/features/sortie/components/session-status-cta";
 
 // Bandeau de statut de session — repère permanent affiché tant que le
 // visiteur n'a pas de session. Dans Sortie l'identité est par défaut liée à
@@ -34,13 +34,10 @@ export async function SessionStatusBar() {
       role="status"
     >
       <span className="flex items-center gap-2 text-[13px] text-ink-300">
-        <span
-          aria-hidden="true"
-          className="h-1.5 w-1.5 rounded-full bg-acid-600 motion-safe:animate-pulse"
-        />
-        Pas connecté
+        <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-acid-600" />
+        Retrouve tes sorties
       </span>
-      <LoginLink variant="outline" label="S'identifier" className="h-8" />
+      <SessionStatusCta />
     </div>
   );
 }
