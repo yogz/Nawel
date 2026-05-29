@@ -21,13 +21,14 @@ export function SessionStatusCta() {
     <a
       href="/login"
       onClick={handleClick}
-      className="relative inline-flex h-8 items-center overflow-hidden rounded-lg border border-acid-600/70 bg-acid-600/10 px-3 text-[13px] font-medium text-acid-600 transition-colors hover:bg-acid-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-400/50 motion-safe:duration-motion-tap motion-safe:active:scale-95"
+      className="relative inline-flex h-8 items-center overflow-hidden rounded-lg border border-acid-600/70 bg-acid-600/10 px-3 text-[13px] font-medium text-acid-600 transition-colors hover:bg-acid-600/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-400/50 motion-safe:animate-cta-pop motion-safe:duration-motion-tap motion-safe:active:scale-95"
     >
-      {/* Reflet one-shot — invisible au repos (gradient translaté hors champ),
-          masqué entièrement en reduced-motion pour ne pas figer un dégradé. */}
+      {/* Reflet d'attention (2 passages) — éclat clair bien plus visible que le
+          vert-sur-vert ; invisible au repos (gradient hors champ), masqué en
+          reduced-motion pour ne pas figer un dégradé. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-acid-600/25 to-transparent motion-safe:animate-acid-sheen motion-reduce:hidden"
+        className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/55 to-transparent motion-safe:animate-acid-sheen motion-reduce:hidden"
       />
       S&apos;identifier
       <ArrowRight

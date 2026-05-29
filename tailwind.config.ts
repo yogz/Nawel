@@ -212,20 +212,33 @@ const config: Config = {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
         },
-        // Reflet acid qui balaie un bouton une fois — transform-only (GPU,
-        // pas de repaint sur un élément sticky). Voir session-status-cta.tsx.
+        // Reflet clair qui balaie un bouton — transform-only (GPU, pas de
+        // repaint sur un élément sticky). Le balayage occupe les 35 premiers %
+        // du cycle puis le reflet reste hors champ : avec 2 itérations ça
+        // donne deux passages espacés, pas un défilement continu. Voir
+        // session-status-cta.tsx.
         "acid-sheen": {
-          "0%": { transform: "translateX(-150%)" },
-          "100%": { transform: "translateX(150%)" },
+          "0%": { transform: "translateX(-160%)" },
+          "35%": { transform: "translateX(160%)" },
+          "100%": { transform: "translateX(160%)" },
+        },
+        // Rebond d'attention du CTA à l'apparition (scale, GPU).
+        "cta-pop": {
+          "0%, 100%": { transform: "scale(1)" },
+          "45%": { transform: "scale(1.07)" },
         },
       },
       animation: {
         blink: "blink 1s step-end infinite",
         "gradient-slow": "gradient 6s ease infinite",
-        // One-shot : 550ms, easing emphasized, delay 250ms (laisse passer le
-        // slide-in du bandeau), 1 itération, état final figé. Toujours via
-        // `motion-safe:animate-acid-sheen`.
-        "acid-sheen": "acid-sheen 550ms cubic-bezier(0.05, 0.7, 0.1, 1) 250ms 1 both",
+        // Geste d'attention one-time (PAS de boucle infinie) : 2 passages sur
+        // ~3,6s, delay 600ms (laisse l'œil arriver après le chargement). Reste
+        // sous le seuil WCAG 2.2.2 (<5s). Toujours via `motion-safe:`.
+        "acid-sheen": "acid-sheen 1500ms cubic-bezier(0.05, 0.7, 0.1, 1) 600ms 2 both",
+        // Deux pops après 600ms, easing emphasized. `backwards` applique l'état
+        // initial pendant le delay sans figer le transform après (pour que
+        // active:scale-95 reste opérant au tap).
+        "cta-pop": "cta-pop 520ms cubic-bezier(0.05, 0.7, 0.1, 1) 600ms 2 backwards",
       },
     },
   },
