@@ -323,6 +323,7 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
             existingExtraAdults={me?.extraAdults ?? undefined}
             existingExtraChildren={me?.extraChildren ?? undefined}
             hasVoted={hasVotedAlready}
+            isLoggedIn={Boolean(session?.user)}
           />
         </div>
       )}

@@ -79,7 +79,9 @@ export function trackOutingShareClicked(params: {
  * pour mesurer l'instabilité d'un yes/no/yes.
  */
 export function trackOutingRsvpSet(params: {
-  response: "yes" | "no" | "handle_own";
+  // "interested" = réponse dérivée du sondage (au moins un créneau coché),
+  // cf. castVoteAction. Les autres viennent du RSVP fixe.
+  response: "yes" | "no" | "handle_own" | "interested";
   delta: "new" | "switched";
   isLoggedIn: boolean;
   // Le visiteur a fourni un email lors du RSVP — signal d'engagement
