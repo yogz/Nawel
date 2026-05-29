@@ -9,6 +9,7 @@ import { castVoteAction } from "@/features/sortie/actions/participant-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
 import { readAnonPrefs, writeAnonPrefs } from "@/features/sortie/lib/anon-rsvp-prefs";
+import { trackOutingRsvpSet } from "@/features/sortie/lib/outing-telemetry";
 import { GuestCountStepper } from "./guest-count-stepper";
 import { IdentityFields } from "./identity-fields";
 
@@ -26,6 +27,7 @@ type Props = {
   existingExtraAdults?: number;
   existingExtraChildren?: number;
   hasVoted: boolean;
+  isLoggedIn?: boolean;
 };
 
 // Tap-cycle : undefined (pas voté) → true (oui) → false (non) → undefined.
@@ -43,6 +45,7 @@ export function VoteRsvpSheet({
   existingExtraAdults,
   existingExtraChildren,
   hasVoted,
+  isLoggedIn = false,
 }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -99,12 +102,21 @@ export function VoteRsvpSheet({
           extraChildren: children,
         });
       }
+      // Parité avec rsvp-prompt : on mesure le taux d'email capturé au vote
+      // (KPI du levier "vote retrouvable cross-appareil"). response dérivée
+      // comme dans castVoteAction (≥1 créneau coché → interested).
+      trackOutingRsvpSet({
+        response: Object.values(selected).some((v) => v === true) ? "interested" : "no",
+        delta: hasVoted ? "switched" : "new",
+        isLoggedIn,
+        hasEmail: Boolean(submittedEmail),
+      });
       queueMicrotask(() => {
         setOpen(false);
         router.refresh();
       });
     }
-  }, [pending, state, router, adults, children]);
+  }, [pending, state, router, adults, children, selected, hasVoted, isLoggedIn]);
 
   const hiddenFieldErrors = state.errors
     ? Object.entries(state.errors)
@@ -210,7 +222,7 @@ export function VoteRsvpSheet({
             defaultName={existingName ?? prefs?.name}
             defaultEmail={existingEmail ?? prefs?.email}
             errors={state.errors}
-            emailHint="pour être prévenu·e quand la date est choisie"
+            emailHint="pour retrouver ton vote sur tous tes appareils + savoir la date choisie"
             knownVerb="votes"
           />
 

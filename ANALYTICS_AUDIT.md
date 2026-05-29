@@ -655,4 +655,20 @@ Le plan approuvé `~/.claude/plans/ba-oui-je-veux-hazy-parasol.md` couvre la ref
 
 ---
 
+## 11. Seuil — « nudge contextuel vote » (cross-appareil)
+
+Contexte : un invité qui vote en anonyme et revient sur un autre appareil ne voit pas son vote
+(identité liée au cookie). Reviews croisées (2026-05-29) : **pas de nouveau nudge** au volume
+actuel (~0,17 silent user/jour → ~0 doublon/mois ; 5 mécanismes d'acquisition existent déjà ;
+risque de baisser le taux de vote + surface email). Action prise : re-cadrage de la copie du champ
+email au vote (« retrouve ton vote sur tous tes appareils ») + instrumentation `outing_rsvp_set`
+sur le sondage (jusque-là non mesuré).
+
+**Critère de réouverture** : ne reconsidérer un vrai nudge (préventif au vote ou post-vote)
+**que si** `outing_rsvp_set` filtré `mode=vote` montre **`has_email` < ~30 %** ET **volume ≥ ~50
+votes sondage/semaine**. En deçà : statu quo, la copie suffit. (Cohérent avec la doctrine de
+seuils absolus du §9 et des silent users.)
+
+---
+
 _Fin du rapport — Phase 3 PR1 livrée. Phase 4 (refonte produit `/admin/stat`) + Phase 4-tech (refonte `/admin/stat/tech`) en attente d'implémentation. 8 PRs au total dont 5 produit (PR1-5) et 3 tech (PR6-8) parallélisables avec PR4._
