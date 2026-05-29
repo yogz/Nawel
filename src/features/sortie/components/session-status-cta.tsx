@@ -28,7 +28,7 @@ export function SessionStatusCta() {
           reduced-motion pour ne pas figer un dégradé. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/55 to-transparent motion-safe:animate-acid-sheen motion-reduce:hidden"
+        className="pointer-events-none absolute -inset-x-3 inset-y-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/70 to-transparent motion-safe:animate-acid-sheen motion-reduce:hidden"
       />
       S&apos;identifier
       <ArrowRight

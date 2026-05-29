@@ -219,22 +219,22 @@ const config: Config = {
         // session-status-cta.tsx.
         "acid-sheen": {
           "0%": { transform: "translateX(-160%)" },
-          "35%": { transform: "translateX(160%)" },
+          "60%": { transform: "translateX(160%)" },
           "100%": { transform: "translateX(160%)" },
         },
         // Rebond d'attention du CTA à l'apparition (scale, GPU).
         "cta-pop": {
           "0%, 100%": { transform: "scale(1)" },
-          "45%": { transform: "scale(1.07)" },
+          "45%": { transform: "scale(1.1)" },
         },
       },
       animation: {
         blink: "blink 1s step-end infinite",
         "gradient-slow": "gradient 6s ease infinite",
-        // Geste d'attention one-time (PAS de boucle infinie) : 2 passages sur
-        // ~3,6s, delay 600ms (laisse l'œil arriver après le chargement). Reste
-        // sous le seuil WCAG 2.2.2 (<5s). Toujours via `motion-safe:`.
-        "acid-sheen": "acid-sheen 1500ms cubic-bezier(0.05, 0.7, 0.1, 1) 600ms 2 both",
+        // Geste d'attention one-time (PAS de boucle infinie) : balayage lent
+        // (~1,1s) pour être perçu, 2 passages, delay 700ms (laisse l'œil
+        // arriver). Total ~4,3s < seuil WCAG 2.2.2 (5s). Toujours `motion-safe:`.
+        "acid-sheen": "acid-sheen 1800ms cubic-bezier(0.05, 0.7, 0.1, 1) 700ms 2 both",
         // Deux pops après 600ms, easing emphasized. `backwards` applique l'état
         // initial pendant le delay sans figer le transform après (pour que
         // active:scale-95 reste opérant au tap).
