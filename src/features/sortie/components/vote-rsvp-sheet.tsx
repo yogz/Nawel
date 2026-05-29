@@ -210,7 +210,7 @@ export function VoteRsvpSheet({
             defaultName={existingName ?? prefs?.name}
             defaultEmail={existingEmail ?? prefs?.email}
             errors={state.errors}
-            emailHint="pour être prévenu·e quand la date est choisie"
+            emailHint="pour retrouver ton vote sur tous tes appareils + savoir la date choisie"
             knownVerb="votes"
           />
 

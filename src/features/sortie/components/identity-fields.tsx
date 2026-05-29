@@ -108,8 +108,11 @@ export function IdentityFields({
           defaultValue={defaultEmail}
           autoComplete="email"
           inputMode="email"
-          placeholder={emailHint}
+          placeholder="toi@exemple.fr"
         />
+        {/* Hint persistant (vs placeholder qui disparaît à la saisie) : le
+            bénéfice de laisser son email reste visible pendant qu'on tape. */}
+        {emailHint && <p className="text-xs text-ink-400">{emailHint}</p>}
         {errors?.email?.[0] && <p className="text-xs text-erreur-700">{errors.email[0]}</p>}
       </div>
     </>
