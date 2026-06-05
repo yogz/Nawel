@@ -33,6 +33,7 @@ import { shortIdSchema } from "./schemas";
 // faute de frappe n'échoue pas au build mais brise la requêtabilité.
 const AUDIT_ACTION = {
   PURCHASE_DECLARED: "PURCHASE_DECLARED",
+  PURCHASE_PRICE_EDITED: "PURCHASE_PRICE_EDITED",
   ALLOCATION_CEDED: "ALLOCATION_CEDED",
   ALLOCATION_GIFTED: "ALLOCATION_GIFTED",
 } as const;
@@ -77,6 +78,47 @@ const declarePurchaseSchema = z.discriminatedUnion("pricingMode", [
     pricingMode: z.literal("nominal"),
     allocationPriceCents: z.array(priceCents).min(1).max(100),
     ghostBuyer: ghostBuyerFlag,
+  }),
+]);
+
+// Édition du prix d'un achat déjà déclaré. Contrairement à la déclaration :
+//  - pas de `ghostBuyer` ni de re-dérivation du plan : on ne touche jamais
+//    QUI est servi (totalPlaces invariant), seulement les montants ;
+//  - le mode de tarif ne peut pas changer (vérifié côté serveur contre le
+//    purchase existant) — le form n'affiche que les champs du mode courant ;
+//  - en nominal, on cible chaque allocation par son `allocationId` (pas par
+//    index de plan), envoyées en JSON dans un champ caché.
+const editPurchaseSchema = z.discriminatedUnion("pricingMode", [
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("unique"),
+    uniquePriceCents: priceCents,
+  }),
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("category"),
+    adultPriceCents: priceCents,
+    childPriceCents: priceCents,
+  }),
+  z.object({
+    shortId: shortIdSchema,
+    pricingMode: z.literal("nominal"),
+    allocationPrices: z.preprocess(
+      (raw) => {
+        if (typeof raw !== "string" || raw.length === 0) {
+          return undefined;
+        }
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return raw;
+        }
+      },
+      z
+        .array(z.object({ allocationId: z.string().uuid(), priceCents }))
+        .min(1)
+        .max(100)
+    ),
   }),
 ]);
 
@@ -304,6 +346,173 @@ export async function declarePurchaseAction(
   revalidatePath(`/${canonical}`);
   revalidatePath(`/${canonical}/dettes`);
   redirect(`/${canonical}/dettes?from=achat`);
+}
+
+/**
+ * Modifie le prix d'un achat déjà déclaré et recalcule les dettes. Même
+ * pattern que cede/gift : on mute l'état (colonnes prix de `purchases` ou
+ * `nominalPriceCents` des allocations), puis `recomputeDebtsForPurchase`
+ * re-dérive tout le ledger dans la même transaction — verrou `FOR UPDATE`
+ * inclus, `DebtLockError` si un paiement a déjà été déclaré.
+ *
+ * Garde-fous :
+ *   - Seul l'acheteur (`purchaserParticipantId`) peut modifier le prix.
+ *   - Refusé si la sortie est annulée ou soldée.
+ *   - Le mode de tarif ne peut PAS changer (sinon il faudrait re-router les
+ *     allocations) — pour changer de mode, c'est un autre flux.
+ *   - `totalPlaces` est invariant : on ne touche jamais qui est servi.
+ */
+export async function editPurchaseAction(
+  _prev: FormActionState,
+  formData: FormData
+): Promise<FormActionState> {
+  const parsed = editPurchaseSchema.safeParse(formDataToObject(formData));
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+  const data = parsed.data;
+
+  const outing = await db.query.outings.findFirst({
+    where: eq(outings.shortId, data.shortId),
+  });
+  if (!outing) {
+    return { message: "Sortie introuvable." };
+  }
+  if (outing.status === "cancelled") {
+    return { message: "Cette sortie est annulée." };
+  }
+  if (outing.status === "settled") {
+    return { message: "Cette sortie est soldée — le bilan est clos." };
+  }
+
+  const { participant: me, userId } = await getCurrentParticipant(outing.id);
+  if (!me) {
+    return { message: "Non autorisé." };
+  }
+
+  const purchase = await db.query.purchases.findFirst({
+    where: eq(purchases.outingId, outing.id),
+  });
+  if (!purchase) {
+    return { message: "Aucun achat à modifier." };
+  }
+  if (purchase.purchaserParticipantId !== me.id) {
+    return { message: "Seul l'acheteur peut modifier le prix." };
+  }
+  if (purchase.pricingMode !== data.pricingMode) {
+    return { message: "Le mode de tarif ne peut pas changer ici." };
+  }
+
+  const gate = await rateLimit({
+    key: `editprice:${me.id}`,
+    limit: 10,
+    windowSeconds: 3600,
+  });
+  if (!gate.ok) {
+    return { message: gate.message };
+  }
+
+  // En nominal, l'ensemble des allocationId reçus doit couvrir exactement les
+  // allocations de l'achat (sinon la page a été éditée avec un état périmé).
+  const allocPriceById = new Map<string, number>();
+  if (data.pricingMode === "nominal") {
+    const allocs = await db
+      .select({ id: purchaseAllocations.id })
+      .from(purchaseAllocations)
+      .where(eq(purchaseAllocations.purchaseId, purchase.id));
+    const dbIds = new Set(allocs.map((a) => a.id));
+    const formIds = new Set(data.allocationPrices.map((a) => a.allocationId));
+    const sameSet = dbIds.size === formIds.size && [...dbIds].every((id) => formIds.has(id));
+    if (!sameSet) {
+      return { message: "La liste des places a changé. Recharge la page et réessaie." };
+    }
+    for (const a of data.allocationPrices) {
+      allocPriceById.set(a.allocationId, a.priceCents);
+    }
+  }
+
+  // Snapshot AVANT pour l'audit before/after.
+  const before = {
+    pricingMode: purchase.pricingMode,
+    uniquePriceCents: purchase.uniquePriceCents,
+    adultPriceCents: purchase.adultPriceCents,
+    childPriceCents: purchase.childPriceCents,
+  };
+
+  // Objet purchase porteur des NOUVEAUX prix — `recomputeDebtsForPurchase` le
+  // passe à `priceFor` pour les modes unique/category. (En nominal, le prix
+  // vit sur les allocations qu'on met à jour dans la transaction ci-dessous,
+  // donc recompute les relit à jour.) Piège classique : recalculer avec
+  // l'ancien objet recalculerait au tarif périmé.
+  const updatedPurchase = {
+    ...purchase,
+    uniquePriceCents:
+      data.pricingMode === "unique" ? data.uniquePriceCents : purchase.uniquePriceCents,
+    adultPriceCents:
+      data.pricingMode === "category" ? data.adultPriceCents : purchase.adultPriceCents,
+    childPriceCents:
+      data.pricingMode === "category" ? data.childPriceCents : purchase.childPriceCents,
+  };
+
+  const ipHash = await hashIp();
+  try {
+    await db.transaction(async (tx) => {
+      if (data.pricingMode === "unique") {
+        await tx
+          .update(purchases)
+          .set({ uniquePriceCents: data.uniquePriceCents })
+          .where(eq(purchases.id, purchase.id));
+      } else if (data.pricingMode === "category") {
+        await tx
+          .update(purchases)
+          .set({ adultPriceCents: data.adultPriceCents, childPriceCents: data.childPriceCents })
+          .where(eq(purchases.id, purchase.id));
+      } else {
+        for (const [allocationId, price] of allocPriceById) {
+          await tx
+            .update(purchaseAllocations)
+            .set({ nominalPriceCents: price })
+            .where(eq(purchaseAllocations.id, allocationId));
+        }
+      }
+
+      await recomputeDebtsForPurchase(tx, updatedPurchase);
+
+      await tx.insert(auditLog).values({
+        outingId: outing.id,
+        actorParticipantId: me.id,
+        actorUserId: userId,
+        action: AUDIT_ACTION.PURCHASE_PRICE_EDITED,
+        ipHash,
+        payload: JSON.stringify({
+          purchaseId: purchase.id,
+          before,
+          after: {
+            pricingMode: data.pricingMode,
+            uniquePriceCents: updatedPurchase.uniquePriceCents,
+            adultPriceCents: updatedPurchase.adultPriceCents,
+            childPriceCents: updatedPurchase.childPriceCents,
+            ...(data.pricingMode === "nominal"
+              ? { allocationPrices: Array.from(allocPriceById.entries()) }
+              : {}),
+          },
+        }),
+      });
+    });
+  } catch (e) {
+    if (e instanceof DebtLockError) {
+      return {
+        message: "Des paiements ont déjà été déclarés — le prix ne peut plus être modifié.",
+      };
+    }
+    throw e;
+  }
+
+  const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
+  revalidatePath(`/${canonical}`);
+  revalidatePath(`/${canonical}/dettes`);
+  revalidatePath(`/${canonical}/achat/modifier`);
+  redirect(`/${canonical}/dettes`);
 }
 
 const cessionSchema = z.object({
