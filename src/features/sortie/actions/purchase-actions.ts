@@ -15,7 +15,12 @@ import {
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { priceFor } from "@/features/sortie/lib/price-for";
-import { DebtLockError, recomputeDebtsForPurchase } from "@/features/sortie/lib/compute-debt-rows";
+import {
+  changedDebtAmounts,
+  DebtLockError,
+  recomputeDebtsForPurchase,
+  type ComputedDebtRow,
+} from "@/features/sortie/lib/compute-debt-rows";
 import {
   sendDebtGiftedEmail,
   sendPurchaseConfirmedEmails,
@@ -454,7 +459,19 @@ export async function editPurchaseAction(
       data.pricingMode === "category" ? data.childPriceCents : purchase.childPriceCents,
   };
 
+  // Dettes AVANT édition (créancier = acheteur), pour ne notifier que les
+  // débiteurs dont le montant change réellement.
+  const debtsBefore = new Map<string, number>();
+  const existingDebts = await db
+    .select({ debtor: debts.debtorParticipantId, amount: debts.amountCents })
+    .from(debts)
+    .where(and(eq(debts.outingId, outing.id), eq(debts.creditorParticipantId, me.id)));
+  for (const d of existingDebts) {
+    debtsBefore.set(d.debtor, d.amount);
+  }
+
   const ipHash = await hashIp();
+  let computed: ComputedDebtRow[] = [];
   try {
     await db.transaction(async (tx) => {
       if (data.pricingMode === "unique") {
@@ -476,7 +493,7 @@ export async function editPurchaseAction(
         }
       }
 
-      await recomputeDebtsForPurchase(tx, updatedPurchase);
+      computed = await recomputeDebtsForPurchase(tx, updatedPurchase);
 
       await tx.insert(auditLog).values({
         outingId: outing.id,
@@ -506,6 +523,23 @@ export async function editPurchaseAction(
       };
     }
     throw e;
+  }
+
+  // Notifie — hors transaction, best-effort — les débiteurs dont le montant a
+  // changé (un Resend down ne doit jamais annuler l'édition déjà écrite).
+  const debtsAfter = new Map(computed.map((r) => [r.debtorParticipantId, r.amountCents]));
+  const changed = changedDebtAmounts(debtsBefore, debtsAfter);
+  if (changed.size > 0) {
+    await sendPurchaseConfirmedEmails({
+      outing: {
+        title: outing.title,
+        fixedDatetime: outing.fixedDatetime,
+        slug: outing.slug,
+        shortId: outing.shortId,
+      },
+      buyerParticipantId: me.id,
+      debts: changed,
+    });
   }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
