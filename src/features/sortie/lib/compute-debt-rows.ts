@@ -89,6 +89,26 @@ export function computeDebtRows(
 }
 
 /**
+ * Compare deux états de dettes (avant → après un recalcul) et renvoie, par
+ * débiteur, le nouveau montant — uniquement pour ceux dont le montant a changé
+ * ET reste strictement positif. Sert à n'envoyer la notification d'édition de
+ * prix qu'aux personnes réellement impactées (pas de spam aux montants
+ * inchangés, ni aux dettes retombées à 0 / offertes).
+ */
+export function changedDebtAmounts(
+  before: Map<string, number>,
+  after: Map<string, number>
+): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const [debtor, amount] of after) {
+    if (amount > 0 && (before.get(debtor) ?? 0) !== amount) {
+      out.set(debtor, amount);
+    }
+  }
+  return out;
+}
+
+/**
  * Levée par `recomputeDebtsForPurchase` quand une dette de la sortie a déjà
  * dépassé `pending` (≠ `gifted`). Les actions appelantes la catchent et
  * renvoient un `FormActionState` avec message — on refuse de renuméroter un

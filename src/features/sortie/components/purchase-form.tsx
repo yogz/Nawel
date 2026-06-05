@@ -2,13 +2,16 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { declarePurchaseAction } from "@/features/sortie/actions/purchase-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatCents } from "@/features/sortie/lib/format";
-
-type Mode = "unique" | "category" | "nominal";
+import {
+  EuroInput,
+  MODE_COPY,
+  parseEuros,
+  type PricingMode as Mode,
+} from "@/features/sortie/components/purchase-form-shared";
 
 export type AllocationRowView = {
   participantId: string;
@@ -29,20 +32,6 @@ type Props = {
   ghostView: PurchaseView;
   canGhost: boolean;
 };
-
-const MODE_COPY: Record<Mode, { title: string; hint: string }> = {
-  unique: { title: "Prix unique", hint: "Tout le monde au même prix." },
-  category: { title: "Par catégorie", hint: "Un prix adulte, un prix enfant." },
-  nominal: { title: "Prix nominatif", hint: "Chacun son tarif (réduits, jeunes…)." },
-};
-
-function parseEuros(raw: string): number {
-  const n = Number(raw.replace(",", ".").trim());
-  if (!Number.isFinite(n) || n < 0) {
-    return 0;
-  }
-  return Math.round(n * 100);
-}
 
 export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
@@ -265,35 +254,5 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
         </Button>
       </div>
     </form>
-  );
-}
-
-function EuroInput({
-  id,
-  value,
-  onChange,
-  className,
-}: {
-  id?: string;
-  value: string;
-  onChange: (next: string) => void;
-  className?: string;
-}) {
-  return (
-    <div className={`relative ${className ?? ""}`}>
-      <Input
-        id={id}
-        type="text"
-        inputMode="decimal"
-        required
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="0"
-        className="pr-7"
-      />
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-ink-400">
-        €
-      </span>
-    </div>
   );
 }

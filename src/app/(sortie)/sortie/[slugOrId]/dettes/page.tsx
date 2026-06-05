@@ -68,7 +68,7 @@ export default async function DebtsPage({ params, searchParams }: Props) {
       getMyCredits(outing.id, me.id),
       db.query.purchases.findFirst({
         where: eq(purchases.outingId, outing.id),
-        columns: { proofFileUrl: true },
+        columns: { proofFileUrl: true, purchaserParticipantId: true },
       }),
       getMyAllocations(outing.id, me.id),
       listCessionTargets(outing.id, me.id),
@@ -80,6 +80,14 @@ export default async function DebtsPage({ params, searchParams }: Props) {
   const ledgerLocked =
     myDebts.some((d) => isLedgerLockingStatus(d.status)) ||
     myCredits.some((d) => isLedgerLockingStatus(d.status));
+
+  // L'acheteur peut corriger le prix tant qu'aucun paiement n'est déclaré et
+  // que la sortie n'est ni soldée ni annulée (mêmes refus que l'action).
+  const canEditPrice =
+    purchase?.purchaserParticipantId === me.id &&
+    !ledgerLocked &&
+    outing.status !== "settled" &&
+    outing.status !== "cancelled";
 
   return (
     <main className="mx-auto max-w-xl px-6 pb-24 pt-10">
@@ -128,6 +136,16 @@ export default async function DebtsPage({ params, searchParams }: Props) {
             >
               Voir la preuve d&rsquo;achat ↗
             </a>
+          </p>
+        )}
+        {canEditPrice && (
+          <p className="mt-2 text-sm">
+            <Link
+              href={`/${canonical}/achat/modifier`}
+              className="inline-flex items-center gap-1 text-ink-400 underline-offset-4 hover:text-acid-600 hover:underline"
+            >
+              Modifier le prix ↗
+            </Link>
           </p>
         )}
       </header>
