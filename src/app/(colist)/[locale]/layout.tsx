@@ -232,7 +232,7 @@ export default async function RootLayout({
                 <Toaster
                   position="top-center"
                   richColors
-                  duration={1500}
+                  duration={2800}
                   expand={false}
                   closeButton
                 />
