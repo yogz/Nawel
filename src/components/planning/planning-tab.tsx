@@ -35,7 +35,7 @@ interface PlanningTabProps {
   onAssign: (item: Item, serviceId?: number) => void;
   onDelete: (item: Item) => void;
   onCreateItem: (serviceId: number) => void;
-  onInlineAdd?: (serviceId: number, name: string) => Promise<void> | void;
+  onInlineAdd?: (serviceId: number, name: string) => Promise<boolean> | void;
   onCreateService: (mealId: number) => void;
   setSheet: (sheet: Sheet) => void;
   sheet: Sheet | null;

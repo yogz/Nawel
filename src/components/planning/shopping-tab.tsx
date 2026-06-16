@@ -189,14 +189,12 @@ export function ShoppingTab({ plan, slug, writeKey, isOwner, currentPersonId }: 
 
         try {
           await Promise.all(promises);
-          // Server sync successful - clear optimistic state (server state will take over)
-          setOptimisticToggles((prev) => {
-            const next = new Set(prev);
-            next.delete(itemId);
-            return next;
-          });
+          // Keep the optimistic toggle: the in-session `plan` is the initial server
+          // snapshot and is never re-fetched here, so clearing the toggle would make the
+          // checkbox snap back to the stale `item.checked` value. The optimistic set is the
+          // source of truth for the session and is reset on the next page load (fresh fetch).
         } catch {
-          // Rollback on error - remove from optimistic toggles
+          // Rollback on error - remove from optimistic toggles so the checkbox reverts
           setOptimisticToggles((prev) => {
             const next = new Set(prev);
             next.delete(itemId);
