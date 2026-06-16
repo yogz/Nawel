@@ -84,7 +84,7 @@ export const ServiceSection = memo(function ServiceSection({
         actions={
           <div className="flex items-center gap-3">
             {filteredItems.length > 0 && (
-              <span className="text-xs font-medium text-gray-400 dark:text-zinc-500">
+              <span className="text-xs font-medium text-gray-500 dark:text-zinc-400">
                 {filteredItems.length} {t("items")}
               </span>
             )}
