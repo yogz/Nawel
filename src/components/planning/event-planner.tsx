@@ -360,6 +360,28 @@ export function EventPlanner({
     );
   }, [effectiveWriteKey, slug, setReadOnly, guestToken]);
 
+  // Android/browser back button closes an open sheet instead of leaving the event.
+  // We push a history marker when a sheet opens; "back" then pops that marker and
+  // closes the sheet. Closing via the UI consumes the marker with history.back().
+  // Depend on the boolean (not the sheet object) so switching sheet types while
+  // open doesn't churn the history stack.
+  const isSheetOpen = !!sheet;
+  useEffect(() => {
+    if (!isSheetOpen) {
+      return;
+    }
+    window.history.pushState({ colistSheet: true }, "");
+    const onPopState = () => setSheet(null);
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+      // If the sheet was closed via the UI (marker still present), consume it.
+      if (window.history.state?.colistSheet) {
+        window.history.back();
+      }
+    };
+  }, [isSheetOpen, setSheet]);
+
   useEffect(() => {
     // Clean up any body background overrides to ensure "white/neutral" content area
     const previousBackground = document.body.style.background;
