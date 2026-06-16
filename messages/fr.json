@@ -426,7 +426,8 @@
       "cancel": "Annuler",
       "expand": "Développer",
       "collapse": "Réduire",
-      "noMealsDesc": "Ajoutez un premier repas pour commencer à organiser le menu."
+      "noMealsDesc": "Ajoutez un premier repas pour commencer à organiser le menu.",
+      "beFirstItem": "Sois le premier à proposer un plat !"
     },
     "Service": {
       "editService": "Modifier le service {name}",

@@ -425,7 +425,8 @@
       "expand": "Uitklappen",
       "collapse": "Inklappen",
       "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren.",
-      "shareEvent": "Evenement delen"
+      "shareEvent": "Evenement delen",
+      "beFirstItem": "Wees de eerste die iets voorstelt!"
     },
     "Service": {
       "editService": "Gang bewerken {name}",

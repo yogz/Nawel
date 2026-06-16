@@ -425,7 +425,8 @@
       "expand": "Genişlet",
       "collapse": "Daralt",
       "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin.",
-      "shareEvent": "Etkinliği paylaş"
+      "shareEvent": "Etkinliği paylaş",
+      "beFirstItem": "Bir yemek öneren ilk kişi ol!"
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",

@@ -425,7 +425,8 @@
       "cancel": "Abbrechen",
       "expand": "Erweitern",
       "collapse": "Einklappen",
-      "noMealsDesc": "Fügen Sie Ihre erste Mahlzeit hinzu, um mit der Organisation des Menüs zu beginnen."
+      "noMealsDesc": "Fügen Sie Ihre erste Mahlzeit hinzu, um mit der Organisation des Menüs zu beginnen.",
+      "beFirstItem": "Sei der Erste, der etwas vorschlägt!"
     },
     "Service": {
       "editService": "Gang bearbeiten {name}",

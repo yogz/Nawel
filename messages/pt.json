@@ -425,7 +425,8 @@
       "cancel": "Cancelar",
       "expand": "Expandir",
       "collapse": "Recolher",
-      "noMealsDesc": "Adicione a sua primeira refeição para começar a organizar o menu."
+      "noMealsDesc": "Adicione a sua primeira refeição para começar a organizar o menu.",
+      "beFirstItem": "Seja o primeiro a sugerir um prato!"
     },
     "Service": {
       "editService": "Editar prato {name}",

@@ -425,7 +425,8 @@
       "expand": "Udfold",
       "collapse": "Skjul",
       "noMealsDesc": "Tilføj dit første måltid for at begynde at organisere menuen.",
-      "shareEvent": "Del begivenhed"
+      "shareEvent": "Del begivenhed",
+      "beFirstItem": "Vær den første til at foreslå en ret!"
     },
     "Service": {
       "editService": "Rediger ret {name}",

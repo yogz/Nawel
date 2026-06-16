@@ -426,7 +426,8 @@
       "cancel": "Cancel",
       "expand": "Expand",
       "collapse": "Collapse",
-      "noMealsDesc": "Add your first meal to start organizing the menu."
+      "noMealsDesc": "Add your first meal to start organizing the menu.",
+      "beFirstItem": "Be the first to suggest a dish!"
     },
     "Service": {
       "editService": "Edit course {name}",
