@@ -202,6 +202,9 @@ export function EventPlannerSheets({
         return (
           <GuestAccessSheetContent
             onAuth={onAuth}
+            // Without a write key, creating a guest would fail silently, so only offer
+            // the "continue without account" path when a key is actually present.
+            canGuest={!!writeKey}
             onCreateGuest={() => {
               setSheet({ type: "person", context: "join" });
               onDismissGuestPrompt();
@@ -246,7 +249,17 @@ export function EventPlannerSheets({
     <>
       <Drawer
         open={!!sheet && sheet.type !== "item-ingredients" && sheet.type !== "event-edit"}
-        onOpenChange={(open) => !open && setSheet(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            // Closing the guest-access prompt (swipe/overlay/X) must mark it dismissed,
+            // otherwise the auto-open effect immediately re-opens it — making it feel
+            // non-dismissable.
+            if (sheet?.type === "guest-access") {
+              onDismissGuestPrompt();
+            }
+            setSheet(null);
+          }
+        }}
         repositionInputs={false}
       >
         <DrawerContent

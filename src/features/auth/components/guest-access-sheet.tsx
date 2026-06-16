@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 export function GuestAccessSheetContent({
   onAuth,
   onCreateGuest,
+  canGuest = true,
 }: {
   onAuth: () => void;
   onCreateGuest?: () => void;
+  canGuest?: boolean;
 }) {
   const t = useTranslations("EventDashboard.Sheets.GuestAccess");
   return (
@@ -20,29 +22,31 @@ export function GuestAccessSheetContent({
       </div>
 
       <div className="grid gap-3 px-4">
-        <Button
-          variant="premium"
-          className="h-auto w-full whitespace-normal border-accent/20 bg-accent py-3.5 text-white shadow-xl shadow-accent/20 transition-all duration-300 active:scale-95"
-          onClick={() => {
-            sendGAEvent("event", "guest_continued_without_auth");
-            if (onCreateGuest) {
-              onCreateGuest();
-            }
-          }}
-          icon={<UserPlus className="h-5 w-5" />}
-          iconClassName="bg-white/20 text-white"
-          shine
-        >
-          <div className="flex-1 text-left">
-            <div className="text-sm font-black uppercase tracking-widest">
-              {t("continueButton")}
+        {canGuest && (
+          <Button
+            variant="premium"
+            className="h-auto w-full whitespace-normal border-accent/20 bg-accent py-3.5 text-white shadow-xl shadow-accent/20 transition-all duration-300 active:scale-95"
+            onClick={() => {
+              sendGAEvent("event", "guest_continued_without_auth");
+              if (onCreateGuest) {
+                onCreateGuest();
+              }
+            }}
+            icon={<UserPlus className="h-5 w-5" />}
+            iconClassName="bg-white/20 text-white"
+            shine
+          >
+            <div className="flex-1 text-left">
+              <div className="text-sm font-black uppercase tracking-widest">
+                {t("continueButton")}
+              </div>
+              <div className="text-[11px] font-medium leading-tight text-white/80">
+                {t("continueDescription")}
+              </div>
             </div>
-            <div className="text-[11px] font-medium leading-tight text-white/80">
-              {t("continueDescription")}
-            </div>
-          </div>
-          <ArrowRight className="h-4 w-4 opacity-50" />
-        </Button>
+            <ArrowRight className="h-4 w-4 opacity-50" />
+          </Button>
+        )}
 
         <Button
           variant="premium"
