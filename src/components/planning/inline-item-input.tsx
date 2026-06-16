@@ -90,7 +90,7 @@ export function InlineItemInput({
           "placeholder:text-muted-foreground placeholder:transition-opacity",
           isFocused
             ? "border-accent bg-surface placeholder:opacity-40"
-            : "border-dashed border-border bg-transparent opacity-70 hover:opacity-100 hover:bg-white/5 dark:hover:bg-white/10 hover:border-accent/50",
+            : "border-dashed border-border bg-transparent hover:bg-white/5 dark:hover:bg-white/10 hover:border-accent/50",
           isSubmitting && "opacity-50"
         )}
       />

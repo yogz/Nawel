@@ -425,7 +425,8 @@
       "cancel": "Annulla",
       "expand": "Espandi",
       "collapse": "Riduci",
-      "noMealsDesc": "Aggiungi il tuo primo pasto per iniziare a organizzare il menu."
+      "noMealsDesc": "Aggiungi il tuo primo pasto per iniziare a organizzare il menu.",
+      "beFirstItem": "Sii il primo a proporre un piatto!"
     },
     "Service": {
       "editService": "Modifica portata {name}",
@@ -831,7 +832,8 @@
       "moved": "Articolo spostato ✓",
       "errorMove": "Errore nello spostamento dell'articolo ❌",
       "checked": "Articolo spuntato ✓",
-      "unchecked": "Articolo non spuntato ✓"
+      "unchecked": "Articolo non spuntato ✓",
+      "undo": "Annulla"
     },
     "meal": {
       "added": "Pasto creato! ✨",

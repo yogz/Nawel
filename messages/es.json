@@ -425,7 +425,8 @@
       "cancel": "Cancelar",
       "expand": "Expandir",
       "collapse": "Contraer",
-      "noMealsDesc": "Añade tu primera comida para empezar a organizar el menú."
+      "noMealsDesc": "Añade tu primera comida para empezar a organizar el menú.",
+      "beFirstItem": "¡Sé el primero en proponer un plato!"
     },
     "Service": {
       "editService": "Editar plato {name}",
@@ -831,7 +832,8 @@
       "moved": "Artículo movido ✓",
       "errorMove": "Error al mover artículo ❌",
       "checked": "Artículo marcado ✓",
-      "unchecked": "Artículo desmarcado ✓"
+      "unchecked": "Artículo desmarcado ✓",
+      "undo": "Deshacer"
     },
     "meal": {
       "added": "¡Comida creada! ✨",

@@ -425,7 +425,8 @@
       "expand": "Expandera",
       "collapse": "Minimera",
       "noMealsDesc": "Lägg till din första måltid för att börja organisera menyn.",
-      "shareEvent": "Dela evenemang"
+      "shareEvent": "Dela evenemang",
+      "beFirstItem": "Var först med att föreslå en rätt!"
     },
     "Service": {
       "editService": "Redigera rätt {name}",
@@ -831,7 +832,8 @@
       "moved": "Artikel flyttad ✓",
       "errorMove": "Fel vid förflyttning av artikel ❌",
       "checked": "Artikel markerad ✓",
-      "unchecked": "Artikel avmarkerad ✓"
+      "unchecked": "Artikel avmarkerad ✓",
+      "undo": "Ångra"
     },
     "meal": {
       "added": "Måltid skapad! ✨",

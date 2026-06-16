@@ -426,7 +426,8 @@
       "cancel": "Cancel",
       "expand": "Expand",
       "collapse": "Collapse",
-      "noMealsDesc": "Add your first meal to start organizing the menu."
+      "noMealsDesc": "Add your first meal to start organizing the menu.",
+      "beFirstItem": "Be the first to suggest a dish!"
     },
     "Service": {
       "editService": "Edit course {name}",
@@ -832,7 +833,8 @@
       "moved": "Item moved ✓",
       "errorMove": "Error moving item ❌",
       "checked": "Item checked ✓",
-      "unchecked": "Item unchecked ✓"
+      "unchecked": "Item unchecked ✓",
+      "undo": "Undo"
     },
     "meal": {
       "added": "Meal created! ✨",

@@ -425,7 +425,8 @@
       "expand": "Rozwiń",
       "collapse": "Zwiń",
       "noMealsDesc": "Dodaj swój pierwszy posiłek, aby zacząć organizować menu.",
-      "shareEvent": "Udostępnij wydarzenie"
+      "shareEvent": "Udostępnij wydarzenie",
+      "beFirstItem": "Zaproponuj danie jako pierwszy!"
     },
     "Service": {
       "editService": "Edytuj danie {name}",
@@ -831,7 +832,8 @@
       "moved": "Przedmiot przesunięty ✓",
       "errorMove": "Błąd przenoszenia przedmiotu ❌",
       "checked": "Zaznaczono ✓",
-      "unchecked": "Odznaczono ✓"
+      "unchecked": "Odznaczono ✓",
+      "undo": "Cofnij"
     },
     "meal": {
       "added": "Posiłek stworzony! ✨",

@@ -189,21 +189,45 @@ export function useItemHandlers({
       return;
     }
     const previousPlan = plan;
+    // Optimistic removal. The actual server deletion is DEFERRED until the undo
+    // toast closes, so "Annuler" can restore the item without a server round-trip
+    // (it's collaborative content — an accidental delete shouldn't be instant/final).
     setServiceItems(item.serviceId, (items) => items.filter((i) => i.id !== item.id));
     if (closeSheet) {
       setSheet(null);
     }
-    toast.success(t("item.deleted", { name: item.name }));
     trackItemAction("item_deleted", item.name);
 
-    startTransition(async () => {
-      try {
-        await deleteItemAction({ id: item.id, slug, key: writeKey, token: token ?? undefined });
-      } catch (error) {
-        console.error("Failed to delete item:", error);
-        setPlan(previousPlan);
-        toast.error(t("item.errorDelete"));
+    let undone = false;
+    let committed = false;
+    const commitDelete = () => {
+      if (undone || committed) {
+        return;
       }
+      committed = true;
+      startTransition(async () => {
+        try {
+          await deleteItemAction({ id: item.id, slug, key: writeKey, token: token ?? undefined });
+        } catch (error) {
+          console.error("Failed to delete item:", error);
+          setPlan(previousPlan);
+          toast.error(t("item.errorDelete"));
+        }
+      });
+    };
+
+    toast.success(t("item.deleted", { name: item.name }), {
+      duration: 5000,
+      action: {
+        label: t("item.undo"),
+        onClick: () => {
+          undone = true;
+          setPlan(previousPlan);
+        },
+      },
+      // Auto-close (timeout) or manual dismiss = confirm the deletion.
+      onAutoClose: commitDelete,
+      onDismiss: commitDelete,
     });
   };
 

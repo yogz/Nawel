@@ -425,7 +425,8 @@
       "expand": "Genişlet",
       "collapse": "Daralt",
       "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin.",
-      "shareEvent": "Etkinliği paylaş"
+      "shareEvent": "Etkinliği paylaş",
+      "beFirstItem": "Bir yemek öneren ilk kişi ol!"
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",
@@ -831,7 +832,8 @@
       "moved": "Ürün taşındı ✓",
       "errorMove": "Taşıma hatası ❌",
       "checked": "Ürün işaretlendi ✓",
-      "unchecked": "Ürün işareti kaldırıldı ✓"
+      "unchecked": "Ürün işareti kaldırıldı ✓",
+      "undo": "Geri al"
     },
     "meal": {
       "added": "Yemek oluşturuldu ! ✨",

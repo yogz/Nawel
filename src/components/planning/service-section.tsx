@@ -138,6 +138,11 @@ export const ServiceSection = memo(function ServiceSection({
 
               {!readOnly && (
                 <div className="p-3 sm:p-4">
+                  {filteredItems.length === 0 && onInlineAdd && (
+                    <p className="mb-2 px-1 text-xs font-medium text-muted-foreground">
+                      {t("beFirstItem")}
+                    </p>
+                  )}
                   {onInlineAdd ? (
                     <div className="flex items-center gap-2">
                       <InlineItemInput

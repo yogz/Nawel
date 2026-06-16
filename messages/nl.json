@@ -425,7 +425,8 @@
       "expand": "Uitklappen",
       "collapse": "Inklappen",
       "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren.",
-      "shareEvent": "Evenement delen"
+      "shareEvent": "Evenement delen",
+      "beFirstItem": "Wees de eerste die iets voorstelt!"
     },
     "Service": {
       "editService": "Gang bewerken {name}",
@@ -831,7 +832,8 @@
       "moved": "Item verplaatst ✓",
       "errorMove": "Fout bij verplaatsen item ❌",
       "checked": "Item aangevinkt ✓",
-      "unchecked": "Item uitgevinkt ✓"
+      "unchecked": "Item uitgevinkt ✓",
+      "undo": "Ongedaan maken"
     },
     "meal": {
       "added": "Maaltijd gemaakt! ✨",
