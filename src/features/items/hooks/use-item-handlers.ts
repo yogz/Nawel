@@ -102,26 +102,33 @@ export function useItemHandlers({
     }
 
     const updatedItem = { ...found.item, ...values };
+    const previousPlan = plan;
 
     startTransition(async () => {
-      await updateItemAction({
-        id: itemId,
-        name: updatedItem.name,
-        quantity: updatedItem.quantity,
-        note: updatedItem.note,
-        price: updatedItem.price ?? null,
-        personId: updatedItem.personId ?? null,
-        slug,
-        key: writeKey,
-        token: token ?? undefined,
-      });
       setServiceItems(found.service.id, (items) =>
         items.map((it) => (it.id === itemId ? updatedItem : it))
       );
-      toast.success(t("item.updated"));
-      trackItemAction("item_updated", updatedItem.name);
       if (closeSheet) {
         setSheet(null);
+      }
+      try {
+        await updateItemAction({
+          id: itemId,
+          name: updatedItem.name,
+          quantity: updatedItem.quantity,
+          note: updatedItem.note,
+          price: updatedItem.price ?? null,
+          personId: updatedItem.personId ?? null,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+        toast.success(t("item.updated"));
+        trackItemAction("item_updated", updatedItem.name);
+      } catch (error) {
+        console.error("Failed to update item:", error);
+        setPlan(previousPlan);
+        toast.error(t("item.errorUpdate"));
       }
     });
   };
@@ -131,6 +138,7 @@ export function useItemHandlers({
       return;
     }
 
+    const previousPlan = plan;
     setServiceItems(item.serviceId, (items) =>
       items.map((it) =>
         it.id === item.id
@@ -148,25 +156,31 @@ export function useItemHandlers({
 
     const person = personId ? plan.people.find((p: Person) => p.id === personId) : null;
     const personName = person?.name || "À prévoir";
-    toast.success(t("person.claimed"));
-    trackItemAction("item_assigned", item.name, { assigned_to: personName });
-
-    // Easter egg for Cécile
-    if (
-      person &&
-      (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")
-    ) {
-      fireEmojiConfetti();
-    }
 
     startTransition(async () => {
-      await assignItemAction({
-        id: item.id,
-        personId,
-        slug,
-        key: writeKey,
-        token: token ?? undefined,
-      });
+      try {
+        await assignItemAction({
+          id: item.id,
+          personId,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+        toast.success(t("person.claimed"));
+        trackItemAction("item_assigned", item.name, { assigned_to: personName });
+
+        // Easter egg for Cécile
+        if (
+          person &&
+          (person.name.toLowerCase() === "cécile" || person.name.toLowerCase() === "cecile")
+        ) {
+          fireEmojiConfetti();
+        }
+      } catch (error) {
+        console.error("Failed to assign item:", error);
+        setPlan(previousPlan);
+        toast.error(t("person.errorClaim"));
+      }
     });
   };
 
@@ -210,6 +224,7 @@ export function useItemHandlers({
     trackItemAction("item_moved", item.name);
     trackDragDrop();
 
+    const previousPlan = plan;
     startTransition(async () => {
       setServiceItems(sourceService.id, (items) => items.filter((i) => i.id !== itemId));
       setServiceItems(targetServiceId, (items) => {
@@ -220,15 +235,21 @@ export function useItemHandlers({
         }
         return newItems;
       });
-      await moveItemAction({
-        itemId,
-        targetServiceId,
-        targetOrder,
-        slug,
-        key: writeKey,
-        token: token ?? undefined,
-      });
-      toast.success(t("item.moved"));
+      try {
+        await moveItemAction({
+          itemId,
+          targetServiceId,
+          targetOrder,
+          slug,
+          key: writeKey,
+          token: token ?? undefined,
+        });
+        toast.success(t("item.moved"));
+      } catch (error) {
+        console.error("Failed to move item:", error);
+        setPlan(previousPlan);
+        toast.error(t("item.errorMove"));
+      }
     });
   };
 
