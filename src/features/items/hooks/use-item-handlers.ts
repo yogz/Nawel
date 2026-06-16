@@ -52,38 +52,44 @@ export function useItemHandlers({
     return null;
   };
 
-  const handleCreateItem = (data: ItemData, closeSheet = true) => {
+  // Returns true on success, false on failure. Awaiting the underlying action (instead of
+  // fire-and-forget inside startTransition) is what lets callers like InlineItemInput keep their
+  // submit guard locked until the item really exists — preventing double submissions / duplicate
+  // toasts and preserving the typed value when the action fails.
+  const handleCreateItem = async (data: ItemData, closeSheet = true): Promise<boolean> => {
     if (readOnly) {
-      return;
+      return false;
     }
     if (typeof data.serviceId !== "number") {
       console.error("Missing serviceId for item creation");
-      return;
+      return false;
     }
     // Type assertion safe because we checked serviceId
     const itemData = data as ItemData & { serviceId: number };
-    startTransition(async () => {
-      try {
-        const created = await createItemAction({
-          ...itemData,
-          slug,
-          key: writeKey,
-          token: token ?? undefined,
-        });
-        const person = itemData.personId
-          ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
-          : null;
+    try {
+      const created = await createItemAction({
+        ...itemData,
+        slug,
+        key: writeKey,
+        token: token ?? undefined,
+      });
+      const person = itemData.personId
+        ? (plan.people.find((p) => p.id === itemData.personId) ?? null)
+        : null;
+      startTransition(() => {
         setServiceItems(itemData.serviceId, (items) => [...items, { ...created, person }]);
         if (closeSheet) {
           setSheet(null);
         }
-        toast.success(t("item.added", { name: itemData.name }));
-        trackItemAction("item_created", itemData.name);
-      } catch (error) {
-        console.error("Failed to create item:", error);
-        toast.error(t("item.errorAdd"));
-      }
-    });
+      });
+      toast.success(t("item.added", { name: itemData.name }));
+      trackItemAction("item_created", itemData.name);
+      return true;
+    } catch (error) {
+      console.error("Failed to create item:", error);
+      toast.error(t("item.errorAdd"));
+      return false;
+    }
   };
 
   const handleUpdateItem = (itemId: number, values: Partial<Item>, closeSheet = false) => {

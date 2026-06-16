@@ -8,7 +8,8 @@ import { useTranslations } from "next-intl";
 import { m as motion, AnimatePresence } from "framer-motion";
 
 interface InlineItemInputProps {
-  onAdd: (name: string) => Promise<void> | void;
+  // Returns false when the add failed, so we keep the typed value instead of clearing it.
+  onAdd: (name: string) => Promise<boolean> | boolean | void;
   placeholder?: string;
   className?: string;
   serviceName?: string;
@@ -33,10 +34,14 @@ export function InlineItemInput({
 
     setIsSubmitting(true);
     try {
-      await onAdd(trimmed);
-      setValue("");
-      // Keep focus on input for rapid entry
-      inputRef.current?.focus();
+      // isSubmitting stays true for the whole await, blocking double submissions.
+      const result = await onAdd(trimmed);
+      // Only clear when the add succeeded (or the caller doesn't report status).
+      if (result !== false) {
+        setValue("");
+        // Keep focus on input for rapid entry
+        inputRef.current?.focus();
+      }
     } finally {
       setIsSubmitting(false);
     }

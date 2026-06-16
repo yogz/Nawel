@@ -22,7 +22,7 @@ interface ServiceSectionProps {
   onDelete: (item: Item) => void;
   onCreate: () => void;
   onEdit: () => void;
-  onInlineAdd?: (name: string) => Promise<void> | void;
+  onInlineAdd?: (name: string) => Promise<boolean> | void;
   activeItemId: number | null;
   handleAssign?: (item: Item, personId: number | null) => void;
   currentUserId?: string;
