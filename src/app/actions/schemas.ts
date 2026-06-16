@@ -11,6 +11,14 @@ import {
 const safeText = (maxLength = 500) => z.string().transform((val) => sanitizeText(val, maxLength));
 const safeStrictText = (maxLength = 100) =>
   z.string().transform((val) => sanitizeStrictText(val, maxLength));
+
+// Same as above but rejects values that are empty AFTER sanitization (e.g. only
+// spaces, or characters stripped by the sanitizer like emoji-only names) so we
+// never persist nameless people or blank items.
+const safeRequiredText = (maxLength = 500) =>
+  safeText(maxLength).refine((val) => val.length > 0, { message: "Cannot be empty" });
+const safeRequiredStrictText = (maxLength = 100) =>
+  safeStrictText(maxLength).refine((val) => val.length > 0, { message: "Cannot be empty" });
 const safeSlug = z.string().transform((val) => sanitizeSlug(val, 50));
 const safeEmoji = z.string().transform((val) => sanitizeEmoji(val));
 const safeKey = z.string().transform((val) => sanitizeKey(val, 100));
@@ -97,7 +105,7 @@ export const deleteMealSchema = baseInput.extend({
 });
 
 export const createPersonSchema = baseInput.extend({
-  name: safeStrictText(50),
+  name: safeRequiredStrictText(50),
   emoji: safeEmoji.optional(),
   image: z.string().optional(),
   userId: z.string().optional(),
@@ -111,7 +119,7 @@ export const unclaimPersonSchema = claimPersonSchema;
 
 export const updatePersonSchema = baseInput.extend({
   id: z.number().int().positive(),
-  name: safeStrictText(50),
+  name: safeRequiredStrictText(50),
   emoji: safeEmoji.optional().nullable(),
   image: z.string().optional().nullable(),
 });
@@ -129,7 +137,7 @@ export const deletePersonSchema = baseInput.extend({
 
 export const createItemSchema = baseInput.extend({
   serviceId: z.number().int().positive(),
-  name: safeText(200),
+  name: safeRequiredText(200),
   quantity: safeText(50).optional(),
   note: safeText(500).optional(),
   price: z.number().min(0).max(100000).optional(),
@@ -138,7 +146,7 @@ export const createItemSchema = baseInput.extend({
 
 export const updateItemSchema = baseInput.extend({
   id: z.number().int().positive(),
-  name: safeText(200),
+  name: safeRequiredText(200),
   quantity: safeText(50).optional().nullable(),
   note: safeText(500).optional().nullable(),
   price: z.number().min(0).max(100000).optional().nullable(),

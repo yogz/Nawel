@@ -141,7 +141,7 @@ function TabItem({
         <span
           className={cn(
             "text-[10px] font-black uppercase tracking-widest transition-colors",
-            selected ? "text-accent" : "text-gray-400"
+            selected ? "text-accent" : "text-gray-500"
           )}
         >
           {display.label}
