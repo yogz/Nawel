@@ -79,9 +79,13 @@ export function InlineItemInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={displayPlaceholder}
+        aria-label={displayPlaceholder}
+        inputMode="text"
+        enterKeyHint="done"
         disabled={isSubmitting}
         className={cn(
-          "relative z-10 h-11 pl-10 pr-12 text-sm transition-all duration-300 text-text",
+          // text-base (16px) on mobile prevents iOS Safari's auto-zoom on focus.
+          "relative z-10 h-11 pl-10 pr-12 text-base sm:text-sm transition-all duration-300 text-text",
           "placeholder:text-muted-foreground placeholder:transition-opacity",
           isFocused
             ? "border-accent bg-surface placeholder:opacity-40"
@@ -114,8 +118,10 @@ export function InlineItemInput({
             className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1"
           >
             <button
+              type="button"
               onClick={handleSubmit}
-              className="flex items-center gap-1.5 bg-violet-100 text-violet-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-violet-200 transition-colors"
+              aria-label={displayPlaceholder}
+              className="flex items-center gap-1.5 bg-violet-100 text-violet-700 px-2 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-violet-200 transition-colors"
             >
               <span>Enter</span>
               <CornerDownLeft size={10} strokeWidth={3} />

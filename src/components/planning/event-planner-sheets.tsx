@@ -260,7 +260,6 @@ export function EventPlannerSheets({
             setSheet(null);
           }
         }}
-        repositionInputs={false}
       >
         <DrawerContent
           className={cn(
@@ -279,7 +278,8 @@ export function EventPlannerSheets({
                 </div>
                 <DrawerClose asChild>
                   <button
-                    className="touch-manipulation rounded-full bg-gray-50 p-2 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
+                    type="button"
+                    className="flex h-11 w-11 touch-manipulation items-center justify-center rounded-full bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 active:scale-95"
                     aria-label={tCommon("close")}
                   >
                     <X size={18} />
