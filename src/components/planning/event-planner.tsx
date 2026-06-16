@@ -225,17 +225,15 @@ export function EventPlanner({
 
   // Handler for inline quick-add in ServiceSection
   const handleInlineAdd = useCallback(
-    async (serviceId: number, name: string) => {
-      await handlers.handleCreateItem(
+    (serviceId: number, name: string): Promise<boolean> =>
+      handlers.handleCreateItem(
         {
           name,
           serviceId,
-
           personId: currentPerson?.id ?? null,
         },
         false // Don't close sheet (there's no sheet)
-      );
-    },
+      ),
     [handlers, currentPerson?.id]
   );
 

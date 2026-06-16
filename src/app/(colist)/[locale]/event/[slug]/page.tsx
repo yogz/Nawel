@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { notFound } from "next/navigation";
 
 // NOTE: Viewport configuration (themeColor, viewportFit, etc.) is handled by
 // the layout.tsx file in this directory. See layout.tsx for details.
@@ -92,6 +93,9 @@ export default async function Page(props: Props) {
   setRequestLocale(params.locale);
 
   const plan = await fetchPlan(params.slug);
+  if (!plan.event) {
+    notFound();
+  }
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
   const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);
 
