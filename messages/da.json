@@ -832,7 +832,8 @@
       "moved": "Element flyttet ✓",
       "errorMove": "Fejl ved flytning af element ❌",
       "checked": "Vare markeret ✓",
-      "unchecked": "Vare afmarkeret ✓"
+      "unchecked": "Vare afmarkeret ✓",
+      "undo": "Fortryd"
     },
     "meal": {
       "added": "Måltid oprettet! ✨",

@@ -832,7 +832,8 @@
       "moved": "Przedmiot przesunięty ✓",
       "errorMove": "Błąd przenoszenia przedmiotu ❌",
       "checked": "Zaznaczono ✓",
-      "unchecked": "Odznaczono ✓"
+      "unchecked": "Odznaczono ✓",
+      "undo": "Cofnij"
     },
     "meal": {
       "added": "Posiłek stworzony! ✨",

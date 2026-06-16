@@ -832,7 +832,8 @@
       "moved": "Artikel verschoben ✓",
       "errorMove": "Fehler beim Verschieben des Artikels ❌",
       "checked": "Artikel abgehakt ✓",
-      "unchecked": "Artikel nicht abgehakt ✓"
+      "unchecked": "Artikel nicht abgehakt ✓",
+      "undo": "Rückgängig"
     },
     "meal": {
       "added": "Mahlzeit erstellt! ✨",

@@ -832,7 +832,8 @@
       "moved": "Artikel flyttad ✓",
       "errorMove": "Fel vid förflyttning av artikel ❌",
       "checked": "Artikel markerad ✓",
-      "unchecked": "Artikel avmarkerad ✓"
+      "unchecked": "Artikel avmarkerad ✓",
+      "undo": "Ångra"
     },
     "meal": {
       "added": "Måltid skapad! ✨",

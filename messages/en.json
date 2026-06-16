@@ -833,7 +833,8 @@
       "moved": "Item moved ✓",
       "errorMove": "Error moving item ❌",
       "checked": "Item checked ✓",
-      "unchecked": "Item unchecked ✓"
+      "unchecked": "Item unchecked ✓",
+      "undo": "Undo"
     },
     "meal": {
       "added": "Meal created! ✨",

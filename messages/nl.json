@@ -832,7 +832,8 @@
       "moved": "Item verplaatst ✓",
       "errorMove": "Fout bij verplaatsen item ❌",
       "checked": "Item aangevinkt ✓",
-      "unchecked": "Item uitgevinkt ✓"
+      "unchecked": "Item uitgevinkt ✓",
+      "undo": "Ongedaan maken"
     },
     "meal": {
       "added": "Maaltijd gemaakt! ✨",

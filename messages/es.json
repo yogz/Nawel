@@ -832,7 +832,8 @@
       "moved": "Artículo movido ✓",
       "errorMove": "Error al mover artículo ❌",
       "checked": "Artículo marcado ✓",
-      "unchecked": "Artículo desmarcado ✓"
+      "unchecked": "Artículo desmarcado ✓",
+      "undo": "Deshacer"
     },
     "meal": {
       "added": "¡Comida creada! ✨",

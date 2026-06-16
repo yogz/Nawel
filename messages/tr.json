@@ -832,7 +832,8 @@
       "moved": "Ürün taşındı ✓",
       "errorMove": "Taşıma hatası ❌",
       "checked": "Ürün işaretlendi ✓",
-      "unchecked": "Ürün işareti kaldırıldı ✓"
+      "unchecked": "Ürün işareti kaldırıldı ✓",
+      "undo": "Geri al"
     },
     "meal": {
       "added": "Yemek oluşturuldu ! ✨",

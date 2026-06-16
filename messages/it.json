@@ -832,7 +832,8 @@
       "moved": "Articolo spostato ✓",
       "errorMove": "Errore nello spostamento dell'articolo ❌",
       "checked": "Articolo spuntato ✓",
-      "unchecked": "Articolo non spuntato ✓"
+      "unchecked": "Articolo non spuntato ✓",
+      "undo": "Annulla"
     },
     "meal": {
       "added": "Pasto creato! ✨",

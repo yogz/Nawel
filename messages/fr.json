@@ -842,7 +842,8 @@
       "moved": "Article déplacé ✓",
       "errorMove": "Erreur lors du déplacement ❌",
       "checked": "Article coché ✓",
-      "unchecked": "Article décoché ✓"
+      "unchecked": "Article décoché ✓",
+      "undo": "Annuler"
     },
     "meal": {
       "added": "Repas créé ! ✨",
