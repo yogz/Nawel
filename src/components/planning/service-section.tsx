@@ -94,7 +94,7 @@ export const ServiceSection = memo(function ServiceSection({
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95 dark:text-zinc-500 dark:hover:bg-white/5 dark:hover:text-zinc-300"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-600 active:scale-95 dark:text-zinc-500 dark:hover:bg-white/5 dark:hover:text-zinc-300"
               aria-label={isExpanded ? t("collapse") : t("expand")}
             >
               <motion.div
