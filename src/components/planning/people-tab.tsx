@@ -243,11 +243,12 @@ export function PeopleTab({
                         currentUserId &&
                         !plan.people.some((p) => p.userId === currentUserId) && (
                           <button
+                            type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               onClaim?.(person.id);
                             }}
-                            className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm hover:bg-accent/90"
+                            className="flex min-h-11 items-center gap-1.5 rounded-full bg-accent px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm hover:bg-accent/90"
                           >
                             {t("itsMe")}
                           </button>

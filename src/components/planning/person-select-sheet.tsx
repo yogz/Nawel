@@ -21,6 +21,7 @@ export function PersonSelectSheet({
   return (
     <div className="no-scrollbar space-y-2 overflow-y-auto p-1">
       <button
+        type="button"
         onClick={() => {
           setPlanningFilter({ type: "all" });
           onClose();
@@ -38,6 +39,7 @@ export function PersonSelectSheet({
       {people.map((person) => (
         <button
           key={person.id}
+          type="button"
           onClick={() => {
             setPlanningFilter({ type: "person", personId: person.id });
             onClose();

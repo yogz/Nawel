@@ -421,6 +421,7 @@ export function EventPlanner({
               <p className="text-sm font-medium text-amber-800">{t("title")}</p>
             </div>
             <button
+              type="button"
               onClick={() => setSheet({ type: "guest-access" })}
               className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-colors hover:bg-amber-600"
             >
