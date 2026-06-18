@@ -17,6 +17,7 @@ import {
   saveAIFeedbackSchema,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
+import { stampMealDirtyByService } from "./_assessment-dirty";
 
 export const createItemAction = createSafeAction(createItemSchema, async (input) => {
   await verifyAccess(input.slug, "item:create", input.key, input.token);
@@ -41,6 +42,7 @@ export const createItemAction = createSafeAction(createItemSchema, async (input)
     })
     .returning();
 
+  await stampMealDirtyByService(input.serviceId);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
@@ -59,6 +61,7 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
     })
     .where(eq(items.id, input.id))
     .returning();
+  if (updated) await stampMealDirtyByService(updated.serviceId);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -66,6 +69,7 @@ export const updateItemAction = createSafeAction(updateItemSchema, async (input)
 export const deleteItemAction = createSafeAction(deleteItemSchema, async (input) => {
   await verifyAccess(input.slug, "item:delete", input.key, input.token);
   const [deleted] = await db.delete(items).where(eq(items.id, input.id)).returning();
+  if (deleted) await stampMealDirtyByService(deleted.serviceId);
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });
@@ -79,6 +83,7 @@ export const assignItemAction = createSafeAction(assignItemSchema, async (input)
     .where(eq(items.id, input.id))
     .returning();
 
+  if (updated) await stampMealDirtyByService(updated.serviceId);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
@@ -100,6 +105,7 @@ export const moveItemAction = createSafeAction(moveItemSchema, async (input) => 
   const itemId = input.itemId;
   const targetServiceId = input.targetServiceId;
   const targetOrder = input.targetOrder;
+  let sourceServiceId = targetServiceId;
 
   await db.transaction(async (tx) => {
     // 1. Get the item to move
@@ -110,7 +116,7 @@ export const moveItemAction = createSafeAction(moveItemSchema, async (input) => 
       throw new Error("Item not found");
     }
 
-    const sourceServiceId = item.serviceId;
+    sourceServiceId = item.serviceId;
 
     if (sourceServiceId === targetServiceId) {
       if (targetOrder === undefined) {
@@ -157,6 +163,9 @@ export const moveItemAction = createSafeAction(moveItemSchema, async (input) => 
     }
   });
 
+  // A cross-meal move leaves the source meal's assessment stale too.
+  await stampMealDirtyByService(targetServiceId);
+  if (sourceServiceId !== targetServiceId) await stampMealDirtyByService(sourceServiceId);
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });

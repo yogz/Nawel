@@ -426,7 +426,12 @@
       "collapse": "Skjul",
       "noMealsDesc": "Tilføj dit første måltid for at begynde at organisere menuen.",
       "shareEvent": "Del begivenhed",
-      "beFirstItem": "Vær den første til at foreslå en ret!"
+      "beFirstItem": "Vær den første til at foreslå en ret!",
+      "assessment": {
+        "title": "Hvad mangler",
+        "dismiss": "Skjul",
+        "disclaimer": "Automatisk genererede forslag – tilpas efter behov."
+      }
     },
     "Service": {
       "editService": "Rediger ret {name}",

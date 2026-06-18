@@ -2,6 +2,20 @@ import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { events } from "@drizzle/schema";
 import { type PlanData, type Meal, type Person } from "./types";
+import { mealAssessmentSchema, type MealAssessment } from "./meal-assessment";
+
+/** Safely parses the stored assessment JSON; returns null on any mismatch. */
+function parseAssessment(raw: string | null): MealAssessment | null {
+  if (!raw) {
+    return null;
+  }
+  try {
+    const result = mealAssessmentSchema.safeParse(JSON.parse(raw));
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Fetches the complete event plan with all related data in optimized queries.
@@ -56,6 +70,7 @@ export async function fetchPlan(slug: string): Promise<PlanData> {
   // 3. Strip tokens from items' person references for security
   const mealsWithSecurePersons = mealRows.map((meal) => ({
     ...meal,
+    parsedAssessment: parseAssessment(meal.assessment),
     services: meal.services.map((service) => ({
       ...service,
       items: service.items.map((item) => ({

@@ -1,6 +1,7 @@
 import { generateObject } from "ai";
 import { aiModel } from "./ai";
 import { logger } from "./logger";
+import { repairJsonText } from "./ai-json";
 import {
   ingredientsSchema,
   categorizationSchema,
@@ -10,34 +11,6 @@ import {
   getUserPrompt,
   INGREDIENT_CATEGORIES,
 } from "./prompts";
-
-/**
- * Strips markdown code blocks from JSON text.
- * Some models (like Mistral) wrap JSON responses in ```json ... ``` blocks.
- */
-function stripMarkdownCodeBlocks(text: string): string {
-  // Match ```json ... ``` or ``` ... ``` blocks and extract the content
-  const codeBlockRegex = /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/;
-  const match = text.trim().match(codeBlockRegex);
-  if (match) {
-    return match[1].trim();
-  }
-  return text;
-}
-
-/**
- * Repair function for generateObject that handles markdown-wrapped JSON.
- */
-async function repairJsonText({ text }: { text: string }): Promise<string | null> {
-  const stripped = stripMarkdownCodeBlocks(text);
-  // If we actually stripped something, return the result
-  if (stripped !== text) {
-    logger.debug("Repaired JSON by stripping markdown code blocks");
-    return stripped;
-  }
-  // Return null to let the original error propagate
-  return null;
-}
 
 export interface GeneratedIngredient {
   name: string;

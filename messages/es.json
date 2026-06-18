@@ -426,7 +426,12 @@
       "expand": "Expandir",
       "collapse": "Contraer",
       "noMealsDesc": "Añade tu primera comida para empezar a organizar el menú.",
-      "beFirstItem": "¡Sé el primero en proponer un plato!"
+      "beFirstItem": "¡Sé el primero en proponer un plato!",
+      "assessment": {
+        "title": "Lo que falta",
+        "dismiss": "Ocultar",
+        "disclaimer": "Sugerencias generadas automáticamente; ajústalas a tu gusto."
+      }
     },
     "Service": {
       "editService": "Editar plato {name}",

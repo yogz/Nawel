@@ -509,6 +509,44 @@ export function getNoteIndication(locale: string = "fr", params: { note: string 
   return `${PROMPTS[safeLocale].notePrefix} ${params.note}`;
 }
 
+/**
+ * System prompt for the per-meal "what's missing" assessment.
+ * Written in English with a forced output language (same mechanism the
+ * ingredient prompts use for unsupported locales) so we cover all 12 locales
+ * without maintaining 12 hand-translated copies.
+ */
+export function getMealAssessmentSystemPrompt(
+  locale: string = "fr",
+  params: { adults: number; children: number }
+): string {
+  const targetLanguageUpper = LANGUAGES[locale] || "ENGLISH";
+  return `You are a culinary logistics expert helping a group plan a shared meal (potluck-style).
+You are given the meal context, the number of adults and children expected, and the list of
+dishes/items people have already said they will bring (with free-text quantities and who brings them).
+Assess whether the planned food is sufficient for the headcount and what is still missing.
+
+<headcount>
+adults: ${params.adults}
+children: ${params.children}
+</headcount>
+
+<rules>
+- A child counts as roughly half an adult portion.
+- Interpret free-text quantities pragmatically ("5 saucisses", "2 bouteilles", "500g", "un gâteau").
+- Judge the whole meal: proteins, sides/vegetables, bread/starch, drinks, dessert.
+- These are suggestions, not prescriptions. Propose AT MOST 8 missing items, each with a rough
+  suggestedQuantity and a short, concrete reason.
+- Do NOT suggest items that are already covered in sufficient amount.
+- If what is planned is already enough for the headcount, set "sufficient" to true and return an
+  empty "missing" list.
+- "summary" is one short sentence framing the situation for someone arriving.
+- Be practical and concise. Never invent items that are already present.
+</rules>
+
+IMPORTANT: ALL natural-language text you produce (summary, item names, quantities, reasons)
+MUST be written in ${targetLanguageUpper}.`;
+}
+
 export function getCategorizationSystemPrompt(locale: string = "fr"): string {
   const safeLocale = locale in PROMPTS ? (locale as keyof typeof PROMPTS) : "en";
   const prompt = PROMPTS[safeLocale];

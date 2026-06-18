@@ -187,6 +187,9 @@ export const events = pgTable(
     ownerId: text("owner_id").references(() => user.id, { onDelete: "set null" }),
     adults: integer("adults").notNull().default(0),
     children: integer("children").notNull().default(0),
+    // Locale captured at creation — used to generate the per-meal AI assessment
+    // in the event's language (existing rows default to fr).
+    locale: varchar("locale", { length: 8 }).notNull().default("fr"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => ({
@@ -208,9 +211,19 @@ export const meals = pgTable(
     title: text("title"),
     adults: integer("adults").notNull().default(0),
     children: integer("children").notNull().default(0),
+    // "What's missing" AI assessment (computed off the request path by a cron).
+    // itemsChangedAt is the debounce clock, stamped on every meaningful edit.
+    itemsChangedAt: timestamp("items_changed_at"),
+    assessment: text("assessment"), // JSON MealAssessment | null
+    assessmentInputHash: varchar("assessment_input_hash", { length: 64 }), // sha256 hex
+    assessmentComputedAt: timestamp("assessment_computed_at"),
   },
   (table) => ({
     eventIdIdx: index("meals_event_id_idx").on(table.eventId),
+    // Partial index for the cron scan over meals awaiting (re)assessment.
+    assessmentDueIdx: index("meals_assessment_due_idx")
+      .on(table.itemsChangedAt)
+      .where(sql`${table.itemsChangedAt} IS NOT NULL`),
   })
 );
 

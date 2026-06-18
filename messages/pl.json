@@ -426,7 +426,12 @@
       "collapse": "Zwiń",
       "noMealsDesc": "Dodaj swój pierwszy posiłek, aby zacząć organizować menu.",
       "shareEvent": "Udostępnij wydarzenie",
-      "beFirstItem": "Zaproponuj danie jako pierwszy!"
+      "beFirstItem": "Zaproponuj danie jako pierwszy!",
+      "assessment": {
+        "title": "Czego brakuje",
+        "dismiss": "Ukryj",
+        "disclaimer": "Sugestie generowane automatycznie – dostosuj według uznania."
+      }
     },
     "Service": {
       "editService": "Edytuj danie {name}",

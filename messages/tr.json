@@ -426,7 +426,12 @@
       "collapse": "Daralt",
       "noMealsDesc": "Menüyü düzenlemeye başlamak için ilk yemeğinizi ekleyin.",
       "shareEvent": "Etkinliği paylaş",
-      "beFirstItem": "Bir yemek öneren ilk kişi ol!"
+      "beFirstItem": "Bir yemek öneren ilk kişi ol!",
+      "assessment": {
+        "title": "Eksik olanlar",
+        "dismiss": "Gizle",
+        "disclaimer": "Otomatik oluşturulan öneriler — dilediğiniz gibi ayarlayın."
+      }
     },
     "Service": {
       "editService": "{name} bölümünü düzenle",

@@ -12,6 +12,7 @@ import {
   deleteMealSchema,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
+import { stampMealDirty } from "./_assessment-dirty";
 
 export const createMealAction = createSafeAction(createMealSchema, async (input) => {
   const { event } = await verifyAccess(input.slug, "meal:create", input.key, input.token);
@@ -123,6 +124,7 @@ export const updateMealAction = createSafeAction(updateMealSchema, async (input)
     return updatedMeal;
   });
 
+  await stampMealDirty(input.id);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });

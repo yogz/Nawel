@@ -5,6 +5,10 @@
     {
       "path": "/api/cron/sortie-sweeper",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/meal-assessment",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
