@@ -6,6 +6,7 @@ import { meals, events } from "@drizzle/schema";
 import { and, or, eq, lt, lte, isNull, isNotNull, asc, inArray, sql } from "drizzle-orm";
 import { computeAssessmentInputHash } from "@/lib/meal-assessment-hash";
 import { generateMealAssessment, type MealAssessmentInput } from "@/lib/meal-assessment";
+import { isPastDate, shouldSkipAssessment } from "./assessment-guards";
 import { logger } from "@/lib/logger";
 
 // Consider a meal "settled" once it hasn't changed for this long.
@@ -21,11 +22,6 @@ export interface AssessmentSweeperReport {
   cleared: number;
   hashUnchanged: number;
   failed: number;
-}
-
-function isPastDate(date: string, todayStr: string): boolean {
-  // "common" meals (vacation shared items) have no real date — never "past".
-  return /^\d{4}-\d{2}-\d{2}$/.test(date) && date < todayStr;
 }
 
 export async function runMealAssessmentSweeper(): Promise<AssessmentSweeperReport> {
@@ -106,8 +102,12 @@ export async function runMealAssessmentSweeper(): Promise<AssessmentSweeperRepor
       }
 
       const totalItems = meal.services.reduce((sum, s) => sum + s.items.length, 0);
-      const guardSkip =
-        totalItems === 0 || adults + children === 0 || isPastDate(meal.date, todayStr);
+      const guardSkip = shouldSkipAssessment({
+        totalItems,
+        adults,
+        children,
+        isPast: isPastDate(meal.date, todayStr),
+      });
 
       if (guardSkip) {
         // Nothing meaningful to suggest — clear any stale assessment so the
