@@ -8,6 +8,7 @@ import { eq } from "drizzle-orm";
 import { verifyAccess } from "./shared";
 import { createServiceSchema, serviceSchema, deleteServiceSchema } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
+import { stampMealDirty } from "./_assessment-dirty";
 
 export const createServiceAction = createSafeAction(createServiceSchema, async (input) => {
   await verifyAccess(input.slug, "service:create", input.key, input.token);
@@ -42,6 +43,7 @@ export const createServiceAction = createSafeAction(createServiceSchema, async (
     })
     .returning();
 
+  await stampMealDirty(input.mealId);
   revalidatePath(`/event/${input.slug}`);
   return created;
 });
@@ -83,13 +85,15 @@ export const updateServiceAction = createSafeAction(serviceSchema, async (input)
     return updatedService;
   });
 
+  if (updated) await stampMealDirty(updated.mealId);
   revalidatePath(`/event/${input.slug}`);
   return updated;
 });
 
 export const deleteServiceAction = createSafeAction(deleteServiceSchema, async (input) => {
   await verifyAccess(input.slug, "service:delete", input.key, input.token);
-  await db.delete(services).where(eq(services.id, input.id)).returning();
+  const [deleted] = await db.delete(services).where(eq(services.id, input.id)).returning();
+  if (deleted) await stampMealDirty(deleted.mealId);
   revalidatePath(`/event/${input.slug}`);
   return { success: true };
 });
