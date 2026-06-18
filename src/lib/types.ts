@@ -9,8 +9,13 @@ import {
   type costs,
 } from "@drizzle/schema";
 
+export type { MealAssessment } from "./meal-assessment";
+import { type MealAssessment } from "./meal-assessment";
+
 export type Meal = InferSelectModel<typeof meals> & {
   services: Service[];
+  // Parsed form of the `assessment` JSON column (computed by the cron).
+  parsedAssessment?: MealAssessment | null;
 };
 
 export type Service = InferSelectModel<typeof services> & {
