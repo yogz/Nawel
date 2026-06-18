@@ -426,7 +426,12 @@
       "collapse": "Minimera",
       "noMealsDesc": "Lägg till din första måltid för att börja organisera menyn.",
       "shareEvent": "Dela evenemang",
-      "beFirstItem": "Var först med att föreslå en rätt!"
+      "beFirstItem": "Var först med att föreslå en rätt!",
+      "assessment": {
+        "title": "Vad som saknas",
+        "dismiss": "Dölj",
+        "disclaimer": "Automatiskt genererade förslag – justera efter smak."
+      }
     },
     "Service": {
       "editService": "Redigera rätt {name}",

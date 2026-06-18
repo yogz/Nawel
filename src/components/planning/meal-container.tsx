@@ -24,6 +24,7 @@ import {
 } from "@/lib/utils";
 import { type Meal, type PlanData, type Item, type Sheet } from "@/lib/types";
 import { useTranslations, useLocale, useFormatter } from "next-intl";
+import { MealAssessmentBanner } from "@/features/meals/components/meal-assessment-banner";
 
 interface MealContainerProps {
   meal: Meal;
@@ -95,6 +96,13 @@ export function MealContainer({
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
       className={cn("relative flex flex-col gap-6 pt-2", plan.meals.length === 1 && "gap-0 pt-0")}
     >
+      {/* AI "what's missing" suggestion banner (hidden when nothing to suggest) */}
+      <MealAssessmentBanner
+        mealId={meal.id}
+        inputHash={meal.assessmentInputHash}
+        assessment={meal.parsedAssessment}
+      />
+
       {/* Meal Info Row - Minimalist & Continuous */}
       {plan.meals.length > 1 && (
         <div className="group/meal-card relative mx-0 transition-all duration-500">

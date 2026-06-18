@@ -426,7 +426,12 @@
       "collapse": "Inklappen",
       "noMealsDesc": "Voeg je eerste maaltijd toe om het menu te organiseren.",
       "shareEvent": "Evenement delen",
-      "beFirstItem": "Wees de eerste die iets voorstelt!"
+      "beFirstItem": "Wees de eerste die iets voorstelt!",
+      "assessment": {
+        "title": "Wat ontbreekt",
+        "dismiss": "Verbergen",
+        "disclaimer": "Automatisch gegenereerde suggesties – pas ze naar wens aan."
+      }
     },
     "Service": {
       "editService": "Gang bewerken {name}",

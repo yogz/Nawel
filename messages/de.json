@@ -426,7 +426,12 @@
       "expand": "Erweitern",
       "collapse": "Einklappen",
       "noMealsDesc": "Fügen Sie Ihre erste Mahlzeit hinzu, um mit der Organisation des Menüs zu beginnen.",
-      "beFirstItem": "Sei der Erste, der etwas vorschlägt!"
+      "beFirstItem": "Sei der Erste, der etwas vorschlägt!",
+      "assessment": {
+        "title": "Was noch fehlt",
+        "dismiss": "Ausblenden",
+        "disclaimer": "Automatisch erstellte Vorschläge – nach Belieben anpassen."
+      }
     },
     "Service": {
       "editService": "Gang bearbeiten {name}",

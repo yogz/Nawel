@@ -426,7 +426,12 @@
       "expand": "Espandi",
       "collapse": "Riduci",
       "noMealsDesc": "Aggiungi il tuo primo pasto per iniziare a organizzare il menu.",
-      "beFirstItem": "Sii il primo a proporre un piatto!"
+      "beFirstItem": "Sii il primo a proporre un piatto!",
+      "assessment": {
+        "title": "Cosa manca",
+        "dismiss": "Nascondi",
+        "disclaimer": "Suggerimenti generati automaticamente, da adattare a piacere."
+      }
     },
     "Service": {
       "editService": "Modifica portata {name}",

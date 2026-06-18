@@ -427,7 +427,12 @@
       "expand": "Développer",
       "collapse": "Réduire",
       "noMealsDesc": "Ajoutez un premier repas pour commencer à organiser le menu.",
-      "beFirstItem": "Sois le premier à proposer un plat !"
+      "beFirstItem": "Sois le premier à proposer un plat !",
+      "assessment": {
+        "title": "Ce qu'il manque",
+        "dismiss": "Masquer",
+        "disclaimer": "Suggestions générées automatiquement, à ajuster selon vos envies."
+      }
     },
     "Service": {
       "editService": "Modifier le service {name}",

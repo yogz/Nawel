@@ -427,7 +427,12 @@
       "expand": "Expand",
       "collapse": "Collapse",
       "noMealsDesc": "Add your first meal to start organizing the menu.",
-      "beFirstItem": "Be the first to suggest a dish!"
+      "beFirstItem": "Be the first to suggest a dish!",
+      "assessment": {
+        "title": "What's missing",
+        "dismiss": "Dismiss",
+        "disclaimer": "Auto-generated suggestions — adjust to taste."
+      }
     },
     "Service": {
       "editService": "Edit course {name}",
