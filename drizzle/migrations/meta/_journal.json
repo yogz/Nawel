@@ -358,6 +358,13 @@
       "when": 1778790068718,
       "tag": "0050_black_bruce_banner",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1781813060163,
+      "tag": "0051_flimsy_leper_queen",
+      "breakpoints": true
     }
   ]
 }
