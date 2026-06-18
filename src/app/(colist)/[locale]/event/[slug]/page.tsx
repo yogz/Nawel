@@ -4,14 +4,20 @@ import { notFound } from "next/navigation";
 
 // NOTE: Viewport configuration (themeColor, viewportFit, etc.) is handled by
 // the layout.tsx file in this directory. See layout.tsx for details.
+import { after } from "next/server";
 import { fetchPlan } from "@/lib/queries";
 import { isWriteKeyValid } from "@/lib/auth";
 import { EventPlanner } from "@/components/planning/event-planner";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { toOpenGraphLocale, getAlternateOpenGraphLocales } from "@/lib/locale-utils";
+import { selectDueMealIds } from "@/features/meals/lib/assessment-guards";
+import { processDueMealAssessments } from "@/features/meals/lib/assessment-processor";
 
 // ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
 export const revalidate = 30;
+// Headroom for the background "what's missing" AI computation scheduled via
+// after(). Stays under the Vercel Hobby 60s function cap.
+export const maxDuration = 45;
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>;
@@ -96,6 +102,15 @@ export default async function Page(props: Props) {
   if (!plan.event) {
     notFound();
   }
+
+  // Trigger the debounced "what's missing" assessment off the request path:
+  // recompute meals that have settled for 10min and are stale. The optimistic
+  // claim inside the processor dedupes concurrent views.
+  const dueMealIds = selectDueMealIds(plan.meals, new Date());
+  if (dueMealIds.length > 0) {
+    after(() => processDueMealAssessments(dueMealIds));
+  }
+
   const key = typeof searchParams?.key === "string" ? searchParams.key : undefined;
   const writeEnabled = isWriteKeyValid(key, plan.event?.adminKey ?? null);
 

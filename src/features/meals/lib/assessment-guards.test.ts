@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { isPastDate, shouldSkipAssessment } from "./assessment-guards";
+import {
+  isPastDate,
+  shouldSkipAssessment,
+  selectDueMealIds,
+  QUIET_WINDOW_MS,
+} from "./assessment-guards";
 
 describe("isPastDate", () => {
   it("is true for a date strictly before today", () => {
@@ -34,5 +39,49 @@ describe("shouldSkipAssessment", () => {
 
   it("skips when the meal is in the past", () => {
     expect(shouldSkipAssessment({ ...base, isPast: true })).toBe(true);
+  });
+});
+
+describe("selectDueMealIds", () => {
+  const now = new Date("2026-06-18T12:00:00Z");
+  const settled = new Date(now.getTime() - QUIET_WINDOW_MS - 1000); // >10min ago
+  const recent = new Date(now.getTime() - 60 * 1000); // 1min ago
+
+  it("ignores meals that were never edited", () => {
+    expect(
+      selectDueMealIds([{ id: 1, itemsChangedAt: null, assessmentComputedAt: null }], now)
+    ).toEqual([]);
+  });
+
+  it("ignores meals still inside the quiet window", () => {
+    expect(
+      selectDueMealIds([{ id: 1, itemsChangedAt: recent, assessmentComputedAt: null }], now)
+    ).toEqual([]);
+  });
+
+  it("selects a settled, never-computed meal", () => {
+    expect(
+      selectDueMealIds([{ id: 7, itemsChangedAt: settled, assessmentComputedAt: null }], now)
+    ).toEqual([7]);
+  });
+
+  it("selects a settled meal whose last computation predates the latest edit", () => {
+    const computedBefore = new Date(settled.getTime() - 1000);
+    expect(
+      selectDueMealIds(
+        [{ id: 7, itemsChangedAt: settled, assessmentComputedAt: computedBefore }],
+        now
+      )
+    ).toEqual([7]);
+  });
+
+  it("skips a meal already computed after its latest edit", () => {
+    const computedAfter = new Date(settled.getTime() + 1000);
+    expect(
+      selectDueMealIds(
+        [{ id: 7, itemsChangedAt: settled, assessmentComputedAt: computedAfter }],
+        now
+      )
+    ).toEqual([]);
   });
 });
