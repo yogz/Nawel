@@ -41,7 +41,7 @@ export function computeAssessmentInputHash(meal: AssessmentHashMeal): string {
         .map((item) => ({
           name: item.name,
           quantity: item.quantity ?? "",
-          hasPerson: item.personId != null,
+          hasPerson: item.personId !== null,
           serviceId: item.serviceId,
         })),
     }));
