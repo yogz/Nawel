@@ -60,6 +60,7 @@ export const createEventAction = createSafeAction(createEventSchema, async (inpu
       ownerId: session?.user.id ?? null,
       adults: input.adults ?? 0,
       children: input.children ?? 0,
+      locale: input.locale ?? "fr",
     })
     .returning();
 
