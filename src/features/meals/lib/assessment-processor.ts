@@ -141,6 +141,7 @@ export async function processDueMealAssessments(
 
       const input: MealAssessmentInput = {
         title: meal.title,
+        date: meal.date,
         adults,
         children,
         services: meal.services.map((s) => ({

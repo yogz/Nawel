@@ -37,6 +37,8 @@ export interface MealAssessmentService {
 
 export interface MealAssessmentInput {
   title: string | null;
+  /** Meal date ("YYYY-MM-DD" or "common"), used for seasonality. */
+  date: string | null;
   adults: number;
   children: number;
   services: MealAssessmentService[];
@@ -46,9 +48,10 @@ function buildUserPrompt(meal: MealAssessmentInput): string {
   const ae = meal.adults + 0.5 * meal.children;
   const lines: string[] = [];
   lines.push(`Meal: ${meal.title?.trim() || "(untitled)"}`);
-  lines.push(
-    `Expected: ${meal.adults} adults, ${meal.children} children (≈${ae} adult-equivalents)`
-  );
+  if (meal.date && meal.date !== "common") {
+    lines.push(`Date: ${meal.date}`);
+  }
+  lines.push(`Expected: ${meal.adults} adults, ${meal.children} children (use AE = ${ae})`);
   lines.push("");
   lines.push("Already planned, grouped by the organizer's own category labels.");
   lines.push(
