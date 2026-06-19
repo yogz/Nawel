@@ -76,9 +76,9 @@ export async function generateMealAssessment(
 ): Promise<MealAssessment | null> {
   try {
     const { object } = await generateObject({
-      // Direct Google provider (GOOGLE_GENERATIVE_AI_API_KEY), like
-      // gemini-search.ts — the Vercel AI Gateway is not configured in prod.
-      model: google("gemini-2.0-flash-lite"),
+      // Direct Google provider (GOOGLE_GENERATIVE_AI_API_KEY) — same model as
+      // gemini-search.ts (gemini-2.0-flash-lite was retired by Google).
+      model: google("gemini-2.5-flash"),
       schema: mealAssessmentSchema,
       system: getMealAssessmentSystemPrompt(locale, {
         adults: meal.adults,
