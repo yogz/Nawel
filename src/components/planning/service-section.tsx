@@ -74,8 +74,9 @@ export const ServiceSection = memo(function ServiceSection({
       ref={setNodeRef}
       className={cn("relative transition-all duration-500", isOver && "bg-accent/5")}
     >
+      {/* top = hauteur du header collapsé (titre seul) — cf. event-planner-header.tsx */}
       <SectionHeader
-        className="sticky top-[calc(env(safe-area-inset-top)+142px)] z-30 mx-1"
+        className="sticky top-[calc(env(safe-area-inset-top)+96px)] z-30 mx-1"
         readOnly={readOnly}
         onClick={onEdit}
         icon={service.icon || getServiceIcon(service.title)}
