@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 // Bump this when the prompt or output format changes meaningfully, to force
 // already-stored assessments to be recomputed on the next visit.
-export const ASSESSMENT_VERSION = "v2";
+export const ASSESSMENT_VERSION = "v3";
 
 /**
  * Minimal structural shape of the inputs that actually influence "what's
