@@ -189,8 +189,9 @@ export function PeopleTab({
 
             return (
               <div key={person.id} className="space-y-4">
+                {/* top = hauteur du header collapsé (titre seul) — cf. event-planner-header.tsx */}
                 <SectionHeader
-                  className="sticky top-[calc(env(safe-area-inset-top)+154px)] z-30 mx-1"
+                  className="sticky top-[calc(env(safe-area-inset-top)+108px)] z-30 mx-1"
                   title={getDisplayName(person)}
                   description={
                     person.userId === currentUserId ? (

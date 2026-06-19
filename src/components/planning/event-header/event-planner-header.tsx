@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { m as motion, useReducedMotion } from "framer-motion";
+import { m as motion, useReducedMotion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/components/theme-provider";
 import { EventPropertiesDrawer } from "./event-properties-drawer";
@@ -95,14 +95,30 @@ export function EventPlannerHeader({
     return () => clearTimeout(timer);
   }, []);
 
-  // Handle scroll for sticky header styling
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Handle scroll for sticky header styling — hysteresis to avoid flicker.
+  // A hard threshold flickers because collapsing the header shrinks the document,
+  // and the browser's scroll-anchoring bounces scrollY back across the threshold.
+  // Dead band between the two thresholds = no toggling; COLLAPSE_ABOVE is kept well
+  // above the collapsed height (~90px) so the post-collapse anchor jump can't land
+  // back under EXPAND_BELOW. (Same useScroll pattern as tab-bar.tsx.)
+  const EXPAND_BELOW = 28;
+  const COLLAPSE_ABOVE = 120;
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    if (Math.abs(latest - prev) < 6) {
+      return; // ignore micro-scroll jitter
+    }
+    if (latest < EXPAND_BELOW) {
+      setIsScrolled(false); // always expanded near the top
+      return;
+    }
+    if (latest > COLLAPSE_ABOVE) {
+      setIsScrolled(true); // collapsed once scrolled well past the header
+    }
+    // between the two thresholds: keep current state (hysteresis)
+  });
 
   const firstMeal = plan.meals[0];
 
