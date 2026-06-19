@@ -24,19 +24,33 @@ Umami est en **tier gratuit → pas d'API**. On lit les chiffres à la main sur 
 Chaque event de la page événement porte désormais une dimension **`role` (host|guest)** et
 **`event_slug`** → on peut filtrer/segmenter dans Umami.
 
-| #   | Étape                    | KPI                                                                                   | Comment le lire dans Umami                          | Cible                             |
-| --- | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- |
-| 1   | **Acquisition**          | Visiteurs uniques landing + taux de clic CTA                                          | Visitors (vue site) ; event `cta_click` / visiteurs | _à fixer après lecture dashboard_ |
-| 2   | **Activation (hôte)**    | Taux de création : `event_created` / visiteurs uniques                                | event `event_created` ÷ Visitors                    | _à fixer_                         |
-| 3   | **Référence / viralité** | `guest_joined` par événement créé                                                     | event `guest_joined` ÷ `event_created`              | _à fixer_                         |
-| 4   | **Engagement invité**    | Taux d'activation invité : `guest_first_contribution` / `guest_joined` ; + `rsvp_set` | ratio des deux events                               | _à fixer_                         |
-| 5   | **Rétention (hôte)**     | Retour hôte à J+7                                                                     | Umami Retention, segment `role = host`              | _à fixer_                         |
+| #   | Étape                    | KPI                                                        | Baseline (30 j, juin 2026)            | Cible                          |
+| --- | ------------------------ | ---------------------------------------------------------- | ------------------------------------- | ------------------------------ |
+| 1   | **Acquisition**          | Visiteurs uniques + rebond                                 | 105 visiteurs, rebond 61 %, CTA 6     | rebond < 55 % en pic saison    |
+| 2   | **Activation (hôte)**    | `event_created` ÷ visiteurs                                | 4 / 105 ≈ **3,8 %**                   | 6–8 %                          |
+| 3   | **Référence / viralité** | `guest_joined` ÷ `event_created`                           | à établir (proxy actuel ≈ 5, cf. bas) | ≥ 3 invités / événement        |
+| 4   | **Engagement invité**    | `guest_first_contribution` ÷ `guest_joined` ; + `rsvp_set` | à établir au déploiement              | ≥ 50 % des invités contribuent |
+| 5   | **Rétention (hôte)**     | Retour hôte J+7                                            | à établir (segment `role = host`)     | à fixer en pic saison          |
 
-**Le KPI #3 est le moteur de croissance** : il n'était pas mesurable avant l'instrumentation de
-la boucle invité (juin 2026). À surveiller en premier une fois du volume accumulé.
+**Le KPI #3 est le moteur de croissance** : non mesurable avant l'instrumentation (juin 2026).
+Proxy avant déploiement : `guest_continued_without_auth` (23) ÷ `event_created` (4) ≈ **5 invités
+arrivés par événement créé** → la boucle tourne déjà, on va enfin la mesurer précisément.
 
-> Cibles chiffrées : à poser après une première lecture du dashboard `cloud.umami.is` (volumes
-> réels). Tant que < ~200 sessions/sem, lire en absolu (pas en %), comme pour Sortie.
+### Baseline juin 2026 (30 j) — hors saison, faible volume
+
+105 visiteurs / 137 visites / 258 vues. **Trafic en forte baisse (~−80 %) vs les 30 j précédents :
+saisonnier** (CoList = repas de fêtes/famille, juin est creux). Re-baseliner en **nov–déc** (pic).
+
+Top events : `service_updated` 193, `item_created` 85, `item_updated` 39 → les rares événements
+créés sont **très utilisés** (engagement élevé par événement). Côté boucle : `guest_continued_without_auth`
+23, `person_created` 15, `share_link_copied` 6, `event_created` 4.
+
+> ⚠️ **`exception` = 34 (7 % des events, ~13 % des vues)** : taux d'erreurs JS élevé à investiguer
+> séparément (Umami ne donne pas le détail — voir Sentry/logs ou reproduire).
+> ⚠️ **`service_updated` = 193 mais `service_created` = 0** : à vérifier que l'event ne sur-déclenche
+> pas (re-render / frappe) avant de s'y fier comme métrique d'engagement.
+
+> Volumes < ~200 sessions/sem → lire en **absolu**, pas en %, comme pour Sortie.
 
 ---
 
