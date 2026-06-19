@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { m as motion } from "framer-motion";
+import { m as motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/components/theme-provider";
 import { EventPropertiesDrawer } from "./event-properties-drawer";
@@ -87,6 +87,7 @@ export function EventPlannerHeader({
   const [isScrolled, setIsScrolled] = useState(false);
   const [showPropertiesDrawer, setShowPropertiesDrawer] = useState(false);
   const [showAttention, setShowAttention] = useState(true);
+  const reduceMotion = useReducedMotion();
 
   // Stop attention animation after 2 minutes
   useEffect(() => {
@@ -166,36 +167,51 @@ export function EventPlannerHeader({
                   />
                 </div>
 
-                {/* Meta Pills + Actions Row */}
+                {/* Meta Pills + Actions Row - Hidden on Scroll (only title stays) */}
                 {plan.meals.length > 0 && firstMeal && (
-                  <div className="flex items-center justify-between gap-2 px-1">
-                    <EventMetaPills
-                      meal={firstMeal}
-                      mealCount={plan.meals.length}
-                      isScrolled={isScrolled}
-                      readOnly={readOnly}
-                      onUpdateMeal={(id, date, title, adults, children, time, address) =>
-                        handlers.handleUpdateMeal?.(
-                          id,
-                          date,
-                          title,
-                          adults,
-                          children,
-                          time,
-                          address
-                        )
-                      }
-                    />
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isScrolled ? 0 : "auto",
+                      opacity: isScrolled ? 0 : 1,
+                      y: isScrolled ? -8 : 0,
+                    }}
+                    transition={
+                      reduceMotion ? { duration: 0 } : { duration: 0.4, ease: [0.32, 0.72, 0, 1] }
+                    }
+                    className="overflow-hidden"
+                    aria-hidden={isScrolled}
+                    inert={isScrolled}
+                  >
+                    <div className="flex items-center justify-between gap-2 px-1">
+                      <EventMetaPills
+                        meal={firstMeal}
+                        mealCount={plan.meals.length}
+                        isScrolled={isScrolled}
+                        readOnly={readOnly}
+                        onUpdateMeal={(id, date, title, adults, children, time, address) =>
+                          handlers.handleUpdateMeal?.(
+                            id,
+                            date,
+                            title,
+                            adults,
+                            children,
+                            time,
+                            address
+                          )
+                        }
+                      />
 
-                    <EventHeaderActions
-                      meal={firstMeal}
-                      eventName={plan.event?.name || "Event"}
-                      isScrolled={isScrolled}
-                      readOnly={readOnly}
-                      showAttention={showAttention}
-                      onShareClick={() => setSheet({ type: "share" })}
-                    />
-                  </div>
+                      <EventHeaderActions
+                        meal={firstMeal}
+                        eventName={plan.event?.name || "Event"}
+                        isScrolled={isScrolled}
+                        readOnly={readOnly}
+                        showAttention={showAttention}
+                        onShareClick={() => setSheet({ type: "share" })}
+                      />
+                    </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>
