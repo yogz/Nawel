@@ -475,11 +475,11 @@
   }
 
   .safe-area-bottom-nav {
-    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   .safe-area-pb-tabbar {
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   /*

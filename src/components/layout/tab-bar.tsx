@@ -4,7 +4,13 @@ import { CalendarRange, Users, ShoppingCart } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import { m as motion, AnimatePresence } from "framer-motion";
+import {
+  m as motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+  useReducedMotion,
+} from "framer-motion";
 import { trackTabChange } from "@/lib/analytics";
 
 const authenticatedTabs = [
@@ -38,6 +44,25 @@ export function TabBar({ active, onChange, hasWriteAccess }: TabBarProps) {
   const [visibleLabel, setVisibleLabel] = useState<TabKey | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Shrink the bar slightly on scroll-down, restore it near the top or on
+  // scroll-up. The bar always stays visible (it's the primary event nav).
+  const reduceMotion = useReducedMotion();
+  const [compact, setCompact] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    const delta = latest - prev;
+    if (Math.abs(delta) < 6) {
+      return; // ignore micro-scroll jitter
+    }
+    if (latest < 80) {
+      setCompact(false); // always full-size near the top
+      return;
+    }
+    setCompact(delta > 0); // scrolling down => compact, up => full-size
+  });
+
   const handleTabChange = (key: TabKey) => {
     if (key !== active) {
       trackTabChange(key, active);
@@ -65,64 +90,73 @@ export function TabBar({ active, onChange, hasWriteAccess }: TabBarProps) {
 
   return (
     <div className="safe-area-bottom-nav pointer-events-none fixed left-1/2 z-40 w-full max-w-[280px] -translate-x-1/2 px-4 sm:max-w-[260px]">
-      <nav
-        id="navigation"
-        className="pointer-events-auto flex items-center justify-around gap-2 rounded-full glass-panel border border-white/20 p-2 shadow-xl transition-all duration-300"
-        role="tablist"
-        aria-label={t("navigation")}
+      <motion.div
+        animate={{ scale: compact ? 0.9 : 1 }}
+        style={{ originY: 1 }}
+        transition={
+          reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 40 }
+        }
       >
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const selected = active === tab.key;
-          const isLabelVisible = visibleLabel === tab.key;
+        <nav
+          id="navigation"
+          className="pointer-events-auto flex items-center justify-around gap-2 rounded-full glass-panel border border-white/20 p-1.5 shadow-xl motion-safe:transition-all motion-safe:duration-300"
+          role="tablist"
+          aria-label={t("navigation")}
+        >
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const selected = active === tab.key;
+            const isLabelVisible = visibleLabel === tab.key;
 
-          return (
-            <motion.button
-              key={tab.key}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleTabChange(tab.key)}
-              role="tab"
-              aria-selected={selected}
-              aria-label={t(tab.key)}
-              className={clsx(
-                "relative flex h-14 flex-1 items-center justify-center rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 sm:h-12",
-                selected ? "text-accent" : "text-gray-500"
-              )}
-            >
-              {/* Active indicator pill */}
-              {selected && (
-                <motion.div
-                  layoutId="activeTabIndicator"
-                  className="absolute inset-1 rounded-full bg-accent/10"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
-
-              <AnimatePresence>
-                {isLabelVisible && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
-                    animate={{ opacity: 1, y: -45, scale: 1, x: "-50%" }}
-                    exit={{ opacity: 0, y: 0, scale: 0.5, x: "-50%" }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className="absolute left-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg sm:text-[9px]"
-                  >
-                    {t(tab.key)}
-                    <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
-                  </motion.div>
+            return (
+              <motion.button
+                key={tab.key}
+                whileTap={reduceMotion ? undefined : { scale: 0.9 }}
+                onClick={() => handleTabChange(tab.key)}
+                role="tab"
+                aria-selected={selected}
+                aria-label={t(tab.key)}
+                className={clsx(
+                  "relative flex h-12 flex-1 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 motion-safe:transition-all motion-safe:duration-300 sm:h-11",
+                  selected ? "text-accent" : "text-gray-500"
                 )}
-              </AnimatePresence>
-
-              <div
-                className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-9 sm:w-9"
-                aria-hidden="true"
               >
-                <Icon size={24} strokeWidth={2.5} />
-              </div>
-            </motion.button>
-          );
-        })}
-      </nav>
+                {/* Active indicator pill */}
+                {selected && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    layout="position"
+                    className="absolute inset-1 rounded-full bg-accent/10"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+
+                <AnimatePresence>
+                  {isLabelVisible && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.5, x: "-50%" }}
+                      animate={{ opacity: 1, y: -45, scale: 1, x: "-50%" }}
+                      exit={{ opacity: 0, y: 0, scale: 0.5, x: "-50%" }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      className="absolute left-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg sm:text-[9px]"
+                    >
+                      {t(tab.key)}
+                      <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-gray-900" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div
+                  className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full sm:h-9 sm:w-9"
+                  aria-hidden="true"
+                >
+                  <Icon size={24} strokeWidth={2.5} />
+                </div>
+              </motion.button>
+            );
+          })}
+        </nav>
+      </motion.div>
     </div>
   );
 }
