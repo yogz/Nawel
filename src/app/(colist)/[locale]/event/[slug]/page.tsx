@@ -12,6 +12,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { toOpenGraphLocale, getAlternateOpenGraphLocales } from "@/lib/locale-utils";
 import { selectDueMealIds } from "@/features/meals/lib/assessment-guards";
 import { processDueMealAssessments } from "@/features/meals/lib/assessment-processor";
+import { isAssessmentHashCurrent } from "@/lib/meal-assessment-hash";
 
 // ISR: revalidate every 30 seconds, on-demand via revalidatePath() from server actions
 export const revalidate = 30;
@@ -112,6 +113,8 @@ export default async function Page(props: Props) {
       itemsChangedAt: meal.itemsChangedAt,
       assessmentComputedAt: meal.assessmentComputedAt,
       assessment: meal.assessment,
+      assessmentOutdated:
+        meal.assessment !== null && !isAssessmentHashCurrent(meal.assessmentInputHash),
       hasItems: meal.services.some((s) => s.items.length > 0),
     })),
     new Date()

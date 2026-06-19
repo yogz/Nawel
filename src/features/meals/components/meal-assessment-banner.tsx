@@ -82,8 +82,6 @@ export function MealAssessmentBanner({ mealId, inputHash, assessment }: MealAsse
           </li>
         ))}
       </ul>
-
-      <p className="mt-2 text-xs text-muted-foreground">{t("disclaimer")}</p>
     </div>
   );
 }

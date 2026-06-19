@@ -1,5 +1,9 @@
 import { createHash } from "node:crypto";
 
+// Bump this when the prompt or output format changes meaningfully, to force
+// already-stored assessments to be recomputed on the next visit.
+export const ASSESSMENT_VERSION = "v2";
+
 /**
  * Minimal structural shape of the inputs that actually influence "what's
  * missing" for a meal. Deliberately excludes `checked`, `price` and `order`:
@@ -53,5 +57,14 @@ export function computeAssessmentInputHash(meal: AssessmentHashMeal): string {
     services,
   });
 
-  return createHash("sha256").update(canonical).digest("hex");
+  // Version prefix so a meaningful prompt/output change forces a recompute of
+  // already-stored assessments. Bump ASSESSMENT_VERSION when that's wanted.
+  // sha truncated so "vN:<sha>" stays within the varchar(64) column.
+  const digest = createHash("sha256").update(canonical).digest("hex").slice(0, 56);
+  return `${ASSESSMENT_VERSION}:${digest}`;
+}
+
+/** Whether a stored input hash was produced by the current assessment version. */
+export function isAssessmentHashCurrent(hash: string | null): boolean {
+  return hash !== null && hash.startsWith(`${ASSESSMENT_VERSION}:`);
 }

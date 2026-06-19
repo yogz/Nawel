@@ -28,6 +28,8 @@ export interface DueMeal {
   assessmentComputedAt: Date | null;
   /** Raw stored assessment JSON (null = none/failed/never computed). */
   assessment: string | null;
+  /** True when a stored assessment was produced by an older assessment version. */
+  assessmentOutdated: boolean;
   hasItems: boolean;
 }
 
@@ -49,7 +51,9 @@ export function selectDueMealIds(meals: DueMeal[], now: Date): number[] {
       const computedAt = meal.assessmentComputedAt;
       const editedSinceCompute =
         changedAt !== null && (computedAt === null || computedAt.getTime() < changedAt.getTime());
-      const needsCompute = (meal.assessment === null && meal.hasItems) || editedSinceCompute;
+      const missingOrOutdated =
+        meal.hasItems && (meal.assessment === null || meal.assessmentOutdated);
+      const needsCompute = missingOrOutdated || editedSinceCompute;
       const settled = changedAt === null || changedAt.getTime() <= cutoff;
       return needsCompute && settled;
     })

@@ -54,6 +54,7 @@ describe("selectDueMealIds", () => {
       itemsChangedAt: null,
       assessmentComputedAt: null,
       assessment: null,
+      assessmentOutdated: false,
       hasItems: true,
       ...over,
     };
@@ -73,10 +74,19 @@ describe("selectDueMealIds", () => {
     ).toEqual([1]);
   });
 
-  it("skips a meal that already has an assessment and no new edit", () => {
+  it("skips a meal that already has an up-to-date assessment and no new edit", () => {
     expect(
       selectDueMealIds([meal({ assessmentComputedAt: settled, assessment: "{}" })], now)
     ).toEqual([]);
+  });
+
+  it("recomputes a meal whose stored assessment is from an older version", () => {
+    expect(
+      selectDueMealIds(
+        [meal({ assessmentComputedAt: settled, assessment: "{}", assessmentOutdated: true })],
+        now
+      )
+    ).toEqual([1]);
   });
 
   it("ignores meals still inside the quiet window", () => {

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { meals, events } from "@drizzle/schema";
 import { eq, sql } from "drizzle-orm";
-import { computeAssessmentInputHash } from "@/lib/meal-assessment-hash";
+import { computeAssessmentInputHash, ASSESSMENT_VERSION } from "@/lib/meal-assessment-hash";
 import { generateMealAssessment, type MealAssessmentInput } from "@/lib/meal-assessment";
 import { isPastDate, shouldSkipAssessment } from "./assessment-guards";
 import { logger } from "@/lib/logger";
@@ -51,9 +51,11 @@ export async function processDueMealAssessments(
             WHERE id = ${mealId}
               AND (items_changed_at IS NULL OR items_changed_at <= now() - interval '10 minutes')
               AND (
-                (assessment IS NULL
-                  AND EXISTS (SELECT 1 FROM services s JOIN items i ON i.service_id = s.id
-                              WHERE s.meal_id = meals.id))
+                (EXISTS (SELECT 1 FROM services s JOIN items i ON i.service_id = s.id
+                         WHERE s.meal_id = meals.id)
+                  AND (assessment IS NULL
+                       OR assessment_input_hash IS NULL
+                       OR assessment_input_hash NOT LIKE ${ASSESSMENT_VERSION + ":%"}))
                 OR (items_changed_at IS NOT NULL
                     AND (assessment_computed_at IS NULL OR assessment_computed_at < items_changed_at))
               )

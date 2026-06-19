@@ -564,14 +564,23 @@ children: ${params.children}
 - Propose AT MOST 8 missing items, ordered MOST important first, and set each item's "priority"
   ("high" | "medium" | "low") by its impact on the meal. Prefer 0-4 high-value suggestions over
   padding to 8.
-- Each missing item: a clear name, a "suggestedQuantity" sized to the headcount with its basis
-  (e.g. "≈3 kg (pour 18)", "6 bouteilles (≈2 par adulte)"), and one short concrete reason.
 - Do NOT suggest anything already covered in sufficient amount; never invent items already present;
   no nice-to-haves (napkins, ice, condiments) unless every core axis is already well covered.
 - If what is planned is already enough, set "sufficient" to true and return an empty "missing" list.
-- "summary" is ONE short sentence for someone arriving; briefly acknowledge it is an approximate,
-  beta estimate (e.g. start with "Estimation approximative : ...").
 </assessment_rules>
+
+<writing_style>
+- Avoid repetition: the summary, an item "name", and its "reason" must NOT say the same thing —
+  each field adds something new.
+- "summary": ONE short sentence (max ~14 words) giving the overall status; do NOT enumerate the
+  missing items here. Start it with "Estimation approximative : ".
+- "name": the missing item, short (e.g. "Sodas et jus", "Pain"). No quantity, no justification.
+- "suggestedQuantity": just the amount with a brief basis, max ~6 words (e.g. "≈10 L (pour 18)",
+  "6 bouteilles").
+- "reason": max ~8 words, ONLY if it adds real context not already obvious from the name (e.g.
+  "surtout pour les enfants"). If nothing useful to add, return an empty string. Never restate the
+  item name or the summary.
+</writing_style>
 
 IMPORTANT: ALL natural-language text you produce (summary, item names, suggestedQuantity, reasons)
 MUST be written in ${targetLanguageUpper}.`;
