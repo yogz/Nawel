@@ -24,7 +24,10 @@ import {
   deleteAllIngredientsSchema,
 } from "./schemas";
 import { createSafeAction } from "@/lib/action-utils";
-import { generateIngredients as generateFromAI, type GeneratedIngredient } from "@/lib/openrouter";
+import {
+  generateIngredients as generateFromAI,
+  type GeneratedIngredient,
+} from "@/lib/ingredient-ai";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth-config";
 import { AI_CACHE_MIN_CONFIRMATIONS } from "@/lib/constants";
@@ -716,7 +719,7 @@ export const generateAllIngredientsAction = createSafeAction(
 
       // 2. Process "Categorize" (Simple Classification)
       if (toCategorize.length > 0) {
-        const categorizedItems = await import("@/lib/openrouter").then((m) =>
+        const categorizedItems = await import("@/lib/ingredient-ai").then((m) =>
           m.categorizeItems(
             toCategorize.map((entry) => entry.item.name),
             input.locale || "fr"

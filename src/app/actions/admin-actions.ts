@@ -416,7 +416,7 @@ export const sendPasswordResetAdminAction = createSafeAction(
 // Model Comparison Admin Actions
 // ==========================================
 
-import { testModelWithPrompt, type ModelTestResult } from "@/lib/openrouter";
+import { testModelWithPrompt, type ModelTestResult } from "@/lib/ingredient-ai";
 
 export const testModelsAction = withErrorThrower(
   async (

@@ -9,7 +9,6 @@ import {
   getCategorizationSystemPrompt,
   getCategorizationUserPrompt,
   getUserPrompt,
-  INGREDIENT_CATEGORIES,
 } from "./prompts";
 
 export interface GeneratedIngredient {
@@ -72,7 +71,9 @@ export async function categorizeItems(
   itemNames: string[],
   locale: string = "fr"
 ): Promise<Array<{ name: string; category: string }>> {
-  if (itemNames.length === 0) return [];
+  if (itemNames.length === 0) {
+    return [];
+  }
 
   const systemPrompt = getCategorizationSystemPrompt(locale);
   const userPrompt = getCategorizationUserPrompt(locale, itemNames);
@@ -98,8 +99,9 @@ export async function categorizeItems(
   }
 }
 
-// Maintenu pour la compatibilité avec l'admin-dashboard
-export const AVAILABLE_FREE_MODELS = ["mistral/mistral-nemo"] as const;
+// Maintenu pour la compatibilité avec l'admin-dashboard.
+// Reflète le modèle réellement utilisé par aiModel (Google API directe).
+export const AVAILABLE_FREE_MODELS = ["gemini-2.5-flash-lite"] as const;
 
 export interface ModelTestResult {
   model: string;
@@ -133,7 +135,7 @@ export async function testModelWithPrompt(
     const responseTimeMs = Math.round(performance.now() - startTime);
 
     return {
-      model: "mistral/mistral-nemo",
+      model: "gemini-2.5-flash-lite",
       success: true,
       ingredients: object.ingredients,
       responseTimeMs,
@@ -142,7 +144,7 @@ export async function testModelWithPrompt(
   } catch (error) {
     const responseTimeMs = Math.round(performance.now() - startTime);
     return {
-      model: "mistral/mistral-nemo",
+      model: "gemini-2.5-flash-lite",
       success: false,
       ingredients: [],
       responseTimeMs,
