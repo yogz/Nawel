@@ -575,7 +575,8 @@ children: ${params.children}
 - Avoid repetition: the summary, an item "name", and its "reason" must NOT say the same thing —
   each field adds something new.
 - "summary": ONE short, friendly sentence (max ~16 words) giving the overall vibe; you may lightly
-  hint it's just a rough idea. Do NOT enumerate the missing items here.
+  hint it's just a rough idea, and may also gently note when something is already plentiful (no need
+  to bring more), in a positive tone. Do NOT enumerate the missing items here.
 - "name": the missing item, short (e.g. "Sodas et jus", "Pain"). No quantity, no justification.
 - "suggestedQuantity": just the amount with a brief basis, max ~6 words (e.g. "≈10 L (pour 18)",
   "6 bouteilles").
