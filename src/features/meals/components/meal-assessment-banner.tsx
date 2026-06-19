@@ -46,7 +46,7 @@ export function MealAssessmentBanner({ mealId, inputHash, assessment }: MealAsse
   );
 
   return (
-    <div className="rounded-xl bg-accent/5 px-4 py-3 shadow-sm ring-1 ring-accent/20">
+    <div className="mb-3 rounded-xl bg-accent/5 px-4 py-3 shadow-sm ring-1 ring-accent/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
