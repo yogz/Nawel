@@ -71,7 +71,8 @@ function buildUserPrompt(meal: MealAssessmentInput): string {
  */
 export async function generateMealAssessment(
   meal: MealAssessmentInput,
-  locale: string
+  locale: string,
+  opts?: { rethrow?: boolean }
 ): Promise<MealAssessment | null> {
   try {
     const { object } = await generateObject({
@@ -90,6 +91,9 @@ export async function generateMealAssessment(
     return object;
   } catch (error) {
     logger.error("generateMealAssessment failed", error);
+    if (opts?.rethrow) {
+      throw error;
+    }
     return null;
   }
 }
