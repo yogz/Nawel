@@ -314,48 +314,14 @@ export function trackLandingEvent(
   action: LandingAction,
   params: Record<string, string | number | boolean> = {}
 ) {
-  // Debug mode - log instead of sending
-  if (IS_DEV) {
-    logger.debug("[Analytics Debug] Landing:", { action, ...params });
-    return;
-  }
-
-  // Check consent
-  if (!hasConsent || !ANALYTICS_ENABLED) {
-    return;
-  }
-
-  try {
-    sendGAEvent("event", action, params);
-  } catch (error) {
-    logger.debug("[Analytics] Failed to track landing event:", action, error);
-  }
+  dispatch(action, params);
 }
 
 /**
  * Track performance metrics
  */
 export function trackPerformance(metric: string, value: number, context?: string) {
-  // Debug mode - log instead of sending
-  if (IS_DEV) {
-    logger.debug("[Analytics Debug] Performance:", { metric, value, context });
-    return;
-  }
-
-  // Check consent
-  if (!hasConsent || !ANALYTICS_ENABLED) {
-    return;
-  }
-
-  try {
-    sendGAEvent("event", "performance_timing", {
-      metric,
-      value: Math.round(value),
-      context,
-    });
-  } catch (error) {
-    logger.debug("[Analytics] Failed to track performance:", metric, error);
-  }
+  dispatch("performance_timing", { metric, value: Math.round(value), context });
 }
 
 /**
@@ -363,27 +329,7 @@ export function trackPerformance(metric: string, value: number, context?: string
  */
 export function trackError(error: Error | string, context?: string, fatal = false) {
   const errorMessage = typeof error === "string" ? error : error.message;
-
-  // Debug mode - log instead of sending
-  if (IS_DEV) {
-    logger.debug("[Analytics Debug] Error:", { error: errorMessage, context, fatal });
-    return;
-  }
-
-  // Check consent
-  if (!hasConsent || !ANALYTICS_ENABLED) {
-    return;
-  }
-
-  try {
-    sendGAEvent("event", "exception", {
-      description: errorMessage,
-      fatal,
-      context,
-    });
-  } catch (err) {
-    logger.debug("[Analytics] Failed to track error:", errorMessage, err);
-  }
+  dispatch("exception", { description: errorMessage, fatal, context });
 }
 
 export function trackDiscoverClick(variant: string) {
