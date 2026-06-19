@@ -36,18 +36,6 @@ export function setAnalyticsConsent(consent: boolean) {
 }
 
 /**
- * Check if analytics consent has been given
- * Returns false by default (GDPR: opt-in required)
- */
-export function getAnalyticsConsent(): boolean {
-  if (typeof window === "undefined") {
-    return true; // Default to true
-  }
-  const stored = localStorage.getItem("analytics_consent");
-  return stored !== "false"; // Only false if explicitly set to "false"
-}
-
-/**
  * Set User ID for cross-device tracking (GDPR compliant)
  */
 export function setAnalyticsUserId(userId: string | null) {
@@ -90,8 +78,9 @@ type EventPageAction =
   | "share_link_copied"
   | "ai_ingredients_generated"
   | "ai_ingredients_generated_batch"
-  | "filter_changed"
   | "drag_drop_used"
+  | "shopping_item_checked"
+  | "event_created"
   | "guest_joined"
   | "rsvp_set"
   | "guest_count_set";
@@ -306,16 +295,6 @@ export function trackAIAction(
     action,
     label: itemName,
     value: ingredientCount,
-  });
-}
-
-/**
- * Track filter changes
- */
-export function trackFilterChange(filterType: string) {
-  trackEvent({
-    action: "filter_changed",
-    label: filterType,
   });
 }
 
