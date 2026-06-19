@@ -54,6 +54,22 @@ export function setAnalyticsUserId(userId: string | null) {
   setUmamiUserId(userId);
 }
 
+// ─── Per-event analytics context ────────────────────────────────────
+// Renseigné une fois quand une page événement monte (cf. event-planner.tsx).
+// Chaque payload trackEvent() est enrichi de ces champs pour pouvoir
+// segmenter les events CoList par hôte/invité et par événement, sans
+// threader l'info dans chaque handler.
+type AnalyticsRole = "host" | "guest";
+let analyticsContext: { role?: AnalyticsRole; event_slug?: string } = {};
+
+export function setAnalyticsContext(ctx: { role?: AnalyticsRole; eventSlug?: string }) {
+  analyticsContext = { role: ctx.role, event_slug: ctx.eventSlug };
+}
+
+export function clearAnalyticsContext() {
+  analyticsContext = {};
+}
+
 type EventPageAction =
   | "tab_changed"
   | "item_created"
@@ -75,7 +91,10 @@ type EventPageAction =
   | "ai_ingredients_generated"
   | "ai_ingredients_generated_batch"
   | "filter_changed"
-  | "drag_drop_used";
+  | "drag_drop_used"
+  | "guest_joined"
+  | "rsvp_set"
+  | "guest_count_set";
 
 type LandingAction =
   | "discover_click"
@@ -93,29 +112,29 @@ interface TrackEventParams {
   [key: string]: string | number | boolean | undefined;
 }
 
+// Actions de contribution qui marquent un invité devenant actif. La
+// première par invité/événement émet un `guest_first_contribution` synthétique.
+const CONTRIBUTION_ACTIONS = new Set<EventPageAction>([
+  "item_created",
+  "meal_created",
+  "service_created",
+  "rsvp_set",
+  "guest_count_set",
+]);
+
 /**
- * Track an event page interaction
+ * Dispatch bas niveau : log dev/debug + garde consentement + envoi.
+ * Partagé par tous les helpers pour que la logique de gating vive à un seul endroit.
  */
-export function trackEvent({
-  action,
-  category = "event_page",
-  label,
-  value,
-  ...extra
-}: TrackEventParams) {
-  // Check consent
+function dispatch(name: string, data: Record<string, string | number | boolean | undefined>) {
   const isDebugMode =
     typeof window !== "undefined" && localStorage.getItem("analytics_debug") === "true";
 
   if (IS_DEV || isDebugMode) {
-    logger.debug("[Analytics]", {
-      action,
-      category,
-      label,
-      value,
-      ...extra,
-    });
-    if (IS_DEV) return;
+    logger.debug("[Analytics]", { event: name, ...data });
+    if (IS_DEV) {
+      return;
+    }
   }
 
   // Check consent - strictly block if no consent
@@ -124,16 +143,87 @@ export function trackEvent({
   }
 
   try {
-    sendGAEvent("event", action, {
-      event_category: category,
-      event_label: label,
-      value,
-      ...extra,
-    });
+    sendGAEvent("event", name, data);
   } catch (error) {
     // Silently fail if GA is not available (e.g., ad blockers)
-    logger.debug("[Analytics] Failed to track event:", action, error);
+    logger.debug("[Analytics] Failed to track event:", name, error);
   }
+}
+
+/**
+ * Track an event page interaction. Le contexte analytics actif
+ * (role hôte/invité, slug événement) est mergé dans chaque payload.
+ */
+export function trackEvent({
+  action,
+  category = "event_page",
+  label,
+  value,
+  ...extra
+}: TrackEventParams) {
+  dispatch(action, {
+    event_category: category,
+    event_label: label,
+    value,
+    ...analyticsContext,
+    ...extra,
+  });
+  maybeTrackFirstContribution(action);
+}
+
+/**
+ * Émet `guest_first_contribution` une fois par invité/événement, à la
+ * première action de contribution. Dédupliqué via localStorage.
+ */
+function maybeTrackFirstContribution(action: EventPageAction) {
+  if (analyticsContext.role !== "guest" || !CONTRIBUTION_ACTIONS.has(action)) {
+    return;
+  }
+  const slug = analyticsContext.event_slug;
+  if (!slug || typeof window === "undefined") {
+    return;
+  }
+  const storageKey = `colist_guest_first_contrib_${slug}`;
+  try {
+    if (localStorage.getItem(storageKey)) {
+      return;
+    }
+    localStorage.setItem(storageKey, "1");
+  } catch {
+    return;
+  }
+  dispatch("guest_first_contribution", { ...analyticsContext });
+}
+
+/**
+ * Marque l'arrivée d'un invité sur un événement (un seul event unifié,
+ * quel que soit le chemin). Dédupliqué une fois par événement côté device.
+ */
+export function trackGuestJoined(method: "guest_access" | "claimed" | "new") {
+  const slug = analyticsContext.event_slug;
+  if (slug && typeof window !== "undefined") {
+    const storageKey = `colist_guest_joined_${slug}`;
+    try {
+      if (localStorage.getItem(storageKey)) {
+        return;
+      }
+      localStorage.setItem(storageKey, "1");
+    } catch {
+      // si localStorage indispo, on émet quand même
+    }
+  }
+  trackEvent({ action: "guest_joined", method });
+}
+
+/**
+ * RSVP d'un invité (présence) et nombre d'accompagnants.
+ */
+export function trackRsvp(status: "confirmed" | "declined" | "maybe") {
+  trackEvent({ action: "rsvp_set", label: status });
+}
+
+export function trackGuestCount(totalGuests: number) {
+  trackEvent({ action: "guest_count_set", value: totalGuests });
 }
 
 /**

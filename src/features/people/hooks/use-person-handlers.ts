@@ -13,7 +13,7 @@ import {
 } from "@/app/actions";
 import type { PlanData } from "@/lib/types";
 import type { PersonHandlerParams } from "@/features/shared/types";
-import { trackPersonAction } from "@/lib/analytics";
+import { trackPersonAction, trackGuestJoined, trackRsvp, trackGuestCount } from "@/lib/analytics";
 import { setLegacyPersonToken } from "@/lib/guest-token";
 
 export function usePersonHandlers({
@@ -49,6 +49,12 @@ export function usePersonHandlers({
 
         if (created.token) {
           setLegacyPersonToken(created.id, created.token);
+          // Un non-propriétaire qui se crée une personne (avec token d'édition)
+          // = un invité qui rejoint. Dédupliqué par événement côté trackGuestJoined.
+          const isOwner = !!session?.user?.id && session.user.id === plan.event?.ownerId;
+          if (!isOwner) {
+            trackGuestJoined("guest_access");
+          }
         }
 
         setPlan((prev: PlanData) => ({
@@ -224,6 +230,7 @@ export function usePersonHandlers({
           people: prev.people.map((p) => (p.id === personId ? { ...p, status } : p)),
         }));
         toast.success(t("person.statusUpdated"));
+        trackRsvp(status);
       } catch (error) {
         console.error("Failed to update status:", error);
         toast.error(t("person.errorUpdate"));
@@ -262,6 +269,7 @@ export function usePersonHandlers({
           ),
         }));
         toast.success(t("person.updated"));
+        trackGuestCount(guestAdults + guestChildren);
       } catch (error) {
         console.error("Failed to update guest count:", error);
         toast.error(t("person.errorUpdate"));

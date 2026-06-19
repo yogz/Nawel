@@ -47,6 +47,7 @@ import { type PlanData, type Item } from "@/lib/types";
 import { TabBar } from "../layout";
 import { validateWriteKeyAction, joinEventAction } from "@/app/actions";
 import { useSession } from "@/lib/auth-client";
+import { setAnalyticsContext, clearAnalyticsContext } from "@/lib/analytics";
 
 // Lightweight components loaded immediately
 import { EventPlannerHeader } from "./event-planner-header";
@@ -145,6 +146,13 @@ export function EventPlanner({
   const isOwner = session?.user?.id === plan.event?.ownerId;
   const effectiveWriteKey =
     writeKey || (isOwner && plan.event?.adminKey ? plan.event.adminKey : undefined);
+
+  // Enrichit chaque event analytics de cette page avec le rôle (hôte/invité)
+  // et le slug, pour segmenter la boucle invité sans toucher chaque handler.
+  useEffect(() => {
+    setAnalyticsContext({ role: isOwner ? "host" : "guest", eventSlug: slug });
+    return () => clearAnalyticsContext();
+  }, [isOwner, slug]);
 
   // Base params shared by all feature hooks
   const handlerParams = {
