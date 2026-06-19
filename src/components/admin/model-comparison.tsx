@@ -12,7 +12,7 @@ import {
   getDefaultSystemPrompt,
   getDefaultUserPrompt,
   type ModelTestResult,
-} from "@/lib/openrouter";
+} from "@/lib/ingredient-ai";
 import { Play, Loader2, CheckCircle, XCircle, Clock, ChefHat } from "lucide-react";
 import clsx from "clsx";
 

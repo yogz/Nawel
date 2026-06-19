@@ -168,7 +168,7 @@ export default async function AdminPromptsPage(props: { params: Promise<{ locale
             <h3 className="mb-2 text-sm font-semibold text-muted-foreground">Fichiers source</h3>
             <ul className="space-y-1 text-xs text-muted-foreground font-mono">
               <li>• src/lib/prompts.ts (Source unique)</li>
-              <li>• src/lib/openrouter.ts → Logique d'appel</li>
+              <li>• src/lib/ingredient-ai.ts → Logique d'appel</li>
               <li>• src/app/actions/ingredient-actions.ts</li>
             </ul>
           </section>

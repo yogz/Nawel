@@ -9,7 +9,6 @@ import {
   getCategorizationSystemPrompt,
   getCategorizationUserPrompt,
   getUserPrompt,
-  INGREDIENT_CATEGORIES,
 } from "./prompts";
 
 export interface GeneratedIngredient {
@@ -72,7 +71,9 @@ export async function categorizeItems(
   itemNames: string[],
   locale: string = "fr"
 ): Promise<Array<{ name: string; category: string }>> {
-  if (itemNames.length === 0) return [];
+  if (itemNames.length === 0) {
+    return [];
+  }
 
   const systemPrompt = getCategorizationSystemPrompt(locale);
   const userPrompt = getCategorizationUserPrompt(locale, itemNames);
