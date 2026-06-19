@@ -94,7 +94,7 @@ export function MealContainer({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
-      className={cn("relative flex flex-col gap-6 pt-2", plan.meals.length === 1 && "gap-0 pt-0")}
+      className={cn("relative flex flex-col gap-6 pt-2", plan.meals.length === 1 && "gap-0 pt-3")}
     >
       {/* AI "what's missing" suggestion banner (hidden when nothing to suggest) */}
       <MealAssessmentBanner
