@@ -3,6 +3,21 @@
 import { useEffect } from "react";
 import { trackPerformance, trackError } from "@/lib/analytics";
 
+// Erreurs bénignes à ne PAS tracker : ce sont du bruit navigateur qui gonfle
+// le compteur d'`exception` sans correspondre à un vrai bug applicatif.
+// - "ResizeObserver loop…" : warning Chrome quand un callback ResizeObserver
+//   déclenche un relayout ; inoffensif (cf. composants Radix/auto-resize).
+// - "Script error." : message anonymisé des erreurs cross-origin (extensions,
+//   scripts tiers) — non actionnable côté code.
+const IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/i, /^Script error\.?$/i];
+
+export function shouldIgnoreClientError(message: string | undefined | null): boolean {
+  if (!message) {
+    return false;
+  }
+  return IGNORED_ERROR_PATTERNS.some((re) => re.test(message));
+}
+
 /**
  * Global component to track core web vitals and client-side errors
  * This help monitor the "perfection" of the application implementation
@@ -23,6 +38,10 @@ export function AnalyticsMonitor() {
 
     // 2. Global Error Monitoring
     const handleError = (event: ErrorEvent) => {
+      const message = event.error?.message ?? event.message;
+      if (shouldIgnoreClientError(message)) {
+        return;
+      }
       trackError(event.error || event.message, "window_error", false);
     };
 
