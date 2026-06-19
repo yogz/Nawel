@@ -14,6 +14,7 @@ export const mealAssessmentSchema = z.object({
         name: z.string(),
         suggestedQuantity: z.string(),
         reason: z.string(),
+        priority: z.enum(["high", "medium", "low"]),
       })
     )
     .max(8),
@@ -40,11 +41,19 @@ export interface MealAssessmentInput {
 }
 
 function buildUserPrompt(meal: MealAssessmentInput): string {
+  const ae = meal.adults + 0.5 * meal.children;
   const lines: string[] = [];
   lines.push(`Meal: ${meal.title?.trim() || "(untitled)"}`);
-  lines.push(`Expected: ${meal.adults} adults, ${meal.children} children`);
+  lines.push(
+    `Expected: ${meal.adults} adults, ${meal.children} children (≈${ae} adult-equivalents)`
+  );
   lines.push("");
-  lines.push("Already planned (by category):");
+  lines.push("Already planned, grouped by the organizer's own category labels.");
+  lines.push(
+    'Quantities may appear in the quantity field OR inside the item name. "[needs a bringer]"' +
+      " means the item is planned but nobody is bringing it yet (it still counts as planned)."
+  );
+  lines.push("");
 
   for (const service of meal.services) {
     lines.push(`- ${service.title?.trim() || "(uncategorized)"}:`);
@@ -53,11 +62,9 @@ function buildUserPrompt(meal: MealAssessmentInput): string {
       continue;
     }
     for (const item of service.items) {
-      const qty = item.quantity?.trim() ? ` — ${item.quantity.trim()}` : "";
-      const who = item.broughtBy?.trim()
-        ? ` (brought by ${item.broughtBy.trim()})`
-        : " (no volunteer yet)";
-      lines.push(`    • ${item.name}${qty}${who}`);
+      const qty = item.quantity?.trim() ? item.quantity.trim() : "(none)";
+      const who = item.broughtBy?.trim() ? item.broughtBy.trim() : "[needs a bringer]";
+      lines.push(`    • ${item.name} — qty: ${qty} — ${who}`);
     }
   }
 
@@ -71,8 +78,7 @@ function buildUserPrompt(meal: MealAssessmentInput): string {
  */
 export async function generateMealAssessment(
   meal: MealAssessmentInput,
-  locale: string,
-  opts?: { rethrow?: boolean }
+  locale: string
 ): Promise<MealAssessment | null> {
   try {
     const { object } = await generateObject({
@@ -85,15 +91,12 @@ export async function generateMealAssessment(
         children: meal.children,
       }),
       prompt: buildUserPrompt(meal),
-      temperature: 0.4,
+      temperature: 0.2,
       experimental_repairText: repairJsonText,
     });
     return object;
   } catch (error) {
     logger.error("generateMealAssessment failed", error);
-    if (opts?.rethrow) {
-      throw error;
-    }
     return null;
   }
 }

@@ -431,7 +431,8 @@
       "assessment": {
         "title": "Ce qu'il manque",
         "dismiss": "Masquer",
-        "disclaimer": "Suggestions générées automatiquement, à ajuster selon vos envies."
+        "disclaimer": "Suggestions générées automatiquement, à ajuster selon vos envies.",
+        "beta": "bêta"
       }
     },
     "Service": {

@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Vad som saknas",
         "dismiss": "Dölj",
-        "disclaimer": "Automatiskt genererade förslag – justera efter smak."
+        "disclaimer": "Automatiskt genererade förslag – justera efter smak.",
+        "beta": "beta"
       }
     },
     "Service": {

@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Wat ontbreekt",
         "dismiss": "Verbergen",
-        "disclaimer": "Automatisch gegenereerde suggesties – pas ze naar wens aan."
+        "disclaimer": "Automatisch gegenereerde suggesties – pas ze naar wens aan.",
+        "beta": "bèta"
       }
     },
     "Service": {

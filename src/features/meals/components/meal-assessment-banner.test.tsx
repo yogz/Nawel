@@ -12,8 +12,13 @@ const missingAssessment: MealAssessment = {
   sufficient: false,
   summary: "La viande est un peu juste pour 10.",
   missing: [
-    { name: "Pain", suggestedQuantity: "2 baguettes", reason: "Rien de prévu" },
-    { name: "Boissons", suggestedQuantity: "6 bouteilles", reason: "Pour 10 convives" },
+    { name: "Pain", suggestedQuantity: "2 baguettes", reason: "Rien de prévu", priority: "high" },
+    {
+      name: "Boissons",
+      suggestedQuantity: "6 bouteilles",
+      reason: "Pour 10 convives",
+      priority: "medium",
+    },
   ],
 };
 

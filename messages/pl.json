@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Czego brakuje",
         "dismiss": "Ukryj",
-        "disclaimer": "Sugestie generowane automatycznie – dostosuj według uznania."
+        "disclaimer": "Sugestie generowane automatycznie – dostosuj według uznania.",
+        "beta": "beta"
       }
     },
     "Service": {

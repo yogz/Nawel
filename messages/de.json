@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Was noch fehlt",
         "dismiss": "Ausblenden",
-        "disclaimer": "Automatisch erstellte Vorschläge – nach Belieben anpassen."
+        "disclaimer": "Automatisch erstellte Vorschläge – nach Belieben anpassen.",
+        "beta": "Beta"
       }
     },
     "Service": {

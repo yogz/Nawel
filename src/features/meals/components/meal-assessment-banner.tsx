@@ -40,12 +40,18 @@ export function MealAssessmentBanner({ mealId, inputHash, assessment }: MealAsse
     setDismissed(true);
   };
 
+  const rank = { high: 0, medium: 1, low: 2 } as const;
+  const missing = [...assessment.missing].sort((a, b) => rank[a.priority] - rank[b.priority]);
+
   return (
     <div className="rounded-xl bg-accent/5 px-4 py-3 shadow-sm ring-1 ring-accent/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
           <p className="text-sm font-semibold text-foreground">{t("title")}</p>
+          <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">
+            {t("beta")}
+          </span>
         </div>
         <button
           type="button"
@@ -62,7 +68,7 @@ export function MealAssessmentBanner({ mealId, inputHash, assessment }: MealAsse
       ) : null}
 
       <ul className="mt-2 space-y-1.5">
-        {assessment.missing.map((entry, index) => (
+        {missing.map((entry, index) => (
           <li key={index} className="text-sm text-foreground">
             <span className="font-medium">{entry.name}</span>
             {entry.suggestedQuantity ? (

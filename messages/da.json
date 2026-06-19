@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Hvad mangler",
         "dismiss": "Skjul",
-        "disclaimer": "Automatisk genererede forslag – tilpas efter behov."
+        "disclaimer": "Automatisk genererede forslag – tilpas efter behov.",
+        "beta": "beta"
       }
     },
     "Service": {

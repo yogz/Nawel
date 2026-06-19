@@ -431,7 +431,8 @@
       "assessment": {
         "title": "What's missing",
         "dismiss": "Dismiss",
-        "disclaimer": "Auto-generated suggestions — adjust to taste."
+        "disclaimer": "Auto-generated suggestions — adjust to taste.",
+        "beta": "beta"
       }
     },
     "Service": {

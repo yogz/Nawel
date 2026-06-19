@@ -430,7 +430,8 @@
       "assessment": {
         "title": "Cosa manca",
         "dismiss": "Nascondi",
-        "disclaimer": "Suggerimenti generati automaticamente, da adattare a piacere."
+        "disclaimer": "Suggerimenti generati automaticamente, da adattare a piacere.",
+        "beta": "beta"
       }
     },
     "Service": {
