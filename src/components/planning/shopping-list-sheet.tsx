@@ -9,7 +9,7 @@ import { type Person, type PlanData, type Item, type Ingredient } from "@/lib/ty
 import { renderAvatar, getDisplayName } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@/lib/umami";
+import { trackEvent } from "@/lib/analytics";
 import {
   aggregateShoppingList,
   formatAggregatedQuantity,
@@ -90,7 +90,7 @@ export function ShoppingListSheet({
     startTransition(() => {
       const newChecked = !aggregatedItem.checked;
       if (newChecked) {
-        sendGAEvent("event", "shopping_item_checked");
+        trackEvent({ action: "shopping_item_checked" });
       }
       aggregatedItem.sources.forEach((source) => {
         if (source.type === "ingredient") {

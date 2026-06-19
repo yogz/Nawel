@@ -6,7 +6,7 @@ import { EventForm } from "@/features/events/components/event-form";
 import { createEventAction } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { sendGAEvent } from "@/lib/umami";
+import { trackEvent } from "@/lib/analytics";
 import { AppBranding } from "@/components/common/app-branding";
 import { useSession } from "@/lib/auth-client";
 import { setGuestToken } from "@/lib/guest-token";
@@ -55,7 +55,9 @@ export default function CreateEventClient() {
           locale,
         });
 
-        sendGAEvent("event", "event_created", {
+        trackEvent({
+          action: "event_created",
+          category: "acquisition",
           creation_mode: creationMode || "total",
         });
 

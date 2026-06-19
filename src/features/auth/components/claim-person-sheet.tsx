@@ -6,7 +6,7 @@ import { type Person } from "@/lib/types";
 import { renderAvatar, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { sendGAEvent } from "@/lib/umami";
+import { trackGuestJoined } from "@/lib/analytics";
 
 export function ClaimPersonSheetContent({
   unclaimed,
@@ -28,7 +28,7 @@ export function ClaimPersonSheetContent({
     setIsPending(true);
     try {
       await onClaim(selectedId);
-      sendGAEvent("event", "person_claimed_profile");
+      trackGuestJoined("claimed");
     } finally {
       setIsPending(false);
     }
@@ -111,7 +111,7 @@ export function ClaimPersonSheetContent({
           variant="premium"
           className="w-full border-zinc-200 bg-zinc-900 py-4 shadow-xl shadow-zinc-900/10 active:scale-95 disabled:opacity-50"
           onClick={() => {
-            sendGAEvent("event", "person_joined_new");
+            trackGuestJoined("new");
             onJoinNew();
           }}
           disabled={isPending}
