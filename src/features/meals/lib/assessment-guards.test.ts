@@ -4,6 +4,7 @@ import {
   shouldSkipAssessment,
   selectDueMealIds,
   QUIET_WINDOW_MS,
+  type DueMeal,
 } from "./assessment-guards";
 
 describe("isPastDate", () => {
@@ -47,45 +48,56 @@ describe("selectDueMealIds", () => {
   const settled = new Date(now.getTime() - QUIET_WINDOW_MS - 1000); // >10min ago
   const recent = new Date(now.getTime() - 60 * 1000); // 1min ago
 
-  it("selects a never-assessed meal even if never edited (existing events)", () => {
+  function meal(over: Partial<DueMeal> = {}): DueMeal {
+    return {
+      id: 1,
+      itemsChangedAt: null,
+      assessmentComputedAt: null,
+      assessment: null,
+      hasItems: true,
+      ...over,
+    };
+  }
+
+  it("selects a never-assessed meal with items (existing events)", () => {
+    expect(selectDueMealIds([meal()], now)).toEqual([1]);
+  });
+
+  it("ignores a never-assessed meal that has no items", () => {
+    expect(selectDueMealIds([meal({ hasItems: false })], now)).toEqual([]);
+  });
+
+  it("unsticks a meal claimed but left blank by a failed attempt", () => {
     expect(
-      selectDueMealIds([{ id: 1, itemsChangedAt: null, assessmentComputedAt: null }], now)
+      selectDueMealIds([meal({ assessmentComputedAt: settled, assessment: null })], now)
     ).toEqual([1]);
   });
 
-  it("skips a never-edited meal that was already assessed", () => {
+  it("skips a meal that already has an assessment and no new edit", () => {
     expect(
-      selectDueMealIds([{ id: 1, itemsChangedAt: null, assessmentComputedAt: settled }], now)
+      selectDueMealIds([meal({ assessmentComputedAt: settled, assessment: "{}" })], now)
     ).toEqual([]);
   });
 
   it("ignores meals still inside the quiet window", () => {
-    expect(
-      selectDueMealIds([{ id: 1, itemsChangedAt: recent, assessmentComputedAt: null }], now)
-    ).toEqual([]);
+    expect(selectDueMealIds([meal({ itemsChangedAt: recent })], now)).toEqual([]);
   });
 
-  it("selects a settled, never-computed meal", () => {
-    expect(
-      selectDueMealIds([{ id: 7, itemsChangedAt: settled, assessmentComputedAt: null }], now)
-    ).toEqual([7]);
-  });
-
-  it("selects a settled meal whose last computation predates the latest edit", () => {
+  it("selects a settled meal edited after its last computation", () => {
     const computedBefore = new Date(settled.getTime() - 1000);
     expect(
       selectDueMealIds(
-        [{ id: 7, itemsChangedAt: settled, assessmentComputedAt: computedBefore }],
+        [meal({ itemsChangedAt: settled, assessmentComputedAt: computedBefore, assessment: "{}" })],
         now
       )
-    ).toEqual([7]);
+    ).toEqual([1]);
   });
 
   it("skips a meal already computed after its latest edit", () => {
     const computedAfter = new Date(settled.getTime() + 1000);
     expect(
       selectDueMealIds(
-        [{ id: 7, itemsChangedAt: settled, assessmentComputedAt: computedAfter }],
+        [meal({ itemsChangedAt: settled, assessmentComputedAt: computedAfter, assessment: "{}" })],
         now
       )
     ).toEqual([]);

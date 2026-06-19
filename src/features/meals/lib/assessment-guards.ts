@@ -26,14 +26,20 @@ export interface DueMeal {
   id: number;
   itemsChangedAt: Date | null;
   assessmentComputedAt: Date | null;
+  /** Raw stored assessment JSON (null = none/failed/never computed). */
+  assessment: string | null;
+  hasItems: boolean;
 }
 
 /**
- * Among the given meals, the ids that are "due" for (re)assessment:
- * - never assessed yet → due immediately (covers events that predate the
- *   feature, whose `itemsChangedAt` is NULL), unless an edit is still settling;
- * - edited and stale → due once settled for the quiet window.
- * Pure so it can run at request time off `fetchPlan` data (no DB query).
+ * Among the given meals, the ids that are "due" for (re)assessment. A meal is
+ * due when it has settled (no edit within the quiet window) AND either:
+ * - it has items but no stored assessment yet (covers events predating the
+ *   feature, and meals left blank by a previous failed attempt), or
+ * - it was edited after its last assessment (stale).
+ * A meal that already has an assessment (even `sufficient`) and no new edit is
+ * not re-computed; an empty meal never triggers an AI call. Pure so it can run
+ * at request time off `fetchPlan` data (no DB query).
  */
 export function selectDueMealIds(meals: DueMeal[], now: Date): number[] {
   const cutoff = now.getTime() - QUIET_WINDOW_MS;
@@ -41,10 +47,11 @@ export function selectDueMealIds(meals: DueMeal[], now: Date): number[] {
     .filter((meal) => {
       const changedAt = meal.itemsChangedAt;
       const computedAt = meal.assessmentComputedAt;
-      const stale =
-        computedAt === null || (changedAt !== null && computedAt.getTime() < changedAt.getTime());
+      const editedSinceCompute =
+        changedAt !== null && (computedAt === null || computedAt.getTime() < changedAt.getTime());
+      const needsCompute = (meal.assessment === null && meal.hasItems) || editedSinceCompute;
       const settled = changedAt === null || changedAt.getTime() <= cutoff;
-      return stale && settled;
+      return needsCompute && settled;
     })
     .map((meal) => meal.id);
 }

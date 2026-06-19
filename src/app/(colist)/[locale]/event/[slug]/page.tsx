@@ -104,9 +104,18 @@ export default async function Page(props: Props) {
   }
 
   // Trigger the debounced "what's missing" assessment off the request path:
-  // recompute meals that have settled for 10min and are stale. The optimistic
+  // recompute meals that have settled and are missing/stale. The optimistic
   // claim inside the processor dedupes concurrent views.
-  const dueMealIds = selectDueMealIds(plan.meals, new Date());
+  const dueMealIds = selectDueMealIds(
+    plan.meals.map((meal) => ({
+      id: meal.id,
+      itemsChangedAt: meal.itemsChangedAt,
+      assessmentComputedAt: meal.assessmentComputedAt,
+      assessment: meal.assessment,
+      hasItems: meal.services.some((s) => s.items.length > 0),
+    })),
+    new Date()
+  );
   if (dueMealIds.length > 0) {
     after(() => processDueMealAssessments(dueMealIds));
   }

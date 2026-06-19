@@ -50,8 +50,13 @@ export async function processDueMealAssessments(
         sql`UPDATE meals SET assessment_computed_at = now()
             WHERE id = ${mealId}
               AND (items_changed_at IS NULL OR items_changed_at <= now() - interval '10 minutes')
-              AND (assessment_computed_at IS NULL
-                   OR (items_changed_at IS NOT NULL AND assessment_computed_at < items_changed_at))
+              AND (
+                (assessment IS NULL
+                  AND EXISTS (SELECT 1 FROM services s JOIN items i ON i.service_id = s.id
+                              WHERE s.meal_id = meals.id))
+                OR (items_changed_at IS NOT NULL
+                    AND (assessment_computed_at IS NULL OR assessment_computed_at < items_changed_at))
+              )
             RETURNING id`
       );
       if (claimed.length === 0) {
@@ -148,7 +153,9 @@ export async function processDueMealAssessments(
 
       const assessment = await generateMealAssessment(input, event.locale);
       if (!assessment) {
-        // AI failed — leave it (claim bumped the clock; a later edit re-triggers).
+        // AI failed — release the claim so a later visit retries instead of
+        // leaving the meal stuck blank.
+        await db.update(meals).set({ assessmentComputedAt: null }).where(eq(meals.id, mealId));
         report.failed += 1;
         continue;
       }

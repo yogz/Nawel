@@ -1,6 +1,6 @@
 import { generateObject } from "ai";
+import { google } from "@ai-sdk/google";
 import { z } from "zod";
-import { aiModel } from "./ai";
 import { logger } from "./logger";
 import { repairJsonText } from "./ai-json";
 import { getMealAssessmentSystemPrompt } from "./prompts";
@@ -75,7 +75,9 @@ export async function generateMealAssessment(
 ): Promise<MealAssessment | null> {
   try {
     const { object } = await generateObject({
-      model: aiModel,
+      // Direct Google provider (GOOGLE_GENERATIVE_AI_API_KEY), like
+      // gemini-search.ts — the Vercel AI Gateway is not configured in prod.
+      model: google("gemini-2.0-flash-lite"),
       schema: mealAssessmentSchema,
       system: getMealAssessmentSystemPrompt(locale, {
         adults: meal.adults,
