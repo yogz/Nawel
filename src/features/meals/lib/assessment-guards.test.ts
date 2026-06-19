@@ -47,9 +47,15 @@ describe("selectDueMealIds", () => {
   const settled = new Date(now.getTime() - QUIET_WINDOW_MS - 1000); // >10min ago
   const recent = new Date(now.getTime() - 60 * 1000); // 1min ago
 
-  it("ignores meals that were never edited", () => {
+  it("selects a never-assessed meal even if never edited (existing events)", () => {
     expect(
       selectDueMealIds([{ id: 1, itemsChangedAt: null, assessmentComputedAt: null }], now)
+    ).toEqual([1]);
+  });
+
+  it("skips a never-edited meal that was already assessed", () => {
+    expect(
+      selectDueMealIds([{ id: 1, itemsChangedAt: null, assessmentComputedAt: settled }], now)
     ).toEqual([]);
   });
 

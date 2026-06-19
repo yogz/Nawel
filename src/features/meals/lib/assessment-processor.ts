@@ -49,9 +49,9 @@ export async function processDueMealAssessments(
       const claimed = await db.execute<{ id: number }>(
         sql`UPDATE meals SET assessment_computed_at = now()
             WHERE id = ${mealId}
-              AND items_changed_at IS NOT NULL
-              AND items_changed_at <= now() - interval '10 minutes'
-              AND (assessment_computed_at IS NULL OR assessment_computed_at < items_changed_at)
+              AND (items_changed_at IS NULL OR items_changed_at <= now() - interval '10 minutes')
+              AND (assessment_computed_at IS NULL
+                   OR (items_changed_at IS NOT NULL AND assessment_computed_at < items_changed_at))
             RETURNING id`
       );
       if (claimed.length === 0) {

@@ -29,19 +29,22 @@ export interface DueMeal {
 }
 
 /**
- * Among the given meals, the ids that are "due" for (re)assessment: edited,
- * settled for at least the quiet window, and stale vs the last computation.
+ * Among the given meals, the ids that are "due" for (re)assessment:
+ * - never assessed yet → due immediately (covers events that predate the
+ *   feature, whose `itemsChangedAt` is NULL), unless an edit is still settling;
+ * - edited and stale → due once settled for the quiet window.
  * Pure so it can run at request time off `fetchPlan` data (no DB query).
  */
 export function selectDueMealIds(meals: DueMeal[], now: Date): number[] {
   const cutoff = now.getTime() - QUIET_WINDOW_MS;
   return meals
-    .filter(
-      (meal) =>
-        meal.itemsChangedAt !== null &&
-        meal.itemsChangedAt.getTime() <= cutoff &&
-        (meal.assessmentComputedAt === null ||
-          meal.assessmentComputedAt.getTime() < meal.itemsChangedAt.getTime())
-    )
+    .filter((meal) => {
+      const changedAt = meal.itemsChangedAt;
+      const computedAt = meal.assessmentComputedAt;
+      const stale =
+        computedAt === null || (changedAt !== null && computedAt.getTime() < changedAt.getTime());
+      const settled = changedAt === null || changedAt.getTime() <= cutoff;
+      return stale && settled;
+    })
     .map((meal) => meal.id);
 }
