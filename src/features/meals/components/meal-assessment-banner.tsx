@@ -41,7 +41,9 @@ export function MealAssessmentBanner({ mealId, inputHash, assessment }: MealAsse
   };
 
   const rank = { high: 0, medium: 1, low: 2 } as const;
-  const missing = [...assessment.missing].sort((a, b) => rank[a.priority] - rank[b.priority]);
+  const missing = [...assessment.missing].sort(
+    (a, b) => rank[a.priority ?? "medium"] - rank[b.priority ?? "medium"]
+  );
 
   return (
     <div className="rounded-xl bg-accent/5 px-4 py-3 shadow-sm ring-1 ring-accent/20">

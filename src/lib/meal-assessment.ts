@@ -14,7 +14,9 @@ export const mealAssessmentSchema = z.object({
         name: z.string(),
         suggestedQuantity: z.string(),
         reason: z.string(),
-        priority: z.enum(["high", "medium", "low"]),
+        // Optional so assessments stored before this field parse fine (lenient);
+        // the prompt still asks the model to always set it.
+        priority: z.enum(["high", "medium", "low"]).optional(),
       })
     )
     .max(8),
