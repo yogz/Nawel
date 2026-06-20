@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { mockEvent, type MockPerson } from "../_mock";
 
@@ -29,12 +32,50 @@ function Avatar({ person, size = 36 }: { person: MockPerson; size?: number }) {
  * Labo de design — Variante A « Convivial ».
  * Page figée (fausses données) : refonte radicale de la page d'événement,
  * en fil unique orienté action invité. Aucune logique réelle branchée.
+ *
+ * Le titre se condense en barre sticky en haut dès qu'on fait défiler.
  */
 export default function DesignEventVariantA() {
   const e = mockEvent;
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 150);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <div className={`${jakarta.className} min-h-screen bg-[#F6F4FB] pb-32 text-[#16121F]`}>
+      {/* Sticky condensed header — apparaît au scroll */}
+      <div
+        className={`fixed inset-x-0 top-0 z-50 text-white motion-safe:transition-all motion-safe:duration-300 ${
+          scrolled ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-full opacity-0"
+        }`}
+        style={{ background: GRAD }}
+      >
+        <div className="mx-auto flex max-w-[430px] items-center gap-3 px-4 pb-3 pt-12">
+          <button
+            type="button"
+            aria-label="Retour"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15"
+          >
+            ←
+          </button>
+          <span className="flex-1 truncate text-[17px] font-extrabold tracking-tight">
+            {e.title}
+          </span>
+          <button
+            type="button"
+            aria-label="Options"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15"
+          >
+            •••
+          </button>
+        </div>
+      </div>
+
       <div className="mx-auto max-w-[430px]">
         {/* HERO */}
         <div
