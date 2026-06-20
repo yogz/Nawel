@@ -21,6 +21,7 @@ const INK = "#2A0B3F"; // titres
 const SOFT = "#6E5C88"; // texte secondaire
 const FADE = "#AC9EC6"; // réglé / désélectionné
 const ACCENT = "#A855F7"; // violet CoList — « à faire / à toi »
+const PINK = "#EC4899"; // rose CoList (signature du dégradé violet→rose)
 const FOCUS =
   "rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A855F7]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FBF9FE]";
 
@@ -88,6 +89,14 @@ export default function DesignEventFluxV2() {
 
       {/* Toile claire CoList */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{ background: CANVAS }} />
+      {/* Halo signature violet→rose en haut — ancre l'identité CoList */}
+      <div
+        className="pointer-events-none fixed inset-x-0 top-0 z-0 h-[380px]"
+        style={{
+          background:
+            "radial-gradient(125% 100% at 50% -12%, rgba(168,85,247,0.26) 0%, rgba(236,72,153,0.16) 42%, transparent 72%)",
+        }}
+      />
 
       {/* Titre sticky — fond clair opaque, fine ombre, ne recouvre rien illisiblement */}
       <button
@@ -108,8 +117,8 @@ export default function DesignEventFluxV2() {
         {/* HERO */}
         <header className="pt-20">
           <div
-            className="text-[12px] font-bold uppercase tracking-[0.22em]"
-            style={{ color: ACCENT }}
+            className="inline-block bg-clip-text text-[12px] font-bold uppercase tracking-[0.22em] text-transparent"
+            style={{ backgroundImage: `linear-gradient(90deg, ${ACCENT}, ${PINK})` }}
           >
             {e.date} · {e.countdown}
           </div>
@@ -192,7 +201,7 @@ export default function DesignEventFluxV2() {
           <div
             className="pointer-events-none absolute bottom-2 left-[9px] top-2 w-[2px] rounded-full"
             style={{
-              background: `linear-gradient(180deg, ${ACCENT} 0%, ${ACCENT} ${pct}%, rgba(42,11,63,0.12) ${pct}%, rgba(42,11,63,0.12) 100%)`,
+              background: `linear-gradient(180deg, ${ACCENT} 0%, ${PINK} ${pct}%, rgba(42,11,63,0.12) ${pct}%, rgba(42,11,63,0.12) 100%)`,
             }}
           />
 
