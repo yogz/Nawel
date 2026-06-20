@@ -49,7 +49,15 @@ export const mockEvent = {
       name: "Apéro",
       items: [
         { name: "Chips & guacamole", by: claire },
-        { name: "Pastèque 🍉", by: null },
+        { name: "Pastèque", by: null },
+      ],
+    },
+    {
+      emoji: "🍰",
+      name: "Dessert",
+      items: [
+        { name: "Tarte aux pommes", by: delphine },
+        { name: "Salade de fruits", by: null },
       ],
     },
   ] satisfies MockSection[],
