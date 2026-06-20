@@ -46,6 +46,8 @@ export default function DesignEventVariantA() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
   return (
     <div className={`${jakarta.className} min-h-screen bg-[#F6F4FB] pb-32 text-[#16121F]`}>
       {/* Sticky condensed header — apparaît au scroll */}
@@ -55,25 +57,16 @@ export default function DesignEventVariantA() {
         }`}
         style={{ background: GRAD }}
       >
-        <div className="mx-auto flex max-w-[430px] items-center gap-3 px-4 pb-3 pt-12">
-          <button
-            type="button"
-            aria-label="Retour"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15"
-          >
-            ←
-          </button>
-          <span className="flex-1 truncate text-[17px] font-extrabold tracking-tight">
+        <button
+          type="button"
+          onClick={scrollToTop}
+          aria-label="Remonter en haut de la page"
+          className="mx-auto block w-full max-w-[430px] px-5 pb-3 pt-12 text-left"
+        >
+          <span className="block truncate text-[20px] font-extrabold tracking-tight">
             {e.title}
           </span>
-          <button
-            type="button"
-            aria-label="Options"
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15"
-          >
-            •••
-          </button>
-        </div>
+        </button>
       </div>
 
       <div className="mx-auto max-w-[430px]">
