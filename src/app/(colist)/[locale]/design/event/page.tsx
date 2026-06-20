@@ -4,6 +4,11 @@ import Link from "next/link";
 // Chaque variante est une refonte autonome, sur fausses données.
 const variants = [
   { slug: "a", name: "A — Convivial", desc: "Fil social, bouton « Je prends », orienté invités." },
+  {
+    slug: "flux",
+    name: "FLUX — sans frontières",
+    desc: "Nouvelle grammaire : une toile vivante, ni cartes ni boutons.",
+  },
 ];
 
 export default function DesignEventIndex() {
