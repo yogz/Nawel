@@ -362,6 +362,46 @@ export function timeslotPickedEmail(args: {
 }
 
 /**
+ * Fired by `reopenPollAction` when the organiser puts the date back to a
+ * vote. Symmetric counterpart of `timeslotPickedEmail` : announcing a date
+ * notified everyone, retracting it used to notify no one — and the event
+ * silently vanished from every subscribed calendar.
+ */
+export function pollReopenedEmail(args: {
+  outingTitle: string;
+  outingUrl: string;
+  previousDatetime: Date;
+  showCalendarFeedPitch?: boolean;
+}): { subject: string; html: string } {
+  const title = escapeHtml(args.outingTitle);
+  const previous = escapeHtml(formatOutingDateConversational(args.previousDatetime));
+  const body = `
+    <h1 style="margin:0 0 14px;${H1}">La date est remise au vote</h1>
+    <p style="margin:0 0 18px;${BODY_P}">
+      <strong>${title}</strong>
+    </p>
+    <p style="margin:0 0 18px;${BODY_P}">
+      Le créneau du <strong>${previous}</strong> n&rsquo;est plus retenu. Il disparaît de ton
+      agenda&nbsp;: ne bloque plus ce soir-là.
+    </p>
+    <p style="margin:0 0 28px;${BODY_P}">
+      Redis vite tes disponibilités pour qu&rsquo;on retrouve une date.
+    </p>
+    <p style="margin:0;">
+      ${ctaButton(args.outingUrl, "Revoter")}
+    </p>
+    ${calendarFeedPitchBlock(args.showCalendarFeedPitch ?? false)}
+  `;
+  return {
+    subject: `${args.outingTitle} — la date est remise au vote`,
+    html: renderEmail({
+      preheader: `Le créneau du ${previous} n'est plus retenu.`,
+      body,
+    }),
+  };
+}
+
+/**
  * Fired once per outing by the hourly sweeper the moment the RSVP deadline
  * is crossed. Reaches only confirmed attendees (yes + handle_own) so no-shows
  * don't get a useless ping.

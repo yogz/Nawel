@@ -23,6 +23,7 @@ import {
   outingModifiedEmail,
   paymentConfirmedEmail,
   paymentDeclaredEmail,
+  pollReopenedEmail,
   purchaseConfirmedEmail,
   rsvpClosedEmail,
   rsvpReceivedEmail,
@@ -65,6 +66,18 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
         response: "yes",
         extraAdults: 1,
         extraChildren: 0,
+      }),
+  },
+  {
+    id: "poll-reopened",
+    name: "Date remise au vote",
+    trigger: "Server Action `reopenPollAction` — l'orga rouvre le sondage.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:370",
+    render: () =>
+      pollReopenedEmail({
+        outingTitle: MOCK_OUTING_TITLE,
+        outingUrl: MOCK_OUTING_URL,
+        previousDatetime: MOCK_OUTING_DATE,
       }),
   },
   {

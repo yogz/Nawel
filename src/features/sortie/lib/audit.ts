@@ -19,6 +19,17 @@ export async function hashIp(): Promise<string | null> {
     .digest("hex");
 }
 
+/**
+ * Cycle de vie de la date d'une sortie en mode sondage. Ces deux actions
+ * n'étaient pas journalisées : l'enquête sur l'incident dMekC3qK a dû
+ * reconstituer une réouverture à partir d'un `outings.updated_at` orphelin,
+ * en la déduisant par élimination.
+ */
+export const OUTING_AUDIT_ACTION = {
+  TIMESLOT_PICKED: "TIMESLOT_PICKED",
+  POLL_REOPENED: "POLL_REOPENED",
+} as const;
+
 export const TICKET_AUDIT_ACTION = {
   TICKET_UPLOADED: "TICKET_UPLOADED",
   TICKET_REVOKED: "TICKET_REVOKED",
