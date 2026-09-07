@@ -160,16 +160,19 @@ function pickAction(
 ): PendingAction | null {
   // === Côté créateur ===
   if (isCreator) {
-    // 1. Sondage tranché à faire — seul cas où une vote-mode outing
-    //    `open` deadline-passée doit interpeller le créateur. Le sweeper
-    //    bascule en `awaiting_purchase` quand la date est tranchée par
-    //    pickTimeslotAction ; tant que ce n'est pas fait, l'outing reste
-    //    `open` avec chosenTimeslotId null et la home doit le crier.
+    // 1. Sondage tranché à faire — une vote-mode outing dont la deadline
+    //    est passée sans créneau choisi. Volontairement PAS gaté sur
+    //    `status === "open"` : le sweeper bascule en `awaiting_purchase`
+    //    dès que la deadline tombe, tranché ou pas (il a une branche mail
+    //    « en attente de choix » dédiée). Le gate rendait donc ce nudge
+    //    quasi mort-né — il ne vivait qu'entre la deadline et le tick
+    //    suivant, soit ≤ 24h sur le cron quotidien Vercel Hobby. Seule
+    //    `cancelled` est exclue : il n'y a plus rien à trancher.
     if (
       o.mode === "vote" &&
       o.chosenTimeslotId === null &&
       o.deadlineAt <= now &&
-      o.status === "open"
+      o.status !== "cancelled"
     ) {
       return makeAction("pick-date", "hot", o, "choisir la date");
     }
