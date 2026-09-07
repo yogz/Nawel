@@ -19,6 +19,7 @@ import {
 import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { canReopenPoll } from "@/features/sortie/lib/can-reopen-poll";
 import {
   deletePreviousEventImage,
   generateOgThumbnailFromRemoteUrl,
@@ -579,14 +580,17 @@ export async function reopenPollAction(
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour rouvrir le sondage." };
   }
-  if (outing.mode !== "vote") {
-    return { message: "Cette sortie n'est pas en mode sondage." };
-  }
-  if (!outing.chosenTimeslotId) {
-    return { message: "Le sondage est déjà ouvert." };
-  }
-  if (outing.status === "cancelled") {
-    return { message: "Cette sortie est annulée." };
+
+  // Même prédicat que celui qui décide l'affichage du bouton côté
+  // `PollSection` — c'est ici qu'il fait autorité.
+  const verdict = canReopenPoll({
+    mode: outing.mode,
+    status: outing.status,
+    chosenTimeslotId: outing.chosenTimeslotId,
+    deadlineAt: outing.deadlineAt,
+  });
+  if (!verdict.ok) {
+    return { message: verdict.message };
   }
 
   await db

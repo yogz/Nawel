@@ -305,6 +305,9 @@ export default async function OutingPublicPage({ params, searchParams }: Props) 
         <PollSection
           shortId={outing.shortId}
           chosenTimeslotId={outing.chosenTimeslotId}
+          status={outing.status}
+          deadlineAt={outing.deadlineAt}
+          canonicalPath={canonical}
           isCreator={isCreator}
           totalVoters={totalVoters}
           timeslots={enrichedTimeslots}
