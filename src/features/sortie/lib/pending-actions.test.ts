@@ -39,6 +39,49 @@ describe("computePendingActions — créateur", () => {
     expect(actions[0].tone).toBe("hot");
   });
 
+  // Le nudge était gaté sur `status === "open"`, alors que le sweeper
+  // bascule en `awaiting_purchase` dès la deadline, tranché ou pas : il
+  // ne vivait donc qu'au plus 24h, puis « acheter les tickets » prenait
+  // sa place sur une sortie sans date.
+  it("émet pick-date même après la bascule du sweeper en awaiting_purchase", () => {
+    const o = outing({
+      id: "vote-swept",
+      mode: "vote",
+      status: "awaiting_purchase",
+      deadlineAt: D_PLUS(-2),
+      chosenTimeslotId: null,
+      creatorUserId: ME,
+    });
+    const actions = computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW });
+    expect(actions).toHaveLength(1);
+    expect(actions[0].kind).toBe("pick-date");
+  });
+
+  it("émet pick-date sur une sortie payée restée sans date (état hérité)", () => {
+    const o = outing({
+      id: "vote-zombie",
+      mode: "vote",
+      status: "purchased",
+      deadlineAt: D_PLUS(-2),
+      chosenTimeslotId: null,
+      creatorUserId: ME,
+    });
+    const actions = computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW });
+    expect(actions[0].kind).toBe("pick-date");
+  });
+
+  it("n'émet pas pick-date sur une sortie annulée", () => {
+    const o = outing({
+      id: "vote-cancelled",
+      mode: "vote",
+      status: "cancelled",
+      deadlineAt: D_PLUS(-2),
+      chosenTimeslotId: null,
+      creatorUserId: ME,
+    });
+    expect(computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW })).toEqual([]);
+  });
+
   it("ignore pick-date si chosenTimeslotId est déjà set", () => {
     const o = outing({
       id: "vote-2",

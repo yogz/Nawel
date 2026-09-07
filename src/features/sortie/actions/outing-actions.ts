@@ -7,18 +7,27 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth-config";
 import { sanitizeStrictText, sanitizeText } from "@/lib/sanitize";
-import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
+import {
+  auditLog,
+  outings,
+  outingTimeslots,
+  participants,
+  timeslotVotes,
+} from "@drizzle/sortie-schema";
 import { generateUniqueShortId, slugifyAscii } from "@/features/sortie/lib/short-id";
 import { ensureParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
   buildOutingDiff,
   sendOutingCancelledEmails,
   sendOutingModifiedEmails,
+  sendPollReopenedEmails,
   sendTimeslotPickedEmails,
 } from "@/features/sortie/lib/emails/send-outing-emails";
 import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
+import { canReopenPoll } from "@/features/sortie/lib/can-reopen-poll";
+import { hashIp, OUTING_AUDIT_ACTION } from "@/features/sortie/lib/audit";
 import {
   deletePreviousEventImage,
   generateOgThumbnailFromRemoteUrl,
@@ -501,6 +510,9 @@ export async function pickTimeslotAction(
     // voted === null (didn't vote on this slot) → keep current response.
   }
 
+  // Hors transaction : `hashIp` lit les headers de la requête, pas la DB.
+  const pickedIpHash = await hashIp();
+
   // Transaction : pick + flips de réponses doivent être atomiques. Sans
   // ça, un crash après l'update outing mais avant les updates participants
   // laisserait la sortie figée sur un créneau alors que les yes/no ne
@@ -529,6 +541,19 @@ export async function pickTimeslotAction(
         .set({ response: "no", updatedAt: new Date() })
         .where(inArray(participants.id, toNo));
     }
+
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorUserId: user?.id ?? null,
+      action: OUTING_AUDIT_ACTION.TIMESLOT_PICKED,
+      ipHash: pickedIpHash,
+      payload: JSON.stringify({
+        timeslotId: timeslot.id,
+        startsAt: timeslot.startsAt.toISOString(),
+        flippedToYes: toYes.length,
+        flippedToNo: toNo.length,
+      }),
+    });
   });
 
   await sendTimeslotPickedEmails({
@@ -579,24 +604,67 @@ export async function reopenPollAction(
   if (!isOwner) {
     return { message: "Tu n'as pas les droits pour rouvrir le sondage." };
   }
-  if (outing.mode !== "vote") {
-    return { message: "Cette sortie n'est pas en mode sondage." };
-  }
-  if (!outing.chosenTimeslotId) {
-    return { message: "Le sondage est déjà ouvert." };
-  }
-  if (outing.status === "cancelled") {
-    return { message: "Cette sortie est annulée." };
+
+  // Même prédicat que celui qui décide l'affichage du bouton côté
+  // `PollSection` — c'est ici qu'il fait autorité.
+  const verdict = canReopenPoll({
+    mode: outing.mode,
+    status: outing.status,
+    chosenTimeslotId: outing.chosenTimeslotId,
+    deadlineAt: outing.deadlineAt,
+  });
+  if (!verdict.ok) {
+    return { message: verdict.message };
   }
 
-  await db
-    .update(outings)
-    .set({
-      chosenTimeslotId: null,
-      fixedDatetime: null,
-      updatedAt: new Date(),
-    })
-    .where(eq(outings.id, outing.id));
+  // La date qu'on s'apprête à effacer : elle sert à la fois au texte du
+  // mail et à l'ICS d'annulation, qui ne peut plus être relu en base après
+  // l'update.
+  const previousDatetime = outing.fixedDatetime;
+  const now = new Date();
+  const ipHash = await hashIp();
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(outings)
+      .set({
+        chosenTimeslotId: null,
+        fixedDatetime: null,
+        // Bump SEQUENCE au même titre que le pick : sans ça, les clients
+        // calendrier ignorent le retrait et gardent l'ancienne date. RFC
+        // 5545 §3.8.7.4.
+        sequence: sql`${outings.sequence} + 1`,
+        updatedAt: now,
+      })
+      .where(eq(outings.id, outing.id));
+
+    await tx.insert(auditLog).values({
+      outingId: outing.id,
+      actorUserId: user?.id ?? null,
+      action: OUTING_AUDIT_ACTION.POLL_REOPENED,
+      ipHash,
+      payload: JSON.stringify({
+        previousTimeslotId: outing.chosenTimeslotId,
+        previousDatetime: previousDatetime?.toISOString() ?? null,
+      }),
+    });
+  });
+
+  if (previousDatetime) {
+    await sendPollReopenedEmails({
+      outing: {
+        id: outing.id,
+        title: outing.title,
+        slug: outing.slug,
+        shortId: outing.shortId,
+        location: outing.location,
+        previousDatetime,
+        sequence: outing.sequence + 1,
+        createdAt: outing.createdAt,
+        updatedAt: now,
+      },
+    });
+  }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);

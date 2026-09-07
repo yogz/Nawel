@@ -184,6 +184,26 @@ describe("buildIcsFeed", () => {
       expect(feed).toContain("TRANSP:OPAQUE\r\n");
     });
 
+    // Incident dMekC3qK : une sortie `purchased` dont la date avait été
+    // effacée publiait ses créneaux candidats comme des rendez-vous fermes
+    // (OPAQUE, sans le suffixe « à confirmer »). Le statut d'achat ne doit
+    // jamais l'emporter sur le fait qu'un créneau n'est qu'une candidate.
+    it("TRANSPARENT + « à confirmer » pour une candidate, même en purchased", () => {
+      const feed = buildIcsFeed({
+        outings: [
+          makeOuting({
+            status: "purchased",
+            userResponse: "interested",
+            candidateTimeslotId: "ts-uuid-1",
+          }),
+        ],
+        publicBase: PUBLIC_BASE,
+      });
+      expect(feed).toContain("TRANSP:TRANSPARENT\r\n");
+      expect(feed).toContain("STATUS:TENTATIVE\r\n");
+      expect(feed).toContain("· à confirmer");
+    });
+
     it("OPAQUE quand userResponse=null (créateur)", () => {
       const feed = buildIcsFeed({
         outings: [makeOuting({ userResponse: null })],

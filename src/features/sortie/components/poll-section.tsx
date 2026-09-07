@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { EnrichedTimeslot } from "@/features/sortie/lib/enrich-timeslots";
+import { canReopenPoll } from "@/features/sortie/lib/can-reopen-poll";
 import { DeadlineBadge } from "./deadline-badge";
 import { PickTimeslotButton } from "./pick-timeslot-button";
 import { ReopenPollButton } from "./reopen-poll-button";
@@ -10,6 +12,11 @@ type Props = {
   totalVoters: number;
   isCreator: boolean;
   chosenTimeslotId: string | null;
+  /** Statut + deadline : décident si la réouverture est encore possible. */
+  status: Parameters<typeof canReopenPoll>[0]["status"];
+  deadlineAt: Date;
+  /** `slug-shortId`, pour pointer vers `/modifier` depuis le refus. */
+  canonicalPath: string;
   /**
    * Quand fourni, la deadline est rendue dans le header du sondage —
    * mode "ouvert" où la PollSection absorbe le rôle social et la
@@ -34,6 +41,9 @@ export function PollSection({
   totalVoters,
   isCreator,
   chosenTimeslotId,
+  status,
+  deadlineAt,
+  canonicalPath,
   inlineDeadlineAt,
 }: Props) {
   let best = 0;
@@ -94,8 +104,54 @@ export function PollSection({
         </p>
       )}
 
-      {isCreator && chosenTimeslotId && <ReopenPollButton shortId={shortId} />}
+      {isCreator && chosenTimeslotId && (
+        <ReopenAffordance
+          shortId={shortId}
+          verdict={canReopenPoll({ mode: "vote", status, chosenTimeslotId, deadlineAt })}
+          canonicalPath={canonicalPath}
+        />
+      )}
     </section>
+  );
+}
+
+/**
+ * Le bouton "Rouvrir le sondage" n'apparaît que quand l'action aboutirait
+ * vraiment. Deux cas se distinguent :
+ *
+ *   - `votes-closed` : la réouverture est inopérante (personne ne peut plus
+ *     voter) mais un chemin existe — repousser la date limite depuis
+ *     `/modifier`. On affiche ce chemin plutôt qu'un bouton qui échoue.
+ *   - `tickets-bought` : plus aucun chemin légitime, on n'affiche rien. La
+ *     correction de date passe par `/modifier`, pas par un re-vote sur une
+ *     date déjà payée.
+ */
+function ReopenAffordance({
+  shortId,
+  verdict,
+  canonicalPath,
+}: {
+  shortId: string;
+  verdict: ReturnType<typeof canReopenPoll>;
+  canonicalPath: string;
+}) {
+  if (verdict.ok) {
+    return <ReopenPollButton shortId={shortId} />;
+  }
+  if (verdict.reason !== "votes-closed") {
+    return null;
+  }
+  return (
+    <p className="mt-4 border-t border-surface-400 pt-3 text-xs leading-relaxed text-ink-400">
+      Les votes sont clos. Pour remettre la date au vote,{" "}
+      <Link
+        href={`/${canonicalPath}/modifier`}
+        className="text-acid-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600/50"
+      >
+        repousse d&rsquo;abord la date limite
+      </Link>
+      .
+    </p>
   );
 }
 

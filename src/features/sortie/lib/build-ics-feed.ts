@@ -205,6 +205,15 @@ function isOutingFigee(o: FeedOuting): boolean {
   if (o.status === "cancelled") {
     return false;
   }
+  // Une *candidate* en mode vote n'est jamais figée, quel que soit le
+  // statut de la sortie. Sans ce court-circuit, une sortie `purchased`
+  // dont la date a disparu (cf. incident dMekC3qK) publiait ses créneaux
+  // candidats en OPAQUE et sans le suffixe « · à confirmer » : ils
+  // arrivaient dans l'agenda habillés en rendez-vous fermes, et
+  // bloquaient la disponibilité sur chacun d'eux.
+  if (o.candidateTimeslotId !== null) {
+    return false;
+  }
   if (o.status === "purchased" || o.status === "past" || o.status === "settled") {
     return true;
   }

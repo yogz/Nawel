@@ -14,6 +14,7 @@ import {
   j1ReminderEmail,
   outingCancelledEmail,
   outingModifiedEmail,
+  pollReopenedEmail,
   rsvpClosedEmail,
   rsvpReceivedEmail,
   timeslotPickedEmail,
@@ -264,6 +265,64 @@ export async function sendOutingCancelledEmails(args: {
       outingCancelledEmail({
         outingTitle: args.outing.title,
         homeUrl: BASE_URL,
+        showCalendarFeedPitch,
+      }),
+  });
+}
+
+/**
+ * Fired by `reopenPollAction`. Contrepartie de `sendTimeslotPickedEmails` :
+ * annoncer une date prévenait tout le monde, la retirer ne prévenait
+ * personne — l'événement disparaissait en silence des agendas abonnés.
+ *
+ * Deux écarts assumés par rapport aux autres envois :
+ *   - on écrit à TOUS les participants, y compris les `no`. En mode vote un
+ *     `no` signifie « pas dispo sur LE créneau retenu » (flip posé par
+ *     `pickTimeslotAction`) — ce sont précisément les gens qu'une nouvelle
+ *     date peut débloquer.
+ *   - l'ICS est construit depuis l'ancienne date passée en argument, pas
+ *     relu en base : au moment de l'envoi la sortie n'a plus de date. Même
+ *     UID que l'événement publié + METHOD:CANCEL ⇒ les clients le retirent.
+ */
+export async function sendPollReopenedEmails(args: {
+  outing: {
+    id: string;
+    title: string;
+    slug: string | null;
+    shortId: string;
+    location: string | null;
+    previousDatetime: Date;
+    sequence: number;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}): Promise<void> {
+  const recipients = await db.query.participants.findMany({
+    where: eq(participants.outingId, args.outing.id),
+    with: { user: { columns: { email: true } } },
+  });
+
+  const canonical = outingPath(args.outing.slug, args.outing.shortId);
+  const ctx: OutingIcsContext = {
+    shortId: args.outing.shortId,
+    slug: args.outing.slug,
+    title: args.outing.title,
+    location: args.outing.location,
+    fixedDatetime: args.outing.previousDatetime,
+    sequence: args.outing.sequence,
+    createdAt: args.outing.createdAt,
+    updatedAt: args.outing.updatedAt,
+  };
+
+  await dispatchEmailWithPitch({
+    recipients,
+    trigger: "poll-reopened",
+    attachments: [buildOutingEventIcs({ outing: ctx, method: "CANCEL", publicBase: BASE_URL })],
+    buildEmail: (showCalendarFeedPitch) =>
+      pollReopenedEmail({
+        outingTitle: args.outing.title,
+        outingUrl: `${BASE_URL}${canonical}`,
+        previousDatetime: args.outing.previousDatetime,
         showCalendarFeedPitch,
       }),
   });
