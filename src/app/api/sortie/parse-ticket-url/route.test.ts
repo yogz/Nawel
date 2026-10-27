@@ -1,6 +1,28 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { trackParseAttempt } from "@/features/sortie/lib/parse-stats";
+import { trackServiceCall } from "@/features/sortie/lib/service-call-stats";
 import { POST } from "./route";
+
+vi.mock("@/features/sortie/lib/parse-stats", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/sortie/lib/parse-stats")>()),
+  trackParseAttempt: vi.fn(),
+}));
+vi.mock("@/features/sortie/lib/service-call-stats", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/features/sortie/lib/service-call-stats")>()),
+  trackServiceCall: vi.fn(),
+}));
+
+describe("isolation de la base", () => {
+  // La base locale EST la base de prod : la télémétrie (parse_stats,
+  // service_call_stats) ne doit jamais partir d'un test. Une ligne
+  // « billetterie.example.com » datée d'avril 2026 en prod prouve que ça
+  // s'est déjà produit.
+  it("intercepte toute la télémétrie qui écrit en base", () => {
+    expect(vi.isMockFunction(trackParseAttempt)).toBe(true);
+    expect(vi.isMockFunction(trackServiceCall)).toBe(true);
+  });
+});
 
 type ParseResponse = {
   title: string | null;
