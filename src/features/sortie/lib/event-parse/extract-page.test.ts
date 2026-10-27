@@ -17,6 +17,13 @@ describe("extractPage", () => {
     expect(page.startsAt).toBe("2026-06-18");
   });
 
+  it("reste rapide sur une page piégée (500 Ko de balises jamais fermées)", () => {
+    const started = Date.now();
+    extractPage("<a".repeat(250_000));
+    extractPage("<style>".repeat(70_000));
+    expect(Date.now() - started).toBeLessThan(1000);
+  });
+
   it("liste toutes les représentations et le texte visible", () => {
     const multi = `<html><head>
 <script type="application/ld+json">

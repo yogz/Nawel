@@ -227,10 +227,32 @@ function extractJsonLd(html: string): JsonLdHit | null {
   return hit;
 }
 
+/**
+ * Retire les blocs script/style/noscript en une seule passe. Une regex
+ * paresseuse `<script>[\s\S]*?</script>` repart du début à chaque balise
+ * ouvrante non fermée : 500 Ko de « <style> » piégés prenaient des
+ * dizaines de secondes (page tierce, route publique).
+ */
+function stripBlocks(html: string): string {
+  const lower = html.toLowerCase();
+  const opener = /<(script|style|noscript)\b/g;
+  let out = "";
+  let pos = 0;
+  for (let m = opener.exec(lower); m; m = opener.exec(lower)) {
+    out += html.slice(pos, m.index) + " ";
+    const close = lower.indexOf(`</${m[1]}`, opener.lastIndex);
+    if (close === -1) {
+      return out; // Bloc jamais fermé : le reste de la page n'est pas du texte visible.
+    }
+    pos = close;
+    opener.lastIndex = close + 2;
+  }
+  return out + html.slice(pos);
+}
+
 function visibleText(html: string): string {
-  return decodeHtmlEntities(
-    html.replace(/<(script|style|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")
-  )
+  // `[^<>]*` (et non `[^>]+`) : une suite de « < » sans « > » reste linéaire.
+  return decodeHtmlEntities(stripBlocks(html).replace(/<[^<>]*>/g, " "))
     .replace(/[ \t\r\n]+/g, " ")
     .trim()
     .slice(0, MAX_TEXT);
