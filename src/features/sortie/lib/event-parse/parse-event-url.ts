@@ -212,6 +212,19 @@ function sameName(a: string | undefined, b: string): boolean {
   return Boolean(a) && norm(a!) === norm(b);
 }
 
+function sameVenue(a: string, b: string): boolean {
+  const norm = (s: string) =>
+    s
+      .replace(/œ/gi, "oe")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "");
+  const x = norm(a);
+  const y = norm(b);
+  return x.length > 0 && y.length > 0 && (x.includes(y) || y.includes(x));
+}
+
 function plausibleSlugVenue(venue: string | undefined): string | undefined {
   return venue && venue.length <= 40 && !/\d/.test(venue) ? venue : undefined;
 }
@@ -348,15 +361,21 @@ export async function parseEventUrl(
   // soirée) : l'heure de la première n'est pas celle que l'utilisateur
   // choisira, on ne la reprend pas (même règle que pour le JSON-LD).
   let tmTimeAmbiguous = false;
+  let fromTitleSearch = false;
   if (!discoveryKeyword && !pageImage && searchTitle) {
     const events = await searchTicketmasterEvents(searchTitle, 3, "parse-enrich");
-    const matches = events.filter((e) =>
-      isTicketmasterMatch(e, { title: searchTitle, date: pageWhen.date })
+    // Quand on connaît la salle, le résultat doit être dans la même salle :
+    // un homonyme ailleurs (autre production, autre ville) n'apporte rien.
+    const matches = events.filter(
+      (e) =>
+        isTicketmasterMatch(e, { title: searchTitle, date: pageWhen.date }) &&
+        (!pageVenue || !e.venue || sameVenue(pageVenue, e.venue))
     );
     const match = matches[0];
     tmTimeAmbiguous =
       new Set(matches.map((e) => toParisDateTime(e.startsAt).time).filter(Boolean)).size > 1;
     if (match) {
+      fromTitleSearch = true;
       tm = {
         title: match.title,
         venue: match.venue ?? undefined,
@@ -378,7 +397,10 @@ export async function parseEventUrl(
   const image = pageImage || tmImage;
   // Date/heure de la page d'abord, sinon celles de Ticketmaster ; l'heure
   // Ticketmaster complète une date de page sans heure si c'est le même jour.
-  const tmParsed = toParisDateTime(tm.startsAt);
+  // Sans date de page, la date d'un résultat trouvé par le titre peut être
+  // n'importe quelle date de la tournée : on ne la reprend pas.
+  const tmParsed: ParisDateTime =
+    fromTitleSearch && !pageWhen.date ? { date: null, time: null } : toParisDateTime(tm.startsAt);
   const tmWhen: ParisDateTime = tmTimeAmbiguous ? { date: tmParsed.date, time: null } : tmParsed;
   const when: ParisDateTime = !pageWhen.date
     ? tmWhen

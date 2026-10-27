@@ -311,9 +311,10 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
       const body = (await res.json()) as ParseResponse;
       expect(body.image).toBe("https://img/robyn.jpg");
-      // La page n'a pas donné de date : Ticketmaster remplit date + heure (Paris).
-      expect(body.date).toBe("2026-11-20");
-      expect(body.time).toBe("20:00");
+      // La page n'a pas donné de date : celle de Ticketmaster pourrait être
+      // une autre date de la tournée, on ne la reprend pas.
+      expect(body.date).toBeNull();
+      expect(body.time).toBeNull();
       // La salle connue du site reste prioritaire sur celle de Ticketmaster.
       expect(body.venue).toBe("Adidas Arena");
       const tmCall = fetchFn.mock.calls.find(([u]) => String(u).includes("app.ticketmaster.com"));
@@ -360,22 +361,58 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
       const body = (await res.json()) as ParseResponse;
       expect(body.image).toBeNull();
-      // Le reste du résultat (date) reste utilisable : seul l'image est générique.
-      expect(body.date).toBe("2026-11-20");
+      // Le reste du résultat (salle) reste utilisable : seule l'image est générique.
+      expect(body.venue).toBe("Adidas Arena");
     });
 
-    it("ne reprend pas l'heure Ticketmaster quand les représentations ont des horaires différents", async () => {
+    it("complète l'heure d'une date de page avec Ticketmaster le même jour", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" />
+            <script type="application/ld+json">{"@type":"Event","name":"Robyn","startDate":"2026-11-20"}</script>
+          </head></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2026-11-20");
+      expect(body.time).toBe("20:00");
+    });
+
+    it("ne prend rien d'un résultat Ticketmaster dans une autre salle", async () => {
       process.env.TICKETMASTER_API_KEY = "test-key";
       mockFetchByHost({
         "www.adidasarena.com": () =>
           htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
         "app.ticketmaster.com": () =>
           tmEvents([
+            {
+              ...robynEvent,
+              _embedded: { venues: [{ name: "Halle Tony Garnier", city: { name: "Lyon" } }] },
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(body.venue).toBe("Adidas Arena");
+    });
+
+    it("ne reprend pas l'heure Ticketmaster quand les représentations ont des horaires différents", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" />
+            <script type="application/ld+json">{"@type":"Event","name":"Robyn","startDate":"2026-11-20"}</script>
+          </head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
             robynEvent,
             {
               ...robynEvent,
               id: "evt-robyn-2",
-              dates: { start: { dateTime: "2026-11-21T15:00:00Z", dateTBA: false } },
+              dates: { start: { dateTime: "2026-11-20T13:00:00Z", dateTBA: false } },
             },
           ]),
       });
