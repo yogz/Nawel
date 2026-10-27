@@ -342,6 +342,28 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       expect(body.date).toBe("2026-11-20");
     });
 
+    it("ne reprend pas l'heure Ticketmaster quand les représentations ont des horaires différents", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
+            robynEvent,
+            {
+              ...robynEvent,
+              id: "evt-robyn-2",
+              dates: { start: { dateTime: "2026-11-21T15:00:00Z", dateTBA: false } },
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://img/robyn.jpg");
+      expect(body.date).toBe("2026-11-20");
+      expect(body.time).toBeNull();
+    });
+
     it("ne cherche pas quand le « titre » de la page est le nom de la salle", async () => {
       process.env.TICKETMASTER_API_KEY = "test-key";
       const fetchFn = mockFetchByHost({

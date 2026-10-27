@@ -166,6 +166,21 @@ sites peuvent répondre différemment aux serveurs.
 
 ## 10. Points ouverts
 
+**Résultat mesuré (2026-10-27, benchmark réel, `scripts/sortie/parse-benchmark.after.md`)** :
+
+| Mesure                                                         | Avant | Après                                                                                                            |
+| -------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------- |
+| Images à récupérer trouvées (14 manuelles + 3 génériques auto) | 3/17  | 6/17 (5/14 sur le jeu manuel d'origine)                                                                          |
+| Images auto perdues                                            | 5/21  | 4/21                                                                                                             |
+| Salle juste                                                    | 12/38 | 26/38, aucune salle fausse restante                                                                              |
+| Heure juste                                                    | 4/38  | 6/38                                                                                                             |
+| Heure fausse (02:00, 01:00, décalage)                          | 6     | 0 — les 3 restantes signalées sont des heures publiées par la salle, différentes de l'horaire choisi par l'owner |
+
+**Objectif image (≥ 9/14) non atteint.** Ticketmaster ne fournit pour plusieurs spectacles
+de théâtre (Sarah Lele, Tristan Lopin, Infiniment Robin) que des images de catégorie,
+désormais rejetées ; plusieurs pages ont disparu (404) depuis la création. Décision owner
+attendue sur une phase 2 Gemini.
+
 - Phase 2 Gemini : à décider par l'owner seulement si la mesure réelle n'atteint pas l'objectif
   image.
 

@@ -344,11 +344,18 @@ export async function parseEventUrl(
     candidateTitle && ![og.siteName, pageVenue].some((n) => sameName(n, candidateTitle))
       ? candidateTitle
       : undefined;
+  // Plusieurs représentations trouvées à des heures différentes (matinée /
+  // soirée) : l'heure de la première n'est pas celle que l'utilisateur
+  // choisira, on ne la reprend pas (même règle que pour le JSON-LD).
+  let tmTimeAmbiguous = false;
   if (!discoveryKeyword && !pageImage && searchTitle) {
     const events = await searchTicketmasterEvents(searchTitle, 3, "parse-enrich");
-    const match = events.find((e) =>
+    const matches = events.filter((e) =>
       isTicketmasterMatch(e, { title: searchTitle, date: pageWhen.date })
     );
+    const match = matches[0];
+    tmTimeAmbiguous =
+      new Set(matches.map((e) => toParisDateTime(e.startsAt).time).filter(Boolean)).size > 1;
     if (match) {
       tm = {
         title: match.title,
@@ -371,7 +378,8 @@ export async function parseEventUrl(
   const image = pageImage || tmImage;
   // Date/heure de la page d'abord, sinon celles de Ticketmaster ; l'heure
   // Ticketmaster complète une date de page sans heure si c'est le même jour.
-  const tmWhen = toParisDateTime(tm.startsAt);
+  const tmParsed = toParisDateTime(tm.startsAt);
+  const tmWhen: ParisDateTime = tmTimeAmbiguous ? { date: tmParsed.date, time: null } : tmParsed;
   const when: ParisDateTime = !pageWhen.date
     ? tmWhen
     : {
