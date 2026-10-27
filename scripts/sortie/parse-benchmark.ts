@@ -53,6 +53,8 @@ function normalize(event: Record<string, unknown>): Normalized {
 
 function fold(s: string): string {
   return s
+    .replace(/œ/gi, "oe")
+    .replace(/æ/gi, "ae")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()

@@ -1,6 +1,7 @@
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 import { safeFetchExternal } from "@/features/sortie/lib/safe-fetch";
 import { pickPageImage } from "./event-image";
+import { pickVenue } from "./venue";
 import { extractPage, VENUE_KEYWORDS, type PageData } from "./extract-page";
 
 const MAX_BYTES = 500 * 1024; // 500 KB — covers OG headers on any real page
@@ -194,6 +195,15 @@ function ticketmasterSearchKeyword(url: URL): string | null {
   return cleaned.length >= 3 ? cleaned : null;
 }
 
+/**
+ * Une salle déduite du slug n'est crédible que courte et sans chiffres :
+ * « l-oeuvre-paris-29-mai-2026-css5-theatredeloeuvre-pg101-ri11689401 »
+ * (Digitick) n'est pas un nom de salle, mieux vaut rien.
+ */
+function plausibleSlugVenue(venue: string | undefined): string | undefined {
+  return venue && venue.length <= 40 && !/\d/.test(venue) ? venue : undefined;
+}
+
 export type ParserHint = { kind: "waf" | "spa"; siteName: string; suggestion: string };
 
 export type ParsedEventLegacy = {
@@ -256,7 +266,14 @@ export async function parseEventUrl(
   const normHost = normalizeHostname(target.hostname);
   // Affiche de la page, logos et images de site écartés (cf. event-image.ts).
   const pageImage = pickPageImage(og, target);
-  const ogIsComplete = Boolean(og.title && og.venue && pageImage && og.startsAt);
+  // Vrai nom de la salle (salle interne / adresse écartées, cf. venue.ts).
+  const pageVenue = pickVenue({
+    jsonLdVenue: og.jsonLdVenue,
+    siteName: og.siteName,
+    legacyVenue: og.venue,
+    hostname: target.hostname,
+  });
+  const ogIsComplete = Boolean(og.title && pageVenue && pageImage && og.startsAt);
   let discoveryKeyword: string | null = null;
   if (normHost === "ticketmaster.fr" && !ogIsComplete) {
     discoveryKeyword = ticketmasterSearchKeyword(target);
@@ -281,7 +298,7 @@ export async function parseEventUrl(
   // crudest signal — the page or API will be more accurate when they
   // ship something usable.
   const title = og.title || tm.title || slug.title;
-  const venue = og.venue || tm.venue || slug.venue;
+  const venue = pageVenue || tm.venue || plausibleSlugVenue(slug.venue);
   const image = pageImage || tm.image;
   const startsAt = og.startsAt || tm.startsAt;
 

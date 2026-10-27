@@ -88,6 +88,19 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       );
     });
 
+    it("n'affiche pas un morceau d'URL bourré d'identifiants comme salle (Digitick)", async () => {
+      mockFetchByHost({
+        "web.digitick.com": () => htmlResponse(emptyOgHtml()),
+      });
+      const res = await POST(
+        makeRequest(
+          "https://web.digitick.com/le-dernier-cedre-du-liban-theatre-theatre-de-l-oeuvre-paris-29-mai-2026-css5-theatredeloeuvre-pg101-ri11689401.html"
+        )
+      );
+      const body = (await res.json()) as ParseResponse;
+      expect(body.venue).toBeNull();
+    });
+
     it("derives a Fnac Spectacles title + venue from the slug pattern", async () => {
       mockFetchByHost({
         "www.fnacspectacles.com": () => htmlResponse(emptyOgHtml()),
