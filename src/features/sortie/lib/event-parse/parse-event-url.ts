@@ -1,6 +1,7 @@
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 import { safeFetchExternal } from "@/features/sortie/lib/safe-fetch";
 import { pickPageImage } from "./event-image";
+import { findShowTime, toParisDateTime, type ParisDateTime } from "./date-time";
 import { pickVenue } from "./venue";
 import { extractPage, VENUE_KEYWORDS, type PageData } from "./extract-page";
 
@@ -204,13 +205,39 @@ function plausibleSlugVenue(venue: string | undefined): string | undefined {
   return venue && venue.length <= 40 && !/\d/.test(venue) ? venue : undefined;
 }
 
+/**
+ * Date + heure (Paris) données par la page. L'heure n'est retenue que si
+ * elle est sûre : présente dans le startDate, cohérente entre toutes les
+ * représentations JSON-LD, sinon trouvée sans ambiguïté près de la date
+ * dans le texte (cf. date-time.ts).
+ */
+function pageDateTime(page: PageData): ParisDateTime {
+  const { date, time } = toParisDateTime(page.startsAt);
+  if (!date) {
+    return { date: null, time: null };
+  }
+  const performanceTimes = new Set(
+    (page.jsonLdStartDates ?? []).map((s) => toParisDateTime(s).time).filter(Boolean)
+  );
+  if (performanceTimes.size > 1) {
+    return { date, time: null };
+  }
+  if (time) {
+    return { date, time };
+  }
+  return { date, time: findShowTime(`${page.description ?? ""} ${page.text ?? ""}`, date) };
+}
+
 export type ParserHint = { kind: "waf" | "spa"; siteName: string; suggestion: string };
 
-export type ParsedEventLegacy = {
+export type ParsedEvent = {
   title: string | null;
   venue: string | null;
   image: string | null;
-  startsAt: string | null;
+  /** "YYYY-MM-DD", Europe/Paris. */
+  date: string | null;
+  /** "HH:MM", Europe/Paris — null si la page ne la donne pas sans ambiguïté. */
+  time: string | null;
   ticketUrl: string;
   parserHint: ParserHint | null;
 };
@@ -233,7 +260,7 @@ export type ParseTelemetry = {
  */
 export async function parseEventUrl(
   target: URL
-): Promise<{ event: ParsedEventLegacy; telemetry: ParseTelemetry }> {
+): Promise<{ event: ParsedEvent; telemetry: ParseTelemetry }> {
   // Always run the slug fallback up-front. It's cheap, deterministic,
   // and gives us a safety net if the upcoming fetch returns an anti-bot
   // challenge (Datadome on ticketmaster.fr / fnacspectacles.com), a
@@ -300,7 +327,9 @@ export async function parseEventUrl(
   const title = og.title || tm.title || slug.title;
   const venue = pageVenue || tm.venue || plausibleSlugVenue(slug.venue);
   const image = pageImage || tm.image;
-  const startsAt = og.startsAt || tm.startsAt;
+  // Date/heure de la page d'abord, sinon celles de Ticketmaster.
+  const pageWhen = pageDateTime(og);
+  const when: ParisDateTime = pageWhen.date ? pageWhen : toParisDateTime(tm.startsAt);
 
   // Hint user-facing unifié pour les deux cas où le scraping ne peut
   // rien remonter de la page (par design, pas par bug) :
@@ -311,7 +340,7 @@ export async function parseEventUrl(
   // (le hint vaut même si Discovery a enrichi), affiché pour les SPA
   // uniquement quand on n'a vraiment rien remonté (le slug fallback
   // marche souvent).
-  const nothingUseful = !title && !venue && !image && !startsAt;
+  const nothingUseful = !title && !venue && !image && !when.date;
   const spa = SPA_HOSTS[normHost] ?? null;
   let parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null = null;
   if (wafBlocked) {
@@ -334,7 +363,8 @@ export async function parseEventUrl(
       title: title ?? null,
       venue: venue ?? null,
       image: image ?? null,
-      startsAt: startsAt ?? null,
+      date: when.date,
+      time: when.time,
       ticketUrl: target.toString(),
       parserHint,
     },

@@ -6,7 +6,8 @@ type ParseResponse = {
   title: string | null;
   venue: string | null;
   image: string | null;
-  startsAt: string | null;
+  date: string | null;
+  time: string | null;
   ticketUrl: string;
   parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
 };
@@ -82,7 +83,8 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       expect(body.title).toBe("George Dalaras");
       // No Discovery API key in env → no enrichment, no image/date.
       expect(body.image).toBeNull();
-      expect(body.startsAt).toBeNull();
+      expect(body.date).toBeNull();
+      expect(body.time).toBeNull();
       expect(body.ticketUrl).toBe(
         "https://www.ticketmaster.fr/fr/manifestation/george-dalaras-billet/idmanif/638386"
       );
@@ -191,6 +193,47 @@ describe("POST /api/sortie/parse-ticket-url", () => {
     });
   });
 
+  describe("date et heure en heure de Paris", () => {
+    it("ne renvoie pas d'heure quand la page ne donne qu'une date (fin du « 02:00 »)", async () => {
+      mockFetchByHost({
+        "www.chatelet.com": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            {"@type":"Event","name":"Souad Massi","startDate":"2026-06-18"}
+          </script></head><body><p>Programme de la saison</p></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.chatelet.com/programmation/souad-massi/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2026-06-18");
+      expect(body.time).toBeNull();
+    });
+
+    it("trouve l'heure écrite près de la date dans la page", async () => {
+      mockFetchByHost({
+        "www.chatelet.com": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            {"@type":"Event","name":"Souad Massi","startDate":"2026-06-18"}
+          </script></head><body><p>Jeudi 18 juin 2026 à 20h</p></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.chatelet.com/programmation/souad-massi/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.time).toBe("20:00");
+    });
+
+    it("ne choisit pas d'heure quand les représentations ont des horaires différents", async () => {
+      mockFetchByHost({
+        "www.operadeparis.fr": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            [{"@type":"Event","name":"Werther","startDate":"2027-02-14T14:30"},
+             {"@type":"Event","name":"Werther","startDate":"2027-02-16T19:30"}]
+          </script></head><body></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.operadeparis.fr/saison-26-27/opera/werther"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2027-02-14");
+      expect(body.time).toBeNull();
+    });
+  });
+
   describe("CTS Eventim WAF blocking", () => {
     it("skippe le fetch et retourne parserHint pour fnacspectacles.com", async () => {
       // Le mock fetch ne devrait pas être appelé : on track via spy.
@@ -218,7 +261,7 @@ describe("POST /api/sortie/parse-ticket-url", () => {
   });
 
   describe("Ticketmaster Discovery API enrichment", () => {
-    it("fills image/startsAt/venue from the Discovery API for ticketmaster.fr URLs", async () => {
+    it("fills image/date/venue from the Discovery API for ticketmaster.fr URLs", async () => {
       process.env.TICKETMASTER_API_KEY = "test-key";
       mockFetchByHost({
         "www.ticketmaster.fr": () => htmlResponse("Forbidden", 403),
@@ -253,7 +296,9 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       expect(body.title).toBe("George Dalaras");
       expect(body.venue).toBe("Le Grand Rex, Paris");
       expect(body.image).toBe("https://img/poster.jpg");
-      expect(body.startsAt).toBe("2026-06-26T19:30:00Z");
+      // 19:30Z en juin = 21:30 à Paris.
+      expect(body.date).toBe("2026-06-26");
+      expect(body.time).toBe("21:30");
     });
 
     it("falls back to slug title when the Discovery API returns nothing", async () => {

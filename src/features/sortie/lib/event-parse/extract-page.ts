@@ -20,7 +20,13 @@ export type PageData = {
   jsonLdImage?: string;
   /** `og:image:width` déclaré par la page, quand présent. */
   ogImageWidth?: number;
+  /** `startDate` de TOUS les Events JSON-LD (représentations multiples). */
+  jsonLdStartDates?: string[];
+  /** Texte visible de la page (sans balises ni scripts), tronqué. */
+  text?: string;
 };
+
+const MAX_TEXT = 20_000;
 
 // HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
 // hex) are handled generically; named entities only cover the Western
@@ -119,6 +125,8 @@ type JsonLdHit = {
   venue?: string;
   startsAt?: string;
   image?: string;
+  /** startDate de chaque Event du document, dans l'ordre. */
+  startDates: string[];
 };
 
 // schema.org `image` : URL, tableau d'URLs, ou ImageObject `{ url }`.
@@ -153,6 +161,10 @@ function extractJsonLd(html: string): JsonLdHit | null {
     return null;
   }
 
+  // Premier Event trouvé = l'événement ; on continue à parcourir pour
+  // relever les startDate des autres représentations.
+  let hit: JsonLdHit | null = null;
+  const startDates: string[] = [];
   for (const tag of scripts) {
     const bodyMatch = tag.match(/>\s*([\s\S]*?)\s*<\/script>/);
     if (!bodyMatch) {
@@ -206,10 +218,22 @@ function extractJsonLd(html: string): JsonLdHit | null {
       }
       const startDate = obj.startDate;
       const startsAt = typeof startDate === "string" ? startDate : undefined;
-      return { title: name, venue, startsAt, image: jsonLdImageUrl(obj.image) };
+      if (startsAt) {
+        startDates.push(startsAt);
+      }
+      hit ??= { title: name, venue, startsAt, image: jsonLdImageUrl(obj.image), startDates };
     }
   }
-  return null;
+  return hit;
+}
+
+function visibleText(html: string): string {
+  return decodeHtmlEntities(
+    html.replace(/<(script|style|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")
+  )
+    .replace(/[ \t\r\n]+/g, " ")
+    .trim()
+    .slice(0, MAX_TEXT);
 }
 
 const MONTHS_FR: Record<string, number> = {
@@ -455,5 +479,7 @@ export function extractPage(html: string): PageData {
     jsonLdVenue: jsonLd?.venue ? decodeHtmlEntities(jsonLd.venue) : undefined,
     jsonLdImage: jsonLd?.image ? decodeHtmlEntities(jsonLd.image) : undefined,
     ogImageWidth: ogImageWidth > 0 ? ogImageWidth : undefined,
+    jsonLdStartDates: jsonLd?.startDates ?? [],
+    text: visibleText(html),
   };
 }

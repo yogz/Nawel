@@ -32,6 +32,7 @@ import { GeminiSuggestionCard } from "./gemini-suggestion-card";
 import { MissingImagePicker } from "./missing-image-picker";
 import type { UnifiedEventResult } from "@/app/api/sortie/search-events/route";
 import type { EventDetails, FindEventResult } from "@/lib/gemini-search";
+import { localDateFromIsoDay, toParisDateTime } from "@/features/sortie/lib/event-parse/date-time";
 import {
   clearWizardDraft,
   persistWizardDraft,
@@ -583,18 +584,11 @@ export function CreateWizard({ isLoggedIn, defaultCreatorName, vibeKey, defaultT
                 onSuggestionPicked={telemetry.onSuggestionPicked}
                 onGeminiStarted={telemetry.onGeminiStarted}
                 onParsed={(data) => {
-                  // JSON-LD often ships a full startsAt — split it back
-                  // into the wizard's date + time fields so step 3 lands
-                  // pre-selected on the right day and hour.
-                  let parsedDate: Date | null = null;
-                  let parsedTime: string | null = null;
-                  if (data.startsAt) {
-                    const d = new Date(data.startsAt);
-                    if (!Number.isNaN(d.getTime())) {
-                      parsedDate = d;
-                      parsedTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-                    }
-                  }
+                  // Date + heure déjà en heure de Paris (cf. event-parse/
+                  // date-time.ts). L'heure n'est pré-remplie que si elle
+                  // est connue : une date seule ne devient plus « 02:00 ».
+                  const parsedDate = data.date ? localDateFromIsoDay(data.date) : null;
+                  const parsedTime = data.time;
                   setDraft((d) => ({
                     ...d,
                     title: data.title ?? d.title,
@@ -836,7 +830,10 @@ function PasteStep({
     title: string | null;
     venue: string | null;
     image: string | null;
-    startsAt: string | null;
+    /** "YYYY-MM-DD", Europe/Paris. */
+    date: string | null;
+    /** "HH:MM", Europe/Paris — null quand inconnue. */
+    time: string | null;
     ticketUrl: string;
     parserHint?: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
   }) => void;
@@ -1133,7 +1130,7 @@ function PasteStep({
       // de propager l'URL au draft : la sortie créée affichera le hero
       // par défaut au lieu d'une icône cassée.
       image: skipImage ? null : geminiSuggestion.heroImageUrl || null,
-      startsAt: geminiSuggestion.startsAt || null,
+      ...toParisDateTime(geminiSuggestion.startsAt),
       ticketUrl: geminiSuggestion.ticketUrl || "",
     });
   }
@@ -1197,7 +1194,7 @@ function PasteStep({
             title: result.title,
             venue: venueLine || null,
             image: result.image,
-            startsAt: result.startsAt,
+            ...toParisDateTime(result.startsAt),
             ticketUrl: result.ticketUrl,
           });
         }}
