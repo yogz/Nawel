@@ -1,12 +1,37 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { trackParseAttempt } from "@/features/sortie/lib/parse-stats";
+import type * as ParseStats from "@/features/sortie/lib/parse-stats";
+import { trackServiceCall } from "@/features/sortie/lib/service-call-stats";
+import type * as ServiceCallStats from "@/features/sortie/lib/service-call-stats";
 import { POST } from "./route";
+
+vi.mock("@/features/sortie/lib/parse-stats", async (importOriginal) => ({
+  ...(await importOriginal<typeof ParseStats>()),
+  trackParseAttempt: vi.fn(),
+}));
+vi.mock("@/features/sortie/lib/service-call-stats", async (importOriginal) => ({
+  ...(await importOriginal<typeof ServiceCallStats>()),
+  trackServiceCall: vi.fn(),
+}));
+
+describe("isolation de la base", () => {
+  // La base locale EST la base de prod : la télémétrie (parse_stats,
+  // service_call_stats) ne doit jamais partir d'un test. Une ligne
+  // « billetterie.example.com » datée d'avril 2026 en prod prouve que ça
+  // s'est déjà produit.
+  it("intercepte toute la télémétrie qui écrit en base", () => {
+    expect(vi.isMockFunction(trackParseAttempt)).toBe(true);
+    expect(vi.isMockFunction(trackServiceCall)).toBe(true);
+  });
+});
 
 type ParseResponse = {
   title: string | null;
   venue: string | null;
   image: string | null;
-  startsAt: string | null;
+  date: string | null;
+  time: string | null;
   ticketUrl: string;
   parserHint: { kind: "waf" | "spa"; siteName: string; suggestion: string } | null;
 };
@@ -82,10 +107,24 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       expect(body.title).toBe("George Dalaras");
       // No Discovery API key in env → no enrichment, no image/date.
       expect(body.image).toBeNull();
-      expect(body.startsAt).toBeNull();
+      expect(body.date).toBeNull();
+      expect(body.time).toBeNull();
       expect(body.ticketUrl).toBe(
         "https://www.ticketmaster.fr/fr/manifestation/george-dalaras-billet/idmanif/638386"
       );
+    });
+
+    it("n'affiche pas un morceau d'URL bourré d'identifiants comme salle (Digitick)", async () => {
+      mockFetchByHost({
+        "web.digitick.com": () => htmlResponse(emptyOgHtml()),
+      });
+      const res = await POST(
+        makeRequest(
+          "https://web.digitick.com/le-dernier-cedre-du-liban-theatre-theatre-de-l-oeuvre-paris-29-mai-2026-css5-theatredeloeuvre-pg101-ri11689401.html"
+        )
+      );
+      const body = (await res.json()) as ParseResponse;
+      expect(body.venue).toBeNull();
     });
 
     it("derives a Fnac Spectacles title + venue from the slug pattern", async () => {
@@ -178,6 +217,47 @@ describe("POST /api/sortie/parse-ticket-url", () => {
     });
   });
 
+  describe("date et heure en heure de Paris", () => {
+    it("ne renvoie pas d'heure quand la page ne donne qu'une date (fin du « 02:00 »)", async () => {
+      mockFetchByHost({
+        "www.chatelet.com": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            {"@type":"Event","name":"Souad Massi","startDate":"2026-06-18"}
+          </script></head><body><p>Programme de la saison</p></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.chatelet.com/programmation/souad-massi/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2026-06-18");
+      expect(body.time).toBeNull();
+    });
+
+    it("trouve l'heure écrite près de la date dans la page", async () => {
+      mockFetchByHost({
+        "www.chatelet.com": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            {"@type":"Event","name":"Souad Massi","startDate":"2026-06-18"}
+          </script></head><body><p>Jeudi 18 juin 2026 à 20h</p></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.chatelet.com/programmation/souad-massi/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.time).toBe("20:00");
+    });
+
+    it("ne choisit pas d'heure quand les représentations ont des horaires différents", async () => {
+      mockFetchByHost({
+        "www.operadeparis.fr": () =>
+          htmlResponse(`<html><head><script type="application/ld+json">
+            [{"@type":"Event","name":"Werther","startDate":"2027-02-14T14:30"},
+             {"@type":"Event","name":"Werther","startDate":"2027-02-16T19:30"}]
+          </script></head><body></body></html>`),
+      });
+      const res = await POST(makeRequest("https://www.operadeparis.fr/saison-26-27/opera/werther"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2027-02-14");
+      expect(body.time).toBeNull();
+    });
+  });
+
   describe("CTS Eventim WAF blocking", () => {
     it("skippe le fetch et retourne parserHint pour fnacspectacles.com", async () => {
       // Le mock fetch ne devrait pas être appelé : on track via spy.
@@ -204,8 +284,181 @@ describe("POST /api/sortie/parse-ticket-url", () => {
     });
   });
 
+  describe("recherche Ticketmaster par le titre (sites de salles sans affiche)", () => {
+    function tmEvents(events: unknown[]): Response {
+      return new Response(JSON.stringify({ _embedded: { events } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const robynEvent = {
+      id: "evt-robyn",
+      name: "ROBYN - Sexistential Tour",
+      url: "https://www.ticketmaster.fr/fr/manifestation/robyn/idmanif/1",
+      images: [{ ratio: "16_9", width: 1024, url: "https://img/robyn.jpg" }],
+      dates: { start: { dateTime: "2026-11-20T19:00:00Z", dateTBA: false } },
+      _embedded: { venues: [{ name: "Adidas Arena", city: { name: "Paris" } }] },
+    };
+
+    it("cherche l'affiche par le titre quand la salle n'expose qu'un logo", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Robyn" />
+            <meta property="og:image" content="https://www.adidasarena.com/seo.jpg" />
+          </head><body></body></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://img/robyn.jpg");
+      // La page n'a pas donné de date : celle de Ticketmaster pourrait être
+      // une autre date de la tournée, on ne la reprend pas.
+      expect(body.date).toBeNull();
+      expect(body.time).toBeNull();
+      // La salle connue du site reste prioritaire sur celle de Ticketmaster.
+      expect(body.venue).toBe("Adidas Arena");
+      const tmCall = fetchFn.mock.calls.find(([u]) => String(u).includes("app.ticketmaster.com"));
+      expect(String(tmCall?.[0])).toContain("keyword=Robyn");
+    });
+
+    it("n'appelle pas Ticketmaster quand la page a déjà une vraie affiche", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Robyn" />
+            <meta property="og:image" content="https://www.adidasarena.com/media/robyn-affiche.jpg" />
+          </head><body></body></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://www.adidasarena.com/media/robyn-affiche.jpg");
+      expect(fetchFn.mock.calls.some(([u]) => String(u).includes("app.ticketmaster.com"))).toBe(
+        false
+      );
+    });
+
+    it("ignore l'image de catégorie par défaut de Ticketmaster", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
+            {
+              ...robynEvent,
+              images: [
+                {
+                  ratio: "16_9",
+                  width: 1024,
+                  url: "https://s1.ticketm.net/dam/c/50a/fa9caa1f_106061_RETINA_LANDSCAPE_16_9.jpg",
+                },
+              ],
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      // Le reste du résultat (salle) reste utilisable : seule l'image est générique.
+      expect(body.venue).toBe("Adidas Arena");
+    });
+
+    it("complète l'heure d'une date de page avec Ticketmaster le même jour", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" />
+            <script type="application/ld+json">{"@type":"Event","name":"Robyn","startDate":"2026-11-20"}</script>
+          </head></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.date).toBe("2026-11-20");
+      expect(body.time).toBe("20:00");
+    });
+
+    it("ne prend rien d'un résultat Ticketmaster dans une autre salle", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
+            {
+              ...robynEvent,
+              _embedded: { venues: [{ name: "Halle Tony Garnier", city: { name: "Lyon" } }] },
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(body.venue).toBe("Adidas Arena");
+    });
+
+    it("ne reprend pas l'heure Ticketmaster quand les représentations ont des horaires différents", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" />
+            <script type="application/ld+json">{"@type":"Event","name":"Robyn","startDate":"2026-11-20"}</script>
+          </head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
+            robynEvent,
+            {
+              ...robynEvent,
+              id: "evt-robyn-2",
+              dates: { start: { dateTime: "2026-11-20T13:00:00Z", dateTBA: false } },
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://img/robyn.jpg");
+      expect(body.date).toBe("2026-11-20");
+      expect(body.time).toBeNull();
+    });
+
+    it("ne cherche pas quand le « titre » de la page est le nom de la salle", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.sallepleyel.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Salle Pleyel" />
+            <meta property="og:site_name" content="Salle Pleyel" />
+          </head></html>`),
+        "app.ticketmaster.com": () => tmEvents([{ ...robynEvent, name: "Salle Pleyel - Gala" }]),
+      });
+      const res = await POST(makeRequest("https://www.sallepleyel.com/evenement/loreen/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(fetchFn.mock.calls.some(([u]) => String(u).includes("app.ticketmaster.com"))).toBe(
+        false
+      );
+    });
+
+    it("rejette un résultat Ticketmaster d'un autre spectacle", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () => tmEvents([{ ...robynEvent, name: "Disney sur glace" }]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(body.date).toBeNull();
+    });
+  });
+
   describe("Ticketmaster Discovery API enrichment", () => {
-    it("fills image/startsAt/venue from the Discovery API for ticketmaster.fr URLs", async () => {
+    it("fills image/date/venue from the Discovery API for ticketmaster.fr URLs", async () => {
       process.env.TICKETMASTER_API_KEY = "test-key";
       mockFetchByHost({
         "www.ticketmaster.fr": () => htmlResponse("Forbidden", 403),
@@ -240,7 +493,9 @@ describe("POST /api/sortie/parse-ticket-url", () => {
       expect(body.title).toBe("George Dalaras");
       expect(body.venue).toBe("Le Grand Rex, Paris");
       expect(body.image).toBe("https://img/poster.jpg");
-      expect(body.startsAt).toBe("2026-06-26T19:30:00Z");
+      // 19:30Z en juin = 21:30 à Paris.
+      expect(body.date).toBe("2026-06-26");
+      expect(body.time).toBe("21:30");
     });
 
     it("falls back to slug title when the Discovery API returns nothing", async () => {

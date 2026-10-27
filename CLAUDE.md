@@ -48,6 +48,9 @@ npm run db:studio
 npm run db:seed
 npm run db:cleanup-sessions
 npm run db:audit-blob-orphans
+
+# Sortie — benchmark réel du parse de lien (vrais fetchs + Ticketmaster, AUCUNE écriture en base)
+npx tsx scripts/sortie/parse-benchmark.ts --out <rapport.md>   # cas figés dans parse-benchmark.cases.json
 ```
 
 ## Architecture
