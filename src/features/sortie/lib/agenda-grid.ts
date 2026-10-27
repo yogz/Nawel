@@ -13,6 +13,15 @@ import { parisDayKey } from "./date-fr";
 // marqués `outOfWindow` (ou l'inverse).
 export const AGENDA_WINDOW_DAYS = 365;
 
+/**
+ * Type d'affichage agenda d'une sortie. Un sondage tranché (pickTimeslot
+ * pose `fixedDatetime`) se lit comme une sortie datée : sans ça, la home
+ * gardait le badge « sondage » et colorait tous les créneaux non retenus.
+ */
+export function agendaMode(mode: "fixed" | "vote", fixedDatetime: Date | null): "fixed" | "vote" {
+  return mode === "vote" && fixedDatetime === null ? "vote" : "fixed";
+}
+
 const TZ = "Europe/Paris";
 
 const longMonthFormatter = new Intl.DateTimeFormat("fr-FR", {
