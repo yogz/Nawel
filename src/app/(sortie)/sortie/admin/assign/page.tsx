@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
 import { outingTimeslots, outings } from "@drizzle/sortie-schema";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { groupAssignOutings } from "@/features/sortie/lib/admin-assign-outings";
 import { AssignForm } from "./assign-form";
 import { ChangeCreatorForm } from "./change-creator-form";
 
@@ -117,7 +118,7 @@ export default async function AdminAssignPage() {
             créneaux à sa place : il comptera dans le vote comme s&rsquo;il avait voté.
           </p>
         </header>
-        <AssignForm outings={outingsList} users={usersList} />
+        <AssignForm outings={groupAssignOutings(outingsList)} users={usersList} />
       </section>
 
       <section>

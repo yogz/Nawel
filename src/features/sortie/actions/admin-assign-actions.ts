@@ -203,6 +203,69 @@ export async function adminAssignUserToOutingAction(
   };
 }
 
+export type AssignSnapshot = {
+  response: z.infer<typeof responseSchema>;
+  extraAdults: number;
+  extraChildren: number;
+  /** Créneaux votés dispo — sert au pré-cochage sur un sondage ouvert. */
+  availableTimeslotIds: string[];
+} | null;
+
+const snapshotSchema = assignSchema.pick({ shortId: true, email: true });
+
+/**
+ * Lecture admin : l'inscription actuelle d'un compte sur une sortie, pour
+ * que le formulaire l'affiche et la pré-remplisse au lieu de l'écraser à
+ * l'aveugle (incident 2026-10-27 : +1 d'un invité effacé en silence).
+ * null = pas encore inscrit (ou sortie / compte introuvable).
+ */
+export async function getAdminAssignSnapshotAction(
+  shortId: string,
+  email: string
+): Promise<AssignSnapshot> {
+  await assertSortieAdmin();
+  const parsed = snapshotSchema.safeParse({ shortId, email });
+  if (!parsed.success) {
+    return null;
+  }
+
+  const row = await db
+    .select({
+      participantId: participants.id,
+      response: participants.response,
+      extraAdults: participants.extraAdults,
+      extraChildren: participants.extraChildren,
+    })
+    .from(participants)
+    .innerJoin(outings, eq(outings.id, participants.outingId))
+    .innerJoin(user, eq(user.id, participants.userId))
+    .where(
+      and(
+        eq(outings.shortId, parsed.data.shortId),
+        sql`lower(${user.email}) = ${parsed.data.email}`
+      )
+    )
+    .limit(1)
+    .then((rows) => rows[0]);
+  if (!row) {
+    return null;
+  }
+
+  const votes = await db
+    .select({ timeslotId: timeslotVotes.timeslotId })
+    .from(timeslotVotes)
+    .where(
+      and(eq(timeslotVotes.participantId, row.participantId), eq(timeslotVotes.available, true))
+    );
+
+  return {
+    response: row.response,
+    extraAdults: row.extraAdults,
+    extraChildren: row.extraChildren,
+    availableTimeslotIds: votes.map((v) => v.timeslotId),
+  };
+}
+
 const changeCreatorSchema = z.object({
   shortId: shortIdSchema,
   email: z.string().trim().toLowerCase().email().max(255),
