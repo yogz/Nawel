@@ -16,12 +16,16 @@ describe("isUnusableVenueName", () => {
     }
   );
 
-  it.each(["L'Olympia", "Salle Pleyel", "Théâtre du Châtelet", "Plenitude Arena"])(
-    "garde « %s »",
-    (name) => {
-      expect(isUnusableVenueName(name)).toBe(false);
-    }
-  );
+  it.each([
+    "L'Olympia",
+    "Salle Pleyel",
+    "Théâtre du Châtelet",
+    "Plenitude Arena",
+    "Studio Hébertot",
+    "Studio des Champs-Élysées",
+  ])("garde « %s »", (name) => {
+    expect(isUnusableVenueName(name)).toBe(false);
+  });
 });
 
 describe("pickVenue", () => {

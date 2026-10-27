@@ -46,7 +46,9 @@ const TICKETING_HOSTS = [
   "billetweb.fr",
 ];
 
-const INTERNAL_HALL = /^(?:(?:grande|petite)\s+salle\b|salle\s+\d+\b|studio\b)/i;
+// « Studio » seul ou numéroté est une salle interne ; « Studio Hébertot »
+// ou « Studio des Champs-Élysées » sont de vrais théâtres parisiens.
+const INTERNAL_HALL = /^(?:(?:grande|petite)\s+salle\b|salle\s+\d+\b|studio(?:\s+\d+)?\s*$)/i;
 const STREET =
   /^\d+\s*(?:bis|ter)?,?\s+(?:rue|avenue|av\.?|bd|boulevard|place|quai|all[ée]e|chemin|impasse|cours|route)\b/i;
 
