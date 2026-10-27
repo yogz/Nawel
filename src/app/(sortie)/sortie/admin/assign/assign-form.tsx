@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
   adminAssignUserToOutingAction,
   type AssignActionState,
 } from "@/features/sortie/actions/admin-assign-actions";
+import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 
 const RESPONSE_OPTIONS: { value: "yes" | "no" | "handle_own" | "interested"; label: string }[] = [
   { value: "yes", label: "yes — il y va" },
@@ -25,6 +26,8 @@ type OutingOption = {
   title: string;
   fixedDatetime: Date | null;
   createdAt: Date;
+  /** Créneaux d'un sondage non tranché ; null pour une sortie datée. */
+  pollSlots: { id: string; startsAt: Date }[] | null;
 };
 
 type UserOption = {
@@ -42,6 +45,10 @@ export function AssignForm({ outings, users }: Props) {
     adminAssignUserToOutingAction,
     {}
   );
+  // Contrôlé pour survivre au reset auto du formulaire après l'action :
+  // l'admin enchaîne souvent plusieurs invités sur la même sortie.
+  const [shortId, setShortId] = useState("");
+  const pollSlots = outings.find((o) => o.shortId === shortId)?.pollSlots ?? null;
 
   return (
     <form action={formAction} className="space-y-5">
@@ -52,7 +59,8 @@ export function AssignForm({ outings, users }: Props) {
         <select
           name="shortId"
           required
-          defaultValue=""
+          value={shortId}
+          onChange={(e) => setShortId(e.target.value)}
           className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
         >
           <option value="" disabled>
@@ -84,23 +92,54 @@ export function AssignForm({ outings, users }: Props) {
         </select>
       </Field>
 
-      <Field label="response">
-        <select
-          name="response"
-          required
-          defaultValue="yes"
-          className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
-        >
-          {RESPONSE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </Field>
+      {pollSlots ? (
+        <fieldset>
+          <legend className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.18em] text-ink-400">
+            créneaux où il est dispo
+          </legend>
+          {pollSlots.length === 0 ? (
+            <p className="text-[13px] text-ink-400">Aucun créneau proposé sur ce sondage.</p>
+          ) : (
+            <div className="space-y-2">
+              {pollSlots.map((slot) => (
+                <label
+                  key={slot.id}
+                  className="flex h-12 items-center gap-3 rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700"
+                >
+                  <input
+                    type="checkbox"
+                    name="timeslotId"
+                    value={slot.id}
+                    className="h-4 w-4 accent-acid-600"
+                  />
+                  {formatOutingDateShort(slot.startsAt)}
+                </label>
+              ))}
+            </div>
+          )}
+          <span className="mt-1 block text-[12px] text-ink-400">
+            Coché = dispo, non coché = pas dispo. Remplace ses votes précédents.
+          </span>
+        </fieldset>
+      ) : (
+        <Field label="response">
+          <select
+            name="response"
+            required
+            defaultValue="yes"
+            className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
+          >
+            {RESPONSE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
-        <Field label="adultes en +" hint="Si yes uniquement.">
+        <Field label="adultes en +" hint={pollSlots ? undefined : "Si yes uniquement."}>
           <input
             type="number"
             name="extraAdults"
@@ -110,7 +149,7 @@ export function AssignForm({ outings, users }: Props) {
             className="h-12 w-full rounded-xl border border-surface-300 bg-surface-50 px-4 text-[14px] text-ink-700 focus:border-acid-600 focus:outline-none"
           />
         </Field>
-        <Field label="enfants en +" hint="Si yes uniquement.">
+        <Field label="enfants en +" hint={pollSlots ? undefined : "Si yes uniquement."}>
           <input
             type="number"
             name="extraChildren"
