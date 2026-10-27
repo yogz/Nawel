@@ -19,7 +19,7 @@ import {
 import { db } from "@/lib/db";
 import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
-import { AGENDA_WINDOW_DAYS } from "@/features/sortie/lib/agenda-grid";
+import { AGENDA_WINDOW_DAYS, agendaMode } from "@/features/sortie/lib/agenda-grid";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
 
 // Fenêtre de rétention historique pour le flux iCal personnel : on garde
@@ -215,8 +215,8 @@ export type AgendaItem = {
  * chevrons + swipe pour retrouver l'historique sans section dédiée.
  *
  * On exclut `cancelled` (les annulées disparaissent de l'agenda).
- * `closed` (sondage tranché → daté avec succès) n'apparaît que si
- * `fixedDatetime` est posé, donc traité comme datée via la branche 1.
+ * Un sondage tranché (`fixedDatetime` posé) est traité comme datée via
+ * la branche 1 : `mode` renvoyé = "fixed", sans ses créneaux candidats.
  */
 export async function listMyAgendaActivity(userId: string, now = new Date()) {
   const windowStart = new Date(now.getTime() - AGENDA_WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -259,14 +259,15 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
         ne(outings.status, "cancelled"),
         or(eq(outings.creatorUserId, userId), isNotNull(myParticipant.response)),
         or(
+          // Datée, ou sondage déjà tranché (`fixedDatetime` posé).
           and(
-            eq(outings.mode, "fixed"),
             isNotNull(outings.fixedDatetime),
             gte(outings.fixedDatetime, windowStart),
             lte(outings.fixedDatetime, windowEnd)
           ),
           and(
             eq(outings.mode, "vote"),
+            isNull(outings.fixedDatetime),
             exists(
               db
                 .select({ id: outingTimeslots.id })
@@ -288,7 +289,9 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
   // 2e query bornée aux outings vote retournées : récupère leurs timeslots
   // qui tombent dans la fenêtre. On ne joint pas dans la 1re query pour
   // éviter de multiplier les rows par N candidats.
-  const voteOutingIds = rows.filter((r) => r.mode === "vote").map((r) => r.id);
+  const voteOutingIds = rows
+    .filter((r) => agendaMode(r.mode, r.fixedDatetime) === "vote")
+    .map((r) => r.id);
   const candidatesByOuting = new Map<string, Date[]>();
   if (voteOutingIds.length > 0) {
     const slots = await db
@@ -319,7 +322,7 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
     title: r.title,
     location: r.location,
     heroImageUrl: r.heroImageUrl,
-    mode: r.mode,
+    mode: agendaMode(r.mode, r.fixedDatetime),
     status: r.status,
     isCreator: r.creatorUserId === userId,
     myResponse: r.myResponse,

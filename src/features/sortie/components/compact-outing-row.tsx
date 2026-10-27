@@ -9,6 +9,7 @@ import {
   TypeBadge,
 } from "@/features/sortie/components/agenda-timeline";
 import { OutingPosterFallback } from "@/features/sortie/components/outing-poster-fallback";
+import { agendaMode } from "@/features/sortie/lib/agenda-grid";
 import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
 import { formatVenue } from "@/features/sortie/lib/format-venue";
 import { OUTING_IMAGE_FILTER } from "@/features/sortie/lib/image-filter";
@@ -54,7 +55,7 @@ type Props = {
  */
 export function CompactOutingRow({ outing, resolvedRsvp, viewerUserId, isPast = false }: Props) {
   const href = `/${canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId })}`;
-  const isVote = outing.mode === "vote";
+  const isVote = agendaMode(outing.mode, outing.startsAt) === "vote";
   const dateLabel = outing.startsAt ? formatOutingDateShort(outing.startsAt) : null;
   const venue = formatVenue(outing.location);
 
