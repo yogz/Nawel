@@ -31,6 +31,21 @@ function validDate(y: string, m: string, d: string): boolean {
 
 export function toParisDateTime(raw: string | null | undefined): ParisDateTime {
   const s = (raw ?? "").trim();
+  // « 2026-06-18T00:00:00.000Z » : une date seule sérialisée en JS
+  // (toISOString), pas un spectacle à 2 h du matin. On garde le jour écrit.
+  const utcMidnight = /^(\d{4})-(\d{2})-(\d{2})T00:00(?::00(?:\.0+)?)?Z$/.exec(s);
+  if (utcMidnight) {
+    return validDate(utcMidnight[1]!, utcMidnight[2]!, utcMidnight[3]!)
+      ? { date: `${utcMidnight[1]}-${utcMidnight[2]}-${utcMidnight[3]}`, time: null }
+      : EMPTY;
+  }
+  const parsed = parseDateTime(s);
+  // Minuit = « heure inconnue » dans la quasi-totalité des données
+  // publiées ; mieux vaut une heure vide qu'une séance à 00:00.
+  return parsed.time === "00:00" ? { date: parsed.date, time: null } : parsed;
+}
+
+function parseDateTime(s: string): ParisDateTime {
   // Compact « 20270508T19:30:0 » (Paris La Défense Arena), lu comme heure de Paris.
   let m = /^(\d{4})(\d{2})(\d{2})T(\d{1,2}):?(\d{2})/.exec(s);
   if (m) {
@@ -96,6 +111,11 @@ const MONTHS: string[][] = [
 
 // Fenêtre après une mention de la date où l'heure du spectacle est cherchée.
 const WINDOW = 80;
+const LOOKBACK = 25;
+// Une heure précédée de ces mots n'est pas celle du spectacle.
+const NOT_SHOW_TIME = /duree|ouverture|portes|doors|duration/;
+// « 1h30 » sans mot-clé est une durée, pas une séance à 1 h du matin.
+const EARLIEST_SHOW_HOUR = 8;
 
 function fold(s: string): string {
   return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -124,7 +144,15 @@ export function findShowTime(text: string, date: string): string | null {
   for (const hit of t.matchAll(mention)) {
     const start = hit.index! + hit[0].length;
     const window = t.slice(start, start + WINDOW);
+    let lastEnd = 0;
     for (const tm of window.matchAll(/\b([01]?\d|2[0-3])\s?(?:h\s?([0-5]\d)?|:([0-5]\d))/g)) {
+      // Texte juste avant cette heure (depuis l'heure précédente) : une
+      // durée ou l'ouverture des portes n'est pas l'heure du spectacle.
+      const before = window.slice(Math.max(lastEnd, tm.index! - LOOKBACK), tm.index!);
+      lastEnd = tm.index! + tm[0].length;
+      if (NOT_SHOW_TIME.test(before) || Number(tm[1]) < EARLIEST_SHOW_HOUR) {
+        continue;
+      }
       times.add(`${pad(tm[1]!)}:${tm[2] ?? tm[3] ?? "00"}`);
     }
   }

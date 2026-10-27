@@ -46,6 +46,24 @@ describe("toParisDateTime", () => {
     expect(toParisDateTime("20270508T19:30:0")).toEqual({ date: "2027-05-08", time: "19:30" });
   });
 
+  it("traite minuit UTC comme une date sans heure (sérialisation JS d'une date seule)", () => {
+    expect(toParisDateTime("2026-06-18T00:00:00.000Z")).toEqual({
+      date: "2026-06-18",
+      time: null,
+    });
+  });
+
+  it("traite une heure écrite 00:00 comme inconnue", () => {
+    expect(toParisDateTime("2026-06-18T00:00:00+02:00")).toEqual({
+      date: "2026-06-18",
+      time: null,
+    });
+  });
+
+  it("traite une heure UTC qui tombe à minuit à Paris comme inconnue", () => {
+    expect(toParisDateTime("2026-06-17T22:00:00Z")).toEqual({ date: "2026-06-18", time: null });
+  });
+
   it("renvoie vide pour une valeur illisible", () => {
     expect(toParisDateTime("bientôt")).toEqual({ date: null, time: null });
   });
@@ -63,9 +81,13 @@ describe("findShowTime", () => {
   });
 
   it("refuse de choisir entre deux heures proches de la date", () => {
+    expect(findShowTime("11 novembre · 19h00 – 20h30", "2026-11-11")).toBeNull();
+  });
+
+  it("retient le concert quand l'autre heure est l'ouverture des portes", () => {
     expect(
       findShowTime("11 novembre · Ouverture des portes 19h00 – concert 20h30", "2026-11-11")
-    ).toBeNull();
+    ).toBe("20:30");
   });
 
   it("ignore une heure trop éloignée de la date", () => {
@@ -83,6 +105,22 @@ describe("findShowTime", () => {
 
   it("accepte la même heure répétée pour la date", () => {
     expect(findShowTime("11 nov. 2026 20h00 — 11 novembre : 20h00", "2026-11-11")).toBe("20:00");
+  });
+
+  it("ne prend pas une durée pour l'heure du spectacle", () => {
+    expect(
+      findShowTime("Jeudi 18 juin 2026 — Durée : 1h30 sans entracte", "2026-06-18")
+    ).toBeNull();
+  });
+
+  it("ne prend pas l'ouverture des portes pour l'heure du spectacle", () => {
+    expect(findShowTime("18 juin 2026 | Ouverture des portes 19h00", "2026-06-18")).toBeNull();
+  });
+
+  it("garde l'heure du concert à côté de l'ouverture des portes", () => {
+    expect(
+      findShowTime("18 juin 2026 · Ouverture des portes : 19h · Début : 20h30", "2026-06-18")
+    ).toBe("20:30");
   });
 
   it("renvoie vide quand la date n'apparaît pas", () => {
