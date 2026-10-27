@@ -120,7 +120,8 @@
     "expect": {
       "venue": "Zénith Paris - La Villette",
       "time": "20:00"
-    }
+    },
+    "knownGenericImage": "https://le-zenith.com/media/cache/og_image/build/images/temp-cover.png"
   },
   {
     "shortId": "UvRuVdBd",

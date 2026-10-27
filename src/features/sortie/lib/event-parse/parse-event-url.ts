@@ -1,5 +1,6 @@
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 import { safeFetchExternal } from "@/features/sortie/lib/safe-fetch";
+import { pickPageImage } from "./event-image";
 import { extractPage, VENUE_KEYWORDS, type PageData } from "./extract-page";
 
 const MAX_BYTES = 500 * 1024; // 500 KB — covers OG headers on any real page
@@ -253,7 +254,9 @@ export async function parseEventUrl(
   //   - Best-effort dans tous les cas : empty result OK.
   let tm: { title?: string; venue?: string; image?: string; startsAt?: string } = {};
   const normHost = normalizeHostname(target.hostname);
-  const ogIsComplete = Boolean(og.title && og.venue && og.image && og.startsAt);
+  // Affiche de la page, logos et images de site écartés (cf. event-image.ts).
+  const pageImage = pickPageImage(og, target);
+  const ogIsComplete = Boolean(og.title && og.venue && pageImage && og.startsAt);
   let discoveryKeyword: string | null = null;
   if (normHost === "ticketmaster.fr" && !ogIsComplete) {
     discoveryKeyword = ticketmasterSearchKeyword(target);
@@ -279,7 +282,7 @@ export async function parseEventUrl(
   // ship something usable.
   const title = og.title || tm.title || slug.title;
   const venue = og.venue || tm.venue || slug.venue;
-  const image = og.image || tm.image;
+  const image = pageImage || tm.image;
   const startsAt = og.startsAt || tm.startsAt;
 
   // Hint user-facing unifié pour les deux cas où le scraping ne peut
@@ -321,8 +324,8 @@ export async function parseEventUrl(
     telemetry: {
       fetched: fetchResult.fetched,
       wafBlocked,
-      pageGotSomething: Boolean(og.title || og.venue || og.image || og.startsAt),
-      pageImage: Boolean(og.image),
+      pageGotSomething: Boolean(og.title || og.venue || pageImage || og.startsAt),
+      pageImage: Boolean(pageImage),
     },
   };
 }

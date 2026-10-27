@@ -75,18 +75,28 @@ function venueOk(got: string | null, expected: string | null): boolean {
 }
 
 function imageStatus(c: Case, got: string | null): string {
-  if (got && got === c.knownGenericImage) return "générique";
+  if (got && got === c.knownGenericImage) {
+    return "générique";
+  }
   if (c.manualImage || c.knownGenericImage) {
-    if (!got) return c.knownGenericImage ? "aucune (générique rejetée)" : "aucune";
+    if (!got) {
+      return c.knownGenericImage ? "aucune (générique rejetée)" : "aucune";
+    }
     return "trouvée (à vérifier)";
   }
-  if (!got) return "PERDUE";
+  if (!got) {
+    return "PERDUE";
+  }
   return got === c.publishedImage ? "identique" : "changée (à vérifier)";
 }
 
 function timeStatus(expected: string | null, got: string | null): string {
-  if (!got) return "vide";
-  if (!expected) return `? ${got}`;
+  if (!got) {
+    return "vide";
+  }
+  if (!expected) {
+    return `? ${got}`;
+  }
   return got === expected ? "OK" : `FAUSSE ${got}`;
 }
 
@@ -116,12 +126,24 @@ async function main() {
     const img = imageStatus(c, got.image);
     const vOk = venueOk(got.venue, c.expect.venue);
     const t = timeStatus(c.expect.time, got.time);
-    if ((c.manualImage || c.knownGenericImage) && img.startsWith("trouvée")) manualFound++;
-    if (img === "PERDUE") autoLost++;
-    if (img.startsWith("changée")) autoChanged++;
-    if (vOk) venueGood++;
-    if (t.startsWith("FAUSSE")) timeWrong++;
-    if (t === "OK") timeGood++;
+    if ((c.manualImage || c.knownGenericImage) && img.startsWith("trouvée")) {
+      manualFound++;
+    }
+    if (img === "PERDUE") {
+      autoLost++;
+    }
+    if (img.startsWith("changée")) {
+      autoChanged++;
+    }
+    if (vOk) {
+      venueGood++;
+    }
+    if (t.startsWith("FAUSSE")) {
+      timeWrong++;
+    }
+    if (t === "OK") {
+      timeGood++;
+    }
     lines.push(
       `| ${c.title.slice(0, 32)} | ${img} | ${vOk ? "OK" : `KO (${got.venue ?? "∅"})`} | ${t} | ${got.image ?? "∅"} |`
     );

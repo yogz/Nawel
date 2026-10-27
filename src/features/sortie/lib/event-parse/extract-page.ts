@@ -16,6 +16,10 @@ export type PageData = {
   description?: string;
   /** `location.name` brut du JSON-LD Event, avant tout arbitrage. */
   jsonLdVenue?: string;
+  /** `image` du JSON-LD Event — propre à l'événement, contrairement à og:image. */
+  jsonLdImage?: string;
+  /** `og:image:width` déclaré par la page, quand présent. */
+  ogImageWidth?: number;
 };
 
 // HTML entities commonly seen in ticket-site OG tags. Numeric (decimal +
@@ -114,7 +118,21 @@ type JsonLdHit = {
   title?: string;
   venue?: string;
   startsAt?: string;
+  image?: string;
 };
+
+// schema.org `image` : URL, tableau d'URLs, ou ImageObject `{ url }`.
+function jsonLdImageUrl(raw: unknown): string | undefined {
+  const first = Array.isArray(raw) ? raw[0] : raw;
+  if (typeof first === "string") {
+    return first.trim() || undefined;
+  }
+  if (first && typeof first === "object") {
+    const url = (first as { url?: unknown }).url;
+    return typeof url === "string" ? url.trim() || undefined : undefined;
+  }
+  return undefined;
+}
 
 function isEventType(raw: unknown): boolean {
   const types = Array.isArray(raw) ? raw : [raw];
@@ -188,7 +206,7 @@ function extractJsonLd(html: string): JsonLdHit | null {
       }
       const startDate = obj.startDate;
       const startsAt = typeof startDate === "string" ? startDate : undefined;
-      return { title: name, venue, startsAt };
+      return { title: name, venue, startsAt, image: jsonLdImageUrl(obj.image) };
     }
   }
   return null;
@@ -381,6 +399,7 @@ export function extractPage(html: string): PageData {
   const description = get("og:description") ?? get("twitter:description");
   const image = get("og:image") ?? get("twitter:image");
   const siteName = get("og:site_name");
+  const ogImageWidth = Number(get("og:image:width"));
 
   // Structured data first — it's canonical when present. Name wins over
   // og:title only if the latter duplicates the venue as a suffix.
@@ -434,5 +453,7 @@ export function extractPage(html: string): PageData {
     siteName,
     description,
     jsonLdVenue: jsonLd?.venue ? decodeHtmlEntities(jsonLd.venue) : undefined,
+    jsonLdImage: jsonLd?.image ? decodeHtmlEntities(jsonLd.image) : undefined,
+    ogImageWidth: ogImageWidth > 0 ? ogImageWidth : undefined,
   };
 }
