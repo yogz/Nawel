@@ -76,6 +76,25 @@ describe("isGenericImageUrl", () => {
     ).toBe(true);
   });
 
+  it("rejette l'image de catégorie par défaut de Ticketmaster (/dam/c/)", () => {
+    // Même image (projecteurs de scène) pour Sarah Lele et Tristan Lopin.
+    expect(
+      isGenericImageUrl(
+        "https://s1.ticketm.net/dam/c/50a/fa9caa1f-73a1-411e-b507-ec56fa59650a_106061_RETINA_LANDSCAPE_16_9.jpg",
+        { hostname: "s1.ticketm.net" }
+      )
+    ).toBe(true);
+  });
+
+  it("garde l'affiche propre à un artiste sur Ticketmaster (/dam/a/)", () => {
+    expect(
+      isGenericImageUrl(
+        "https://s1.ticketm.net/dam/a/746/1541d4c3-9c17-400f-84f1-3017d9c9d746_RETINA_LANDSCAPE_16_9.jpg",
+        { hostname: "s1.ticketm.net" }
+      )
+    ).toBe(false);
+  });
+
   it("rejette une image déclarée trop étroite", () => {
     expect(isGenericImageUrl("https://x.fr/a.jpg", { hostname: "x.fr", declaredWidth: 200 })).toBe(
       true

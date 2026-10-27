@@ -1,7 +1,8 @@
 import { searchTicketmasterEvents } from "@/features/sortie/lib/ticketmaster-search";
 import { safeFetchExternal } from "@/features/sortie/lib/safe-fetch";
-import { pickPageImage } from "./event-image";
+import { isGenericImageUrl, pickPageImage } from "./event-image";
 import { findShowTime, toParisDateTime, type ParisDateTime } from "./date-time";
+import { isTicketmasterMatch } from "./ticketmaster-match";
 import { pickVenue } from "./venue";
 import { extractPage, VENUE_KEYWORDS, type PageData } from "./extract-page";
 
@@ -201,6 +202,16 @@ function ticketmasterSearchKeyword(url: URL): string | null {
  * « l-oeuvre-paris-29-mai-2026-css5-theatredeloeuvre-pg101-ri11689401 »
  * (Digitick) n'est pas un nom de salle, mieux vaut rien.
  */
+function sameName(a: string | undefined, b: string): boolean {
+  const norm = (s: string) =>
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "");
+  return Boolean(a) && norm(a!) === norm(b);
+}
+
 function plausibleSlugVenue(venue: string | undefined): string | undefined {
   return venue && venue.length <= 40 && !/\d/.test(venue) ? venue : undefined;
 }
@@ -320,16 +331,53 @@ export async function parseEventUrl(
     }
   }
 
+  // Sites de salles sans affiche exploitable (hors Ticketmaster / CTS,
+  // traités ci-dessus tels quels) : recherche du spectacle par son titre.
+  // Le résultat n'est retenu que s'il correspond (titre, et date quand la
+  // page en a donné une) — une image d'un autre spectacle est pire que
+  // rien. Il ne remplit que les champs vides (cf. fusion plus bas).
+  const pageWhen = pageDateTime(og);
+  // Un « titre » qui n'est que le nom du site / de la salle (page générique,
+  // 404) ramènerait n'importe quel spectacle de cette salle : pas de recherche.
+  const candidateTitle = og.title || slug.title;
+  const searchTitle =
+    candidateTitle && ![og.siteName, pageVenue].some((n) => sameName(n, candidateTitle))
+      ? candidateTitle
+      : undefined;
+  if (!discoveryKeyword && !pageImage && searchTitle) {
+    const events = await searchTicketmasterEvents(searchTitle, 3, "parse-enrich");
+    const match = events.find((e) =>
+      isTicketmasterMatch(e, { title: searchTitle, date: pageWhen.date })
+    );
+    if (match) {
+      tm = {
+        title: match.title,
+        venue: match.venue ?? undefined,
+        image: match.image ?? undefined,
+        startsAt: match.startsAt ?? undefined,
+      };
+    }
+  }
+
   // Merge priority: page-extracted (canonical when available) > TM API
   // enrichment > URL-slug. The slug is always last because it's the
   // crudest signal — the page or API will be more accurate when they
   // ship something usable.
   const title = og.title || tm.title || slug.title;
   const venue = pageVenue || tm.venue || plausibleSlugVenue(slug.venue);
-  const image = pageImage || tm.image;
-  // Date/heure de la page d'abord, sinon celles de Ticketmaster.
-  const pageWhen = pageDateTime(og);
-  const when: ParisDateTime = pageWhen.date ? pageWhen : toParisDateTime(tm.startsAt);
+  // Les images de catégorie Ticketmaster (/dam/c/) ne sont pas des affiches.
+  const tmImage =
+    tm.image && !isGenericImageUrl(tm.image, { hostname: "s1.ticketm.net" }) ? tm.image : undefined;
+  const image = pageImage || tmImage;
+  // Date/heure de la page d'abord, sinon celles de Ticketmaster ; l'heure
+  // Ticketmaster complète une date de page sans heure si c'est le même jour.
+  const tmWhen = toParisDateTime(tm.startsAt);
+  const when: ParisDateTime = !pageWhen.date
+    ? tmWhen
+    : {
+        date: pageWhen.date,
+        time: pageWhen.time ?? (tmWhen.date === pageWhen.date ? tmWhen.time : null),
+      };
 
   // Hint user-facing unifié pour les deux cas où le scraping ne peut
   // rien remonter de la page (par design, pas par bug) :

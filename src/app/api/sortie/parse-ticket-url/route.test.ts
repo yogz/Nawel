@@ -260,6 +260,120 @@ describe("POST /api/sortie/parse-ticket-url", () => {
     });
   });
 
+  describe("recherche Ticketmaster par le titre (sites de salles sans affiche)", () => {
+    function tmEvents(events: unknown[]): Response {
+      return new Response(JSON.stringify({ _embedded: { events } }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const robynEvent = {
+      id: "evt-robyn",
+      name: "ROBYN - Sexistential Tour",
+      url: "https://www.ticketmaster.fr/fr/manifestation/robyn/idmanif/1",
+      images: [{ ratio: "16_9", width: 1024, url: "https://img/robyn.jpg" }],
+      dates: { start: { dateTime: "2026-11-20T19:00:00Z", dateTBA: false } },
+      _embedded: { venues: [{ name: "Adidas Arena", city: { name: "Paris" } }] },
+    };
+
+    it("cherche l'affiche par le titre quand la salle n'expose qu'un logo", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Robyn" />
+            <meta property="og:image" content="https://www.adidasarena.com/seo.jpg" />
+          </head><body></body></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://img/robyn.jpg");
+      // La page n'a pas donné de date : Ticketmaster remplit date + heure (Paris).
+      expect(body.date).toBe("2026-11-20");
+      expect(body.time).toBe("20:00");
+      // La salle connue du site reste prioritaire sur celle de Ticketmaster.
+      expect(body.venue).toBe("Adidas Arena");
+      const tmCall = fetchFn.mock.calls.find(([u]) => String(u).includes("app.ticketmaster.com"));
+      expect(String(tmCall?.[0])).toContain("keyword=Robyn");
+    });
+
+    it("n'appelle pas Ticketmaster quand la page a déjà une vraie affiche", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Robyn" />
+            <meta property="og:image" content="https://www.adidasarena.com/media/robyn-affiche.jpg" />
+          </head><body></body></html>`),
+        "app.ticketmaster.com": () => tmEvents([robynEvent]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBe("https://www.adidasarena.com/media/robyn-affiche.jpg");
+      expect(fetchFn.mock.calls.some(([u]) => String(u).includes("app.ticketmaster.com"))).toBe(
+        false
+      );
+    });
+
+    it("ignore l'image de catégorie par défaut de Ticketmaster", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () =>
+          tmEvents([
+            {
+              ...robynEvent,
+              images: [
+                {
+                  ratio: "16_9",
+                  width: 1024,
+                  url: "https://s1.ticketm.net/dam/c/50a/fa9caa1f_106061_RETINA_LANDSCAPE_16_9.jpg",
+                },
+              ],
+            },
+          ]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      // Le reste du résultat (date) reste utilisable : seul l'image est générique.
+      expect(body.date).toBe("2026-11-20");
+    });
+
+    it("ne cherche pas quand le « titre » de la page est le nom de la salle", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      const fetchFn = mockFetchByHost({
+        "www.sallepleyel.com": () =>
+          htmlResponse(`<html><head>
+            <meta property="og:title" content="Salle Pleyel" />
+            <meta property="og:site_name" content="Salle Pleyel" />
+          </head></html>`),
+        "app.ticketmaster.com": () => tmEvents([{ ...robynEvent, name: "Salle Pleyel - Gala" }]),
+      });
+      const res = await POST(makeRequest("https://www.sallepleyel.com/evenement/loreen/"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(fetchFn.mock.calls.some(([u]) => String(u).includes("app.ticketmaster.com"))).toBe(
+        false
+      );
+    });
+
+    it("rejette un résultat Ticketmaster d'un autre spectacle", async () => {
+      process.env.TICKETMASTER_API_KEY = "test-key";
+      mockFetchByHost({
+        "www.adidasarena.com": () =>
+          htmlResponse(`<html><head><meta property="og:title" content="Robyn" /></head></html>`),
+        "app.ticketmaster.com": () => tmEvents([{ ...robynEvent, name: "Disney sur glace" }]),
+      });
+      const res = await POST(makeRequest("https://www.adidasarena.com/programmation/robyn--1226"));
+      const body = (await res.json()) as ParseResponse;
+      expect(body.image).toBeNull();
+      expect(body.date).toBeNull();
+    });
+  });
+
   describe("Ticketmaster Discovery API enrichment", () => {
     it("fills image/date/venue from the Discovery API for ticketmaster.fr URLs", async () => {
       process.env.TICKETMASTER_API_KEY = "test-key";

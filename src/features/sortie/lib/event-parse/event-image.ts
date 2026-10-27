@@ -78,9 +78,17 @@ export function isGenericImageUrl(
     return true;
   }
   let pathname: string;
+  let imageHost: string;
   try {
-    pathname = new URL(url).pathname;
+    const u = new URL(url);
+    pathname = u.pathname;
+    imageHost = u.hostname;
   } catch {
+    return true;
+  }
+  // Ticketmaster range les images par défaut d'une catégorie (projecteurs,
+  // salle vide…) sous /dam/c/ ; les affiches d'artiste sont sous /dam/a/.
+  if (imageHost.endsWith("ticketm.net") && pathname.startsWith("/dam/c/")) {
     return true;
   }
   const file = fold(decodeURIComponent(pathname.split("/").pop() ?? ""));

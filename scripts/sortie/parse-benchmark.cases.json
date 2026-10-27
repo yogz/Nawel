@@ -75,7 +75,8 @@
     "expect": {
       "venue": "MUSEE MAILLOL - PARIS, Paris",
       "time": "11:00"
-    }
+    },
+    "knownGenericImage": "https://s1.ticketm.net/dam/c/71a/8ec88564-616d-465d-979a-53eae342571a_106151_RETINA_LANDSCAPE_16_9.jpg"
   },
   {
     "shortId": "tPKbeHQ7",
