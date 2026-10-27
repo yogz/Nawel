@@ -1,9 +1,9 @@
-import { asc, desc, ne } from "drizzle-orm";
+import { asc, desc, inArray, ne } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
-import { outings } from "@drizzle/sortie-schema";
+import { outingTimeslots, outings } from "@drizzle/sortie-schema";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 import { AssignForm } from "./assign-form";
 import { ChangeCreatorForm } from "./change-creator-form";
@@ -20,17 +20,51 @@ export default async function AdminAssignPage() {
   // Sorties non-annulées les plus récentes en tête. Cap à 200 pour
   // garder un native <select> performant sur mobile — au-delà, on
   // basculera sur un combobox cherchable.
-  const outingsList = await db
+  const outingsRows = await db
     .select({
+      id: outings.id,
       shortId: outings.shortId,
       title: outings.title,
       fixedDatetime: outings.fixedDatetime,
       createdAt: outings.createdAt,
+      mode: outings.mode,
+      chosenTimeslotId: outings.chosenTimeslotId,
     })
     .from(outings)
     .where(ne(outings.status, "cancelled"))
     .orderBy(desc(outings.createdAt))
     .limit(OUTINGS_DROPDOWN_LIMIT);
+
+  // Créneaux des sondages non tranchés : le formulaire les propose en
+  // cases à cocher pour voter à la place de l'invité.
+  const openPollIds = outingsRows
+    .filter((o) => o.mode === "vote" && o.chosenTimeslotId === null)
+    .map((o) => o.id);
+  const slotRows =
+    openPollIds.length > 0
+      ? await db
+          .select({
+            id: outingTimeslots.id,
+            outingId: outingTimeslots.outingId,
+            startsAt: outingTimeslots.startsAt,
+          })
+          .from(outingTimeslots)
+          .where(inArray(outingTimeslots.outingId, openPollIds))
+          .orderBy(asc(outingTimeslots.startsAt))
+      : [];
+  const outingsList = outingsRows.map((o) => ({
+    shortId: o.shortId,
+    title: o.title,
+    fixedDatetime: o.fixedDatetime,
+    createdAt: o.createdAt,
+    // null = pas un sondage ouvert → le formulaire garde le menu « response ».
+    pollSlots:
+      o.mode === "vote" && o.chosenTimeslotId === null
+        ? slotRows
+            .filter((t) => t.outingId === o.id)
+            .map((t) => ({ id: t.id, startsAt: t.startsAt }))
+        : null,
+  }));
 
   // Users triés par nom alphabétique pour rendre la recherche
   // type-to-jump du native picker utile.
@@ -78,8 +112,9 @@ export default async function AdminAssignPage() {
           </h2>
           <p className="mt-2 text-[13px] leading-relaxed text-ink-500">
             Crée ou met à jour la row participant pour un compte existant. Le user ne pourra pas la
-            modifier depuis son device tant qu'il n'a pas RSVP lui-même (le cookie hash placeholder
-            sera réécrit à ce moment-là).
+            modifier depuis son device tant qu&rsquo;il n&rsquo;a pas RSVP lui-même (le cookie hash
+            placeholder sera réécrit à ce moment-là). Sur un sondage sans date choisie, coche ses
+            créneaux à sa place : il comptera dans le vote comme s&rsquo;il avait voté.
           </p>
         </header>
         <AssignForm outings={outingsList} users={usersList} />

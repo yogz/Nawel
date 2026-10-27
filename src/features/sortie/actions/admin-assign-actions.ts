@@ -6,9 +6,18 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
-import { auditLog, outings, participants, rsvpResponse } from "@drizzle/sortie-schema";
+import {
+  auditLog,
+  outingTimeslots,
+  outings,
+  participants,
+  rsvpResponse,
+  timeslotVotes,
+} from "@drizzle/sortie-schema";
 import { assertSortieAdmin } from "@/features/sortie/lib/require-sortie-admin";
 import { ADMIN_AUDIT } from "@/features/sortie/lib/admin-audit-actions";
+import { resolveAdminPollVotes } from "@/features/sortie/lib/admin-poll-votes";
+import { plural } from "@/features/sortie/lib/plural";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { shortIdSchema } from "./schemas";
 
@@ -25,7 +34,9 @@ const responseSchema = z.enum(rsvpResponse.enumValues);
 const assignSchema = z.object({
   shortId: shortIdSchema,
   email: z.string().trim().toLowerCase().email().max(255),
-  response: responseSchema,
+  // Absent pour un sondage non tranché : la réponse découle des créneaux
+  // cochés (cf. `resolveAdminPollVotes`).
+  response: responseSchema.optional(),
   extraAdults: z.coerce.number().int().min(0).max(10).default(0),
   extraChildren: z.coerce.number().int().min(0).max(10).default(0),
 });
@@ -49,6 +60,11 @@ function generatePlaceholderCookieHash(): string {
  * forcer une présence sans passer par le flow RSVP normal (compte
  * silencieux pas encore activé, user incapable d'accéder au lien, etc.).
  *
+ * Sur un sondage non tranché, l'admin coche les créneaux à la place de
+ * l'invité (champ `timeslotId` répété) : ses votes remplacent les
+ * précédents, et `pickTimeslotAction` le basculera en yes/no comme un
+ * votant normal. Autorisé après la deadline — c'est l'outil de rattrapage.
+ *
  * Re-vérifie `assertSortieAdmin` (défense en profondeur — le layout
  * gate déjà la vue, mais une mutation doit toujours re-checker).
  */
@@ -64,7 +80,7 @@ export async function adminAssignUserToOutingAction(
     const firstFieldError = Object.values(flat.fieldErrors).flat()[0];
     return { error: firstFieldError ?? "Données invalides." };
   }
-  const { shortId, email, response, extraAdults, extraChildren } = parsed.data;
+  const { shortId, email, extraAdults, extraChildren } = parsed.data;
 
   const outing = await db.query.outings.findFirst({
     where: eq(outings.shortId, shortId),
@@ -74,6 +90,24 @@ export async function adminAssignUserToOutingAction(
   }
   if (outing.status === "cancelled") {
     return { error: "Cette sortie est annulée." };
+  }
+
+  const isOpenPoll = outing.mode === "vote" && outing.chosenTimeslotId === null;
+  let pollVotes: ReturnType<typeof resolveAdminPollVotes> | null = null;
+  if (isOpenPoll) {
+    const slots = await db
+      .select({ id: outingTimeslots.id })
+      .from(outingTimeslots)
+      .where(eq(outingTimeslots.outingId, outing.id));
+    const checked = formData.getAll("timeslotId").filter((v): v is string => typeof v === "string");
+    pollVotes = resolveAdminPollVotes(
+      checked,
+      slots.map((s) => s.id)
+    );
+  }
+  const response = pollVotes?.response ?? parsed.data.response;
+  if (!response) {
+    return { error: "Choisis une réponse." };
   }
 
   // Lookup case-insensitive : Better Auth stocke l'email saisi tel quel
@@ -96,30 +130,46 @@ export async function adminAssignUserToOutingAction(
     where: and(eq(participants.outingId, outing.id), eq(participants.userId, targetUser.id)),
   });
 
-  const yesExtras = response === "yes";
+  // Comme `castVoteAction`, un vote de sondage garde les extras quelle que
+  // soit la réponse : le pick les reporte sur le yes final.
+  const keepExtras = response === "yes" || pollVotes !== null;
 
   await db.transaction(async (tx) => {
+    let participantId: string;
     if (existing) {
+      participantId = existing.id;
       await tx
         .update(participants)
         .set({
           response,
-          extraAdults: yesExtras ? extraAdults : 0,
-          extraChildren: yesExtras ? extraChildren : 0,
+          extraAdults: keepExtras ? extraAdults : 0,
+          extraChildren: keepExtras ? extraChildren : 0,
           anonName: null,
           anonEmail: null,
           updatedAt: new Date(),
         })
         .where(eq(participants.id, existing.id));
     } else {
-      await tx.insert(participants).values({
-        outingId: outing.id,
-        userId: targetUser.id,
-        cookieTokenHash: generatePlaceholderCookieHash(),
-        response,
-        extraAdults: yesExtras ? extraAdults : 0,
-        extraChildren: yesExtras ? extraChildren : 0,
-      });
+      const [row] = await tx
+        .insert(participants)
+        .values({
+          outingId: outing.id,
+          userId: targetUser.id,
+          cookieTokenHash: generatePlaceholderCookieHash(),
+          response,
+          extraAdults: keepExtras ? extraAdults : 0,
+          extraChildren: keepExtras ? extraChildren : 0,
+        })
+        .returning({ id: participants.id });
+      participantId = row.id;
+    }
+    if (pollVotes) {
+      await tx.delete(timeslotVotes).where(eq(timeslotVotes.participantId, participantId));
+      if (pollVotes.votes.length > 0) {
+        await tx
+          .insert(timeslotVotes)
+          .values(pollVotes.votes.map((v) => ({ participantId, ...v })));
+      }
     }
     await tx.insert(auditLog).values({
       actorUserId: session.user.id,
@@ -129,9 +179,10 @@ export async function adminAssignUserToOutingAction(
         targetUserId: targetUser.id,
         targetEmail: targetUser.email,
         response,
-        extraAdults: yesExtras ? extraAdults : 0,
-        extraChildren: yesExtras ? extraChildren : 0,
+        extraAdults: keepExtras ? extraAdults : 0,
+        extraChildren: keepExtras ? extraChildren : 0,
         upsert: existing ? "update" : "insert",
+        ...(pollVotes ? { votes: pollVotes.votes } : {}),
       }),
     });
   });
@@ -143,8 +194,12 @@ export async function adminAssignUserToOutingAction(
   revalidatePath("/sortie/agenda");
 
   const verb = existing ? "mis à jour" : "ajouté";
+  const availableCount = pollVotes?.votes.filter((v) => v.available).length ?? 0;
+  const detail = pollVotes
+    ? `${availableCount} ${plural(availableCount, "créneau coché", "créneaux cochés")}`
+    : response;
   return {
-    ok: `${targetUser.name} ${verb} sur "${outing.title}" (${response}).`,
+    ok: `${targetUser.name} ${verb} sur "${outing.title}" (${detail}).`,
   };
 }
 
