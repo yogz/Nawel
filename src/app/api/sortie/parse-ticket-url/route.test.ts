@@ -1,15 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { trackParseAttempt } from "@/features/sortie/lib/parse-stats";
+import type * as ParseStats from "@/features/sortie/lib/parse-stats";
 import { trackServiceCall } from "@/features/sortie/lib/service-call-stats";
+import type * as ServiceCallStats from "@/features/sortie/lib/service-call-stats";
 import { POST } from "./route";
 
 vi.mock("@/features/sortie/lib/parse-stats", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/sortie/lib/parse-stats")>()),
+  ...(await importOriginal<typeof ParseStats>()),
   trackParseAttempt: vi.fn(),
 }));
 vi.mock("@/features/sortie/lib/service-call-stats", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("@/features/sortie/lib/service-call-stats")>()),
+  ...(await importOriginal<typeof ServiceCallStats>()),
   trackServiceCall: vi.fn(),
 }));
 
