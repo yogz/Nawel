@@ -95,6 +95,26 @@ describe("isGenericImageUrl", () => {
     ).toBe(false);
   });
 
+  it("ne plante pas sur un nom de fichier mal encodé (é en Latin-1)", () => {
+    expect(isGenericImageUrl("https://x.fr/img/affiche_th%E9atre.jpg", { hostname: "x.fr" })).toBe(
+      false
+    );
+  });
+
+  it("garde une affiche dont le nom finit par un numéro court ou une date", () => {
+    expect(isGenericImageUrl("https://x.fr/affiche-hamlet_01.jpg", { hostname: "x.fr" })).toBe(
+      false
+    );
+    expect(isGenericImageUrl("https://x.fr/visuel-2026-12.jpg", { hostname: "x.fr" })).toBe(false);
+  });
+
+  it("rejette toujours les vignettes « 150x150 » et « _110 »", () => {
+    expect(isGenericImageUrl("https://x.fr/affiche-150x150.jpg", { hostname: "x.fr" })).toBe(true);
+    expect(isGenericImageUrl("https://x.fr/LeDernierCedre_110.png", { hostname: "x.fr" })).toBe(
+      true
+    );
+  });
+
   it("rejette une image déclarée trop étroite", () => {
     expect(isGenericImageUrl("https://x.fr/a.jpg", { hostname: "x.fr", declaredWidth: 200 })).toBe(
       true

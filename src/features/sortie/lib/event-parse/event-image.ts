@@ -91,13 +91,25 @@ export function isGenericImageUrl(
   if (imageHost.endsWith("ticketm.net") && pathname.startsWith("/dam/c/")) {
     return true;
   }
-  const file = fold(decodeURIComponent(pathname.split("/").pop() ?? ""));
+  const rawFile = pathname.split("/").pop() ?? "";
+  let decoded = rawFile;
+  try {
+    decoded = decodeURIComponent(rawFile);
+  } catch {
+    // « %E9 » (é en Latin-1, vieux sites) : on garde le nom encodé.
+  }
+  const file = fold(decoded);
   if (/\.svg$/.test(file)) {
     return true;
   }
-  // Suffixe de taille « _110.png » / « -150x150.jpg » sous le seuil.
-  const size = /[_-](\d{2,3})(?:x\d{2,3})?\.(?:png|jpe?g|webp|gif)$/.exec(file);
-  if (size && Number(size[1]) < MIN_WIDTH) {
+  // Suffixe de taille « -150x150.jpg » ou vignette à 3 chiffres « _110.png »
+  // sous le seuil. Pas de forme courte à 2 chiffres : « _01 », « -2026-12 »
+  // sont des numéros de version ou des dates sur de vraies affiches.
+  const size =
+    /[_-](\d{2,4})x\d{2,4}\.(?:png|jpe?g|webp|gif)$|[_-](\d{3})\.(?:png|jpe?g|webp|gif)$/.exec(
+      file
+    );
+  if (size && Number(size[1] ?? size[2]) < MIN_WIDTH) {
     return true;
   }
   if (GENERIC_SUBSTRINGS.some((s) => file.includes(s))) {
