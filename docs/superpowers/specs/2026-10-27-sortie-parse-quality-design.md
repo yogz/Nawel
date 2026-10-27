@@ -173,7 +173,7 @@ sites peuvent répondre différemment aux serveurs.
 | Images à récupérer trouvées (14 manuelles + 3 génériques auto) | 3/17  | 6/17 (5/14 sur le jeu manuel d'origine)                                                                          |
 | Images auto perdues                                            | 5/21  | 4/21                                                                                                             |
 | Salle juste                                                    | 12/38 | 26/38, aucune salle fausse restante                                                                              |
-| Heure juste                                                    | 4/38  | 6/38                                                                                                             |
+| Heure juste                                                    | 4/38  | 7/38                                                                                                             |
 | Heure fausse (02:00, 01:00, décalage)                          | 6     | 0 — les 3 restantes signalées sont des heures publiées par la salle, différentes de l'horaire choisi par l'owner |
 
 **Objectif image (≥ 9/14) non atteint.** Ticketmaster ne fournit pour plusieurs spectacles
