@@ -15,6 +15,7 @@ import {
   purgeLegacyPrefill,
   trackPaymentMethodAdded,
 } from "@/features/sortie/lib/payment-method-prefill";
+import { valueFieldCopy } from "@/features/sortie/lib/payment-value";
 
 const TYPE_LABELS: Record<PaymentMethodPreview["type"], string> = {
   iban: "IBAN",
@@ -82,13 +83,7 @@ function AddMethodForm({ shortId }: { shortId: string }) {
   );
   const errors = state.errors ?? {};
 
-  // Placeholders volontairement tronqués (ellipsis "…") pour qu'on ne
-  // les confonde pas avec un IBAN/numéro déjà rempli — sinon un user
-  // pressé peut croire que le champ est pré-saisi et soumettre la valeur
-  // de démo. Les "…" en milieu/fin signalent visuellement le trou.
-  const valueHint = type === "iban" ? "FR76 1234 5678 …………" : "+33 6 34 56 …";
-
-  const valueLabel = type === "iban" ? "IBAN" : "Numéro de téléphone";
+  const field = valueFieldCopy(type);
 
   return (
     <form
@@ -118,14 +113,14 @@ function AddMethodForm({ shortId }: { shortId: string }) {
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="pm-value" className="text-[13px] font-medium text-ink-500">
-          {valueLabel}
+          {field.label}
         </Label>
         <Input
           id="pm-value"
           name="value"
-          type={type === "iban" ? "text" : "tel"}
+          type={field.inputType}
           required
-          placeholder={valueHint}
+          placeholder={field.hint}
           autoComplete="off"
           spellCheck={false}
         />

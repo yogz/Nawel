@@ -161,6 +161,16 @@ describe("checkAccountMethodAdd", () => {
     ).toEqual({ ok: false, message: "Tu as déjà un Lydia qui finit par 42." });
   });
 
+  it("doublon Revolut par pseudo : nomme le pseudo entier", () => {
+    expect(
+      checkAccountMethodAdd({
+        existing: [{ type: "revolut", valuePreview: "@jean.dupont", confirmedAt: CONFIRMED }],
+        type: "revolut",
+        valuePreview: "@jean.dupont",
+      })
+    ).toEqual({ ok: false, message: "Tu as déjà le Revolut @jean.dupont." });
+  });
+
   it("même aperçu mais autre type : pas un doublon", () => {
     expect(
       checkAccountMethodAdd({

@@ -16,6 +16,7 @@ import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { rateLimit, getClientIp } from "@/features/sortie/lib/rate-limit";
 import { formDataToObject } from "@/features/sortie/lib/form-data";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
+import { payUrlForMethod } from "@/features/sortie/lib/revolut";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
@@ -275,7 +276,9 @@ export async function remindDebtAction(
   return {};
 }
 
-type RevealResult = { ok: true; value: string } | { ok: false; message: string };
+type RevealResult =
+  | { ok: true; value: string; payUrl: string | null }
+  | { ok: false; message: string };
 
 /**
  * Decrypt and return a payment method's full value — only for an active
@@ -354,10 +357,18 @@ export async function revealIbanAction(input: unknown): Promise<RevealResult> {
       actorUserId: userId,
       action: AUDIT_ACTION.IBAN_REVEALED,
       ipHash,
-      payload: JSON.stringify({ methodId, debtId }),
+      payload: JSON.stringify({ methodId, debtId, type: method.type }),
     });
     return decrypted;
   });
 
-  return { ok: true, value };
+  // Lien revolut.me pré-rempli : montant lu sur la dette en base, jamais
+  // fourni par le client ; null si la valeur n'est pas un pseudo Revolut.
+  const payUrl = payUrlForMethod({
+    type: method.type,
+    value,
+    amountCents: debt.amountCents,
+    outingTitle: outing.title,
+  });
+  return { ok: true, value, payUrl };
 }

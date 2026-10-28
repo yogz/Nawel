@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
-import { Copy, Eye, Mail, MessageCircle } from "lucide-react";
+import { Copy, ExternalLink, Eye, Mail, MessageCircle, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import {
@@ -155,7 +155,14 @@ export function DebtRow({
           {methods.length > 0 ? (
             <ul className="flex flex-col gap-1.5">
               {methods.map((m) => (
-                <MethodRow key={m.id} shortId={shortId} debtId={debtId} method={m} />
+                <MethodRow
+                  key={m.id}
+                  shortId={shortId}
+                  debtId={debtId}
+                  method={m}
+                  amountCents={amountCents}
+                  canPay={status === "pending"}
+                />
               ))}
             </ul>
           ) : (
@@ -325,14 +332,27 @@ function MethodRow({
   shortId,
   debtId,
   method,
+  amountCents,
+  canPay,
 }: {
   shortId: string;
   debtId: string;
   method: PaymentMethod;
+  amountCents: number;
+  /** Faux une fois le paiement déclaré : pas de bouton qui inviterait à
+   * payer deux fois. La révélation reste possible côté serveur. */
+  canPay: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [revealed, setRevealed] = useState<string | null>(null);
+  const [payUrl, setPayUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Pseudo Revolut (aperçu « @… ») : on annonce le paiement direct. Le lien
+  // lui-même vient du serveur, qui revalide la valeur.
+  const offersPay = canPay && method.type === "revolut" && method.valuePreview.startsWith("@");
+  // Dérivé à chaque rendu : dès que la dette passe en « déclarée payée »,
+  // le lien disparaît sans attendre la fin des 30 s.
+  const shownPayUrl = canPay ? payUrl : null;
 
   async function reveal() {
     setError(null);
@@ -340,8 +360,12 @@ function MethodRow({
       const result = await revealIbanAction({ shortId, methodId: method.id, debtId });
       if (result.ok) {
         setRevealed(result.value);
+        setPayUrl(result.payUrl);
         // Auto-hide after 30s so the raw value doesn't linger in the DOM.
-        window.setTimeout(() => setRevealed(null), 30_000);
+        window.setTimeout(() => {
+          setRevealed(null);
+          setPayUrl(null);
+        }, 30_000);
       } else {
         setError(result.message);
       }
@@ -359,34 +383,62 @@ function MethodRow({
     }
   }
 
+  const pillClass =
+    "inline-flex items-center gap-1 rounded-full border border-surface-400 px-2.5 py-1 text-xs text-ink-500 hover:border-hot-500 hover:text-acid-700";
+
   return (
-    <li className="flex items-center justify-between gap-2 rounded-md bg-white px-3 py-2">
-      <div className="flex flex-col">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
-          {TYPE_LABEL[method.type]}
-          {method.displayLabel ? ` · ${method.displayLabel}` : ""}
-        </span>
-        <span className="font-mono text-sm text-ink-700">{revealed ?? method.valuePreview}</span>
-        {error && <span className="text-xs text-erreur-700">{error}</span>}
+    <li className="flex flex-col gap-1.5 rounded-md bg-white px-3 py-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
+            {TYPE_LABEL[method.type]}
+            {method.displayLabel ? ` · ${method.displayLabel}` : ""}
+          </span>
+          <span className="font-mono text-sm text-ink-700">{revealed ?? method.valuePreview}</span>
+          {error && <span className="text-xs text-erreur-700">{error}</span>}
+        </div>
+        {revealed ? (
+          <div className="flex items-center gap-1.5">
+            {shownPayUrl && (
+              // Vrai lien touché par l'utilisateur : c'est ce geste qui permet
+              // au téléphone d'ouvrir l'appli Revolut plutôt que la page web.
+              <a
+                href={shownPayUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${pillClass} border-hot-500 text-acid-700`}
+              >
+                <ExternalLink size={12} /> Ouvrir Revolut
+              </a>
+            )}
+            <button type="button" onClick={copy} className={pillClass} aria-label="Copier">
+              <Copy size={12} /> Copier
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={reveal}
+            disabled={isPending}
+            className={`${pillClass} disabled:opacity-40`}
+          >
+            {offersPay ? (
+              <>
+                <Wallet size={12} /> Payer {formatCents(amountCents)}
+              </>
+            ) : (
+              <>
+                <Eye size={12} /> Afficher
+              </>
+            )}
+          </button>
+        )}
       </div>
-      {revealed ? (
-        <button
-          type="button"
-          onClick={copy}
-          className="inline-flex items-center gap-1 rounded-full border border-surface-400 px-2.5 py-1 text-xs text-ink-500 hover:border-hot-500 hover:text-acid-700"
-          aria-label="Copier"
-        >
-          <Copy size={12} /> Copier
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={reveal}
-          disabled={isPending}
-          className="inline-flex items-center gap-1 rounded-full border border-surface-400 px-2.5 py-1 text-xs text-ink-500 hover:border-hot-500 hover:text-acid-700 disabled:opacity-40"
-        >
-          <Eye size={12} /> Afficher
-        </button>
+      {shownPayUrl && (
+        <p className="text-xs text-ink-400">
+          Montant et note déjà remplis dans Revolut. Une fois payé, reviens toucher « J&rsquo;ai
+          payé ».
+        </p>
       )}
     </li>
   );

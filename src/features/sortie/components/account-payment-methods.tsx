@@ -17,6 +17,7 @@ import {
   MAX_LABEL_LENGTH,
   PAYMENT_TYPE_LABEL,
 } from "@/features/sortie/lib/account-payment/rules";
+import { valueFieldCopy } from "@/features/sortie/lib/payment-value";
 
 /**
  * Section « Tes moyens de paiement » de « Mon argent ». Ne reçoit que des
@@ -214,9 +215,7 @@ function AddForm({
   errors: Record<string, string[]>;
 }) {
   const [type, setType] = useState<PaymentMethodPreview["type"]>("iban");
-  // Placeholders tronqués (« … ») : jamais confondus avec une vraie valeur.
-  const valueHint = type === "iban" ? "FR76 1234 5678 …………" : "+33 6 34 56 …";
-  const valueLabel = type === "iban" ? "IBAN" : "Numéro de téléphone";
+  const field = valueFieldCopy(type);
 
   return (
     <form
@@ -243,14 +242,14 @@ function AddForm({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="acct-pm-value" className="text-[13px] font-medium text-ink-500">
-          {valueLabel}
+          {field.label}
         </Label>
         <Input
           id="acct-pm-value"
           name="value"
-          type={type === "iban" ? "text" : "tel"}
+          type={field.inputType}
           required
-          placeholder={valueHint}
+          placeholder={field.hint}
           autoComplete="off"
           spellCheck={false}
           aria-invalid={errors.value ? true : undefined}

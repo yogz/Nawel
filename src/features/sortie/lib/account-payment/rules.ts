@@ -129,7 +129,10 @@ export function checkAccountMethodAdd(a: {
     const label = PAYMENT_TYPE_LABEL[a.type] ?? a.type;
     return {
       ok: false,
-      message: `Tu as déjà un ${label} qui finit par ${previewTail(a.valuePreview)}.`,
+      // Un pseudo Revolut (« @… ») est affiché en entier, pas « qui finit par ».
+      message: a.valuePreview.startsWith("@")
+        ? `Tu as déjà le ${label} ${a.valuePreview}.`
+        : `Tu as déjà un ${label} qui finit par ${previewTail(a.valuePreview)}.`,
     };
   }
   return { ok: true };
