@@ -1,6 +1,8 @@
 import { escapeHtml } from "@/lib/html-escape";
 import {
   formatOutingDateConversational,
+  formatOutingWeekdayDateConversational,
+  formatTimeOnly,
   parisCalendarDaysBetween,
 } from "@/features/sortie/lib/date-fr";
 import { formatCents } from "@/features/sortie/lib/format";
@@ -471,32 +473,50 @@ type ReminderArgs = {
   location: string | null;
 };
 
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+// Copy rule for reminders: no colon or em-dash in our own words (owner's
+// call) — the outing title may still carry its own dashes.
 function reminderEmail(
   args: ReminderArgs,
-  copy: { heading: string; subjectPrefix: string; preheaderLead: string; closing: string }
+  copy: {
+    /** Heading and subject lead, e.g. "C’est demain". */
+    lead: string;
+    closing: string;
+    /** Inbox preview line: the full date a week out, just the time up close. */
+    preview: "date" | "time";
+  }
 ): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
-  const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
+  const when = capitalize(formatOutingWeekdayDateConversational(args.fixedDatetime));
   const locationLine = args.location
     ? `<br /><span style="color:${INK_MUTED};">${escapeHtml(args.location)}</span>`
     : "";
+  // The subject already says when and what; the preview carries the rest.
+  const previewParts = [
+    copy.preview === "date" ? when : `Rendez-vous à ${formatTimeOnly(args.fixedDatetime)}`,
+    args.location,
+  ].filter((part): part is string => !!part);
   const body = `
-    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(copy.heading)}</h1>
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(copy.lead)}</h1>
     <p style="margin:0 0 18px;${BODY_P}">
       <strong>${title}</strong>${locationLine}
     </p>
     <p style="margin:0 0 28px;${BODY_P}">
-      ${when}. ${escapeHtml(copy.closing)}
+      ${escapeHtml(when)}. ${escapeHtml(copy.closing)}
     </p>
     <p style="margin:0;">
-      ${ctaButton(args.outingUrl, "Détails de la sortie")}
+      ${ctaButton(args.outingUrl, "Voir la sortie")}
     </p>
   `;
   return {
-    subject: `${copy.subjectPrefix} — ${args.outingTitle}`,
+    subject: `${copy.lead} · ${args.outingTitle}`,
     html: renderEmail({
-      preheader: `${args.outingTitle} ${copy.preheaderLead}. ${when}.`,
+      preheader: escapeHtml(previewParts.join(" · ")),
       body,
+      reason: "Tu reçois ce rappel parce que tu as répondu présent.",
     }),
   };
 }
@@ -517,25 +537,18 @@ export function j1ReminderEmail(
   const days = parisCalendarDaysBetween(now, args.fixedDatetime);
   if (days <= 0) {
     return reminderEmail(args, {
-      heading: "C’est aujourd’hui",
-      subjectPrefix: "Aujourd'hui",
-      preheaderLead: "c'est aujourd'hui",
-      closing: "À tout à l'heure.",
+      lead: "C’est aujourd’hui",
+      closing: "À tout à l’heure.",
+      preview: "time",
     });
   }
   if (days === 1) {
-    return reminderEmail(args, {
-      heading: "C’est demain",
-      subjectPrefix: "Demain",
-      preheaderLead: "c'est demain",
-      closing: "À demain.",
-    });
+    return reminderEmail(args, { lead: "C’est demain", closing: "À demain.", preview: "time" });
   }
   return reminderEmail(args, {
-    heading: "C’est après-demain",
-    subjectPrefix: "Après-demain",
-    preheaderLead: "c'est après-demain",
-    closing: "À après-demain.",
+    lead: "C’est après-demain",
+    closing: "À très vite.",
+    preview: "time",
   });
 }
 
@@ -546,10 +559,9 @@ export function j1ReminderEmail(
  */
 export function j7ReminderEmail(args: ReminderArgs): { subject: string; html: string } {
   return reminderEmail(args, {
-    heading: "Dans une semaine",
-    subjectPrefix: "Dans une semaine",
-    preheaderLead: "c'est dans une semaine",
+    lead: "Dans une semaine",
     closing: "Pense à bloquer la date.",
+    preview: "date",
   });
 }
 

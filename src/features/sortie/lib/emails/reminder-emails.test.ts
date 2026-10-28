@@ -12,37 +12,71 @@ const OUTING = {
 // Heure du cron : 07:00 UTC = 08:00 Paris en hiver.
 const tickOn = (day: string) => new Date(`${day}T07:00:00Z`);
 
+function preheader(html: string): string {
+  return html.match(/<span style="display:none[^>]*>([^<]*)<\/span>/)?.[1] ?? "";
+}
+
 describe("j1ReminderEmail", () => {
   it("dit « demain » quand la sortie est le lendemain", () => {
     const { subject, html } = j1ReminderEmail(OUTING, tickOn("2026-11-20"));
-    expect(subject).toBe("Demain — Pilote");
+    expect(subject).toBe("C’est demain · Pilote");
     expect(html).toContain("C’est demain");
-    expect(html).toContain("À demain.");
+    expect(html).toContain("Samedi 21 novembre à 20h30. À demain.");
   });
 
   it("dit « aujourd'hui » quand la sortie est le soir même", () => {
     // Sortie créée la veille après le passage du cron : rappel le matin même.
     const { subject, html } = j1ReminderEmail(OUTING, tickOn("2026-11-21"));
-    expect(subject).toBe("Aujourd'hui — Pilote");
-    expect(html).toContain("C’est aujourd’hui");
+    expect(subject).toBe("C’est aujourd’hui · Pilote");
+    expect(html).toContain("À tout à l’heure.");
     expect(html).not.toContain("demain");
   });
 
   it("dit « après-demain » quand la sortie est tôt le matin du surlendemain", () => {
     const early = { ...OUTING, fixedDatetime: new Date("2026-11-21T07:30:00+01:00") };
     const { subject, html } = j1ReminderEmail(early, tickOn("2026-11-19"));
-    expect(subject).toBe("Après-demain — Pilote");
-    expect(html).toContain("C’est après-demain");
+    expect(subject).toBe("C’est après-demain · Pilote");
+    expect(html).toContain("À très vite.");
+  });
+
+  it("donne l'heure et le lieu en aperçu, sans répéter l'objet", () => {
+    const { html } = j1ReminderEmail(OUTING, tickOn("2026-11-20"));
+    expect(preheader(html)).toBe("Rendez-vous à 20h30 · La Cigale");
   });
 });
 
 describe("j7ReminderEmail", () => {
   it("annonce la sortie dans une semaine sans rien demander", () => {
     const { subject, html } = j7ReminderEmail(OUTING);
-    expect(subject).toBe("Dans une semaine — Pilote");
-    expect(html).toContain("Dans une semaine");
-    expect(html).toContain("21 novembre à 20h30");
-    expect(html).toContain("La Cigale");
-    expect(html).toContain("Pense à bloquer la date.");
+    expect(subject).toBe("Dans une semaine · Pilote");
+    expect(html).toContain("Samedi 21 novembre à 20h30. Pense à bloquer la date.");
+    expect(html).toContain("Voir la sortie");
+    expect(html).toContain("Tu reçois ce rappel parce que tu as répondu présent.");
+  });
+
+  it("met la date complète en aperçu, ou seulement la date sans lieu", () => {
+    expect(preheader(j7ReminderEmail(OUTING).html)).toBe("Samedi 21 novembre à 20h30 · La Cigale");
+    expect(preheader(j7ReminderEmail({ ...OUTING, location: null }).html)).toBe(
+      "Samedi 21 novembre à 20h30"
+    );
+  });
+});
+
+describe("rappels", () => {
+  // Le slogan du pied de page, commun à tous les mails, n'est pas couvert.
+  it("n'utilisent ni deux-points ni tiret cadratin dans leur texte", () => {
+    const emails = [
+      j7ReminderEmail(OUTING),
+      j1ReminderEmail(OUTING, tickOn("2026-11-19")),
+      j1ReminderEmail(OUTING, tickOn("2026-11-20")),
+      j1ReminderEmail(OUTING, tickOn("2026-11-21")),
+    ];
+    for (const { subject, html } of emails) {
+      const content = html.slice(html.indexOf("<h1"), html.indexOf("Voir la sortie"));
+      const visibleText = content.replace(/<[^>]+>/g, " ");
+      for (const text of [subject, preheader(html), visibleText]) {
+        expect(text).not.toMatch(/—|&mdash;| :/);
+      }
+    }
   });
 });

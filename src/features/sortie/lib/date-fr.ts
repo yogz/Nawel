@@ -197,6 +197,13 @@ export function formatOutingDateConversational(date: Date, now: Date = new Date(
   return `${day}${yearSuffixIfNeeded(date, now)} à ${time}`;
 }
 
+/** "samedi 21 novembre à 20h30" — variante email avec le jour de la semaine */
+export function formatOutingWeekdayDateConversational(date: Date, now: Date = new Date()): string {
+  const day = dayMonthFormatter.format(date);
+  const time = timeFormatter.format(date).replace(":", "h");
+  return `${day}${yearSuffixIfNeeded(date, now)} à ${time}`;
+}
+
 /** "2026-12-12T20:30" — for datetime-local inputs */
 export function toDateTimeLocalValue(date: Date): string {
   const parts = isoFormatter.formatToParts(date);
