@@ -14,6 +14,28 @@ const HANDLE_MIN = 4;
 const HANDLE_MAX = 50;
 
 /**
+ * Copy of the value field in both "add a payment method" forms. Hints are
+ * truncated ("…") so nobody mistakes them for an already filled value.
+ */
+export function valueFieldCopy(type: PaymentMethodType): {
+  label: string;
+  hint: string;
+  inputType: "text" | "tel";
+} {
+  if (type === "iban") {
+    return { label: "IBAN", hint: "FR76 1234 5678 …………", inputType: "text" };
+  }
+  if (type === "revolut") {
+    return {
+      label: "Lien revolut.me ou numéro",
+      hint: "revolut.me/… ou +33 6 34 56 …",
+      inputType: "text",
+    };
+  }
+  return { label: "Numéro de téléphone", hint: "+33 6 34 56 …", inputType: "tel" };
+}
+
+/**
  * Value actually stored (encrypted) and its public preview — shared by the
  * per-outing and account-level "add a payment method" actions. A Revolut
  * pseudo is stored as "@tag" and shown in full: it's a public pay handle,
