@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { purchases } from "@drizzle/sortie-schema";
+import { purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
 import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
 import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
 import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
@@ -113,6 +113,25 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     };
   }
 
+  // Dernier contrôle avant de valider (on ne peut plus ajouter personne
+  // après l'achat) : prénoms comptés, et qui ne recevra pas l'e-mail. Seul
+  // un booléen « a un e-mail » sert ici — aucune adresse n'est transmise.
+  const confirmed = outing.participants.filter((p) => p.response === "yes");
+  const withExtras = (p: (typeof confirmed)[number], name: string) => {
+    const extras = p.extraAdults + p.extraChildren;
+    return extras > 0 ? `${name} (+${extras})` : name;
+  };
+  const countedNames = confirmed.map((p) =>
+    withExtras(p, p.id === me.id ? "Toi" : (nameByParticipant.get(p.id) ?? "Quelqu'un"))
+  );
+  const noEmailNames = confirmed
+    .filter((p) => p.id !== me.id && p.userId === null && !p.anonEmail)
+    .map((p) => nameByParticipant.get(p.id) ?? "Quelqu'un");
+  const myMethod = await db.query.purchaserPaymentMethods.findFirst({
+    where: eq(purchaserPaymentMethods.participantId, me.id),
+    columns: { id: true },
+  });
+
   const normalView = buildView(yesRows);
   const ghostView = buildView(yesRows.filter((r) => r.id !== me.id));
 
@@ -144,6 +163,9 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
         normalView={normalView}
         ghostView={ghostView}
         canGhost={ghostView.totalPlaces > 0}
+        countedNames={countedNames}
+        noEmailNames={noEmailNames}
+        paymentHref={myMethod ? null : `/${canonical}/paiement`}
       />
     </main>
   );

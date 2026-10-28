@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { declarePurchaseAction } from "@/features/sortie/actions/purchase-actions";
@@ -31,9 +32,23 @@ type Props = {
   normalView: PurchaseView;
   ghostView: PurchaseView;
   canGhost: boolean;
+  /** Dernier contrôle avant validation : « Toi, Yves (+1), Cécile ». */
+  countedNames: string[];
+  /** Comptés sans adresse e-mail : ils ne recevront pas leur part. */
+  noEmailNames: string[];
+  /** Lien vers /paiement quand l'acheteur n'a aucun moyen de paiement. */
+  paymentHref: string | null;
 };
 
-export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props) {
+export function PurchaseForm({
+  shortId,
+  normalView,
+  ghostView,
+  canGhost,
+  countedNames,
+  noEmailNames,
+  paymentHref,
+}: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     declarePurchaseAction,
     {} as FormActionState
@@ -116,6 +131,9 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
           {adultCount} adulte{adultCount > 1 ? "s" : ""}
           {childCount > 0 && `, ${childCount} enfant${childCount > 1 ? "s" : ""}`}
         </p>
+        {countedNames.length > 0 && (
+          <p className="mt-2 text-sm text-ink-500">{countedNames.join(", ")}</p>
+        )}
       </div>
 
       <fieldset className="flex flex-col gap-2">
@@ -247,6 +265,21 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
           {state.message}
         </p>
       )}
+
+      <div className="flex flex-col gap-1 text-sm text-ink-500">
+        <p>Chacun reçoit sa part par e-mail.</p>
+        {noEmailNames.length > 0 && (
+          <p>Pas d&rsquo;e-mail : {noEmailNames.join(", ")}. Préviens-les toi-même.</p>
+        )}
+        {paymentHref && (
+          <Link
+            href={paymentHref}
+            className="text-acid-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600/50"
+          >
+            Ajoute un RIB ou un Lydia : il apparaîtra dans le mail de chacun.
+          </Link>
+        )}
+      </div>
 
       <div className="flex items-center justify-end gap-3">
         <Button type="submit" size="lg" disabled={pending || !canSubmit}>
