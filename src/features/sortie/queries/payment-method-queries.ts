@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, asc, eq, gt, isNotNull, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { purchaserPaymentMethods } from "@drizzle/sortie-schema";
+import { purchaserPaymentMethods, userPaymentMethods } from "@drizzle/sortie-schema";
 
 /**
  * Returns non-sensitive rows (no encrypted value) for display. The actual
@@ -23,3 +23,30 @@ export async function listPaymentMethodsForParticipant(participantId: string) {
 export type PaymentMethodPreview = Awaited<
   ReturnType<typeof listPaymentMethodsForParticipant>
 >[number];
+
+/**
+ * Moyens enregistrés sur le compte, aperçus seulement (jamais le chiffré).
+ * Les ajouts en attente dont le lien a expiré sont masqués : ils ne
+ * pourront plus être confirmés (l'ajout suivant les nettoie).
+ */
+export async function listAccountPaymentMethods(userId: string, now: Date) {
+  return db
+    .select({
+      id: userPaymentMethods.id,
+      type: userPaymentMethods.type,
+      valuePreview: userPaymentMethods.valuePreview,
+      displayLabel: userPaymentMethods.displayLabel,
+      confirmedAt: userPaymentMethods.confirmedAt,
+    })
+    .from(userPaymentMethods)
+    .where(
+      and(
+        eq(userPaymentMethods.userId, userId),
+        or(
+          isNotNull(userPaymentMethods.confirmedAt),
+          gt(userPaymentMethods.confirmTokenExpiresAt, now)
+        )
+      )
+    )
+    .orderBy(asc(userPaymentMethods.createdAt), asc(userPaymentMethods.id));
+}

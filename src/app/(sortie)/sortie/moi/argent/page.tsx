@@ -26,6 +26,9 @@ import {
   PersonAccountReminder,
 } from "@/features/sortie/components/wallet/person-account-toolbar";
 import { formatCents, personName, type PersonRef } from "@/features/sortie/lib/format";
+import { AccountPaymentMethods } from "@/features/sortie/components/account-payment-methods";
+import { listAccountPaymentMethods } from "@/features/sortie/queries/payment-method-queries";
+import { mayManageAccountMethods } from "@/features/sortie/lib/account-payment/rules";
 
 // La page agrège des données financières privées de l'utilisateur
 // connecté ; on désactive tout pré-rendu et toute mise en cache pour
@@ -42,7 +45,11 @@ function outingHref(outing: WalletDebtRow["outing"], suffix?: string): string {
   return suffix ? `/${canonical}/${suffix}` : `/${canonical}`;
 }
 
-export default async function WalletPage() {
+export default async function WalletPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ moyen?: string | string[] }>;
+}) {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user) {
@@ -76,12 +83,20 @@ export default async function WalletPage() {
   }
 
   const userId = session.user.id;
-  const [allDebts, allCredits, allocations, creditorSeats] = await Promise.all([
-    getWalletDebts(userId),
-    getWalletCredits(userId),
-    getWalletAllocations(userId),
-    getWalletCreditorSeats(userId),
-  ]);
+  const [allDebts, allCredits, allocations, creditorSeats, accountMethods, params] =
+    await Promise.all([
+      getWalletDebts(userId),
+      getWalletCredits(userId),
+      getWalletAllocations(userId),
+      getWalletCreditorSeats(userId),
+      listAccountPaymentMethods(userId, new Date()),
+      searchParams,
+    ]);
+  const canManageMethods = mayManageAccountMethods({
+    userId,
+    emailVerified: session.user.emailVerified ?? null,
+  });
+  const methodOutcome = typeof params.moyen === "string" ? params.moyen : null;
 
   // Panneau « Offrir » des lignes créancier : places groupées par
   // (sortie, débiteur), et verrou par sortie. Un achat par sortie ⇒ tous les
@@ -298,6 +313,18 @@ export default async function WalletPage() {
           </ul>
         </section>
       )}
+
+      <AccountPaymentMethods
+        methods={accountMethods.map((m) => ({
+          id: m.id,
+          type: m.type,
+          valuePreview: m.valuePreview,
+          displayLabel: m.displayLabel,
+          pending: m.confirmedAt === null,
+        }))}
+        canManage={canManageMethods}
+        outcome={methodOutcome}
+      />
 
       {hasAnyData && (
         <footer className="mt-12 border-t border-ink-100 pt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-400">
