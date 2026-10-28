@@ -27,6 +27,7 @@ import {
 import { sendNewOutingBroadcast } from "@/features/sortie/lib/emails/follower-broadcast";
 import { runAfterResponse } from "@/features/sortie/lib/after-response";
 import {
+  cancelNotifiesParticipants,
   editKeepsDeadline,
   editNotifiesParticipants,
   resolveAlreadyBoughtCreation,
@@ -466,9 +467,22 @@ export async function cancelOutingAction(
     })
     .where(eq(outings.id, outing.id));
 
-  await sendOutingCancelledEmails({
-    outing: { id: outing.id, title: outing.title },
-  });
+  const cancelHasPurchase = outing.alreadyBought
+    ? (await db.query.purchases.findFirst({
+        where: eq(purchases.outingId, outing.id),
+        columns: { id: true },
+      })) !== undefined
+    : false;
+  if (
+    cancelNotifiesParticipants({
+      alreadyBought: outing.alreadyBought,
+      hasPurchase: cancelHasPurchase,
+    })
+  ) {
+    await sendOutingCancelledEmails({
+      outing: { id: outing.id, title: outing.title },
+    });
+  }
 
   const canonical = canonicalPathSegment({ slug: outing.slug, shortId: outing.shortId });
   revalidatePath(`/${canonical}`);

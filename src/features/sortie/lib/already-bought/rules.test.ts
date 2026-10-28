@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   acceptsResponses,
   editKeepsDeadline,
+  cancelNotifiesParticipants,
   editNotifiesParticipants,
   mayDeclarePurchase,
   resolveAlreadyBoughtCreation,
@@ -138,5 +139,16 @@ describe("acceptsResponses", () => {
         NOW
       )
     ).toBe(true);
+  });
+});
+
+describe("annulation d'une sortie « billets déjà pris »", () => {
+  it("ne prévient pas des amis jamais prévenus (avant l'achat)", () => {
+    expect(cancelNotifiesParticipants({ alreadyBought: true, hasPurchase: false })).toBe(false);
+  });
+
+  it("prévient normalement après l'achat ou pour une sortie normale", () => {
+    expect(cancelNotifiesParticipants({ alreadyBought: true, hasPurchase: true })).toBe(true);
+    expect(cancelNotifiesParticipants({ alreadyBought: false, hasPurchase: false })).toBe(true);
   });
 });

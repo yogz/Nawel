@@ -89,3 +89,15 @@ export function mayDeclarePurchase(a: {
   }
   return a.sessionUserId !== null && a.sessionUserId === a.creatorUserId;
 }
+
+/**
+ * E-mail « sortie annulée » : même règle que la modification — des amis
+ * ajoutés à une sortie « billets déjà pris » n'ont encore rien reçu tant
+ * que l'achat n'est pas déclaré, on ne leur écrit pas pour une annulation.
+ */
+export function cancelNotifiesParticipants(o: {
+  alreadyBought: boolean;
+  hasPurchase: boolean;
+}): boolean {
+  return editNotifiesParticipants(o);
+}
