@@ -10,7 +10,7 @@ import { auth } from "@/lib/auth-config";
 import { user } from "@drizzle/schema";
 import {
   listMyParticipantsForOutings,
-  listPublicProfileOutings,
+  listProfileOutings,
 } from "@/features/sortie/queries/outing-queries";
 import { readParticipantTokenHash } from "@/features/sortie/lib/cookie-token";
 import {
@@ -25,7 +25,7 @@ import {
 } from "@/features/sortie/lib/claim-prompt";
 import { UserAvatar } from "@/features/sortie/components/user-avatar";
 import { OutingProfileCard } from "@/features/sortie/components/outing-profile-card";
-import { LiveStatusHero } from "@/features/sortie/components/live-status-hero";
+import { OutingShowcaseCard } from "@/features/sortie/components/outing-showcase-card";
 import { RecentlyAddedRow } from "@/features/sortie/components/recently-added-row";
 import { FollowToggle } from "@/features/sortie/components/follow-toggle";
 import { isFollowing } from "@/features/sortie/queries/follow-queries";
@@ -34,6 +34,12 @@ import { InboxClaimPrompt } from "@/features/sortie/components/inbox-claim-promp
 import { cookies } from "next/headers";
 import { resolveMyRsvp } from "@/features/sortie/lib/resolve-my-rsvp";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
+import { formatOutingDateShort } from "@/features/sortie/lib/date-fr";
+import {
+  buildProfileDescription,
+  organizerLabel,
+  toShowcaseOuting,
+} from "@/features/sortie/lib/profile-outings";
 
 /**
  * Seuil en dessous duquel on bypass le grouping par bucket sur la
@@ -79,20 +85,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // Format mini-agenda : la valeur d'un partage de profil c'est la *série*,
-  // pas la sortie isolée. Le partage type est "voilà ce que je vais voir,
-  // dites-moi si vous voulez venir" en WhatsApp/DM aux amis — donc le titre
-  // affiche la densité (count) et la description liste les prochaines.
-  const { upcoming, past } = await listPublicProfileOutings(row.id);
-  const datedUpcoming = upcoming
-    .filter((o): o is typeof o & { startsAt: Date } => o.startsAt !== null)
-    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
+  // pas la sortie isolée — le titre affiche la densité (count) et la
+  // description liste les prochaines, sans date (la vitrine publique n'en
+  // montre pas, cf. spec 2026-10-28-sortie-profile-attending).
+  const { upcoming, past } = await listProfileOutings(row.id);
 
   const url = `${PUBLIC_BASE}/@${row.username}`;
 
   const title = buildProfileTitle({ name: row.name, upcomingCount: upcoming.length });
   const description = buildProfileDescription({
-    dated: datedUpcoming,
-    totalUpcoming: upcoming.length,
+    upcomingTitles: sortUpcomingByStartsAt(upcoming).map((o) => o.title),
     pastCount: past.length,
   });
 
@@ -130,46 +132,6 @@ function buildProfileTitle(args: { name: string; upcomingCount: number }): strin
   return `${args.name} — ${args.upcomingCount} sorties à venir`;
 }
 
-const SHORT_DATE_FMT = new Intl.DateTimeFormat("fr-FR", {
-  day: "numeric",
-  month: "short",
-  timeZone: "Europe/Paris",
-});
-
-function buildProfileDescription(args: {
-  dated: { title: string; startsAt: Date }[];
-  totalUpcoming: number;
-  pastCount: number;
-}): string {
-  if (args.totalUpcoming === 0) {
-    if (args.pastCount > 0) {
-      const label = args.pastCount === 1 ? "sortie passée" : "sorties passées";
-      return `${args.pastCount} ${label} · la prochaine arrive bientôt.`;
-    }
-    return "Les prochaines sorties arriveront ici.";
-  }
-
-  // Liste compacte : 3 prochaines avec date courte ("29 avr") + nom court.
-  // Vise ~140 chars pour rester sous le truncation WhatsApp/iMessage tout
-  // en montrant la densité de la sélection.
-  const slice = args.dated.slice(0, 3);
-  const parts = slice.map(
-    (o) => `${SHORT_DATE_FMT.format(o.startsAt).replace(".", "")} : ${truncateTitle(o.title, 32)}`
-  );
-  const overflow = args.totalUpcoming - slice.length;
-  if (overflow > 0) {
-    parts.push(`+${overflow} autre${overflow > 1 ? "s" : ""}`);
-  }
-  return parts.join(" · ");
-}
-
-function truncateTitle(title: string, max: number): string {
-  if (title.length <= max) {
-    return title;
-  }
-  return `${title.slice(0, max - 1).trimEnd()}…`;
-}
-
 export default async function PublicProfilePage({ params, searchParams }: Props) {
   const { username } = await params;
   const { k } = await searchParams;
@@ -194,7 +156,7 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
     row.rsvpInviteToken !== null &&
     row.rsvpInviteToken === k;
 
-  const { upcoming: upcomingRaw, past } = await listPublicProfileOutings(row.id);
+  const { upcoming: upcomingRaw, past } = await listProfileOutings(row.id);
   // La query renvoie `desc(createdAt)` — sans tri par horizon temporel,
   // une sortie créée hier qui se passe dans 3 mois remonte avant une
   // sortie de samedi prochain créée la semaine dernière. Aligne sur
@@ -216,30 +178,28 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
       : false;
   const inboxMode = tokenValid || viewerFollows;
 
-  // Vitrine publique : on featured la prochaine sortie en hero
-  // (LiveStatusHero) pour donner une accroche au visiteur curieux.
-  // Lien privé : pas de hero — l'invité doit RSVP à toutes les
-  // sorties, l'asymétrie d'un hero ralentit le scan. Toutes en
-  // OutingProfileCard uniformes, format Doodle / checklist.
-  const heroOuting = inboxMode ? null : (upcoming.find((o) => o.startsAt !== null) ?? null);
-  const restUpcoming = heroOuting ? upcoming.filter((o) => o.id !== heroOuting.id) : upcoming;
+  // Vitrine publique : uniquement des cartes inertes (image, titre, salle),
+  // sans date ni lien — plus de hero ni de rangée « derniers ajoutés ».
+  // Lien privé / suiveur : ses propres sorties en checklist RSVP, celles
+  // d'autrui où il va à part, visibles mais sans moyen de s'y inscrire
+  // (cf. spec 2026-10-28-sortie-profile-attending §5 bis).
+  const ownUpcoming = upcoming.filter((o) => o.isOwn);
+  const othersUpcoming = upcoming.filter((o) => !o.isOwn);
 
   // On part de `upcomingRaw` (déjà trié `desc(createdAt)` par la query)
   // plutôt que de `upcoming` re-trié par startsAt — évite un sort
-  // redondant. La sortie featurée en hero reste dans la rangée et le
-  // mode lien privé l'affiche aussi : teaser éditorial au-dessus de la
-  // checklist.
+  // redondant. Teaser éditorial au-dessus de la checklist.
   const now = new Date();
-  const recentlyAdded = upcomingRaw
-    .filter((o) => o.deadlineAt.getTime() > now.getTime())
-    .slice(0, 8);
+  const recentlyAdded = inboxMode
+    ? upcomingRaw.filter((o) => o.isOwn && o.deadlineAt.getTime() > now.getTime()).slice(0, 8)
+    : [];
 
   // Only load the viewer's existing RSVPs when the inbox mode unlocks inline RSVP
   // — otherwise there's nothing to render and the round-trip is wasted.
   const cookieTokenHash = inboxMode ? await readParticipantTokenHash() : null;
   const myRsvpByOuting = inboxMode
     ? await listMyParticipantsForOutings({
-        outingIds: upcoming.map((o) => o.id),
+        outingIds: ownUpcoming.map((o) => o.id),
         cookieTokenHash,
         userId: session?.user?.id ?? null,
       })
@@ -294,8 +254,8 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
 
       {/* Header compact unifié sur les 2 modes (vitrine + lien privé) :
           la version "hero plein" 88px + text-5xl mangeait ~40% du 1er
-          viewport sur la vitrine publique alors que le visiteur cherche
-          la prochaine sortie, pas la photo de Nicolas en plein écran.
+          viewport sur la vitrine publique alors que le visiteur vient voir
+          les sorties, pas la photo de Nicolas en plein écran.
           Avatar 56px + h1 3xl/4xl libère ~150px de fold = 1 card de plus
           visible au scroll initial. L'eyebrow @username reste — c'est le
           handle système, complémentaire du display name. */}
@@ -351,44 +311,40 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
 
       {recentlyAdded.length > 0 && <RecentlyAddedRow outings={recentlyAdded} />}
 
-      {heroOuting && heroOuting.startsAt && (
-        <LiveStatusHero
-          slug={heroOuting.slug}
-          shortId={heroOuting.shortId}
-          title={heroOuting.title}
-          location={heroOuting.location}
-          startsAt={heroOuting.startsAt}
-          heroImageUrl={heroOuting.heroImageUrl}
-          deadlineAt={heroOuting.deadlineAt}
-          status={heroOuting.status}
-          mode={heroOuting.mode}
-          eyebrow={isSelf ? "Ta prochaine sortie" : "Prochaine sortie"}
-        />
-      )}
-
       {showClaimPrompt && row.username && (
         <InboxClaimPrompt creatorUsername={row.username} origin={claimOrigin} />
       )}
 
-      {restUpcoming.length > 0 &&
-        (inboxMode ? (
-          <InboxSection
-            outings={restUpcoming}
-            myRsvpByOuting={myRsvpByOuting}
-            loggedInName={session?.user?.name ?? null}
-          />
-        ) : (
-          <OutingSection
-            title="À venir"
-            outings={restUpcoming}
-            showRsvp={inboxMode}
-            myRsvpByOuting={myRsvpByOuting}
-            loggedInName={session?.user?.name ?? null}
-            isPast={false}
-          />
-        ))}
+      {inboxMode ? (
+        <>
+          {ownUpcoming.length > 0 && (
+            <InboxSection
+              outings={ownUpcoming}
+              myRsvpByOuting={myRsvpByOuting}
+              loggedInName={session?.user?.name ?? null}
+            />
+          )}
+          {othersUpcoming.length > 0 && (
+            <ShowcaseSection
+              title={`${row.name.trim().split(" ")[0] || row.username} y va aussi`}
+              outings={othersUpcoming}
+              inboxMode
+            />
+          )}
+        </>
+      ) : (
+        upcoming.length > 0 && (
+          <ShowcaseSection title="À venir" outings={upcoming} inboxMode={false} />
+        )
+      )}
 
-      {past.length > 0 && <PastSection outings={past} loggedInName={session?.user?.name ?? null} />}
+      {past.length > 0 && (
+        <PastSection
+          outings={past}
+          inboxMode={inboxMode}
+          loggedInName={session?.user?.name ?? null}
+        />
+      )}
     </main>
   );
 }
@@ -401,9 +357,11 @@ export default async function PublicProfilePage({ params, searchParams }: Props)
  */
 function PastSection({
   outings,
+  inboxMode,
   loggedInName,
 }: {
   outings: OutingRow[];
+  inboxMode: boolean;
   loggedInName: string | null;
 }) {
   const inline = outings.slice(0, 3);
@@ -417,13 +375,11 @@ function PastSection({
       <ul className="flex flex-col gap-4">
         {inline.map((o) => (
           <li key={o.id}>
-            <OutingProfileCard
+            <ProfileOutingItem
               outing={o}
-              showRsvp={false}
-              myRsvp={null}
-              loggedInName={loggedInName}
-              outingBaseUrl={PUBLIC_BASE}
               isPast
+              inboxMode={inboxMode}
+              loggedInName={loggedInName}
             />
           </li>
         ))}
@@ -443,13 +399,11 @@ function PastSection({
           <ul className="mt-4 flex flex-col gap-4">
             {hidden.map((o) => (
               <li key={o.id}>
-                <OutingProfileCard
+                <ProfileOutingItem
                   outing={o}
-                  showRsvp={false}
-                  myRsvp={null}
-                  loggedInName={loggedInName}
-                  outingBaseUrl={PUBLIC_BASE}
                   isPast
+                  inboxMode={inboxMode}
+                  loggedInName={loggedInName}
                 />
               </li>
             ))}
@@ -460,12 +414,80 @@ function PastSection({
   );
 }
 
-type OutingRow = Awaited<ReturnType<typeof listPublicProfileOutings>>["upcoming"][number];
+/**
+ * Seules ses propres sorties, en lien privé, restent cliquables. Partout
+ * ailleurs : carte inerte — sans date en vitrine publique, avec date et
+ * organisateur pour les sorties d'autrui en lien privé.
+ */
+function ProfileOutingItem({
+  outing,
+  isPast,
+  inboxMode,
+  loggedInName,
+}: {
+  outing: OutingRow;
+  isPast: boolean;
+  inboxMode: boolean;
+  loggedInName: string | null;
+}) {
+  if (inboxMode && outing.isOwn) {
+    return (
+      <OutingProfileCard
+        outing={outing}
+        showRsvp={false}
+        myRsvp={null}
+        loggedInName={loggedInName}
+        outingBaseUrl={PUBLIC_BASE}
+        isPast={isPast}
+      />
+    );
+  }
+  return (
+    <OutingShowcaseCard
+      outing={toShowcaseOuting(outing)}
+      isPast={isPast}
+      dateLabel={inboxMode && outing.startsAt ? formatOutingDateShort(outing.startsAt) : null}
+      organizerLabel={inboxMode ? organizerLabel(outing) : null}
+    />
+  );
+}
+
+function ShowcaseSection({
+  title,
+  outings,
+  inboxMode,
+}: {
+  title: string;
+  outings: OutingRow[];
+  inboxMode: boolean;
+}) {
+  return (
+    <section className="mb-10">
+      <Eyebrow tone="muted" className="mb-3">
+        ─ {title.toLowerCase()}
+      </Eyebrow>
+      <ul className="flex flex-col gap-4">
+        {outings.map((o) => (
+          <li key={o.id}>
+            <ProfileOutingItem
+              outing={o}
+              isPast={false}
+              inboxMode={inboxMode}
+              loggedInName={null}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+type OutingRow = Awaited<ReturnType<typeof listProfileOutings>>["upcoming"][number];
 type ParticipantRow =
   Awaited<ReturnType<typeof listMyParticipantsForOutings>> extends Map<string, infer V> ? V : never;
 
 /**
- * Mode lien-privé uniquement : la liste des sorties à venir est groupée
+ * Mode lien-privé uniquement : ses propres sorties à venir sont groupées
  * par état d'action côté invité (à toi de jouer / tu viens / en attente
  * / tu viens pas) plutôt que chronologique. Transforme la page en
  * checklist au lieu d'un agenda.
@@ -497,8 +519,6 @@ function InboxSection({
           outings={flattenInboxByPriority(buckets)}
           myRsvpByOuting={myRsvpByOuting}
           loggedInName={loggedInName}
-          showRsvp
-          isPast={false}
         />
       </section>
     );
@@ -543,8 +563,6 @@ function InboxBucketSection({
         outings={bucket.outings}
         myRsvpByOuting={myRsvpByOuting}
         loggedInName={loggedInName}
-        showRsvp
-        isPast={false}
       />
     </section>
   );
@@ -554,14 +572,10 @@ function RsvpCardList({
   outings,
   myRsvpByOuting,
   loggedInName,
-  showRsvp,
-  isPast,
 }: {
   outings: OutingRow[];
   myRsvpByOuting: Map<string, ParticipantRow>;
   loggedInName: string | null;
-  showRsvp: boolean;
-  isPast: boolean;
 }) {
   return (
     <ul className="flex flex-col gap-4">
@@ -569,45 +583,14 @@ function RsvpCardList({
         <li key={o.id}>
           <OutingProfileCard
             outing={o}
-            showRsvp={showRsvp}
+            showRsvp
             myRsvp={resolveMyRsvp(myRsvpByOuting.get(o.id), loggedInName)}
             loggedInName={loggedInName}
             outingBaseUrl={PUBLIC_BASE}
-            isPast={isPast}
+            isPast={false}
           />
         </li>
       ))}
     </ul>
-  );
-}
-
-function OutingSection({
-  title,
-  outings,
-  showRsvp,
-  myRsvpByOuting,
-  loggedInName,
-  isPast,
-}: {
-  title: string;
-  outings: OutingRow[];
-  showRsvp: boolean;
-  myRsvpByOuting: Map<string, ParticipantRow>;
-  loggedInName: string | null;
-  isPast: boolean;
-}) {
-  return (
-    <section className="mb-10">
-      <Eyebrow tone="muted" className="mb-3">
-        ─ {title.toLowerCase()}
-      </Eyebrow>
-      <RsvpCardList
-        outings={outings}
-        myRsvpByOuting={myRsvpByOuting}
-        loggedInName={loggedInName}
-        showRsvp={showRsvp}
-        isPast={isPast}
-      />
-    </section>
   );
 }

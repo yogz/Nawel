@@ -21,6 +21,7 @@ import { outings, outingTimeslots, participants, timeslotVotes } from "@drizzle/
 import { user } from "@drizzle/schema";
 import { AGENDA_WINDOW_DAYS, agendaMode } from "@/features/sortie/lib/agenda-grid";
 import type { FeedOuting } from "@/features/sortie/lib/build-ics-feed";
+import { ATTENDING_RESPONSES, splitProfileOutings } from "@/features/sortie/lib/profile-outings";
 
 // Fenêtre de rétention historique pour le flux iCal personnel : on garde
 // les sorties past des 30 derniers jours (utile pour relancer un paiement
@@ -333,16 +334,28 @@ export async function listMyAgendaActivity(userId: string, now = new Date()) {
 }
 
 /**
- * Public profile view — only surfaces outings the user chose to show
- * (`showOnProfile`) and excludes cancelled ones. Splits into upcoming vs
- * past by the current time against `fixedDatetime` (vote-mode outings
- * with no chosen slot yet count as upcoming).
+ * Profile view (`/@<username>`) — the user's own outings plus other
+ * people's outings the user attends (`yes` / `handle_own`). Only outings
+ * shown on profiles (`showOnProfile`) and not cancelled. `isOwn` tells the
+ * page which ones visitors may act on (cf. `lib/profile-outings.ts`).
  *
  * `confirmedCount` is computed via a scalar sub-query rather than a
  * LEFT JOIN + GROUP BY — cleaner to compose alongside ORDER BY / LIMIT,
- * and the participants outing_id index covers the lookup.
+ * and the participants outing_id index covers the lookup. The attendance
+ * EXISTS qualifies its columns for the same reason as `confirmedCountSql`.
+ * The creator always has a `yes` row on their own outing: OR + EXISTS
+ * keeps one row per outing, no dedup needed.
  */
-export const listPublicProfileOutings = cache(async (userId: string, now = new Date()) => {
+export const listProfileOutings = cache(async (userId: string, now = new Date()) => {
+  const attends = sql`EXISTS (
+    SELECT 1 FROM ${participants}
+    WHERE ${participants}.outing_id = ${outings}.id
+      AND ${participants}.user_id = ${userId}
+      AND ${participants}.response IN (${sql.join(
+        ATTENDING_RESPONSES.map((r) => sql`${r}`),
+        sql`, `
+      )})
+  )`;
   const rows = await db
     .select({
       id: outings.id,
@@ -357,11 +370,15 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
       heroImageUrl: outings.heroImageUrl,
       createdAt: outings.createdAt,
       confirmedCount: confirmedCountSql.as("confirmed_count"),
+      creatorUserId: outings.creatorUserId,
+      creatorName: user.name,
+      creatorUsername: user.username,
     })
     .from(outings)
+    .leftJoin(user, eq(user.id, outings.creatorUserId))
     .where(
       and(
-        eq(outings.creatorUserId, userId),
+        or(eq(outings.creatorUserId, userId), attends),
         eq(outings.showOnProfile, true),
         ne(outings.status, "cancelled")
       )
@@ -369,9 +386,7 @@ export const listPublicProfileOutings = cache(async (userId: string, now = new D
     .orderBy(desc(outings.createdAt))
     .limit(50);
 
-  const upcoming = rows.filter((r) => !r.startsAt || r.startsAt >= now);
-  const past = rows.filter((r) => r.startsAt && r.startsAt < now);
-  return { upcoming, past };
+  return splitProfileOutings(rows, userId, now);
 });
 
 /**
