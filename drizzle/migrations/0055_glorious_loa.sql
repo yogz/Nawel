@@ -1,0 +1,1 @@
+ALTER TABLE "sortie"."outings" ADD COLUMN "reminder_j7_sent_at" timestamp with time zone;

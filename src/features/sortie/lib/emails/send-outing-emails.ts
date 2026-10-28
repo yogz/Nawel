@@ -12,6 +12,7 @@ import {
 import { BASE_URL, outingPath, safeSend } from "./shared";
 import {
   j1ReminderEmail,
+  j7ReminderEmail,
   outingCancelledEmail,
   outingModifiedEmail,
   pollReopenedEmail,
@@ -376,12 +377,14 @@ export async function sendRsvpClosedEmails(args: {
 }
 
 /**
- * Fired once per outing by the sweeper when fixedDatetime is ~24h away.
- * Reaches confirmed attendees (yes + handle_own). The caller is responsible
- * for stamping `reminder_j1_sent_at` before this runs so a partial failure
- * doesn't re-fire the whole batch on the next cron tick.
+ * Fired once per outing by the sweeper — `j7` on the Paris day a week
+ * before, `j1` once fixedDatetime is within 48h. Reaches confirmed
+ * attendees (yes + handle_own). The caller is responsible for stamping
+ * `reminder_j7_sent_at` / `reminder_j1_sent_at` before this runs so a
+ * partial failure doesn't re-fire the whole batch on the next cron tick.
  */
-export async function sendJ1ReminderEmails(args: {
+export async function sendReminderEmails(args: {
+  kind: "j1" | "j7";
   outing: {
     id: string;
     title: string;
@@ -390,6 +393,7 @@ export async function sendJ1ReminderEmails(args: {
     fixedDatetime: Date;
     location: string | null;
   };
+  now: Date;
 }): Promise<void> {
   const recipients = await db.query.participants.findMany({
     where: and(
@@ -401,18 +405,20 @@ export async function sendJ1ReminderEmails(args: {
   });
 
   const canonical = outingPath(args.outing.slug, args.outing.shortId);
-  const { subject, html } = j1ReminderEmail({
+  const reminderArgs = {
     outingTitle: args.outing.title,
     outingUrl: `${BASE_URL}${canonical}`,
     fixedDatetime: args.outing.fixedDatetime,
     location: args.outing.location,
-  });
+  };
+  const { subject, html } =
+    args.kind === "j1" ? j1ReminderEmail(reminderArgs, args.now) : j7ReminderEmail(reminderArgs);
 
   await Promise.all(
     recipients
       .map((p) => p.anonEmail ?? p.user?.email ?? null)
       .filter((e): e is string => !!e)
-      .map((email) => safeSend({ to: email, subject, html, trigger: "j1-reminder" }))
+      .map((email) => safeSend({ to: email, subject, html, trigger: `${args.kind}-reminder` }))
   );
 }
 

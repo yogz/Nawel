@@ -1,5 +1,8 @@
 import { escapeHtml } from "@/lib/html-escape";
-import { formatOutingDateConversational } from "@/features/sortie/lib/date-fr";
+import {
+  formatOutingDateConversational,
+  parisCalendarDaysBetween,
+} from "@/features/sortie/lib/date-fr";
 import { formatCents } from "@/features/sortie/lib/format";
 import { PAYMENT_TYPE_LABEL } from "@/features/sortie/lib/account-payment/rules";
 import { renderEmail } from "./layout";
@@ -461,42 +464,93 @@ export function rsvpClosedEmail(args: {
   };
 }
 
-/**
- * Fired exactly once per outing by the sweeper when fixedDatetime is ~24h
- * away. Idempotency enforced by the reminder_j1_sent_at timestamp — if
- * this email fails to send, we still stamp (we don't want to retry forever
- * and a missed reminder is better than a duplicated one).
- */
-export function j1ReminderEmail(args: {
+type ReminderArgs = {
   outingTitle: string;
   outingUrl: string;
   fixedDatetime: Date;
   location: string | null;
-}): { subject: string; html: string } {
+};
+
+function reminderEmail(
+  args: ReminderArgs,
+  copy: { heading: string; subjectPrefix: string; preheaderLead: string; closing: string }
+): { subject: string; html: string } {
   const title = escapeHtml(args.outingTitle);
   const when = escapeHtml(formatOutingDateConversational(args.fixedDatetime));
   const locationLine = args.location
     ? `<br /><span style="color:${INK_MUTED};">${escapeHtml(args.location)}</span>`
     : "";
   const body = `
-    <h1 style="margin:0 0 14px;${H1}">C&rsquo;est demain</h1>
+    <h1 style="margin:0 0 14px;${H1}">${escapeHtml(copy.heading)}</h1>
     <p style="margin:0 0 18px;${BODY_P}">
       <strong>${title}</strong>${locationLine}
     </p>
     <p style="margin:0 0 28px;${BODY_P}">
-      ${when}. À demain.
+      ${when}. ${escapeHtml(copy.closing)}
     </p>
     <p style="margin:0;">
       ${ctaButton(args.outingUrl, "Détails de la sortie")}
     </p>
   `;
   return {
-    subject: `Demain — ${args.outingTitle}`,
+    subject: `${copy.subjectPrefix} — ${args.outingTitle}`,
     html: renderEmail({
-      preheader: `${args.outingTitle} c'est demain. ${when}.`,
+      preheader: `${args.outingTitle} ${copy.preheaderLead}. ${when}.`,
       body,
     }),
   };
+}
+
+/**
+ * Fired exactly once per outing by the sweeper when fixedDatetime is within
+ * 48h. Idempotency enforced by the reminder_j1_sent_at timestamp — if
+ * this email fails to send, we still stamp (we don't want to retry forever
+ * and a missed reminder is better than a duplicated one).
+ *
+ * Le cron ne tourne qu'une fois par jour, donc l'écart réel varie de 0 à 2
+ * jours calendaires : le titre suit cet écart au lieu d'affirmer « demain ».
+ */
+export function j1ReminderEmail(
+  args: ReminderArgs,
+  now: Date = new Date()
+): { subject: string; html: string } {
+  const days = parisCalendarDaysBetween(now, args.fixedDatetime);
+  if (days <= 0) {
+    return reminderEmail(args, {
+      heading: "C’est aujourd’hui",
+      subjectPrefix: "Aujourd'hui",
+      preheaderLead: "c'est aujourd'hui",
+      closing: "À tout à l'heure.",
+    });
+  }
+  if (days === 1) {
+    return reminderEmail(args, {
+      heading: "C’est demain",
+      subjectPrefix: "Demain",
+      preheaderLead: "c'est demain",
+      closing: "À demain.",
+    });
+  }
+  return reminderEmail(args, {
+    heading: "C’est après-demain",
+    subjectPrefix: "Après-demain",
+    preheaderLead: "c'est après-demain",
+    closing: "À après-demain.",
+  });
+}
+
+/**
+ * Fired once per outing by the sweeper on the Paris calendar day 7 days
+ * before fixedDatetime. Simple heads-up to keep the date free — no action
+ * asked. Idempotency via reminder_j7_sent_at, same stamp-first rule as J-1.
+ */
+export function j7ReminderEmail(args: ReminderArgs): { subject: string; html: string } {
+  return reminderEmail(args, {
+    heading: "Dans une semaine",
+    subjectPrefix: "Dans une semaine",
+    preheaderLead: "c'est dans une semaine",
+    closing: "Pense à bloquer la date.",
+  });
 }
 
 /**

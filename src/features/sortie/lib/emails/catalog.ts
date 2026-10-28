@@ -18,6 +18,7 @@ import {
 import {
   debtReminderEmail,
   j1ReminderEmail,
+  j7ReminderEmail,
   newFollowerEmail,
   outingCancelledEmail,
   outingModifiedEmail,
@@ -149,17 +150,34 @@ export const EMAIL_CATALOG: EmailCatalogEntry[] = [
       }),
   },
   {
-    id: "j1-reminder",
-    name: "Rappel J-1",
-    trigger: "Cron sweeper quotidien (07:00) — sortie dans [now, now+48h].",
-    sourcePath: "src/features/sortie/lib/emails/templates.ts:314",
+    id: "j7-reminder",
+    name: "Rappel J-7",
+    trigger: "Cron sweeper quotidien (07:00) — sortie datée 7 jours calendaires plus tard (Paris).",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:547",
     render: () =>
-      j1ReminderEmail({
+      j7ReminderEmail({
         outingTitle: MOCK_OUTING_TITLE,
         outingUrl: MOCK_OUTING_URL,
         fixedDatetime: MOCK_OUTING_DATE,
         location: "Chez Léa, 12 rue Oberkampf",
       }),
+  },
+  {
+    id: "j1-reminder",
+    name: "Rappel J-1",
+    trigger:
+      "Cron sweeper quotidien (07:00) — sortie dans [now, now+48h] ; titre aujourd'hui / demain / après-demain selon l'écart.",
+    sourcePath: "src/features/sortie/lib/emails/templates.ts:513",
+    render: () =>
+      j1ReminderEmail(
+        {
+          outingTitle: MOCK_OUTING_TITLE,
+          outingUrl: MOCK_OUTING_URL,
+          fixedDatetime: MOCK_OUTING_DATE,
+          location: "Chez Léa, 12 rue Oberkampf",
+        },
+        new Date(MOCK_OUTING_DATE.getTime() - 24 * 60 * 60 * 1000)
+      ),
   },
 
   // --- Money flow ---

@@ -90,6 +90,8 @@ export const outings = sortie.table(
     // Stamped by the hourly sweeper once the J-1 reminder email has been sent,
     // so the cron can't double-send if it overlaps its own 1-hour window.
     reminderJ1SentAt: timestamp("reminder_j1_sent_at", { withTimezone: true }),
+    // Same stamp-first idempotency for the "dans une semaine" heads-up.
+    reminderJ7SentAt: timestamp("reminder_j7_sent_at", { withTimezone: true }),
     // Stamped after the broadcast "nouvelle sortie" emails are dispatched to
     // the creator's followers. The atomic UPDATE … WHERE IS NULL ensures
     // idempotence : si Next.js re-déclenche after() ou si la création est
