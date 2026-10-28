@@ -1,4 +1,5 @@
-import { and, eq, inArray, ne, or } from "drizzle-orm";
+import { and, asc, eq, inArray, ne, or } from "drizzle-orm";
+import { payLinkFirst } from "@/features/sortie/lib/payment-value";
 import { db } from "@/lib/db";
 import {
   debts,
@@ -68,9 +69,10 @@ async function attachNames(rows: (typeof debts.$inferSelect)[]): Promise<DebtRow
       creditorIds.length > 0
         ? or(...creditorIds.map((id) => eq(purchaserPaymentMethods.participantId, id)))!
         : eq(purchaserPaymentMethods.participantId, "")
-    );
+    )
+    .orderBy(asc(purchaserPaymentMethods.createdAt), asc(purchaserPaymentMethods.id));
   const methodsByCreditor = new Map<string, PaymentMethodRef[]>();
-  for (const m of methods) {
+  for (const m of payLinkFirst(methods)) {
     const list = methodsByCreditor.get(m.participantId) ?? [];
     list.push({
       id: m.id,

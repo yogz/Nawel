@@ -1,4 +1,5 @@
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { and, asc, eq, inArray, ne } from "drizzle-orm";
+import { payLinkFirst } from "@/features/sortie/lib/payment-value";
 import { db } from "@/lib/db";
 import {
   debts,
@@ -129,12 +130,13 @@ async function attachPeopleAndMethods(
           })
           .from(purchaserPaymentMethods)
           .where(inArray(purchaserPaymentMethods.participantId, Array.from(creditorIds)))
+          .orderBy(asc(purchaserPaymentMethods.createdAt), asc(purchaserPaymentMethods.id))
       : Promise.resolve([] as never[]),
   ]);
 
   const byId = new Map(people.map((p) => [p.id, personFromRow(p)]));
   const methodsByCreditor = new Map<string, PaymentMethodRef[]>();
-  for (const m of methods) {
+  for (const m of payLinkFirst(methods)) {
     const list = methodsByCreditor.get(m.participantId) ?? [];
     list.push({
       id: m.id,
