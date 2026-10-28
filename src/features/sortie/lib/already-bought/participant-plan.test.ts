@@ -50,6 +50,8 @@ function plan(
     resolveKey: (k) => REGULARS.get(k),
     hasPurchase: false,
     newEmailsToday: 0,
+    regularEmails: new Map([["yves@example.com", "Yves"]]),
+    deletableKeys: new Set(["u:u-yves", "n:cecile", "e:claire@example.com"]),
     ...over,
   });
 }
@@ -195,5 +197,20 @@ describe("planParticipants", () => {
       extraChildren: 0,
     }));
     expect(plan(requested)).toEqual({ ok: false, message: "Pas plus de 100 places par sortie." });
+  });
+
+  it("refuse une nouvelle personne avec l'adresse d'un habitué (sinon deux parts)", () => {
+    expect(plan([{ newName: "Yves D.", newEmail: "Yves@example.com", ...extras }])).toEqual({
+      ok: false,
+      message: "Cette adresse est déjà celle de Yves dans tes habitués.",
+    });
+  });
+
+  it("ne supprime jamais une personne inscrite absente de la liste affichée", () => {
+    const current = [
+      CREATOR,
+      { id: "p-ghost", userId: "u-banni", anonName: null, anonEmail: null, ...extras },
+    ];
+    expect(plan([], { current })).toMatchObject({ ok: true, deleteIds: [] });
   });
 });

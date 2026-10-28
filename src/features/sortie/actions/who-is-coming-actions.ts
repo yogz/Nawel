@@ -130,6 +130,10 @@ export async function saveWhoIsComingAction(
       resolveKey: (key) => findRegularByViewKey(regulars, key, secret),
       hasPurchase: purchase !== undefined,
       newEmailsToday,
+      regularEmails: new Map(
+        regulars.flatMap((r) => (r.email ? [[r.email, r.name] as const] : []))
+      ),
+      deletableKeys: new Set(regulars.map((r) => r.key)),
     });
     if (!plan.ok) {
       return plan;

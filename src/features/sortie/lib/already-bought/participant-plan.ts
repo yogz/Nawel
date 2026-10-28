@@ -62,6 +62,14 @@ export function planParticipants(a: {
   resolveKey: (key: string) => Regular | undefined;
   hasPurchase: boolean;
   newEmailsToday: number;
+  /** Adresse (minuscules) → prénom de chaque habitué qui en a une. */
+  regularEmails: ReadonlyMap<string, string>;
+  /**
+   * Clés des personnes affichées sur la page. Une ligne inscrite hors de
+   * cette liste (compte banni, nom vide…) n'est jamais supprimée : on ne
+   * retire pas quelqu'un que l'organisateur ne pouvait pas voir.
+   */
+  deletableKeys: ReadonlySet<string>;
 }): ParticipantPlan {
   if (a.hasPurchase) {
     return { ok: false, message: "L'achat est déjà déclaré.", redirectTo: "dettes" };
@@ -102,6 +110,13 @@ export function planParticipants(a: {
         return { ok: false, message: "E-mail invalide." };
       }
       email = parsed.data;
+      const owner = a.regularEmails.get(email);
+      if (owner) {
+        return {
+          ok: false,
+          message: `Cette adresse est déjà celle de ${owner} dans tes habitués.`,
+        };
+      }
     }
     desired.push({
       key: personKey({ userId: null, email, anonName: name })!,
@@ -171,7 +186,9 @@ export function planParticipants(a: {
     const key = personKey({ userId: row.userId, email: row.anonEmail, anonName: row.anonName });
     const want = key ? desiredByKey.get(key) : undefined;
     if (!want || matched.has(want.key)) {
-      deleteIds.push(row.id);
+      if (key && a.deletableKeys.has(key)) {
+        deleteIds.push(row.id);
+      }
       continue;
     }
     matched.add(want.key);

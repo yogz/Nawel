@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull, ne, or } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, ne, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { outings, participants } from "@drizzle/sortie-schema";
 import { user } from "@drizzle/schema";
@@ -33,6 +33,9 @@ export async function listRegularRows(creatorUserId: string): Promise<RegularRow
         or(isNull(user.id), ne(user.banned, true), isNull(user.banned))
       )
     )
+    // Les plus récentes d'abord : au-delà du plafond, ce sont les vieilles
+    // sorties qui tombent, jamais celle en cours.
+    .orderBy(desc(outings.createdAt))
     .limit(2000);
 
   return rows.map((r) => ({
