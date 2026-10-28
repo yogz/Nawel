@@ -23,6 +23,8 @@ type Props = {
   ticketUrl: string | null;
   heroImageUrl: string | null;
   vibe: Vibe | null;
+  /** « Billets déjà pris » : pas de date limite (réponses fermées pour de bon). */
+  alreadyBought?: boolean;
 };
 
 export function EditOutingForm({
@@ -34,6 +36,7 @@ export function EditOutingForm({
   ticketUrl,
   heroImageUrl,
   vibe,
+  alreadyBought = false,
 }: Props) {
   const [state, formAction, pending] = useActionState(updateOutingAction, INITIAL);
   const errors = state.errors ?? {};
@@ -87,15 +90,17 @@ export function EditOutingForm({
             error={errors.startsAt?.[0]}
           />
         )}
-        <DateField
-          label="Dernier jour pour répondre"
-          name="rsvpDeadline"
-          required
-          dateOnly
-          defaultValue={toDateTimeLocalValue(deadlineAt)}
-          error={errors.rsvpDeadline?.[0]}
-          hint="Clôture à 23h59"
-        />
+        {!alreadyBought && (
+          <DateField
+            label="Dernier jour pour répondre"
+            name="rsvpDeadline"
+            required
+            dateOnly
+            defaultValue={toDateTimeLocalValue(deadlineAt)}
+            error={errors.rsvpDeadline?.[0]}
+            hint="Clôture à 23h59"
+          />
+        )}
       </div>
       {!startsAt && (
         <p className="-mt-2 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-400">

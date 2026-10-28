@@ -94,22 +94,28 @@ export function purchaseConfirmedEmail(args: {
   const body = `
     <h1 style="margin:0 0 14px;${H1}">Les billets sont pris</h1>
     <p style="margin:0 0 18px;${BODY_P}">
-      ${escapeHtml(args.buyerName)} a pris les places pour <strong>${title}</strong>${dateLine}.
+      ${escapeHtml(args.buyerName)} a pris les places pour <strong>${title}</strong>${dateLine}, la tienne comprise.
       Ta part&nbsp;: <strong>${escapeHtml(formatCents(args.amountCents))}</strong>.
     </p>
-    <p style="margin:0 0 8px;${MICRO_TAG}">Moyens de paiement</p>
+    <p style="margin:0 0 8px;${MICRO_TAG}">Pour rembourser ${escapeHtml(args.buyerName)}</p>
     ${methodsBlock(args.methods)}
     <p style="margin:28px 0;">
       ${ctaButton(args.debtsUrl, "Régler ma part")}
     </p>
+    <p style="margin:0 0 10px;font-size:13px;color:${INK_MUTED};line-height:1.6;">
+      Une fois le virement parti, tape « j&rsquo;ai payé » — ou dis-le simplement à ${escapeHtml(args.buyerName)}.
+      Pour te reconnaître, la page te demandera ton e-mail&nbsp;: donne celui où tu reçois ce message.
+    </p>
     <p style="margin:0;font-size:13px;color:${INK_MUTED};line-height:1.6;">
-      Une fois le virement parti, tape « j&rsquo;ai payé » pour que ${escapeHtml(args.buyerName)} confirme la réception.
+      Ce n&rsquo;est pas toi ? Préviens ${escapeHtml(args.buyerName)}.
     </p>
   `;
   return {
-    subject: `${formatCents(args.amountCents)} pour ${args.outingTitle}`,
+    // Pensé pour quelqu'un qui découvre la sortie par ce mail (organisateur
+    // qui a inscrit ses amis) : « 25 € pour Pilote » ressemblait à une facture.
+    subject: `${args.buyerName} a pris ta place pour ${args.outingTitle} — ${formatCents(args.amountCents)}`,
     html: renderEmail({
-      preheader: `${args.buyerName} a pris les billets. Ta part : ${formatCents(args.amountCents)}.`,
+      preheader: `Ta part : ${formatCents(args.amountCents)}. Tout est dans ce mail.`,
       body,
     }),
   };

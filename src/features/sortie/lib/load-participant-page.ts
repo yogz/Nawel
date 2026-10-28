@@ -22,7 +22,14 @@ export type ParticipantSubPath = "dettes" | "achat" | "paiement" | "billets";
  *   - `not-found` : outing inconnu ou slugOrId invalide
  */
 export type ParticipantPageState =
-  | { kind: "ok"; outing: Outing; me: Participant; canonical: string }
+  | {
+      kind: "ok";
+      outing: Outing;
+      me: Participant;
+      canonical: string;
+      /** Compte connecté (null si accès par cookie seul). */
+      sessionUserId: string | null;
+    }
   | {
       kind: "needs-auth";
       outing: Outing;
@@ -83,7 +90,7 @@ export async function loadParticipantPage(
   });
 
   if (me) {
-    return { kind: "ok", outing, me, canonical };
+    return { kind: "ok", outing, me, canonical, sessionUserId: userId };
   }
 
   // Connecté mais pas dans la sortie → notice claire, pas le gate.

@@ -111,6 +111,26 @@ describe("computePendingActions — créateur", () => {
     expect(actions[0].tone).toBe("hot");
   });
 
+  it("billets déjà pris : « qui vient ? » tant que l'organisateur est seul", () => {
+    const o = {
+      ...outing({ id: "ab", status: "awaiting_purchase", creatorUserId: ME }),
+      alreadyBought: true,
+      confirmedCount: 1,
+    };
+    const actions = computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW });
+    expect(actions[0].label).toBe("qui vient ?");
+  });
+
+  it("billets déjà pris : « déclarer l'achat » une fois les participants choisis", () => {
+    const o = {
+      ...outing({ id: "ab", status: "awaiting_purchase", creatorUserId: ME }),
+      alreadyBought: true,
+      confirmedCount: 4,
+    };
+    const actions = computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW });
+    expect(actions[0].label).toBe("déclarer l'achat");
+  });
+
   it("émet confirm-purchase sur status=stale_purchase", () => {
     const o = outing({ id: "sp", status: "stale_purchase", creatorUserId: ME });
     const actions = computePendingActions({ outings: [o], userId: ME, now: FROZEN_NOW });

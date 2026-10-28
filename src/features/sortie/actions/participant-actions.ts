@@ -1,5 +1,6 @@
 "use server";
 
+import { acceptsResponses } from "@/features/sortie/lib/already-bought/rules";
 import { and, eq, or } from "drizzle-orm";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -57,7 +58,9 @@ export async function rsvpAction(
   }
   // After the RSVP deadline the list is frozen — Phase 3 will allow
   // late "interested" responses, not here.
-  if (outing.deadlineAt < new Date() && outing.status !== "open") {
+  // Fermé après la deadline, et toujours pour une sortie « billets déjà
+  // pris » (l'organisateur choisit qui vient).
+  if (!acceptsResponses(outing, new Date())) {
     return { message: "Les réponses sont closes pour cette sortie." };
   }
 
@@ -324,7 +327,7 @@ export async function castVoteAction(
   if (outing.chosenTimeslotId) {
     return { message: "Le créneau a déjà été choisi. Réponds plutôt oui/non." };
   }
-  if (outing.deadlineAt < new Date()) {
+  if (outing.deadlineAt < new Date() || outing.alreadyBought) {
     return { message: "Les votes sont clos pour cette sortie." };
   }
 

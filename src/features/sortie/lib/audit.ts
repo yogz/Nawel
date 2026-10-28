@@ -28,6 +28,8 @@ export async function hashIp(): Promise<string | null> {
 export const OUTING_AUDIT_ACTION = {
   TIMESLOT_PICKED: "TIMESLOT_PICKED",
   POLL_REOPENED: "POLL_REOPENED",
+  // « Qui vient ? » d'une sortie billets déjà pris (compteurs, sans adresses).
+  PARTICIPANTS_SET_BY_CREATOR: "OUTING_PARTICIPANTS_SET_BY_CREATOR",
 } as const;
 
 export const TICKET_AUDIT_ACTION = {

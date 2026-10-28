@@ -31,9 +31,20 @@ type Props = {
   normalView: PurchaseView;
   ghostView: PurchaseView;
   canGhost: boolean;
+  /** Dernier contrôle avant validation : « Toi, Yves (+1), Cécile ». */
+  countedNames: string[];
+  /** Comptés sans adresse e-mail : ils ne recevront pas leur part. */
+  noEmailNames: string[];
 };
 
-export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props) {
+export function PurchaseForm({
+  shortId,
+  normalView,
+  ghostView,
+  canGhost,
+  countedNames,
+  noEmailNames,
+}: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     declarePurchaseAction,
     {} as FormActionState
@@ -116,6 +127,9 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
           {adultCount} adulte{adultCount > 1 ? "s" : ""}
           {childCount > 0 && `, ${childCount} enfant${childCount > 1 ? "s" : ""}`}
         </p>
+        {countedNames.length > 0 && (
+          <p className="mt-2 text-sm text-ink-500">{countedNames.join(", ")}</p>
+        )}
       </div>
 
       <fieldset className="flex flex-col gap-2">
@@ -247,6 +261,19 @@ export function PurchaseForm({ shortId, normalView, ghostView, canGhost }: Props
           {state.message}
         </p>
       )}
+
+      <div className="flex flex-col gap-1 text-sm text-ink-500">
+        <p>Chacun reçoit sa part par e-mail.</p>
+        {noEmailNames.length > 0 && (
+          <p>Pas d&rsquo;e-mail : {noEmailNames.join(", ")}. Préviens-les toi-même.</p>
+        )}
+        {/* Un moyen de paiement ne peut être ajouté qu'une fois l'achat
+            déclaré (payment-method-actions : réservé à l'acheteur). */}
+        <p>
+          Après l&rsquo;enregistrement, ajoute ton RIB ou ton Lydia : chacun le verra sur sa page de
+          remboursement.
+        </p>
+      </div>
 
       <div className="flex items-center justify-end gap-3">
         <Button type="submit" size="lg" disabled={pending || !canSubmit}>

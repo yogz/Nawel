@@ -9,6 +9,7 @@ import { ParticipantAuthGate } from "@/features/sortie/components/participant-au
 import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
 import { displayNameOf } from "@/features/sortie/lib/participant-name";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
+import { mayDeclarePurchase } from "@/features/sortie/lib/already-bought/rules";
 import { PurchaseForm, type AllocationRowView } from "@/features/sortie/components/purchase-form";
 import { Eyebrow } from "@/features/sortie/components/eyebrow";
 
@@ -50,13 +51,20 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     );
   }
 
-  const { outing, me, canonical } = state;
+  const { outing, me, canonical, sessionUserId } = state;
 
   // Une row participant existe mais l'utilisateur n'a pas confirmé sa
   // présence — pas le droit de déclarer l'achat. On garde le 404
   // historique : l'utilisateur arrive sur l'URL en suivant un lien
   // qu'il n'aurait pas dû avoir.
-  if (me.response !== "yes") {
+  if (
+    !mayDeclarePurchase({
+      alreadyBought: outing.alreadyBought,
+      creatorUserId: outing.creatorUserId,
+      sessionUserId,
+      myResponse: me.response,
+    })
+  ) {
     notFound();
   }
 
@@ -105,6 +113,21 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
     };
   }
 
+  // Dernier contrôle avant de valider (on ne peut plus ajouter personne
+  // après l'achat) : prénoms comptés, et qui ne recevra pas l'e-mail. Seul
+  // un booléen « a un e-mail » sert ici — aucune adresse n'est transmise.
+  const confirmed = outing.participants.filter((p) => p.response === "yes");
+  const withExtras = (p: (typeof confirmed)[number], name: string) => {
+    const extras = p.extraAdults + p.extraChildren;
+    return extras > 0 ? `${name} (+${extras})` : name;
+  };
+  const countedNames = confirmed.map((p) =>
+    withExtras(p, p.id === me.id ? "Toi" : (nameByParticipant.get(p.id) ?? "Quelqu'un"))
+  );
+  const noEmailNames = confirmed
+    .filter((p) => p.id !== me.id && p.userId === null && !p.anonEmail)
+    .map((p) => nameByParticipant.get(p.id) ?? "Quelqu'un");
+
   const normalView = buildView(yesRows);
   const ghostView = buildView(yesRows.filter((r) => r.id !== me.id));
 
@@ -136,6 +159,8 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
         normalView={normalView}
         ghostView={ghostView}
         canGhost={ghostView.totalPlaces > 0}
+        countedNames={countedNames}
+        noEmailNames={noEmailNames}
       />
     </main>
   );
