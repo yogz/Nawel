@@ -78,3 +78,27 @@ export function revolutPayUrl(args: {
   url.searchParams.set("note", Array.from(note).slice(0, NOTE_MAX_CHARS).join(""));
   return url.toString();
 }
+
+/**
+ * Pay link for a decrypted payment method, or null. Re-parses the stored
+ * value instead of trusting its preview: older Revolut rows are free text.
+ */
+export function payUrlForMethod(args: {
+  type: string;
+  value: string;
+  amountCents: number;
+  outingTitle: string;
+}): string | null {
+  if (args.type !== "revolut") {
+    return null;
+  }
+  const parsed = parseRevolutInput(args.value);
+  if (parsed.kind !== "tag") {
+    return null;
+  }
+  return revolutPayUrl({
+    tag: parsed.tag,
+    amountCents: args.amountCents,
+    outingTitle: args.outingTitle,
+  });
+}

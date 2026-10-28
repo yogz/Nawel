@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRevolutInput, revolutPayUrl } from "./revolut";
+import { parseRevolutInput, payUrlForMethod, revolutPayUrl } from "./revolut";
 
 describe("parseRevolutInput", () => {
   it.each([
@@ -86,5 +86,32 @@ describe("revolutPayUrl", () => {
     expect(() =>
       revolutPayUrl({ tag: "yogzgo", amountCents: 500, outingTitle: `${"b".repeat(55)}😀😀` })
     ).not.toThrow();
+  });
+});
+
+describe("payUrlForMethod", () => {
+  const base = { amountCents: 1250, outingTitle: "Concert" };
+
+  it("donne un lien pour un Revolut enregistré par pseudo", () => {
+    const url = payUrlForMethod({ ...base, type: "revolut", value: "@yogzgo" });
+    expect(url && new URL(url).pathname).toBe("/yogzgo");
+  });
+
+  // Revalidation à la révélation : les anciennes lignes sont des saisies libres.
+  it("pas de lien pour un Revolut enregistré par numéro", () => {
+    expect(payUrlForMethod({ ...base, type: "revolut", value: "+33 6 12 34 56 78" })).toBeNull();
+  });
+
+  it("pas de lien pour une ancienne saisie libre douteuse", () => {
+    expect(
+      payUrlForMethod({ ...base, type: "revolut", value: "https://evilrevolut.me/x" })
+    ).toBeNull();
+  });
+
+  it("pas de lien pour les autres moyens", () => {
+    expect(payUrlForMethod({ ...base, type: "lydia", value: "@yogzgo" })).toBeNull();
+    expect(
+      payUrlForMethod({ ...base, type: "iban", value: "FR1420041010050500013M02606" })
+    ).toBeNull();
   });
 });
