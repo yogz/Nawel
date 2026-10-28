@@ -18,7 +18,10 @@ import {
   PAYMENT_TYPE_LABEL,
   validateMethodLabel,
 } from "@/features/sortie/lib/account-payment/rules";
-import { newConfirmToken } from "@/features/sortie/lib/account-payment/confirm-token";
+import {
+  hashSessionId,
+  newConfirmToken,
+} from "@/features/sortie/lib/account-payment/confirm-token";
 import {
   sendAccountMethodChangedEmail,
   sendAccountMethodConfirmEmail,
@@ -60,7 +63,7 @@ const removeAccountMethodSchema = z.object({
 });
 
 async function getManagingUser(): Promise<
-  { ok: true; userId: string; email: string } | { ok: false; message: string }
+  { ok: true; userId: string; email: string; sessionHash: string } | { ok: false; message: string }
 > {
   const session = await auth.api.getSession({ headers: await headers() });
   const u = session?.user;
@@ -73,7 +76,12 @@ async function getManagingUser(): Promise<
       message: "Confirme d'abord ton adresse e-mail pour enregistrer un moyen de paiement.",
     };
   }
-  return { ok: true, userId: u.id, email: u.email };
+  return {
+    ok: true,
+    userId: u.id,
+    email: u.email,
+    sessionHash: hashSessionId(session.session.id),
+  };
 }
 
 export async function addAccountPaymentMethodAction(
@@ -155,6 +163,8 @@ export async function addAccountPaymentMethodAction(
         displayLabel,
         confirmTokenHash: tokenHash,
         confirmTokenExpiresAt: expiresAt,
+        // Le lien ne sera accepté que depuis cette session (option A).
+        confirmSessionHash: who.sessionHash,
       })
       .returning({ id: userPaymentMethods.id });
 

@@ -36,16 +36,29 @@ describe("checkConfirmToken", () => {
     confirmTokenHash: t.tokenHash,
     confirmTokenExpiresAt: t.expiresAt,
     confirmedAt: null,
+    confirmSessionHash: "s1",
   };
 
   it("accepte un jeton valide, du bon compte, dans les temps", () => {
-    expect(checkConfirmToken({ row: pending, sessionUserId: "u1", now: NOW })).toEqual({
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: "u1", sessionHash: "s1", now: NOW })
+    ).toEqual({
       ok: true,
     });
   });
 
+  // Option A choisie par l'owner : un clic depuis une autre session (autre
+  // appareil, ou quelqu'un qui a le mot de passe) ne confirme rien.
+  it("refuse une confirmation depuis une autre session que celle de l'ajout", () => {
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: "u1", sessionHash: "s2", now: NOW })
+    ).toEqual({ ok: false, reason: "other-device" });
+  });
+
   it("refuse un jeton inconnu", () => {
-    expect(checkConfirmToken({ row: undefined, sessionUserId: "u1", now: NOW })).toEqual({
+    expect(
+      checkConfirmToken({ row: undefined, sessionUserId: "u1", sessionHash: "s1", now: NOW })
+    ).toEqual({
       ok: false,
       reason: "invalid",
     });
@@ -53,11 +66,15 @@ describe("checkConfirmToken", () => {
 
   it("refuse un jeton expiré", () => {
     const later = new Date(t.expiresAt.getTime() + 1);
-    expect(checkConfirmToken({ row: pending, sessionUserId: "u1", now: later })).toEqual({
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: "u1", sessionHash: "s1", now: later })
+    ).toEqual({
       ok: false,
       reason: "expired",
     });
-    expect(checkConfirmToken({ row: pending, sessionUserId: "u1", now: t.expiresAt })).toEqual({
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: "u1", sessionHash: "s1", now: t.expiresAt })
+    ).toEqual({
       ok: false,
       reason: "expired",
     });
@@ -68,6 +85,7 @@ describe("checkConfirmToken", () => {
       checkConfirmToken({
         row: { ...pending, confirmedAt: NOW },
         sessionUserId: "u1",
+        sessionHash: "s1",
         now: NOW,
       })
     ).toEqual({ ok: false, reason: "used" });
@@ -75,17 +93,22 @@ describe("checkConfirmToken", () => {
       checkConfirmToken({
         row: { ...pending, confirmTokenHash: null, confirmTokenExpiresAt: null },
         sessionUserId: "u1",
+        sessionHash: "s1",
         now: NOW,
       })
     ).toEqual({ ok: false, reason: "used" });
   });
 
   it("refuse le jeton d'un autre compte, ou sans session", () => {
-    expect(checkConfirmToken({ row: pending, sessionUserId: "u2", now: NOW })).toEqual({
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: "u2", sessionHash: "s1", now: NOW })
+    ).toEqual({
       ok: false,
       reason: "other-account",
     });
-    expect(checkConfirmToken({ row: pending, sessionUserId: null, now: NOW })).toEqual({
+    expect(
+      checkConfirmToken({ row: pending, sessionUserId: null, sessionHash: "s1", now: NOW })
+    ).toEqual({
       ok: false,
       reason: "other-account",
     });

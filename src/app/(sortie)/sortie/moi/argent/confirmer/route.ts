@@ -6,6 +6,7 @@ import { auditLog, userPaymentMethods } from "@drizzle/sortie-schema";
 import { ACCOUNT_PAYMENT_AUDIT_ACTION, hashIp } from "@/features/sortie/lib/audit";
 import {
   checkConfirmToken,
+  hashSessionId,
   hashConfirmToken,
 } from "@/features/sortie/lib/account-payment/confirm-token";
 import {
@@ -53,15 +54,27 @@ export async function GET(request: NextRequest) {
       confirmTokenHash: true,
       confirmTokenExpiresAt: true,
       confirmedAt: true,
+      confirmSessionHash: true,
     },
   });
 
   const now = new Date();
-  const check = checkConfirmToken({ row, sessionUserId: u.id, now });
+  const check = checkConfirmToken({
+    row,
+    sessionUserId: u.id,
+    sessionHash: session ? hashSessionId(session.session.id) : null,
+    now,
+  });
   if (!check.ok || !row) {
     const reason = check.ok ? "invalid" : check.reason;
     return backToAccount(
-      reason === "expired" ? "expire" : reason === "other-account" ? "autre-compte" : "invalide"
+      reason === "expired"
+        ? "expire"
+        : reason === "other-account"
+          ? "autre-compte"
+          : reason === "other-device"
+            ? "autre-appareil"
+            : "invalide"
     );
   }
 

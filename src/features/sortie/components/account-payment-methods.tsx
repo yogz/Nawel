@@ -46,6 +46,8 @@ const OUTCOME_MESSAGES: Record<string, string> = {
   expire: "Lien expiré. Ajoute ce moyen à nouveau pour recevoir un nouveau lien.",
   "autre-compte":
     "Ce lien a été envoyé à un autre compte. Connecte-toi avec celui-là pour le confirmer.",
+  "autre-appareil":
+    "Ouvre le lien sur l'appareil où tu as ajouté ce moyen de paiement (et avec la même connexion).",
   plein: "5 moyens maximum. Retire-en un pour en ajouter un autre.",
   invalide: "Lien invalide ou déjà utilisé.",
 };

@@ -298,6 +298,9 @@ export const userPaymentMethods = sortie.table(
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     confirmTokenHash: varchar("confirm_token_hash", { length: 64 }),
     confirmTokenExpiresAt: timestamp("confirm_token_expires_at", { withTimezone: true }),
+    // Empreinte de la session qui a fait l'ajout : la confirmation n'est
+    // acceptée que depuis cette session (cf. account-payment/confirm-token.ts).
+    confirmSessionHash: varchar("confirm_session_hash", { length: 64 }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => ({

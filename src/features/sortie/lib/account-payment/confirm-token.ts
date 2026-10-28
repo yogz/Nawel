@@ -24,7 +24,17 @@ export function newConfirmToken(now: Date): { token: string; tokenHash: string; 
 
 export type ConfirmTokenCheck =
   | { ok: true }
-  | { ok: false; reason: "invalid" | "expired" | "used" | "other-account" };
+  | { ok: false; reason: "invalid" | "expired" | "used" | "other-account" | "other-device" };
+
+/**
+ * Empreinte de la session de connexion qui a fait l'ajout : le lien n'est
+ * accepté que depuis cette même session (option A choisie par l'owner).
+ * Sans ça, le vrai propriétaire pouvait confirmer d'un clic un IBAN ajouté
+ * par quelqu'un qui connaît son mot de passe.
+ */
+export function hashSessionId(sessionId: string): string {
+  return createHash("sha256").update(`sortie:acct-pm-session:${sessionId}`).digest("hex");
+}
 
 /**
  * `row` = la ligne retrouvée par le hachage du jeton reçu (undefined si
@@ -38,9 +48,11 @@ export function checkConfirmToken(a: {
         confirmTokenHash: string | null;
         confirmTokenExpiresAt: Date | null;
         confirmedAt: Date | null;
+        confirmSessionHash: string | null;
       }
     | undefined;
   sessionUserId: string | null;
+  sessionHash: string | null;
   now: Date;
 }): ConfirmTokenCheck {
   const { row } = a;
@@ -55,6 +67,9 @@ export function checkConfirmToken(a: {
   }
   if (row.confirmTokenExpiresAt.getTime() <= a.now.getTime()) {
     return { ok: false, reason: "expired" };
+  }
+  if (!row.confirmSessionHash || a.sessionHash !== row.confirmSessionHash) {
+    return { ok: false, reason: "other-device" };
   }
   return { ok: true };
 }
