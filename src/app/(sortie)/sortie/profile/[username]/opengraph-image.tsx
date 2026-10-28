@@ -3,12 +3,12 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user } from "@drizzle/schema";
 import { listProfileOutings } from "@/features/sortie/queries/outing-queries";
+import { sortUpcomingByStartsAt } from "@/features/sortie/lib/upcoming-buckets";
 
-// Format mini-agenda : carte profil = menu des prochaines sorties (4 lignes
-// datées + compteur "+ N autres"). Cible le cas d'usage natif "voilà ce que
-// je vais voir, dites-moi si vous voulez venir" partagé en WhatsApp/DM aux
-// amis. Plus de focus sur "la prochaine" — c'est la *série* qui crée la
-// valeur du partage de profil.
+// Format mini-agenda : carte profil = menu des prochaines sorties (4 titres
+// + compteur "+ N autres"), sans date — la vitrine publique n'en montre pas
+// (cf. spec 2026-10-28-sortie-profile-attending). C'est la *série* qui crée
+// la valeur du partage de profil.
 export const alt = "Sortie";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -27,10 +27,6 @@ const INK_400 = "#7A7A7A";
 const HOT = "#FF3D81";
 const HOT_DEEP = "#E63577";
 const ACID = "#C7FF3C";
-
-const TZ = "Europe/Paris";
-const dayFmt = new Intl.DateTimeFormat("fr-FR", { day: "numeric", timeZone: TZ });
-const monthShortFmt = new Intl.DateTimeFormat("fr-FR", { month: "short", timeZone: TZ });
 
 const MENU_LIMIT = 4;
 
@@ -51,17 +47,13 @@ export default async function Image({ params }: Props) {
 
   const { upcoming } = await listProfileOutings(row.id);
 
-  // Re-trie par startsAt asc (la query renvoie en `desc(createdAt)` par
-  // défaut). Pour le menu il faut la chronologie "ce qui arrive en premier".
-  const dated = upcoming
-    .filter((o): o is typeof o & { startsAt: Date } => o.startsAt !== null)
-    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
-
   if (upcoming.length === 0) {
     return renderEmpty(row.name, row.username);
   }
 
-  const featured = dated.slice(0, MENU_LIMIT);
+  // Re-trie par startsAt asc (la query renvoie en `desc(createdAt)` par
+  // défaut) : le menu suit "ce qui arrive en premier", non datées en fin.
+  const featured = sortUpcomingByStartsAt(upcoming).slice(0, MENU_LIMIT);
   const overflow = upcoming.length - featured.length;
 
   return new ImageResponse(
@@ -139,7 +131,7 @@ export default async function Image({ params }: Props) {
         }}
       >
         {featured.map((o) => (
-          <MenuRow key={o.id} title={o.title} date={o.startsAt} />
+          <MenuRow key={o.id} title={o.title} />
         ))}
         {overflow > 0 && (
           <div
@@ -154,22 +146,6 @@ export default async function Image({ params }: Props) {
             {`+ ${overflow} autre${overflow > 1 ? "s" : ""}`}
           </div>
         )}
-        {/* Edge case: que des sorties non datées (mode vote sans créneau
-                choisi). On ne montre pas les titres pour rester sobre — le
-                compteur "Agenda · N sorties" en haut suffit. */}
-        {featured.length === 0 && (
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 500,
-              color: INK_500,
-              lineHeight: 1.4,
-              maxWidth: 760,
-            }}
-          >
-            {"Dates en cours de coordination — RDV bientôt."}
-          </div>
-        )}
       </div>
 
       <BrandBottomLeft />
@@ -178,63 +154,21 @@ export default async function Image({ params }: Props) {
   );
 }
 
-function MenuRow({ title, date }: { title: string; date: Date }) {
-  const day = dayFmt.format(date);
-  const month = monthShortFmt.format(date).replace(/\./g, "").toUpperCase();
-
+function MenuRow({ title }: { title: string }) {
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "baseline",
-        gap: 28,
+        fontSize: 26,
+        fontWeight: 500,
+        color: INK_700,
+        lineHeight: 1.2,
+        display: "-webkit-box",
+        WebkitLineClamp: 1,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 8,
-          width: 130,
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: ACID,
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {day}
-        </span>
-        <span
-          style={{
-            fontSize: 18,
-            fontWeight: 600,
-            letterSpacing: "0.14em",
-            color: ACID,
-          }}
-        >
-          {month}
-        </span>
-      </div>
-      <div
-        style={{
-          fontSize: 26,
-          fontWeight: 500,
-          color: INK_700,
-          lineHeight: 1.2,
-          flex: 1,
-          display: "-webkit-box",
-          WebkitLineClamp: 1,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-      >
-        {title}
-      </div>
+      {title}
     </div>
   );
 }
