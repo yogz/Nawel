@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/db";
-import { purchaserPaymentMethods, purchases } from "@drizzle/sortie-schema";
+import { purchases } from "@drizzle/sortie-schema";
 import { loadParticipantPage } from "@/features/sortie/lib/load-participant-page";
 import { ParticipantAuthGate } from "@/features/sortie/components/participant-auth-gate";
 import { NotParticipantNotice } from "@/features/sortie/components/not-participant-notice";
@@ -127,10 +127,6 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
   const noEmailNames = confirmed
     .filter((p) => p.id !== me.id && p.userId === null && !p.anonEmail)
     .map((p) => nameByParticipant.get(p.id) ?? "Quelqu'un");
-  const myMethod = await db.query.purchaserPaymentMethods.findFirst({
-    where: eq(purchaserPaymentMethods.participantId, me.id),
-    columns: { id: true },
-  });
 
   const normalView = buildView(yesRows);
   const ghostView = buildView(yesRows.filter((r) => r.id !== me.id));
@@ -165,7 +161,6 @@ export default async function PurchaseDeclarationPage({ params }: Props) {
         canGhost={ghostView.totalPlaces > 0}
         countedNames={countedNames}
         noEmailNames={noEmailNames}
-        paymentHref={myMethod ? null : `/${canonical}/paiement`}
       />
     </main>
   );

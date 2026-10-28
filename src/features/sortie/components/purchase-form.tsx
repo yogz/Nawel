@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { declarePurchaseAction } from "@/features/sortie/actions/purchase-actions";
@@ -36,8 +35,6 @@ type Props = {
   countedNames: string[];
   /** Comptés sans adresse e-mail : ils ne recevront pas leur part. */
   noEmailNames: string[];
-  /** Lien vers /paiement quand l'acheteur n'a aucun moyen de paiement. */
-  paymentHref: string | null;
 };
 
 export function PurchaseForm({
@@ -47,7 +44,6 @@ export function PurchaseForm({
   canGhost,
   countedNames,
   noEmailNames,
-  paymentHref,
 }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     declarePurchaseAction,
@@ -271,14 +267,12 @@ export function PurchaseForm({
         {noEmailNames.length > 0 && (
           <p>Pas d&rsquo;e-mail : {noEmailNames.join(", ")}. Préviens-les toi-même.</p>
         )}
-        {paymentHref && (
-          <Link
-            href={paymentHref}
-            className="text-acid-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acid-600/50"
-          >
-            Ajoute un RIB ou un Lydia : il apparaîtra dans le mail de chacun.
-          </Link>
-        )}
+        {/* Un moyen de paiement ne peut être ajouté qu'une fois l'achat
+            déclaré (payment-method-actions : réservé à l'acheteur). */}
+        <p>
+          Après l&rsquo;enregistrement, ajoute ton RIB ou ton Lydia : chacun le verra sur sa page de
+          remboursement.
+        </p>
       </div>
 
       <div className="flex items-center justify-end gap-3">

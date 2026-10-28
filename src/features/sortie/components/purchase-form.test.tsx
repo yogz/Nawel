@@ -17,7 +17,6 @@ function renderForm(over: Partial<Parameters<typeof PurchaseForm>[0]> = {}) {
       canGhost={false}
       countedNames={["Toi", "Yves (+1)", "Cécile"]}
       noEmailNames={[]}
-      paymentHref={null}
       {...over}
     />
   );
@@ -37,9 +36,13 @@ describe("PurchaseForm — dernier contrôle avant de valider", () => {
     expect(screen.getByText(/Pas d.e-mail : Cécile\. Préviens-les toi-même\./)).toBeTruthy();
   });
 
-  it("rappelle d'ajouter un moyen de paiement quand il n'y en a pas", () => {
-    renderForm({ paymentHref: "/pilote-JtLFTqLm/paiement" });
-    const link = screen.getByRole("link", { name: /Ajoute un RIB ou un Lydia/ });
-    expect(link.getAttribute("href")).toBe("/pilote-JtLFTqLm/paiement");
+  it("dit honnêtement quand ajouter son RIB (pas de lien vers une page encore inaccessible)", () => {
+    renderForm();
+    expect(
+      screen.getByText(
+        "Après l’enregistrement, ajoute ton RIB ou ton Lydia : chacun le verra sur sa page de remboursement."
+      )
+    ).toBeTruthy();
+    expect(screen.queryByRole("link")).toBeNull();
   });
 });
