@@ -59,4 +59,7 @@ export const ACCOUNT_PAYMENT_AUDIT_ACTION = {
   USER_PAYMENT_METHOD_ADDED: "USER_PAYMENT_METHOD_ADDED",
   USER_PAYMENT_METHOD_CONFIRMED: "USER_PAYMENT_METHOD_CONFIRMED",
   USER_PAYMENT_METHOD_REMOVED: "USER_PAYMENT_METHOD_REMOVED",
+  // Copie (chiffré tel quel) vers purchaser_payment_methods à la déclaration
+  // d'un achat. Payload : `{ purchaseId, count, types, sourceMethodIds }`.
+  PAYMENT_METHODS_COPIED_FROM_ACCOUNT: "PAYMENT_METHODS_COPIED_FROM_ACCOUNT",
 } as const;

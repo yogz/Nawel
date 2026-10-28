@@ -11,7 +11,9 @@ import {
   outings,
   participants,
   purchaseAllocations,
+  purchaserPaymentMethods,
   purchases,
+  userPaymentMethods,
 } from "@drizzle/sortie-schema";
 import { buildAllocationPlan } from "@/features/sortie/lib/allocation-plan";
 import { priceFor } from "@/features/sortie/lib/price-for";
@@ -28,9 +30,13 @@ import {
 import { canonicalPathSegment } from "@/features/sortie/lib/parse-outing-path";
 import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
-import { hashIp } from "@/features/sortie/lib/audit";
+import { ACCOUNT_PAYMENT_AUDIT_ACTION, hashIp } from "@/features/sortie/lib/audit";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
 import { mayDeclarePurchase } from "@/features/sortie/lib/already-bought/rules";
+import {
+  mayCopyAccountMethods,
+  selectMethodsToCopy,
+} from "@/features/sortie/lib/account-payment/rules";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
@@ -280,6 +286,19 @@ export async function declarePurchaseAction(
     );
   });
 
+  // Moyens du compte cochés sur la page achat. Simples candidats : revérifiés
+  // dans la transaction contre les moyens confirmés du compte connecté.
+  const checkedMethodIds = formData
+    .getAll("copyMethodIds")
+    .filter((v): v is string => typeof v === "string")
+    .slice(0, 20);
+  // Copie seulement si l'acheteur EST le compte connecté — jamais pour une
+  // ligne reconnue par le seul cookie (cf. spec moyens de paiement §5 bis).
+  const copyFromUserId =
+    userId && mayCopyAccountMethods({ sessionUserId: userId, buyerUserId: me.userId })
+      ? userId
+      : null;
+
   const ipHash = await hashIp();
   await db.transaction(async (tx) => {
     const [purchase] = await tx
@@ -315,6 +334,52 @@ export async function declarePurchaseAction(
         ghostBuyer: data.ghostBuyer,
       }),
     });
+
+    // Moyens du compte → moyens de cette participation, chiffré copié tel
+    // quel (jamais déchiffré) : l'e-mail « ta part » les contient dès l'envoi.
+    if (copyFromUserId && checkedMethodIds.length > 0) {
+      const accountRows = await tx
+        .select({
+          id: userPaymentMethods.id,
+          type: userPaymentMethods.type,
+          valueEncrypted: userPaymentMethods.valueEncrypted,
+          valuePreview: userPaymentMethods.valuePreview,
+          displayLabel: userPaymentMethods.displayLabel,
+          confirmedAt: userPaymentMethods.confirmedAt,
+        })
+        .from(userPaymentMethods)
+        .where(eq(userPaymentMethods.userId, copyFromUserId))
+        .orderBy(asc(userPaymentMethods.createdAt), asc(userPaymentMethods.id));
+      const copyIds = selectMethodsToCopy({
+        checkedIds: checkedMethodIds,
+        accountMethods: accountRows,
+      });
+      const toCopy = accountRows.filter((r) => copyIds.includes(r.id));
+      if (toCopy.length > 0) {
+        await tx.insert(purchaserPaymentMethods).values(
+          toCopy.map((r) => ({
+            participantId: me.id,
+            type: r.type,
+            valueEncrypted: r.valueEncrypted,
+            valuePreview: r.valuePreview,
+            displayLabel: r.displayLabel,
+          }))
+        );
+        await tx.insert(auditLog).values({
+          outingId: outing.id,
+          actorParticipantId: me.id,
+          actorUserId: userId,
+          action: ACCOUNT_PAYMENT_AUDIT_ACTION.PAYMENT_METHODS_COPIED_FROM_ACCOUNT,
+          ipHash,
+          payload: JSON.stringify({
+            purchaseId: purchase.id,
+            count: toCopy.length,
+            types: toCopy.map((r) => r.type),
+            sourceMethodIds: copyIds,
+          }),
+        });
+      }
+    }
 
     // Filtre sur amount > 0 AVANT le check size : un achat à prix 0
     // (cadeau / prévente / abo) accumule des entrées à 0 dans la map

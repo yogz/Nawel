@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { declarePurchaseAction } from "@/features/sortie/actions/purchase-actions";
 import type { FormActionState } from "@/features/sortie/actions/outing-actions";
 import { formatCents } from "@/features/sortie/lib/format";
+import { PAYMENT_TYPE_LABEL } from "@/features/sortie/lib/account-payment/rules";
 import {
   EuroInput,
   MODE_COPY,
@@ -17,6 +18,14 @@ export type AllocationRowView = {
   participantId: string;
   displayName: string;
   isChild: boolean;
+};
+
+/** Moyen confirmé du compte connecté — aperçu seulement, jamais la valeur. */
+export type AccountCopyMethod = {
+  id: string;
+  type: "iban" | "lydia" | "revolut" | "wero";
+  valuePreview: string;
+  displayLabel: string | null;
 };
 
 export type PurchaseView = {
@@ -35,6 +44,12 @@ type Props = {
   countedNames: string[];
   /** Comptés sans adresse e-mail : ils ne recevront pas leur part. */
   noEmailNames: string[];
+  /**
+   * Moyens du compte joignables à l'achat (`mayCopyAccountMethods`). `null`
+   * = pas de copie possible (acheteur non connecté, ou reconnu par cookie) :
+   * on n'annonce alors jamais une copie qui ne partirait pas.
+   */
+  accountMethods: AccountCopyMethod[] | null;
 };
 
 export function PurchaseForm({
@@ -44,6 +59,7 @@ export function PurchaseForm({
   canGhost,
   countedNames,
   noEmailNames,
+  accountMethods,
 }: Props) {
   const [state, formAction, pending] = useActionState<FormActionState, FormData>(
     declarePurchaseAction,
@@ -263,16 +279,34 @@ export function PurchaseForm({
       )}
 
       <div className="flex flex-col gap-1 text-sm text-ink-500">
-        <p>Chacun reçoit sa part par e-mail.</p>
+        {accountMethods && accountMethods.length > 0 ? (
+          <AccountMethodsToCopy methods={accountMethods} />
+        ) : (
+          <p>Chacun reçoit sa part par e-mail.</p>
+        )}
         {noEmailNames.length > 0 && (
           <p>Pas d&rsquo;e-mail : {noEmailNames.join(", ")}. Préviens-les toi-même.</p>
         )}
-        {/* Un moyen de paiement ne peut être ajouté qu'une fois l'achat
-            déclaré (payment-method-actions : réservé à l'acheteur). */}
-        <p>
-          Après l&rsquo;enregistrement, ajoute ton RIB ou ton Lydia : chacun le verra sur sa page de
-          remboursement.
-        </p>
+        {accountMethods === null ? (
+          // Un moyen par sortie ne peut être ajouté qu'une fois l'achat
+          // déclaré (payment-method-actions : réservé à l'acheteur).
+          <p>
+            Après l&rsquo;enregistrement, ajoute ton IBAN ou ton Lydia : chacun le verra sur sa page
+            de remboursement.
+          </p>
+        ) : accountMethods.length === 0 ? (
+          <p>
+            Ajoute ton IBAN ou ton Lydia une fois dans{" "}
+            <a
+              href="/moi/argent#moyens"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-acid-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+            >
+              Mon argent ↗
+            </a>
+          </p>
+        ) : null}
       </div>
 
       <div className="flex items-center justify-end gap-3">
@@ -281,5 +315,41 @@ export function PurchaseForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+/**
+ * Geste conscient : chaque moyen du compte a sa case, cochée par défaut. Le
+ * serveur ne copie que les ids cochés, revérifiés (compte connecté, moyen
+ * confirmé) — cf. `selectMethodsToCopy`.
+ */
+function AccountMethodsToCopy({ methods }: { methods: AccountCopyMethod[] }) {
+  return (
+    <fieldset className="flex flex-col gap-1">
+      <legend className="mb-1">
+        Chacun reçoit sa part par e-mail, avec tes moyens de paiement :
+      </legend>
+      {methods.map((m) => (
+        <label
+          key={m.id}
+          className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-surface-400 bg-surface-50 px-3 py-2"
+        >
+          <input
+            type="checkbox"
+            name="copyMethodIds"
+            value={m.id}
+            defaultChecked
+            className="h-4 w-4 accent-acid-600"
+          />
+          <span className="flex flex-col">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-hot-600">
+              {PAYMENT_TYPE_LABEL[m.type] ?? m.type}
+            </span>
+            <span className="font-mono text-sm text-ink-700">{m.valuePreview}</span>
+            {m.displayLabel && <span className="text-xs text-ink-400">{m.displayLabel}</span>}
+          </span>
+        </label>
+      ))}
+    </fieldset>
   );
 }
