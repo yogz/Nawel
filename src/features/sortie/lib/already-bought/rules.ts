@@ -68,3 +68,24 @@ export function editNotifiesParticipants(o: {
 }): boolean {
   return !o.alreadyBought || o.hasPurchase;
 }
+
+/**
+ * Droit de déclarer l'achat. Sortie normale : tout participant « oui »
+ * (règle historique). « Billets déjà pris » : l'organisateur connecté
+ * seulement — sinon un ami ajouté pourrait déclarer avant lui et inverser
+ * qui doit de l'argent à qui.
+ */
+export function mayDeclarePurchase(a: {
+  alreadyBought: boolean;
+  creatorUserId: string | null;
+  sessionUserId: string | null;
+  myResponse: string | null;
+}): boolean {
+  if (a.myResponse !== "yes") {
+    return false;
+  }
+  if (!a.alreadyBought) {
+    return true;
+  }
+  return a.sessionUserId !== null && a.sessionUserId === a.creatorUserId;
+}

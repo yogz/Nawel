@@ -3,8 +3,36 @@ import {
   acceptsResponses,
   editKeepsDeadline,
   editNotifiesParticipants,
+  mayDeclarePurchase,
   resolveAlreadyBoughtCreation,
 } from "./rules";
+
+describe("mayDeclarePurchase", () => {
+  const base = { creatorUserId: "creator", myResponse: "yes" as string | null };
+
+  it("refuse un participant « oui » qui n'est pas l'organisateur (billets déjà pris)", () => {
+    expect(mayDeclarePurchase({ ...base, alreadyBought: true, sessionUserId: "friend" })).toBe(
+      false
+    );
+  });
+
+  it("refuse un visiteur non connecté (billets déjà pris)", () => {
+    expect(mayDeclarePurchase({ ...base, alreadyBought: true, sessionUserId: null })).toBe(false);
+  });
+
+  it("accepte l'organisateur connecté et inscrit", () => {
+    expect(mayDeclarePurchase({ ...base, alreadyBought: true, sessionUserId: "creator" })).toBe(
+      true
+    );
+  });
+
+  it("garde la règle existante pour une sortie normale", () => {
+    expect(mayDeclarePurchase({ ...base, alreadyBought: false, sessionUserId: null })).toBe(true);
+    expect(
+      mayDeclarePurchase({ ...base, alreadyBought: false, sessionUserId: null, myResponse: "no" })
+    ).toBe(false);
+  });
+});
 
 describe("modification d'une sortie « billets déjà pris »", () => {
   it("garde la date limite d'origine (pas de réouverture des réponses)", () => {

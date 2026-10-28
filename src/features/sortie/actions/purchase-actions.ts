@@ -30,6 +30,7 @@ import { uploadPurchaseProof } from "@/features/sortie/lib/proof-upload";
 import { rateLimit } from "@/features/sortie/lib/rate-limit";
 import { hashIp } from "@/features/sortie/lib/audit";
 import { getCurrentParticipant } from "@/features/sortie/lib/current-participant";
+import { mayDeclarePurchase } from "@/features/sortie/lib/already-bought/rules";
 import type { FormActionState } from "./outing-actions";
 import { shortIdSchema } from "./schemas";
 
@@ -171,6 +172,16 @@ export async function declarePurchaseAction(
   const { participant: me, userId } = await getCurrentParticipant(outing.id);
   if (!me || me.response !== "yes") {
     return { message: "Seul un confirmé peut déclarer l'achat." };
+  }
+  if (
+    !mayDeclarePurchase({
+      alreadyBought: outing.alreadyBought,
+      creatorUserId: outing.creatorUserId,
+      sessionUserId: userId,
+      myResponse: me.response,
+    })
+  ) {
+    return { message: "Seul l'organisateur déclare l'achat de cette sortie." };
   }
 
   const gate = await rateLimit({
