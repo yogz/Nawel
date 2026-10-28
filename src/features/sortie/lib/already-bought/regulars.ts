@@ -44,16 +44,26 @@ function normalizeName(s: string): string {
   return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim().replace(/\s+/g, " ");
 }
 
-function internalKey(r: RegularRow): string | null {
-  if (r.userId) {
-    return `u:${r.userId}`;
+/**
+ * Identité d'une personne : compte, sinon e-mail, sinon prénom (seulement
+ * sans e-mail). Partagée par les habitués et les lignes d'une sortie.
+ */
+export function personKey(p: {
+  userId: string | null;
+  email: string | null;
+  anonName: string | null;
+}): string | null {
+  if (p.userId) {
+    return `u:${p.userId}`;
   }
-  if (r.email) {
-    return `e:${r.email.trim().toLowerCase()}`;
+  if (p.email) {
+    return `e:${p.email.trim().toLowerCase()}`;
   }
-  const name = r.anonName ? normalizeName(r.anonName) : "";
+  const name = p.anonName ? normalizeName(p.anonName) : "";
   return name ? `n:${name}` : null;
 }
+
+export { normalizeName };
 
 export function groupRegulars(rows: RegularRow[], creatorUserId: string): Regular[] {
   const byKey = new Map<string, Regular & { outingIds: Set<string> }>();
@@ -61,7 +71,7 @@ export function groupRegulars(rows: RegularRow[], creatorUserId: string): Regula
     if (r.userId === creatorUserId) {
       continue;
     }
-    const key = internalKey(r);
+    const key = personKey(r);
     const name = (r.userName ?? r.anonName ?? "").trim();
     if (!key || !name) {
       continue;
