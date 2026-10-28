@@ -57,9 +57,9 @@ function ctaButton(href: string, label: string): string {
   return `<a href="${escapeHtml(href)}" style="display:inline-block;padding:14px 26px;background:${INK};color:${ACID};text-decoration:none;border-radius:999px;font-weight:700;font-size:14px;letter-spacing:0.01em;">${escapeHtml(label)}</a>`;
 }
 
-function methodsBlock(methods: PaymentMethodPreview[]): string {
+function methodsBlock(methods: PaymentMethodPreview[], buyerName: string): string {
   if (methods.length === 0) {
-    return `<p style="color:${INK_MUTED};font-size:13px;">Aucun moyen de paiement renseigné pour l&rsquo;instant.</p>`;
+    return `<p style="color:${INK_MUTED};font-size:13px;">${escapeHtml(buyerName)} n&rsquo;a pas encore indiqué comment le rembourser. Ça apparaîtra sur ta page dès que c&rsquo;est fait.</p>`;
   }
   const rows = methods
     .map((m) => {
@@ -70,7 +70,8 @@ function methodsBlock(methods: PaymentMethodPreview[]): string {
       </li>`;
     })
     .join("");
-  return `<ul style="margin:8px 0 0;padding:0;">${rows}</ul>`;
+  return `<ul style="margin:8px 0 0;padding:0;">${rows}</ul>
+    <p style="margin:8px 0 0;color:${INK_MUTED};font-size:13px;">Numéros masqués ici : « Régler ma part » les affiche en entier.</p>`;
 }
 
 /**
@@ -99,7 +100,7 @@ export function purchaseConfirmedEmail(args: {
       Ta part&nbsp;: <strong>${escapeHtml(formatCents(args.amountCents))}</strong>.
     </p>
     <p style="margin:0 0 8px;${MICRO_TAG}">Pour rembourser ${escapeHtml(args.buyerName)}</p>
-    ${methodsBlock(args.methods)}
+    ${methodsBlock(args.methods, args.buyerName)}
     <p style="margin:28px 0;">
       ${ctaButton(args.debtsUrl, "Régler ma part")}
     </p>
