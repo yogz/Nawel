@@ -13,7 +13,8 @@ export const MAX_LABEL_LENGTH = 40;
 
 type Result = { ok: true } | { ok: false; message: string };
 
-const TYPE_LABEL: Record<string, string> = {
+/** Nom affiché d'un type de moyen (textes, e-mails). */
+export const PAYMENT_TYPE_LABEL: Record<string, string> = {
   iban: "IBAN",
   lydia: "Lydia",
   revolut: "Revolut",
@@ -109,7 +110,7 @@ export function checkAccountMethodAdd(a: {
     return { ok: false, message: "5 moyens maximum. Retire-en un pour en ajouter un autre." };
   }
   if (isDuplicateMethod(a.existing, a.type, a.valuePreview)) {
-    const label = TYPE_LABEL[a.type] ?? a.type;
+    const label = PAYMENT_TYPE_LABEL[a.type] ?? a.type;
     return {
       ok: false,
       message: `Tu as déjà un ${label} qui finit par ${previewTail(a.valuePreview)}.`,

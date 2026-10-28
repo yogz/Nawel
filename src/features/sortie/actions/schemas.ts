@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { endOfDayInParis } from "@/features/sortie/lib/date-fr";
+import { isValidIban } from "@/features/sortie/lib/iban";
 
 const trimmedString = z.string().trim();
 
@@ -9,6 +10,16 @@ export const shortIdSchema = z
   .string()
   .trim()
   .regex(/^[23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ]{8}$/);
+
+// Valeur d'un moyen de paiement — partagée entre l'ajout par sortie
+// (payment-method-actions) et l'ajout sur le compte (account-payment-actions).
+export const ibanValueSchema = z
+  .string()
+  .trim()
+  .min(14)
+  .max(44)
+  .refine((v) => isValidIban(v), "IBAN invalide");
+export const handleValueSchema = z.string().trim().min(4).max(50);
 
 // z.string().url() accepts javascript: — refine to http/https so a malicious
 // creator can't turn the "Voir la billetterie" link into an XSS payload.
