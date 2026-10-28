@@ -69,6 +69,79 @@ la seule identité stable d'un acheteur anonyme était sa participation.
   chacun. » (lien vers `/moi/argent`).
 - **Révélation inchangée** : seul le débiteur voit l'IBAN complet, via `revealIbanAction`.
 
+## 5 bis. Arbitrages après les revues (2026-10-28)
+
+Trois revues (sécurité, UX/rédaction, « constructeur »). Vérifié dans le code : inscription par
+mot de passe ouverte avec `requireEmailVerification: false` (`auth-config.ts:127-130`) ;
+rattachement par e-mail à la connexion qui pose `userId` sans retirer le cookie
+(`auth-config.ts:~609-623`) ; `decryptSecret` retrouve la clé par `keyId` (copie du chiffré
+sans déchiffrer = sûre). Ces choix **remplacent** le §5 quand ils divergent ; tous sont des
+_choix de conception_.
+
+**Compte « pré-créé » par un attaquant (sécurité C1).**
+
+- Gérer des moyens sur le compte exige `session.user.emailVerified === true`.
+- Chaque **ajout** reste « en attente » jusqu'au clic sur un lien envoyé à l'adresse du compte
+  (jeton à usage unique, 15 min, haché en base). Un mot de passe volé ou planté ne suffit donc
+  pas : il faut aussi la boîte mail.
+- E-mail de notification à chaque ajout confirmé et à chaque retrait.
+
+**Condition de copie (sécurité C2).** Fonction pure `mayCopyAccountMethods` :
+`sessionUserId !== null && buyer.userId === sessionUserId` — jamais `buyer.userId` seul, jamais
+le cookie. Réutilisée par le texte de la page achat (jamais d'annonce d'une copie qui ne part
+pas). Couvre aussi le cas « inscription créée sans compte puis connexion » : pas de copie.
+
+**Geste conscient (sécurité I2).** Sur la page achat, les moyens du compte sont listés avec une
+case à cocher chacun (cochées par défaut). Le serveur ne copie que les identifiants cochés,
+après avoir revérifié qu'ils appartiennent au compte connecté et sont confirmés.
+
+**Faiblesse existante resserrée (sécurité I1).** Ajout / retrait de moyens **par sortie** : si
+la ligne participant porte un `userId`, exiger `session.user.id === row.userId` (le cookie seul
+ne suffit plus).
+
+**Cache navigateur en clair (sécurité I4).** Supprimé : plus d'écriture `sortie:lastPM:*`, purge
+des valeurs existantes au chargement du gestionnaire. Le stockage sur le compte remplace ce
+confort.
+
+**Libellé (sécurité M2).** 40 caractères max, refus d'une suite de plus de 8 chiffres (évite
+« vire plutôt sur FR76… » dans les e-mails des autres).
+
+**Plafonds et audit (sécurité M3).** 5 moyens confirmés max par compte ; rate-limit
+`acct-pm:<userId>` 10 / h ; doublon refusé (même type + même aperçu) : « Tu as déjà un IBAN qui
+finit par 1234. » Audit `USER_PAYMENT_METHOD_ADDED` / `CONFIRMED` / `REMOVED`
+(`{methodId, type, valuePreview}`, `outing_id` nul) et `PAYMENT_METHODS_COPIED_FROM_ACCOUNT`
+(`{purchaseId, count, types, sourceMethodIds}`) dans la transaction d'achat. Noms figés en
+constantes.
+
+**Rotation des clés (sécurité I3).** Avant de retirer une ancienne clé `SORTIE_IBAN_KEY_*`, un
+rechiffrement doit couvrir les deux tables (`purchaser_payment_methods` et
+`user_payment_methods`). Note ajoutée au commentaire de `crypto.ts`.
+
+**Écrans et textes (revue UX).**
+
+- « Tes moyens de paiement » en bas de « Mon argent » (`id="moyens"`), visible même sans
+  dette ; aide : « Enregistre-les une fois : ils sont joints automatiquement au mail de chacun
+  quand tu déclares un achat. » / « Masqués partout. En entier seulement pour qui te doit de
+  l'argent, à sa demande. » ; état vide avec formulaire ouvert ; sinon « + Ajouter un autre
+  moyen » ; retrait en deux temps (« Oui, retirer » / « Annuler »), bouton ≥ 44 px avec
+  `aria-label` précis ; aide sous le libellé « Visible par ceux qui te remboursent. » ;
+  messages : « IBAN ajouté : confirme-le depuis le mail qu'on vient de t'envoyer. »,
+  « Retiré de ton compte. Les sorties déjà achetées gardent l'ancien. », « 5 moyens maximum.
+  Retire-en un pour en ajouter un autre. »
+- Page achat : connecté avec moyens → « Chacun reçoit sa part par e-mail, avec tes moyens de
+  paiement : » + cases ; connecté sans moyen → « … Ajoute ton IBAN ou ton Lydia une fois dans
+  Mon argent ↗ » (nouvel onglet, `/moi/argent#moyens`) ; sinon texte actuel (« RIB » → « IBAN »).
+- `/paiement` : pas d'« enregistrer aussi sur mon compte » ; phrase « Ce que tu ajoutes ici ne
+  vaut que pour cette sortie. Pour ne plus le ressaisir : Mon argent ↗. » et refus des doublons
+  (« Déjà ajouté pour cette sortie. »).
+- E-mail : après la liste « Numéros masqués ici : « Régler ma part » les affiche en entier. » ;
+  cas vide : « {Prénom} n'a pas encore indiqué comment le rembourser. Ça apparaîtra sur ta page
+  dès que c'est fait. »
+
+**Vérification en ligne (revue « constructeur »).** Pas de vrai achat (une déclaration est
+définitive et la base locale est la prod) : l'owner enregistre ses moyens dans « Mon argent » et
+confirme par e-mail ; le rendu de l'e-mail est vérifié via l'aperçu admin des e-mails.
+
 ## 6. Mesure de réussite
 
 - Ajouter / retirer un moyen sur son compte, et refus pour un visiteur non connecté (tests des
